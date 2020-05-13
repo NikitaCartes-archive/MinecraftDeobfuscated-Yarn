@@ -23,7 +23,8 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
@@ -76,7 +77,7 @@ public class ShipwreckGenerator {
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
             if ("map_chest".equals(metadata)) {
                 LootableContainerBlockEntity.setLootTable(world, random, pos.down(), LootTables.SHIPWRECK_MAP_CHEST);
             } else if ("treasure_chest".equals(metadata)) {
@@ -87,18 +88,18 @@ public class ShipwreckGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
+        public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
             int i = 256;
             int j = 0;
             BlockPos blockPos2 = this.structure.getSize();
             Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
             int k = blockPos2.getX() * blockPos2.getZ();
             if (k == 0) {
-                j = world.getTopY(type, this.pos.getX(), this.pos.getZ());
+                j = serverWorldAccess.getTopY(type, this.pos.getX(), this.pos.getZ());
             } else {
                 BlockPos blockPos3 = this.pos.add(blockPos2.getX() - 1, 0, blockPos2.getZ() - 1);
                 for (BlockPos blockPos4 : BlockPos.iterate(this.pos, blockPos3)) {
-                    int l = world.getTopY(type, blockPos4.getX(), blockPos4.getZ());
+                    int l = serverWorldAccess.getTopY(type, blockPos4.getX(), blockPos4.getZ());
                     j += l;
                     i = Math.min(i, l);
                 }
@@ -106,7 +107,7 @@ public class ShipwreckGenerator {
             }
             int m = this.grounded ? i - blockPos2.getY() / 2 - random.nextInt(3) : j;
             this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-            return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+            return super.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
         }
     }
 }

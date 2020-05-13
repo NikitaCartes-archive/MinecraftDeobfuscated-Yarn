@@ -33,8 +33,8 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 /**
@@ -116,7 +116,7 @@ extends Fluid {
         return blockState.isSideSolidFullSquare(world, pos, direction);
     }
 
-    protected void tryFlow(IWorld world, BlockPos fluidPos, FluidState state) {
+    protected void tryFlow(WorldAccess world, BlockPos fluidPos, FluidState state) {
         if (state.isEmpty()) {
             return;
         }
@@ -134,7 +134,7 @@ extends Fluid {
         }
     }
 
-    private void method_15744(IWorld world, BlockPos pos, FluidState fluidState, BlockState blockState) {
+    private void method_15744(WorldAccess world, BlockPos pos, FluidState fluidState, BlockState blockState) {
         int i = fluidState.getLevel() - this.getLevelDecreasePerBlock(world);
         if (fluidState.get(FALLING).booleanValue()) {
             i = 7;
@@ -225,7 +225,7 @@ extends Fluid {
 
     protected abstract boolean isInfinite();
 
-    protected void flow(IWorld world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
+    protected void flow(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
         if (state.getBlock() instanceof FluidFillable) {
             ((FluidFillable)((Object)state.getBlock())).tryFillWithFluid(world, pos, state, fluidState);
         } else {
@@ -236,7 +236,7 @@ extends Fluid {
         }
     }
 
-    protected abstract void beforeBreakingBlock(IWorld var1, BlockPos var2, BlockState var3);
+    protected abstract void beforeBreakingBlock(WorldAccess var1, BlockPos var2, BlockState var3);
 
     private static short method_15747(BlockPos blockPos, BlockPos blockPos2) {
         int i = blockPos2.getX() - blockPos.getX();

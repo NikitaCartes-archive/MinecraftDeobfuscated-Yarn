@@ -28,8 +28,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.TheEndDimension;
 
@@ -51,7 +51,7 @@ extends AbstractFireBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (this.canPlaceAt(state, world, pos)) {
             return this.method_24855(world, pos, state.get(AGE));
         }
@@ -118,7 +118,7 @@ extends AbstractFireBlock {
             world.removeBlock(pos, false);
         }
         BlockState blockState = world.getBlockState(pos.down());
-        boolean bl = world.dimension instanceof TheEndDimension && blockState.isOf(Blocks.BEDROCK) || blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.MAGMA_BLOCK);
+        boolean bl = world.getDimension() instanceof TheEndDimension && blockState.isOf(Blocks.BEDROCK) || blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.MAGMA_BLOCK);
         int i = state.get(AGE);
         if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2f + (float)i * 0.03f) {
             world.removeBlock(pos, false);
@@ -210,8 +210,8 @@ extends AbstractFireBlock {
         }
     }
 
-    private BlockState method_24855(IWorld iWorld, BlockPos blockPos, int i) {
-        BlockState blockState = FireBlock.getState(iWorld, blockPos);
+    private BlockState method_24855(WorldAccess worldAccess, BlockPos blockPos, int i) {
+        BlockState blockState = FireBlock.getState(worldAccess, blockPos);
         if (blockState.isOf(Blocks.FIRE)) {
             return (BlockState)blockState.with(AGE, i);
         }

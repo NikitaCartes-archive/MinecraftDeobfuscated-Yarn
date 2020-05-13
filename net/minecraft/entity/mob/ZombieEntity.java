@@ -62,9 +62,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class ZombieEntity
@@ -439,7 +439,7 @@ extends HostileEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         float f = difficulty.getClampedLocalDifficulty();
         this.setCanPickUpLoot(this.random.nextFloat() < 0.55f * f);
@@ -531,7 +531,7 @@ extends HostileEntity {
         }
 
         @Override
-        public void tickStepping(IWorld world, BlockPos pos) {
+        public void tickStepping(WorldAccess world, BlockPos pos) {
             world.playSound(null, pos, SoundEvents.ENTITY_ZOMBIE_DESTROY_EGG, SoundCategory.HOSTILE, 0.5f, 0.9f + ZombieEntity.this.random.nextFloat() * 0.2f);
         }
 

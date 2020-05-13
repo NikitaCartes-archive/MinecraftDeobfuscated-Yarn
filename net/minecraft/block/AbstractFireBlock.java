@@ -148,7 +148,7 @@ extends Block {
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        if ((world.dimension.getType() == DimensionType.OVERWORLD || world.dimension.getType() == DimensionType.THE_NETHER) && NetherPortalBlock.createPortalAt(world, pos)) {
+        if ((world.method_27983() == DimensionType.OVERWORLD || world.method_27983() == DimensionType.THE_NETHER) && NetherPortalBlock.createPortalAt(world, pos)) {
             return;
         }
         if (!state.canPlaceAt(world, pos)) {

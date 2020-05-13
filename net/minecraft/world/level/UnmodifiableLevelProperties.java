@@ -15,8 +15,6 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorOptions;
-import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.timer.Timer;
 
 public class UnmodifiableLevelProperties
@@ -29,11 +27,6 @@ implements class_5268 {
         this.field_24178 = dimensionType;
         this.field_24179 = arg;
         this.properties = arg2;
-    }
-
-    @Override
-    public long getSeed() {
-        return this.field_24179.getSeed();
     }
 
     @Override
@@ -141,27 +134,12 @@ implements class_5268 {
     }
 
     @Override
-    public boolean hasStructures() {
-        return this.properties.hasStructures();
-    }
-
-    @Override
     public void setGameMode(GameMode gameMode) {
     }
 
     @Override
     public boolean isHardcore() {
         return this.field_24179.isHardcore();
-    }
-
-    @Override
-    public LevelGeneratorType getGeneratorType() {
-        return this.properties.getGeneratorType();
-    }
-
-    @Override
-    public LevelGeneratorOptions getGeneratorOptions() {
-        return this.properties.getGeneratorOptions();
     }
 
     @Override

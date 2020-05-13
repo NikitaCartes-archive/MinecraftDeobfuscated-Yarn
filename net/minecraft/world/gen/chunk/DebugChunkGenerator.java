@@ -6,6 +6,8 @@ package net.minecraft.world.gen.chunk;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -14,26 +16,34 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.DebugChunkGeneratorConfig;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 
 public class DebugChunkGenerator
-extends ChunkGenerator<DebugChunkGeneratorConfig> {
+extends ChunkGenerator {
+    public static final ChunkGenerator field_24509 = new DebugChunkGenerator();
     private static final List<BlockState> BLOCK_STATES = StreamSupport.stream(Registry.BLOCK.spliterator(), false).flatMap(block -> block.getStateManager().getStates().stream()).collect(Collectors.toList());
     private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size()));
     private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
     protected static final BlockState AIR = Blocks.AIR.getDefaultState();
     protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
 
-    public DebugChunkGenerator(IWorld world, BiomeSource biomeSource, DebugChunkGeneratorConfig config) {
-        super(world, biomeSource, config);
+    private DebugChunkGenerator() {
+        super(new FixedBiomeSource(Biomes.PLAINS), new ChunkGeneratorConfig());
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public ChunkGenerator method_27997(long l) {
+        return this;
     }
 
     @Override
@@ -41,12 +51,7 @@ extends ChunkGenerator<DebugChunkGeneratorConfig> {
     }
 
     @Override
-    public void carve(BiomeAccess biomeAccess, Chunk chunk, GenerationStep.Carver carver) {
-    }
-
-    @Override
-    public int getSpawnHeight() {
-        return this.world.getSeaLevel() + 1;
+    public void carve(long l, BiomeAccess biomeAccess, Chunk chunk, GenerationStep.Carver carver) {
     }
 
     @Override
@@ -67,7 +72,7 @@ extends ChunkGenerator<DebugChunkGeneratorConfig> {
     }
 
     @Override
-    public void populateNoise(IWorld world, StructureAccessor structureAccessor, Chunk chunk) {
+    public void populateNoise(WorldAccess world, StructureAccessor structureAccessor, Chunk chunk) {
     }
 
     @Override

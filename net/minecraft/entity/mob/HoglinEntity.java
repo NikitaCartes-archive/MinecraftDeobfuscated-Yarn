@@ -47,9 +47,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
@@ -158,13 +158,13 @@ Hoglin {
         }
     }
 
-    public static boolean canSpawn(EntityType<HoglinEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<HoglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
     }
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (world.getRandom().nextFloat() < 0.2f) {
             this.setBaby(true);
         }
@@ -288,7 +288,7 @@ Hoglin {
     }
 
     public boolean canConvert() {
-        return this.world.getDimension().getType() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
+        return this.world.method_27983() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
     }
 
     private void setCannotBeHunted(boolean cannotBeHunted) {

@@ -12,8 +12,8 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 
 /**
@@ -27,7 +27,7 @@ implements DynamicSerializable {
         this.type = type;
     }
 
-    public abstract void generate(IWorld var1, Random var2, List<BlockPos> var3, List<BlockPos> var4, Set<BlockPos> var5, BlockBox var6);
+    public abstract void generate(WorldAccess var1, Random var2, List<BlockPos> var3, List<BlockPos> var4, Set<BlockPos> var5, BlockBox var6);
 
     protected void placeVine(ModifiableWorld world, BlockPos pos, BooleanProperty directionProperty, Set<BlockPos> set, BlockBox box) {
         this.setBlockStateAndEncompassPosition(world, pos, (BlockState)Blocks.VINE.getDefaultState().with(directionProperty, true), set, box);

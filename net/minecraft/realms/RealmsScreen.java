@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsLabel;
-import net.minecraft.realms.TickableRealmsButton;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class RealmsScreen
@@ -31,8 +31,8 @@ extends Screen {
     @Override
     public void tick() {
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-            if (!(abstractButtonWidget instanceof TickableRealmsButton)) continue;
-            ((TickableRealmsButton)((Object)abstractButtonWidget)).tick();
+            if (!(abstractButtonWidget instanceof TickableElement)) continue;
+            ((TickableElement)((Object)abstractButtonWidget)).tick();
         }
     }
 

@@ -17,8 +17,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class AbstractPressurePlateBlock
@@ -46,7 +46,7 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
@@ -99,9 +99,9 @@ extends Block {
         }
     }
 
-    protected abstract void playPressSound(IWorld var1, BlockPos var2);
+    protected abstract void playPressSound(WorldAccess var1, BlockPos var2);
 
-    protected abstract void playDepressSound(IWorld var1, BlockPos var2);
+    protected abstract void playDepressSound(WorldAccess var1, BlockPos var2);
 
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {

@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class AttachedStemBlock
 extends PlantBlock {
@@ -48,7 +48,7 @@ extends PlantBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (!newState.isOf(this.gourdBlock) && direction == state.get(FACING)) {
             return (BlockState)this.gourdBlock.getStem().getDefaultState().with(StemBlock.AGE, 7);
         }

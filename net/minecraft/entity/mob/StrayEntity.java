@@ -16,8 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class StrayEntity
 extends AbstractSkeletonEntity {
@@ -25,7 +25,7 @@ extends AbstractSkeletonEntity {
         super((EntityType<? extends AbstractSkeletonEntity>)entityType, world);
     }
 
-    public static boolean canSpawn(EntityType<StrayEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<StrayEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return StrayEntity.canSpawnInDark(type, world, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.isSkyVisible(pos));
     }
 

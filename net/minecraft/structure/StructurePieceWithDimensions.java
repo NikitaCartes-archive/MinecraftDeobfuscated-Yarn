@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public abstract class StructurePieceWithDimensions
 extends StructurePiece {
@@ -45,7 +45,7 @@ extends StructurePiece {
         tag.putInt("HPos", this.hPos);
     }
 
-    protected boolean method_14839(IWorld world, BlockBox boundingBox, int i) {
+    protected boolean method_14839(WorldAccess world, BlockBox boundingBox, int i) {
         if (this.hPos >= 0) {
             return true;
         }

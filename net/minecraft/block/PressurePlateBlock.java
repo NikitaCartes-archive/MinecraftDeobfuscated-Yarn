@@ -18,8 +18,8 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class PressurePlateBlock
 extends AbstractPressurePlateBlock {
@@ -43,7 +43,7 @@ extends AbstractPressurePlateBlock {
     }
 
     @Override
-    protected void playPressSound(IWorld world, BlockPos pos) {
+    protected void playPressSound(WorldAccess world, BlockPos pos) {
         if (this.material == Material.WOOD || this.material == Material.NETHER_WOOD) {
             world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.8f);
         } else {
@@ -52,7 +52,7 @@ extends AbstractPressurePlateBlock {
     }
 
     @Override
-    protected void playDepressSound(IWorld world, BlockPos pos) {
+    protected void playDepressSound(WorldAccess world, BlockPos pos) {
         if (this.material == Material.WOOD || this.material == Material.NETHER_WOOD) {
             world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.7f);
         } else {

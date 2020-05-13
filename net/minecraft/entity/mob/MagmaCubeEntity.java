@@ -23,8 +23,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class MagmaCubeEntity
@@ -37,7 +37,7 @@ extends SlimeEntity {
         return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2f);
     }
 
-    public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return world.getDifficulty() != Difficulty.PEACEFUL;
     }
 

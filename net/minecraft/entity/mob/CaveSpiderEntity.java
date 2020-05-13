@@ -17,9 +17,9 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class CaveSpiderEntity
@@ -53,7 +53,7 @@ extends SpiderEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         return entityData;
     }
 

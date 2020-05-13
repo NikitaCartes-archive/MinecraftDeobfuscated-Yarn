@@ -33,8 +33,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class NetherPortalBlock
@@ -60,7 +60,7 @@ extends Block {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
+        if (world.getDimension().hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
             ZombifiedPiglinEntity entity;
             while (world.getBlockState(pos).isOf(this)) {
                 pos = pos.down();
@@ -71,8 +71,8 @@ extends Block {
         }
     }
 
-    public static boolean createPortalAt(IWorld iWorld, BlockPos blockPos) {
-        AreaHelper areaHelper = NetherPortalBlock.createAreaHelper(iWorld, blockPos);
+    public static boolean createPortalAt(WorldAccess worldAccess, BlockPos blockPos) {
+        AreaHelper areaHelper = NetherPortalBlock.createAreaHelper(worldAccess, blockPos);
         if (areaHelper != null) {
             areaHelper.createPortal();
             return true;
@@ -81,12 +81,12 @@ extends Block {
     }
 
     @Nullable
-    public static AreaHelper createAreaHelper(IWorld iWorld, BlockPos blockPos) {
-        AreaHelper areaHelper = new AreaHelper(iWorld, blockPos, Direction.Axis.X);
+    public static AreaHelper createAreaHelper(WorldAccess worldAccess, BlockPos blockPos) {
+        AreaHelper areaHelper = new AreaHelper(worldAccess, blockPos, Direction.Axis.X);
         if (areaHelper.isValid() && areaHelper.foundPortalBlocks == 0) {
             return areaHelper;
         }
-        AreaHelper areaHelper2 = new AreaHelper(iWorld, blockPos, Direction.Axis.Z);
+        AreaHelper areaHelper2 = new AreaHelper(worldAccess, blockPos, Direction.Axis.Z);
         if (areaHelper2.isValid() && areaHelper2.foundPortalBlocks == 0) {
             return areaHelper2;
         }
@@ -94,7 +94,7 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         boolean bl;
         Direction.Axis axis = direction.getAxis();
         Direction.Axis axis2 = state.get(AXIS);
@@ -167,13 +167,13 @@ extends Block {
         builder.add(AXIS);
     }
 
-    public static BlockPattern.Result findPortal(IWorld iWorld, BlockPos world) {
+    public static BlockPattern.Result findPortal(WorldAccess worldAccess, BlockPos world) {
         Direction.Axis axis = Direction.Axis.Z;
-        AreaHelper areaHelper = new AreaHelper(iWorld, world, Direction.Axis.X);
-        LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(iWorld, true);
+        AreaHelper areaHelper = new AreaHelper(worldAccess, world, Direction.Axis.X);
+        LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(worldAccess, true);
         if (!areaHelper.isValid()) {
             axis = Direction.Axis.X;
-            areaHelper = new AreaHelper(iWorld, world, Direction.Axis.Z);
+            areaHelper = new AreaHelper(worldAccess, world, Direction.Axis.Z);
         }
         if (!areaHelper.isValid()) {
             return new BlockPattern.Result(world, Direction.NORTH, Direction.UP, loadingCache, 1, 1, 1);
@@ -201,7 +201,7 @@ extends Block {
     }
 
     public static class AreaHelper {
-        private final IWorld world;
+        private final WorldAccess world;
         private final Direction.Axis axis;
         private final Direction negativeDir;
         private final Direction positiveDir;
@@ -211,7 +211,7 @@ extends Block {
         private int height;
         private int width;
 
-        public AreaHelper(IWorld world, BlockPos pos, Direction.Axis axis) {
+        public AreaHelper(WorldAccess world, BlockPos pos, Direction.Axis axis) {
             this.world = world;
             this.axis = axis;
             if (axis == Direction.Axis.X) {

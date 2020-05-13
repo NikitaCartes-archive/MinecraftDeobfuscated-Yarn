@@ -22,9 +22,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class HostileEntity
@@ -100,7 +100,7 @@ implements Monster {
         return 0.5f - world.getBrightness(pos);
     }
 
-    public static boolean isSpawnDark(IWorld world, BlockPos pos, Random random) {
+    public static boolean isSpawnDark(WorldAccess world, BlockPos pos, Random random) {
         if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
             return false;
         }
@@ -108,11 +108,11 @@ implements Monster {
         return i <= random.nextInt(8);
     }
 
-    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(world, pos, random) && HostileEntity.canMobSpawn(type, world, spawnReason, pos, random);
     }
 
-    public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.canMobSpawn(type, world, spawnReason, pos, random);
     }
 

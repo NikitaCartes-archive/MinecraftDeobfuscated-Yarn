@@ -42,8 +42,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.BiomeParticleConfig;
@@ -55,7 +55,6 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -273,12 +272,12 @@ public abstract class Biome {
         return this.features.get((Object)feature);
     }
 
-    public void generateFeatureStep(GenerationStep.Feature step, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, IWorld world, long populationSeed, ChunkRandom chunkRandom, BlockPos pos) {
+    public void generateFeatureStep(GenerationStep.Feature step, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ServerWorldAccess serverWorldAccess, long populationSeed, ChunkRandom chunkRandom, BlockPos pos) {
         int i = 0;
         for (ConfiguredFeature<?, ?> configuredFeature : this.features.get((Object)step)) {
             chunkRandom.setDecoratorSeed(populationSeed, i, step.ordinal());
             try {
-                configuredFeature.generate(world, structureAccessor, chunkGenerator, chunkRandom, pos);
+                configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, chunkRandom, pos);
             } catch (Exception exception) {
                 CrashReport crashReport = CrashReport.create(exception, "Feature placement");
                 crashReport.addElement("Feature").add("Id", Registry.FEATURE.getId((Feature<?>)configuredFeature.feature)).add("Config", configuredFeature.config).add("Description", () -> configuredFeature.feature.toString());

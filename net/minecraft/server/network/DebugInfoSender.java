@@ -21,8 +21,8 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -68,7 +68,7 @@ public class DebugInfoSender {
     public static void sendNeighborUpdate(World world, BlockPos pos) {
     }
 
-    public static void sendStructureStart(IWorld world, StructureStart structureStart) {
+    public static void sendStructureStart(WorldAccess world, StructureStart structureStart) {
     }
 
     public static void sendGoalSelector(World world, MobEntity mob, GoalSelector goalSelector) {

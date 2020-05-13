@@ -32,7 +32,7 @@ import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -100,13 +100,13 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean bl) {
+    public boolean generate(StructureManager structureManager, ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean bl) {
         StructurePlacementData structurePlacementData;
         Structure structure = this.method_27233(structureManager);
-        if (structure.place(world, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox, bl), 18)) {
-            List<Structure.StructureBlockInfo> list = Structure.process(world, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
+        if (structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox, bl), 18)) {
+            List<Structure.StructureBlockInfo> list = Structure.process(serverWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
-                this.method_16756(world, structureBlockInfo, blockPos, blockRotation, random, blockBox);
+                this.method_16756(serverWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);
             }
             return true;
         }

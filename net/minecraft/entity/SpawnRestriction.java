@@ -39,7 +39,7 @@ import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class SpawnRestriction {
@@ -62,7 +62,7 @@ public class SpawnRestriction {
         return entry == null ? Heightmap.Type.MOTION_BLOCKING_NO_LEAVES : entry.heightmapType;
     }
 
-    public static <T extends Entity> boolean canSpawn(EntityType<T> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static <T extends Entity> boolean canSpawn(EntityType<T> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         Entry entry = RESTRICTIONS.get(type);
         return entry == null || entry.predicate.test(type, world, spawnReason, pos, random);
     }
@@ -159,7 +159,7 @@ public class SpawnRestriction {
 
     @FunctionalInterface
     public static interface SpawnPredicate<T extends Entity> {
-        public boolean test(EntityType<T> var1, IWorld var2, SpawnReason var3, BlockPos var4, Random var5);
+        public boolean test(EntityType<T> var1, WorldAccess var2, SpawnReason var3, BlockPos var4, Random var5);
     }
 }
 

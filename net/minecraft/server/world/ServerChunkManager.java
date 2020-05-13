@@ -55,7 +55,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +63,7 @@ public class ServerChunkManager
 extends ChunkManager {
     private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
     private final ChunkTicketManager ticketManager;
-    private final ChunkGenerator<?> chunkGenerator;
+    private final ChunkGenerator chunkGenerator;
     private final ServerWorld world;
     private final Thread serverThread;
     private final ServerLightingProvider lightProvider;
@@ -80,12 +79,12 @@ extends ChunkManager {
     @Nullable
     private SpawnHelper.Info spawnEntry;
 
-    public ServerChunkManager(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator<?> chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier) {
+    public ServerChunkManager(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier) {
         this.world = serverWorld;
         this.mainThreadExecutor = new MainThreadExecutor(serverWorld);
         this.chunkGenerator = chunkGenerator;
         this.serverThread = Thread.currentThread();
-        File file = session.method_27424(serverWorld.getDimension().getType());
+        File file = session.method_27424(serverWorld.method_27983());
         File file2 = new File(file, "data");
         file2.mkdirs();
         this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
@@ -310,15 +309,14 @@ extends ChunkManager {
         this.threadedAnvilChunkStorage.close();
     }
 
-    @Override
-    public void tick(BooleanSupplier shouldKeepTicking) {
+    public void tick(BooleanSupplier booleanSupplier) {
         this.world.getProfiler().push("purge");
         this.ticketManager.purge();
         this.tick();
         this.world.getProfiler().swap("chunks");
         this.tickChunks();
         this.world.getProfiler().swap("unload");
-        this.threadedAnvilChunkStorage.tick(shouldKeepTicking);
+        this.threadedAnvilChunkStorage.tick(booleanSupplier);
         this.world.getProfiler().pop();
         this.initChunkCaches();
     }
@@ -328,7 +326,7 @@ extends ChunkManager {
         long m = l - this.lastMobSpawningTime;
         this.lastMobSpawningTime = l;
         class_5217 lv = this.world.getLevelProperties();
-        boolean bl = lv.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES;
+        boolean bl = this.world.method_27982();
         boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
         if (!bl) {
             SpawnHelper.Info info;
@@ -387,7 +385,7 @@ extends ChunkManager {
         return this.mainThreadExecutor.getTaskCount();
     }
 
-    public ChunkGenerator<?> getChunkGenerator() {
+    public ChunkGenerator getChunkGenerator() {
         return this.chunkGenerator;
     }
 
@@ -488,7 +486,7 @@ extends ChunkManager {
     final class MainThreadExecutor
     extends ThreadExecutor<Runnable> {
         private MainThreadExecutor(World world) {
-            super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getId(world.getDimension().getType()));
+            super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getId(world.method_27983()));
         }
 
         @Override

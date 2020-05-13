@@ -21,7 +21,8 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
@@ -59,15 +60,15 @@ extends StructurePiece {
     }
 
     @Override
-    public boolean generate(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
         this.placementData.setBoundingBox(boundingBox);
         this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-        if (this.structure.place(world, this.pos, blockPos, this.placementData, 2)) {
+        if (this.structure.place(serverWorldAccess, this.pos, blockPos, this.placementData, 2)) {
             List<Structure.StructureBlockInfo> list = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 StructureBlockMode structureBlockMode;
                 if (structureBlockInfo.tag == null || (structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"))) != StructureBlockMode.DATA) continue;
-                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, world, random, boundingBox);
+                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, serverWorldAccess, random, boundingBox);
             }
             List<Structure.StructureBlockInfo> list2 = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW);
             for (Structure.StructureBlockInfo structureBlockInfo2 : list2) {
@@ -86,13 +87,13 @@ extends StructurePiece {
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", (Object)string, (Object)structureBlockInfo2.pos);
                 }
-                world.setBlockState(structureBlockInfo2.pos, blockState, 3);
+                serverWorldAccess.setBlockState(structureBlockInfo2.pos, blockState, 3);
             }
         }
         return true;
     }
 
-    protected abstract void handleMetadata(String var1, BlockPos var2, IWorld var3, Random var4, BlockBox var5);
+    protected abstract void handleMetadata(String var1, BlockPos var2, WorldAccess var3, Random var4, BlockBox var5);
 
     @Override
     public void translate(int x, int y, int z) {

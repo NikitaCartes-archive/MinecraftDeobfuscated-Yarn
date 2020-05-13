@@ -8,7 +8,6 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayers;
 import net.minecraft.world.biome.layer.type.IdentitySamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
-import net.minecraft.world.level.LevelGeneratorType;
 
 public class SetBaseBiomesLayer
 implements IdentitySamplingLayer {
@@ -33,23 +32,16 @@ implements IdentitySamplingLayer {
     private static final int[] TEMPERATE_BIOMES = new int[]{FOREST_ID, DARK_FOREST_ID, MOUNTAINS_ID, PLAINS_ID, BIRCH_FOREST_ID, SWAMP_ID};
     private static final int[] COOL_BIOMES = new int[]{FOREST_ID, MOUNTAINS_ID, TAIGA_ID, PLAINS_ID};
     private static final int[] SNOWY_BIOMES = new int[]{SNOWY_TUNDRA_ID, SNOWY_TUNDRA_ID, SNOWY_TUNDRA_ID, SNOWY_TAIGA_ID};
-    private final int field_20621;
     private int[] chosenGroup1 = DRY_BIOMES;
 
-    public SetBaseBiomesLayer(LevelGeneratorType generatorType, int i) {
-        if (generatorType == LevelGeneratorType.DEFAULT_1_1) {
+    public SetBaseBiomesLayer(boolean bl) {
+        if (bl) {
             this.chosenGroup1 = OLD_GROUP_1;
-            this.field_20621 = -1;
-        } else {
-            this.field_20621 = i;
         }
     }
 
     @Override
     public int sample(LayerRandomnessSource context, int value) {
-        if (this.field_20621 >= 0) {
-            return this.field_20621;
-        }
         int i = (value & 0xF00) >> 8;
         if (BiomeLayers.isOcean(value &= 0xFFFFF0FF) || value == MUSHROOM_FIELDS_ID) {
             return value;

@@ -10,9 +10,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.HeightmapRangeDecoratorConfig;
 
@@ -23,12 +22,12 @@ extends Decorator<HeightmapRangeDecoratorConfig> {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, HeightmapRangeDecoratorConfig heightmapRangeDecoratorConfig, BlockPos blockPos) {
+    public Stream<BlockPos> getPositions(WorldAccess worldAccess, ChunkGenerator chunkGenerator, Random random, HeightmapRangeDecoratorConfig heightmapRangeDecoratorConfig, BlockPos blockPos) {
         int i2 = random.nextInt(heightmapRangeDecoratorConfig.max - heightmapRangeDecoratorConfig.min) + heightmapRangeDecoratorConfig.min;
         return IntStream.range(0, i2).mapToObj(i -> {
             int j = random.nextInt(16) + blockPos.getX();
             int k = random.nextInt(16) + blockPos.getZ();
-            int l = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, j, k);
+            int l = worldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, j, k);
             return new BlockPos(j, l, k);
         });
     }

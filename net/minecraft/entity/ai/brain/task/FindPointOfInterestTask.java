@@ -66,7 +66,7 @@ extends Task<MobEntityWithAi> {
             BlockPos blockPos2 = path.getTarget();
             pointOfInterestStorage.getType(blockPos2).ifPresent(pointOfInterestType -> {
                 pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos2), blockPos2, 1);
-                mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getDimension().getType(), blockPos2));
+                mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.method_27983(), blockPos2));
                 DebugInfoSender.sendPointOfInterest(serverWorld, blockPos2);
             });
         } else if (this.tries < 5) {

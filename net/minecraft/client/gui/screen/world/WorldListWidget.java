@@ -28,6 +28,7 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
@@ -322,11 +323,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         public void recreate() {
             try {
                 this.client.openScreen(new ProgressScreen());
-                CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen);
                 try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());){
                     class_5219 lv = session.readLevelProperties();
                     if (lv != null) {
-                        createWorldScreen.recreateLevel(lv);
+                        CreateWorldScreen createWorldScreen = new CreateWorldScreen((Screen)this.screen, lv);
                         if (this.level.isLegacyCustomizedWorld()) {
                             this.client.openScreen(new ConfirmScreen(bl -> this.client.openScreen(bl ? createWorldScreen : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
                         } else {

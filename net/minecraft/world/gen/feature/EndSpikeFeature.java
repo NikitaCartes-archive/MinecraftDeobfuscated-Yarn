@@ -26,10 +26,10 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -41,26 +41,26 @@ extends Feature<EndSpikeFeatureConfig> {
         super(function);
     }
 
-    public static List<Spike> getSpikes(IWorld world) {
-        Random random = new Random(world.getSeed());
+    public static List<Spike> getSpikes(ServerWorldAccess serverWorldAccess) {
+        Random random = new Random(serverWorldAccess.getSeed());
         long l = random.nextLong() & 0xFFFFL;
         return CACHE.getUnchecked(l);
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig) {
         List<Spike> list = endSpikeFeatureConfig.getSpikes();
         if (list.isEmpty()) {
-            list = EndSpikeFeature.getSpikes(iWorld);
+            list = EndSpikeFeature.getSpikes(serverWorldAccess);
         }
         for (Spike spike : list) {
             if (!spike.isInChunk(blockPos)) continue;
-            this.generateSpike(iWorld, random, endSpikeFeatureConfig, spike);
+            this.generateSpike(serverWorldAccess, random, endSpikeFeatureConfig, spike);
         }
         return true;
     }
 
-    private void generateSpike(IWorld world, Random random, EndSpikeFeatureConfig config, Spike spike) {
+    private void generateSpike(WorldAccess world, Random random, EndSpikeFeatureConfig config, Spike spike) {
         int i = spike.getRadius();
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ(), false) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {

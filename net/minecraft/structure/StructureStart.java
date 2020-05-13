@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
@@ -28,7 +28,7 @@ public abstract class StructureStart {
     public static final StructureStart DEFAULT = new StructureStart((StructureFeature)Feature.MINESHAFT, 0, 0, BlockBox.empty(), 0, 0L){
 
         @Override
-        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
         }
     };
     private final StructureFeature<?> feature;
@@ -49,7 +49,7 @@ public abstract class StructureStart {
         this.boundingBox = box;
     }
 
-    public abstract void init(ChunkGenerator<?> var1, StructureManager var2, int var3, int var4, Biome var5);
+    public abstract void init(ChunkGenerator var1, StructureManager var2, int var3, int var4, Biome var5);
 
     public BlockBox getBoundingBox() {
         return this.boundingBox;
@@ -62,7 +62,7 @@ public abstract class StructureStart {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void generateStructure(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+    public void generateStructure(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
         List<StructurePiece> list = this.children;
         synchronized (list) {
             if (this.children.isEmpty()) {
@@ -74,7 +74,7 @@ public abstract class StructureStart {
             Iterator<StructurePiece> iterator = this.children.iterator();
             while (iterator.hasNext()) {
                 StructurePiece structurePiece = iterator.next();
-                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) continue;
+                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) continue;
                 iterator.remove();
             }
             this.setBoundingBoxFromChildren();

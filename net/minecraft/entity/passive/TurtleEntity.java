@@ -59,9 +59,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,13 +171,13 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setHomePos(this.getBlockPos());
         this.setTravelPos(BlockPos.ORIGIN);
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
-    public static boolean canSpawn(EntityType<TurtleEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<TurtleEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return pos.getY() < world.getSeaLevel() + 4 && world.getBlockState(pos.down()).isOf(Blocks.SAND) && world.getBaseLightLevel(pos, 0) > 8;
     }
 

@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.Dynamic;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -16,9 +15,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_5219;
 import net.minecraft.class_5268;
+import net.minecraft.class_5285;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.datafixer.NbtOps;
-import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
@@ -32,8 +30,6 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorOptions;
-import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.timer.Timer;
 import net.minecraft.world.timer.TimerCallbackSerializer;
@@ -45,10 +41,7 @@ class_5219 {
     private final String versionName;
     private final int versionId;
     private final boolean versionSnapshot;
-    private final long randomSeed;
-    private final LevelGeneratorOptions generatorOptions;
-    @Nullable
-    private String legacyCustomOptions;
+    private final class_5285 generatorOptions;
     private int spawnX;
     private int spawnY;
     private int spawnZ;
@@ -69,10 +62,8 @@ class_5219 {
     private boolean thundering;
     private int thunderTime;
     private GameMode gameMode;
-    private final boolean structures;
     private final boolean hardcore;
     private final boolean commandsAllowed;
-    private final boolean bonusChest;
     private boolean initialized;
     private Difficulty difficulty = Difficulty.NORMAL;
     private boolean difficultyLocked;
@@ -107,33 +98,8 @@ class_5219 {
             this.versionId = SharedConstants.getGameVersion().getWorldVersion();
             this.versionSnapshot = !SharedConstants.getGameVersion().isStable();
         }
-        this.randomSeed = tag.getLong("RandomSeed");
-        if (tag.contains("generatorName", 8)) {
-            String string = tag.getString("generatorName");
-            Object levelGeneratorType = LevelGeneratorType.getTypeFromName(string);
-            if (levelGeneratorType == null) {
-                levelGeneratorType = LevelGeneratorType.DEFAULT;
-            } else if (levelGeneratorType == LevelGeneratorType.CUSTOMIZED) {
-                this.legacyCustomOptions = tag.getString("generatorOptions");
-            } else if (((LevelGeneratorType)levelGeneratorType).isVersioned()) {
-                int j = 0;
-                if (tag.contains("generatorVersion", 99)) {
-                    j = tag.getInt("generatorVersion");
-                }
-                levelGeneratorType = ((LevelGeneratorType)levelGeneratorType).getTypeForVersion(j);
-            }
-            CompoundTag compoundTag2 = tag.getCompound("generatorOptions");
-            Dynamic<CompoundTag> dynamic = new Dynamic<CompoundTag>(NbtOps.INSTANCE, compoundTag2);
-            Dynamic<CompoundTag> dynamic2 = LevelProperties.updateGeneratorOptionsData((LevelGeneratorType)levelGeneratorType, dynamic, dataVersion, dataFixer);
-            this.generatorOptions = ((LevelGeneratorType)levelGeneratorType).loadOptions(dynamic2);
-        } else {
-            this.generatorOptions = LevelGeneratorType.DEFAULT.getDefaultOptions();
-        }
         this.gameMode = GameMode.byId(tag.getInt("GameType"));
-        if (tag.contains("legacy_custom_options", 8)) {
-            this.legacyCustomOptions = tag.getString("legacy_custom_options");
-        }
-        this.structures = tag.contains("MapFeatures", 99) ? tag.getBoolean("MapFeatures") : true;
+        this.generatorOptions = class_5285.method_28023(tag, dataFixer, dataVersion);
         this.spawnX = tag.getInt("SpawnX");
         this.spawnY = tag.getInt("SpawnY");
         this.spawnZ = tag.getInt("SpawnZ");
@@ -151,7 +117,6 @@ class_5219 {
         this.hardcore = tag.getBoolean("hardcore");
         this.initialized = tag.contains("initialized", 99) ? tag.getBoolean("initialized") : true;
         this.commandsAllowed = tag.contains("allowCommands", 99) ? tag.getBoolean("allowCommands") : this.gameMode == GameMode.CREATIVE;
-        this.bonusChest = tag.getBoolean("BonusChest");
         this.dataVersion = dataVersion;
         if (playerData != null) {
             this.playerData = playerData;
@@ -168,8 +133,8 @@ class_5219 {
         this.field_24193 = WorldBorder.class_5200.method_27358(tag, WorldBorder.field_24122);
         if (tag.contains("DimensionData", 10)) {
             CompoundTag compoundTag = tag.getCompound("DimensionData");
-            for (String string2 : compoundTag.getKeys()) {
-                this.worldData.put(DimensionType.byRawId(Integer.parseInt(string2)), compoundTag.getCompound(string2));
+            for (String string : compoundTag.getKeys()) {
+                this.worldData.put(DimensionType.byRawId(Integer.parseInt(string)), compoundTag.getCompound(string));
             }
         }
         if (tag.contains("DataPacks", 10)) {
@@ -200,23 +165,14 @@ class_5219 {
         }
     }
 
-    private static <T> Dynamic<T> updateGeneratorOptionsData(LevelGeneratorType type, Dynamic<T> dynamic, int dataVersion, DataFixer dataFixer) {
-        int i = Math.max(dataVersion, 2501);
-        Dynamic<T> dynamic2 = dynamic.merge(dynamic.createString("levelType"), dynamic.createString(type.getStoredName()));
-        return dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic2, i, SharedConstants.getGameVersion().getWorldVersion()).remove("levelType");
-    }
-
     public LevelProperties(LevelInfo levelInfo) {
         this.dataFixer = null;
         this.dataVersion = SharedConstants.getGameVersion().getWorldVersion();
-        this.randomSeed = levelInfo.getSeed();
         this.gameMode = levelInfo.getGameMode();
         this.difficulty = levelInfo.getDifficulty();
-        this.structures = levelInfo.hasStructures();
-        this.hardcore = levelInfo.isHardcore();
+        this.hardcore = levelInfo.hasStructures();
         this.generatorOptions = levelInfo.getGeneratorOptions();
-        this.commandsAllowed = levelInfo.allowCommands();
-        this.bonusChest = levelInfo.hasBonusChest();
+        this.commandsAllowed = levelInfo.isHardcore();
         this.levelName = levelInfo.getLevelName();
         this.version = 19133;
         this.initialized = false;
@@ -248,18 +204,11 @@ class_5219 {
         compoundTag.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
         levelTag.put("Version", compoundTag);
         levelTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-        levelTag.putLong("RandomSeed", this.randomSeed);
-        levelTag.putString("generatorName", this.generatorOptions.getType().getStoredName());
-        levelTag.putInt("generatorVersion", this.generatorOptions.getType().getVersion());
-        CompoundTag compoundTag2 = (CompoundTag)this.generatorOptions.getDynamic().convert(NbtOps.INSTANCE).getValue();
-        if (!compoundTag2.isEmpty()) {
-            levelTag.put("generatorOptions", compoundTag2);
-        }
-        if (this.legacyCustomOptions != null) {
-            levelTag.putString("legacy_custom_options", this.legacyCustomOptions);
+        CompoundTag compoundTag2 = this.generatorOptions.method_28025();
+        for (String string : compoundTag2.getKeys()) {
+            levelTag.put(string, compoundTag2.get(string));
         }
         levelTag.putInt("GameType", this.gameMode.getId());
-        levelTag.putBoolean("MapFeatures", this.structures);
         levelTag.putInt("SpawnX", this.spawnX);
         levelTag.putInt("SpawnY", this.spawnY);
         levelTag.putInt("SpawnZ", this.spawnZ);
@@ -276,7 +225,6 @@ class_5219 {
         levelTag.putBoolean("thundering", this.thundering);
         levelTag.putBoolean("hardcore", this.hardcore);
         levelTag.putBoolean("allowCommands", this.commandsAllowed);
-        levelTag.putBoolean("BonusChest", this.bonusChest);
         levelTag.putBoolean("initialized", this.initialized);
         this.field_24193.method_27357(levelTag);
         levelTag.putByte("Difficulty", (byte)this.difficulty.getId());
@@ -292,13 +240,13 @@ class_5219 {
         }
         CompoundTag compoundTag4 = new CompoundTag();
         ListTag listTag2 = new ListTag();
-        for (String string : this.enabledDataPacks) {
-            listTag2.add(StringTag.of(string));
+        for (String string2 : this.enabledDataPacks) {
+            listTag2.add(StringTag.of(string2));
         }
         compoundTag4.put("Enabled", listTag2);
         ListTag listTag3 = new ListTag();
-        for (String string2 : this.disabledDataPacks) {
-            listTag3.add(StringTag.of(string2));
+        for (String string3 : this.disabledDataPacks) {
+            listTag3.add(StringTag.of(string3));
         }
         compoundTag4.put("Disabled", listTag3);
         levelTag.put("DataPacks", compoundTag4);
@@ -311,11 +259,6 @@ class_5219 {
         if (this.wanderingTraderId != null) {
             levelTag.putUuidNew("WanderingTraderId", this.wanderingTraderId);
         }
-    }
-
-    @Override
-    public long getSeed() {
-        return this.randomSeed;
     }
 
     @Override
@@ -466,11 +409,6 @@ class_5219 {
     }
 
     @Override
-    public boolean hasStructures() {
-        return this.structures;
-    }
-
-    @Override
     public void setGameMode(GameMode gameMode) {
         this.gameMode = gameMode;
     }
@@ -478,16 +416,6 @@ class_5219 {
     @Override
     public boolean isHardcore() {
         return this.hardcore;
-    }
-
-    @Override
-    public LevelGeneratorType getGeneratorType() {
-        return this.generatorOptions.getType();
-    }
-
-    @Override
-    public LevelGeneratorOptions getGeneratorOptions() {
-        return this.generatorOptions;
     }
 
     @Override
@@ -563,6 +491,11 @@ class_5219 {
     @Override
     public void setWorldData(DimensionType dimensionType, CompoundTag tag) {
         this.worldData.put(dimensionType, tag);
+    }
+
+    @Override
+    public class_5285 method_28057() {
+        return this.generatorOptions;
     }
 
     @Override
@@ -661,15 +594,9 @@ class_5219 {
     }
 
     @Override
+    @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo() {
-        LevelInfo levelInfo = new LevelInfo(this.levelName, this.randomSeed, this.gameMode, this.structures, this.hardcore, this.difficulty, this.generatorOptions, this.gameRules.copy());
-        if (this.bonusChest) {
-            levelInfo = levelInfo.setBonusChest();
-        }
-        if (this.commandsAllowed) {
-            levelInfo = levelInfo.enableCommands();
-        }
-        return levelInfo;
+        return new LevelInfo(this.levelName, this.gameMode, this.hardcore, this.difficulty, this.commandsAllowed, this.gameRules.copy(), this.generatorOptions);
     }
 }
 

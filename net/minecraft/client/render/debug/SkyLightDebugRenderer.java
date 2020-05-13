@@ -16,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LightType;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class SkyLightDebugRenderer
@@ -42,7 +41,7 @@ implements DebugRenderer.Renderer {
             int j = MathHelper.hsvToRgb(f, 0.9f, 0.9f);
             long l = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
             if (longSet.add(l)) {
-                DebugRenderer.drawString(((World)world).getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(l)), ChunkSectionPos.getX(l) * 16 + 8, ChunkSectionPos.getY(l) * 16 + 8, ChunkSectionPos.getZ(l) * 16 + 8, 0xFF0000, 0.3f);
+                DebugRenderer.drawString(world.getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(l)), ChunkSectionPos.getX(l) * 16 + 8, ChunkSectionPos.getY(l) * 16 + 8, ChunkSectionPos.getZ(l) * 16 + 8, 0xFF0000, 0.3f);
             }
             if (i == 15) continue;
             DebugRenderer.drawString(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);

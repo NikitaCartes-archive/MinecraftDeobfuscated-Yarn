@@ -62,7 +62,6 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
-import net.minecraft.world.level.LevelGeneratorType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -173,7 +172,7 @@ implements Chunk {
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
-        if (this.world.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+        if (this.world.method_27982()) {
             BlockState blockState = null;
             if (j == 60) {
                 blockState = Blocks.BARRIER.getDefaultState();

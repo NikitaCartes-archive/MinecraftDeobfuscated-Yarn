@@ -11,9 +11,9 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowGroupLeaderGoal;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class SchoolingFishEntity
@@ -101,7 +101,7 @@ extends FishEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (entityData == null) {
             entityData = new FishData(this);

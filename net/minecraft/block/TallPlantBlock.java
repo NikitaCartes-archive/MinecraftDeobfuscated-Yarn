@@ -22,8 +22,8 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +37,7 @@ extends PlantBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         DoubleBlockHalf doubleBlockHalf = state.get(HALF);
         if (!(direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP) || newState.isOf(this) && newState.get(HALF) != doubleBlockHalf)) {
             return Blocks.AIR.getDefaultState();
@@ -72,7 +72,7 @@ extends PlantBlock {
         return super.canPlaceAt(state, world, pos);
     }
 
-    public void placeAt(IWorld world, BlockPos pos, int flags) {
+    public void placeAt(WorldAccess world, BlockPos pos, int flags) {
         world.setBlockState(pos, (BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.LOWER), flags);
         world.setBlockState(pos.up(), (BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), flags);
     }

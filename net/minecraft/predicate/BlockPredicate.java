@@ -114,8 +114,13 @@ public class BlockPredicate {
             return new Builder();
         }
 
-        public Builder tag(Tag<Block> tag) {
-            this.tag = tag;
+        public Builder method_27962(Block block) {
+            this.block = block;
+            return this;
+        }
+
+        public Builder method_27963(StatePredicate statePredicate) {
+            this.state = statePredicate;
             return this;
         }
 

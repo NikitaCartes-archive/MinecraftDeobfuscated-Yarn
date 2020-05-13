@@ -31,7 +31,7 @@ extends Task<MobEntityWithAi> {
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
         Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.target);
-        return optional.isPresent() && Objects.equals(serverWorld.getDimension().getType(), optional.get().getDimension()) && optional.get().getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
+        return optional.isPresent() && Objects.equals(serverWorld.method_27983(), optional.get().getDimension()) && optional.get().getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
     }
 
     @Override

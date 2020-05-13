@@ -45,8 +45,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class Structure {
@@ -79,6 +80,7 @@ public class Structure {
         BlockPos blockPos3 = new BlockPos(Math.max(start.getX(), blockPos.getX()), Math.max(start.getY(), blockPos.getY()), Math.max(start.getZ(), blockPos.getZ()));
         this.size = size;
         for (BlockPos blockPos4 : BlockPos.iterate(blockPos2, blockPos3)) {
+            StructureBlockInfo structureBlockInfo;
             BlockPos blockPos5 = blockPos4.subtract(blockPos2);
             BlockState blockState = world.getBlockState(blockPos4);
             if (ignoredBlock != null && ignoredBlock == blockState.getBlock()) continue;
@@ -88,19 +90,13 @@ public class Structure {
                 compoundTag.remove("x");
                 compoundTag.remove("y");
                 compoundTag.remove("z");
-                list2.add(new StructureBlockInfo(blockPos5, blockState, compoundTag));
-                continue;
+                structureBlockInfo = new StructureBlockInfo(blockPos5, blockState, compoundTag);
+            } else {
+                structureBlockInfo = new StructureBlockInfo(blockPos5, blockState, null);
             }
-            if (blockState.isOpaqueFullCube(world, blockPos4) || blockState.isFullCube(world, blockPos4)) {
-                list.add(new StructureBlockInfo(blockPos5, blockState, null));
-                continue;
-            }
-            list3.add(new StructureBlockInfo(blockPos5, blockState, null));
+            Structure.method_28054(structureBlockInfo, list, list2, list3);
         }
-        ArrayList<StructureBlockInfo> list4 = Lists.newArrayList();
-        list4.addAll(list);
-        list4.addAll(list2);
-        list4.addAll(list3);
+        List<StructureBlockInfo> list4 = Structure.method_28055(list, list2, list3);
         this.blockInfoLists.clear();
         this.blockInfoLists.add(new PalettedBlockInfoList(list4));
         if (includeEntities) {
@@ -108,6 +104,28 @@ public class Structure {
         } else {
             this.entities.clear();
         }
+    }
+
+    private static void method_28054(StructureBlockInfo structureBlockInfo, List<StructureBlockInfo> list, List<StructureBlockInfo> list2, List<StructureBlockInfo> list3) {
+        if (structureBlockInfo.tag != null) {
+            list2.add(structureBlockInfo);
+        } else if (!structureBlockInfo.state.getBlock().hasDynamicBounds() && structureBlockInfo.state.isFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN)) {
+            list.add(structureBlockInfo);
+        } else {
+            list3.add(structureBlockInfo);
+        }
+    }
+
+    private static List<StructureBlockInfo> method_28055(List<StructureBlockInfo> list, List<StructureBlockInfo> list2, List<StructureBlockInfo> list3) {
+        Comparator<StructureBlockInfo> comparator = Comparator.comparingInt(structureBlockInfo -> structureBlockInfo.pos.getY()).thenComparingInt(structureBlockInfo -> structureBlockInfo.pos.getX()).thenComparingInt(structureBlockInfo -> structureBlockInfo.pos.getZ());
+        list.sort(comparator);
+        list3.sort(comparator);
+        list2.sort(comparator);
+        ArrayList<StructureBlockInfo> list4 = Lists.newArrayList();
+        list4.addAll(list);
+        list4.addAll(list3);
+        list4.addAll(list2);
+        return list4;
     }
 
     private void addEntitiesFromWorld(World world, BlockPos firstCorner, BlockPos secondCorner) {
@@ -151,16 +169,16 @@ public class Structure {
         return Structure.transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
     }
 
-    public void place(IWorld world, BlockPos pos, StructurePlacementData placementData) {
+    public void place(WorldAccess world, BlockPos pos, StructurePlacementData placementData) {
         placementData.calculateBoundingBox();
         this.placeAndNotifyListeners(world, pos, placementData);
     }
 
-    public void placeAndNotifyListeners(IWorld world, BlockPos pos, StructurePlacementData data) {
+    public void placeAndNotifyListeners(WorldAccess world, BlockPos pos, StructurePlacementData data) {
         this.place(world, pos, pos, data, 2);
     }
 
-    public boolean place(IWorld world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, int i) {
+    public boolean place(WorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, int i) {
         if (this.blockInfoLists.isEmpty()) {
             return false;
         }
@@ -267,7 +285,7 @@ public class Structure {
         return true;
     }
 
-    public static void updateCorner(IWorld world, int flags, VoxelSet voxelSet, int startX, int startY, int startZ) {
+    public static void updateCorner(WorldAccess world, int flags, VoxelSet voxelSet, int startX, int startY, int startZ) {
         voxelSet.forEachDirection((direction, m, n, o) -> {
             BlockState blockState4;
             BlockState blockState2;
@@ -284,7 +302,7 @@ public class Structure {
         });
     }
 
-    public static List<StructureBlockInfo> process(IWorld world, BlockPos pos, BlockPos blockPos, StructurePlacementData structurePlacementData, List<StructureBlockInfo> list) {
+    public static List<StructureBlockInfo> process(WorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData structurePlacementData, List<StructureBlockInfo> list) {
         ArrayList<StructureBlockInfo> list2 = Lists.newArrayList();
         for (StructureBlockInfo structureBlockInfo : list) {
             BlockPos blockPos2 = Structure.transform(structurePlacementData, structureBlockInfo.pos).add(pos);
@@ -299,7 +317,7 @@ public class Structure {
         return list2;
     }
 
-    private void spawnEntities(IWorld world, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean bl) {
+    private void spawnEntities(WorldAccess world, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean bl) {
         for (StructureEntityInfo structureEntityInfo : this.entities) {
             BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
             if (area != null && !area.contains(blockPos)) continue;
@@ -323,9 +341,9 @@ public class Structure {
         }
     }
 
-    private static Optional<Entity> getEntity(IWorld iWorld, CompoundTag compoundTag) {
+    private static Optional<Entity> getEntity(WorldAccess worldAccess, CompoundTag compoundTag) {
         try {
-            return EntityType.getEntityFromTag(compoundTag, iWorld.getWorld());
+            return EntityType.getEntityFromTag(compoundTag, worldAccess.getWorld());
         } catch (Exception exception) {
             return Optional.empty();
         }
@@ -582,22 +600,24 @@ public class Structure {
     }
 
     private void loadPalettedBlockInfo(ListTag paletteTag, ListTag blocksTag) {
-        int i;
         Palette palette = new Palette();
-        ArrayList<StructureBlockInfo> list = Lists.newArrayList();
-        for (i = 0; i < paletteTag.size(); ++i) {
+        for (int i = 0; i < paletteTag.size(); ++i) {
             palette.set(NbtHelper.toBlockState(paletteTag.getCompound(i)), i);
         }
-        for (i = 0; i < blocksTag.size(); ++i) {
-            CompoundTag compoundTag = blocksTag.getCompound(i);
+        ArrayList<StructureBlockInfo> list = Lists.newArrayList();
+        ArrayList<StructureBlockInfo> list2 = Lists.newArrayList();
+        ArrayList<StructureBlockInfo> list3 = Lists.newArrayList();
+        for (int j = 0; j < blocksTag.size(); ++j) {
+            CompoundTag compoundTag = blocksTag.getCompound(j);
             ListTag listTag = compoundTag.getList("pos", 3);
             BlockPos blockPos = new BlockPos(listTag.getInt(0), listTag.getInt(1), listTag.getInt(2));
             BlockState blockState = palette.getState(compoundTag.getInt("state"));
             CompoundTag compoundTag2 = compoundTag.contains("nbt") ? compoundTag.getCompound("nbt") : null;
-            list.add(new StructureBlockInfo(blockPos, blockState, compoundTag2));
+            StructureBlockInfo structureBlockInfo = new StructureBlockInfo(blockPos, blockState, compoundTag2);
+            Structure.method_28054(structureBlockInfo, list, list2, list3);
         }
-        list.sort(Comparator.comparingInt(structureBlockInfo -> structureBlockInfo.pos.getY()));
-        this.blockInfoLists.add(new PalettedBlockInfoList(list));
+        List<StructureBlockInfo> list4 = Structure.method_28055(list, list2, list3);
+        this.blockInfoLists.add(new PalettedBlockInfoList(list4));
     }
 
     private ListTag createIntListTag(int ... is) {

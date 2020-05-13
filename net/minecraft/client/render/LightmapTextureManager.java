@@ -106,7 +106,7 @@ implements AutoCloseable {
                 float p = n * ((n * 0.6f + 0.4f) * 0.6f + 0.4f);
                 float q = n * (n * n * 0.6f + 0.4f);
                 vector3f2.set(o, p, q);
-                if (clientWorld.dimension.getType() == DimensionType.THE_END) {
+                if (clientWorld.method_27983() == DimensionType.THE_END) {
                     vector3f2.lerp(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
                 } else {
                     Vector3f vector3f3 = vector3f.copy();
@@ -151,7 +151,7 @@ implements AutoCloseable {
     }
 
     private float getBrightness(World world, int i) {
-        return world.dimension.getBrightness(i);
+        return world.getDimension().getBrightness(i);
     }
 
     public static int pack(int block, int sky) {

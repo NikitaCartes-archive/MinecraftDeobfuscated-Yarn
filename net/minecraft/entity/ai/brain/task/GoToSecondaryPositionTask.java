@@ -43,7 +43,7 @@ extends Task<VillagerEntity> {
         Optional<GlobalPos> optional2 = villagerEntity.getBrain().getOptionalMemory(this.primaryPosition);
         if (optional.isPresent() && optional2.isPresent() && !(list = optional.get()).isEmpty()) {
             this.chosenPosition = list.get(serverWorld.getRandom().nextInt(list.size()));
-            return this.chosenPosition != null && Objects.equals(serverWorld.getDimension().getType(), this.chosenPosition.getDimension()) && optional2.get().getPos().isWithinDistance(villagerEntity.getPos(), (double)this.primaryPositionActivationDistance);
+            return this.chosenPosition != null && Objects.equals(serverWorld.method_27983(), this.chosenPosition.getDimension()) && optional2.get().getPos().isWithinDistance(villagerEntity.getPos(), (double)this.primaryPositionActivationDistance);
         }
         return false;
     }

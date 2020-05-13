@@ -114,7 +114,7 @@ extends BlockEntity {
         this.target = new Identifier(tag.getString("target"));
         this.pool = new Identifier(tag.getString("pool"));
         this.finalState = tag.getString("final_state");
-        this.joint = Joint.byName(tag.getString("joint")).orElseGet(() -> JigsawBlock.method_26378(state).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
+        this.joint = Joint.byName(tag.getString("joint")).orElseGet(() -> JigsawBlock.getFacing(state).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
     }
 
     @Override
@@ -129,7 +129,7 @@ extends BlockEntity {
     }
 
     public void generate(ServerWorld world, int maxDepth) {
-        ChunkGenerator<?> chunkGenerator = world.getChunkManager().getChunkGenerator();
+        ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
         StructureManager structureManager = world.getStructureManager();
         StructureAccessor structureAccessor = world.getStructureAccessor();
         Random random = world.getRandom();

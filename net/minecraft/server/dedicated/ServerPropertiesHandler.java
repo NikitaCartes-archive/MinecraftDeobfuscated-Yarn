@@ -6,11 +6,11 @@ package net.minecraft.server.dedicated;
 import java.nio.file.Path;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.class_5285;
 import net.minecraft.server.dedicated.AbstractPropertiesHandler;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.level.LevelGeneratorType;
 
 public class ServerPropertiesHandler
 extends AbstractPropertiesHandler<ServerPropertiesHandler> {
@@ -25,13 +25,9 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final String motd = this.getString("motd", "A Minecraft Server");
     public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
     public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
-    public final boolean generateStructures = this.parseBoolean("generate-structures", true);
     public final Difficulty difficulty = this.get("difficulty", ServerPropertiesHandler.combineParser(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.EASY);
     public final GameMode gameMode = this.get("gamemode", ServerPropertiesHandler.combineParser(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
     public final String levelName = this.getString("level-name", "world");
-    public final String levelSeed = this.getString("level-seed", "");
-    public final LevelGeneratorType levelType = this.get("level-type", LevelGeneratorType::getTypeFromName, LevelGeneratorType::getName, LevelGeneratorType.DEFAULT);
-    public final String generatorSettings = this.getString("generator-settings", "");
     public final int serverPort = this.getInt("server-port", 25565);
     public final int maxBuildHeight = this.transformedParseInt("max-build-height", integer -> MathHelper.clamp((integer + 8) / 16 * 16, 64, 256), 256);
     public final Boolean announcePlayerAchievements = this.getDeprecatedBoolean("announce-player-achievements");
@@ -64,6 +60,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final int entityBroadcastRangePercentage;
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout;
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList;
+    public final class_5285 field_24623;
 
     public ServerPropertiesHandler(Properties properties) {
         super(properties);
@@ -89,6 +86,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         this.entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", integer -> MathHelper.clamp(integer, 10, 1000), 100);
         this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
         this.whiteList = this.booleanAccessor("white-list", false);
+        this.field_24623 = class_5285.method_28021(properties);
     }
 
     public static ServerPropertiesHandler load(Path path) {

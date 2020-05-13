@@ -179,14 +179,9 @@ public class StructureTestUtil {
     }
 
     private static void method_22368(int altitude, BlockPos pos, ServerWorld world) {
-        BlockState blockState;
-        Object chunkGeneratorConfig = world.getChunkManager().getChunkGenerator().getConfig();
-        if (chunkGeneratorConfig instanceof FlatChunkGeneratorConfig) {
-            BlockState[] blockStates = ((FlatChunkGeneratorConfig)chunkGeneratorConfig).getLayerBlocks();
-            blockState = pos.getY() < altitude ? blockStates[pos.getY() - 1] : Blocks.AIR.getDefaultState();
-        } else {
-            blockState = pos.getY() == altitude - 1 ? world.getBiome(pos).getSurfaceConfig().getTopMaterial() : (pos.getY() < altitude - 1 ? world.getBiome(pos).getSurfaceConfig().getUnderMaterial() : Blocks.AIR.getDefaultState());
-        }
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig();
+        BlockState[] blockStates = flatChunkGeneratorConfig.getLayerBlocks();
+        BlockState blockState = pos.getY() < altitude ? blockStates[pos.getY() - 1] : Blocks.AIR.getDefaultState();
         BlockStateArgument blockStateArgument = new BlockStateArgument(blockState, Collections.emptySet(), null);
         blockStateArgument.setBlockState(world, pos, 2);
         world.updateNeighbors(pos, blockState.getBlock());

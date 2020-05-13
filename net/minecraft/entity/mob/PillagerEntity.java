@@ -54,9 +54,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
@@ -170,7 +170,7 @@ implements CrossbowUser {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
@@ -231,6 +231,7 @@ implements CrossbowUser {
         } else {
             Item item2 = itemStack.getItem();
             if (this.method_7111(item2)) {
+                this.method_27964(item);
                 ItemStack itemStack2 = this.inventory.addStack(itemStack);
                 if (itemStack2.isEmpty()) {
                     item.remove();

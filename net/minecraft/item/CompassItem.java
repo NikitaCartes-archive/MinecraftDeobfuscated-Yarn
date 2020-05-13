@@ -61,7 +61,7 @@ implements Vanishable {
                 return;
             }
             Optional<DimensionType> optional = CompassItem.getLodestoneDimension(compoundTag);
-            if (optional.isPresent() && optional.get().equals(world.dimension.getType()) && compoundTag.contains("LodestonePos") && !((ServerWorld)world).getPointOfInterestStorage().method_26339(PointOfInterestType.LODESTONE, NbtHelper.toBlockPos((CompoundTag)compoundTag.get("LodestonePos")))) {
+            if (optional.isPresent() && optional.get().equals(world.method_27983()) && compoundTag.contains("LodestonePos") && !((ServerWorld)world).getPointOfInterestStorage().method_26339(PointOfInterestType.LODESTONE, NbtHelper.toBlockPos((CompoundTag)compoundTag.get("LodestonePos")))) {
                 compoundTag.remove("LodestonePos");
             }
         }
@@ -75,7 +75,7 @@ implements Vanishable {
             context.world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
             boolean bl2 = bl = !context.player.abilities.creativeMode && context.stack.getCount() == 1;
             if (bl) {
-                this.method_27315(context.world.dimension, blockPos, context.stack.getOrCreateTag());
+                this.method_27315(context.world.getDimension(), blockPos, context.stack.getOrCreateTag());
             } else {
                 ItemStack itemStack = new ItemStack(Items.COMPASS, 1);
                 CompoundTag compoundTag = context.stack.hasTag() ? context.stack.getTag().copy() : new CompoundTag();
@@ -83,7 +83,7 @@ implements Vanishable {
                 if (!context.player.abilities.creativeMode) {
                     context.stack.decrement(1);
                 }
-                this.method_27315(context.world.dimension, blockPos, compoundTag);
+                this.method_27315(context.world.getDimension(), blockPos, compoundTag);
                 if (!context.player.inventory.insertStack(itemStack)) {
                     context.player.dropItem(itemStack, false);
                 }

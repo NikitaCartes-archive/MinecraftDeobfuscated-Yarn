@@ -48,9 +48,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -88,7 +88,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && this.random.nextFloat() < 0.03f) {
             this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
@@ -97,7 +97,7 @@ implements RangedAttackMob {
         return entityData;
     }
 
-    public static boolean canSpawn(EntityType<DrownedEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<DrownedEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         boolean bl;
         Biome biome = world.getBiome(pos);
         boolean bl2 = bl = world.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(world, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).matches(FluidTags.WATER));
@@ -107,7 +107,7 @@ implements RangedAttackMob {
         return random.nextInt(40) == 0 && DrownedEntity.isValidSpawnDepth(world, pos) && bl;
     }
 
-    private static boolean isValidSpawnDepth(IWorld world, BlockPos pos) {
+    private static boolean isValidSpawnDepth(WorldAccess world, BlockPos pos) {
         return pos.getY() < world.getSeaLevel() - 5;
     }
 

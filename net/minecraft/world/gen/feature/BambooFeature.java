@@ -13,11 +13,10 @@ import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 
 public class BambooFeature
@@ -32,12 +31,12 @@ extends Feature<ProbabilityConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig) {
         int i = 0;
         BlockPos.Mutable mutable = blockPos.mutableCopy();
         BlockPos.Mutable mutable2 = blockPos.mutableCopy();
-        if (iWorld.isAir(mutable)) {
-            if (Blocks.BAMBOO.getDefaultState().canPlaceAt(iWorld, mutable)) {
+        if (serverWorldAccess.isAir(mutable)) {
+            if (Blocks.BAMBOO.getDefaultState().canPlaceAt(serverWorldAccess, mutable)) {
                 int k;
                 int j = random.nextInt(12) + 5;
                 if (random.nextFloat() < probabilityConfig.probability) {
@@ -47,20 +46,20 @@ extends Feature<ProbabilityConfig> {
                             int o;
                             int n = l - blockPos.getX();
                             if (n * n + (o = m - blockPos.getZ()) * o > k * k) continue;
-                            mutable2.set(l, iWorld.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
-                            if (!BambooFeature.isDirt(iWorld.getBlockState(mutable2).getBlock())) continue;
-                            iWorld.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
+                            mutable2.set(l, serverWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
+                            if (!BambooFeature.isDirt(serverWorldAccess.getBlockState(mutable2).getBlock())) continue;
+                            serverWorldAccess.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
                         }
                     }
                 }
-                for (k = 0; k < j && iWorld.isAir(mutable); ++k) {
-                    iWorld.setBlockState(mutable, BAMBOO, 2);
+                for (k = 0; k < j && serverWorldAccess.isAir(mutable); ++k) {
+                    serverWorldAccess.setBlockState(mutable, BAMBOO, 2);
                     mutable.move(Direction.UP, 1);
                 }
                 if (mutable.getY() - blockPos.getY() >= 3) {
-                    iWorld.setBlockState(mutable, BAMBOO_TOP_1, 2);
-                    iWorld.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_2, 2);
-                    iWorld.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_3, 2);
+                    serverWorldAccess.setBlockState(mutable, BAMBOO_TOP_1, 2);
+                    serverWorldAccess.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_2, 2);
+                    serverWorldAccess.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_3, 2);
                 }
             }
             ++i;

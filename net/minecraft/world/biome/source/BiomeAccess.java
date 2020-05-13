@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.biome.source;
 
+import com.google.common.hash.Hashing;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +21,10 @@ public class BiomeAccess {
         this.storage = storage;
         this.seed = seed;
         this.type = type;
+    }
+
+    public static long method_27984(long l) {
+        return Hashing.sha256().hashLong(l).asLong();
     }
 
     public BiomeAccess withSource(BiomeSource source) {

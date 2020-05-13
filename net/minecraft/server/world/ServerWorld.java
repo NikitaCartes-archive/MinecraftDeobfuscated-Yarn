@@ -123,6 +123,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.ScheduledTick;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.WanderingTraderManager;
@@ -136,7 +137,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -146,13 +147,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerWorld
-extends World {
+extends World
+implements ServerWorldAccess {
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<Entity> globalEntities = Lists.newArrayList();
     private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectLinkedOpenHashMap<Entity>();
     private final Map<UUID, Entity> entitiesByUuid = Maps.newHashMap();
     private final Queue<Entity> entitiesToLoad = Queues.newArrayDeque();
     private final List<ServerPlayerEntity> players = Lists.newArrayList();
+    private final ServerChunkManager field_24624;
     boolean inEntityTick;
     private final MinecraftServer server;
     private final class_5268 field_24456;
@@ -170,20 +173,21 @@ extends World {
     private final WanderingTraderManager wanderingTraderManager;
     private final StructureAccessor structureAccessor;
 
-    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, class_5268 properties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener) {
-        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, session, server.getDataFixer(), server.getStructureManager(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), server::getProfiler, false);
-        this.server = server;
+    public ServerWorld(MinecraftServer minecraftServer, Executor workerExecutor, LevelStorage.Session session, class_5268 properties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean bl, long l) {
+        super(properties, dimensionType, minecraftServer::getProfiler, false, bl, l);
+        this.field_24624 = new ServerChunkManager(this, session, minecraftServer.getDataFixer(), minecraftServer.getStructureManager(), workerExecutor, chunkGenerator, minecraftServer.getPlayerManager().getViewDistance(), minecraftServer.syncChunkWrites(), worldGenerationProgressListener, () -> minecraftServer.getWorld(DimensionType.OVERWORLD).getPersistentStateManager());
+        this.server = minecraftServer;
         this.field_24456 = properties;
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
-        this.getWorldBorder().setMaxWorldBorderRadius(server.getMaxWorldBorderRadius());
-        this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
-        if (!server.isSinglePlayer()) {
-            properties.setGameMode(server.getDefaultGameMode());
+        this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
+        this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.method_27983()));
+        if (!minecraftServer.isSinglePlayer()) {
+            properties.setGameMode(minecraftServer.getDefaultGameMode());
         }
-        this.wanderingTraderManager = this.dimension.getType() == DimensionType.OVERWORLD ? new WanderingTraderManager(this, this.field_24456) : null;
-        this.structureAccessor = new StructureAccessor(this, this.field_24456);
+        this.wanderingTraderManager = this.method_27983() == DimensionType.OVERWORLD ? new WanderingTraderManager(this, this.field_24456) : null;
+        this.structureAccessor = new StructureAccessor(this, minecraftServer.method_27728().method_28057());
     }
 
     public void method_27910(int i, int j, boolean bl, boolean bl2) {
@@ -212,7 +216,7 @@ extends World {
         this.getWorldBorder().tick();
         profiler.swap("weather");
         boolean bl = this.isRaining();
-        if (this.dimension.hasSkyLight()) {
+        if (this.method_27983().hasSkyLight()) {
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
                 int i = this.field_24456.getClearWeatherTime();
                 j = this.field_24456.getThunderTime();
@@ -255,10 +259,10 @@ extends World {
             this.rainGradient = MathHelper.clamp(this.rainGradient, 0.0f, 1.0f);
         }
         if (this.rainGradientPrev != this.rainGradient) {
-            this.server.getPlayerManager().sendToDimension(new GameStateChangeS2CPacket(7, this.rainGradient), this.dimension.getType());
+            this.server.getPlayerManager().sendToDimension(new GameStateChangeS2CPacket(7, this.rainGradient), this.method_27983());
         }
         if (this.thunderGradientPrev != this.thunderGradient) {
-            this.server.getPlayerManager().sendToDimension(new GameStateChangeS2CPacket(8, this.thunderGradient), this.dimension.getType());
+            this.server.getPlayerManager().sendToDimension(new GameStateChangeS2CPacket(8, this.thunderGradient), this.method_27983());
         }
         if (bl != this.isRaining()) {
             if (bl) {
@@ -285,7 +289,7 @@ extends World {
         profiler.swap("chunkSource");
         this.getChunkManager().tick(shouldKeepTicking);
         profiler.swap("tickPending");
-        if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+        if (!this.method_27982()) {
             this.blockTickScheduler.tick();
             this.fluidTickScheduler.tick();
         }
@@ -304,7 +308,7 @@ extends World {
         }
         if (bl4 || this.idleTimeout++ < 300) {
             Entity entity2;
-            this.dimension.update();
+            this.getDimension().update();
             profiler.push("global");
             for (j = 0; j < this.globalEntities.size(); ++j) {
                 Entity entity3 = this.globalEntities.get(j);
@@ -562,7 +566,7 @@ extends World {
 
     @Nullable
     public BlockPos getForcedSpawnPoint() {
-        return this.dimension.getForcedSpawnPoint();
+        return this.getDimension().getForcedSpawnPoint();
     }
 
     public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) {
@@ -581,7 +585,7 @@ extends World {
     }
 
     protected void saveLevel() {
-        this.dimension.saveWorldData(this.field_24456);
+        this.getDimension().saveWorldData(this.field_24456);
         this.getChunkManager().getPersistentStateManager().save();
     }
 
@@ -781,7 +785,7 @@ extends World {
 
     public void addLightning(LightningEntity lightningEntity) {
         this.globalEntities.add(lightningEntity);
-        this.server.getPlayerManager().sendToAround(null, lightningEntity.getX(), lightningEntity.getY(), lightningEntity.getZ(), 512.0, this.dimension.getType(), new EntitySpawnGlobalS2CPacket(lightningEntity));
+        this.server.getPlayerManager().sendToAround(null, lightningEntity.getX(), lightningEntity.getY(), lightningEntity.getZ(), 512.0, this.method_27983(), new EntitySpawnGlobalS2CPacket(lightningEntity));
     }
 
     @Override
@@ -797,12 +801,12 @@ extends World {
 
     @Override
     public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        this.server.getPlayerManager().sendToAround(player, x, y, z, volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.dimension.getType(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch));
+        this.server.getPlayerManager().sendToAround(player, x, y, z, volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.method_27983(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch));
     }
 
     @Override
     public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        this.server.getPlayerManager().sendToAround(player, entity.getX(), entity.getY(), entity.getZ(), volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.dimension.getType(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch));
+        this.server.getPlayerManager().sendToAround(player, entity.getX(), entity.getY(), entity.getZ(), volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.method_27983(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch));
     }
 
     @Override
@@ -812,7 +816,7 @@ extends World {
 
     @Override
     public void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
-        this.server.getPlayerManager().sendToAround(player, pos.getX(), pos.getY(), pos.getZ(), 64.0, this.dimension.getType(), new WorldEventS2CPacket(eventId, pos, data, false));
+        this.server.getPlayerManager().sendToAround(player, pos.getX(), pos.getY(), pos.getZ(), 64.0, this.method_27983(), new WorldEventS2CPacket(eventId, pos, data, false));
     }
 
     @Override
@@ -836,7 +840,7 @@ extends World {
 
     @Override
     public ServerChunkManager getChunkManager() {
-        return (ServerChunkManager)super.getChunkManager();
+        return this.field_24624;
     }
 
     @Override
@@ -866,7 +870,7 @@ extends World {
         while (!this.syncedBlockEventQueue.isEmpty()) {
             BlockEvent blockEvent = this.syncedBlockEventQueue.removeFirst();
             if (!this.processBlockEvent(blockEvent)) continue;
-            this.server.getPlayerManager().sendToAround(null, blockEvent.getPos().getX(), blockEvent.getPos().getY(), blockEvent.getPos().getZ(), 64.0, this.dimension.getType(), new BlockEventS2CPacket(blockEvent.getPos(), blockEvent.getBlock(), blockEvent.getType(), blockEvent.getData()));
+            this.server.getPlayerManager().sendToAround(null, blockEvent.getPos().getX(), blockEvent.getPos().getY(), blockEvent.getPos().getZ(), 64.0, this.method_27983(), new BlockEventS2CPacket(blockEvent.getPos(), blockEvent.getBlock(), blockEvent.getType(), blockEvent.getData()));
         }
     }
 
@@ -941,7 +945,7 @@ extends World {
 
     @Nullable
     public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
-        if (!this.field_24456.hasStructures()) {
+        if (!this.server.method_27728().method_28057().method_28029()) {
             return null;
         }
         return this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
@@ -1199,7 +1203,7 @@ extends World {
 
     @Override
     public void updateNeighbors(BlockPos pos, Block block) {
-        if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+        if (!this.method_27982()) {
             this.updateNeighborsAlways(pos, block);
         }
     }
@@ -1216,6 +1220,15 @@ extends World {
 
     public String toString() {
         return "ServerLevel[" + this.field_24456.getLevelName() + "]";
+    }
+
+    public boolean method_28125() {
+        return this.server.method_27728().method_28057().method_28034();
+    }
+
+    @Override
+    public long getSeed() {
+        return this.server.method_27728().method_28057().method_28028();
     }
 
     @Override

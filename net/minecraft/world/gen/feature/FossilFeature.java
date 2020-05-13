@@ -19,10 +19,9 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -52,12 +51,12 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         int m;
-        Random random2 = iWorld.getRandom();
+        Random random2 = serverWorldAccess.getRandom();
         BlockRotation blockRotation = BlockRotation.random(random2);
         int i = random2.nextInt(FOSSILS.length);
-        StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).getServer().getStructureManager();
+        StructureManager structureManager = ((ServerWorld)serverWorldAccess.getWorld()).getServer().getStructureManager();
         Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
         Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
         ChunkPos chunkPos = new ChunkPos(blockPos);
@@ -69,18 +68,18 @@ extends Feature<DefaultFeatureConfig> {
         int l = 256;
         for (m = 0; m < blockPos2.getX(); ++m) {
             for (int n = 0; n < blockPos2.getZ(); ++n) {
-                l = Math.min(l, iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
+                l = Math.min(l, serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
             }
         }
         m = Math.max(l - 15 - random2.nextInt(10), 10);
         BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
         BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9f);
         structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
-        structure.place(iWorld, blockPos3, blockPos3, structurePlacementData, 4);
+        structure.place(serverWorldAccess, blockPos3, blockPos3, structurePlacementData, 4);
         structurePlacementData.removeProcessor(blockRotStructureProcessor);
         BlockRotStructureProcessor blockRotStructureProcessor2 = new BlockRotStructureProcessor(0.1f);
         structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor2);
-        structure2.place(iWorld, blockPos3, blockPos3, structurePlacementData, 4);
+        structure2.place(serverWorldAccess, blockPos3, blockPos3, structurePlacementData, 4);
         return true;
     }
 }

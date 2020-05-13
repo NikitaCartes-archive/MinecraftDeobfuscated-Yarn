@@ -32,9 +32,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.MultiTickScheduler;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -45,13 +45,13 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkRegion
-implements IWorld {
+implements ServerWorldAccess {
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<Chunk> chunks;
     private final int centerChunkX;
@@ -62,7 +62,6 @@ implements IWorld {
     private final class_5217 levelProperties;
     private final Random random;
     private final Dimension dimension;
-    private final ChunkGeneratorConfig generatorSettings;
     private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<Block>(blockPos -> this.getChunk((BlockPos)blockPos).getBlockTickScheduler());
     private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(blockPos -> this.getChunk((BlockPos)blockPos).getFluidTickScheduler());
     private final BiomeAccess biomeAccess;
@@ -81,11 +80,10 @@ implements IWorld {
         this.width = i;
         this.world = world;
         this.seed = world.getSeed();
-        this.generatorSettings = world.getChunkManager().getChunkGenerator().getConfig();
         this.levelProperties = world.getLevelProperties();
         this.random = world.getRandom();
         this.dimension = world.getDimension();
-        this.biomeAccess = new BiomeAccess(this, class_5217.method_27418(this.seed), this.dimension.getType().getBiomeAccessType());
+        this.biomeAccess = new BiomeAccess(this, BiomeAccess.method_27984(this.seed), world.method_27983().getBiomeAccessType());
         this.field_23788 = chunks.get(0).getPos();
         this.field_23789 = chunks.get(chunks.size() - 1).getPos();
     }
@@ -343,6 +341,11 @@ implements IWorld {
     @Override
     public Dimension getDimension() {
         return this.dimension;
+    }
+
+    @Override
+    public DimensionType method_27983() {
+        return this.dimension.getType();
     }
 
     @Override

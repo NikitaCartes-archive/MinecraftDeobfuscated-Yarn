@@ -7,10 +7,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.RandomBooleanFeatureConfig;
 
@@ -21,12 +20,12 @@ extends Feature<RandomBooleanFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, RandomBooleanFeatureConfig randomBooleanFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomBooleanFeatureConfig randomBooleanFeatureConfig) {
         boolean bl = random.nextBoolean();
         if (bl) {
-            return randomBooleanFeatureConfig.featureTrue.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
+            return randomBooleanFeatureConfig.featureTrue.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
         }
-        return randomBooleanFeatureConfig.featureFalse.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
+        return randomBooleanFeatureConfig.featureFalse.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
     }
 }
 

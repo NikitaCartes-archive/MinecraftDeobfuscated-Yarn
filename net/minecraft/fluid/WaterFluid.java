@@ -26,8 +26,8 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,7 +73,7 @@ extends FlowableFluid {
     }
 
     @Override
-    protected void beforeBreakingBlock(IWorld world, BlockPos pos, BlockState state) {
+    protected void beforeBreakingBlock(WorldAccess world, BlockPos pos, BlockState state) {
         BlockEntity blockEntity = state.getBlock().hasBlockEntity() ? world.getBlockEntity(pos) : null;
         Block.dropStacks(state, world.getWorld(), pos, blockEntity);
     }

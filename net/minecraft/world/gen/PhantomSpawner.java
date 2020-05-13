@@ -37,7 +37,7 @@ public class PhantomSpawner {
             return 0;
         }
         this.ticksUntilNextSpawn += (60 + random.nextInt(60)) * 20;
-        if (serverWorld.getAmbientDarkness() < 5 && serverWorld.dimension.hasSkyLight()) {
+        if (serverWorld.getAmbientDarkness() < 5 && serverWorld.method_27983().hasSkyLight()) {
             return 0;
         }
         int i = 0;
@@ -48,7 +48,7 @@ public class PhantomSpawner {
             LocalDifficulty localDifficulty;
             if (playerEntity.isSpectator()) continue;
             BlockPos blockPos = playerEntity.getBlockPos();
-            if (serverWorld.dimension.hasSkyLight() && (blockPos.getY() < serverWorld.getSeaLevel() || !serverWorld.isSkyVisible(blockPos)) || !(localDifficulty = serverWorld.getLocalDifficulty(blockPos)).isHarderThan(random.nextFloat() * 3.0f)) continue;
+            if (serverWorld.method_27983().hasSkyLight() && (blockPos.getY() < serverWorld.getSeaLevel() || !serverWorld.isSkyVisible(blockPos)) || !(localDifficulty = serverWorld.getLocalDifficulty(blockPos)).isHarderThan(random.nextFloat() * 3.0f)) continue;
             ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).getStatHandler();
             int j = MathHelper.clamp(serverStatHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
             int k = 24000;

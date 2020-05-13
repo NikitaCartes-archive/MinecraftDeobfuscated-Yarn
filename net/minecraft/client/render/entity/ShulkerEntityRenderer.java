@@ -70,16 +70,10 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
 
     @Override
     protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {
-        super.setupTransforms(shulkerEntity, matrixStack, f, g, h);
+        super.setupTransforms(shulkerEntity, matrixStack, f, g + 180.0f, h);
         matrixStack.translate(0.0, 0.5, 0.0);
         matrixStack.multiply(shulkerEntity.getAttachedFace().getOpposite().getRotationQuaternion());
         matrixStack.translate(0.0, -0.5, 0.0);
-    }
-
-    @Override
-    protected void scale(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f) {
-        float g = 0.999f;
-        matrixStack.scale(0.999f, 0.999f, 0.999f);
     }
 }
 

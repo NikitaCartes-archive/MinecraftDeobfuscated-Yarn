@@ -23,8 +23,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class JukeboxBlock
 extends BlockWithEntity {
@@ -46,7 +46,7 @@ extends BlockWithEntity {
         return ActionResult.PASS;
     }
 
-    public void setRecord(IWorld world, BlockPos pos, BlockState state, ItemStack stack) {
+    public void setRecord(WorldAccess world, BlockPos pos, BlockState state, ItemStack stack) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof JukeboxBlockEntity)) {
             return;

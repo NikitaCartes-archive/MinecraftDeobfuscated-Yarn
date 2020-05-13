@@ -20,8 +20,8 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class FlintAndSteelItem
 extends Item {
@@ -33,21 +33,21 @@ extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
         PlayerEntity playerEntity = context.getPlayer();
-        World iWorld = context.getWorld();
-        BlockState blockState = iWorld.getBlockState(blockPos = context.getBlockPos());
+        World worldAccess = context.getWorld();
+        BlockState blockState = worldAccess.getBlockState(blockPos = context.getBlockPos());
         if (FlintAndSteelItem.isIgnitable(blockState)) {
-            iWorld.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
-            iWorld.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
+            worldAccess.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
+            worldAccess.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
             if (playerEntity != null) {
                 context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
             }
             return ActionResult.SUCCESS;
         }
         BlockPos blockPos2 = blockPos.offset(context.getSide());
-        if (FlintAndSteelItem.canIgnite(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
-            iWorld.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
-            BlockState blockState2 = AbstractFireBlock.getState(iWorld, blockPos2);
-            iWorld.setBlockState(blockPos2, blockState2, 11);
+        if (FlintAndSteelItem.canIgnite(worldAccess.getBlockState(blockPos2), worldAccess, blockPos2)) {
+            worldAccess.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
+            BlockState blockState2 = AbstractFireBlock.getState(worldAccess, blockPos2);
+            worldAccess.setBlockState(blockPos2, blockState2, 11);
             ItemStack itemStack = context.getStack();
             if (playerEntity instanceof ServerPlayerEntity) {
                 Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
@@ -62,7 +62,7 @@ extends Item {
         return state.method_27851(BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(Properties.WATERLOGGED) && abstractBlockState.contains(Properties.LIT)) && state.get(Properties.WATERLOGGED) == false && state.get(Properties.LIT) == false;
     }
 
-    public static boolean canIgnite(BlockState block, IWorld world, BlockPos pos) {
+    public static boolean canIgnite(BlockState block, WorldAccess world, BlockPos pos) {
         BlockState blockState = AbstractFireBlock.getState(world, pos);
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {

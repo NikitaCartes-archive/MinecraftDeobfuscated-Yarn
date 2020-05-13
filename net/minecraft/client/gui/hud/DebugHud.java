@@ -197,7 +197,7 @@ extends DrawableHelper {
         if (string3 != null) {
             list.add(string3);
         }
-        list.add(DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()));
+        list.add(DimensionType.getId(this.client.world.method_27983()).toString() + " FC: " + Integer.toString(longSet.size()));
         list.add("");
         list.add(String.format(Locale.ROOT, "XYZ: %.3f / %.5f / %.3f", this.client.getCameraEntity().getX(), this.client.getCameraEntity().getY(), this.client.getCameraEntity().getZ()));
         list.add(String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
@@ -278,7 +278,7 @@ extends DrawableHelper {
     private ServerWorld getServerWorld() {
         IntegratedServer integratedServer = this.client.getServer();
         if (integratedServer != null) {
-            return integratedServer.getWorld(this.client.world.getDimension().getType());
+            return integratedServer.getWorld(this.client.world.method_27983());
         }
         return null;
     }
@@ -293,7 +293,7 @@ extends DrawableHelper {
     }
 
     private World getWorld() {
-        return DataFixUtils.orElse(Optional.ofNullable(this.client.getServer()).map(integratedServer -> integratedServer.getWorld(this.client.world.dimension.getType())), this.client.world);
+        return DataFixUtils.orElse(Optional.ofNullable(this.client.getServer()).map(integratedServer -> integratedServer.getWorld(this.client.world.method_27983())), this.client.world);
     }
 
     @Nullable

@@ -7,10 +7,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
@@ -22,12 +21,12 @@ extends Feature<RandomFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig) {
         for (RandomFeatureEntry<?> randomFeatureEntry : randomFeatureConfig.features) {
             if (!(random.nextFloat() < randomFeatureEntry.chance)) continue;
-            return randomFeatureEntry.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
+            return randomFeatureEntry.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
         }
-        return randomFeatureConfig.defaultFeature.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
+        return randomFeatureConfig.defaultFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
     }
 }
 

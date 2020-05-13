@@ -18,8 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public abstract class AbstractPlantStemBlock
 extends AbstractPlantPartBlock
@@ -33,7 +33,7 @@ implements Fertilizable {
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
     }
 
-    public BlockState getRandomGrowthState(IWorld world) {
+    public BlockState getRandomGrowthState(WorldAccess world) {
         return (BlockState)this.getDefaultState().with(AGE, world.getRandom().nextInt(25));
     }
 
@@ -58,7 +58,7 @@ implements Fertilizable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }

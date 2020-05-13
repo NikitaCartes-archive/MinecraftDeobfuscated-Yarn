@@ -34,7 +34,7 @@ public class ForceLoadCommand {
 
     private static int executeQuery(ServerCommandSource source, ColumnPos pos) throws CommandSyntaxException {
         ChunkPos chunkPos = new ChunkPos(pos.x >> 4, pos.z >> 4);
-        DimensionType dimensionType = source.getWorld().getDimension().getType();
+        DimensionType dimensionType = source.getWorld().method_27983();
         boolean bl = source.getMinecraftServer().getWorld(dimensionType).getForcedChunks().contains(chunkPos.toLong());
         if (bl) {
             source.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, dimensionType), false);
@@ -44,7 +44,7 @@ public class ForceLoadCommand {
     }
 
     private static int executeQuery(ServerCommandSource source) {
-        DimensionType dimensionType = source.getWorld().getDimension().getType();
+        DimensionType dimensionType = source.getWorld().method_27983();
         LongSet longSet = source.getMinecraftServer().getWorld(dimensionType).getForcedChunks();
         int i = longSet.size();
         if (i > 0) {
@@ -61,7 +61,7 @@ public class ForceLoadCommand {
     }
 
     private static int executeRemoveAll(ServerCommandSource source) {
-        DimensionType dimensionType = source.getWorld().getDimension().getType();
+        DimensionType dimensionType = source.getWorld().method_27983();
         ServerWorld serverWorld = source.getMinecraftServer().getWorld(dimensionType);
         LongSet longSet = serverWorld.getForcedChunks();
         longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
@@ -85,7 +85,7 @@ public class ForceLoadCommand {
         if (q > 256L) {
             throw TOO_BIG_EXCEPTION.create(256, q);
         }
-        DimensionType dimensionType = source.getWorld().getDimension().getType();
+        DimensionType dimensionType = source.getWorld().method_27983();
         ServerWorld serverWorld = source.getMinecraftServer().getWorld(dimensionType);
         ChunkPos chunkPos = null;
         int r = 0;

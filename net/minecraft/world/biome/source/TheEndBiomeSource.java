@@ -5,25 +5,31 @@ package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.biome.source.TheEndBiomeSourceConfig;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class TheEndBiomeSource
 extends BiomeSource {
     private final SimplexNoiseSampler noise;
-    private final ChunkRandom random;
     private static final Set<Biome> BIOMES = ImmutableSet.of(Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS);
 
-    public TheEndBiomeSource(TheEndBiomeSourceConfig config) {
+    public TheEndBiomeSource(long l) {
         super(BIOMES);
-        this.random = new ChunkRandom(config.getSeed());
-        this.random.consume(17292);
-        this.noise = new SimplexNoiseSampler(this.random);
+        ChunkRandom chunkRandom = new ChunkRandom(l);
+        chunkRandom.consume(17292);
+        this.noise = new SimplexNoiseSampler(chunkRandom);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public BiomeSource method_27985(long l) {
+        return new TheEndBiomeSource(l);
     }
 
     @Override

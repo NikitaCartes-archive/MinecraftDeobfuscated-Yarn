@@ -9,10 +9,9 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -23,8 +22,8 @@ extends Feature<DiskFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
-        if (!iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
+        if (!serverWorldAccess.getFluidState(blockPos).matches(FluidTags.WATER)) {
             return false;
         }
         int i = 0;
@@ -36,10 +35,10 @@ extends Feature<DiskFeatureConfig> {
                 if (m * m + (n = l - blockPos.getZ()) * n > j * j) continue;
                 block2: for (int o = blockPos.getY() - diskFeatureConfig.ySize; o <= blockPos.getY() + diskFeatureConfig.ySize; ++o) {
                     BlockPos blockPos2 = new BlockPos(k, o, l);
-                    BlockState blockState = iWorld.getBlockState(blockPos2);
+                    BlockState blockState = serverWorldAccess.getBlockState(blockPos2);
                     for (BlockState blockState2 : diskFeatureConfig.targets) {
                         if (!blockState2.isOf(blockState.getBlock())) continue;
-                        iWorld.setBlockState(blockPos2, diskFeatureConfig.state, 2);
+                        serverWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, 2);
                         ++i;
                         continue block2;
                     }

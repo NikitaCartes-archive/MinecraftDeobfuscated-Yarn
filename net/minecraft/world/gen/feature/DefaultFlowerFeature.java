@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.FlowerFeature;
 import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
 
@@ -19,8 +19,8 @@ extends FlowerFeature<RandomPatchFeatureConfig> {
     }
 
     @Override
-    public boolean isPosValid(IWorld iWorld, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
-        return !randomPatchFeatureConfig.blacklist.contains(iWorld.getBlockState(blockPos));
+    public boolean isPosValid(WorldAccess worldAccess, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
+        return !randomPatchFeatureConfig.blacklist.contains(worldAccess.getBlockState(blockPos));
     }
 
     @Override

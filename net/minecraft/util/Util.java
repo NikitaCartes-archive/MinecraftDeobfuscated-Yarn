@@ -57,7 +57,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class Util {
     private static final AtomicInteger NEXT_SERVER_WORKER_ID = new AtomicInteger(1);
-    private static final ExecutorService SERVER_WORKER_EXECUTOR = Util.createServerWorkerExecutor();
+    private static final ExecutorService BOOTSTRAP = Util.method_28122("Bootstrap");
+    private static final ExecutorService SERVER_WORKER_EXECUTOR = Util.method_28122("Main");
     private static final ExecutorService field_24477 = Util.method_27959();
     public static LongSupplier nanoTimeSupplier = System::nanoTime;
     private static final Logger LOGGER = LogManager.getLogger();
@@ -89,7 +90,7 @@ public class Util {
         return Instant.now().toEpochMilli();
     }
 
-    private static ExecutorService createServerWorkerExecutor() {
+    private static ExecutorService method_28122(String string) {
         int i = MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7);
         ExecutorService executorService = i <= 0 ? MoreExecutors.newDirectExecutorService() : new ForkJoinPool(i, forkJoinPool -> {
             ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool){
@@ -104,10 +105,14 @@ public class Util {
                     super.onTermination(throwable);
                 }
             };
-            forkJoinWorkerThread.setName("Worker-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
+            forkJoinWorkerThread.setName("Worker-" + string + "-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
             return forkJoinWorkerThread;
         }, Util::method_18347, true);
         return executorService;
+    }
+
+    public static Executor method_28124() {
+        return BOOTSTRAP;
     }
 
     public static Executor getServerWorkerExecutor() {

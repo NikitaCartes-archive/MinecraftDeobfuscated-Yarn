@@ -60,8 +60,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class ChestBlock
@@ -166,7 +166,7 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
@@ -288,7 +288,7 @@ implements Waterloggable {
 
     @Override
     public DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getBlockEntitySource(BlockState state, World world, BlockPos pos, boolean ignoreBlocked) {
-        BiPredicate<IWorld, BlockPos> biPredicate = ignoreBlocked ? (iWorld, blockPos) -> false : ChestBlock::isChestBlocked;
+        BiPredicate<WorldAccess, BlockPos> biPredicate = ignoreBlocked ? (worldAccess, blockPos) -> false : ChestBlock::isChestBlocked;
         return DoubleBlockProperties.toPropertySource((BlockEntityType)this.entityTypeRetriever.get(), ChestBlock::getDoubleBlockType, ChestBlock::getFacing, FACING, state, world, pos, biPredicate);
     }
 
@@ -329,7 +329,7 @@ implements Waterloggable {
         return new ChestBlockEntity();
     }
 
-    public static boolean isChestBlocked(IWorld world, BlockPos pos) {
+    public static boolean isChestBlocked(WorldAccess world, BlockPos pos) {
         return ChestBlock.hasBlockOnTop(world, pos) || ChestBlock.hasOcelotOnTop(world, pos);
     }
 
@@ -338,7 +338,7 @@ implements Waterloggable {
         return world.getBlockState(blockPos).isSolidBlock(world, blockPos);
     }
 
-    private static boolean hasOcelotOnTop(IWorld world, BlockPos pos) {
+    private static boolean hasOcelotOnTop(WorldAccess world, BlockPos pos) {
         List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos.getX(), pos.getY() + 1, pos.getZ(), pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1));
         if (!list.isEmpty()) {
             for (CatEntity catEntity : list) {

@@ -11,10 +11,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.KelpBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -25,26 +24,26 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         int i = 0;
-        int j = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
+        int j = serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
-        if (iWorld.getBlockState(blockPos2).isOf(Blocks.WATER)) {
+        if (serverWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
             BlockState blockState = Blocks.KELP.getDefaultState();
             BlockState blockState2 = Blocks.KELP_PLANT.getDefaultState();
             int k = 1 + random.nextInt(10);
             for (int l = 0; l <= k; ++l) {
-                if (iWorld.getBlockState(blockPos2).isOf(Blocks.WATER) && iWorld.getBlockState(blockPos2.up()).isOf(Blocks.WATER) && blockState2.canPlaceAt(iWorld, blockPos2)) {
+                if (serverWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER) && serverWorldAccess.getBlockState(blockPos2.up()).isOf(Blocks.WATER) && blockState2.canPlaceAt(serverWorldAccess, blockPos2)) {
                     if (l == k) {
-                        iWorld.setBlockState(blockPos2, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
+                        serverWorldAccess.setBlockState(blockPos2, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
                         ++i;
                     } else {
-                        iWorld.setBlockState(blockPos2, blockState2, 2);
+                        serverWorldAccess.setBlockState(blockPos2, blockState2, 2);
                     }
                 } else if (l > 0) {
                     BlockPos blockPos3 = blockPos2.down();
-                    if (!blockState.canPlaceAt(iWorld, blockPos3) || iWorld.getBlockState(blockPos3.down()).isOf(Blocks.KELP)) break;
-                    iWorld.setBlockState(blockPos3, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
+                    if (!blockState.canPlaceAt(serverWorldAccess, blockPos3) || serverWorldAccess.getBlockState(blockPos3.down()).isOf(Blocks.KELP)) break;
+                    serverWorldAccess.setBlockState(blockPos3, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
                     ++i;
                     break;
                 }

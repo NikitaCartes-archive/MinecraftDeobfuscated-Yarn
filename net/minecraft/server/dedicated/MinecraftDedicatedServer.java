@@ -389,7 +389,7 @@ implements DedicatedServer {
     @Override
     public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
         int j;
-        if (serverWorld.dimension.getType() != DimensionType.OVERWORLD) {
+        if (serverWorld.method_27983() != DimensionType.OVERWORLD) {
             return false;
         }
         if (this.getPlayerManager().getOpList().isEmpty()) {

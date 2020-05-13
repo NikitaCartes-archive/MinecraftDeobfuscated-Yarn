@@ -7,10 +7,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 
@@ -21,9 +20,9 @@ extends Feature<SimpleBlockFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SimpleBlockFeatureConfig simpleBlockFeatureConfig) {
-        if (simpleBlockFeatureConfig.placeOn.contains(iWorld.getBlockState(blockPos.down())) && simpleBlockFeatureConfig.placeIn.contains(iWorld.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(iWorld.getBlockState(blockPos.up()))) {
-            iWorld.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SimpleBlockFeatureConfig simpleBlockFeatureConfig) {
+        if (simpleBlockFeatureConfig.placeOn.contains(serverWorldAccess.getBlockState(blockPos.down())) && simpleBlockFeatureConfig.placeIn.contains(serverWorldAccess.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(serverWorldAccess.getBlockState(blockPos.up()))) {
+            serverWorldAccess.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);
             return true;
         }
         return false;

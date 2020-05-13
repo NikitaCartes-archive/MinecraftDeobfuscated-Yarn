@@ -56,9 +56,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
@@ -336,7 +336,7 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int i = this.chooseType(world);
         if (entityData instanceof RabbitData) {
             i = ((RabbitData)entityData).type;
@@ -347,7 +347,7 @@ extends AnimalEntity {
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
-    private int chooseType(IWorld world) {
+    private int chooseType(WorldAccess world) {
         Biome biome = world.getBiome(this.getBlockPos());
         int i = this.random.nextInt(100);
         if (biome.getPrecipitation() == Biome.Precipitation.SNOW) {
@@ -359,7 +359,7 @@ extends AnimalEntity {
         return i < 50 ? 0 : (i < 90 ? 5 : 2);
     }
 
-    public static boolean canSpawn(EntityType<RabbitEntity> entity, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<RabbitEntity> entity, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         BlockState blockState = world.getBlockState(pos.down());
         return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SAND)) && world.getBaseLightLevel(pos, 0) > 8;
     }

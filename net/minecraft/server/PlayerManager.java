@@ -83,6 +83,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
@@ -145,7 +146,7 @@ public abstract class PlayerManager {
         GameRules gameRules = serverWorld.getGameRules();
         boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
         boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
-        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getEntityId(), player.interactionManager.getGameMode(), class_5217.method_27418(lv.getSeed()), lv.isHardcore(), serverWorld.dimension.getType(), this.getMaxPlayerCount(), lv.getGeneratorType(), this.viewDistance, bl2, !bl));
+        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getEntityId(), player.interactionManager.getGameMode(), BiomeAccess.method_27984(serverWorld.getSeed()), lv.isHardcore(), serverWorld.method_27983(), this.getMaxPlayerCount(), this.viewDistance, bl2, !bl, serverWorld.method_27982(), serverWorld.method_28125()));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
         serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.abilities));
@@ -390,7 +391,7 @@ public abstract class PlayerManager {
             serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
         }
         class_5217 lv = serverPlayerEntity.world.getLevelProperties();
-        serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), serverPlayerEntity.interactionManager.getGameMode(), bl));
+        serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.dimension, BiomeAccess.method_27984(serverPlayerEntity.getServerWorld().getSeed()), serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.getServerWorld().method_27982(), serverPlayerEntity.getServerWorld().method_28125(), bl));
         serverPlayerEntity.networkHandler.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch);
         serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld.method_27911()));
         serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));

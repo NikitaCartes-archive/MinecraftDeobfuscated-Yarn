@@ -12,11 +12,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -27,23 +27,23 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        return TwistingVinesFeature.method_26265(iWorld, random, blockPos, 8, 4, 8);
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+        return TwistingVinesFeature.method_26265(serverWorldAccess, random, blockPos, 8, 4, 8);
     }
 
-    public static boolean method_26265(IWorld iWorld, Random random, BlockPos blockPos, int i, int j, int k) {
-        if (TwistingVinesFeature.isNotSuitable(iWorld, blockPos)) {
+    public static boolean method_26265(WorldAccess worldAccess, Random random, BlockPos blockPos, int i, int j, int k) {
+        if (TwistingVinesFeature.isNotSuitable(worldAccess, blockPos)) {
             return false;
         }
-        TwistingVinesFeature.generateVinesInArea(iWorld, random, blockPos, i, j, k);
+        TwistingVinesFeature.generateVinesInArea(worldAccess, random, blockPos, i, j, k);
         return true;
     }
 
-    private static void generateVinesInArea(IWorld iWorld, Random random, BlockPos blockPos, int i, int j, int k) {
+    private static void generateVinesInArea(WorldAccess worldAccess, Random random, BlockPos blockPos, int i, int j, int k) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int l = 0; l < i * i; ++l) {
             mutable.set(blockPos).move(MathHelper.nextInt(random, -i, i), MathHelper.nextInt(random, -j, j), MathHelper.nextInt(random, -i, i));
-            if (!TwistingVinesFeature.method_27220(iWorld, mutable) || TwistingVinesFeature.isNotSuitable(iWorld, mutable)) continue;
+            if (!TwistingVinesFeature.method_27220(worldAccess, mutable) || TwistingVinesFeature.isNotSuitable(worldAccess, mutable)) continue;
             int m = MathHelper.nextInt(random, 1, k);
             if (random.nextInt(6) == 0) {
                 m *= 2;
@@ -53,21 +53,21 @@ extends Feature<DefaultFeatureConfig> {
             }
             int n = 17;
             int o = 25;
-            TwistingVinesFeature.generateVineColumn(iWorld, random, mutable, m, 17, 25);
+            TwistingVinesFeature.generateVineColumn(worldAccess, random, mutable, m, 17, 25);
         }
     }
 
-    private static boolean method_27220(IWorld iWorld, BlockPos.Mutable mutable) {
+    private static boolean method_27220(WorldAccess worldAccess, BlockPos.Mutable mutable) {
         do {
             mutable.move(0, -1, 0);
             if (!World.isHeightInvalid(mutable)) continue;
             return false;
-        } while (iWorld.getBlockState(mutable).isAir());
+        } while (worldAccess.getBlockState(mutable).isAir());
         mutable.move(0, 1, 0);
         return true;
     }
 
-    public static void generateVineColumn(IWorld world, Random random, BlockPos.Mutable pos, int maxLength, int minAge, int maxAge) {
+    public static void generateVineColumn(WorldAccess world, Random random, BlockPos.Mutable pos, int maxLength, int minAge, int maxAge) {
         for (int i = 1; i <= maxLength; ++i) {
             if (world.isAir(pos)) {
                 if (i == maxLength || !world.isAir(pos.up())) {
@@ -80,11 +80,11 @@ extends Feature<DefaultFeatureConfig> {
         }
     }
 
-    private static boolean isNotSuitable(IWorld iWorld, BlockPos blockPos) {
-        if (!iWorld.isAir(blockPos)) {
+    private static boolean isNotSuitable(WorldAccess worldAccess, BlockPos blockPos) {
+        if (!worldAccess.isAir(blockPos)) {
             return true;
         }
-        BlockState blockState = iWorld.getBlockState(blockPos.down());
+        BlockState blockState = worldAccess.getBlockState(blockPos.down());
         return !blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.WARPED_NYLIUM) && !blockState.isOf(Blocks.WARPED_WART_BLOCK);
     }
 }

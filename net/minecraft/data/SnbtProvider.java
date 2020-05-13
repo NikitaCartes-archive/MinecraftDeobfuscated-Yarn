@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -26,6 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.Util;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +35,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class SnbtProvider
 implements DataProvider {
+    @Nullable
+    private static final Path field_24615 = null;
     private static final Logger LOGGER = LogManager.getLogger();
     private final DataGenerator root;
     private final List<Tweaker> write = Lists.newArrayList();
@@ -83,11 +87,13 @@ implements DataProvider {
     private CompressedData toCompressedNbt(Path path, String name) {
         try (BufferedReader bufferedReader = Files.newBufferedReader(path);){
             String string = IOUtils.toString(bufferedReader);
+            CompoundTag compoundTag = this.write(name, StringNbtReader.parse(string));
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(this.write(name, StringNbtReader.parse(string)), byteArrayOutputStream);
+            NbtIo.writeCompressed(compoundTag, byteArrayOutputStream);
             byte[] bs = byteArrayOutputStream.toByteArray();
             String string2 = SHA1.hashBytes(bs).toString();
-            CompressedData compressedData = new CompressedData(name, bs, string2);
+            String string3 = field_24615 != null ? compoundTag.toText("    ", 0).getString() + "\n" : null;
+            CompressedData compressedData = new CompressedData(name, bs, string3, string2);
             return compressedData;
         } catch (CommandSyntaxException commandSyntaxException) {
             LOGGER.error("Couldn't convert {} from SNBT to NBT at {} as it's invalid SNBT", (Object)name, (Object)path, (Object)commandSyntaxException);
@@ -99,7 +105,16 @@ implements DataProvider {
     }
 
     private void write(DataCache dataCache, CompressedData compressedData, Path path) {
-        Path path2 = path.resolve(compressedData.name + ".nbt");
+        Path path2;
+        if (compressedData.field_24616 != null) {
+            path2 = field_24615.resolve(compressedData.name + ".snbt");
+            try {
+                FileUtils.write(path2.toFile(), (CharSequence)compressedData.field_24616, StandardCharsets.UTF_8);
+            } catch (IOException iOException) {
+                LOGGER.error("Couldn't write structure SNBT {} at {}", (Object)compressedData.name, (Object)path2, (Object)iOException);
+            }
+        }
+        path2 = path.resolve(compressedData.name + ".nbt");
         try {
             if (!Objects.equals(dataCache.getOldSha1(path2), compressedData.sha1) || !Files.exists(path2, new LinkOption[0])) {
                 Files.createDirectories(path2.getParent(), new FileAttribute[0]);
@@ -121,12 +136,15 @@ implements DataProvider {
     static class CompressedData {
         private final String name;
         private final byte[] bytes;
+        @Nullable
+        private final String field_24616;
         private final String sha1;
 
-        public CompressedData(String name, byte[] bytes, String sha1) {
+        public CompressedData(String name, byte[] bytes, @Nullable String sha1, String string) {
             this.name = name;
             this.bytes = bytes;
-            this.sha1 = sha1;
+            this.field_24616 = sha1;
+            this.sha1 = string;
         }
     }
 }

@@ -23,7 +23,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -38,7 +37,7 @@ extends PersistentState {
     private int currentTime;
 
     public RaidManager(ServerWorld world) {
-        super(RaidManager.nameFor(world.dimension));
+        super(RaidManager.nameFor(world.method_27983()));
         this.world = world;
         this.nextAvailableId = 1;
         this.markDirty();
@@ -71,7 +70,7 @@ extends PersistentState {
 
     public static boolean isValidRaiderFor(RaiderEntity raider, Raid raid) {
         if (raider != null && raid != null && raid.getWorld() != null) {
-            return raider.isAlive() && raider.canJoinRaid() && raider.getDespawnCounter() <= 2400 && raider.world.getDimension().getType() == raid.getWorld().getDimension().getType();
+            return raider.isAlive() && raider.canJoinRaid() && raider.getDespawnCounter() <= 2400 && raider.world.method_27983() == raid.getWorld().method_27983();
         }
         return false;
     }
@@ -85,7 +84,7 @@ extends PersistentState {
         if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
             return null;
         }
-        DimensionType dimensionType = player.world.getDimension().getType();
+        DimensionType dimensionType = player.world.method_27983();
         if (dimensionType == DimensionType.THE_NETHER) {
             return null;
         }
@@ -160,8 +159,8 @@ extends PersistentState {
         return tag;
     }
 
-    public static String nameFor(Dimension dimension) {
-        return "raids" + dimension.getType().getSuffix();
+    public static String nameFor(DimensionType dimensionType) {
+        return "raids" + dimensionType.getSuffix();
     }
 
     private int nextId() {

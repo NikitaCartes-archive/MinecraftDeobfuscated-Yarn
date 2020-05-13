@@ -14,10 +14,10 @@ import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -28,14 +28,14 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockState blockState = ((Block)BlockTags.CORAL_BLOCKS.getRandom(random)).getDefaultState();
-        return this.spawnCoral(iWorld, random, blockPos, blockState);
+        return this.spawnCoral(serverWorldAccess, random, blockPos, blockState);
     }
 
-    protected abstract boolean spawnCoral(IWorld var1, Random var2, BlockPos var3, BlockState var4);
+    protected abstract boolean spawnCoral(WorldAccess var1, Random var2, BlockPos var3, BlockState var4);
 
-    protected boolean spawnCoralPiece(IWorld world, Random random, BlockPos pos, BlockState state) {
+    protected boolean spawnCoralPiece(WorldAccess world, Random random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.up();
         BlockState blockState = world.getBlockState(pos);
         if (!blockState.isOf(Blocks.WATER) && !blockState.isIn(BlockTags.CORALS) || !world.getBlockState(blockPos).isOf(Blocks.WATER)) {

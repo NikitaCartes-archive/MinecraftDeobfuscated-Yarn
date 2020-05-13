@@ -10,10 +10,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -24,7 +24,7 @@ extends Feature<BlockPileFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
         if (blockPos.getY() < 5) {
             return false;
         }
@@ -34,16 +34,16 @@ extends Feature<BlockPileFeatureConfig> {
             int l;
             int k = blockPos.getX() - blockPos2.getX();
             if ((float)(k * k + (l = blockPos.getZ() - blockPos2.getZ()) * l) <= random.nextFloat() * 10.0f - random.nextFloat() * 6.0f) {
-                this.addPileBlock(iWorld, blockPos2, random, blockPileFeatureConfig);
+                this.addPileBlock(serverWorldAccess, blockPos2, random, blockPileFeatureConfig);
                 continue;
             }
             if (!((double)random.nextFloat() < 0.031)) continue;
-            this.addPileBlock(iWorld, blockPos2, random, blockPileFeatureConfig);
+            this.addPileBlock(serverWorldAccess, blockPos2, random, blockPileFeatureConfig);
         }
         return true;
     }
 
-    private boolean canPlacePileBlock(IWorld world, BlockPos pos, Random random) {
+    private boolean canPlacePileBlock(WorldAccess world, BlockPos pos, Random random) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
         if (blockState.isOf(Blocks.GRASS_PATH)) {
@@ -52,7 +52,7 @@ extends Feature<BlockPileFeatureConfig> {
         return blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
     }
 
-    private void addPileBlock(IWorld world, BlockPos pos, Random random, BlockPileFeatureConfig config) {
+    private void addPileBlock(WorldAccess world, BlockPos pos, Random random, BlockPileFeatureConfig config) {
         if (world.isAir(pos) && this.canPlacePileBlock(world, pos, random)) {
             world.setBlockState(pos, config.stateProvider.getBlockState(random, pos), 4);
         }

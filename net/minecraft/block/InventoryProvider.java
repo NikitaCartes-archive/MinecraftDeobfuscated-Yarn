@@ -6,9 +6,9 @@ package net.minecraft.block;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public interface InventoryProvider {
-    public SidedInventory getInventory(BlockState var1, IWorld var2, BlockPos var3);
+    public SidedInventory getInventory(BlockState var1, WorldAccess var2, BlockPos var3);
 }
 

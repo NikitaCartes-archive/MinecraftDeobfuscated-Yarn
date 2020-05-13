@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.math.MathHelper;
@@ -19,6 +20,7 @@ extends CompositeEntityModel<T> {
     private final ModelPart head;
 
     public ShulkerEntityModel() {
+        super(RenderLayer::method_28116);
         this.bottomShell = new ModelPart(64, 64, 0, 28);
         this.head = new ModelPart(64, 64, 0, 52);
         this.topShell.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f);
@@ -41,7 +43,7 @@ extends CompositeEntityModel<T> {
         this.topShell.setPivot(0.0f, 16.0f + MathHelper.sin(l) * 8.0f + n, 0.0f);
         this.topShell.yaw = ((ShulkerEntity)shulkerEntity).getOpenProgress(k) > 0.3f ? m * m * m * m * (float)Math.PI * 0.125f : 0.0f;
         this.head.pitch = j * ((float)Math.PI / 180);
-        this.head.yaw = i * ((float)Math.PI / 180);
+        this.head.yaw = (((ShulkerEntity)shulkerEntity).headYaw - 180.0f - ((ShulkerEntity)shulkerEntity).bodyYaw) * ((float)Math.PI / 180);
     }
 
     @Override

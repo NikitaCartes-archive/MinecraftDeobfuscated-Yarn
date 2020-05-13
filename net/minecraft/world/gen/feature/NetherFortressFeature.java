@@ -16,7 +16,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -32,13 +31,13 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+    protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
         return chunkGeneratorConfig.getNetherStructureSpacing();
     }
 
     @Override
-    protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
-        return chunkGenerationConfig.getNetherStructureSeparation();
+    protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
+        return chunkGeneratorConfig.getNetherStructureSeparation();
     }
 
     @Override
@@ -47,7 +46,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos) {
+    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos) {
         return chunkRandom.nextInt(6) < 2;
     }
 
@@ -78,7 +77,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
             this.children.add(start);
             start.placeJigsaw(start, this.children, this.random);

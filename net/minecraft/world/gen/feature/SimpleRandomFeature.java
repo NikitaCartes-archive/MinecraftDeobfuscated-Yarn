@@ -7,10 +7,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SimpleRandomFeatureConfig;
@@ -22,10 +21,10 @@ extends Feature<SimpleRandomFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SimpleRandomFeatureConfig simpleRandomFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SimpleRandomFeatureConfig simpleRandomFeatureConfig) {
         int i = random.nextInt(simpleRandomFeatureConfig.features.size());
         ConfiguredFeature<?, ?> configuredFeature = simpleRandomFeatureConfig.features.get(i);
-        return configuredFeature.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
+        return configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
     }
 }
 

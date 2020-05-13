@@ -13,7 +13,6 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +48,7 @@ public class StructureFeatures {
     }
 
     @Nullable
-    public static StructureStart readStructureStart(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, CompoundTag compoundTag) {
+    public static StructureStart readStructureStart(StructureManager structureManager, CompoundTag compoundTag, long l) {
         String string = compoundTag.getString("id");
         if ("INVALID".equals(string)) {
             return StructureStart.DEFAULT;
@@ -65,9 +64,9 @@ public class StructureFeatures {
         BlockBox blockBox = compoundTag.contains("BB") ? new BlockBox(compoundTag.getIntArray("BB")) : BlockBox.empty();
         ListTag listTag = compoundTag.getList("Children", 10);
         try {
-            StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, blockBox, k, chunkGenerator.getSeed());
-            for (int l = 0; l < listTag.size(); ++l) {
-                CompoundTag compoundTag2 = listTag.getCompound(l);
+            StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, blockBox, k, l);
+            for (int m = 0; m < listTag.size(); ++m) {
+                CompoundTag compoundTag2 = listTag.getCompound(m);
                 String string2 = compoundTag2.getString("id");
                 StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string2.toLowerCase(Locale.ROOT)));
                 if (structurePieceType == null) {

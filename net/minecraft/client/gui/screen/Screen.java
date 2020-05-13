@@ -21,6 +21,7 @@ import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
+import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
@@ -46,7 +47,8 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public abstract class Screen
 extends AbstractParentElement
-implements Drawable {
+implements TickableElement,
+Drawable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Set<String> ALLOWED_PROTOCOLS = Sets.newHashSet("http", "https");
     protected final Text title;
@@ -295,6 +297,7 @@ implements Drawable {
     protected void init() {
     }
 
+    @Override
     public void tick() {
     }
 

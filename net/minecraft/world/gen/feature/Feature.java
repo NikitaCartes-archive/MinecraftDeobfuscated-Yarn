@@ -19,14 +19,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.AbstractPileFeature;
 import net.minecraft.world.gen.feature.BambooFeature;
 import net.minecraft.world.gen.feature.BasaltColumnsFeature;
@@ -252,7 +251,7 @@ public abstract class Feature<FC extends FeatureConfig> {
         world.setBlockState(pos, state, 3);
     }
 
-    public abstract boolean generate(IWorld var1, StructureAccessor var2, ChunkGenerator<? extends ChunkGeneratorConfig> var3, Random var4, BlockPos var5, FC var6);
+    public abstract boolean generate(ServerWorldAccess var1, StructureAccessor var2, ChunkGenerator var3, Random var4, BlockPos var5, FC var6);
 
     public List<Biome.SpawnEntry> getMonsterSpawns() {
         return Collections.emptyList();

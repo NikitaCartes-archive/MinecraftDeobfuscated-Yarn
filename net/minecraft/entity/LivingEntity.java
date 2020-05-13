@@ -1615,7 +1615,7 @@ extends Entity {
 
     private void onDismounted(Entity vehicle) {
         Vec3d vec3d = vehicle.removed || this.world.getBlockState(vehicle.getBlockPos()).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.method_24829(this);
-        this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
+        this.requestTeleport(vec3d.x, vec3d.y, vec3d.z);
     }
 
     @Override

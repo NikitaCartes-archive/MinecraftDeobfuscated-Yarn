@@ -1,14 +1,14 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.realms;
+package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @FunctionalInterface
 @Environment(value=EnvType.CLIENT)
-public interface TickableRealmsButton {
+public interface TickableElement {
     public void tick();
 }
 

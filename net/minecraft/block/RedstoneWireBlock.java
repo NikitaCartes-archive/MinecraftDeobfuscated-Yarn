@@ -34,8 +34,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
@@ -122,7 +122,7 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (direction == Direction.DOWN) {
             return state;
         }
@@ -141,7 +141,7 @@ extends Block {
     }
 
     @Override
-    public void prepare(BlockState state, IWorld world, BlockPos pos, int flags) {
+    public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.Type.HORIZONTAL) {
             WireConnection wireConnection = (WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));

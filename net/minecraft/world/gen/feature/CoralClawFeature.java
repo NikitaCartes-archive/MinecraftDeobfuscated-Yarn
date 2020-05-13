@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.CoralFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
@@ -25,7 +25,7 @@ extends CoralFeature {
     }
 
     @Override
-    protected boolean spawnCoral(IWorld world, Random random, BlockPos pos, BlockState state) {
+    protected boolean spawnCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
         if (!this.spawnCoralPiece(world, random, pos, state)) {
             return false;
         }

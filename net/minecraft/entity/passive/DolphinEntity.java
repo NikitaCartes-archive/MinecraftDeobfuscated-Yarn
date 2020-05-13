@@ -61,9 +61,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biomes;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,7 +84,7 @@ extends WaterCreatureEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setAir(this.getMaxAir());
         this.pitch = 0.0f;
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
@@ -231,6 +231,7 @@ extends WaterCreatureEntity {
     protected void loot(ItemEntity item) {
         ItemStack itemStack;
         if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && this.canPickupItem(itemStack = item.getStack())) {
+            this.method_27964(item);
             this.equipStack(EquipmentSlot.MAINHAND, itemStack);
             this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0f;
             this.sendPickup(item, itemStack.getCount());
@@ -306,7 +307,7 @@ extends WaterCreatureEntity {
         return super.interactMob(player, hand);
     }
 
-    public static boolean canSpawn(EntityType<DolphinEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<DolphinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return pos.getY() > 45 && pos.getY() < world.getSeaLevel() && (world.getBiome(pos) != Biomes.OCEAN || world.getBiome(pos) != Biomes.DEEP_OCEAN) && world.getFluidState(pos).matches(FluidTags.WATER);
     }
 

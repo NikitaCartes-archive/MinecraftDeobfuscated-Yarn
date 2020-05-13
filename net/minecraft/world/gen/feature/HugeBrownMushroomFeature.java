@@ -9,7 +9,7 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.HugeMushroomFeature;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 
@@ -20,7 +20,7 @@ extends HugeMushroomFeature {
     }
 
     @Override
-    protected void generateCap(IWorld world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+    protected void generateCap(WorldAccess world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
         int i = config.capSize;
         for (int j = -i; j <= i; ++j) {
             for (int k = -i; k <= i; ++k) {

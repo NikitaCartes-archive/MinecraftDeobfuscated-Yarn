@@ -16,10 +16,9 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -36,13 +35,13 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+    protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
         return chunkGeneratorConfig.getOceanMonumentSpacing();
     }
 
     @Override
-    protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
-        return chunkGenerationConfig.getOceanMonumentSeparation();
+    protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
+        return chunkGeneratorConfig.getOceanMonumentSeparation();
     }
 
     @Override
@@ -56,13 +55,13 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos) {
-        Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 16);
+    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos) {
+        Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16);
         for (Biome biome2 : set) {
             if (chunkGenerator.hasStructure(biome2, this)) continue;
             return false;
         }
-        Set<Biome> set2 = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 29);
+        Set<Biome> set2 = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29);
         for (Biome biome3 : set2) {
             if (biome3.getCategory() == Biome.Category.OCEAN || biome3.getCategory() == Biome.Category.RIVER) continue;
             return false;
@@ -99,7 +98,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             this.method_16588(x, z);
         }
 
@@ -113,12 +112,12 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+        public void generateStructure(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
             if (!this.field_13717) {
                 this.children.clear();
                 this.method_16588(this.getChunkX(), this.getChunkZ());
             }
-            super.generateStructure(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
+            super.generateStructure(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
         }
     }
 }

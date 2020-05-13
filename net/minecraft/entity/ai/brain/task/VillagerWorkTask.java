@@ -35,7 +35,7 @@ extends Task<VillagerEntity> {
         }
         this.lastCheckedTime = serverWorld.getTime();
         GlobalPos globalPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
-        return Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+        return Objects.equals(globalPos.getDimension(), serverWorld.method_27983()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
     }
 
     @Override
@@ -60,7 +60,7 @@ extends Task<VillagerEntity> {
             return false;
         }
         GlobalPos globalPos = optional.get();
-        return Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+        return Objects.equals(globalPos.getDimension(), serverWorld.method_27983()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
     }
 
     @Override

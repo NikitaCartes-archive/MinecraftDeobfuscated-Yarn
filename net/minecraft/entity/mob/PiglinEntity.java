@@ -55,9 +55,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
@@ -144,13 +144,13 @@ implements CrossbowUser {
         return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
     }
 
-    public static boolean canSpawn(EntityType<PiglinEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<PiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
     }
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (spawnReason != SpawnReason.STRUCTURE) {
             if (world.getRandom().nextFloat() < 0.2f) {
                 this.setBaby(true);
@@ -252,7 +252,7 @@ implements CrossbowUser {
     }
 
     public boolean canConvert() {
-        return this.world.getDimension().getType() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
+        return this.world.method_27983() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
     }
 
     @Override
@@ -415,6 +415,7 @@ implements CrossbowUser {
 
     @Override
     protected void loot(ItemEntity item) {
+        this.method_27964(item);
         PiglinBrain.loot(this, item);
     }
 

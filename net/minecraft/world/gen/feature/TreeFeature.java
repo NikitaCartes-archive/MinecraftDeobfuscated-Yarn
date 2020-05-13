@@ -28,13 +28,13 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.TestableWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -140,12 +140,12 @@ extends Feature<TreeFeatureConfig> {
     }
 
     @Override
-    public final boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
+    public final boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
         HashSet<BlockPos> set = Sets.newHashSet();
         HashSet<BlockPos> set2 = Sets.newHashSet();
         HashSet<BlockPos> set3 = Sets.newHashSet();
         BlockBox blockBox = BlockBox.empty();
-        boolean bl = this.generate(iWorld, random, blockPos, set, set2, blockBox, treeFeatureConfig);
+        boolean bl = this.generate(serverWorldAccess, random, blockPos, set, set2, blockBox, treeFeatureConfig);
         if (blockBox.minX > blockBox.maxX || !bl || set.isEmpty()) {
             return false;
         }
@@ -154,14 +154,14 @@ extends Feature<TreeFeatureConfig> {
             ArrayList<BlockPos> list2 = Lists.newArrayList(set2);
             list.sort(Comparator.comparingInt(Vec3i::getY));
             list2.sort(Comparator.comparingInt(Vec3i::getY));
-            treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(iWorld, random, list, list2, set3, blockBox));
+            treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(serverWorldAccess, random, list, list2, set3, blockBox));
         }
-        VoxelSet voxelSet = this.placeLogsAndLeaves(iWorld, blockBox, set, set3);
-        Structure.updateCorner(iWorld, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
+        VoxelSet voxelSet = this.placeLogsAndLeaves(serverWorldAccess, blockBox, set, set3);
+        Structure.updateCorner(serverWorldAccess, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
         return true;
     }
 
-    private VoxelSet placeLogsAndLeaves(IWorld world, BlockBox box, Set<BlockPos> logs, Set<BlockPos> leaves) {
+    private VoxelSet placeLogsAndLeaves(WorldAccess world, BlockBox box, Set<BlockPos> logs, Set<BlockPos> leaves) {
         ArrayList list = Lists.newArrayList();
         BitSetVoxelSet voxelSet = new BitSetVoxelSet(box.getBlockCountX(), box.getBlockCountY(), box.getBlockCountZ());
         int i = 6;

@@ -10,10 +10,10 @@ import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 
@@ -24,7 +24,7 @@ extends Feature<OreFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
         float f = random.nextFloat() * (float)Math.PI;
         float g = (float)oreFeatureConfig.size / 8.0f;
         int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0f * 2.0f + 1.0f) / 2.0f);
@@ -42,14 +42,14 @@ extends Feature<OreFeatureConfig> {
         int r = 2 * (2 + i);
         for (int s = n; s <= n + q; ++s) {
             for (int t = p; t <= p + q; ++t) {
-                if (o > iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) continue;
-                return this.generateVeinPart(iWorld, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
+                if (o > serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) continue;
+                return this.generateVeinPart(serverWorldAccess, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
             }
         }
         return false;
     }
 
-    protected boolean generateVeinPart(IWorld world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int size, int i) {
+    protected boolean generateVeinPart(WorldAccess world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int size, int i) {
         double h;
         double g;
         double e;

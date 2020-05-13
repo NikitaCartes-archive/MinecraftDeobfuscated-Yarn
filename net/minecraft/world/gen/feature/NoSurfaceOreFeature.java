@@ -8,10 +8,10 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 
@@ -22,13 +22,13 @@ extends Feature<OreFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
         int i = random.nextInt(oreFeatureConfig.size + 1);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int j = 0; j < i; ++j) {
             this.getStartPos(mutable, random, blockPos, Math.min(j, 7));
-            if (!oreFeatureConfig.target.getCondition().test(iWorld.getBlockState(mutable)) || this.checkAir(iWorld, mutable)) continue;
-            iWorld.setBlockState(mutable, oreFeatureConfig.state, 2);
+            if (!oreFeatureConfig.target.getCondition().test(serverWorldAccess.getBlockState(mutable)) || this.checkAir(serverWorldAccess, mutable)) continue;
+            serverWorldAccess.setBlockState(mutable, oreFeatureConfig.state, 2);
         }
         return true;
     }
@@ -44,7 +44,7 @@ extends Feature<OreFeatureConfig> {
         return Math.round((random.nextFloat() - random.nextFloat()) * (float)size);
     }
 
-    private boolean checkAir(IWorld world, BlockPos pos) {
+    private boolean checkAir(WorldAccess world, BlockPos pos) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.values()) {
             mutable.set(pos, direction);

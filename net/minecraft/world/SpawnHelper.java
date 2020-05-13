@@ -36,8 +36,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.DirectBiomeAccessType;
@@ -98,7 +98,7 @@ public final class SpawnHelper {
 
     public static void spawnEntitiesInChunk(SpawnGroup group, ServerWorld world, Chunk chunk, BlockPos pos, Checker checker, Runner runner) {
         StructureAccessor structureAccessor = world.getStructureAccessor();
-        ChunkGenerator<?> chunkGenerator = world.getChunkManager().getChunkGenerator();
+        ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
         int i = pos.getY();
         BlockState blockState = chunk.getBlockState(pos);
         if (blockState.isSolidBlock(chunk, pos)) {
@@ -122,7 +122,7 @@ public final class SpawnHelper {
                 PlayerEntity playerEntity = world.getClosestPlayer((double)f, (double)i, (double)g, -1.0, false);
                 if (playerEntity == null || !SpawnHelper.isAcceptableSpawnPosition(world, chunk, mutable, d = playerEntity.squaredDistanceTo(f, i, g))) continue;
                 if (spawnEntry == null) {
-                    spawnEntry = SpawnHelper.pickRandomSpawnEntry(structureAccessor, chunkGenerator, group, world.random, mutable);
+                    spawnEntry = SpawnHelper.pickRandomSpawnEntry(world, structureAccessor, chunkGenerator, group, world.random, mutable);
                     if (spawnEntry == null) continue block0;
                     o = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
                 }
@@ -156,7 +156,7 @@ public final class SpawnHelper {
         return Objects.equals(chunkPos, chunk.getPos()) || world.getChunkManager().shouldTickChunk(chunkPos);
     }
 
-    private static boolean canSpawn(ServerWorld world, SpawnGroup group, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Biome.SpawnEntry spawnEntry, BlockPos.Mutable pos, double squaredDistance) {
+    private static boolean canSpawn(ServerWorld world, SpawnGroup group, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Biome.SpawnEntry spawnEntry, BlockPos.Mutable pos, double squaredDistance) {
         EntityType<?> entityType = spawnEntry.type;
         if (entityType.getSpawnGroup() == SpawnGroup.MISC) {
             return false;
@@ -164,7 +164,7 @@ public final class SpawnHelper {
         if (!entityType.isSpawnableFarFromPlayer() && squaredDistance > (double)(entityType.getSpawnGroup().getImmediateDespawnRange() * entityType.getSpawnGroup().getImmediateDespawnRange())) {
             return false;
         }
-        if (!entityType.isSummonable() || !SpawnHelper.containsSpawnEntry(structureAccessor, chunkGenerator, group, spawnEntry, pos)) {
+        if (!entityType.isSummonable() || !SpawnHelper.containsSpawnEntry(world, structureAccessor, chunkGenerator, group, spawnEntry, pos)) {
             return false;
         }
         SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
@@ -201,16 +201,16 @@ public final class SpawnHelper {
     }
 
     @Nullable
-    private static Biome.SpawnEntry pickRandomSpawnEntry(StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, SpawnGroup group, Random random, BlockPos pos) {
-        List<Biome.SpawnEntry> list = chunkGenerator.getEntitySpawnList(structureAccessor, group, pos);
+    private static Biome.SpawnEntry pickRandomSpawnEntry(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos blockPos) {
+        List<Biome.SpawnEntry> list = chunkGenerator.getEntitySpawnList(serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos);
         if (list.isEmpty()) {
             return null;
         }
         return WeightedPicker.getRandom(random, list);
     }
 
-    private static boolean containsSpawnEntry(StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, SpawnGroup group, Biome.SpawnEntry spawnEntry, BlockPos pos) {
-        return chunkGenerator.getEntitySpawnList(structureAccessor, group, pos).contains(spawnEntry);
+    private static boolean containsSpawnEntry(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Biome.SpawnEntry spawnEntry, BlockPos blockPos) {
+        return chunkGenerator.getEntitySpawnList(serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos).contains(spawnEntry);
     }
 
     private static BlockPos getSpawnPos(World world, WorldChunk chunk) {
@@ -261,7 +261,7 @@ public final class SpawnHelper {
         return SpawnHelper.isClearForSpawn(world, pos, blockState, fluidState) && SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos));
     }
 
-    public static void populateEntities(IWorld world, Biome biome, int chunkX, int chunkZ, Random random) {
+    public static void populateEntities(WorldAccess world, Biome biome, int chunkX, int chunkZ, Random random) {
         List<Biome.SpawnEntry> list = biome.getEntitySpawnList(SpawnGroup.CREATURE);
         if (list.isEmpty()) {
             return;

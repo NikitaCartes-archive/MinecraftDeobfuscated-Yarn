@@ -7,6 +7,7 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5268;
+import net.minecraft.class_5285;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.Difficulty;
@@ -64,6 +65,7 @@ public interface class_5219 {
 
     public class_5268 method_27859();
 
+    @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo();
 
     public CompoundTag cloneWorldTag(@Nullable CompoundTag var1);
@@ -80,8 +82,6 @@ public interface class_5219 {
 
     @Environment(value=EnvType.CLIENT)
     public long getLastPlayed();
-
-    public long getSeed();
 
     public boolean areCommandsAllowed();
 
@@ -100,5 +100,7 @@ public interface class_5219 {
     public CompoundTag getWorldData(DimensionType var1);
 
     public void setWorldData(DimensionType var1, CompoundTag var2);
+
+    public class_5285 method_28057();
 }
 

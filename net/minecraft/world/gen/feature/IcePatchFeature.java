@@ -9,10 +9,9 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.IcePatchFeatureConfig;
 
@@ -25,11 +24,11 @@ extends Feature<IcePatchFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig) {
-        while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig) {
+        while (serverWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
             blockPos = blockPos.down();
         }
-        if (!iWorld.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
+        if (!serverWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
             return false;
         }
         int i = random.nextInt(icePatchFeatureConfig.radius) + 2;
@@ -41,9 +40,9 @@ extends Feature<IcePatchFeatureConfig> {
                 if (m * m + (n = l - blockPos.getZ()) * n > i * i) continue;
                 for (int o = blockPos.getY() - 1; o <= blockPos.getY() + 1; ++o) {
                     BlockPos blockPos2 = new BlockPos(k, o, l);
-                    Block block = iWorld.getBlockState(blockPos2).getBlock();
+                    Block block = serverWorldAccess.getBlockState(blockPos2).getBlock();
                     if (!IcePatchFeature.isDirt(block) && block != Blocks.SNOW_BLOCK && block != Blocks.ICE) continue;
-                    iWorld.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
+                    serverWorldAccess.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
                 }
             }
         }

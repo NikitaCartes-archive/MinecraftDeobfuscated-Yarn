@@ -23,8 +23,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class TargetBlock
 extends Block {
@@ -46,7 +46,7 @@ extends Block {
         }
     }
 
-    private static int trigger(IWorld world, BlockState state, BlockHitResult blockHitResult, Entity entity) {
+    private static int trigger(WorldAccess world, BlockState state, BlockHitResult blockHitResult, Entity entity) {
         int j;
         int i = TargetBlock.calculatePower(blockHitResult, blockHitResult.getPos());
         int n = j = entity instanceof PersistentProjectileEntity ? 20 : 8;
@@ -66,7 +66,7 @@ extends Block {
         return Math.max(1, MathHelper.ceil(15.0 * MathHelper.clamp((0.5 - g) / 0.5, 0.0, 1.0)));
     }
 
-    private static void setPower(IWorld world, BlockState state, int power, BlockPos pos, int delay) {
+    private static void setPower(WorldAccess world, BlockState state, int power, BlockPos pos, int delay) {
         world.setBlockState(pos, (BlockState)state.with(POWER, power), 3);
         world.getBlockTickScheduler().schedule(pos, state.getBlock(), delay);
     }

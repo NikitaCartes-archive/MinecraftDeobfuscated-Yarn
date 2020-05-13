@@ -80,6 +80,7 @@ public class EnderDragonFight {
     private EnderDragonSpawnState dragonSpawnState;
     private int spawnStateTimer;
     private List<EndCrystalEntity> crystals;
+    private boolean field_24506;
 
     public EnderDragonFight(ServerWorld world, CompoundTag compoundTag) {
         this.world = world;
@@ -105,8 +106,7 @@ public class EnderDragonFight {
                 this.gateways.add(listTag.getInt(i));
             }
         } else {
-            this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
-            Collections.shuffle(this.gateways, new Random(world.getSeed()));
+            this.field_24506 = true;
         }
         this.endPortalPattern = BlockPatternBuilder.start().aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  ").aisle("       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       ").where('#', CachedBlockPosition.matchesBlockState(BlockPredicate.make(Blocks.BEDROCK))).build();
     }
@@ -318,6 +318,11 @@ public class EnderDragonFight {
     }
 
     private void generateNewEndGateway() {
+        if (this.field_24506) {
+            this.field_24506 = false;
+            this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
+            Collections.shuffle(this.gateways, new Random(this.world.getSeed()));
+        }
         if (this.gateways.isEmpty()) {
             return;
         }

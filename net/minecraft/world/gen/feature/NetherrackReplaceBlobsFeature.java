@@ -11,10 +11,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
 import org.jetbrains.annotations.Nullable;
@@ -26,9 +26,9 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig) {
         Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
-        BlockPos blockPos2 = NetherrackReplaceBlobsFeature.method_27107(iWorld, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, iWorld.getHeight() - 1), block);
+        BlockPos blockPos2 = NetherrackReplaceBlobsFeature.method_27107(serverWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, serverWorldAccess.getHeight() - 1), block);
         if (blockPos2 == null) {
             return false;
         }
@@ -37,18 +37,18 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
         boolean bl = false;
         for (BlockPos blockPos3 : BlockPos.iterateOutwards(blockPos2, vec3i.getX(), vec3i.getY(), vec3i.getZ())) {
             if (blockPos3.getManhattanDistance(blockPos2) > i) break;
-            BlockState blockState = iWorld.getBlockState(blockPos3);
+            BlockState blockState = serverWorldAccess.getBlockState(blockPos3);
             if (!blockState.isOf(block)) continue;
-            this.setBlockState(iWorld, blockPos3, netherrackReplaceBlobsFeatureConfig.state);
+            this.setBlockState(serverWorldAccess, blockPos3, netherrackReplaceBlobsFeatureConfig.state);
             bl = true;
         }
         return bl;
     }
 
     @Nullable
-    private static BlockPos method_27107(IWorld iWorld, BlockPos.Mutable mutable, Block block) {
+    private static BlockPos method_27107(WorldAccess worldAccess, BlockPos.Mutable mutable, Block block) {
         while (mutable.getY() > 1) {
-            BlockState blockState = iWorld.getBlockState(mutable);
+            BlockState blockState = worldAccess.getBlockState(mutable);
             if (blockState.isOf(block)) {
                 return mutable;
             }

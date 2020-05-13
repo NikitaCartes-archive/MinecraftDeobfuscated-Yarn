@@ -29,8 +29,8 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class SquidEntity
 extends WaterCreatureEntity {
@@ -183,7 +183,7 @@ extends WaterCreatureEntity {
         this.move(MovementType.SELF, this.getVelocity());
     }
 
-    public static boolean canSpawn(EntityType<SquidEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<SquidEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return pos.getY() > 45 && pos.getY() < world.getSeaLevel();
     }
 

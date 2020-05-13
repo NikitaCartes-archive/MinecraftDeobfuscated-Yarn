@@ -43,7 +43,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -113,21 +114,21 @@ extends SimpleStructurePiece {
     }
 
     @Override
-    public boolean generate(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos2) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos2) {
         if (!boundingBox.contains(this.pos)) {
             return true;
         }
         boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-        boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos2);
-        this.placeNetherrackBase(random, world);
-        this.updateNetherracksInBound(random, world);
+        boolean bl = super.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos2);
+        this.placeNetherrackBase(random, serverWorldAccess);
+        this.updateNetherracksInBound(random, serverWorldAccess);
         if (this.properties.vines || this.properties.overgrown) {
             BlockPos.stream(this.getBoundingBox()).forEach(blockPos -> {
                 if (this.properties.vines) {
-                    this.generateVines(random, world, (BlockPos)blockPos);
+                    this.generateVines(random, serverWorldAccess, (BlockPos)blockPos);
                 }
                 if (this.properties.overgrown) {
-                    this.generateOvergrownLeaves(random, world, (BlockPos)blockPos);
+                    this.generateOvergrownLeaves(random, serverWorldAccess, (BlockPos)blockPos);
                 }
             });
         }
@@ -135,10 +136,10 @@ extends SimpleStructurePiece {
     }
 
     @Override
-    protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+    protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
     }
 
-    private void generateVines(Random random, IWorld world, BlockPos pos) {
+    private void generateVines(Random random, WorldAccess world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
         if (blockState.isAir() || blockState.isOf(Blocks.VINE)) {
             return;
@@ -156,13 +157,13 @@ extends SimpleStructurePiece {
         world.setBlockState(blockPos, (BlockState)Blocks.VINE.getDefaultState().with(booleanProperty, true), 3);
     }
 
-    private void generateOvergrownLeaves(Random random, IWorld world, BlockPos pos) {
+    private void generateOvergrownLeaves(Random random, WorldAccess world, BlockPos pos) {
         if (random.nextFloat() < 0.5f && world.getBlockState(pos).isOf(Blocks.NETHERRACK) && world.getBlockState(pos.up()).isAir()) {
             world.setBlockState(pos.up(), (BlockState)Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true), 3);
         }
     }
 
-    private void updateNetherracksInBound(Random random, IWorld world) {
+    private void updateNetherracksInBound(Random random, WorldAccess world) {
         for (int i = this.boundingBox.minX + 1; i < this.boundingBox.maxX; ++i) {
             for (int j = this.boundingBox.minZ + 1; j < this.boundingBox.maxZ; ++j) {
                 BlockPos blockPos = new BlockPos(i, this.boundingBox.minY, j);
@@ -172,7 +173,7 @@ extends SimpleStructurePiece {
         }
     }
 
-    private void updateNetherracks(Random random, IWorld world, BlockPos pos) {
+    private void updateNetherracks(Random random, WorldAccess world, BlockPos pos) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         this.placeNetherrackBottom(random, world, mutable);
         for (int i = 8; i > 0 && random.nextFloat() < 0.5f; --i) {
@@ -181,7 +182,7 @@ extends SimpleStructurePiece {
         }
     }
 
-    private void placeNetherrackBase(Random random, IWorld world) {
+    private void placeNetherrackBase(Random random, WorldAccess world) {
         boolean bl = this.verticalPlacement == VerticalPlacement.ON_LAND_SURFACE || this.verticalPlacement == VerticalPlacement.ON_OCEAN_FLOOR;
         Vec3i vec3i = this.boundingBox.getCenter();
         int i = vec3i.getX();
@@ -212,12 +213,12 @@ extends SimpleStructurePiece {
         }
     }
 
-    private boolean canFillNetherrack(IWorld world, BlockPos pos) {
+    private boolean canFillNetherrack(WorldAccess world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
         return !blockState.isOf(Blocks.AIR) && !blockState.isOf(Blocks.OBSIDIAN) && (this.verticalPlacement == VerticalPlacement.IN_NETHER || !blockState.isOf(Blocks.LAVA));
     }
 
-    private void placeNetherrackBottom(Random random, IWorld world, BlockPos pos) {
+    private void placeNetherrackBottom(Random random, WorldAccess world, BlockPos pos) {
         if (!this.properties.cold && random.nextFloat() < 0.07f) {
             world.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), 3);
         } else {
@@ -225,7 +226,7 @@ extends SimpleStructurePiece {
         }
     }
 
-    private static int getBaseHeight(IWorld world, int x, int y, VerticalPlacement verticalPlacement) {
+    private static int getBaseHeight(WorldAccess world, int x, int y, VerticalPlacement verticalPlacement) {
         return world.getTopY(RuinedPortalFeaturePiece.getHeightmapType(verticalPlacement), x, y) - 1;
     }
 

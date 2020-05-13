@@ -138,7 +138,7 @@ public enum DirectionTransformation implements StringIdentifiable
     }
 
     public JigsawOrientation mapJigsawOrientation(JigsawOrientation orientation) {
-        return JigsawOrientation.byDirections(this.map(orientation.method_26426()), this.map(orientation.method_26428()));
+        return JigsawOrientation.byDirections(this.map(orientation.getFacing()), this.map(orientation.getRotation()));
     }
 
     static {

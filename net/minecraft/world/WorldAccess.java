@@ -31,12 +31,10 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
 import org.jetbrains.annotations.Nullable;
 
-public interface IWorld
+public interface WorldAccess
 extends EntityView,
 WorldView,
 ModifiableTestableWorld {
-    public long getSeed();
-
     default public float getMoonSize() {
         return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
     }
@@ -83,7 +81,7 @@ ModifiableTestableWorld {
     public void syncWorldEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
 
     default public int getDimensionHeight() {
-        return this.getDimension().isNether() ? 128 : 256;
+        return this.method_27983().method_27998() ? 128 : 256;
     }
 
     default public void syncWorldEvent(int eventId, BlockPos pos, int data) {
@@ -96,13 +94,13 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-        return EntityView.super.intersectsEntities(except, shape);
+    default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
+        return EntityView.super.intersectsEntities(entity, shape);
     }
 
     @Override
-    default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
-        return WorldView.super.getTopPosition(heightmap, pos);
+    default public BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
+        return WorldView.super.getTopPosition(type, pos);
     }
 }
 

@@ -783,7 +783,7 @@ AutoCloseable {
         BackgroundRenderer.render(camera, tickDelta, this.client.world, this.client.options.viewDistance, gameRenderer.getSkyDarkness(tickDelta));
         RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
         float g = gameRenderer.getViewDistance();
-        boolean bl4 = bl2 = this.client.world.dimension.isFogThick(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
+        boolean bl4 = bl2 = this.client.world.method_28103().method_28110(MathHelper.floor(d), MathHelper.floor(e)) || this.client.inGameHud.getBossBarHud().shouldThickenFog();
         if (this.client.options.viewDistance >= 4) {
             BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2);
             profiler.swap("sky");
@@ -807,7 +807,7 @@ AutoCloseable {
         this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f);
         this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f);
         this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f);
-        if (this.world.dimension.getType() == DimensionType.THE_NETHER) {
+        if (this.world.method_27983() == DimensionType.THE_NETHER) {
             DiffuseLighting.enableForLevel(matrices.peek().getModel());
         } else {
             DiffuseLighting.method_27869(matrices.peek().getModel());
@@ -1243,11 +1243,11 @@ AutoCloseable {
         int n;
         float l;
         float j;
-        if (this.client.world.dimension.getType() == DimensionType.THE_END) {
+        if (this.client.world.method_27983() == DimensionType.THE_END) {
             this.renderEndSky(matrixStack);
             return;
         }
-        if (!this.client.world.dimension.hasVisibleSky()) {
+        if (!this.client.world.method_28103().method_28114()) {
             return;
         }
         RenderSystem.disableTexture();
@@ -1269,7 +1269,7 @@ AutoCloseable {
         RenderSystem.disableAlphaTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        float[] fs = this.world.dimension.getBackgroundColor(this.world.getSkyAngle(f), f);
+        float[] fs = this.world.method_28103().method_28109(this.world.getSkyAngle(f), f);
         if (fs != null) {
             RenderSystem.disableTexture();
             RenderSystem.shadeModel(7425);
@@ -1346,7 +1346,7 @@ AutoCloseable {
         matrixStack.pop();
         RenderSystem.disableTexture();
         RenderSystem.color3f(0.0f, 0.0f, 0.0f);
-        double d = this.client.player.getCameraPosVec((float)f).y - this.world.getSkyDarknessHeight();
+        double d = this.client.player.getCameraPosVec((float)f).y - this.world.getLevelProperties().method_28105();
         if (d < 0.0) {
             matrixStack.push();
             matrixStack.translate(0.0, 12.0, 0.0);
@@ -1357,7 +1357,7 @@ AutoCloseable {
             this.skyVertexFormat.endDrawing();
             matrixStack.pop();
         }
-        if (this.world.dimension.hasGround()) {
+        if (this.world.method_28103().method_28113()) {
             RenderSystem.color3f(g * 0.2f + 0.04f, h * 0.2f + 0.04f, i * 0.6f + 0.1f);
         } else {
             RenderSystem.color3f(g, h, i);
@@ -1368,7 +1368,8 @@ AutoCloseable {
     }
 
     public void renderClouds(MatrixStack matrices, float tickDelta, double cameraX, double cameraY, double cameraZ) {
-        if (!this.client.world.dimension.hasVisibleSky()) {
+        float f = this.world.method_28103().method_28108();
+        if (Float.isNaN(f)) {
             return;
         }
         RenderSystem.disableCull();
@@ -1378,26 +1379,26 @@ AutoCloseable {
         RenderSystem.defaultAlphaFunc();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableFog();
-        float f = 12.0f;
-        float g = 4.0f;
+        float g = 12.0f;
+        float h = 4.0f;
         double d = 2.0E-4;
         double e = ((float)this.ticks + tickDelta) * 0.03f;
-        double h = (cameraX + e) / 12.0;
-        double i = this.world.dimension.getCloudHeight() - (float)cameraY + 0.33f;
-        double j = cameraZ / 12.0 + (double)0.33f;
-        h -= (double)(MathHelper.floor(h / 2048.0) * 2048);
-        j -= (double)(MathHelper.floor(j / 2048.0) * 2048);
-        float k = (float)(h - (double)MathHelper.floor(h));
-        float l = (float)(i / 4.0 - (double)MathHelper.floor(i / 4.0)) * 4.0f;
-        float m = (float)(j - (double)MathHelper.floor(j));
+        double i = (cameraX + e) / 12.0;
+        double j = f - (float)cameraY + 0.33f;
+        double k = cameraZ / 12.0 + (double)0.33f;
+        i -= (double)(MathHelper.floor(i / 2048.0) * 2048);
+        k -= (double)(MathHelper.floor(k / 2048.0) * 2048);
+        float l = (float)(i - (double)MathHelper.floor(i));
+        float m = (float)(j / 4.0 - (double)MathHelper.floor(j / 4.0)) * 4.0f;
+        float n = (float)(k - (double)MathHelper.floor(k));
         Vec3d vec3d = this.world.getCloudsColor(tickDelta);
-        int n = (int)Math.floor(h);
-        int o = (int)Math.floor(i / 4.0);
-        int p = (int)Math.floor(j);
-        if (n != this.lastCloudsBlockX || o != this.lastCloudsBlockY || p != this.lastCloudsBlockZ || this.client.options.getCloudRenderMode() != this.lastCloudsRenderMode || this.lastCloudsColor.squaredDistanceTo(vec3d) > 2.0E-4) {
-            this.lastCloudsBlockX = n;
-            this.lastCloudsBlockY = o;
-            this.lastCloudsBlockZ = p;
+        int o = (int)Math.floor(i);
+        int p = (int)Math.floor(j / 4.0);
+        int q = (int)Math.floor(k);
+        if (o != this.lastCloudsBlockX || p != this.lastCloudsBlockY || q != this.lastCloudsBlockZ || this.client.options.getCloudRenderMode() != this.lastCloudsRenderMode || this.lastCloudsColor.squaredDistanceTo(vec3d) > 2.0E-4) {
+            this.lastCloudsBlockX = o;
+            this.lastCloudsBlockY = p;
+            this.lastCloudsBlockZ = q;
             this.lastCloudsColor = vec3d;
             this.lastCloudsRenderMode = this.client.options.getCloudRenderMode();
             this.cloudsDirty = true;
@@ -1409,20 +1410,20 @@ AutoCloseable {
                 this.cloudsBuffer.close();
             }
             this.cloudsBuffer = new VertexBuffer(VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
-            this.renderClouds(bufferBuilder, h, i, j, vec3d);
+            this.renderClouds(bufferBuilder, i, j, k, vec3d);
             bufferBuilder.end();
             this.cloudsBuffer.upload(bufferBuilder);
         }
         this.textureManager.bindTexture(CLOUDS);
         matrices.push();
         matrices.scale(12.0f, 1.0f, 12.0f);
-        matrices.translate(-k, l, -m);
+        matrices.translate(-l, m, -n);
         if (this.cloudsBuffer != null) {
-            int q;
+            int r;
             this.cloudsBuffer.bind();
             VertexFormats.POSITION_TEXTURE_COLOR_NORMAL.startDrawing(0L);
-            for (int r = q = this.lastCloudsRenderMode == CloudRenderMode.FANCY ? 0 : 1; r < 2; ++r) {
-                if (r == 0) {
+            for (int s = r = this.lastCloudsRenderMode == CloudRenderMode.FANCY ? 0 : 1; s < 2; ++s) {
+                if (s == 0) {
                     RenderSystem.colorMask(false, false, false, false);
                 } else {
                     RenderSystem.colorMask(true, true, true, true);

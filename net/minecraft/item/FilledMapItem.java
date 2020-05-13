@@ -49,7 +49,7 @@ extends NetworkSyncedItem {
 
     public static ItemStack createMap(World world, int x, int z, byte scale, boolean showIcons, boolean unlimitedTracking) {
         ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
-        FilledMapItem.createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.dimension.getType());
+        FilledMapItem.createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.method_27983());
         return itemStack;
     }
 
@@ -61,8 +61,8 @@ extends NetworkSyncedItem {
     @Nullable
     public static MapState getOrCreateMapState(ItemStack map, World world) {
         MapState mapState = FilledMapItem.getMapState(map, world);
-        if (mapState == null && !world.isClient) {
-            mapState = FilledMapItem.createMapState(map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.dimension.getType());
+        if (mapState == null && world instanceof ServerWorld) {
+            mapState = FilledMapItem.createMapState(map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.method_27983());
         }
         return mapState;
     }
@@ -86,7 +86,7 @@ extends NetworkSyncedItem {
     }
 
     public void updateColors(World world, Entity entity, MapState state) {
-        if (world.dimension.getType() != state.dimension || !(entity instanceof PlayerEntity)) {
+        if (world.method_27983() != state.dimension || !(entity instanceof PlayerEntity)) {
             return;
         }
         int i = 1 << state.scale;
@@ -95,7 +95,7 @@ extends NetworkSyncedItem {
         int l = MathHelper.floor(entity.getX() - (double)j) / i + 64;
         int m = MathHelper.floor(entity.getZ() - (double)k) / i + 64;
         int n = 128 / i;
-        if (world.dimension.isNether()) {
+        if (world.method_27983().method_27998()) {
             n /= 2;
         }
         MapState.PlayerUpdateTracker playerUpdateTracker = state.getPlayerSyncData((PlayerEntity)entity);
@@ -124,7 +124,7 @@ extends NetworkSyncedItem {
                 int v = t & 0xF;
                 int w = 0;
                 double e = 0.0;
-                if (world.dimension.isNether()) {
+                if (world.method_27983().method_27998()) {
                     int x = s + t * 231871;
                     if (((x = x * x * 31287121 + x * 11) >> 20 & 1) == 0) {
                         multiset.add(Blocks.DIRT.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 10);
@@ -210,7 +210,7 @@ extends NetworkSyncedItem {
         if (mapState == null) {
             return;
         }
-        if (serverWorld.dimension.getType() != mapState.dimension) {
+        if (serverWorld.method_27983() != mapState.dimension) {
             return;
         }
         int i = 1 << mapState.scale;

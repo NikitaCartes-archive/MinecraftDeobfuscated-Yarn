@@ -10,10 +10,10 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.decorator.CarvingMaskDecorator;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
@@ -127,16 +127,16 @@ public abstract class Decorator<DC extends DecoratorConfig> {
         return new ConfiguredDecorator<DC>(this, decoratorConfig);
     }
 
-    protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
+    protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        this.getPositions(world, chunkGenerator, random, decoratorConfig, blockPos2).forEach(blockPos -> {
-            boolean bl = configuredFeature.generate(world, structureAccessor, (ChunkGenerator<ChunkGeneratorConfig>)chunkGenerator, random, (BlockPos)blockPos);
+        this.getPositions(serverWorldAccess, chunkGenerator, random, decoratorConfig, blockPos2).forEach(blockPos -> {
+            boolean bl = configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, (BlockPos)blockPos);
             atomicBoolean.set(atomicBoolean.get() || bl);
         });
         return atomicBoolean.get();
     }
 
-    public abstract Stream<BlockPos> getPositions(IWorld var1, ChunkGenerator<? extends ChunkGeneratorConfig> var2, Random var3, DC var4, BlockPos var5);
+    public abstract Stream<BlockPos> getPositions(WorldAccess var1, ChunkGenerator var2, Random var3, DC var4, BlockPos var5);
 
     public String toString() {
         return this.getClass().getSimpleName() + "@" + Integer.toHexString(this.hashCode());

@@ -36,7 +36,7 @@ public class BastionRemnantGenerator {
         BastionData.init();
     }
 
-    public static void addPieces(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos pos, List<StructurePiece> pieces, ChunkRandom random, BastionRemnantFeatureConfig config) {
+    public static void addPieces(ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos pos, List<StructurePiece> pieces, ChunkRandom random, BastionRemnantFeatureConfig config) {
         BastionRemnantGenerator.init();
         StructurePoolFeatureConfig structurePoolFeatureConfig = config.getRandom(random);
         StructurePoolBasedGenerator.addPieces(structurePoolFeatureConfig.startPool, structurePoolFeatureConfig.size, Piece::new, chunkGenerator, structureManager, pos, pieces, random, false, false);

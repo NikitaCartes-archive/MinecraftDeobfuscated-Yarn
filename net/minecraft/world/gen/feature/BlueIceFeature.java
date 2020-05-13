@@ -11,10 +11,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -25,23 +24,23 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+        if (blockPos.getY() > serverWorldAccess.getSeaLevel() - 1) {
             return false;
         }
-        if (!iWorld.getBlockState(blockPos).isOf(Blocks.WATER) && !iWorld.getBlockState(blockPos.down()).isOf(Blocks.WATER)) {
+        if (!serverWorldAccess.getBlockState(blockPos).isOf(Blocks.WATER) && !serverWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.WATER)) {
             return false;
         }
         boolean bl = false;
         for (Direction direction : Direction.values()) {
-            if (direction == Direction.DOWN || !iWorld.getBlockState(blockPos.offset(direction)).isOf(Blocks.PACKED_ICE)) continue;
+            if (direction == Direction.DOWN || !serverWorldAccess.getBlockState(blockPos.offset(direction)).isOf(Blocks.PACKED_ICE)) continue;
             bl = true;
             break;
         }
         if (!bl) {
             return false;
         }
-        iWorld.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), 2);
+        serverWorldAccess.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), 2);
         block1: for (int i = 0; i < 200; ++i) {
             BlockPos blockPos2;
             BlockState blockState;
@@ -50,11 +49,11 @@ extends Feature<DefaultFeatureConfig> {
             if (j < 2) {
                 k += j / 2;
             }
-            if (k < 1 || (blockState = iWorld.getBlockState(blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k)))).getMaterial() != Material.AIR && !blockState.isOf(Blocks.WATER) && !blockState.isOf(Blocks.PACKED_ICE) && !blockState.isOf(Blocks.ICE)) continue;
+            if (k < 1 || (blockState = serverWorldAccess.getBlockState(blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k)))).getMaterial() != Material.AIR && !blockState.isOf(Blocks.WATER) && !blockState.isOf(Blocks.PACKED_ICE) && !blockState.isOf(Blocks.ICE)) continue;
             for (Direction direction2 : Direction.values()) {
-                BlockState blockState2 = iWorld.getBlockState(blockPos2.offset(direction2));
+                BlockState blockState2 = serverWorldAccess.getBlockState(blockPos2.offset(direction2));
                 if (!blockState2.isOf(Blocks.BLUE_ICE)) continue;
-                iWorld.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), 2);
+                serverWorldAccess.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), 2);
                 continue block1;
             }
         }

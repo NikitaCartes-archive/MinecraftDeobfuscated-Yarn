@@ -10,7 +10,7 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.placer.BlockPlacer;
 import net.minecraft.world.gen.placer.BlockPlacerType;
 
@@ -25,8 +25,8 @@ extends BlockPlacer {
     }
 
     @Override
-    public void method_23403(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-        iWorld.setBlockState(blockPos, blockState, 2);
+    public void method_23403(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Random random) {
+        worldAccess.setBlockState(blockPos, blockState, 2);
     }
 
     @Override

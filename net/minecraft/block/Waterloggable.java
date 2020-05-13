@@ -12,7 +12,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public interface Waterloggable
 extends FluidDrainable,
@@ -23,7 +23,7 @@ FluidFillable {
     }
 
     @Override
-    default public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
+    default public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
         if (!state.get(Properties.WATERLOGGED).booleanValue() && fluidState.getFluid() == Fluids.WATER) {
             if (!world.isClient()) {
                 world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, true), 3);
@@ -35,7 +35,7 @@ FluidFillable {
     }
 
     @Override
-    default public Fluid tryDrainFluid(IWorld world, BlockPos pos, BlockState state) {
+    default public Fluid tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
         if (state.get(Properties.WATERLOGGED).booleanValue()) {
             world.setBlockState(pos, (BlockState)state.with(Properties.WATERLOGGED, false), 3);
             return Fluids.WATER;

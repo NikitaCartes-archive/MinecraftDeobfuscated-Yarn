@@ -22,8 +22,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class DebugStickItem
@@ -56,7 +56,7 @@ extends Item {
         return ActionResult.SUCCESS;
     }
 
-    private void use(PlayerEntity player, BlockState state, IWorld world, BlockPos pos, boolean update, ItemStack stack) {
+    private void use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {
         if (!player.isCreativeLevelTwoOp()) {
             return;
         }

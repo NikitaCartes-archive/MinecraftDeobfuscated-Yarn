@@ -12,10 +12,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -28,20 +28,20 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        if (!iWorld.isAir(blockPos)) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+        if (!serverWorldAccess.isAir(blockPos)) {
             return false;
         }
-        BlockState blockState = iWorld.getBlockState(blockPos.up());
+        BlockState blockState = serverWorldAccess.getBlockState(blockPos.up());
         if (!blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
             return false;
         }
-        this.generateNetherWartBlocksInArea(iWorld, random, blockPos);
-        this.generateVinesInArea(iWorld, random, blockPos);
+        this.generateNetherWartBlocksInArea(serverWorldAccess, random, blockPos);
+        this.generateVinesInArea(serverWorldAccess, random, blockPos);
         return true;
     }
 
-    private void generateNetherWartBlocksInArea(IWorld world, Random random, BlockPos pos) {
+    private void generateNetherWartBlocksInArea(WorldAccess world, Random random, BlockPos pos) {
         world.setBlockState(pos, Blocks.NETHER_WART_BLOCK.getDefaultState(), 2);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
@@ -61,7 +61,7 @@ extends Feature<DefaultFeatureConfig> {
         }
     }
 
-    private void generateVinesInArea(IWorld world, Random random, BlockPos pos) {
+    private void generateVinesInArea(WorldAccess world, Random random, BlockPos pos) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < 100; ++i) {
             BlockState blockState;
@@ -80,7 +80,7 @@ extends Feature<DefaultFeatureConfig> {
         }
     }
 
-    public static void generateVineColumn(IWorld world, Random random, BlockPos.Mutable pos, int length, int minAge, int maxAge) {
+    public static void generateVineColumn(WorldAccess world, Random random, BlockPos.Mutable pos, int length, int minAge, int maxAge) {
         for (int i = 0; i <= length; ++i) {
             if (world.isAir(pos)) {
                 if (i == length || !world.isAir((BlockPos)pos.down())) {

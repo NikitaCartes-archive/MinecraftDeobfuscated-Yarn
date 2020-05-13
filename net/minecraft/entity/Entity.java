@@ -48,7 +48,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -213,7 +212,7 @@ CommandOutput {
         this.blockPos = BlockPos.ORIGIN;
         this.updatePosition(0.0, 0.0, 0.0);
         if (world != null) {
-            this.dimension = world.dimension.getType();
+            this.dimension = world.method_27983();
         }
         this.dataTracker = new DataTracker(this);
         this.dataTracker.startTracking(FLAGS, (byte)0);
@@ -916,7 +915,7 @@ CommandOutput {
         if (this.isTouchingWater()) {
             return true;
         }
-        double d = this.world.getDimension().isNether() ? 0.007 : 0.0023333333333333335;
+        double d = this.world.method_27983().method_27998() ? 0.007 : 0.0023333333333333335;
         return this.updateMovementInFluid(FluidTags.LAVA, d);
     }
 
@@ -1332,10 +1331,6 @@ CommandOutput {
             this.pitch = listTag3.getFloat(1);
             this.prevYaw = this.yaw;
             this.prevPitch = this.pitch;
-            if (listTag3.isEmpty() && this instanceof ShulkerEntity) {
-                this.yaw = 180.0f;
-                this.prevYaw = 180.0f;
-            }
             this.setHeadYaw(this.yaw);
             this.setYaw(this.yaw);
             this.fallDistance = tag.getFloat("FallDistance");
@@ -1644,7 +1639,7 @@ CommandOutput {
                 this.world.getProfiler().push("portal");
                 this.netherPortalTime = i;
                 this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
-                this.changeDimension(this.world.dimension.getType() == DimensionType.THE_NETHER ? DimensionType.OVERWORLD : DimensionType.THE_NETHER);
+                this.changeDimension(this.world.method_27983() == DimensionType.THE_NETHER ? DimensionType.OVERWORLD : DimensionType.THE_NETHER);
                 this.world.getProfiler().pop();
             }
             this.inNetherPortal = false;

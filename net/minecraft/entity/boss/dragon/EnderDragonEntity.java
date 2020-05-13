@@ -114,7 +114,7 @@ implements Monster {
         this.setHealth(this.getMaximumHealth());
         this.noClip = true;
         this.ignoreCameraFrustum = true;
-        this.fight = !world.isClient && world.dimension instanceof TheEndDimension ? ((TheEndDimension)world.dimension).getEnderDragonFight() : null;
+        this.fight = !world.isClient && world.getDimension() instanceof TheEndDimension ? ((TheEndDimension)world.getDimension()).getEnderDragonFight() : null;
         this.phaseManager = new PhaseManager(this);
     }
 

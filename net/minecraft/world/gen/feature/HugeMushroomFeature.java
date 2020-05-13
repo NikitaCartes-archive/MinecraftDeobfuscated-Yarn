@@ -11,10 +11,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 
@@ -24,7 +24,7 @@ extends Feature<HugeMushroomFeatureConfig> {
         super(function);
     }
 
-    protected void generateStem(IWorld world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutable) {
+    protected void generateStem(WorldAccess world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutable) {
         for (int i = 0; i < height; ++i) {
             mutable.set(pos).move(Direction.UP, i);
             if (world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) continue;
@@ -40,7 +40,7 @@ extends Feature<HugeMushroomFeatureConfig> {
         return i;
     }
 
-    protected boolean canGenerate(IWorld world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+    protected boolean canGenerate(WorldAccess world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
         int i = pos.getY();
         if (i < 1 || i + height + 1 >= 256) {
             return false;
@@ -63,19 +63,19 @@ extends Feature<HugeMushroomFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
         BlockPos.Mutable mutable;
         int i = this.getHeight(random);
-        if (!this.canGenerate(iWorld, blockPos, i, mutable = new BlockPos.Mutable(), hugeMushroomFeatureConfig)) {
+        if (!this.canGenerate(serverWorldAccess, blockPos, i, mutable = new BlockPos.Mutable(), hugeMushroomFeatureConfig)) {
             return false;
         }
-        this.generateCap(iWorld, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
-        this.generateStem(iWorld, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
+        this.generateCap(serverWorldAccess, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
+        this.generateStem(serverWorldAccess, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
         return true;
     }
 
     protected abstract int getCapSize(int var1, int var2, int var3, int var4);
 
-    protected abstract void generateCap(IWorld var1, Random var2, BlockPos var3, int var4, BlockPos.Mutable var5, HugeMushroomFeatureConfig var6);
+    protected abstract void generateCap(WorldAccess var1, Random var2, BlockPos var3, int var4, BlockPos.Mutable var5, HugeMushroomFeatureConfig var6);
 }
 

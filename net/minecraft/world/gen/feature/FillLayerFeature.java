@@ -7,10 +7,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FillLayerFeatureConfig;
 
@@ -21,7 +20,7 @@ extends Feature<FillLayerFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, FillLayerFeatureConfig fillLayerFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, FillLayerFeatureConfig fillLayerFeatureConfig) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
@@ -29,8 +28,8 @@ extends Feature<FillLayerFeatureConfig> {
                 int l = blockPos.getZ() + j;
                 int m = fillLayerFeatureConfig.height;
                 mutable.set(k, m, l);
-                if (!iWorld.getBlockState(mutable).isAir()) continue;
-                iWorld.setBlockState(mutable, fillLayerFeatureConfig.state, 2);
+                if (!serverWorldAccess.getBlockState(mutable).isAir()) continue;
+                serverWorldAccess.setBlockState(mutable, fillLayerFeatureConfig.state, 2);
             }
         }
         return true;

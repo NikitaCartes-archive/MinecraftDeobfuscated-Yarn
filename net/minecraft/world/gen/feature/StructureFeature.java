@@ -12,12 +12,11 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -43,7 +42,7 @@ extends Feature<C> {
     }
 
     @Override
-    public boolean generate(IWorld world, StructureAccessor accessor, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, C config) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor accessor, ChunkGenerator generator, Random random, BlockPos pos, C config) {
         if (!accessor.method_27834()) {
             return false;
         }
@@ -51,31 +50,31 @@ extends Feature<C> {
         int j = pos.getZ() >> 4;
         int k = i << 4;
         int l = j << 4;
-        return accessor.getStructuresWithChildren(ChunkSectionPos.from(pos), this, world).map(structureStart -> {
-            structureStart.generateStructure(world, accessor, generator, random, new BlockBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
+        return accessor.getStructuresWithChildren(ChunkSectionPos.from(pos), this).map(structureStart -> {
+            structureStart.generateStructure(serverWorldAccess, accessor, generator, random, new BlockBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
             return null;
         }).count() != 0L;
     }
 
-    protected StructureStart isInsideStructure(IWorld iWorld, StructureAccessor structureAccessor, BlockPos blockPos, boolean bl) {
-        return structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), this, iWorld).filter(structureStart -> structureStart.getBoundingBox().contains(blockPos)).filter(structureStart -> !bl || structureStart.getChildren().stream().anyMatch(structurePiece -> structurePiece.getBoundingBox().contains(blockPos))).findFirst().orElse(StructureStart.DEFAULT);
+    protected StructureStart isInsideStructure(StructureAccessor structureAccessor, BlockPos blockPos, boolean bl) {
+        return structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), this).filter(structureStart -> structureStart.getBoundingBox().contains(blockPos)).filter(structureStart -> !bl || structureStart.getChildren().stream().anyMatch(structurePiece -> structurePiece.getBoundingBox().contains(blockPos))).findFirst().orElse(StructureStart.DEFAULT);
     }
 
-    public boolean isApproximatelyInsideStructure(IWorld world, StructureAccessor structureAccessor, BlockPos blockPos) {
-        return this.isInsideStructure(world, structureAccessor, blockPos, false).hasChildren();
+    public boolean isApproximatelyInsideStructure(StructureAccessor structureAccessor, BlockPos blockPos) {
+        return this.isInsideStructure(structureAccessor, blockPos, false).hasChildren();
     }
 
-    public boolean isInsideStructure(IWorld world, StructureAccessor structureAccessor, BlockPos blockPos) {
-        return this.isInsideStructure(world, structureAccessor, blockPos, true).hasChildren();
+    public boolean isInsideStructure(StructureAccessor structureAccessor, BlockPos blockPos) {
+        return this.isInsideStructure(structureAccessor, blockPos, true).hasChildren();
     }
 
     @Nullable
-    public BlockPos locateStructure(ServerWorld serverWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks) {
+    public BlockPos locateStructure(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks) {
         if (!chunkGenerator.hasStructure(this)) {
             return null;
         }
         StructureAccessor structureAccessor = serverWorld.getStructureAccessor();
-        int j = this.getSpacing(chunkGenerator.getDimensionType(), chunkGenerator.getConfig());
+        int j = this.getSpacing(chunkGenerator.getConfig());
         int k = blockPos.getX() >> 4;
         int l = blockPos.getZ() >> 4;
         ChunkRandom chunkRandom = new ChunkRandom();
@@ -88,7 +87,7 @@ extends Feature<C> {
                     if (!bl && !bl2) continue;
                     int p = k + j * n;
                     int q = l + j * o;
-                    ChunkPos chunkPos = this.method_27218(chunkGenerator, chunkRandom, p, q);
+                    ChunkPos chunkPos = this.method_27218(chunkGenerator.getConfig(), serverWorld.getSeed(), chunkRandom, p, q);
                     Chunk chunk = serverWorld.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
                     StructureStart structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), this, chunk);
                     if (structureStart != null && structureStart.hasChildren()) {
@@ -108,11 +107,11 @@ extends Feature<C> {
         return null;
     }
 
-    protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+    protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
         return 1;
     }
 
-    protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
+    protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
         return 0;
     }
 
@@ -124,32 +123,30 @@ extends Feature<C> {
         return true;
     }
 
-    public final ChunkPos method_27218(ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int i, int j) {
+    public final ChunkPos method_27218(ChunkGeneratorConfig chunkGeneratorConfig, long l, ChunkRandom chunkRandom, int i, int j) {
+        int q;
         int p;
-        int o;
-        Object chunkGeneratorConfig = chunkGenerator.getConfig();
-        DimensionType dimensionType = chunkGenerator.getDimensionType();
-        int k = this.getSpacing(dimensionType, (ChunkGeneratorConfig)chunkGeneratorConfig);
-        int l = this.getSeparation(dimensionType, (ChunkGeneratorConfig)chunkGeneratorConfig);
-        int m = Math.floorDiv(i, k);
-        int n = Math.floorDiv(j, k);
-        chunkRandom.setRegionSeed(chunkGenerator.getSeed(), m, n, this.getSeedModifier((ChunkGeneratorConfig)chunkGeneratorConfig));
+        int k = this.getSpacing(chunkGeneratorConfig);
+        int m = this.getSeparation(chunkGeneratorConfig);
+        int n = Math.floorDiv(i, k);
+        int o = Math.floorDiv(j, k);
+        chunkRandom.setRegionSeed(l, n, o, this.getSeedModifier(chunkGeneratorConfig));
         if (this.method_27219()) {
-            o = chunkRandom.nextInt(k - l);
-            p = chunkRandom.nextInt(k - l);
+            p = chunkRandom.nextInt(k - m);
+            q = chunkRandom.nextInt(k - m);
         } else {
-            o = (chunkRandom.nextInt(k - l) + chunkRandom.nextInt(k - l)) / 2;
-            p = (chunkRandom.nextInt(k - l) + chunkRandom.nextInt(k - l)) / 2;
+            p = (chunkRandom.nextInt(k - m) + chunkRandom.nextInt(k - m)) / 2;
+            q = (chunkRandom.nextInt(k - m) + chunkRandom.nextInt(k - m)) / 2;
         }
-        return new ChunkPos(m * k + o, n * k + p);
+        return new ChunkPos(n * k + p, o * k + q);
     }
 
-    public boolean method_27217(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int i, int j, Biome biome) {
-        ChunkPos chunkPos = this.method_27218(chunkGenerator, chunkRandom, i, j);
-        return i == chunkPos.x && j == chunkPos.z && chunkGenerator.hasStructure(biome, this) && this.shouldStartAt(biomeAccess, chunkGenerator, chunkRandom, i, j, biome, chunkPos);
+    public boolean method_27217(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome) {
+        ChunkPos chunkPos = this.method_27218(chunkGenerator.getConfig(), l, chunkRandom, i, j);
+        return i == chunkPos.x && j == chunkPos.z && chunkGenerator.hasStructure(biome, this) && this.shouldStartAt(biomeAccess, chunkGenerator, l, chunkRandom, i, j, biome, chunkPos);
     }
 
-    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos) {
+    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos) {
         return true;
     }
 

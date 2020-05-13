@@ -31,8 +31,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SilverfishEntity
@@ -124,7 +124,7 @@ extends HostileEntity {
         return super.getPathfindingFavor(pos, world);
     }
 
-    public static boolean canSpawn(EntityType<SilverfishEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<SilverfishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         if (SilverfishEntity.canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random)) {
             PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0, true);
             return playerEntity == null;
@@ -183,11 +183,11 @@ extends HostileEntity {
                 super.start();
                 return;
             }
-            World iWorld = this.mob.world;
+            World worldAccess = this.mob.world;
             BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
-            BlockState blockState = iWorld.getBlockState(blockPos);
+            BlockState blockState = worldAccess.getBlockState(blockPos);
             if (InfestedBlock.isInfestable(blockState)) {
-                iWorld.setBlockState(blockPos, InfestedBlock.fromRegularBlock(blockState.getBlock()), 3);
+                worldAccess.setBlockState(blockPos, InfestedBlock.fromRegularBlock(blockState.getBlock()), 3);
                 this.mob.playSpawnEffects();
                 this.mob.remove();
             }

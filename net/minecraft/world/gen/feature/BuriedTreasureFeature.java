@@ -25,8 +25,8 @@ extends StructureFeature<BuriedTreasureFeatureConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos) {
-        chunkRandom.setRegionSeed(chunkGenerator.getSeed(), chunkX, chunkZ, 10387320);
+    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos) {
+        chunkRandom.setRegionSeed(l, i, j, 10387320);
         BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
         return chunkRandom.nextFloat() < buriedTreasureFeatureConfig.probability;
     }
@@ -53,7 +53,7 @@ extends StructureFeature<BuriedTreasureFeatureConfig> {
         }
 
         @Override
-        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             int i = x * 16;
             int j = z * 16;
             BlockPos blockPos = new BlockPos(i + 9, 90, j + 9);

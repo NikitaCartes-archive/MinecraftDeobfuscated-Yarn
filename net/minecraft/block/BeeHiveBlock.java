@@ -55,8 +55,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class BeehiveBlock
@@ -113,7 +113,6 @@ extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player2, Hand hand, BlockHitResult hit) {
         ItemStack itemStack = player2.getStackInHand(hand);
-        ItemStack itemStack2 = itemStack.copy();
         int i = state.get(HONEY_LEVEL);
         boolean bl = false;
         if (i >= 5) {
@@ -134,16 +133,13 @@ extends BlockWithEntity {
             }
         }
         if (bl) {
-            if (!CampfireBlock.isLitCampfireInRange(world, pos, 5)) {
+            if (!CampfireBlock.isLitCampfireInRange(world, pos)) {
                 if (this.hasBees(world, pos)) {
                     this.angerNearbyBees(world, pos);
                 }
                 this.takeHoney(world, state, pos, player2, BeehiveBlockEntity.BeeState.EMERGENCY);
             } else {
                 this.takeHoney(world, state, pos);
-                if (player2 instanceof ServerPlayerEntity) {
-                    Criteria.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)player2, pos, itemStack2);
-                }
             }
             return ActionResult.SUCCESS;
         }
@@ -276,7 +272,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         BlockEntity blockEntity;
         if (world.getBlockState(posFrom).getBlock() instanceof FireBlock && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;

@@ -68,7 +68,7 @@ public class ChunkSerializer {
         int n;
         ListTag listTag3;
         Chunk chunk;
-        ChunkGenerator<?> chunkGenerator = world.getChunkManager().getChunkGenerator();
+        ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
         BiomeSource biomeSource = chunkGenerator.getBiomeSource();
         CompoundTag compoundTag = tag.getCompound("Level");
         ChunkPos chunkPos = new ChunkPos(compoundTag.getInt("xPos"), compoundTag.getInt("zPos"));
@@ -83,7 +83,7 @@ public class ChunkSerializer {
         ListTag listTag = compoundTag.getList("Sections", 10);
         int i = 16;
         ChunkSection[] chunkSections = new ChunkSection[16];
-        boolean bl2 = world.getDimension().hasSkyLight();
+        boolean bl2 = world.method_27983().hasSkyLight();
         ServerChunkManager chunkManager = world.getChunkManager();
         LightingProvider lightingProvider = ((ChunkManager)chunkManager).getLightingProvider();
         if (bl) {
@@ -143,7 +143,7 @@ public class ChunkSerializer {
         }
         Heightmap.populateHeightmaps(chunk, enumSet);
         CompoundTag compoundTag2 = compoundTag.getCompound("Structures");
-        chunk.setStructureStarts(ChunkSerializer.readStructureStarts(chunkGenerator, structureManager, compoundTag2));
+        chunk.setStructureStarts(ChunkSerializer.readStructureStarts(structureManager, compoundTag2, world.getSeed()));
         chunk.setStructureReferences(ChunkSerializer.readStructureReferences(pos, compoundTag2));
         if (compoundTag.getBoolean("shouldSave")) {
             chunk.setShouldSave(true);
@@ -337,11 +337,11 @@ public class ChunkSerializer {
         return compoundTag;
     }
 
-    private static Map<String, StructureStart> readStructureStarts(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, CompoundTag compoundTag) {
+    private static Map<String, StructureStart> readStructureStarts(StructureManager structureManager, CompoundTag compoundTag, long l) {
         HashMap<String, StructureStart> map = Maps.newHashMap();
         CompoundTag compoundTag2 = compoundTag.getCompound("Starts");
         for (String string : compoundTag2.getKeys()) {
-            map.put(string, StructureFeatures.readStructureStart(chunkGenerator, structureManager, compoundTag2.getCompound(string)));
+            map.put(string, StructureFeatures.readStructureStart(structureManager, compoundTag2.getCompound(string), l));
         }
         return map;
     }

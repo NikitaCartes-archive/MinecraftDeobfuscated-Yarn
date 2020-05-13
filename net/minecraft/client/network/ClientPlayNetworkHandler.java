@@ -363,8 +363,10 @@ implements ClientPlayPacketListener {
             EntityTypeTags.markReady();
         }
         this.chunkLoadDistance = packet.getChunkLoadDistance();
-        this.field_24321 = lv = new ClientWorld.class_5271(packet.getSeed(), Difficulty.NORMAL, packet.isHardcore(), packet.getGeneratorType().getDefaultOptions());
-        this.world = new ClientWorld(this, lv, packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
+        boolean bl = packet.method_28119();
+        boolean bl2 = packet.isHardcore();
+        this.field_24321 = lv = new ClientWorld.class_5271(Difficulty.NORMAL, packet.method_28118(), bl2);
+        this.world = new ClientWorld(this, lv, packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSeed());
         this.client.joinWorld(this.world);
         if (this.client.player == null) {
             this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
@@ -927,8 +929,10 @@ implements ClientPlayPacketListener {
         if (dimensionType != clientPlayerEntity.dimension) {
             ClientWorld.class_5271 lv;
             Scoreboard scoreboard = this.world.getScoreboard();
-            this.field_24321 = lv = new ClientWorld.class_5271(packet.getSha256Seed(), this.field_24321.getDifficulty(), this.field_24321.isHardcore(), packet.getGeneratorType().getDefaultOptions());
-            this.world = new ClientWorld(this, lv, packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
+            boolean bl = packet.method_28120();
+            boolean bl2 = packet.method_28121();
+            this.field_24321 = lv = new ClientWorld.class_5271(this.field_24321.getDifficulty(), this.field_24321.isHardcore(), bl2);
+            this.world = new ClientWorld(this, lv, packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed());
             this.world.setScoreboard(scoreboard);
             this.client.joinWorld(this.world);
             this.client.openScreen(new DownloadingTerrainScreen());

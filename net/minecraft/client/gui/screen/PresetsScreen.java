@@ -30,7 +30,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import org.jetbrains.annotations.Nullable;
@@ -117,7 +116,7 @@ extends Screen {
     }
 
     private static void addPreset(Text text, ItemConvertible icon, Biome biome, List<String> structures, FlatChunkGeneratorLayer ... layers) {
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig();
         for (int i = layers.length - 1; i >= 0; --i) {
             flatChunkGeneratorConfig.getLayers().add(layers[i]);
         }

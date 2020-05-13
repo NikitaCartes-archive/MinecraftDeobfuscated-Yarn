@@ -11,8 +11,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class MobEntityWithAi
@@ -30,7 +30,7 @@ extends MobEntity {
     }
 
     @Override
-    public boolean canSpawn(IWorld world, SpawnReason spawnReason) {
+    public boolean canSpawn(WorldAccess world, SpawnReason spawnReason) {
         return this.getPathfindingFavor(this.getBlockPos(), world) >= 0.0f;
     }
 

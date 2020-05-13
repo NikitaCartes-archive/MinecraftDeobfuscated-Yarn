@@ -19,10 +19,9 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -37,13 +36,13 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+    protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
         return chunkGeneratorConfig.getMansionDistance();
     }
 
     @Override
-    protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
-        return chunkGenerationConfig.getMansionSeparation();
+    protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
+        return chunkGeneratorConfig.getMansionSeparation();
     }
 
     @Override
@@ -57,8 +56,8 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos) {
-        Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 32);
+    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos) {
+        Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32);
         for (Biome biome2 : set) {
             if (chunkGenerator.hasStructure(biome2, this)) continue;
             return false;
@@ -88,7 +87,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             BlockRotation blockRotation = BlockRotation.random(this.random);
             int i = 5;
             int j = 5;
@@ -118,14 +117,14 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-            super.generateStructure(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
+        public void generateStructure(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+            super.generateStructure(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
             int i = this.boundingBox.minY;
             for (int j = blockBox.minX; j <= blockBox.maxX; ++j) {
                 for (int k = blockBox.minZ; k <= blockBox.maxZ; ++k) {
                     BlockPos blockPos2;
                     BlockPos blockPos = new BlockPos(j, i, k);
-                    if (world.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
+                    if (serverWorldAccess.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
                     boolean bl = false;
                     for (StructurePiece structurePiece : this.children) {
                         if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
@@ -133,8 +132,8 @@ extends StructureFeature<DefaultFeatureConfig> {
                         break;
                     }
                     if (!bl) continue;
-                    for (int l = i - 1; l > 1 && (world.isAir(blockPos2 = new BlockPos(j, l, k)) || world.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
-                        world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+                    for (int l = i - 1; l > 1 && (serverWorldAccess.isAir(blockPos2 = new BlockPos(j, l, k)) || serverWorldAccess.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
+                        serverWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
                     }
                 }
             }

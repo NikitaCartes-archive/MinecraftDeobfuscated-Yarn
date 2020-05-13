@@ -48,7 +48,7 @@ public class StructurePoolBasedGenerator {
         PillagerOutpostGenerator.init();
     }
 
-    public static void addPieces(Identifier startPoolId, int size, PieceFactory pieceFactory, ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<? super PoolStructurePiece> list, Random random, boolean bl, boolean bl2) {
+    public static void addPieces(Identifier startPoolId, int size, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<? super PoolStructurePiece> list, Random random, boolean bl, boolean bl2) {
         StructureFeatures.initialize();
         BlockRotation blockRotation = BlockRotation.random(random);
         StructurePool structurePool = REGISTRY.get(startPoolId);
@@ -74,7 +74,7 @@ public class StructurePoolBasedGenerator {
         }
     }
 
-    public static void method_27230(PoolStructurePiece poolStructurePiece, int i, PieceFactory pieceFactory, ChunkGenerator<?> chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
+    public static void method_27230(PoolStructurePiece poolStructurePiece, int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
         StructurePoolBasedGenerator.init();
         StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(i, pieceFactory, chunkGenerator, structureManager, list, random);
         structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(poolStructurePiece, new AtomicReference<VoxelShape>(VoxelShapes.UNBOUNDED), 0, 0));
@@ -95,13 +95,13 @@ public class StructurePoolBasedGenerator {
     static final class StructurePoolGenerator {
         private final int maxSize;
         private final PieceFactory pieceFactory;
-        private final ChunkGenerator<?> chunkGenerator;
+        private final ChunkGenerator chunkGenerator;
         private final StructureManager structureManager;
         private final List<? super PoolStructurePiece> children;
         private final Random random;
         private final Deque<ShapedPoolStructurePiece> structurePieces = Queues.newArrayDeque();
 
-        private StructurePoolGenerator(int i, PieceFactory pieceFactory, ChunkGenerator<?> chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
+        private StructurePoolGenerator(int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
             this.maxSize = i;
             this.pieceFactory = pieceFactory;
             this.chunkGenerator = chunkGenerator;
@@ -123,7 +123,7 @@ public class StructurePoolBasedGenerator {
                 StructurePoolElement structurePoolElement2;
                 int l;
                 AtomicReference<Object> atomicReference2;
-                Direction direction = JigsawBlock.method_26378(structureBlockInfo2.state);
+                Direction direction = JigsawBlock.getFacing(structureBlockInfo2.state);
                 BlockPos blockPos2 = structureBlockInfo2.pos;
                 BlockPos blockPos3 = blockPos2.offset(direction);
                 int j = blockPos2.getY() - i;
@@ -156,7 +156,7 @@ public class StructurePoolBasedGenerator {
                         List<Structure.StructureBlockInfo> list2 = structurePoolElement2.getStructureBlockInfos(this.structureManager, BlockPos.ORIGIN, blockRotation2, this.random);
                         BlockBox blockBox2 = structurePoolElement2.getBoundingBox(this.structureManager, BlockPos.ORIGIN, blockRotation2);
                         int m = !bl || blockBox2.getBlockCountY() > 16 ? 0 : list2.stream().mapToInt(structureBlockInfo -> {
-                            if (!blockBox2.contains(structureBlockInfo.pos.offset(JigsawBlock.method_26378(structureBlockInfo.state)))) {
+                            if (!blockBox2.contains(structureBlockInfo.pos.offset(JigsawBlock.getFacing(structureBlockInfo.state)))) {
                                 return 0;
                             }
                             Identifier identifier = new Identifier(structureBlockInfo.tag.getString("pool"));
@@ -176,7 +176,7 @@ public class StructurePoolBasedGenerator {
                             StructurePool.Projection projection2 = structurePoolElement2.getProjection();
                             boolean bl4 = projection2 == StructurePool.Projection.RIGID;
                             int o = blockPos4.getY();
-                            int p = j - o + JigsawBlock.method_26378(structureBlockInfo2.state).getOffsetY();
+                            int p = j - o + JigsawBlock.getFacing(structureBlockInfo2.state).getOffsetY();
                             if (bl2 && bl4) {
                                 q = i + p;
                             } else {

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class LargeTreeSaplingGenerator
 extends SaplingGenerator {
     @Override
-    public boolean generate(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
+    public boolean generate(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
         for (int i = 0; i >= -1; --i) {
             for (int j = 0; j >= -1; --j) {
                 if (!LargeTreeSaplingGenerator.canGenerateLargeTree(blockState, serverWorld, blockPos, i, j)) continue;
@@ -32,7 +32,7 @@ extends SaplingGenerator {
     @Nullable
     protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random var1);
 
-    public boolean generateLargeTree(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
+    public boolean generateLargeTree(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
         ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
         if (configuredFeature == null) {
             return false;

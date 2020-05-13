@@ -16,8 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class HuskEntity
 extends ZombieEntity {
@@ -25,7 +25,7 @@ extends ZombieEntity {
         super((EntityType<? extends ZombieEntity>)entityType, world);
     }
 
-    public static boolean canSpawn(EntityType<HuskEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<HuskEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return HuskEntity.canSpawnInDark(type, world, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.isSkyVisible(pos));
     }
 

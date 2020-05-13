@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -60,8 +59,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
@@ -73,13 +72,12 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.level.LevelGeneratorType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class World
-implements IWorld,
+implements WorldAccess,
 AutoCloseable {
     protected static final Logger LOGGER = LogManager.getLogger();
     private static final Direction[] DIRECTIONS = Direction.values();
@@ -88,6 +86,7 @@ AutoCloseable {
     protected final List<BlockEntity> pendingBlockEntities = Lists.newArrayList();
     protected final List<BlockEntity> unloadedBlockEntities = Lists.newArrayList();
     private final Thread thread;
+    private final boolean field_24496;
     private int ambientDarkness;
     protected int lcgBlockSeed = new Random().nextInt();
     protected final int unusedIncrement = 1013904223;
@@ -96,8 +95,7 @@ AutoCloseable {
     protected float thunderGradientPrev;
     protected float thunderGradient;
     public final Random random = new Random();
-    public final Dimension dimension;
-    protected final ChunkManager chunkManager;
+    private final Dimension dimension;
     protected final class_5269 properties;
     private final Supplier<Profiler> profiler;
     public final boolean isClient;
@@ -105,15 +103,15 @@ AutoCloseable {
     private final WorldBorder border;
     private final BiomeAccess biomeAccess;
 
-    protected World(class_5269 levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> chunkManagerProvider, Supplier<Profiler> profiler, boolean isClient) {
-        this.profiler = profiler;
-        this.properties = levelProperties;
+    protected World(class_5269 arg, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l) {
+        this.profiler = supplier;
+        this.properties = arg;
         this.dimension = dimensionType.create(this);
-        this.chunkManager = chunkManagerProvider.apply(this, this.dimension);
-        this.isClient = isClient;
-        this.border = this.dimension.createWorldBorder();
+        this.isClient = bl;
+        this.border = this.getDimension().createWorldBorder();
         this.thread = Thread.currentThread();
-        this.biomeAccess = new BiomeAccess(this, isClient ? levelProperties.getSeed() : class_5217.method_27418(levelProperties.getSeed()), dimensionType.getBiomeAccessType());
+        this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
+        this.field_24496 = bl2;
     }
 
     @Override
@@ -203,7 +201,7 @@ AutoCloseable {
 
     @Override
     public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
-        Chunk chunk = this.chunkManager.getChunk(chunkX, chunkZ, leastStatus, create);
+        Chunk chunk = this.getChunkManager().getChunk(chunkX, chunkZ, leastStatus, create);
         if (chunk == null && create) {
             throw new IllegalStateException("Should always be able to create a chunk!");
         }
@@ -215,7 +213,7 @@ AutoCloseable {
         if (World.isHeightInvalid(pos)) {
             return false;
         }
-        if (!this.isClient && this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+        if (!this.isClient && this.method_27982()) {
             return false;
         }
         WorldChunk worldChunk = this.getWorldChunk(pos);
@@ -371,11 +369,11 @@ AutoCloseable {
     }
 
     public boolean isDay() {
-        return this.dimension.getType() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
+        return this.method_27983() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
     }
 
     public boolean isNight() {
-        return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDay();
+        return this.method_27983() == DimensionType.OVERWORLD && !this.isDay();
     }
 
     @Override
@@ -449,22 +447,24 @@ AutoCloseable {
         this.iteratingTickingBlockEntities = true;
         Iterator<BlockEntity> iterator = this.tickingBlockEntities.iterator();
         while (iterator.hasNext()) {
-            BlockPos blockPos;
             BlockEntity blockEntity = iterator.next();
-            if (!blockEntity.isRemoved() && blockEntity.hasWorld() && this.chunkManager.shouldTickBlock(blockPos = blockEntity.getPos()) && this.getWorldBorder().contains(blockPos)) {
-                try {
-                    profiler.push(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType())));
-                    if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
-                        ((Tickable)((Object)blockEntity)).tick();
-                    } else {
-                        blockEntity.markInvalid();
+            if (!blockEntity.isRemoved() && blockEntity.hasWorld()) {
+                BlockPos blockPos = blockEntity.getPos();
+                if (this.getChunkManager().shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
+                    try {
+                        profiler.push(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType())));
+                        if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
+                            ((Tickable)((Object)blockEntity)).tick();
+                        } else {
+                            blockEntity.markInvalid();
+                        }
+                        profiler.pop();
+                    } catch (Throwable throwable) {
+                        CrashReport crashReport = CrashReport.create(throwable, "Ticking block entity");
+                        CrashReportSection crashReportSection = crashReport.addElement("Block entity being ticked");
+                        blockEntity.populateCrashReport(crashReportSection);
+                        throw new CrashException(crashReport);
                     }
-                    profiler.pop();
-                } catch (Throwable throwable) {
-                    CrashReport crashReport = CrashReport.create(throwable, "Ticking block entity");
-                    CrashReportSection crashReportSection = crashReport.addElement("Block entity being ticked");
-                    blockEntity.populateCrashReport(crashReportSection);
-                    throw new CrashException(crashReport);
                 }
             }
             if (!blockEntity.isRemoved()) continue;
@@ -601,7 +601,7 @@ AutoCloseable {
 
     @Environment(value=EnvType.CLIENT)
     public String getDebugString() {
-        return this.chunkManager.getDebugString();
+        return this.getChunkManager().getDebugString();
     }
 
     @Override
@@ -677,7 +677,7 @@ AutoCloseable {
         if (World.isHeightInvalid(pos)) {
             return false;
         }
-        return this.chunkManager.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
+        return this.getChunkManager().isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public boolean isDirectionSolid(BlockPos pos, Entity entity, Direction direction) {
@@ -717,7 +717,7 @@ AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        this.chunkManager.close();
+        this.getChunkManager().close();
     }
 
     @Override
@@ -818,10 +818,6 @@ AutoCloseable {
         return this;
     }
 
-    public LevelGeneratorType getGeneratorType() {
-        return this.properties.getGeneratorType();
-    }
-
     public int getReceivedStrongRedstonePower(BlockPos pos) {
         int i = 0;
         if ((i = Math.max(i, this.getStrongRedstonePower(pos.down(), Direction.DOWN))) >= 15) {
@@ -898,11 +894,6 @@ AutoCloseable {
         this.properties.setTime(time);
     }
 
-    @Override
-    public long getSeed() {
-        return this.properties.getSeed();
-    }
-
     public long getTime() {
         return this.properties.getTime();
     }
@@ -927,11 +918,6 @@ AutoCloseable {
     }
 
     public void sendEntityStatus(Entity entity, byte status) {
-    }
-
-    @Override
-    public ChunkManager getChunkManager() {
-        return this.chunkManager;
     }
 
     public void addSyncedBlockEvent(BlockPos pos, Block block, int type, int data) {
@@ -968,7 +954,7 @@ AutoCloseable {
     }
 
     public boolean isThundering() {
-        if (!this.dimension.hasSkyLight() || this.dimension.isNether()) {
+        if (!this.method_27983().hasSkyLight() || this.method_27983().method_27998()) {
             return false;
         }
         return (double)this.getThunderGradient(1.0f) > 0.9;
@@ -1010,8 +996,8 @@ AutoCloseable {
     public CrashReportSection addDetailsToCrashReport(CrashReport report) {
         CrashReportSection crashReportSection = report.addElement("Affected level", 1);
         crashReportSection.add("All players", () -> this.getPlayers().size() + " total; " + this.getPlayers());
-        crashReportSection.add("Chunk stats", this.chunkManager::getDebugString);
-        crashReportSection.add("Level dimension", () -> this.dimension.getType().toString());
+        crashReportSection.add("Chunk stats", this.getChunkManager()::getDebugString);
+        crashReportSection.add("Level dimension", () -> this.method_27983().toString());
         try {
             this.properties.populateCrashReport(crashReportSection);
         } catch (Throwable throwable) {
@@ -1076,6 +1062,11 @@ AutoCloseable {
     }
 
     @Override
+    public DimensionType method_27983() {
+        return this.dimension.getType();
+    }
+
+    @Override
     public Random getRandom() {
         return this.random;
     }
@@ -1110,6 +1101,10 @@ AutoCloseable {
     @Override
     public BiomeAccess getBiomeAccess() {
         return this.biomeAccess;
+    }
+
+    public final boolean method_27982() {
+        return this.field_24496;
     }
 
     @Override

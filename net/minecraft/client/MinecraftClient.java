@@ -1874,7 +1874,7 @@ WindowEventHandler {
             return MusicType.CREDITS;
         }
         if (this.player != null) {
-            if (this.player.world.dimension instanceof TheEndDimension) {
+            if (this.player.world.getDimension() instanceof TheEndDimension) {
                 if (this.inGameHud.getBossBarHud().shouldPlayDragonMusic()) {
                     return MusicType.DRAGON;
                 }

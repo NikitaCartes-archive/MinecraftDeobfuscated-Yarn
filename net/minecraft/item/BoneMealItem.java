@@ -19,8 +19,8 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import org.jetbrains.annotations.Nullable;
@@ -111,7 +111,7 @@ extends Item {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void createParticles(IWorld world, BlockPos pos, int count) {
+    public static void createParticles(WorldAccess world, BlockPos pos, int count) {
         double e;
         BlockState blockState;
         if (count == 0) {

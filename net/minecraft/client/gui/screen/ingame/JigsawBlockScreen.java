@@ -121,7 +121,7 @@ extends Screen {
             this.joint = joints[i];
             buttonWidget.setMessage(this.getLocalizedJointName());
         }));
-        this.jointRotationButton.active = bl = JigsawBlock.method_26378(this.jigsaw.getCachedState()).getAxis().isVertical();
+        this.jointRotationButton.active = bl = JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical();
         this.jointRotationButton.visible = bl;
         this.setInitialFocus(this.poolField);
         this.updateDoneButtonState();
@@ -181,7 +181,7 @@ extends Screen {
         this.targetField.render(matrices, mouseX, mouseY, delta);
         this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.final_state", new Object[0]), this.width / 2 - 153, 115, 0xA0A0A0);
         this.finalStateField.render(matrices, mouseX, mouseY, delta);
-        if (JigsawBlock.method_26378(this.jigsaw.getCachedState()).getAxis().isVertical()) {
+        if (JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical()) {
             this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.joint_label", new Object[0]), this.width / 2 - 153, 156, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);

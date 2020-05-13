@@ -14,8 +14,8 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 import net.minecraft.world.gen.feature.Feature;
@@ -31,7 +31,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+    public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
         leavesPositions.forEach(blockPos -> {
             BlockPos blockPos2;
             if (random.nextInt(4) == 0 && Feature.method_27370(world, blockPos2 = blockPos.west())) {

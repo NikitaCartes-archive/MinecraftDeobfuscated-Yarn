@@ -29,7 +29,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class WoodlandMansionGenerator {
@@ -948,7 +948,7 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
             if (metadata.startsWith("Chest")) {
                 BlockRotation blockRotation = this.placementData.getRotation();
                 BlockState blockState = Blocks.CHEST.getDefaultState();

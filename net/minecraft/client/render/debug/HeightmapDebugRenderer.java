@@ -33,7 +33,7 @@ implements DebugRenderer.Renderer {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-        ClientWorld iWorld = this.client.world;
+        ClientWorld worldAccess = this.client.world;
         RenderSystem.pushMatrix();
         RenderSystem.disableBlend();
         RenderSystem.disableTexture();
@@ -44,7 +44,7 @@ implements DebugRenderer.Renderer {
         bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
         for (int i = -32; i <= 32; i += 16) {
             for (int j = -32; j <= 32; j += 16) {
-                Chunk chunk = iWorld.getChunk(blockPos.add(i, 0, j));
+                Chunk chunk = worldAccess.getChunk(blockPos.add(i, 0, j));
                 for (Map.Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
                     Heightmap.Type type = entry.getKey();
                     ChunkPos chunkPos = chunk.getPos();
@@ -53,7 +53,7 @@ implements DebugRenderer.Renderer {
                         for (int l = 0; l < 16; ++l) {
                             int m = chunkPos.x * 16 + k;
                             int n = chunkPos.z * 16 + l;
-                            float f = (float)((double)((float)iWorld.getTopY(type, m, n) + (float)type.ordinal() * 0.09375f) - cameraY);
+                            float f = (float)((double)((float)worldAccess.getTopY(type, m, n) + (float)type.ordinal() * 0.09375f) - cameraY);
                             WorldRenderer.drawBox(bufferBuilder, (double)((float)m + 0.25f) - cameraX, f, (double)((float)n + 0.25f) - cameraZ, (double)((float)m + 0.75f) - cameraX, f + 0.09375f, (double)((float)n + 0.75f) - cameraZ, vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0f);
                         }
                     }

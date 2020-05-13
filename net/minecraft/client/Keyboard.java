@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_5289;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.Screen;
@@ -111,10 +112,18 @@ public class Keyboard {
             case 78: {
                 if (!this.client.player.hasPermissionLevel(2)) {
                     this.debugWarn("debug.creative_spectator.error", new Object[0]);
-                } else if (this.client.player.isCreative()) {
+                } else if (!this.client.player.isSpectator()) {
                     this.client.player.sendChatMessage("/gamemode spectator");
                 } else {
-                    this.client.player.sendChatMessage("/gamemode creative");
+                    this.client.player.sendChatMessage("/gamemode " + this.client.interactionManager.method_28107().getName());
+                }
+                return true;
+            }
+            case 293: {
+                if (!this.client.player.hasPermissionLevel(2)) {
+                    this.debugWarn("debug.gamemodes.error", new Object[0]);
+                } else {
+                    this.client.openScreen(new class_5289());
                 }
                 return true;
             }
@@ -140,6 +149,7 @@ public class Keyboard {
                 chatHud.addMessage(new TranslatableText("debug.help.help"));
                 chatHud.addMessage(new TranslatableText("debug.reload_resourcepacks.help"));
                 chatHud.addMessage(new TranslatableText("debug.pause.help"));
+                chatHud.addMessage(new TranslatableText("debug.gamemodes.help"));
                 return true;
             }
             case 84: {
@@ -152,7 +162,7 @@ public class Keyboard {
                     return false;
                 }
                 this.debugWarn("debug.copy_location.message", new Object[0]);
-                this.setClipboard(String.format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f", DimensionType.getId(this.client.player.world.dimension.getType()), this.client.player.getX(), this.client.player.getY(), this.client.player.getZ(), Float.valueOf(this.client.player.yaw), Float.valueOf(this.client.player.pitch)));
+                this.setClipboard(String.format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f", DimensionType.getId(this.client.player.world.method_27983()), this.client.player.getX(), this.client.player.getY(), this.client.player.getZ(), Float.valueOf(this.client.player.yaw), Float.valueOf(this.client.player.pitch)));
                 return true;
             }
         }

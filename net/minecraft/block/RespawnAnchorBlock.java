@@ -60,8 +60,8 @@ extends Block {
         }
         if (RespawnAnchorBlock.method_27353(world)) {
             ServerPlayerEntity serverPlayerEntity;
-            if (!(world.isClient || (serverPlayerEntity = (ServerPlayerEntity)player).getSpawnPointDimension() == world.dimension.getType() && serverPlayerEntity.getSpawnPointPosition().equals(pos))) {
-                serverPlayerEntity.setSpawnPoint(world.dimension.getType(), pos, false, true);
+            if (!(world.isClient || (serverPlayerEntity = (ServerPlayerEntity)player).getSpawnPointDimension() == world.method_27983() && serverPlayerEntity.getSpawnPointPosition().equals(pos))) {
+                serverPlayerEntity.setSpawnPoint(world.method_27983(), pos, false, true);
                 world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 return ActionResult.SUCCESS;
             }
@@ -75,7 +75,7 @@ extends Block {
     }
 
     public static boolean method_27353(World world) {
-        return world.dimension.getType() == DimensionType.THE_NETHER;
+        return world.method_27983() == DimensionType.THE_NETHER;
     }
 
     public static void charge(World world, BlockPos pos, BlockState state) {

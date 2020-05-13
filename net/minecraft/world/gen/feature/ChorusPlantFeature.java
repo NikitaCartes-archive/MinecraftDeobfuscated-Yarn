@@ -9,10 +9,9 @@ import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChorusFlowerBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -23,9 +22,9 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        if (iWorld.isAir(blockPos.up()) && iWorld.getBlockState(blockPos).isOf(Blocks.END_STONE)) {
-            ChorusFlowerBlock.generate(iWorld, blockPos.up(), random, 8);
+    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+        if (serverWorldAccess.isAir(blockPos.up()) && serverWorldAccess.getBlockState(blockPos).isOf(Blocks.END_STONE)) {
+            ChorusFlowerBlock.generate(serverWorldAccess, blockPos.up(), random, 8);
             return true;
         }
         return false;

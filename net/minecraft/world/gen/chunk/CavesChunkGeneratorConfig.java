@@ -3,10 +3,17 @@
  */
 package net.minecraft.world.gen.chunk;
 
+import net.minecraft.class_5284;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class CavesChunkGeneratorConfig
-extends ChunkGeneratorConfig {
+extends class_5284 {
+    public CavesChunkGeneratorConfig(ChunkGeneratorConfig chunkGeneratorConfig) {
+        super(chunkGeneratorConfig);
+        chunkGeneratorConfig.field_24507 = 25;
+        chunkGeneratorConfig.field_24508 = 10;
+    }
+
     @Override
     public int getBedrockFloorY() {
         return 0;
