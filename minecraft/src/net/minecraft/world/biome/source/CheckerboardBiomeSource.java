@@ -9,15 +9,15 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	private final Biome[] biomeArray;
 	private final int gridSize;
 
-	public CheckerboardBiomeSource(Biome[] biomes, int i) {
+	public CheckerboardBiomeSource(Biome[] biomes, int size) {
 		super(ImmutableSet.copyOf(biomes));
 		this.biomeArray = biomes;
-		this.gridSize = i + 2;
+		this.gridSize = size + 2;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public BiomeSource method_27985(long l) {
+	public BiomeSource create(long seed) {
 		return this;
 	}
 

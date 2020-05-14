@@ -391,7 +391,10 @@ public abstract class FlowableFluid extends Fluid {
 			&& block != Blocks.SUGAR_CANE
 			&& block != Blocks.BUBBLE_COLUMN) {
 			Material material = state.getMaterial();
-			return material != Material.PORTAL && material != Material.STRUCTURE_VOID && material != Material.UNDERWATER_PLANT && material != Material.SEAGRASS
+			return material != Material.PORTAL
+					&& material != Material.STRUCTURE_VOID
+					&& material != Material.UNDERWATER_PLANT
+					&& material != Material.REPLACEABLE_UNDERWATER_PLANT
 				? !material.blocksMovement()
 				: false;
 		} else {

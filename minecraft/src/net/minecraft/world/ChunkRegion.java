@@ -73,7 +73,7 @@ public class ChunkRegion implements ServerWorldAccess {
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
 			this.dimension = world.getDimension();
-			this.biomeAccess = new BiomeAccess(this, BiomeAccess.method_27984(this.seed), world.method_27983().getBiomeAccessType());
+			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.method_27983().getBiomeAccessType());
 			this.field_23788 = ((Chunk)chunks.get(0)).getPos();
 			this.field_23789 = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
 		}

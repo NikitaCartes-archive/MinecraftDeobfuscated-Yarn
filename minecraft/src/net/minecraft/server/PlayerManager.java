@@ -145,7 +145,7 @@ public abstract class PlayerManager {
 			new GameJoinS2CPacket(
 				player.getEntityId(),
 				player.interactionManager.getGameMode(),
-				BiomeAccess.method_27984(serverWorld.getSeed()),
+				BiomeAccess.hashSeed(serverWorld.getSeed()),
 				lv.isHardcore(),
 				serverWorld.method_27983(),
 				this.getMaxPlayerCount(),
@@ -464,7 +464,7 @@ public abstract class PlayerManager {
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
 					serverPlayerEntity.dimension,
-					BiomeAccess.method_27984(serverPlayerEntity.getServerWorld().getSeed()),
+					BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()),
 					serverPlayerEntity.interactionManager.getGameMode(),
 					serverPlayerEntity.getServerWorld().method_27982(),
 					serverPlayerEntity.getServerWorld().method_28125(),

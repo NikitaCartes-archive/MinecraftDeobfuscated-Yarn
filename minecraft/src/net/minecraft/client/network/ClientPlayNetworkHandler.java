@@ -306,7 +306,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final Screen loginScreen;
 	private MinecraftClient client;
 	private ClientWorld world;
-	private ClientWorld.class_5271 field_24321;
+	private ClientWorld.class_5271 worldProperties;
 	private boolean positionLookSetup;
 	private final Map<UUID, PlayerListEntry> playerListEntries = Maps.<UUID, PlayerListEntry>newHashMap();
 	private final ClientAdvancementManager advancementHandler;
@@ -352,10 +352,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		this.chunkLoadDistance = packet.getChunkLoadDistance();
-		boolean bl = packet.method_28119();
-		boolean bl2 = packet.isHardcore();
-		ClientWorld.class_5271 lv = new ClientWorld.class_5271(Difficulty.NORMAL, packet.method_28118(), bl2);
-		this.field_24321 = lv;
+		boolean bl = packet.isDebugWorld();
+		boolean bl2 = packet.isFlatWorld();
+		ClientWorld.class_5271 lv = new ClientWorld.class_5271(Difficulty.NORMAL, packet.isHardcore(), bl2);
+		this.worldProperties = lv;
 		this.world = new ClientWorld(
 			this, lv, packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSeed()
 		);
@@ -956,7 +956,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				if (entity2 != null) {
 					entity2.startRiding(entity, true);
 					if (entity2 == this.client.player && !bl) {
-						this.client.inGameHud.setOverlayMessage(new TranslatableText("mount.onboard", this.client.options.keySneak.getLocalizedName()), false);
+						this.client.inGameHud.setOverlayMessage(new TranslatableText("mount.onboard", this.client.options.keySneak.getBoundKeyLocalizedText()), false);
 					}
 				}
 			}
@@ -1026,10 +1026,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.positionLookSetup = false;
 		if (dimensionType != clientPlayerEntity.dimension) {
 			Scoreboard scoreboard = this.world.getScoreboard();
-			boolean bl = packet.method_28120();
-			boolean bl2 = packet.method_28121();
-			ClientWorld.class_5271 lv = new ClientWorld.class_5271(this.field_24321.getDifficulty(), this.field_24321.isHardcore(), bl2);
-			this.field_24321 = lv;
+			boolean bl = packet.isDebugWorld();
+			boolean bl2 = packet.isFlatWorld();
+			ClientWorld.class_5271 lv = new ClientWorld.class_5271(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
+			this.worldProperties = lv;
 			this.world = new ClientWorld(
 				this, lv, packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed()
 			);
@@ -1049,7 +1049,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.player = clientPlayerEntity2;
 		this.client.cameraEntity = clientPlayerEntity2;
 		clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getAllEntries());
-		if (packet.method_27904()) {
+		if (packet.shouldKeepPlayerAttributes()) {
 			clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
 		}
 
@@ -1278,18 +1278,18 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					.addMessage(
 						new TranslatableText(
 							"demo.help.movement",
-							gameOptions.keyForward.getLocalizedName(),
-							gameOptions.keyLeft.getLocalizedName(),
-							gameOptions.keyBack.getLocalizedName(),
-							gameOptions.keyRight.getLocalizedName()
+							gameOptions.keyForward.getBoundKeyLocalizedText(),
+							gameOptions.keyLeft.getBoundKeyLocalizedText(),
+							gameOptions.keyBack.getBoundKeyLocalizedText(),
+							gameOptions.keyRight.getBoundKeyLocalizedText()
 						)
 					);
 			} else if (f == 102.0F) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.jump", gameOptions.keyJump.getLocalizedName()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()));
 			} else if (f == 103.0F) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()));
 			} else if (f == 104.0F) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getLocalizedName()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getBoundKeyLocalizedText()));
 			}
 		} else if (i == 6) {
 			this.world
@@ -1519,8 +1519,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onDifficulty(DifficultyS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.field_24321.method_27875(packet.getDifficulty());
-		this.field_24321.method_27876(packet.isDifficultyLocked());
+		this.worldProperties.method_27875(packet.getDifficulty());
+		this.worldProperties.method_27876(packet.isDifficultyLocked());
 	}
 
 	@Override

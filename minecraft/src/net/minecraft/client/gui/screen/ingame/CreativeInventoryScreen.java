@@ -439,8 +439,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 						if (k == j) {
 							ItemStack itemStack = new ItemStack(Items.PAPER);
 							itemStack.getOrCreateSubTag("CustomCreativeLock");
-							Text text = this.client.options.keysHotbar[j].getLocalizedName();
-							Text text2 = this.client.options.keySaveToolbarActivator.getLocalizedName();
+							Text text = this.client.options.keysHotbar[j].getBoundKeyLocalizedText();
+							Text text2 = this.client.options.keySaveToolbarActivator.getBoundKeyLocalizedText();
 							itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", text2, text));
 							this.handler.itemList.add(itemStack);
 						} else {
@@ -763,8 +763,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				hotbarStorageEntry.set(i, clientPlayerEntity.inventory.getStack(i).copy());
 			}
 
-			Text text = client.options.keysHotbar[index].getLocalizedName();
-			Text text2 = client.options.keyLoadToolbarActivator.getLocalizedName();
+			Text text = client.options.keysHotbar[index].getBoundKeyLocalizedText();
+			Text text2 = client.options.keyLoadToolbarActivator.getBoundKeyLocalizedText();
 			client.inGameHud.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", text2, text), false);
 			hotbarStorage.save();
 		}

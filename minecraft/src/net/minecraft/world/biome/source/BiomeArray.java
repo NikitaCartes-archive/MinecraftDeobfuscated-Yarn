@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class BiomeArray implements BiomeAccess.Storage {
-	private static final Logger field_21813 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int HORIZONTAL_SECTION_COUNT = (int)Math.round(Math.log(16.0) / Math.log(2.0)) - 2;
 	private static final int VERTICAL_SECTION_COUNT = (int)Math.round(Math.log(256.0) / Math.log(2.0)) - 2;
 	public static final int DEFAULT_LENGTH = 1 << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT + VERTICAL_SECTION_COUNT;
@@ -27,14 +27,14 @@ public class BiomeArray implements BiomeAccess.Storage {
 		this(new Biome[DEFAULT_LENGTH]);
 	}
 
-	public BiomeArray(PacketByteBuf packetByteBuf) {
+	public BiomeArray(PacketByteBuf buf) {
 		this();
 
 		for (int i = 0; i < this.data.length; i++) {
-			int j = packetByteBuf.readInt();
+			int j = buf.readInt();
 			Biome biome = Registry.BIOME.get(j);
 			if (biome == null) {
-				field_21813.warn("Received invalid biome id: " + j);
+				LOGGER.warn("Received invalid biome id: " + j);
 				this.data[i] = Biomes.PLAINS;
 			} else {
 				this.data[i] = biome;

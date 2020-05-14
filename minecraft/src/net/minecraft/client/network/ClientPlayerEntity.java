@@ -461,7 +461,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		Box box = this.getBoundingBox();
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
-		for (int i = MathHelper.floor(box.y1); i < MathHelper.ceil(box.y2); i++) {
+		for (int i = MathHelper.floor(box.minY); i < MathHelper.ceil(box.maxY); i++) {
 			mutable.setY(i);
 			if (!this.doesNotSuffocate(mutable)) {
 				return true;
@@ -920,7 +920,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			float j = (float)(vec3d5.x * vec3d4.x + vec3d5.z * vec3d4.z);
 			if (!(j < -0.15F)) {
 				ShapeContext shapeContext = ShapeContext.of(this);
-				BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().y2, this.getZ());
+				BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().maxY, this.getZ());
 				BlockState blockState = this.world.getBlockState(blockPos);
 				if (blockState.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
 					blockPos = blockPos.up();
@@ -951,7 +951,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 						while (iterator.hasNext()) {
 							Box box2 = (Box)iterator.next();
 							if (box2.intersects(vec3d10, vec3d11) || box2.intersects(vec3d12, vec3d13)) {
-								r = (float)box2.y2;
+								r = (float)box2.maxY;
 								Vec3d vec3d14 = box2.getCenter();
 								BlockPos blockPos2 = new BlockPos(vec3d14);
 

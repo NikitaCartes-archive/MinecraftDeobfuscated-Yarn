@@ -21,8 +21,8 @@ public class TutorialManager {
 	@Nullable
 	private TutorialStepHandler currentHandler;
 
-	public TutorialManager(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public TutorialManager(MinecraftClient client) {
+		this.client = client;
 	}
 
 	public void onMovement(Input input) {
@@ -55,9 +55,9 @@ public class TutorialManager {
 		}
 	}
 
-	public void onSlotUpdate(ItemStack itemStack) {
+	public void onSlotUpdate(ItemStack stack) {
 		if (this.currentHandler != null) {
-			this.currentHandler.onSlotUpdate(itemStack);
+			this.currentHandler.onSlotUpdate(stack);
 		}
 	}
 
@@ -88,12 +88,12 @@ public class TutorialManager {
 		}
 	}
 
-	public void setStep(TutorialStep tutorialStep) {
-		this.client.options.tutorialStep = tutorialStep;
+	public void setStep(TutorialStep step) {
+		this.client.options.tutorialStep = step;
 		this.client.options.write();
 		if (this.currentHandler != null) {
 			this.currentHandler.destroy();
-			this.currentHandler = tutorialStep.createHandler(this);
+			this.currentHandler = step.createHandler(this);
 		}
 	}
 

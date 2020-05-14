@@ -208,8 +208,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw + 45.0F)
 		};
 		Set<BlockPos> set = Sets.<BlockPos>newLinkedHashSet();
-		double d = this.getBoundingBox().y2;
-		double e = this.getBoundingBox().y1 - 0.5;
+		double d = this.getBoundingBox().maxY;
+		double e = this.getBoundingBox().minY - 0.5;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Vec3d vec3d : vec3ds) {
@@ -237,7 +237,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			}
 		}
 
-		return new Vec3d(this.getX(), this.getBoundingBox().y2, this.getZ());
+		return new Vec3d(this.getX(), this.getBoundingBox().maxY, this.getZ());
 	}
 
 	@Override

@@ -149,8 +149,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			this.renderItem(matrices, this.field_22718, x, width, y);
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.renderItem(matrices, this.field_22718, index, x, y);
 		}
 
 		@Override

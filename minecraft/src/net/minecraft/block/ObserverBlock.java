@@ -98,7 +98,7 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (!state.isOf(newState.getBlock())) {
 			if (!world.isClient && (Boolean)state.get(POWERED) && world.getBlockTickScheduler().isScheduled(pos, this)) {
 				this.updateNeighbors(world, pos, state.with(POWERED, Boolean.valueOf(false)));

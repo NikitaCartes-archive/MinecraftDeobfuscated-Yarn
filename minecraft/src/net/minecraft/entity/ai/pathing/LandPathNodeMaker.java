@@ -83,10 +83,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		PathNodeType pathNodeType = this.getNodeType(this.entity, blockPos.getX(), i, blockPos.getZ());
 		if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0F) {
 			Box box = this.entity.getBoundingBox();
-			if (this.method_27139(mutable.set(box.x1, (double)i, box.z1))
-				|| this.method_27139(mutable.set(box.x1, (double)i, box.z2))
-				|| this.method_27139(mutable.set(box.x2, (double)i, box.z1))
-				|| this.method_27139(mutable.set(box.x2, (double)i, box.z2))) {
+			if (this.method_27139(mutable.set(box.minX, (double)i, box.minZ))
+				|| this.method_27139(mutable.set(box.minX, (double)i, box.maxZ))
+				|| this.method_27139(mutable.set(box.maxX, (double)i, box.minZ))
+				|| this.method_27139(mutable.set(box.maxX, (double)i, box.maxZ))) {
 				return this.method_27137(mutable);
 			}
 		}

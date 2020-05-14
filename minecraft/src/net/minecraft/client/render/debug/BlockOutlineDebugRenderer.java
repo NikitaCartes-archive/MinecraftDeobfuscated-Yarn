@@ -42,12 +42,12 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 
 				for (Box box : voxelShape.getBoundingBoxes()) {
 					Box box2 = box.offset(blockPos2).expand(0.002).offset(-cameraX, -cameraY, -cameraZ);
-					double d = box2.x1;
-					double e = box2.y1;
-					double f = box2.z1;
-					double g = box2.x2;
-					double h = box2.y2;
-					double i = box2.z2;
+					double d = box2.minX;
+					double e = box2.minY;
+					double f = box2.minZ;
+					double g = box2.maxX;
+					double h = box2.maxY;
+					double i = box2.maxZ;
 					float j = 1.0F;
 					float k = 0.0F;
 					float l = 0.0F;

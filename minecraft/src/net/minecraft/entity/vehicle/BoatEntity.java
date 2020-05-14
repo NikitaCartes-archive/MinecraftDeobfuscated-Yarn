@@ -177,10 +177,10 @@ public class BoatEntity extends Entity {
 	@Override
 	public void pushAwayFrom(Entity entity) {
 		if (entity instanceof BoatEntity) {
-			if (entity.getBoundingBox().y1 < this.getBoundingBox().y2) {
+			if (entity.getBoundingBox().minY < this.getBoundingBox().maxY) {
 				super.pushAwayFrom(entity);
 			}
-		} else if (entity.getBoundingBox().y1 <= this.getBoundingBox().y1) {
+		} else if (entity.getBoundingBox().minY <= this.getBoundingBox().minY) {
 			super.pushAwayFrom(entity);
 		}
 	}
@@ -405,7 +405,7 @@ public class BoatEntity extends Entity {
 	private BoatEntity.Location checkLocation() {
 		BoatEntity.Location location = this.getUnderWaterLocation();
 		if (location != null) {
-			this.waterLevel = this.getBoundingBox().y2;
+			this.waterLevel = this.getBoundingBox().maxY;
 			return location;
 		} else if (this.checkBoatInWater()) {
 			return BoatEntity.Location.IN_WATER;
@@ -422,12 +422,12 @@ public class BoatEntity extends Entity {
 
 	public float method_7544() {
 		Box box = this.getBoundingBox();
-		int i = MathHelper.floor(box.x1);
-		int j = MathHelper.ceil(box.x2);
-		int k = MathHelper.floor(box.y2);
-		int l = MathHelper.ceil(box.y2 - this.fallVelocity);
-		int m = MathHelper.floor(box.z1);
-		int n = MathHelper.ceil(box.z2);
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.maxY);
+		int l = MathHelper.ceil(box.maxY - this.fallVelocity);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		label39:
@@ -458,13 +458,13 @@ public class BoatEntity extends Entity {
 
 	public float method_7548() {
 		Box box = this.getBoundingBox();
-		Box box2 = new Box(box.x1, box.y1 - 0.001, box.z1, box.x2, box.y1, box.z2);
-		int i = MathHelper.floor(box2.x1) - 1;
-		int j = MathHelper.ceil(box2.x2) + 1;
-		int k = MathHelper.floor(box2.y1) - 1;
-		int l = MathHelper.ceil(box2.y2) + 1;
-		int m = MathHelper.floor(box2.z1) - 1;
-		int n = MathHelper.ceil(box2.z2) + 1;
+		Box box2 = new Box(box.minX, box.minY - 0.001, box.minZ, box.maxX, box.minY, box.maxZ);
+		int i = MathHelper.floor(box2.minX) - 1;
+		int j = MathHelper.ceil(box2.maxX) + 1;
+		int k = MathHelper.floor(box2.minY) - 1;
+		int l = MathHelper.ceil(box2.maxY) + 1;
+		int m = MathHelper.floor(box2.minZ) - 1;
+		int n = MathHelper.ceil(box2.maxZ) + 1;
 		VoxelShape voxelShape = VoxelShapes.cuboid(box2);
 		float f = 0.0F;
 		int o = 0;
@@ -496,12 +496,12 @@ public class BoatEntity extends Entity {
 
 	private boolean checkBoatInWater() {
 		Box box = this.getBoundingBox();
-		int i = MathHelper.floor(box.x1);
-		int j = MathHelper.ceil(box.x2);
-		int k = MathHelper.floor(box.y1);
-		int l = MathHelper.ceil(box.y1 + 0.001);
-		int m = MathHelper.floor(box.z1);
-		int n = MathHelper.ceil(box.z2);
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.minY + 0.001);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		boolean bl = false;
 		this.waterLevel = Double.MIN_VALUE;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -514,7 +514,7 @@ public class BoatEntity extends Entity {
 					if (fluidState.matches(FluidTags.WATER)) {
 						float f = (float)p + fluidState.getHeight(this.world, mutable);
 						this.waterLevel = Math.max((double)f, this.waterLevel);
-						bl |= box.y1 < (double)f;
+						bl |= box.minY < (double)f;
 					}
 				}
 			}
@@ -526,13 +526,13 @@ public class BoatEntity extends Entity {
 	@Nullable
 	private BoatEntity.Location getUnderWaterLocation() {
 		Box box = this.getBoundingBox();
-		double d = box.y2 + 0.001;
-		int i = MathHelper.floor(box.x1);
-		int j = MathHelper.ceil(box.x2);
-		int k = MathHelper.floor(box.y2);
+		double d = box.maxY + 0.001;
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.maxY);
 		int l = MathHelper.ceil(d);
-		int m = MathHelper.floor(box.z1);
-		int n = MathHelper.ceil(box.z2);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		boolean bl = false;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -663,7 +663,7 @@ public class BoatEntity extends Entity {
 		Vec3d vec3d = method_24826((double)(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO), (double)livingEntity.getWidth(), this.yaw);
 		double d = this.getX() + vec3d.x;
 		double e = this.getZ() + vec3d.z;
-		BlockPos blockPos = new BlockPos(d, this.getBoundingBox().y2, e);
+		BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e);
 		BlockPos blockPos2 = blockPos.down();
 		if (!this.world.isWater(blockPos2)) {
 			for (EntityPose entityPose : livingEntity.getPoses()) {

@@ -509,7 +509,9 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		@Deprecated
 		EntryListWidget<E> list;
 
-		public abstract void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta);
+		public abstract void render(
+			MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
+		);
 
 		@Override
 		public boolean isMouseOver(double mouseX, double mouseY) {

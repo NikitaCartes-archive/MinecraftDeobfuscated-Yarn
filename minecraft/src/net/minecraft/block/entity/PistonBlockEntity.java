@@ -192,10 +192,10 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private static boolean method_23671(Box box, Entity entity) {
 		return entity.getPistonBehavior() == PistonBehavior.NORMAL
 			&& entity.isOnGround()
-			&& entity.getX() >= box.x1
-			&& entity.getX() <= box.x2
-			&& entity.getZ() >= box.z1
-			&& entity.getZ() <= box.z2;
+			&& entity.getX() >= box.minX
+			&& entity.getX() <= box.maxX
+			&& entity.getZ() >= box.minZ
+			&& entity.getZ() <= box.maxZ;
 	}
 
 	private boolean isPushingHoneyBlock() {
@@ -209,18 +209,18 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private static double getIntersectionSize(Box box, Direction direction, Box box2) {
 		switch (direction) {
 			case EAST:
-				return box.x2 - box2.x1;
+				return box.maxX - box2.minX;
 			case WEST:
-				return box2.x2 - box.x1;
+				return box2.maxX - box.minX;
 			case UP:
 			default:
-				return box.y2 - box2.y1;
+				return box.maxY - box2.minY;
 			case DOWN:
-				return box2.y2 - box.y1;
+				return box2.maxY - box.minY;
 			case SOUTH:
-				return box.z2 - box2.z1;
+				return box.maxZ - box2.minZ;
 			case NORTH:
-				return box2.z2 - box.z1;
+				return box2.maxZ - box.minZ;
 		}
 	}
 

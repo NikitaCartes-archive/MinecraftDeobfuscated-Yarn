@@ -61,7 +61,7 @@ public class ClientPlayerInteractionManager {
 	private int blockBreakingCooldown;
 	private boolean breakingBlock;
 	private GameMode gameMode = GameMode.SURVIVAL;
-	private GameMode field_24608 = GameMode.SURVIVAL;
+	private GameMode previousGameMode = GameMode.SURVIVAL;
 	private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, PosAndRot> unacknowledgedPlayerActions = new Object2ObjectLinkedOpenHashMap<>();
 	private int lastSelectedSlot;
 
@@ -76,7 +76,7 @@ public class ClientPlayerInteractionManager {
 
 	public void setGameMode(GameMode gameMode) {
 		if (gameMode != this.gameMode) {
-			this.field_24608 = this.gameMode;
+			this.previousGameMode = this.gameMode;
 		}
 
 		this.gameMode = gameMode;
@@ -399,8 +399,8 @@ public class ClientPlayerInteractionManager {
 		return this.gameMode == GameMode.SPECTATOR;
 	}
 
-	public GameMode method_28107() {
-		return this.field_24608;
+	public GameMode getPreviousGameMode() {
+		return this.previousGameMode;
 	}
 
 	public GameMode getCurrentGameMode() {

@@ -182,7 +182,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (!state.isOf(newState.getBlock())) {
 			if ((Boolean)state.get(HAS_BOOK)) {
 				this.dropBook(state, world, pos);
@@ -192,7 +192,7 @@ public class LecternBlock extends BlockWithEntity {
 				world.updateNeighborsAlways(pos.down(), this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, notify);
+			super.onStateReplaced(state, world, pos, newState, notify);
 		}
 	}
 

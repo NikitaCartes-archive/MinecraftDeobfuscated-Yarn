@@ -162,8 +162,8 @@ public class class_5285 {
 	private static ChunkGenerator method_28011(long l) {
 		TheEndBiomeSource theEndBiomeSource = new TheEndBiomeSource(l);
 		class_5284 lv = new class_5284(new ChunkGeneratorConfig());
-		lv.method_28003(Blocks.END_STONE.getDefaultState());
-		lv.method_28004(Blocks.AIR.getDefaultState());
+		lv.setDefaultBlock(Blocks.END_STONE.getDefaultState());
+		lv.setDefaultFluid(Blocks.AIR.getDefaultState());
 		return new FloatingIslandsChunkGenerator(theEndBiomeSource, l, lv);
 	}
 
@@ -171,10 +171,10 @@ public class class_5285 {
 		ImmutableList<Biome> immutableList = ImmutableList.of(
 			Biomes.NETHER_WASTES, Biomes.SOUL_SAND_VALLEY, Biomes.CRIMSON_FOREST, Biomes.WARPED_FOREST, Biomes.BASALT_DELTAS
 		);
-		MultiNoiseBiomeSource multiNoiseBiomeSource = MultiNoiseBiomeSource.method_27986(l, immutableList);
+		MultiNoiseBiomeSource multiNoiseBiomeSource = MultiNoiseBiomeSource.fromBiomes(l, immutableList);
 		CavesChunkGeneratorConfig cavesChunkGeneratorConfig = new CavesChunkGeneratorConfig(new ChunkGeneratorConfig());
-		cavesChunkGeneratorConfig.method_28003(Blocks.NETHERRACK.getDefaultState());
-		cavesChunkGeneratorConfig.method_28004(Blocks.LAVA.getDefaultState());
+		cavesChunkGeneratorConfig.setDefaultBlock(Blocks.NETHERRACK.getDefaultState());
+		cavesChunkGeneratorConfig.setDefaultFluid(Blocks.LAVA.getDefaultState());
 		return new CavesChunkGenerator(multiNoiseBiomeSource, l, cavesChunkGeneratorConfig);
 	}
 
@@ -327,7 +327,7 @@ public class class_5285 {
 	@Environment(EnvType.CLIENT)
 	public class_5285 method_28024(boolean bl, OptionalLong optionalLong) {
 		long l = optionalLong.orElse(this.field_24526);
-		ChunkGenerator chunkGenerator = optionalLong.isPresent() ? this.field_24531.method_27997(optionalLong.getAsLong()) : this.field_24531;
+		ChunkGenerator chunkGenerator = optionalLong.isPresent() ? this.field_24531.create(optionalLong.getAsLong()) : this.field_24531;
 		class_5285 lv;
 		if (this.method_28033()) {
 			lv = new class_5285(l, false, false, this.field_24529, this.field_24530, chunkGenerator);
@@ -351,26 +351,26 @@ public class class_5285 {
 			switch (lv) {
 				case field_24537:
 					CavesChunkGeneratorConfig cavesChunkGeneratorConfig = new CavesChunkGeneratorConfig(new ChunkGeneratorConfig());
-					cavesChunkGeneratorConfig.method_28003(blockState);
-					cavesChunkGeneratorConfig.method_28004(blockState2);
+					cavesChunkGeneratorConfig.setDefaultBlock(blockState);
+					cavesChunkGeneratorConfig.setDefaultFluid(blockState2);
 					return new CavesChunkGenerator(biomeSource, l, cavesChunkGeneratorConfig);
 				case field_24538:
 					class_5284 lv2 = new class_5284(new ChunkGeneratorConfig());
-					lv2.method_28003(blockState);
-					lv2.method_28004(blockState2);
+					lv2.setDefaultBlock(blockState);
+					lv2.setDefaultFluid(blockState2);
 					return new FloatingIslandsChunkGenerator(biomeSource, l, lv2);
 				case field_24536:
 				default:
 					OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = new OverworldChunkGeneratorConfig();
-					overworldChunkGeneratorConfig.method_28003(blockState);
-					overworldChunkGeneratorConfig.method_28004(blockState2);
+					overworldChunkGeneratorConfig.setDefaultBlock(blockState);
+					overworldChunkGeneratorConfig.setDefaultFluid(blockState2);
 					return new OverworldChunkGenerator(biomeSource, l, overworldChunkGeneratorConfig);
 			}
 		} else if (arg == class_5285.class_5287.field_24543) {
 			FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.fromDynamic(dynamic);
 			return new FlatChunkGenerator(flatChunkGeneratorConfig);
 		} else if (arg == class_5285.class_5287.field_24547) {
-			return DebugChunkGenerator.field_24509;
+			return DebugChunkGenerator.generator;
 		} else {
 			boolean bl = arg == class_5285.class_5287.field_24549;
 			int i = arg == class_5285.class_5287.field_24544 ? 6 : 4;

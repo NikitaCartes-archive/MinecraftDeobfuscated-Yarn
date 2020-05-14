@@ -112,13 +112,13 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	protected abstract SoundEvent getClickSound(boolean powered);
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (!notify && !state.isOf(newState.getBlock())) {
 			if ((Boolean)state.get(POWERED)) {
 				this.updateNeighbors(state, world, pos);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, notify);
+			super.onStateReplaced(state, world, pos, newState, notify);
 		}
 	}
 

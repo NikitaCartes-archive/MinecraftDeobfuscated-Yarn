@@ -3,15 +3,15 @@ package net.minecraft.world.gen.chunk;
 import net.minecraft.class_5284;
 
 public class OverworldChunkGeneratorConfig extends class_5284 {
-	private final boolean field_24517;
+	private final boolean old;
 
 	public OverworldChunkGeneratorConfig() {
 		this(new ChunkGeneratorConfig(), false);
 	}
 
-	public OverworldChunkGeneratorConfig(ChunkGeneratorConfig chunkGeneratorConfig, boolean bl) {
-		super(chunkGeneratorConfig);
-		this.field_24517 = bl;
+	public OverworldChunkGeneratorConfig(ChunkGeneratorConfig config, boolean old) {
+		super(config);
+		this.old = old;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class OverworldChunkGeneratorConfig extends class_5284 {
 		return 0;
 	}
 
-	public boolean method_28008() {
-		return this.field_24517;
+	public boolean isOld() {
+		return this.old;
 	}
 }

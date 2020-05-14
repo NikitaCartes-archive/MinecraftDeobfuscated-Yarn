@@ -186,46 +186,46 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			String string = this.level.getDisplayName();
 			String string2 = this.level.getName() + " (" + WorldListWidget.DATE_FORMAT.format(new Date(this.level.getLastPlayed())) + ")";
 			if (StringUtils.isEmpty(string)) {
-				string = I18n.translate("selectWorld.world") + " " + (x + 1);
+				string = I18n.translate("selectWorld.world") + " " + (index + 1);
 			}
 
 			Text text = this.level.method_27429();
-			this.client.textRenderer.draw(matrices, string, (float)(width + 32 + 3), (float)(y + 1), 16777215);
-			this.client.textRenderer.draw(matrices, string2, (float)(width + 32 + 3), (float)(y + 9 + 3), 8421504);
-			this.client.textRenderer.draw(matrices, text, (float)(width + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
+			this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 16777215);
+			this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + 9 + 3), 8421504);
+			this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION);
 			RenderSystem.enableBlend();
-			DrawableHelper.drawTexture(matrices, width, y, 0.0F, 0.0F, 32, 32, 32, 32);
+			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
-			if (this.client.options.touchscreen || bl) {
+			if (this.client.options.touchscreen || hovered) {
 				this.client.getTextureManager().bindTexture(WorldListWidget.WORLD_SELECTION_LOCATION);
-				DrawableHelper.fill(matrices, width, y, width + 32, y + 32, -1601138544);
+				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				int j = mouseY - width;
-				boolean bl2 = j < 32;
-				int k = bl2 ? 32 : 0;
+				int i = mouseX - x;
+				boolean bl = i < 32;
+				int j = bl ? 32 : 0;
 				if (this.level.isLocked()) {
-					DrawableHelper.drawTexture(matrices, width, y, 96.0F, (float)k, 32, 32, 256, 256);
-					if (bl2) {
+					DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+					if (bl) {
 						Text text2 = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
 					}
 				} else if (this.level.isDifferentVersion()) {
-					DrawableHelper.drawTexture(matrices, width, y, 32.0F, (float)k, 32, 32, 256, 256);
+					DrawableHelper.drawTexture(matrices, x, y, 32.0F, (float)j, 32, 32, 256, 256);
 					if (this.level.isLegacyCustomizedWorld()) {
-						DrawableHelper.drawTexture(matrices, width, y, 96.0F, (float)k, 32, 32, 256, 256);
-						if (bl2) {
+						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+						if (bl) {
 							Text text2 = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
 							this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
 						}
 					} else if (this.level.isFutureLevel()) {
-						DrawableHelper.drawTexture(matrices, width, y, 96.0F, (float)k, 32, 32, 256, 256);
-						if (bl2) {
+						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+						if (bl) {
 							this.screen
 								.setTooltip(
 									Arrays.asList(
@@ -235,8 +235,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								);
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
-						DrawableHelper.drawTexture(matrices, width, y, 64.0F, (float)k, 32, 32, 256, 256);
-						if (bl2) {
+						DrawableHelper.drawTexture(matrices, x, y, 64.0F, (float)j, 32, 32, 256, 256);
+						if (bl) {
 							this.screen
 								.setTooltip(
 									Arrays.asList(
@@ -247,7 +247,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						}
 					}
 				} else {
-					DrawableHelper.drawTexture(matrices, width, y, 0.0F, (float)k, 32, 32, 256, 256);
+					DrawableHelper.drawTexture(matrices, x, y, 0.0F, (float)j, 32, 32, 256, 256);
 				}
 			}
 		}
@@ -289,7 +289,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 							try (LevelStorage.Session session = this.client.getLevelStorage().createSession(string)) {
 								EditWorldScreen.backupLevel(session);
 							} catch (IOException var17) {
-								SystemToast.method_27023(this.client, string);
+								SystemToast.addWorldAccessFailureToast(this.client, string);
 								WorldListWidget.LOGGER.error("Failed to backup level {}", string, var17);
 							}
 						}
@@ -342,7 +342,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								try (LevelStorage.Session session = levelStorage.createSession(string)) {
 									session.deleteSessionLock();
 								} catch (IOException var17) {
-									SystemToast.method_27025(this.client, string);
+									SystemToast.addWorldDeleteFailureToast(this.client, string);
 									WorldListWidget.LOGGER.error("Failed to delete world {}", string, var17);
 								}
 
@@ -378,7 +378,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					this.client.openScreen(this.screen);
 				}, session));
 			} catch (IOException var3) {
-				SystemToast.method_27023(this.client, string);
+				SystemToast.addWorldAccessFailureToast(this.client, string);
 				WorldListWidget.LOGGER.error("Failed to access level {}", string, var3);
 				WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
 			}

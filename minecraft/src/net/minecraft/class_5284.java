@@ -5,28 +5,28 @@ import net.minecraft.block.Blocks;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class class_5284 {
-	private final ChunkGeneratorConfig field_24516;
-	protected BlockState field_24514 = Blocks.STONE.getDefaultState();
-	protected BlockState field_24515 = Blocks.WATER.getDefaultState();
+	private final ChunkGeneratorConfig config;
+	protected BlockState defaultBlock = Blocks.STONE.getDefaultState();
+	protected BlockState defaultFluid = Blocks.WATER.getDefaultState();
 
-	public class_5284(ChunkGeneratorConfig chunkGeneratorConfig) {
-		this.field_24516 = chunkGeneratorConfig;
+	public class_5284(ChunkGeneratorConfig config) {
+		this.config = config;
 	}
 
-	public BlockState method_28005() {
-		return this.field_24514;
+	public BlockState getDefaultBlock() {
+		return this.defaultBlock;
 	}
 
-	public BlockState method_28006() {
-		return this.field_24515;
+	public BlockState getDefaultFluid() {
+		return this.defaultFluid;
 	}
 
-	public void method_28003(BlockState blockState) {
-		this.field_24514 = blockState;
+	public void setDefaultBlock(BlockState defaultBlock) {
+		this.defaultBlock = defaultBlock;
 	}
 
-	public void method_28004(BlockState blockState) {
-		this.field_24515 = blockState;
+	public void setDefaultFluid(BlockState defaultFluid) {
+		this.defaultFluid = defaultFluid;
 	}
 
 	public int getBedrockCeilingY() {
@@ -37,7 +37,7 @@ public class class_5284 {
 		return 256;
 	}
 
-	public ChunkGeneratorConfig method_28007() {
-		return this.field_24516;
+	public ChunkGeneratorConfig getConfig() {
+		return this.config;
 	}
 }

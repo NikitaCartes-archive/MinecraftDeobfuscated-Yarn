@@ -22,33 +22,33 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	private final List<Pair<Biome.MixedNoisePoint, Biome>> biomePoints;
 	private final boolean threeDimensionalSampling;
 
-	public static MultiNoiseBiomeSource method_27986(long l, List<Biome> list) {
+	public static MultiNoiseBiomeSource fromBiomes(long seed, List<Biome> biomes) {
 		return new MultiNoiseBiomeSource(
-			l,
-			(List<Pair<Biome.MixedNoisePoint, Biome>>)list.stream()
-				.flatMap(biome -> biome.streamNoises().map(mixedNoisePoint -> Pair.of(mixedNoisePoint, biome)))
+			seed,
+			(List<Pair<Biome.MixedNoisePoint, Biome>>)biomes.stream()
+				.flatMap(biome -> biome.streamNoises().map(point -> Pair.of(point, biome)))
 				.collect(ImmutableList.toImmutableList())
 		);
 	}
 
-	public MultiNoiseBiomeSource(long l, List<Pair<Biome.MixedNoisePoint, Biome>> list) {
-		super((Set<Biome>)list.stream().map(Pair::getSecond).collect(Collectors.toSet()));
+	public MultiNoiseBiomeSource(long seed, List<Pair<Biome.MixedNoisePoint, Biome>> biomePoints) {
+		super((Set<Biome>)biomePoints.stream().map(Pair::getSecond).collect(Collectors.toSet()));
 		IntStream intStream = IntStream.rangeClosed(-7, -6);
 		IntStream intStream2 = IntStream.rangeClosed(-7, -6);
 		IntStream intStream3 = IntStream.rangeClosed(-7, -6);
 		IntStream intStream4 = IntStream.rangeClosed(-7, -6);
-		this.temperatureNoise = new DoublePerlinNoiseSampler(new ChunkRandom(l), intStream);
-		this.humidityNoise = new DoublePerlinNoiseSampler(new ChunkRandom(l + 1L), intStream2);
-		this.altitudeNoise = new DoublePerlinNoiseSampler(new ChunkRandom(l + 2L), intStream3);
-		this.weirdnessNoise = new DoublePerlinNoiseSampler(new ChunkRandom(l + 3L), intStream4);
-		this.biomePoints = list;
+		this.temperatureNoise = new DoublePerlinNoiseSampler(new ChunkRandom(seed), intStream);
+		this.humidityNoise = new DoublePerlinNoiseSampler(new ChunkRandom(seed + 1L), intStream2);
+		this.altitudeNoise = new DoublePerlinNoiseSampler(new ChunkRandom(seed + 2L), intStream3);
+		this.weirdnessNoise = new DoublePerlinNoiseSampler(new ChunkRandom(seed + 3L), intStream4);
+		this.biomePoints = biomePoints;
 		this.threeDimensionalSampling = false;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public BiomeSource method_27985(long l) {
-		return new MultiNoiseBiomeSource(l, this.biomePoints);
+	public BiomeSource create(long seed) {
+		return new MultiNoiseBiomeSource(seed, this.biomePoints);
 	}
 
 	@Override

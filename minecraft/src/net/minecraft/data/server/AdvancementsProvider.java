@@ -29,8 +29,8 @@ public class AdvancementsProvider implements DataProvider {
 		new StoryTabAdvancementGenerator()
 	);
 
-	public AdvancementsProvider(DataGenerator dataGenerator) {
-		this.root = dataGenerator;
+	public AdvancementsProvider(DataGenerator root) {
+		this.root = root;
 	}
 
 	@Override

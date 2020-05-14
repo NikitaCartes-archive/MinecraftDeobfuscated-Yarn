@@ -283,10 +283,10 @@ public class PresetsScreen extends Screen {
 		@Environment(EnvType.CLIENT)
 		public class SuperflatPresetEntry extends AlwaysSelectedEntryListWidget.Entry<PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry> {
 			@Override
-			public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(x);
-				this.method_2200(matrices, width, y, superflatPreset.icon);
-				PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(width + 18 + 5), (float)(y + 6), 16777215);
+			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(index);
+				this.method_2200(matrices, x, y, superflatPreset.icon);
+				PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 16777215);
 			}
 
 			@Override

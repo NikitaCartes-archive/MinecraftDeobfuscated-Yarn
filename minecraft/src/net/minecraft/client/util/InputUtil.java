@@ -29,47 +29,47 @@ public class InputUtil {
 	@Nullable
 	private static final MethodHandle GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE;
 	private static final int GLFW_RAW_MOUSE_MOTION;
-	public static final InputUtil.KeyCode UNKNOWN_KEYCODE;
+	public static final InputUtil.Key UNKNOWN_KEY;
 
-	public static InputUtil.KeyCode getKeyCode(int i, int j) {
-		return i == -1 ? InputUtil.Type.SCANCODE.createFromCode(j) : InputUtil.Type.KEYSYM.createFromCode(i);
+	public static InputUtil.Key fromKeyCode(int keyCode, int scanCode) {
+		return keyCode == -1 ? InputUtil.Type.SCANCODE.createFromCode(scanCode) : InputUtil.Type.KEYSYM.createFromCode(keyCode);
 	}
 
-	public static InputUtil.KeyCode fromName(String s) {
-		if (InputUtil.KeyCode.NAMES.containsKey(s)) {
-			return (InputUtil.KeyCode)InputUtil.KeyCode.NAMES.get(s);
+	public static InputUtil.Key fromTranslationKey(String translationKey) {
+		if (InputUtil.Key.KEYS.containsKey(translationKey)) {
+			return (InputUtil.Key)InputUtil.Key.KEYS.get(translationKey);
 		} else {
 			for (InputUtil.Type type : InputUtil.Type.values()) {
-				if (s.startsWith(type.name)) {
-					String string = s.substring(type.name.length() + 1);
+				if (translationKey.startsWith(type.name)) {
+					String string = translationKey.substring(type.name.length() + 1);
 					return type.createFromCode(Integer.parseInt(string));
 				}
 			}
 
-			throw new IllegalArgumentException("Unknown key name: " + s);
+			throw new IllegalArgumentException("Unknown key name: " + translationKey);
 		}
 	}
 
-	public static boolean isKeyPressed(long handle, int i) {
-		return GLFW.glfwGetKey(handle, i) == 1;
+	public static boolean isKeyPressed(long handle, int code) {
+		return GLFW.glfwGetKey(handle, code) == 1;
 	}
 
-	public static void setKeyboardCallbacks(long handle, GLFWKeyCallbackI gLFWKeyCallbackI, GLFWCharModsCallbackI gLFWCharModsCallbackI) {
-		GLFW.glfwSetKeyCallback(handle, gLFWKeyCallbackI);
-		GLFW.glfwSetCharModsCallback(handle, gLFWCharModsCallbackI);
+	public static void setKeyboardCallbacks(long handle, GLFWKeyCallbackI keyCallback, GLFWCharModsCallbackI charModsCallback) {
+		GLFW.glfwSetKeyCallback(handle, keyCallback);
+		GLFW.glfwSetCharModsCallback(handle, charModsCallback);
 	}
 
 	public static void setMouseCallbacks(
-		long handle, GLFWCursorPosCallbackI gLFWCursorPosCallbackI, GLFWMouseButtonCallbackI gLFWMouseButtonCallbackI, GLFWScrollCallbackI gLFWScrollCallbackI
+		long handle, GLFWCursorPosCallbackI cursorPosCallback, GLFWMouseButtonCallbackI mouseButtonCallback, GLFWScrollCallbackI scrollCallback
 	) {
-		GLFW.glfwSetCursorPosCallback(handle, gLFWCursorPosCallbackI);
-		GLFW.glfwSetMouseButtonCallback(handle, gLFWMouseButtonCallbackI);
-		GLFW.glfwSetScrollCallback(handle, gLFWScrollCallbackI);
+		GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
+		GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
+		GLFW.glfwSetScrollCallback(handle, scrollCallback);
 	}
 
-	public static void setCursorParameters(long l, int i, double d, double e) {
-		GLFW.glfwSetCursorPos(l, d, e);
-		GLFW.glfwSetInputMode(l, 208897, i);
+	public static void setCursorParameters(long handler, int i, double d, double e) {
+		GLFW.glfwSetCursorPos(handler, d, e);
+		GLFW.glfwSetInputMode(handler, 208897, i);
 	}
 
 	public static boolean isRawMouseMotionSupported() {
@@ -103,58 +103,58 @@ public class InputUtil {
 
 		GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE = methodHandle;
 		GLFW_RAW_MOUSE_MOTION = i;
-		UNKNOWN_KEYCODE = InputUtil.Type.KEYSYM.createFromCode(-1);
+		UNKNOWN_KEY = InputUtil.Type.KEYSYM.createFromCode(-1);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static final class KeyCode {
-		private final String name;
+	public static final class Key {
+		private final String translationKey;
 		private final InputUtil.Type type;
-		private final int keyCode;
-		private final Lazy<Text> field_24196;
-		private static final Map<String, InputUtil.KeyCode> NAMES = Maps.<String, InputUtil.KeyCode>newHashMap();
+		private final int code;
+		private final Lazy<Text> localizedText;
+		private static final Map<String, InputUtil.Key> KEYS = Maps.<String, InputUtil.Key>newHashMap();
 
-		private KeyCode(String keyName, InputUtil.Type type, int i) {
-			this.name = keyName;
+		private Key(String translationKey, InputUtil.Type type, int code) {
+			this.translationKey = translationKey;
 			this.type = type;
-			this.keyCode = i;
-			this.field_24196 = new Lazy<>(() -> (Text)type.field_24197.apply(i, keyName));
-			NAMES.put(keyName, this);
+			this.code = code;
+			this.localizedText = new Lazy<>(() -> (Text)type.textTranslator.apply(code, translationKey));
+			KEYS.put(translationKey, this);
 		}
 
 		public InputUtil.Type getCategory() {
 			return this.type;
 		}
 
-		public int getKeyCode() {
-			return this.keyCode;
+		public int getCode() {
+			return this.code;
 		}
 
-		public String getName() {
-			return this.name;
+		public String getTranslationKey() {
+			return this.translationKey;
 		}
 
-		public Text method_27445() {
-			return this.field_24196.get();
+		public Text getLocalizedText() {
+			return this.localizedText.get();
 		}
 
-		public boolean equals(Object o) {
-			if (this == o) {
+		public boolean equals(Object other) {
+			if (this == other) {
 				return true;
-			} else if (o != null && this.getClass() == o.getClass()) {
-				InputUtil.KeyCode keyCode = (InputUtil.KeyCode)o;
-				return this.keyCode == keyCode.keyCode && this.type == keyCode.type;
+			} else if (other != null && this.getClass() == other.getClass()) {
+				InputUtil.Key key = (InputUtil.Key)other;
+				return this.code == key.code && this.type == key.type;
 			} else {
 				return false;
 			}
 		}
 
 		public int hashCode() {
-			return Objects.hash(new Object[]{this.type, this.keyCode});
+			return Objects.hash(new Object[]{this.type, this.code});
 		}
 
 		public String toString() {
-			return this.name;
+			return this.translationKey;
 		}
 	}
 
@@ -170,29 +170,29 @@ public class InputUtil {
 		}),
 		MOUSE("key.mouse", (integer, string) -> new TranslatableText(string));
 
-		private final Int2ObjectMap<InputUtil.KeyCode> map = new Int2ObjectOpenHashMap<>();
+		private final Int2ObjectMap<InputUtil.Key> map = new Int2ObjectOpenHashMap<>();
 		private final String name;
-		private final BiFunction<Integer, String, Text> field_24197;
+		private final BiFunction<Integer, String, Text> textTranslator;
 
-		private static void mapKey(InputUtil.Type type, String name, int keyCode) {
-			InputUtil.KeyCode keyCode2 = new InputUtil.KeyCode(name, type, keyCode);
-			type.map.put(keyCode, keyCode2);
+		private static void mapKey(InputUtil.Type type, String translationKey, int keyCode) {
+			InputUtil.Key key = new InputUtil.Key(translationKey, type, keyCode);
+			type.map.put(keyCode, key);
 		}
 
-		private Type(String string2, BiFunction<Integer, String, Text> biFunction) {
-			this.name = string2;
-			this.field_24197 = biFunction;
+		private Type(String name, BiFunction<Integer, String, Text> textTranslator) {
+			this.name = name;
+			this.textTranslator = textTranslator;
 		}
 
-		public InputUtil.KeyCode createFromCode(int i) {
-			return this.map.computeIfAbsent(i, ix -> {
-				int j = ix;
+		public InputUtil.Key createFromCode(int code) {
+			return this.map.computeIfAbsent(code, codex -> {
+				int i = codex;
 				if (this == MOUSE) {
-					j = ix + 1;
+					i = codex + 1;
 				}
 
-				String string = this.name + "." + j;
-				return new InputUtil.KeyCode(string, this, ix);
+				String string = this.name + "." + i;
+				return new InputUtil.Key(string, this, codex);
 			});
 		}
 

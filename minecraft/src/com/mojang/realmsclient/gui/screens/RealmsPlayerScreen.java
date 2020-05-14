@@ -385,8 +385,8 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			this.renderInvitedItem(matrices, this.mPlayerInfo, width, y, mouseY, i);
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.renderInvitedItem(matrices, this.mPlayerInfo, x, y, mouseX, mouseY);
 		}
 
 		private void renderInvitedItem(MatrixStack matrixStack, PlayerInfo playerInfo, int i, int j, int k, int l) {

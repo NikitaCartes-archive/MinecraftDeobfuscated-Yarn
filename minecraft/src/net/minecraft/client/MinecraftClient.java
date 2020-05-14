@@ -1572,7 +1572,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			session = this.levelStorage.createSession(name);
 		} catch (IOException var12) {
 			LOGGER.warn("Failed to read level {} data", name, var12);
-			SystemToast.method_27023(this, name);
+			SystemToast.addWorldAccessFailureToast(this, name);
 			this.openScreen(null);
 			return;
 		}

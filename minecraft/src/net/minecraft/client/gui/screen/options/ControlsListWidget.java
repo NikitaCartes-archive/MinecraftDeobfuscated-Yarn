@@ -21,12 +21,12 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Entry> {
-	private final ControlsOptionsScreen gui;
+	private final ControlsOptionsScreen parent;
 	private int maxKeyNameLength;
 
-	public ControlsListWidget(ControlsOptionsScreen gui, MinecraftClient client) {
-		super(client, gui.width + 45, gui.height, 43, gui.height - 32, 20);
-		this.gui = gui;
+	public ControlsListWidget(ControlsOptionsScreen parent, MinecraftClient client) {
+		super(client, parent.width + 45, parent.height, 43, parent.height - 32, 20);
+		this.parent = parent;
 		KeyBinding[] keyBindings = ArrayUtils.clone(client.options.keysAll);
 		Arrays.sort(keyBindings);
 		String string = null;
@@ -38,7 +38,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				this.addEntry(new ControlsListWidget.CategoryEntry(new TranslatableText(string2)));
 			}
 
-			Text text = new TranslatableText(keyBinding.getId());
+			Text text = new TranslatableText(keyBinding.getTranslationKey());
 			int i = client.textRenderer.getWidth(text);
 			if (i > this.maxKeyNameLength) {
 				this.maxKeyNameLength = i;
@@ -60,19 +60,19 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 	@Environment(EnvType.CLIENT)
 	public class CategoryEntry extends ControlsListWidget.Entry {
-		private final Text name;
-		private final int nameWidth;
+		private final Text text;
+		private final int textWidth;
 
 		public CategoryEntry(Text text) {
-			this.name = text;
-			this.nameWidth = ControlsListWidget.this.client.textRenderer.getWidth(this.name);
+			this.text = text;
+			this.textWidth = ControlsListWidget.this.client.textRenderer.getWidth(this.text);
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			ControlsListWidget.this.client
 				.textRenderer
-				.draw(matrices, this.name, (float)(ControlsListWidget.this.client.currentScreen.width / 2 - this.nameWidth / 2), (float)(y + mouseX - 9 - 1), 16777215);
+				.draw(matrices, this.text, (float)(ControlsListWidget.this.client.currentScreen.width / 2 - this.textWidth / 2), (float)(y + entryHeight - 9 - 1), 16777215);
 		}
 
 		@Override
@@ -97,19 +97,19 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private final ButtonWidget editButton;
 		private final ButtonWidget resetButton;
 
-		private KeyBindingEntry(KeyBinding keyBinding, Text text) {
-			this.binding = keyBinding;
+		private KeyBindingEntry(KeyBinding binding, Text text) {
+			this.binding = binding;
 			this.bindingName = text;
-			this.editButton = new ButtonWidget(0, 0, 75, 20, text, buttonWidget -> ControlsListWidget.this.gui.focusedBinding = keyBinding) {
+			this.editButton = new ButtonWidget(0, 0, 75, 20, text, buttonWidget -> ControlsListWidget.this.parent.focusedBinding = binding) {
 				@Override
 				protected MutableText getNarrationMessage() {
-					return keyBinding.isNotBound()
+					return binding.isUnbound()
 						? new TranslatableText("narrator.controls.unbound", text)
 						: new TranslatableText("narrator.controls.bound", text, super.getNarrationMessage());
 				}
 			};
 			this.resetButton = new ButtonWidget(0, 0, 50, 20, new TranslatableText("controls.reset"), buttonWidget -> {
-				ControlsListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
+				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
 				KeyBinding.updateKeysByCode();
 			}) {
 				@Override
@@ -120,38 +120,38 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			boolean bl2 = ControlsListWidget.this.gui.focusedBinding == this.binding;
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			boolean bl = ControlsListWidget.this.parent.focusedBinding == this.binding;
 			ControlsListWidget.this.client
 				.textRenderer
-				.draw(matrices, this.bindingName, (float)(width + 90 - ControlsListWidget.this.maxKeyNameLength), (float)(y + mouseX / 2 - 9 / 2), 16777215);
-			this.resetButton.x = width + 190;
+				.draw(matrices, this.bindingName, (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength), (float)(y + entryHeight / 2 - 9 / 2), 16777215);
+			this.resetButton.x = x + 190;
 			this.resetButton.y = y;
 			this.resetButton.active = !this.binding.isDefault();
-			this.resetButton.render(matrices, mouseY, i, tickDelta);
-			this.editButton.x = width + 105;
+			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
+			this.editButton.x = x + 105;
 			this.editButton.y = y;
-			this.editButton.setMessage(this.binding.getLocalizedName());
-			boolean bl3 = false;
-			if (!this.binding.isNotBound()) {
+			this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
+			boolean bl2 = false;
+			if (!this.binding.isUnbound()) {
 				for (KeyBinding keyBinding : ControlsListWidget.this.client.options.keysAll) {
 					if (keyBinding != this.binding && this.binding.equals(keyBinding)) {
-						bl3 = true;
+						bl2 = true;
 						break;
 					}
 				}
 			}
 
-			if (bl2) {
+			if (bl) {
 				this.editButton
 					.setMessage(
 						new LiteralText("> ").append(this.editButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW)
 					);
-			} else if (bl3) {
+			} else if (bl2) {
 				this.editButton.setMessage(this.editButton.getMessage().shallowCopy().formatted(Formatting.RED));
 			}
 
-			this.editButton.render(matrices, mouseY, i, tickDelta);
+			this.editButton.render(matrices, mouseX, mouseY, tickDelta);
 		}
 
 		@Override

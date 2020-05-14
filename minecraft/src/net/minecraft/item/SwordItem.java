@@ -54,7 +54,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 					&& material != Material.REPLACEABLE_PLANT
 					&& material != Material.UNUSED_PLANT
 					&& !state.isIn(BlockTags.LEAVES)
-					&& material != Material.PUMPKIN
+					&& material != Material.GOURD
 				? 1.0F
 				: 1.5F;
 		}

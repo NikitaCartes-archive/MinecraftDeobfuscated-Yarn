@@ -2022,7 +2022,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public static void drawBox(MatrixStack matrixStack, VertexConsumer vertexConsumer, Box box, float f, float g, float h, float i) {
-		drawBox(matrixStack, vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, f, g, h, i, f, g, h);
+		drawBox(matrixStack, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i, f, g, h);
 	}
 
 	public static void drawBox(

@@ -459,31 +459,31 @@ public class ParticleManager implements ResourceReloadListener {
 			int k = pos.getZ();
 			float f = 0.1F;
 			Box box = blockState.getOutlineShape(this.world, pos).getBoundingBox();
-			double d = (double)i + this.random.nextDouble() * (box.x2 - box.x1 - 0.2F) + 0.1F + box.x1;
-			double e = (double)j + this.random.nextDouble() * (box.y2 - box.y1 - 0.2F) + 0.1F + box.y1;
-			double g = (double)k + this.random.nextDouble() * (box.z2 - box.z1 - 0.2F) + 0.1F + box.z1;
+			double d = (double)i + this.random.nextDouble() * (box.maxX - box.minX - 0.2F) + 0.1F + box.minX;
+			double e = (double)j + this.random.nextDouble() * (box.maxY - box.minY - 0.2F) + 0.1F + box.minY;
+			double g = (double)k + this.random.nextDouble() * (box.maxZ - box.minZ - 0.2F) + 0.1F + box.minZ;
 			if (direction == Direction.DOWN) {
-				e = (double)j + box.y1 - 0.1F;
+				e = (double)j + box.minY - 0.1F;
 			}
 
 			if (direction == Direction.UP) {
-				e = (double)j + box.y2 + 0.1F;
+				e = (double)j + box.maxY + 0.1F;
 			}
 
 			if (direction == Direction.NORTH) {
-				g = (double)k + box.z1 - 0.1F;
+				g = (double)k + box.minZ - 0.1F;
 			}
 
 			if (direction == Direction.SOUTH) {
-				g = (double)k + box.z2 + 0.1F;
+				g = (double)k + box.maxZ + 0.1F;
 			}
 
 			if (direction == Direction.WEST) {
-				d = (double)i + box.x1 - 0.1F;
+				d = (double)i + box.minX - 0.1F;
 			}
 
 			if (direction == Direction.EAST) {
-				d = (double)i + box.x2 + 0.1F;
+				d = (double)i + box.maxX + 0.1F;
 			}
 
 			this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(pos).move(0.2F).scale(0.6F));

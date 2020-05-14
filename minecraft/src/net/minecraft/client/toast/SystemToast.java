@@ -25,23 +25,23 @@ public class SystemToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(MatrixStack matrixStack, ToastManager toastManager, long l) {
+	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
 		if (this.justUpdated) {
-			this.startTime = l;
+			this.startTime = startTime;
 			this.justUpdated = false;
 		}
 
-		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-		toastManager.drawTexture(matrixStack, 0, 0, 0, 64, 160, 32);
+		manager.drawTexture(matrices, 0, 0, 0, 64, 160, 32);
 		if (this.description == null) {
-			toastManager.getGame().textRenderer.draw(matrixStack, this.title, 18.0F, 12.0F, -256);
+			manager.getGame().textRenderer.draw(matrices, this.title, 18.0F, 12.0F, -256);
 		} else {
-			toastManager.getGame().textRenderer.draw(matrixStack, this.title, 18.0F, 7.0F, -256);
-			toastManager.getGame().textRenderer.draw(matrixStack, this.description, 18.0F, 18.0F, -1);
+			manager.getGame().textRenderer.draw(matrices, this.title, 18.0F, 7.0F, -256);
+			manager.getGame().textRenderer.draw(matrices, this.description, 18.0F, 18.0F, -1);
 		}
 
-		return l - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+		return startTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
 	public void setContent(Text title, @Nullable Text description) {
@@ -54,29 +54,25 @@ public class SystemToast implements Toast {
 		return this.type;
 	}
 
-	public static void method_27024(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
-		toastManager.add(new SystemToast(type, text, text2));
+	public static void add(ToastManager manager, SystemToast.Type type, Text title, @Nullable Text description) {
+		manager.add(new SystemToast(type, title, description));
 	}
 
-	public static void show(ToastManager toastManager, SystemToast.Type type, Text title, @Nullable Text description) {
-		SystemToast systemToast = toastManager.getToast(SystemToast.class, type);
+	public static void show(ToastManager manager, SystemToast.Type type, Text title, @Nullable Text description) {
+		SystemToast systemToast = manager.getToast(SystemToast.class, type);
 		if (systemToast == null) {
-			method_27024(toastManager, type, title, description);
+			add(manager, type, title, description);
 		} else {
 			systemToast.setContent(title, description);
 		}
 	}
 
-	public static void method_27023(MinecraftClient minecraftClient, String string) {
-		method_27024(
-			minecraftClient.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.access_failure"), new LiteralText(string)
-		);
+	public static void addWorldAccessFailureToast(MinecraftClient client, String worldName) {
+		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.access_failure"), new LiteralText(worldName));
 	}
 
-	public static void method_27025(MinecraftClient minecraftClient, String string) {
-		method_27024(
-			minecraftClient.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.delete_failure"), new LiteralText(string)
-		);
+	public static void addWorldDeleteFailureToast(MinecraftClient client, String worldName) {
+		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.delete_failure"), new LiteralText(worldName));
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -605,7 +605,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
 						newDimension,
-						BiomeAccess.method_27984(serverWorld2.getSeed()),
+						BiomeAccess.hashSeed(serverWorld2.getSeed()),
 						this.interactionManager.getGameMode(),
 						serverWorld2.method_27982(),
 						serverWorld2.method_28125(),
@@ -1342,7 +1342,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
 						this.dimension,
-						BiomeAccess.method_27984(targetWorld.getSeed()),
+						BiomeAccess.hashSeed(targetWorld.getSeed()),
 						this.interactionManager.getGameMode(),
 						targetWorld.method_27982(),
 						targetWorld.method_28125(),

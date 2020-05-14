@@ -344,8 +344,8 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			this.renderBackupItem(matrices, this.mBackup, width - 40, y, mouseY, i);
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.renderBackupItem(matrices, this.mBackup, x - 40, y, mouseX, mouseY);
 		}
 
 		private void renderBackupItem(MatrixStack matrixStack, Backup backup, int i, int j, int k, int l) {

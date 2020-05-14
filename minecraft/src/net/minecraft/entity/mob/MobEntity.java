@@ -519,7 +519,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected void method_27964(ItemEntity itemEntity) {
 		PlayerEntity playerEntity = itemEntity.getThrower() != null ? this.world.getPlayerByUuid(itemEntity.getThrower()) : null;
 		if (playerEntity instanceof ServerPlayerEntity) {
-			Criteria.field_24480.method_27975((ServerPlayerEntity)playerEntity, itemEntity.getStack(), this);
+			Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.test((ServerPlayerEntity)playerEntity, itemEntity.getStack(), this);
 		}
 	}
 
@@ -724,7 +724,7 @@ public abstract class MobEntity extends LivingEntity {
 			LivingEntity livingEntity = (LivingEntity)targetEntity;
 			f = livingEntity.getEyeY() - this.getEyeY();
 		} else {
-			f = (targetEntity.getBoundingBox().y1 + targetEntity.getBoundingBox().y2) / 2.0 - this.getEyeY();
+			f = (targetEntity.getBoundingBox().minY + targetEntity.getBoundingBox().maxY) / 2.0 - this.getEyeY();
 		}
 
 		double g = (double)MathHelper.sqrt(d * d + e * e);

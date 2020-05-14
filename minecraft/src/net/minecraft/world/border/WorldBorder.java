@@ -42,7 +42,7 @@ public class WorldBorder {
 	}
 
 	public boolean contains(Box box) {
-		return box.x2 > this.getBoundWest() && box.x1 < this.getBoundEast() && box.z2 > this.getBoundNorth() && box.z1 < this.getBoundSouth();
+		return box.maxX > this.getBoundWest() && box.minX < this.getBoundEast() && box.maxZ > this.getBoundNorth() && box.minZ < this.getBoundSouth();
 	}
 
 	public double getDistanceInsideBorder(Entity entity) {

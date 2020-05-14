@@ -138,7 +138,7 @@ public class DebugRenderer {
 	}
 
 	public static void drawBox(Box box, float red, float green, float blue, float alpha) {
-		drawBox(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, red, green, blue, alpha);
+		drawBox(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, red, green, blue, alpha);
 	}
 
 	public static void drawBox(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float red, float green, float blue, float alpha) {

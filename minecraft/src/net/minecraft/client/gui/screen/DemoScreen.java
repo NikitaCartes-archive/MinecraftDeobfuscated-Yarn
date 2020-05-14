@@ -54,19 +54,19 @@ public class DemoScreen extends Screen {
 				matrices,
 				new TranslatableText(
 					"demo.help.movementShort",
-					gameOptions.keyForward.getLocalizedName(),
-					gameOptions.keyLeft.getLocalizedName(),
-					gameOptions.keyBack.getLocalizedName(),
-					gameOptions.keyRight.getLocalizedName()
+					gameOptions.keyForward.getBoundKeyLocalizedText(),
+					gameOptions.keyLeft.getBoundKeyLocalizedText(),
+					gameOptions.keyBack.getBoundKeyLocalizedText(),
+					gameOptions.keyRight.getBoundKeyLocalizedText()
 				),
 				(float)i,
 				(float)j,
 				5197647
 			);
 		this.textRenderer.draw(matrices, new TranslatableText("demo.help.movementMouse"), (float)i, (float)(j + 12), 5197647);
-		this.textRenderer.draw(matrices, new TranslatableText("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)i, (float)(j + 24), 5197647);
+		this.textRenderer.draw(matrices, new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()), (float)i, (float)(j + 24), 5197647);
 		this.textRenderer
-			.draw(matrices, new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)i, (float)(j + 36), 5197647);
+			.draw(matrices, new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()), (float)i, (float)(j + 36), 5197647);
 		this.textRenderer.drawTrimmed(new TranslatableText("demo.help.fullWrapped"), i, j + 68, 218, 2039583);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

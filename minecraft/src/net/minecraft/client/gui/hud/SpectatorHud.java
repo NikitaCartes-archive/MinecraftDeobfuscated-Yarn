@@ -90,7 +90,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 			spectatorMenuCommand.renderIcon(matrixStack, h, k);
 			RenderSystem.popMatrix();
 			if (k > 3 && spectatorMenuCommand.isEnabled()) {
-				Text text = this.client.options.keysHotbar[i].getLocalizedName();
+				Text text = this.client.options.keysHotbar[i].getBoundKeyLocalizedText();
 				this.client
 					.textRenderer
 					.drawWithShadow(matrixStack, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0F + 3.0F, 16777215 + (k << 24));

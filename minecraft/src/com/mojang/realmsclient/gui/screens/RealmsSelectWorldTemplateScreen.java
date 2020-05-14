@@ -446,8 +446,8 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			this.renderWorldTemplateItem(matrices, this.mTemplate, width, y, mouseY, i);
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.renderWorldTemplateItem(matrices, this.mTemplate, x, y, mouseX, mouseY);
 		}
 
 		private void renderWorldTemplateItem(MatrixStack matrixStack, WorldTemplate worldTemplate, int i, int j, int k, int l) {

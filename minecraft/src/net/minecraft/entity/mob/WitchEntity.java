@@ -190,7 +190,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					.addParticle(
 						ParticleTypes.WITCH,
 						this.getX() + this.random.nextGaussian() * 0.13F,
-						this.getBoundingBox().y2 + 0.5 + this.random.nextGaussian() * 0.13F,
+						this.getBoundingBox().maxY + 0.5 + this.random.nextGaussian() * 0.13F,
 						this.getZ() + this.random.nextGaussian() * 0.13F,
 						0.0,
 						0.0,

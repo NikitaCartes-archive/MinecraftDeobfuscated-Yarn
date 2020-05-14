@@ -6,12 +6,12 @@ import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.criterion.BeeNestDestroyedCriterion;
-import net.minecraft.advancement.criterion.BlockUsedCriterion;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
 import net.minecraft.advancement.criterion.FilledBucketCriterion;
 import net.minecraft.advancement.criterion.FishingRodHookedCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.block.Blocks;
@@ -245,8 +245,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.criterion(
 				"safely_harvest_honey",
-				BlockUsedCriterion.Conditions.method_27981(
-					LocationPredicate.Builder.create().method_27989(BlockPredicate.Builder.create().method_27962(Blocks.BEEHIVE).build()).method_27990(true),
+				ItemUsedOnBlockCriterion.Conditions.create(
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(Blocks.BEEHIVE).build()).smokey(true),
 					ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE)
 				)
 			)

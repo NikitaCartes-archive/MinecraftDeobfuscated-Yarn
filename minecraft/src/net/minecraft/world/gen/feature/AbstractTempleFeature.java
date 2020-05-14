@@ -11,7 +11,7 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 
 	@Override
 	protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-		return chunkGeneratorConfig.getTempleDistance();
+		return chunkGeneratorConfig.getTempleSpacing();
 	}
 
 	@Override

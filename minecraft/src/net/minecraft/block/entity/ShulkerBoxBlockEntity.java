@@ -130,27 +130,27 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 						switch (direction.getAxis()) {
 							case X:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									d = box.x2 - box2.x1;
+									d = box.maxX - box2.minX;
 								} else {
-									d = box2.x2 - box.x1;
+									d = box2.maxX - box.minX;
 								}
 
 								d += 0.01;
 								break;
 							case Y:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									e = box.y2 - box2.y1;
+									e = box.maxY - box2.minY;
 								} else {
-									e = box2.y2 - box.y1;
+									e = box2.maxY - box.minY;
 								}
 
 								e += 0.01;
 								break;
 							case Z:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									f = box.z2 - box2.z1;
+									f = box.maxZ - box2.minZ;
 								} else {
-									f = box2.z2 - box.z1;
+									f = box2.maxZ - box.minZ;
 								}
 
 								f += 0.01;

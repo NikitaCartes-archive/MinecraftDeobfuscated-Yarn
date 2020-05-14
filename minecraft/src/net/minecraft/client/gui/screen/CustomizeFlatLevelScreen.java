@@ -187,10 +187,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 
 			@Override
-			public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
 					.getLayers()
-					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - x - 1);
+					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - index - 1);
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
 				Item item = blockState.getBlock().asItem();
 				if (item == Items.AIR) {
@@ -202,19 +202,19 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 
 				ItemStack itemStack = new ItemStack(item);
-				this.method_19375(matrices, width, y, itemStack);
-				CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, item.getName(itemStack), (float)(width + 18 + 5), (float)(y + 3), 16777215);
+				this.method_19375(matrices, x, y, itemStack);
+				CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, item.getName(itemStack), (float)(x + 18 + 5), (float)(y + 3), 16777215);
 				String string;
-				if (x == 0) {
+				if (index == 0) {
 					string = I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness());
-				} else if (x == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1) {
+				} else if (index == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1) {
 					string = I18n.translate("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness());
 				} else {
 					string = I18n.translate("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness());
 				}
 
 				CustomizeFlatLevelScreen.this.textRenderer
-					.draw(matrices, string, (float)(width + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getWidth(string)), (float)(y + 3), 16777215);
+					.draw(matrices, string, (float)(x + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getWidth(string)), (float)(y + 3), 16777215);
 			}
 
 			@Override

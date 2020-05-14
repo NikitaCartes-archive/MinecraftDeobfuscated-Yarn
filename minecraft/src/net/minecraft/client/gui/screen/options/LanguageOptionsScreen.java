@@ -125,7 +125,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			}
 
 			@Override
-			public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				LanguageOptionsScreen.this.textRenderer.setRightToLeft(true);
 				LanguageSelectionListWidget.this.drawCenteredString(
 					matrices, LanguageOptionsScreen.this.textRenderer, this.languageDefinition.toString(), LanguageSelectionListWidget.this.width / 2, y + 1, 16777215

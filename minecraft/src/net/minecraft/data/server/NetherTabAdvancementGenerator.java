@@ -1,23 +1,23 @@
 package net.minecraft.data.server;
 
 import java.util.function.Consumer;
-import net.minecraft.class_5279;
-import net.minecraft.class_5282;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
-import net.minecraft.advancement.criterion.BlockUsedCriterion;
 import net.minecraft.advancement.criterion.BrewedPotionCriterion;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.ConstructBeaconCriterion;
 import net.minecraft.advancement.criterion.EffectsChangedCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
+import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.NetherTravelCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
+import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
+import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.EntityType;
@@ -44,7 +44,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
-	private static final Biome[] field_24614 = new Biome[]{
+	private static final Biome[] NETHER_BIOMES = new Biome[]{
 		Biomes.NETHER_WASTES, Biomes.SOUL_SAND_VALLEY, Biomes.WARPED_FOREST, Biomes.CRIMSON_FOREST, Biomes.BASALT_DELTAS
 	};
 
@@ -340,8 +340,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion(
 				"use_lodestone",
-				BlockUsedCriterion.Conditions.method_27981(
-					LocationPredicate.Builder.create().method_27989(BlockPredicate.Builder.create().method_27962(Blocks.LODESTONE).build()),
+				ItemUsedOnBlockCriterion.Conditions.create(
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(Blocks.LODESTONE).build()),
 					ItemPredicate.Builder.create().item(Items.COMPASS)
 				)
 			)
@@ -374,12 +374,12 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion(
 				"charge_respawn_anchor",
-				BlockUsedCriterion.Conditions.method_27981(
+				ItemUsedOnBlockCriterion.Conditions.create(
 					LocationPredicate.Builder.create()
-						.method_27989(
+						.block(
 							BlockPredicate.Builder.create()
-								.method_27962(Blocks.RESPAWN_ANCHOR)
-								.method_27963(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4).build())
+								.block(Blocks.RESPAWN_ANCHOR)
+								.state(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4).build())
 								.build()
 						),
 					ItemPredicate.Builder.create().item(Blocks.GLOWSTONE)
@@ -401,13 +401,13 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"used_warped_fungus_on_a_stick",
 				ItemDurabilityChangedCriterion.Conditions.create(
-					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().method_27971(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()).build()),
+					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()).build()),
 					ItemPredicate.Builder.create().item(Items.WARPED_FUNGUS_ON_A_STICK).build(),
 					NumberRange.IntRange.ANY
 				)
 			)
 			.build(consumer, "nether/ride_strider");
-		AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Task.create(), field_24614)
+		AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Task.create(), NETHER_BIOMES)
 			.parent(advancement12)
 			.display(
 				Items.NETHERITE_BOOTS,
@@ -447,10 +447,10 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				false
 			)
 			.criteriaMerger(CriteriaMerger.OR)
-			.criterion("loot_bastion_other", class_5282.class_5283.method_27995(new Identifier("minecraft:chests/bastion_other")))
-			.criterion("loot_bastion_treasure", class_5282.class_5283.method_27995(new Identifier("minecraft:chests/bastion_treasure")))
-			.criterion("loot_bastion_hoglin_stable", class_5282.class_5283.method_27995(new Identifier("minecraft:chests/bastion_hoglin_stable")))
-			.criterion("loot_bastion_bridge", class_5282.class_5283.method_27995(new Identifier("minecraft:chests/bastion_bridge")))
+			.criterion("loot_bastion_other", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_other")))
+			.criterion("loot_bastion_treasure", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_treasure")))
+			.criterion("loot_bastion_hoglin_stable", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_hoglin_stable")))
+			.criterion("loot_bastion_bridge", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_bridge")))
 			.build(consumer, "nether/loot_bastion");
 		Advancement.Task.create()
 			.parent(advancement)
@@ -466,41 +466,33 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion(
 				"distract_piglin",
-				class_5279.class_5280.method_27978(
-					EntityPredicate.Extended.method_27973(
+				ThrownItemPickedUpByEntityCriterion.Conditions.create(
+					EntityPredicate.Extended.create(
 						EntityPropertiesLootCondition.builder(
 								LootContext.EntityTarget.THIS,
 								EntityPredicate.Builder.create()
-									.equipment(
-										EntityEquipmentPredicate.class_5278.method_27965().method_27966(ItemPredicate.Builder.create().item(Items.GOLDEN_HELMET).build()).method_27967()
-									)
+									.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().item(Items.GOLDEN_HELMET).build()).build())
 							)
 							.invert()
 							.build(),
 						EntityPropertiesLootCondition.builder(
 								LootContext.EntityTarget.THIS,
 								EntityPredicate.Builder.create()
-									.equipment(
-										EntityEquipmentPredicate.class_5278.method_27965().method_27968(ItemPredicate.Builder.create().item(Items.GOLDEN_CHESTPLATE).build()).method_27967()
-									)
+									.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().item(Items.GOLDEN_CHESTPLATE).build()).build())
 							)
 							.invert()
 							.build(),
 						EntityPropertiesLootCondition.builder(
 								LootContext.EntityTarget.THIS,
 								EntityPredicate.Builder.create()
-									.equipment(
-										EntityEquipmentPredicate.class_5278.method_27965().method_27969(ItemPredicate.Builder.create().item(Items.GOLDEN_LEGGINGS).build()).method_27967()
-									)
+									.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().item(Items.GOLDEN_LEGGINGS).build()).build())
 							)
 							.invert()
 							.build(),
 						EntityPropertiesLootCondition.builder(
 								LootContext.EntityTarget.THIS,
 								EntityPredicate.Builder.create()
-									.equipment(
-										EntityEquipmentPredicate.class_5278.method_27965().method_27970(ItemPredicate.Builder.create().item(Items.GOLDEN_BOOTS).build()).method_27967()
-									)
+									.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(Items.GOLDEN_BOOTS).build()).build())
 							)
 							.invert()
 							.build()

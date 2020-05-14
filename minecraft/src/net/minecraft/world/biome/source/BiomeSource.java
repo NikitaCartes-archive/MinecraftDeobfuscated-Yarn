@@ -29,7 +29,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract BiomeSource method_27985(long l);
+	public abstract BiomeSource create(long seed);
 
 	public List<Biome> getSpawnBiomes() {
 		return SPAWN_BIOMES;
@@ -109,7 +109,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		return blockPos;
 	}
 
-	public float getNoiseRange(int i, int j) {
+	public float getNoiseAt(int x, int z) {
 		return 0.0F;
 	}
 

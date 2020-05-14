@@ -154,7 +154,12 @@ public class RavagerEntity extends RaiderEntity {
 				Box box = this.getBoundingBox().expand(0.2);
 
 				for (BlockPos blockPos : BlockPos.iterate(
-					MathHelper.floor(box.x1), MathHelper.floor(box.y1), MathHelper.floor(box.z1), MathHelper.floor(box.x2), MathHelper.floor(box.y2), MathHelper.floor(box.z2)
+					MathHelper.floor(box.minX),
+					MathHelper.floor(box.minY),
+					MathHelper.floor(box.minZ),
+					MathHelper.floor(box.maxX),
+					MathHelper.floor(box.maxY),
+					MathHelper.floor(box.maxZ)
 				)) {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();

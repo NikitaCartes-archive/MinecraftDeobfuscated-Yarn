@@ -49,9 +49,9 @@ public final class VoxelShapes {
 	}
 
 	public static VoxelShape cuboid(Box box) {
-		int i = findRequiredBitResolution(box.x1, box.x2);
-		int j = findRequiredBitResolution(box.y1, box.y2);
-		int k = findRequiredBitResolution(box.z1, box.z2);
+		int i = findRequiredBitResolution(box.minX, box.maxX);
+		int j = findRequiredBitResolution(box.minY, box.maxY);
+		int k = findRequiredBitResolution(box.minZ, box.maxZ);
 		if (i >= 0 && j >= 0 && k >= 0) {
 			if (i == 0 && j == 0 && k == 0) {
 				return box.contains(0.5, 0.5, 0.5) ? fullCube() : empty();
@@ -59,12 +59,12 @@ public final class VoxelShapes {
 				int l = 1 << i;
 				int m = 1 << j;
 				int n = 1 << k;
-				int o = (int)Math.round(box.x1 * (double)l);
-				int p = (int)Math.round(box.x2 * (double)l);
-				int q = (int)Math.round(box.y1 * (double)m);
-				int r = (int)Math.round(box.y2 * (double)m);
-				int s = (int)Math.round(box.z1 * (double)n);
-				int t = (int)Math.round(box.z2 * (double)n);
+				int o = (int)Math.round(box.minX * (double)l);
+				int p = (int)Math.round(box.maxX * (double)l);
+				int q = (int)Math.round(box.minY * (double)m);
+				int r = (int)Math.round(box.maxY * (double)m);
+				int s = (int)Math.round(box.minZ * (double)n);
+				int t = (int)Math.round(box.maxZ * (double)n);
 				BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(l, m, n, o, q, s, p, r, t);
 
 				for (long u = (long)o; u < (long)p; u++) {
@@ -78,7 +78,7 @@ public final class VoxelShapes {
 				return new SimpleVoxelShape(bitSetVoxelSet);
 			}
 		} else {
-			return new ArrayVoxelShape(FULL_CUBE.voxels, new double[]{box.x1, box.x2}, new double[]{box.y1, box.y2}, new double[]{box.z1, box.z2});
+			return new ArrayVoxelShape(FULL_CUBE.voxels, new double[]{box.minX, box.maxX}, new double[]{box.minY, box.maxY}, new double[]{box.minZ, box.maxZ});
 		}
 	}
 

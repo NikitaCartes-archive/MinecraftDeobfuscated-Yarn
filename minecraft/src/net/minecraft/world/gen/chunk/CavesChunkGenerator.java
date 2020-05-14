@@ -13,17 +13,17 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGeneratorConfig> {
 	private final double[] noiseFalloff = this.buildNoiseFalloff();
-	private final CavesChunkGeneratorConfig field_24511;
+	private final CavesChunkGeneratorConfig generatorConfig;
 
-	public CavesChunkGenerator(BiomeSource biomeSource, long l, CavesChunkGeneratorConfig cavesChunkGeneratorConfig) {
-		super(biomeSource, l, cavesChunkGeneratorConfig, 4, 8, 128, false);
-		this.field_24511 = cavesChunkGeneratorConfig;
+	public CavesChunkGenerator(BiomeSource biomeSource, long seed, CavesChunkGeneratorConfig config) {
+		super(biomeSource, seed, config, 4, 8, 128, false);
+		this.generatorConfig = config;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ChunkGenerator method_27997(long l) {
-		return new CavesChunkGenerator(this.biomeSource.method_27985(l), l, this.field_24511);
+	public ChunkGenerator create(long seed) {
+		return new CavesChunkGenerator(this.biomeSource.create(seed), seed, this.generatorConfig);
 	}
 
 	@Override
@@ -67,10 +67,10 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor structureAccessor, SpawnGroup spawnGroup, BlockPos blockPos) {
-		return spawnGroup == SpawnGroup.MONSTER && Feature.NETHER_BRIDGE.isInsideStructure(structureAccessor, blockPos)
+	public List<Biome.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+		return group == SpawnGroup.MONSTER && Feature.NETHER_BRIDGE.isInsideStructure(accessor, pos)
 			? Feature.NETHER_BRIDGE.getMonsterSpawns()
-			: super.getEntitySpawnList(biome, structureAccessor, spawnGroup, blockPos);
+			: super.getEntitySpawnList(biome, accessor, group, pos);
 	}
 
 	@Override

@@ -47,13 +47,13 @@ public abstract class ChunkGenerator {
 	protected final BiomeSource biomeSource;
 	private final ChunkGeneratorConfig config;
 
-	public ChunkGenerator(BiomeSource biomeSource, ChunkGeneratorConfig chunkGeneratorConfig) {
+	public ChunkGenerator(BiomeSource biomeSource, ChunkGeneratorConfig config) {
 		this.biomeSource = biomeSource;
-		this.config = chunkGeneratorConfig;
+		this.config = config;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract ChunkGenerator method_27997(long l);
+	public abstract ChunkGenerator create(long seed);
 
 	public void populateBiomes(Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
@@ -64,26 +64,26 @@ public abstract class ChunkGenerator {
 		return biomeAccess.getBiome(pos);
 	}
 
-	public void carve(long l, BiomeAccess biomeAccess, Chunk chunk, GenerationStep.Carver carver) {
+	public void carve(long seed, BiomeAccess access, Chunk chunk, GenerationStep.Carver carver) {
 		ChunkRandom chunkRandom = new ChunkRandom();
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
 		int j = chunkPos.x;
 		int k = chunkPos.z;
-		Biome biome = this.getDecorationBiome(biomeAccess, chunkPos.getCenterBlockPos());
+		Biome biome = this.getDecorationBiome(access, chunkPos.getCenterBlockPos());
 		BitSet bitSet = chunk.getCarvingMask(carver);
 
-		for (int m = j - 8; m <= j + 8; m++) {
-			for (int n = k - 8; n <= k + 8; n++) {
+		for (int l = j - 8; l <= j + 8; l++) {
+			for (int m = k - 8; m <= k + 8; m++) {
 				List<ConfiguredCarver<?>> list = biome.getCarversForStep(carver);
 				ListIterator<ConfiguredCarver<?>> listIterator = list.listIterator();
 
 				while (listIterator.hasNext()) {
-					int o = listIterator.nextIndex();
+					int n = listIterator.nextIndex();
 					ConfiguredCarver<?> configuredCarver = (ConfiguredCarver<?>)listIterator.next();
-					chunkRandom.setCarverSeed(l + (long)o, m, n);
-					if (configuredCarver.shouldCarve(chunkRandom, m, n)) {
-						configuredCarver.carve(chunk, blockPos -> this.getDecorationBiome(biomeAccess, blockPos), chunkRandom, this.getSeaLevel(), m, n, j, k, bitSet);
+					chunkRandom.setCarverSeed(seed + (long)n, l, m);
+					if (configuredCarver.shouldCarve(chunkRandom, l, m)) {
+						configuredCarver.carve(chunk, pos -> this.getDecorationBiome(access, pos), chunkRandom, this.getSeaLevel(), l, m, j, k, bitSet);
 					}
 				}
 			}
@@ -91,24 +91,24 @@ public abstract class ChunkGenerator {
 	}
 
 	@Nullable
-	public BlockPos locateStructure(ServerWorld serverWorld, String id, BlockPos center, int radius, boolean skipExistingChunks) {
+	public BlockPos locateStructure(ServerWorld world, String id, BlockPos center, int radius, boolean skipExistingChunks) {
 		StructureFeature<?> structureFeature = (StructureFeature<?>)Feature.STRUCTURES.get(id.toLowerCase(Locale.ROOT));
-		return structureFeature != null ? structureFeature.locateStructure(serverWorld, this, center, radius, skipExistingChunks) : null;
+		return structureFeature != null ? structureFeature.locateStructure(world, this, center, radius, skipExistingChunks) : null;
 	}
 
-	public void generateFeatures(ChunkRegion chunkRegion, StructureAccessor structureAccessor) {
-		int i = chunkRegion.getCenterChunkX();
-		int j = chunkRegion.getCenterChunkZ();
+	public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
+		int i = region.getCenterChunkX();
+		int j = region.getCenterChunkZ();
 		int k = i * 16;
 		int l = j * 16;
 		BlockPos blockPos = new BlockPos(k, 0, l);
-		Biome biome = this.getDecorationBiome(chunkRegion.getBiomeAccess(), blockPos.add(8, 8, 8));
+		Biome biome = this.getDecorationBiome(region.getBiomeAccess(), blockPos.add(8, 8, 8));
 		ChunkRandom chunkRandom = new ChunkRandom();
-		long m = chunkRandom.setPopulationSeed(chunkRegion.getSeed(), k, l);
+		long m = chunkRandom.setPopulationSeed(region.getSeed(), k, l);
 
 		for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
 			try {
-				biome.generateFeatureStep(feature, structureAccessor, this, chunkRegion, m, chunkRandom, blockPos);
+				biome.generateFeatureStep(feature, accessor, this, region, m, chunkRandom, blockPos);
 			} catch (Exception var18) {
 				CrashReport crashReport = CrashReport.create(var18, "Biome decoration");
 				crashReport.addElement("Generation").add("CenterX", i).add("CenterZ", j).add("Step", feature).add("Seed", m).add("Biome", Registry.BIOME.getId(biome));
@@ -138,8 +138,8 @@ public abstract class ChunkGenerator {
 	}
 
 	@Nullable
-	public <C extends FeatureConfig> C getStructureConfig(Biome biome, StructureFeature<C> structureFeature) {
-		return biome.getStructureFeatureConfig(structureFeature);
+	public <C extends FeatureConfig> C getStructureConfig(Biome biome, StructureFeature<C> feature) {
+		return biome.getStructureFeatureConfig(feature);
 	}
 
 	public BiomeSource getBiomeSource() {
@@ -150,37 +150,35 @@ public abstract class ChunkGenerator {
 		return 256;
 	}
 
-	public List<Biome.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor structureAccessor, SpawnGroup spawnGroup, BlockPos blockPos) {
-		return biome.getEntitySpawnList(spawnGroup);
+	public List<Biome.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+		return biome.getEntitySpawnList(group);
 	}
 
-	public void setStructureStarts(
-		StructureAccessor structureAccessor, BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator chunkGenerator, StructureManager structureManager, long l
-	) {
+	public void setStructureStarts(StructureAccessor accessor, BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator generator, StructureManager manager, long seed) {
 		for (StructureFeature<?> structureFeature : Feature.STRUCTURES.values()) {
-			if (chunkGenerator.hasStructure(structureFeature)) {
-				StructureStart structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), structureFeature, chunk);
+			if (generator.hasStructure(structureFeature)) {
+				StructureStart structureStart = accessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), structureFeature, chunk);
 				int i = structureStart != null ? structureStart.getReferences() : 0;
 				ChunkRandom chunkRandom = new ChunkRandom();
 				ChunkPos chunkPos = chunk.getPos();
 				StructureStart structureStart2 = StructureStart.DEFAULT;
-				Biome biome = chunkGenerator.getDecorationBiome(biomeAccess, new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
-				if (structureFeature.method_27217(biomeAccess, chunkGenerator, l, chunkRandom, chunkPos.x, chunkPos.z, biome)) {
-					StructureStart structureStart3 = structureFeature.getStructureStartFactory().create(structureFeature, chunkPos.x, chunkPos.z, BlockBox.empty(), i, l);
-					structureStart3.init(this, structureManager, chunkPos.x, chunkPos.z, biome);
+				Biome biome = generator.getDecorationBiome(biomeAccess, new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
+				if (structureFeature.method_27217(biomeAccess, generator, seed, chunkRandom, chunkPos.x, chunkPos.z, biome)) {
+					StructureStart structureStart3 = structureFeature.getStructureStartFactory().create(structureFeature, chunkPos.x, chunkPos.z, BlockBox.empty(), i, seed);
+					structureStart3.init(this, manager, chunkPos.x, chunkPos.z, biome);
 					structureStart2 = structureStart3.hasChildren() ? structureStart3 : StructureStart.DEFAULT;
 				}
 
-				structureAccessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), structureFeature, structureStart2, chunk);
+				accessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), structureFeature, structureStart2, chunk);
 			}
 		}
 	}
 
-	public boolean hasStructure(StructureFeature<?> structureFeature) {
-		return this.getBiomeSource().hasStructureFeature(structureFeature);
+	public boolean hasStructure(StructureFeature<?> feature) {
+		return this.getBiomeSource().hasStructureFeature(feature);
 	}
 
-	public void addStructureReferences(WorldAccess world, StructureAccessor structureAccessor, Chunk chunk) {
+	public void addStructureReferences(WorldAccess world, StructureAccessor accessor, Chunk chunk) {
 		int i = 8;
 		int j = chunk.getPos().x;
 		int k = chunk.getPos().z;
@@ -195,7 +193,7 @@ public abstract class ChunkGenerator {
 				for (Entry<String, StructureStart> entry : world.getChunk(n, o).getStructureStarts().entrySet()) {
 					StructureStart structureStart = (StructureStart)entry.getValue();
 					if (structureStart != StructureStart.DEFAULT && structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) {
-						structureAccessor.addStructureReference(chunkSectionPos, structureStart.getFeature(), p, chunk);
+						accessor.addStructureReference(chunkSectionPos, structureStart.getFeature(), p, chunk);
 						DebugInfoSender.sendStructureStart(world, structureStart);
 					}
 				}
@@ -206,7 +204,7 @@ public abstract class ChunkGenerator {
 	/**
 	 * Generates the base shape of the chunk out of the basic block states as decided by this chunk generator's config.
 	 */
-	public abstract void populateNoise(WorldAccess world, StructureAccessor structureAccessor, Chunk chunk);
+	public abstract void populateNoise(WorldAccess world, StructureAccessor accessor, Chunk chunk);
 
 	public int getSeaLevel() {
 		return 63;

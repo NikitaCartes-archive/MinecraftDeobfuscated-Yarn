@@ -17,10 +17,10 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private DimensionType dimension;
 	private int maxPlayers;
 	private int chunkLoadDistance;
-	private boolean field_24618;
-	private boolean field_24619;
 	private boolean reducedDebugInfo;
-	private boolean showsDeathScreen;
+	private boolean showDeathScreen;
+	private boolean debugWorld;
+	private boolean flatWorld;
 
 	public GameJoinS2CPacket() {
 	}
@@ -32,11 +32,11 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		boolean hardcore,
 		DimensionType dimensionType,
 		int maxPlayers,
-		int i,
-		boolean bl,
-		boolean bl2,
-		boolean bl3,
-		boolean bl4
+		int chunkLoadDistance,
+		boolean reducedDebugInfo,
+		boolean showDeathScreen,
+		boolean debugWorld,
+		boolean flatWorld
 	) {
 		this.playerEntityId = playerEntityId;
 		this.dimension = dimensionType;
@@ -44,11 +44,11 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.gameMode = gameMode;
 		this.maxPlayers = maxPlayers;
 		this.hardcore = hardcore;
-		this.chunkLoadDistance = i;
-		this.field_24618 = bl;
-		this.field_24619 = bl2;
-		this.reducedDebugInfo = bl3;
-		this.showsDeathScreen = bl4;
+		this.chunkLoadDistance = chunkLoadDistance;
+		this.reducedDebugInfo = reducedDebugInfo;
+		this.showDeathScreen = showDeathScreen;
+		this.debugWorld = debugWorld;
+		this.flatWorld = flatWorld;
 	}
 
 	@Override
@@ -62,10 +62,10 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.seed = buf.readLong();
 		this.maxPlayers = buf.readUnsignedByte();
 		this.chunkLoadDistance = buf.readVarInt();
-		this.field_24618 = buf.readBoolean();
-		this.field_24619 = buf.readBoolean();
 		this.reducedDebugInfo = buf.readBoolean();
-		this.showsDeathScreen = buf.readBoolean();
+		this.showDeathScreen = buf.readBoolean();
+		this.debugWorld = buf.readBoolean();
+		this.flatWorld = buf.readBoolean();
 	}
 
 	@Override
@@ -81,10 +81,10 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeLong(this.seed);
 		buf.writeByte(this.maxPlayers);
 		buf.writeVarInt(this.chunkLoadDistance);
-		buf.writeBoolean(this.field_24618);
-		buf.writeBoolean(this.field_24619);
 		buf.writeBoolean(this.reducedDebugInfo);
-		buf.writeBoolean(this.showsDeathScreen);
+		buf.writeBoolean(this.showDeathScreen);
+		buf.writeBoolean(this.debugWorld);
+		buf.writeBoolean(this.flatWorld);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -102,7 +102,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_28118() {
+	public boolean isHardcore() {
 		return this.hardcore;
 	}
 
@@ -123,21 +123,21 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Environment(EnvType.CLIENT)
 	public boolean hasReducedDebugInfo() {
-		return this.field_24618;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean showsDeathScreen() {
-		return this.field_24619;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean method_28119() {
 		return this.reducedDebugInfo;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isHardcore() {
-		return this.showsDeathScreen;
+	public boolean showsDeathScreen() {
+		return this.showDeathScreen;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isDebugWorld() {
+		return this.debugWorld;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isFlatWorld() {
+		return this.flatWorld;
 	}
 }

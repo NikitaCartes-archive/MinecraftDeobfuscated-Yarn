@@ -125,9 +125,9 @@ public class GameOptions {
 	public final KeyBinding keyCommand = new KeyBinding("key.command", 47, "key.categories.multiplayer");
 	public final KeyBinding keyScreenshot = new KeyBinding("key.screenshot", 291, "key.categories.misc");
 	public final KeyBinding keyTogglePerspective = new KeyBinding("key.togglePerspective", 294, "key.categories.misc");
-	public final KeyBinding keySmoothCamera = new KeyBinding("key.smoothCamera", InputUtil.UNKNOWN_KEYCODE.getKeyCode(), "key.categories.misc");
+	public final KeyBinding keySmoothCamera = new KeyBinding("key.smoothCamera", InputUtil.UNKNOWN_KEY.getCode(), "key.categories.misc");
 	public final KeyBinding keyFullscreen = new KeyBinding("key.fullscreen", 300, "key.categories.misc");
-	public final KeyBinding keySpectatorOutlines = new KeyBinding("key.spectatorOutlines", InputUtil.UNKNOWN_KEYCODE.getKeyCode(), "key.categories.misc");
+	public final KeyBinding keySpectatorOutlines = new KeyBinding("key.spectatorOutlines", InputUtil.UNKNOWN_KEY.getCode(), "key.categories.misc");
 	public final KeyBinding keyAdvancements = new KeyBinding("key.advancements", 76, "key.categories.misc");
 	public final KeyBinding[] keysHotbar = new KeyBinding[]{
 		new KeyBinding("key.hotbar.1", 49, "key.categories.inventory"),
@@ -213,8 +213,8 @@ public class GameOptions {
 		return this.backgroundForChatOnly ? fallbackColor : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
 	}
 
-	public void setKeyCode(KeyBinding key, InputUtil.KeyCode code) {
-		key.setKeyCode(code);
+	public void setKeyCode(KeyBinding key, InputUtil.Key code) {
+		key.setBoundKey(code);
 		this.write();
 	}
 
@@ -535,8 +535,8 @@ public class GameOptions {
 					}
 
 					for (KeyBinding keyBinding : this.keysAll) {
-						if (string.equals("key_" + keyBinding.getId())) {
-							keyBinding.setKeyCode(InputUtil.fromName(string2));
+						if (string.equals("key_" + keyBinding.getTranslationKey())) {
+							keyBinding.setBoundKey(InputUtil.fromTranslationKey(string2));
 						}
 					}
 
@@ -666,7 +666,7 @@ public class GameOptions {
 				printWriter.println("skipMultiplayerWarning:" + this.skipMultiplayerWarning);
 
 				for (KeyBinding keyBinding : this.keysAll) {
-					printWriter.println("key_" + keyBinding.getId() + ":" + keyBinding.getName());
+					printWriter.println("key_" + keyBinding.getTranslationKey() + ":" + keyBinding.getBoundKeyTranslationKey());
 				}
 
 				for (SoundCategory soundCategory : SoundCategory.values()) {

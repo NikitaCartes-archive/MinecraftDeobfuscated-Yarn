@@ -145,7 +145,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return drops(drop, WITH_SHEARS, child);
 	}
 
-	private static LootTable.Builder dropsWithSilkTouchShears(Block drop, LootEntry.Builder<?> child) {
+	private static LootTable.Builder dropsWithSilkTouchOrShears(Block drop, LootEntry.Builder<?> child) {
 		return drops(drop, WITH_SILK_TOUCH_OR_SHEARS, child);
 	}
 
@@ -386,7 +386,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private static LootTable.Builder leavesDrop(Block leaves, Block drop, float... chance) {
-		return dropsWithSilkTouchShears(
+		return dropsWithSilkTouchOrShears(
 				leaves,
 				((LeafEntry.Builder)addSurvivesExplosionCondition(leaves, ItemEntry.builder(drop)))
 					.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, chance))
@@ -1192,7 +1192,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				)
 		);
 		this.addDrop(
-			Blocks.COBWEB, blockx -> dropsWithSilkTouchShears(blockx, (LootEntry.Builder<?>)addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.STRING)))
+			Blocks.COBWEB, blockx -> dropsWithSilkTouchOrShears(blockx, (LootEntry.Builder<?>)addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.STRING)))
 		);
 		this.addDrop(
 			Blocks.DEAD_BUSH,
@@ -1515,7 +1515,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private void addVinePlantDrop(Block block, Block drop) {
-		LootTable.Builder builder = dropsWithSilkTouchShears(
+		LootTable.Builder builder = dropsWithSilkTouchOrShears(
 			block, ItemEntry.builder(block).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.33F, 0.55F, 0.77F, 1.0F))
 		);
 		this.addDrop(block, builder);

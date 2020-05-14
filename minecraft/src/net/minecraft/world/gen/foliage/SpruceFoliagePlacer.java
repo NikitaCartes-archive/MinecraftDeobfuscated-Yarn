@@ -14,10 +14,10 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 	private final int trunkHeight;
 	private final int randomTrunkHeight;
 
-	public SpruceFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, int trunkHeight, int randomChunkHeight) {
+	public SpruceFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, int trunkHeight, int randomTrunkHeight) {
 		super(radius, randomRadius, offset, randomOffset, FoliagePlacerType.SPRUCE_FOLIAGE_PLACER);
 		this.trunkHeight = trunkHeight;
-		this.randomTrunkHeight = randomChunkHeight;
+		this.randomTrunkHeight = randomTrunkHeight;
 	}
 
 	public <T> SpruceFoliagePlacer(Dynamic<T> dynamic) {

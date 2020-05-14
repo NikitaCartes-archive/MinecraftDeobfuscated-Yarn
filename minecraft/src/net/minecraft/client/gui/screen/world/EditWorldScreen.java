@@ -137,7 +137,7 @@ public class EditWorldScreen extends Screen {
 			this.callback.accept(true);
 		} catch (IOException var2) {
 			field_23776.error("Failed to access world '{}'", this.field_23777.getDirectoryName(), var2);
-			SystemToast.method_27023(this.client, this.field_23777.getDirectoryName());
+			SystemToast.addWorldAccessFailureToast(this.client, this.field_23777.getDirectoryName());
 			this.callback.accept(true);
 		}
 	}

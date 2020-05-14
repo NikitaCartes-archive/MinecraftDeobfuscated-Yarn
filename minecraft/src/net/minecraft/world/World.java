@@ -550,12 +550,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean isAreaNotEmpty(Box box) {
-		int i = MathHelper.floor(box.x1);
-		int j = MathHelper.ceil(box.x2);
-		int k = MathHelper.floor(box.y1);
-		int l = MathHelper.ceil(box.y2);
-		int m = MathHelper.floor(box.z1);
-		int n = MathHelper.ceil(box.z2);
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int o = i; o < j; o++) {
@@ -573,12 +573,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean doesAreaContainFireSource(Box box) {
-		int i = MathHelper.floor(box.x1);
-		int j = MathHelper.ceil(box.x2);
-		int k = MathHelper.floor(box.y1);
-		int l = MathHelper.ceil(box.y2);
-		int m = MathHelper.floor(box.z1);
-		int n = MathHelper.ceil(box.z2);
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.ceil(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.ceil(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.ceil(box.maxZ);
 		if (this.isRegionLoaded(i, k, m, j, l, n)) {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -600,12 +600,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public BlockState getBlockState(Box area, Block block) {
-		int i = MathHelper.floor(area.x1);
-		int j = MathHelper.ceil(area.x2);
-		int k = MathHelper.floor(area.y1);
-		int l = MathHelper.ceil(area.y2);
-		int m = MathHelper.floor(area.z1);
-		int n = MathHelper.ceil(area.z2);
+		int i = MathHelper.floor(area.minX);
+		int j = MathHelper.ceil(area.maxX);
+		int k = MathHelper.floor(area.minY);
+		int l = MathHelper.ceil(area.maxY);
+		int m = MathHelper.floor(area.minZ);
+		int n = MathHelper.ceil(area.maxZ);
 		if (this.isRegionLoaded(i, k, m, j, l, n)) {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -625,12 +625,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean containsBlockWithMaterial(Box area, Material material) {
-		int i = MathHelper.floor(area.x1);
-		int j = MathHelper.ceil(area.x2);
-		int k = MathHelper.floor(area.y1);
-		int l = MathHelper.ceil(area.y2);
-		int m = MathHelper.floor(area.z1);
-		int n = MathHelper.ceil(area.z2);
+		int i = MathHelper.floor(area.minX);
+		int j = MathHelper.ceil(area.maxX);
+		int k = MathHelper.floor(area.minY);
+		int l = MathHelper.ceil(area.maxY);
+		int m = MathHelper.floor(area.minZ);
+		int n = MathHelper.ceil(area.maxZ);
 		MaterialPredicate materialPredicate = MaterialPredicate.create(material);
 		return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.test(this.getBlockState(blockPos)));
 	}
@@ -798,10 +798,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public List<Entity> getEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
 		this.getProfiler().visit("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
-		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
-		int j = MathHelper.floor((box.x2 + 2.0) / 16.0);
-		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
-		int l = MathHelper.floor((box.z2 + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.floor((box.maxZ + 2.0) / 16.0);
 
 		for (int m = i; m <= j; m++) {
 			for (int n = k; n <= l; n++) {
@@ -817,10 +817,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public <T extends Entity> List<T> getEntities(@Nullable EntityType<T> type, Box box, Predicate<? super T> predicate) {
 		this.getProfiler().visit("getEntities");
-		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
-		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
-		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
-		int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<T> list = Lists.<T>newArrayList();
 
 		for (int m = i; m < j; m++) {
@@ -838,10 +838,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public <T extends Entity> List<T> getEntities(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
 		this.getProfiler().visit("getEntities");
-		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
-		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
-		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
-		int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<T> list = Lists.<T>newArrayList();
 		ChunkManager chunkManager = this.getChunkManager();
 
@@ -860,10 +860,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
 		this.getProfiler().visit("getLoadedEntities");
-		int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
-		int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
-		int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
-		int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
+		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
+		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
+		int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
 		List<T> list = Lists.<T>newArrayList();
 		ChunkManager chunkManager = this.getChunkManager();
 

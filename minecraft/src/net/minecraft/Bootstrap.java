@@ -18,8 +18,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.util.Language;
-import net.minecraft.util.logging.DebugPrintStreamLogger;
-import net.minecraft.util.logging.PrintStreamLogger;
+import net.minecraft.util.logging.DebugLoggerPrintStream;
+import net.minecraft.util.logging.LoggerPrintStream;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.Biome;
@@ -102,11 +102,11 @@ public class Bootstrap {
 
 	private static void setOutputStreams() {
 		if (LOGGER.isDebugEnabled()) {
-			System.setErr(new DebugPrintStreamLogger("STDERR", System.err));
-			System.setOut(new DebugPrintStreamLogger("STDOUT", SYSOUT));
+			System.setErr(new DebugLoggerPrintStream("STDERR", System.err));
+			System.setOut(new DebugLoggerPrintStream("STDOUT", SYSOUT));
 		} else {
-			System.setErr(new PrintStreamLogger("STDERR", System.err));
-			System.setOut(new PrintStreamLogger("STDOUT", SYSOUT));
+			System.setErr(new LoggerPrintStream("STDERR", System.err));
+			System.setOut(new LoggerPrintStream("STDOUT", SYSOUT));
 		}
 	}
 

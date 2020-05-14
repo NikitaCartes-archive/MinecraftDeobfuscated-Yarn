@@ -42,32 +42,32 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	);
 	private static final Text TITLE = new TranslatableText("tutorial.find_tree.title");
 	private static final Text DESCRIPTION = new TranslatableText("tutorial.find_tree.description");
-	private final TutorialManager tutorialManager;
+	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;
 
-	public FindTreeTutorialStepHandler(TutorialManager tutorialManager) {
-		this.tutorialManager = tutorialManager;
+	public FindTreeTutorialStepHandler(TutorialManager manager) {
+		this.manager = manager;
 	}
 
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.tutorialManager.getGameMode() != GameMode.SURVIVAL) {
-			this.tutorialManager.setStep(TutorialStep.NONE);
+		if (this.manager.getGameMode() != GameMode.SURVIVAL) {
+			this.manager.setStep(TutorialStep.NONE);
 		} else {
 			if (this.ticks == 1) {
-				ClientPlayerEntity clientPlayerEntity = this.tutorialManager.getClient().player;
+				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
 					for (Block block : TREE_BLOCKS) {
 						if (clientPlayerEntity.inventory.contains(new ItemStack(block))) {
-							this.tutorialManager.setStep(TutorialStep.CRAFT_PLANKS);
+							this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 							return;
 						}
 					}
 
 					if (hasBrokenTreeBlocks(clientPlayerEntity)) {
-						this.tutorialManager.setStep(TutorialStep.CRAFT_PLANKS);
+						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 						return;
 					}
 				}
@@ -75,7 +75,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 
 			if (this.ticks >= 6000 && this.toast == null) {
 				this.toast = new TutorialToast(TutorialToast.Type.TREE, TITLE, DESCRIPTION, false);
-				this.tutorialManager.getClient().getToastManager().add(this.toast);
+				this.manager.getClient().getToastManager().add(this.toast);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 		if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockState blockState = world.getBlockState(((BlockHitResult)hitResult).getBlockPos());
 			if (TREE_BLOCKS.contains(blockState.getBlock())) {
-				this.tutorialManager.setStep(TutorialStep.PUNCH_TREE);
+				this.manager.setStep(TutorialStep.PUNCH_TREE);
 			}
 		}
 	}
@@ -102,7 +102,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	public void onSlotUpdate(ItemStack stack) {
 		for (Block block : TREE_BLOCKS) {
 			if (stack.getItem() == block.asItem()) {
-				this.tutorialManager.setStep(TutorialStep.CRAFT_PLANKS);
+				this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 				return;
 			}
 		}

@@ -219,7 +219,7 @@ public class TitleScreen extends Screen {
 								);
 						}
 					} catch (IOException var16x) {
-						SystemToast.method_27023(this.client, "Demo_World");
+						SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
 						field_23775.warn("Failed to access demo world", (Throwable)var16x);
 					}
 				}
@@ -232,7 +232,7 @@ public class TitleScreen extends Screen {
 				this.buttonResetDemo.active = false;
 			}
 		} catch (IOException var16) {
-			SystemToast.method_27023(this.client, "Demo_World");
+			SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
 			field_23775.warn("Failed to read demo world data", (Throwable)var16);
 		}
 	}
@@ -346,7 +346,7 @@ public class TitleScreen extends Screen {
 			try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
 				session.deleteSessionLock();
 			} catch (IOException var15) {
-				SystemToast.method_27025(this.client, "Demo_World");
+				SystemToast.addWorldDeleteFailureToast(this.client, "Demo_World");
 				field_23775.warn("Failed to delete demo world", (Throwable)var15);
 			}
 		}

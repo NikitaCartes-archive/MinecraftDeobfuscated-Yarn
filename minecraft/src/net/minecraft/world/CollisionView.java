@@ -64,12 +64,12 @@ public interface CollisionView extends BlockView {
 	}
 
 	default Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box) {
-		int i = MathHelper.floor(box.x1 - 1.0E-7) - 1;
-		int j = MathHelper.floor(box.x2 + 1.0E-7) + 1;
-		int k = MathHelper.floor(box.y1 - 1.0E-7) - 1;
-		int l = MathHelper.floor(box.y2 + 1.0E-7) + 1;
-		int m = MathHelper.floor(box.z1 - 1.0E-7) - 1;
-		int n = MathHelper.floor(box.z2 + 1.0E-7) + 1;
+		int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
+		int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
+		int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
+		int l = MathHelper.floor(box.maxY + 1.0E-7) + 1;
+		int m = MathHelper.floor(box.minZ - 1.0E-7) - 1;
+		int n = MathHelper.floor(box.maxZ + 1.0E-7) + 1;
 		final ShapeContext shapeContext = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
 		final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
 		final BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -130,6 +130,6 @@ public interface CollisionView extends BlockView {
 		double e = (double)MathHelper.floor(worldBorder.getBoundNorth());
 		double f = (double)MathHelper.ceil(worldBorder.getBoundEast());
 		double g = (double)MathHelper.ceil(worldBorder.getBoundSouth());
-		return box.x1 > d && box.x1 < f && box.z1 > e && box.z1 < g && box.x2 > d && box.x2 < f && box.z2 > e && box.z2 < g;
+		return box.minX > d && box.minX < f && box.minZ > e && box.minZ < g && box.maxX > d && box.maxX < f && box.maxZ > e && box.maxZ < g;
 	}
 }

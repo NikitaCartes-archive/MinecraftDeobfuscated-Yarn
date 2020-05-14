@@ -1309,8 +1309,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			this.method_20945(this.mServerData, matrices, width, y, mouseY, i);
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.method_20945(this.mServerData, matrices, x, y, mouseX, mouseY);
 		}
 
 		@Override
@@ -1438,8 +1438,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			this.renderTrialItem(matrices, x, width, y, mouseY, i);
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.renderTrialItem(matrices, index, x, y, mouseX, mouseY);
 		}
 
 		@Override

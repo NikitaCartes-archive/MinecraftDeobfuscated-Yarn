@@ -982,13 +982,13 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	@Nullable
 	private Vec3d method_27930(Vec3d vec3d, LivingEntity livingEntity) {
 		double d = this.getX() + vec3d.x;
-		double e = this.getBoundingBox().y1;
+		double e = this.getBoundingBox().minY;
 		double f = this.getZ() + vec3d.z;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (EntityPose entityPose : livingEntity.getPoses()) {
 			mutable.set(d, e, f);
-			double g = this.getBoundingBox().y2 + 0.75;
+			double g = this.getBoundingBox().maxY + 0.75;
 
 			do {
 				double h = this.world.method_26372(mutable);
