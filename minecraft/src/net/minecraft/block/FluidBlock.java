@@ -175,7 +175,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 		if (this.fluid.isIn(FluidTags.LAVA)) {
 			float f = (float)pos.getY() + state.getFluidState().getHeight(world, pos);
 			Box box = entity.getBoundingBox();
-			if (box.y1 < (double)f || (double)f > box.y2) {
+			if (box.minY < (double)f || (double)f > box.maxY) {
 				entity.setInLava();
 			}
 		}

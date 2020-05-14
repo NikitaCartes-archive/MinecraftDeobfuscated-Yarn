@@ -132,9 +132,9 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			}
 
 			@Override
-			public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				BuffetBiomesListWidget.this.drawStringWithShadow(
-					matrices, CustomizeBuffetLevelScreen.this.textRenderer, this.field_24564.getName().getString(), width + 5, y + 2, 16777215
+					matrices, CustomizeBuffetLevelScreen.this.textRenderer, this.field_24564.getName().getString(), x + 5, y + 2, 16777215
 				);
 			}
 

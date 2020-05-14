@@ -6,11 +6,11 @@ import javax.annotation.Nullable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PrintStreamLogger extends PrintStream {
+public class LoggerPrintStream extends PrintStream {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	protected final String name;
 
-	public PrintStreamLogger(String name, OutputStream out) {
+	public LoggerPrintStream(String name, OutputStream out) {
 		super(out);
 		this.name = name;
 	}

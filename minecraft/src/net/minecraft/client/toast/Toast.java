@@ -12,12 +12,12 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public interface Toast {
 	Identifier TOASTS_TEX = new Identifier("textures/gui/toasts.png");
-	Object field_2208 = new Object();
+	Object TYPE = new Object();
 
-	Toast.Visibility draw(MatrixStack matrixStack, ToastManager toastManager, long l);
+	Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime);
 
 	default Object getType() {
-		return field_2208;
+		return TYPE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -27,8 +27,8 @@ public interface Toast {
 
 		private final SoundEvent sound;
 
-		private Visibility(SoundEvent soundEvent) {
-			this.sound = soundEvent;
+		private Visibility(SoundEvent sound) {
+			this.sound = sound;
 		}
 
 		public void playSound(SoundManager soundManager) {

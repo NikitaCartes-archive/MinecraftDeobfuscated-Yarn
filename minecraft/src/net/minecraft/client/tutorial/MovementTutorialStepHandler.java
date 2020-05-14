@@ -31,8 +31,8 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	private int moveAroundCompletionTicks = -1;
 	private int lookAroundCompletionTicks = -1;
 
-	public MovementTutorialStepHandler(TutorialManager tutorialManager) {
-		this.manager = tutorialManager;
+	public MovementTutorialStepHandler(TutorialManager manager) {
+		this.manager = manager;
 	}
 
 	@Override

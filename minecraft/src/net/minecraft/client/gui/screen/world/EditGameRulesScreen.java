@@ -133,10 +133,10 @@ public class EditGameRulesScreen extends Screen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			this.toggleButton.x = width;
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.toggleButton.x = x;
 			this.toggleButton.y = y;
-			this.toggleButton.render(matrices, mouseY, i, tickDelta);
+			this.toggleButton.render(matrices, mouseX, mouseY, tickDelta);
 		}
 
 		@Override
@@ -171,11 +171,11 @@ public class EditGameRulesScreen extends Screen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			EditGameRulesScreen.this.client.textRenderer.draw(matrices, this.name, (float)width, (float)(y + 5), 16777215);
-			this.valueWidget.x = width + height - 44;
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			EditGameRulesScreen.this.client.textRenderer.draw(matrices, this.name, (float)x, (float)(y + 5), 16777215);
+			this.valueWidget.x = x + entryWidth - 44;
 			this.valueWidget.y = y;
-			this.valueWidget.render(matrices, mouseY, i, tickDelta);
+			this.valueWidget.render(matrices, mouseX, mouseY, tickDelta);
 		}
 
 		@Override
@@ -194,8 +194,8 @@ public class EditGameRulesScreen extends Screen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			EditGameRulesScreen.this.drawCenteredText(matrices, EditGameRulesScreen.this.client.textRenderer, this.name, width + height / 2, y + 5, 16777215);
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			EditGameRulesScreen.this.drawCenteredText(matrices, EditGameRulesScreen.this.client.textRenderer, this.name, x + entryWidth / 2, y + 5, 16777215);
 		}
 
 		@Override

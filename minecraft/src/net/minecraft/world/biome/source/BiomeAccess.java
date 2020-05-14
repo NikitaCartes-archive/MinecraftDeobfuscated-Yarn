@@ -18,8 +18,8 @@ public class BiomeAccess {
 		this.type = type;
 	}
 
-	public static long method_27984(long l) {
-		return Hashing.sha256().hashLong(l).asLong();
+	public static long hashSeed(long seed) {
+		return Hashing.sha256().hashLong(seed).asLong();
 	}
 
 	public BiomeAccess withSource(BiomeSource source) {
@@ -39,10 +39,10 @@ public class BiomeAccess {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Biome method_27344(BlockPos blockPos) {
-		int i = blockPos.getX() >> 2;
-		int j = blockPos.getY() >> 2;
-		int k = blockPos.getZ() >> 2;
+	public Biome method_27344(BlockPos pos) {
+		int i = pos.getX() >> 2;
+		int j = pos.getY() >> 2;
+		int k = pos.getZ() >> 2;
 		return this.getBiomeForNoiseGen(i, j, k);
 	}
 

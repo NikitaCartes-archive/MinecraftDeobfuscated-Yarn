@@ -121,9 +121,9 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (!notify) {
-			super.onBlockRemoved(state, world, pos, newState, notify);
+			super.onStateReplaced(state, world, pos, newState, notify);
 			if (((RailShape)state.get(this.getShapeProperty())).isAscending()) {
 				world.updateNeighborsAlways(pos.up(), this);
 			}

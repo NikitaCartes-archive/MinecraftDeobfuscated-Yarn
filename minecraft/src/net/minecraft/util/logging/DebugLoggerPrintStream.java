@@ -2,8 +2,8 @@ package net.minecraft.util.logging;
 
 import java.io.OutputStream;
 
-public class DebugPrintStreamLogger extends PrintStreamLogger {
-	public DebugPrintStreamLogger(String string, OutputStream outputStream) {
+public class DebugLoggerPrintStream extends LoggerPrintStream {
+	public DebugLoggerPrintStream(String string, OutputStream outputStream) {
 		super(string, outputStream);
 	}
 

@@ -62,10 +62,10 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			this.buttons.forEach(abstractButtonWidget -> {
 				abstractButtonWidget.y = y;
-				abstractButtonWidget.render(matrices, mouseY, i, tickDelta);
+				abstractButtonWidget.render(matrices, mouseX, mouseY, tickDelta);
 			});
 		}
 

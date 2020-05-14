@@ -5,8 +5,8 @@ import net.minecraft.class_5284;
 public class CavesChunkGeneratorConfig extends class_5284 {
 	public CavesChunkGeneratorConfig(ChunkGeneratorConfig chunkGeneratorConfig) {
 		super(chunkGeneratorConfig);
-		chunkGeneratorConfig.field_24507 = 25;
-		chunkGeneratorConfig.field_24508 = 10;
+		chunkGeneratorConfig.ruinedPortalSpacing = 25;
+		chunkGeneratorConfig.ruinedPortalSeparation = 10;
 	}
 
 	@Override

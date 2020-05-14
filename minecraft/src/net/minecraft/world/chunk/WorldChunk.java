@@ -281,7 +281,7 @@ public class WorldChunk implements Chunk {
 			}
 
 			if (!this.world.isClient) {
-				blockState.onBlockRemoved(this.world, pos, state, moved);
+				blockState.onStateReplaced(this.world, pos, state, moved);
 			} else if (block2 != block && block2 instanceof BlockEntityProvider) {
 				this.world.removeBlockEntity(pos);
 			}
@@ -477,8 +477,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	public void getEntities(@Nullable Entity except, Box box, List<Entity> entityList, @Nullable Predicate<? super Entity> predicate) {
-		int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
-		int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
@@ -504,8 +504,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	public <T extends Entity> void getEntities(@Nullable EntityType<?> type, Box box, List<? super T> list, Predicate<? super T> predicate) {
-		int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
-		int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
@@ -519,8 +519,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> result, @Nullable Predicate<? super T> predicate) {
-		int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
-		int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
+		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
+		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 

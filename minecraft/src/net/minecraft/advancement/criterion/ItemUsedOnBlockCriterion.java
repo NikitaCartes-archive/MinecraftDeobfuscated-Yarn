@@ -13,20 +13,20 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-public class BlockUsedCriterion extends AbstractCriterion<BlockUsedCriterion.Conditions> {
-	private static final Identifier id = new Identifier("item_used_on_block");
+public class ItemUsedOnBlockCriterion extends AbstractCriterion<ItemUsedOnBlockCriterion.Conditions> {
+	private static final Identifier ID = new Identifier("item_used_on_block");
 
 	@Override
 	public Identifier getId() {
-		return id;
+		return ID;
 	}
 
-	public BlockUsedCriterion.Conditions conditionsFromJson(
+	public ItemUsedOnBlockCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new BlockUsedCriterion.Conditions(extended, locationPredicate, itemPredicate);
+		return new ItemUsedOnBlockCriterion.Conditions(extended, locationPredicate, itemPredicate);
 	}
 
 	public void test(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
@@ -35,27 +35,27 @@ public class BlockUsedCriterion extends AbstractCriterion<BlockUsedCriterion.Con
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final LocationPredicate field_24495;
+		private final LocationPredicate location;
 		private final ItemPredicate item;
 
-		public Conditions(EntityPredicate.Extended extended, LocationPredicate locationPredicate, ItemPredicate itemPredicate) {
-			super(BlockUsedCriterion.id, extended);
-			this.field_24495 = locationPredicate;
-			this.item = itemPredicate;
+		public Conditions(EntityPredicate.Extended extended, LocationPredicate location, ItemPredicate item) {
+			super(ItemUsedOnBlockCriterion.ID, extended);
+			this.location = location;
+			this.item = item;
 		}
 
-		public static BlockUsedCriterion.Conditions method_27981(LocationPredicate.Builder builder, ItemPredicate.Builder builder2) {
-			return new BlockUsedCriterion.Conditions(EntityPredicate.Extended.EMPTY, builder.build(), builder2.build());
+		public static ItemUsedOnBlockCriterion.Conditions create(LocationPredicate.Builder builder, ItemPredicate.Builder builder2) {
+			return new ItemUsedOnBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, builder.build(), builder2.build());
 		}
 
 		public boolean test(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
-			return !this.field_24495.test(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) ? false : this.item.test(stack);
+			return !this.location.test(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) ? false : this.item.test(stack);
 		}
 
 		@Override
 		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
 			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("location", this.field_24495.toJson());
+			jsonObject.add("location", this.location.toJson());
 			jsonObject.add("item", this.item.toJson());
 			return jsonObject;
 		}

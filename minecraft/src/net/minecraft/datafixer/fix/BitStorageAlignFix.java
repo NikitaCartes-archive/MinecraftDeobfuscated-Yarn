@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -16,9 +16,9 @@ import java.util.stream.LongStream;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.math.MathHelper;
 
-public class class_5196 extends DataFix {
-	public class_5196(Schema schema) {
-		super(schema, false);
+public class BitStorageAlignFix extends DataFix {
+	public BitStorageAlignFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

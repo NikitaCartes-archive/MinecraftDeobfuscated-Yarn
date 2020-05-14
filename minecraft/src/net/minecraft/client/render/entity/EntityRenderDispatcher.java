@@ -429,11 +429,11 @@ public class EntityRenderDispatcher {
 						}
 
 						Box box = voxelShape.getBoundingBox();
-						double d = (double)pos.getX() + box.x1;
-						double e = (double)pos.getX() + box.x2;
-						double g = (double)pos.getY() + box.y1;
-						double h = (double)pos.getZ() + box.z1;
-						double i = (double)pos.getZ() + box.z2;
+						double d = (double)pos.getX() + box.minX;
+						double e = (double)pos.getX() + box.maxX;
+						double g = (double)pos.getY() + box.minY;
+						double h = (double)pos.getZ() + box.minZ;
+						double i = (double)pos.getZ() + box.maxZ;
 						float j = (float)(d - x);
 						float k = (float)(e - x);
 						float l = (float)(g - y);

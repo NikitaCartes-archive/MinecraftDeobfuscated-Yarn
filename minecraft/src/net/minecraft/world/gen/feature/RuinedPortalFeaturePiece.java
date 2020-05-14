@@ -61,7 +61,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		BlockMirror mirror,
 		BlockPos center
 	) {
-		super(StructurePieceType.RUPO, 0);
+		super(StructurePieceType.RUINED_PORTAL, 0);
 		this.pos = pos;
 		this.template = template;
 		this.rotation = rotation;
@@ -72,7 +72,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 	}
 
 	public RuinedPortalFeaturePiece(StructureManager manager, CompoundTag tag) {
-		super(StructurePieceType.RUPO, tag);
+		super(StructurePieceType.RUINED_PORTAL, tag);
 		this.template = new Identifier(tag.getString("Template"));
 		this.rotation = BlockRotation.valueOf(tag.getString("Rotation"));
 		this.mirror = BlockMirror.valueOf(tag.getString("Mirror"));

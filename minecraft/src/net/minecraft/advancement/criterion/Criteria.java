@@ -3,8 +3,6 @@ package net.minecraft.advancement.criterion;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.class_5279;
-import net.minecraft.class_5282;
 import net.minecraft.util.Identifier;
 
 public class Criteria {
@@ -47,9 +45,9 @@ public class Criteria {
 	public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = register(new SlideDownBlockCriterion());
 	public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = register(new BeeNestDestroyedCriterion());
 	public static final TargetHitCriterion TARGET_HIT = register(new TargetHitCriterion());
-	public static final BlockUsedCriterion field_24478 = register(new BlockUsedCriterion());
-	public static final class_5282 field_24479 = register(new class_5282());
-	public static final class_5279 field_24480 = register(new class_5279());
+	public static final ItemUsedOnBlockCriterion ITEM_USED_ON_BLOCK = register(new ItemUsedOnBlockCriterion());
+	public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = register(new PlayerGeneratesContainerLootCriterion());
+	public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = register(new ThrownItemPickedUpByEntityCriterion());
 
 	private static <T extends Criterion<?>> T register(T object) {
 		if (VALUES.containsKey(object.getId())) {

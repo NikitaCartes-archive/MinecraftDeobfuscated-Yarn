@@ -259,8 +259,8 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			this.renderPendingInvitationItem(matrices, this.mPendingInvite, width, y, mouseY, i);
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.renderPendingInvitationItem(matrices, this.mPendingInvite, x, y, mouseX, mouseY);
 		}
 
 		@Override

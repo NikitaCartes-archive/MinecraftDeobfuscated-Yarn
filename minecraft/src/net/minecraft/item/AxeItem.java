@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 
 public class AxeItem extends MiningToolItem {
 	private static final Set<Material> field_23139 = Sets.<Material>newHashSet(
-		Material.WOOD, Material.NETHER_WOOD, Material.PLANT, Material.REPLACEABLE_PLANT, Material.BAMBOO, Material.PUMPKIN
+		Material.WOOD, Material.NETHER_WOOD, Material.PLANT, Material.REPLACEABLE_PLANT, Material.BAMBOO, Material.GOURD
 	);
 	private static final Set<Block> EFFECTIVE_BLOCKS = Sets.<Block>newHashSet(
 		Blocks.LADDER,

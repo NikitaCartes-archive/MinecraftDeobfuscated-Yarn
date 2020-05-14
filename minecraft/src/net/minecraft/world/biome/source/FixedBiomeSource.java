@@ -21,7 +21,7 @@ public class FixedBiomeSource extends BiomeSource {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public BiomeSource method_27985(long l) {
+	public BiomeSource create(long seed) {
 		return this;
 	}
 

@@ -30,7 +30,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 	@Override
 	protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-		return chunkGeneratorConfig.getMansionDistance();
+		return chunkGeneratorConfig.getMansionSpacing();
 	}
 
 	@Override

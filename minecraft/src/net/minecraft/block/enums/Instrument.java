@@ -70,7 +70,7 @@ public enum Instrument implements StringIdentifiable {
 			Material material = state.getMaterial();
 			if (material == Material.STONE) {
 				return BASEDRUM;
-			} else if (material == Material.SAND) {
+			} else if (material == Material.AGGREGATE) {
 				return SNARE;
 			} else if (material == Material.GLASS) {
 				return HAT;

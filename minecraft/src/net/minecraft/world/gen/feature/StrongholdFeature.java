@@ -124,7 +124,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 			}
 		}
 
-		int i = chunkGenerator.getConfig().getStrongholdDistance();
+		int i = chunkGenerator.getConfig().getStrongholdSpacing();
 		int j = chunkGenerator.getConfig().getStrongholdCount();
 		int k = chunkGenerator.getConfig().getStrongholdSpread();
 		this.startPositions = new ChunkPos[j];
