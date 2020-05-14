@@ -8,10 +8,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_5289;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.GameModeSwitcherScreen;
 import net.minecraft.client.gui.screen.options.AccessibilityScreen;
 import net.minecraft.client.gui.screen.options.ChatOptionsScreen;
 import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
@@ -115,7 +115,7 @@ public class Keyboard {
                 } else if (!this.client.player.isSpectator()) {
                     this.client.player.sendChatMessage("/gamemode spectator");
                 } else {
-                    this.client.player.sendChatMessage("/gamemode " + this.client.interactionManager.method_28107().getName());
+                    this.client.player.sendChatMessage("/gamemode " + this.client.interactionManager.getPreviousGameMode().getName());
                 }
                 return true;
             }
@@ -123,7 +123,7 @@ public class Keyboard {
                 if (!this.client.player.hasPermissionLevel(2)) {
                     this.debugWarn("debug.gamemodes.error", new Object[0]);
                 } else {
-                    this.client.openScreen(new class_5289());
+                    this.client.openScreen(new GameModeSwitcherScreen());
                 }
                 return true;
             }
@@ -302,9 +302,9 @@ public class Keyboard {
             }
         }
         if (this.client.currentScreen == null || this.client.currentScreen.passEvents) {
-            InputUtil.KeyCode keyCode = InputUtil.getKeyCode(key, scancode);
+            InputUtil.Key key2 = InputUtil.fromKeyCode(key, scancode);
             if (i == 0) {
-                KeyBinding.setKeyPressed(keyCode, false);
+                KeyBinding.setKeyPressed(key2, false);
                 if (key == 292) {
                     if (this.switchF3State) {
                         this.switchF3State = false;
@@ -331,10 +331,10 @@ public class Keyboard {
                     }
                 }
                 if (bl22) {
-                    KeyBinding.setKeyPressed(keyCode, false);
+                    KeyBinding.setKeyPressed(key2, false);
                 } else {
-                    KeyBinding.setKeyPressed(keyCode, true);
-                    KeyBinding.onKeyPressed(keyCode);
+                    KeyBinding.setKeyPressed(key2, true);
+                    KeyBinding.onKeyPressed(key2);
                 }
                 if (this.client.options.debugProfilerEnabled && key >= 48 && key <= 57) {
                     this.client.handleProfilerKeyPress(key - 48);

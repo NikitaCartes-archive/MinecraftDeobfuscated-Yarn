@@ -12,8 +12,6 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5196;
-import net.minecraft.class_5277;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
@@ -24,6 +22,7 @@ import net.minecraft.datafixer.fix.BeehiveRenameFix;
 import net.minecraft.datafixer.fix.BiomeFormatFix;
 import net.minecraft.datafixer.fix.BiomeRenameFix;
 import net.minecraft.datafixer.fix.BiomesFix;
+import net.minecraft.datafixer.fix.BitStorageAlignFix;
 import net.minecraft.datafixer.fix.BlockEntityBannerColorFix;
 import net.minecraft.datafixer.fix.BlockEntityBlockStateFix;
 import net.minecraft.datafixer.fix.BlockEntityCustomNameToTextFix;
@@ -66,6 +65,7 @@ import net.minecraft.datafixer.fix.EntityRavagerRenameFix;
 import net.minecraft.datafixer.fix.EntityRedundantChanceTagsFix;
 import net.minecraft.datafixer.fix.EntityRidingToPassengerFix;
 import net.minecraft.datafixer.fix.EntityShulkerColorFix;
+import net.minecraft.datafixer.fix.EntityShulkerRotationFix;
 import net.minecraft.datafixer.fix.EntitySkeletonSplitFix;
 import net.minecraft.datafixer.fix.EntityStringUuidFix;
 import net.minecraft.datafixer.fix.EntityTheRenameningBlock;
@@ -499,7 +499,7 @@ public class Schemas {
         Schema schema113 = builder.addSchema(2523, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new RenameItemStackAttributesFix(schema113));
         Schema schema114 = builder.addSchema(2527, EMPTY_IDENTIFIER_NORMALIZE);
-        builder.addFixer(new class_5196(schema114));
+        builder.addFixer(new BitStorageAlignFix(schema114));
         Schema schema115 = builder.addSchema(2528, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(ItemNameFix.create(schema115, "Rename soul fire torch and soul fire lantern", string -> ImmutableMap.of("minecraft:soul_fire_torch", "minecraft:soul_torch", "minecraft:soul_fire_lantern", "minecraft:soul_lantern").getOrDefault(string, (String)string)));
         builder.addFixer(BlockNameFix.create(schema115, "Rename soul fire torch and soul fire lantern", string -> ImmutableMap.of("minecraft:soul_fire_torch", "minecraft:soul_torch", "minecraft:soul_fire_wall_torch", "minecraft:soul_wall_torch", "minecraft:soul_fire_lantern", "minecraft:soul_lantern").getOrDefault(string, (String)string)));
@@ -510,7 +510,7 @@ public class Schemas {
         Schema schema118 = builder.addSchema(2533, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new VillagerFollowRangeFix(schema118));
         Schema schema119 = builder.addSchema(2535, EMPTY_IDENTIFIER_NORMALIZE);
-        builder.addFixer(new class_5277(schema119));
+        builder.addFixer(new EntityShulkerRotationFix(schema119));
     }
 }
 

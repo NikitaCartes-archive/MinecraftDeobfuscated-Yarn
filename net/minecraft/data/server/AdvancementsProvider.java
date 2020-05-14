@@ -31,8 +31,8 @@ implements DataProvider {
     private final DataGenerator root;
     private final List<Consumer<Consumer<Advancement>>> tabGenerators = ImmutableList.of(new EndTabAdvancementGenerator(), new HusbandryTabAdvancementGenerator(), new AdventureTabAdvancementGenerator(), new NetherTabAdvancementGenerator(), new StoryTabAdvancementGenerator());
 
-    public AdvancementsProvider(DataGenerator dataGenerator) {
-        this.root = dataGenerator;
+    public AdvancementsProvider(DataGenerator root) {
+        this.root = root;
     }
 
     @Override

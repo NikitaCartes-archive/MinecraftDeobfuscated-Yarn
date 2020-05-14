@@ -49,14 +49,14 @@ public class EntityPredicate {
     private final EntityEquipmentPredicate equipment;
     private final PlayerPredicate player;
     private final FishingHookPredicate fishingHook;
-    private final EntityPredicate field_24488;
-    private final EntityPredicate field_24489;
+    private final EntityPredicate vehicle;
+    private final EntityPredicate targetedEntity;
     @Nullable
     private final String team;
     @Nullable
     private final Identifier catType;
 
-    private EntityPredicate(EntityTypePredicate type, DistancePredicate distance, LocationPredicate location, EntityEffectPredicate effects, NbtPredicate nbt, EntityFlagsPredicate flags, EntityEquipmentPredicate equipment, PlayerPredicate player, FishingHookPredicate fishingHook, EntityPredicate entityPredicate, EntityPredicate entityPredicate2, @Nullable String string, @Nullable Identifier identifier) {
+    private EntityPredicate(EntityTypePredicate type, DistancePredicate distance, LocationPredicate location, EntityEffectPredicate effects, NbtPredicate nbt, EntityFlagsPredicate flags, EntityEquipmentPredicate equipment, PlayerPredicate player, FishingHookPredicate fishingHook, EntityPredicate vehicle, EntityPredicate targetedEntity, @Nullable String team, @Nullable Identifier catType) {
         this.type = type;
         this.distance = distance;
         this.location = location;
@@ -66,10 +66,10 @@ public class EntityPredicate {
         this.equipment = equipment;
         this.player = player;
         this.fishingHook = fishingHook;
-        this.field_24488 = entityPredicate;
-        this.field_24489 = entityPredicate2;
-        this.team = string;
-        this.catType = identifier;
+        this.vehicle = vehicle;
+        this.targetedEntity = targetedEntity;
+        this.team = team;
+        this.catType = catType;
     }
 
     public boolean test(ServerPlayerEntity player, @Nullable Entity entity) {
@@ -111,10 +111,10 @@ public class EntityPredicate {
         if (!this.fishingHook.test(entity)) {
             return false;
         }
-        if (!this.field_24488.test(world, pos, entity.getVehicle())) {
+        if (!this.vehicle.test(world, pos, entity.getVehicle())) {
             return false;
         }
-        if (!this.field_24489.test(world, pos, entity instanceof MobEntity ? ((MobEntity)entity).getTarget() : null)) {
+        if (!this.targetedEntity.test(world, pos, entity instanceof MobEntity ? ((MobEntity)entity).getTarget() : null)) {
             return false;
         }
         if (!(this.team == null || (abstractTeam = entity.getScoreboardTeam()) != null && this.team.equals(abstractTeam.getName()))) {
@@ -141,7 +141,7 @@ public class EntityPredicate {
         EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("targeted_entity"));
         String string = JsonHelper.getString(jsonObject, "team", null);
         Identifier identifier = jsonObject.has("catType") ? new Identifier(JsonHelper.getString(jsonObject, "catType")) : null;
-        return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).player(playerPredicate).fishHook(fishingHookPredicate).team(string).method_27971(entityPredicate).method_27972(entityPredicate2).catType(identifier).build();
+        return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).player(playerPredicate).fishHook(fishingHookPredicate).team(string).vehicle(entityPredicate).targetedEntity(entityPredicate2).catType(identifier).build();
     }
 
     public JsonElement toJson() {
@@ -158,8 +158,8 @@ public class EntityPredicate {
         jsonObject.add("equipment", this.equipment.toJson());
         jsonObject.add("player", this.player.toJson());
         jsonObject.add("fishing_hook", this.fishingHook.toJson());
-        jsonObject.add("vehicle", this.field_24488.toJson());
-        jsonObject.add("targeted_entity", this.field_24489.toJson());
+        jsonObject.add("vehicle", this.vehicle.toJson());
+        jsonObject.add("targeted_entity", this.targetedEntity.toJson());
         jsonObject.addProperty("team", this.team);
         if (this.catType != null) {
             jsonObject.addProperty("catType", this.catType.toString());
@@ -181,8 +181,8 @@ public class EntityPredicate {
             this.combinedCondition = LootConditions.joinAnd(conditions);
         }
 
-        public static Extended method_27973(LootCondition ... lootConditions) {
-            return new Extended(lootConditions);
+        public static Extended create(LootCondition ... conditions) {
+            return new Extended(conditions);
         }
 
         public static Extended getInJson(JsonObject root, String key, AdvancementEntityPredicateDeserializer predicateDeserializer) {
@@ -253,8 +253,8 @@ public class EntityPredicate {
         private EntityEquipmentPredicate equipment = EntityEquipmentPredicate.ANY;
         private PlayerPredicate player = PlayerPredicate.ANY;
         private FishingHookPredicate fishHook = FishingHookPredicate.ANY;
-        private EntityPredicate field_24490 = ANY;
-        private EntityPredicate field_24491 = ANY;
+        private EntityPredicate vehicle = ANY;
+        private EntityPredicate targetedEntity = ANY;
         private String team;
         private Identifier catType;
 
@@ -322,13 +322,13 @@ public class EntityPredicate {
             return this;
         }
 
-        public Builder method_27971(EntityPredicate entityPredicate) {
-            this.field_24490 = entityPredicate;
+        public Builder vehicle(EntityPredicate vehicle) {
+            this.vehicle = vehicle;
             return this;
         }
 
-        public Builder method_27972(EntityPredicate entityPredicate) {
-            this.field_24491 = entityPredicate;
+        public Builder targetedEntity(EntityPredicate targetedEntity) {
+            this.targetedEntity = targetedEntity;
             return this;
         }
 
@@ -343,7 +343,7 @@ public class EntityPredicate {
         }
 
         public EntityPredicate build() {
-            return new EntityPredicate(this.type, this.distance, this.location, this.effects, this.nbt, this.flags, this.equipment, this.player, this.fishHook, this.field_24490, this.field_24491, this.team, this.catType);
+            return new EntityPredicate(this.type, this.distance, this.location, this.effects, this.nbt, this.flags, this.equipment, this.player, this.fishHook, this.vehicle, this.targetedEntity, this.team, this.catType);
         }
     }
 }

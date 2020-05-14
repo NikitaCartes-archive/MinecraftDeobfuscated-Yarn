@@ -27,12 +27,12 @@ implements TutorialStepHandler {
     private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title");
     private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
     private final TutorialManager manager;
-    private TutorialToast field_5637;
+    private TutorialToast toast;
     private int ticks;
     private int field_5635;
 
-    public PunchTreeTutorialStepHandler(TutorialManager tutorialManager) {
-        this.manager = tutorialManager;
+    public PunchTreeTutorialStepHandler(TutorialManager manager) {
+        this.manager = manager;
     }
 
     @Override
@@ -53,17 +53,17 @@ implements TutorialStepHandler {
                 return;
             }
         }
-        if ((this.ticks >= 600 || this.field_5635 > 3) && this.field_5637 == null) {
-            this.field_5637 = new TutorialToast(TutorialToast.Type.TREE, TITLE, DESCRIPTION, true);
-            this.manager.getClient().getToastManager().add(this.field_5637);
+        if ((this.ticks >= 600 || this.field_5635 > 3) && this.toast == null) {
+            this.toast = new TutorialToast(TutorialToast.Type.TREE, TITLE, DESCRIPTION, true);
+            this.manager.getClient().getToastManager().add(this.toast);
         }
     }
 
     @Override
     public void destroy() {
-        if (this.field_5637 != null) {
-            this.field_5637.hide();
-            this.field_5637 = null;
+        if (this.toast != null) {
+            this.toast.hide();
+            this.toast = null;
         }
     }
 
@@ -71,14 +71,14 @@ implements TutorialStepHandler {
     public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
         boolean bl = state.isIn(BlockTags.LOGS);
         if (bl && f > 0.0f) {
-            if (this.field_5637 != null) {
-                this.field_5637.setProgress(f);
+            if (this.toast != null) {
+                this.toast.setProgress(f);
             }
             if (f >= 1.0f) {
                 this.manager.setStep(TutorialStep.OPEN_INVENTORY);
             }
-        } else if (this.field_5637 != null) {
-            this.field_5637.setProgress(0.0f);
+        } else if (this.toast != null) {
+            this.toast.setProgress(0.0f);
         } else if (bl) {
             ++this.field_5635;
         }

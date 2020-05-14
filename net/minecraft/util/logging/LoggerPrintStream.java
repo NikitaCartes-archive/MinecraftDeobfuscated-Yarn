@@ -9,12 +9,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-public class PrintStreamLogger
+public class LoggerPrintStream
 extends PrintStream {
     protected static final Logger LOGGER = LogManager.getLogger();
     protected final String name;
 
-    public PrintStreamLogger(String name, OutputStream out) {
+    public LoggerPrintStream(String name, OutputStream out) {
         super(out);
         this.name = name;
     }

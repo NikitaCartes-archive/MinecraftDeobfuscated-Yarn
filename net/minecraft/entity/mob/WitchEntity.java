@@ -172,7 +172,7 @@ implements RangedAttackMob {
     public void handleStatus(byte status) {
         if (status == 15) {
             for (int i = 0; i < this.random.nextInt(35) + 10; ++i) {
-                this.world.addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double)0.13f, this.getBoundingBox().y2 + 0.5 + this.random.nextGaussian() * (double)0.13f, this.getZ() + this.random.nextGaussian() * (double)0.13f, 0.0, 0.0, 0.0);
+                this.world.addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double)0.13f, this.getBoundingBox().maxY + 0.5 + this.random.nextGaussian() * (double)0.13f, this.getZ() + this.random.nextGaussian() * (double)0.13f, 0.0, 0.0, 0.0);
             }
         } else {
             super.handleStatus(status);

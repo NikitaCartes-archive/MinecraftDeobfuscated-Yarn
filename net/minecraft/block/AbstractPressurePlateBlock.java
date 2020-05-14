@@ -104,14 +104,14 @@ extends Block {
     protected abstract void playDepressSound(WorldAccess var1, BlockPos var2);
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (notify || state.isOf(newState.getBlock())) {
             return;
         }
         if (this.getRedstoneOutput(state) > 0) {
             this.updateNeighbors(world, pos);
         }
-        super.onBlockRemoved(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, notify);
     }
 
     protected void updateNeighbors(World world, BlockPos pos) {

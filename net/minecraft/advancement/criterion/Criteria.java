@@ -6,7 +6,6 @@ package net.minecraft.advancement.criterion;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import net.minecraft.advancement.criterion.BeeNestDestroyedCriterion;
-import net.minecraft.advancement.criterion.BlockUsedCriterion;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.BrewedPotionCriterion;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
@@ -25,12 +24,14 @@ import net.minecraft.advancement.criterion.FishingRodHookedCriterion;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
+import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LevitationCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.NetherTravelCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
+import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
 import net.minecraft.advancement.criterion.PlayerHurtEntityCriterion;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
@@ -38,12 +39,11 @@ import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.advancement.criterion.TargetHitCriterion;
+import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.advancement.criterion.UsedEnderEyeCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
-import net.minecraft.class_5279;
-import net.minecraft.class_5282;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,9 +87,9 @@ public class Criteria {
     public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = Criteria.register(new SlideDownBlockCriterion());
     public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = Criteria.register(new BeeNestDestroyedCriterion());
     public static final TargetHitCriterion TARGET_HIT = Criteria.register(new TargetHitCriterion());
-    public static final BlockUsedCriterion field_24478 = Criteria.register(new BlockUsedCriterion());
-    public static final class_5282 field_24479 = Criteria.register(new class_5282());
-    public static final class_5279 field_24480 = Criteria.register(new class_5279());
+    public static final ItemUsedOnBlockCriterion ITEM_USED_ON_BLOCK = Criteria.register(new ItemUsedOnBlockCriterion());
+    public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = Criteria.register(new PlayerGeneratesContainerLootCriterion());
+    public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = Criteria.register(new ThrownItemPickedUpByEntityCriterion());
 
     private static <T extends Criterion<?>> T register(T object) {
         if (VALUES.containsKey(object.getId())) {

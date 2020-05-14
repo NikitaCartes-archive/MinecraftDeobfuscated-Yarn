@@ -29,8 +29,8 @@ extends BiomeSource {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public BiomeSource method_27985(long l) {
-        return new VanillaLayeredBiomeSource(l, this.field_24498, this.field_24499);
+    public BiomeSource create(long seed) {
+        return new VanillaLayeredBiomeSource(seed, this.field_24498, this.field_24499);
     }
 
     @Override

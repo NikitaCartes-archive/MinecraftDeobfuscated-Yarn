@@ -355,8 +355,8 @@ implements Monster {
     }
 
     private void launchLivingEntities(List<Entity> entities) {
-        double d = (this.partBody.getBoundingBox().x1 + this.partBody.getBoundingBox().x2) / 2.0;
-        double e = (this.partBody.getBoundingBox().z1 + this.partBody.getBoundingBox().z2) / 2.0;
+        double d = (this.partBody.getBoundingBox().minX + this.partBody.getBoundingBox().maxX) / 2.0;
+        double e = (this.partBody.getBoundingBox().minZ + this.partBody.getBoundingBox().maxZ) / 2.0;
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) continue;
             double f = entity.getX() - d;
@@ -382,12 +382,12 @@ implements Monster {
     }
 
     private boolean destroyBlocks(Box box) {
-        int i = MathHelper.floor(box.x1);
-        int j = MathHelper.floor(box.y1);
-        int k = MathHelper.floor(box.z1);
-        int l = MathHelper.floor(box.x2);
-        int m = MathHelper.floor(box.y2);
-        int n = MathHelper.floor(box.z2);
+        int i = MathHelper.floor(box.minX);
+        int j = MathHelper.floor(box.minY);
+        int k = MathHelper.floor(box.minZ);
+        int l = MathHelper.floor(box.maxX);
+        int m = MathHelper.floor(box.maxY);
+        int n = MathHelper.floor(box.maxZ);
         boolean bl = false;
         boolean bl2 = false;
         for (int o = i; o <= l; ++o) {

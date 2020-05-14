@@ -34,8 +34,8 @@ implements IdentitySamplingLayer {
     private static final int[] SNOWY_BIOMES = new int[]{SNOWY_TUNDRA_ID, SNOWY_TUNDRA_ID, SNOWY_TUNDRA_ID, SNOWY_TAIGA_ID};
     private int[] chosenGroup1 = DRY_BIOMES;
 
-    public SetBaseBiomesLayer(boolean bl) {
-        if (bl) {
+    public SetBaseBiomesLayer(boolean old) {
+        if (old) {
             this.chosenGroup1 = OLD_GROUP_1;
         }
     }

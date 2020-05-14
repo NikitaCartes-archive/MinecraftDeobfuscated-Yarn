@@ -28,8 +28,8 @@ implements TutorialStepHandler {
     private TutorialToast toast;
     private int ticks;
 
-    public CraftPlanksTutorialStepHandler(TutorialManager tutorialManager) {
-        this.manager = tutorialManager;
+    public CraftPlanksTutorialStepHandler(TutorialManager manager) {
+        this.manager = manager;
     }
 
     @Override

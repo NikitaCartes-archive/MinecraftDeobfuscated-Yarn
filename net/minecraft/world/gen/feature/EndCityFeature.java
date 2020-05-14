@@ -30,7 +30,7 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     @Override
     protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getEndCityDistance();
+        return chunkGeneratorConfig.getEndCitySpacing();
     }
 
     @Override

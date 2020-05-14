@@ -66,7 +66,7 @@ public interface StructurePieceType {
     public static final StructurePieceType JUNGLE_TEMPLE = StructurePieceType.register(JungleTempleGenerator::new, "TeJP");
     public static final StructurePieceType OCEAN_TEMPLE = StructurePieceType.register(OceanRuinGenerator.Piece::new, "ORP");
     public static final StructurePieceType IGLOO = StructurePieceType.register(IglooGenerator.Piece::new, "Iglu");
-    public static final StructurePieceType RUPO = StructurePieceType.register(RuinedPortalFeaturePiece::new, "RUPO");
+    public static final StructurePieceType RUINED_PORTAL = StructurePieceType.register(RuinedPortalFeaturePiece::new, "RUPO");
     public static final StructurePieceType SWAMP_HUT = StructurePieceType.register(SwampHutGenerator::new, "TeSH");
     public static final StructurePieceType DESERT_TEMPLE = StructurePieceType.register(DesertTempleGenerator::new, "TeDP");
     public static final StructurePieceType OCEAN_MONUMENT_BASE = StructurePieceType.register(OceanMonumentGenerator.Base::new, "OMB");
@@ -85,7 +85,7 @@ public interface StructurePieceType {
     public static final StructurePieceType WOODLAND_MANSION = StructurePieceType.register(WoodlandMansionGenerator.Piece::new, "WMP");
     public static final StructurePieceType BURIED_TREASURE = StructurePieceType.register(BuriedTreasureGenerator.Piece::new, "BTP");
     public static final StructurePieceType SHIPWRECK = StructurePieceType.register(ShipwreckGenerator.Piece::new, "Shipwreck");
-    public static final StructurePieceType NE_FOS = StructurePieceType.register(NetherFossilGenerator.Piece::new, "NeFos");
+    public static final StructurePieceType NETHER_FOSSIL = StructurePieceType.register(NetherFossilGenerator.Piece::new, "NeFos");
     public static final StructurePieceType BASTION_REMNANT = StructurePieceType.register(BastionRemnantGenerator.Piece::new, "BastionRemnant");
     public static final StructurePieceType RUNTIME = StructurePieceType.register(JigsawBlockEntity.RuntimeStructurePiece::new, "Runtime");
 

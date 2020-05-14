@@ -91,7 +91,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
@@ -99,7 +99,7 @@ extends BlockWithEntity {
         if (blockEntity instanceof BrewingStandBlockEntity) {
             ItemScatterer.spawn(world, pos, (Inventory)((BrewingStandBlockEntity)blockEntity));
         }
-        super.onBlockRemoved(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, notify);
     }
 
     @Override

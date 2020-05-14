@@ -28,7 +28,7 @@ extends PathNodeMaker {
 
     @Override
     public PathNode getStart() {
-        return super.getNode(MathHelper.floor(this.entity.getBoundingBox().x1), MathHelper.floor(this.entity.getBoundingBox().y1 + 0.5), MathHelper.floor(this.entity.getBoundingBox().z1));
+        return super.getNode(MathHelper.floor(this.entity.getBoundingBox().minX), MathHelper.floor(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.getBoundingBox().minZ));
     }
 
     @Override

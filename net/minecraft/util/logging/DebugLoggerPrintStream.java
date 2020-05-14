@@ -4,11 +4,11 @@
 package net.minecraft.util.logging;
 
 import java.io.OutputStream;
-import net.minecraft.util.logging.PrintStreamLogger;
+import net.minecraft.util.logging.LoggerPrintStream;
 
-public class DebugPrintStreamLogger
-extends PrintStreamLogger {
-    public DebugPrintStreamLogger(String string, OutputStream outputStream) {
+public class DebugLoggerPrintStream
+extends LoggerPrintStream {
+    public DebugLoggerPrintStream(String string, OutputStream outputStream) {
         super(string, outputStream);
     }
 

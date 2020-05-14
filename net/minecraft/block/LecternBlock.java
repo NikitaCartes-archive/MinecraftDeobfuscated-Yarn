@@ -172,7 +172,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
@@ -182,7 +182,7 @@ extends BlockWithEntity {
         if (state.get(POWERED).booleanValue()) {
             world.updateNeighborsAlways(pos.down(), this);
         }
-        super.onBlockRemoved(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, notify);
     }
 
     private void dropBook(BlockState state, World world, BlockPos pos) {

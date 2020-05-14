@@ -28,13 +28,13 @@ extends DrawableHelper {
         this.client = client;
     }
 
-    public void draw(MatrixStack matrixStack) {
+    public void draw(MatrixStack matrices) {
         if (this.client.options.hudHidden) {
             return;
         }
         for (int i = 0; i < this.visibleEntries.length; ++i) {
             Entry<?> entry = this.visibleEntries[i];
-            if (entry != null && entry.draw(this.client.getWindow().getScaledWidth(), i, matrixStack)) {
+            if (entry != null && entry.draw(this.client.getWindow().getScaledWidth(), i, matrices)) {
                 this.visibleEntries[i] = null;
             }
             if (this.visibleEntries[i] != null || this.toastQueue.isEmpty()) continue;
@@ -94,7 +94,7 @@ extends DrawableHelper {
             return f;
         }
 
-        public boolean draw(int x, int y, MatrixStack matrixStack) {
+        public boolean draw(int x, int y, MatrixStack matrices) {
             long l = Util.getMeasuringTimeMs();
             if (this.field_2243 == -1L) {
                 this.field_2243 = l;
@@ -105,7 +105,7 @@ extends DrawableHelper {
             }
             RenderSystem.pushMatrix();
             RenderSystem.translatef((float)x - 160.0f * this.getDissapearProgress(l), y * 32, 800 + y);
-            Toast.Visibility visibility = this.instance.draw(matrixStack, this.field_2245, l - this.field_2242);
+            Toast.Visibility visibility = this.instance.draw(matrices, this.field_2245, l - this.field_2242);
             RenderSystem.popMatrix();
             if (visibility != this.visibility) {
                 this.field_2243 = l - (long)((int)((1.0f - this.getDissapearProgress(l)) * 600.0f));

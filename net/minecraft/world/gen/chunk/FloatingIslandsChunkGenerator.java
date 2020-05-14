@@ -12,17 +12,17 @@ import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
 
 public class FloatingIslandsChunkGenerator
 extends SurfaceChunkGenerator<class_5284> {
-    private final class_5284 field_24519;
+    private final class_5284 generatorConfig;
 
-    public FloatingIslandsChunkGenerator(BiomeSource biomeSource, long l, class_5284 arg) {
-        super(biomeSource, l, arg, 8, 4, 128, true);
-        this.field_24519 = arg;
+    public FloatingIslandsChunkGenerator(BiomeSource biomeSource, long seed, class_5284 config) {
+        super(biomeSource, seed, config, 8, 4, 128, true);
+        this.generatorConfig = config;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ChunkGenerator method_27997(long l) {
-        return new FloatingIslandsChunkGenerator(this.biomeSource.method_27985(l), l, this.field_24519);
+    public ChunkGenerator create(long seed) {
+        return new FloatingIslandsChunkGenerator(this.biomeSource.create(seed), seed, this.generatorConfig);
     }
 
     @Override
@@ -38,7 +38,7 @@ extends SurfaceChunkGenerator<class_5284> {
 
     @Override
     protected double[] computeNoiseRange(int x, int z) {
-        return new double[]{this.biomeSource.getNoiseRange(x, z), 0.0};
+        return new double[]{this.biomeSource.getNoiseAt(x, z), 0.0};
     }
 
     @Override
@@ -47,12 +47,12 @@ extends SurfaceChunkGenerator<class_5284> {
     }
 
     @Override
-    protected double method_16409() {
-        return (int)super.method_16409() / 2;
+    protected double topInterpolationStart() {
+        return (int)super.topInterpolationStart() / 2;
     }
 
     @Override
-    protected double method_16410() {
+    protected double bottomInterpolationStart() {
         return 8.0;
     }
 

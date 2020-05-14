@@ -37,7 +37,7 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     @Override
     protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getMansionDistance();
+        return chunkGeneratorConfig.getMansionSpacing();
     }
 
     @Override

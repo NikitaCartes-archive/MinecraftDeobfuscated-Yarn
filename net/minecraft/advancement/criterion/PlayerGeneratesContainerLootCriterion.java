@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
@@ -13,23 +13,23 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
-public class class_5282
-extends AbstractCriterion<class_5283> {
-    private static final Identifier field_24502 = new Identifier("player_generates_container_loot");
+public class PlayerGeneratesContainerLootCriterion
+extends AbstractCriterion<Conditions> {
+    private static final Identifier ID = new Identifier("player_generates_container_loot");
 
     @Override
     public Identifier getId() {
-        return field_24502;
+        return ID;
     }
 
     @Override
-    protected class_5283 conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
+    protected Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "loot_table"));
-        return new class_5283(extended, identifier);
+        return new Conditions(extended, identifier);
     }
 
-    public void method_27993(ServerPlayerEntity serverPlayerEntity, Identifier identifier) {
-        this.test(serverPlayerEntity, arg -> arg.method_27996(identifier));
+    public void test(ServerPlayerEntity player, Identifier id) {
+        this.test(player, (T conditions) -> conditions.test(id));
     }
 
     @Override
@@ -37,27 +37,27 @@ extends AbstractCriterion<class_5283> {
         return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
-    public static class class_5283
+    public static class Conditions
     extends AbstractCriterionConditions {
-        private final Identifier field_24503;
+        private final Identifier lootTable;
 
-        public class_5283(EntityPredicate.Extended extended, Identifier identifier) {
-            super(field_24502, extended);
-            this.field_24503 = identifier;
+        public Conditions(EntityPredicate.Extended entity, Identifier lootTable) {
+            super(ID, entity);
+            this.lootTable = lootTable;
         }
 
-        public static class_5283 method_27995(Identifier identifier) {
-            return new class_5283(EntityPredicate.Extended.EMPTY, identifier);
+        public static Conditions create(Identifier lootTable) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, lootTable);
         }
 
-        public boolean method_27996(Identifier identifier) {
-            return this.field_24503.equals(identifier);
+        public boolean test(Identifier lootTable) {
+            return this.lootTable.equals(lootTable);
         }
 
         @Override
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
-            jsonObject.addProperty("loot_table", this.field_24503.toString());
+            jsonObject.addProperty("loot_table", this.lootTable.toString());
             return jsonObject;
         }
     }

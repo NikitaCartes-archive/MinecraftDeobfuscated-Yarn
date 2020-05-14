@@ -103,7 +103,7 @@ public class LookControl {
         if (entity instanceof LivingEntity) {
             return entity.getEyeY();
         }
-        return (entity.getBoundingBox().y1 + entity.getBoundingBox().y2) / 2.0;
+        return (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
     }
 }
 

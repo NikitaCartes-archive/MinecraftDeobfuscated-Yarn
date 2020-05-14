@@ -179,7 +179,7 @@ NamedScreenHandlerFactory {
         if (this.lootTableId != null && this.world.getServer() != null) {
             LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
             if (player instanceof ServerPlayerEntity) {
-                Criteria.field_24479.method_27993((ServerPlayerEntity)player, this.lootTableId);
+                Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test((ServerPlayerEntity)player, this.lootTableId);
             }
             this.lootTableId = null;
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.POSITION, this.getBlockPos()).random(this.lootSeed);

@@ -39,7 +39,7 @@ extends GameOptionsScreen {
         this.children.add(this.keyBindingListWidget);
         this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, new TranslatableText("controls.resetAll"), buttonWidget -> {
             for (KeyBinding keyBinding : this.gameOptions.keysAll) {
-                keyBinding.setKeyCode(keyBinding.getDefaultKeyCode());
+                keyBinding.setBoundKey(keyBinding.getDefaultKey());
             }
             KeyBinding.updateKeysByCode();
         }));
@@ -61,9 +61,9 @@ extends GameOptionsScreen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.focusedBinding != null) {
             if (keyCode == 256) {
-                this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
+                this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEY);
             } else {
-                this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(keyCode, scanCode));
+                this.gameOptions.setKeyCode(this.focusedBinding, InputUtil.fromKeyCode(keyCode, scanCode));
             }
             this.focusedBinding = null;
             this.time = Util.getMeasuringTimeMs();

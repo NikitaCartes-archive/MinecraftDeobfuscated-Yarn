@@ -567,7 +567,7 @@ implements ScreenHandlerListener {
         this.dimension = newDimension;
         ServerWorld serverWorld2 = this.server.getWorld(newDimension);
         class_5217 lv = serverWorld2.getLevelProperties();
-        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(newDimension, BiomeAccess.method_27984(serverWorld2.getSeed()), this.interactionManager.getGameMode(), serverWorld2.method_27982(), serverWorld2.method_28125(), true));
+        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(newDimension, BiomeAccess.hashSeed(serverWorld2.getSeed()), this.interactionManager.getGameMode(), serverWorld2.method_27982(), serverWorld2.method_28125(), true));
         this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
         PlayerManager playerManager = this.server.getPlayerManager();
         playerManager.sendCommandTree(this);
@@ -1264,7 +1264,7 @@ implements ScreenHandlerListener {
             ServerWorld serverWorld = this.getServerWorld();
             this.dimension = targetWorld.method_27983();
             class_5217 lv = targetWorld.getLevelProperties();
-            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, BiomeAccess.method_27984(targetWorld.getSeed()), this.interactionManager.getGameMode(), targetWorld.method_27982(), targetWorld.method_28125(), true));
+            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), targetWorld.method_27982(), targetWorld.method_28125(), true));
             this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
             this.server.getPlayerManager().sendCommandTree(this);
             serverWorld.removePlayer(this);

@@ -203,7 +203,7 @@ extends Entity {
                 }
             }
         }
-        double e = this.getBoundingBox().y2;
+        double e = this.getBoundingBox().maxY;
         mutable.set((double)blockPos.getX(), e, (double)blockPos.getZ());
         for (EntityPose entityPose2 : immutableList) {
             double g = livingEntity.getDimensions((EntityPose)entityPose2).height;

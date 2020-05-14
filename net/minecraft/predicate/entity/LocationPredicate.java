@@ -35,22 +35,22 @@ public class LocationPredicate {
     @Nullable
     private final DimensionType dimension;
     @Nullable
-    private final Boolean field_24500;
+    private final Boolean smokey;
     private final LightPredicate light;
     private final BlockPredicate block;
     private final FluidPredicate fluid;
 
-    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable Biome biome, @Nullable StructureFeature<?> feature, @Nullable DimensionType dimension, @Nullable Boolean boolean_, LightPredicate lightPredicate, BlockPredicate blockPredicate, FluidPredicate fluidPredicate) {
+    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable Biome biome, @Nullable StructureFeature<?> feature, @Nullable DimensionType dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.biome = biome;
         this.feature = feature;
         this.dimension = dimension;
-        this.field_24500 = boolean_;
-        this.light = lightPredicate;
-        this.block = blockPredicate;
-        this.fluid = fluidPredicate;
+        this.smokey = smokey;
+        this.light = light;
+        this.block = block;
+        this.fluid = fluid;
     }
 
     public static LocationPredicate biome(Biome biome) {
@@ -90,7 +90,7 @@ public class LocationPredicate {
         if (!(this.feature == null || bl && this.feature.isInsideStructure(world.getStructureAccessor(), blockPos))) {
             return false;
         }
-        if (!(this.field_24500 == null || bl && this.field_24500 == CampfireBlock.isLitCampfireInRange(world, blockPos))) {
+        if (!(this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos))) {
             return false;
         }
         if (!this.light.test(world, blockPos)) {
@@ -123,8 +123,8 @@ public class LocationPredicate {
         if (this.biome != null) {
             jsonObject.addProperty("biome", Registry.BIOME.getId(this.biome).toString());
         }
-        if (this.field_24500 != null) {
-            jsonObject.addProperty("smokey", this.field_24500);
+        if (this.smokey != null) {
+            jsonObject.addProperty("smokey", this.smokey);
         }
         jsonObject.add("light", this.light.toJson());
         jsonObject.add("block", this.block.toJson());
@@ -166,7 +166,7 @@ public class LocationPredicate {
         @Nullable
         private DimensionType dimension;
         @Nullable
-        private Boolean field_24501;
+        private Boolean smokey;
         private LightPredicate light = LightPredicate.ANY;
         private BlockPredicate block = BlockPredicate.ANY;
         private FluidPredicate fluid = FluidPredicate.ANY;
@@ -180,18 +180,18 @@ public class LocationPredicate {
             return this;
         }
 
-        public Builder method_27989(BlockPredicate blockPredicate) {
-            this.block = blockPredicate;
+        public Builder block(BlockPredicate block) {
+            this.block = block;
             return this;
         }
 
-        public Builder method_27990(Boolean boolean_) {
-            this.field_24501 = boolean_;
+        public Builder smokey(Boolean smokey) {
+            this.smokey = smokey;
             return this;
         }
 
         public LocationPredicate build() {
-            return new LocationPredicate(this.x, this.y, this.z, this.biome, this.feature, this.dimension, this.field_24501, this.light, this.block, this.fluid);
+            return new LocationPredicate(this.x, this.y, this.z, this.biome, this.feature, this.dimension, this.smokey, this.light, this.block, this.fluid);
         }
     }
 }

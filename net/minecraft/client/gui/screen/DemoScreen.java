@@ -53,10 +53,10 @@ extends Screen {
         int j = (this.height - 166) / 2 + 8;
         this.textRenderer.draw(matrices, this.title, (float)i, (float)j, 0x1F1F1F);
         GameOptions gameOptions = this.client.options;
-        this.textRenderer.draw(matrices, new TranslatableText("demo.help.movementShort", gameOptions.keyForward.getLocalizedName(), gameOptions.keyLeft.getLocalizedName(), gameOptions.keyBack.getLocalizedName(), gameOptions.keyRight.getLocalizedName()), (float)i, (float)(j += 12), 0x4F4F4F);
+        this.textRenderer.draw(matrices, new TranslatableText("demo.help.movementShort", gameOptions.keyForward.getBoundKeyLocalizedText(), gameOptions.keyLeft.getBoundKeyLocalizedText(), gameOptions.keyBack.getBoundKeyLocalizedText(), gameOptions.keyRight.getBoundKeyLocalizedText()), (float)i, (float)(j += 12), 0x4F4F4F);
         this.textRenderer.draw(matrices, new TranslatableText("demo.help.movementMouse"), (float)i, (float)(j + 12), 0x4F4F4F);
-        this.textRenderer.draw(matrices, new TranslatableText("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)i, (float)(j + 24), 0x4F4F4F);
-        this.textRenderer.draw(matrices, new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)i, (float)(j + 36), 0x4F4F4F);
+        this.textRenderer.draw(matrices, new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()), (float)i, (float)(j + 24), 0x4F4F4F);
+        this.textRenderer.draw(matrices, new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()), (float)i, (float)(j + 36), 0x4F4F4F);
         this.textRenderer.drawTrimmed(new TranslatableText("demo.help.fullWrapped"), i, j + 68, 218, 0x1F1F1F);
         super.render(matrices, mouseX, mouseY, delta);
     }

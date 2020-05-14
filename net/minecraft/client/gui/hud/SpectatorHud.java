@@ -92,7 +92,7 @@ implements SpectatorMenuCloseCallback {
             spectatorMenuCommand.renderIcon(matrixStack, h, k);
             RenderSystem.popMatrix();
             if (k > 3 && spectatorMenuCommand.isEnabled()) {
-                Text text = this.client.options.keysHotbar[i].getLocalizedName();
+                Text text = this.client.options.keysHotbar[i].getBoundKeyLocalizedText();
                 this.client.textRenderer.drawWithShadow(matrixStack, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0f + 3.0f, 0xFFFFFF + (k << 24));
             }
         }

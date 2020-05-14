@@ -151,7 +151,7 @@ extends Screen {
                     this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", lv.getLevelName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
                 }
             } catch (IOException iOException) {
-                SystemToast.method_27023(this.client, "Demo_World");
+                SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
                 field_23775.warn("Failed to access demo world", (Throwable)iOException);
             }
         }));
@@ -161,7 +161,7 @@ extends Screen {
                 this.buttonResetDemo.active = false;
             }
         } catch (IOException iOException) {
-            SystemToast.method_27023(this.client, "Demo_World");
+            SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
             field_23775.warn("Failed to read demo world data", (Throwable)iOException);
         }
     }
@@ -261,7 +261,7 @@ extends Screen {
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World");){
                 session.deleteSessionLock();
             } catch (IOException iOException) {
-                SystemToast.method_27025(this.client, "Demo_World");
+                SystemToast.addWorldDeleteFailureToast(this.client, "Demo_World");
                 field_23775.warn("Failed to delete demo world", (Throwable)iOException);
             }
         }

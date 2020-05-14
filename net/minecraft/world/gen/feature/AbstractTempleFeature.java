@@ -17,7 +17,7 @@ extends StructureFeature<C> {
 
     @Override
     protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getTempleDistance();
+        return chunkGeneratorConfig.getTempleSpacing();
     }
 
     @Override

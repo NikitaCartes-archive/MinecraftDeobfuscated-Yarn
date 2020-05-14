@@ -1411,7 +1411,7 @@ WindowEventHandler {
             session = this.levelStorage.createSession(name);
         } catch (IOException iOException) {
             LOGGER.warn("Failed to read level {} data", (Object)name, (Object)iOException);
-            SystemToast.method_27023(this, name);
+            SystemToast.addWorldAccessFailureToast(this, name);
             this.openScreen(null);
             return;
         }

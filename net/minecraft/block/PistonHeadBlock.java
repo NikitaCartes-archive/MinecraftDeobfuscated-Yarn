@@ -129,11 +129,11 @@ extends FacingBlock {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
-        super.onBlockRemoved(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, notify);
         BlockPos blockPos = pos.offset(state.get(FACING).getOpposite());
         if (this.method_26980(state, world.getBlockState(blockPos))) {
             world.breakBlock(blockPos, true);

@@ -29,7 +29,7 @@ import net.minecraft.world.gen.chunk.VerticalBlockSample;
 
 public class DebugChunkGenerator
 extends ChunkGenerator {
-    public static final ChunkGenerator field_24509 = new DebugChunkGenerator();
+    public static final ChunkGenerator generator = new DebugChunkGenerator();
     private static final List<BlockState> BLOCK_STATES = StreamSupport.stream(Registry.BLOCK.spliterator(), false).flatMap(block -> block.getStateManager().getStates().stream()).collect(Collectors.toList());
     private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size()));
     private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
@@ -42,7 +42,7 @@ extends ChunkGenerator {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ChunkGenerator method_27997(long l) {
+    public ChunkGenerator create(long seed) {
         return this;
     }
 
@@ -51,28 +51,28 @@ extends ChunkGenerator {
     }
 
     @Override
-    public void carve(long l, BiomeAccess biomeAccess, Chunk chunk, GenerationStep.Carver carver) {
+    public void carve(long seed, BiomeAccess access, Chunk chunk, GenerationStep.Carver carver) {
     }
 
     @Override
-    public void generateFeatures(ChunkRegion chunkRegion, StructureAccessor structureAccessor) {
+    public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int i = chunkRegion.getCenterChunkX();
-        int j = chunkRegion.getCenterChunkZ();
+        int i = region.getCenterChunkX();
+        int j = region.getCenterChunkZ();
         for (int k = 0; k < 16; ++k) {
             for (int l = 0; l < 16; ++l) {
                 int m = (i << 4) + k;
                 int n = (j << 4) + l;
-                chunkRegion.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
+                region.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
                 BlockState blockState = DebugChunkGenerator.getBlockState(m, n);
                 if (blockState == null) continue;
-                chunkRegion.setBlockState(mutable.set(m, 70, n), blockState, 2);
+                region.setBlockState(mutable.set(m, 70, n), blockState, 2);
             }
         }
     }
 
     @Override
-    public void populateNoise(WorldAccess world, StructureAccessor structureAccessor, Chunk chunk) {
+    public void populateNoise(WorldAccess world, StructureAccessor accessor, Chunk chunk) {
     }
 
     @Override

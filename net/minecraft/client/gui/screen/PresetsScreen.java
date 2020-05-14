@@ -201,10 +201,10 @@ extends Screen {
         public class SuperflatPresetEntry
         extends AlwaysSelectedEntryListWidget.Entry<SuperflatPresetEntry> {
             @Override
-            public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-                SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(x);
-                this.method_2200(matrices, width, y, superflatPreset.icon);
-                PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(width + 18 + 5), (float)(y + 6), 0xFFFFFF);
+            public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+                SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(index);
+                this.method_2200(matrices, x, y, superflatPreset.icon);
+                PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 0xFFFFFF);
             }
 
             @Override

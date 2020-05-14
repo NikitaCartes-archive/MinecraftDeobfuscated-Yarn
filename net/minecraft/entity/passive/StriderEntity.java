@@ -219,8 +219,8 @@ Saddleable {
         double f;
         Vec3d[] vec3ds = new Vec3d[]{StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw - 22.5f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw + 22.5f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw - 45.0f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw + 45.0f)};
         LinkedHashSet<BlockPos> set = Sets.newLinkedHashSet();
-        double d = this.getBoundingBox().y2;
-        double e = this.getBoundingBox().y1 - 0.5;
+        double d = this.getBoundingBox().maxY;
+        double e = this.getBoundingBox().minY - 0.5;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Vec3d vec3d : vec3ds) {
             mutable.set(this.getX() + vec3d.x, d, this.getZ() + vec3d.z);
@@ -240,7 +240,7 @@ Saddleable {
                 return vec3d2;
             }
         }
-        return new Vec3d(this.getX(), this.getBoundingBox().y2, this.getZ());
+        return new Vec3d(this.getX(), this.getBoundingBox().maxY, this.getZ());
     }
 
     @Override

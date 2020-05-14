@@ -19,11 +19,11 @@ implements TutorialStepHandler {
     private static final Text TITLE = new TranslatableText("tutorial.open_inventory.title");
     private static final Text DESCRIPTION = new TranslatableText("tutorial.open_inventory.description", TutorialManager.getKeybindName("inventory"));
     private final TutorialManager manager;
-    private TutorialToast field_5642;
+    private TutorialToast toast;
     private int ticks;
 
-    public OpenInventoryTutorialStepHandler(TutorialManager tutorialManager) {
-        this.manager = tutorialManager;
+    public OpenInventoryTutorialStepHandler(TutorialManager manager) {
+        this.manager = manager;
     }
 
     @Override
@@ -33,17 +33,17 @@ implements TutorialStepHandler {
             this.manager.setStep(TutorialStep.NONE);
             return;
         }
-        if (this.ticks >= 600 && this.field_5642 == null) {
-            this.field_5642 = new TutorialToast(TutorialToast.Type.RECIPE_BOOK, TITLE, DESCRIPTION, false);
-            this.manager.getClient().getToastManager().add(this.field_5642);
+        if (this.ticks >= 600 && this.toast == null) {
+            this.toast = new TutorialToast(TutorialToast.Type.RECIPE_BOOK, TITLE, DESCRIPTION, false);
+            this.manager.getClient().getToastManager().add(this.toast);
         }
     }
 
     @Override
     public void destroy() {
-        if (this.field_5642 != null) {
-            this.field_5642.hide();
-            this.field_5642 = null;
+        if (this.toast != null) {
+            this.toast.hide();
+            this.toast = null;
         }
     }
 

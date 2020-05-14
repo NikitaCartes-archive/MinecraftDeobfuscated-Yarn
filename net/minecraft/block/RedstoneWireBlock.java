@@ -259,11 +259,11 @@ extends Block {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (notify || state.isOf(newState.getBlock())) {
             return;
         }
-        super.onBlockRemoved(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, notify);
         if (world.isClient) {
             return;
         }

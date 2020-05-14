@@ -137,17 +137,17 @@ Tickable {
             Box box2 = entity.getBoundingBox();
             switch (direction.getAxis()) {
                 case X: {
-                    d = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.x2 - box2.x1 : box2.x2 - box.x1;
+                    d = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxX - box2.minX : box2.maxX - box.minX;
                     d += 0.01;
                     break;
                 }
                 case Y: {
-                    e = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.y2 - box2.y1 : box2.y2 - box.y1;
+                    e = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxY - box2.minY : box2.maxY - box.minY;
                     e += 0.01;
                     break;
                 }
                 case Z: {
-                    f = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.z2 - box2.z1 : box2.z2 - box.z1;
+                    f = direction.getDirection() == Direction.AxisDirection.POSITIVE ? box.maxZ - box2.minZ : box2.maxZ - box.minZ;
                     f += 0.01;
                 }
             }

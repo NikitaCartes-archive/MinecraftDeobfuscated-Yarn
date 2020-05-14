@@ -98,7 +98,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
@@ -106,7 +106,7 @@ implements Waterloggable {
         if (blockEntity instanceof CampfireBlockEntity) {
             ItemScatterer.spawn(world, pos, ((CampfireBlockEntity)blockEntity).getItemsBeingCooked());
         }
-        super.onBlockRemoved(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, notify);
     }
 
     @Override

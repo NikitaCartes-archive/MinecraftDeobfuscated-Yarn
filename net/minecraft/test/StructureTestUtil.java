@@ -119,9 +119,9 @@ public class StructureTestUtil {
         ArrayList<BlockPos> collection = Lists.newArrayList();
         Box box = new Box(pos);
         box = box.expand(radius);
-        for (int i = (int)box.x1; i <= (int)box.x2; ++i) {
-            for (int j = (int)box.y1; j <= (int)box.y2; ++j) {
-                for (int k = (int)box.z1; k <= (int)box.z2; ++k) {
+        for (int i = (int)box.minX; i <= (int)box.maxX; ++i) {
+            for (int j = (int)box.minY; j <= (int)box.maxY; ++j) {
+                for (int k = (int)box.minZ; k <= (int)box.maxZ; ++k) {
                     BlockPos blockPos = new BlockPos(i, j, k);
                     BlockState blockState = world.getBlockState(blockPos);
                     if (!blockState.isOf(Blocks.STRUCTURE_BLOCK)) continue;

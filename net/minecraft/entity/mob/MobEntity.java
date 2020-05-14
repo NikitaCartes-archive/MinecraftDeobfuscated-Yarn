@@ -490,7 +490,7 @@ extends LivingEntity {
         PlayerEntity playerEntity;
         PlayerEntity playerEntity2 = playerEntity = itemEntity.getThrower() != null ? this.world.getPlayerByUuid(itemEntity.getThrower()) : null;
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criteria.field_24480.method_27975((ServerPlayerEntity)playerEntity, itemEntity.getStack(), this);
+            Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.test((ServerPlayerEntity)playerEntity, itemEntity.getStack(), this);
         }
     }
 
@@ -694,7 +694,7 @@ extends LivingEntity {
             LivingEntity livingEntity = (LivingEntity)targetEntity;
             f = livingEntity.getEyeY() - this.getEyeY();
         } else {
-            f = (targetEntity.getBoundingBox().y1 + targetEntity.getBoundingBox().y2) / 2.0 - this.getEyeY();
+            f = (targetEntity.getBoundingBox().minY + targetEntity.getBoundingBox().maxY) / 2.0 - this.getEyeY();
         }
         double g = MathHelper.sqrt(d * d + e * e);
         float h = (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;

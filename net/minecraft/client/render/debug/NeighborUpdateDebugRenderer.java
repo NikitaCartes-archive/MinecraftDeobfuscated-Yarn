@@ -68,7 +68,7 @@ implements DebugRenderer.Renderer {
                 Integer integer = entry2.getValue();
                 if (!set.add(blockPos)) continue;
                 Box box = new Box(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)m).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-cameraX, -cameraY, -cameraZ);
-                WorldRenderer.drawBox(matrices, vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, 1.0f, 1.0f, 1.0f, 1.0f);
+                WorldRenderer.drawBox(matrices, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0f, 1.0f, 1.0f, 1.0f);
                 map.put(blockPos, integer);
             }
         }

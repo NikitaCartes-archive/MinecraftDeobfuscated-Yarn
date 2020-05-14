@@ -25,7 +25,7 @@ extends StructureFeature<StructurePoolFeatureConfig> {
 
     @Override
     protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getVillageDistance();
+        return chunkGeneratorConfig.getVillageSpacing();
     }
 
     @Override

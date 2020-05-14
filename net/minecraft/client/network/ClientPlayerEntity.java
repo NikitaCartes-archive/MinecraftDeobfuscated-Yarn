@@ -453,7 +453,7 @@ extends AbstractClientPlayerEntity {
     private boolean cannotFitAt(BlockPos pos) {
         Box box = this.getBoundingBox();
         BlockPos.Mutable mutable = pos.mutableCopy();
-        for (int i = MathHelper.floor(box.y1); i < MathHelper.ceil(box.y2); ++i) {
+        for (int i = MathHelper.floor(box.minY); i < MathHelper.ceil(box.maxY); ++i) {
             mutable.setY(i);
             if (this.doesNotSuffocate(mutable)) continue;
             return true;
@@ -873,7 +873,7 @@ extends AbstractClientPlayerEntity {
             return;
         }
         ShapeContext shapeContext = ShapeContext.of(this);
-        BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().y2, this.getZ());
+        BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().maxY, this.getZ());
         BlockState blockState = this.world.getBlockState(blockPos);
         if (!blockState.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
             return;
@@ -906,7 +906,7 @@ extends AbstractClientPlayerEntity {
         while (iterator.hasNext()) {
             Box box2 = (Box)iterator.next();
             if (!box2.intersects(vec3d10, vec3d11) && !box2.intersects(vec3d12, vec3d13)) continue;
-            r = (float)box2.y2;
+            r = (float)box2.maxY;
             Vec3d vec3d14 = box2.getCenter();
             BlockPos blockPos2 = new BlockPos(vec3d14);
             int s = 1;

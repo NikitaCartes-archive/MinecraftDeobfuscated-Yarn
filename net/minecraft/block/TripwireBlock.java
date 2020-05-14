@@ -79,7 +79,7 @@ extends Block {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (notify || state.isOf(newState.getBlock())) {
             return;
         }

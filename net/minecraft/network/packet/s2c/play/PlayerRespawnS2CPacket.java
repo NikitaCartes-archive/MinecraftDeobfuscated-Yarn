@@ -17,20 +17,20 @@ implements Packet<ClientPlayPacketListener> {
     private DimensionType dimension;
     private long sha256Seed;
     private GameMode gameMode;
-    private boolean field_24620;
-    private boolean field_24621;
-    private boolean field_24451;
+    private boolean debugWorld;
+    private boolean flatWorld;
+    private boolean keepPlayerAttributes;
 
     public PlayerRespawnS2CPacket() {
     }
 
-    public PlayerRespawnS2CPacket(DimensionType dimension, long sha256Seed, GameMode gameMode, boolean bl, boolean bl2, boolean bl3) {
+    public PlayerRespawnS2CPacket(DimensionType dimension, long sha256Seed, GameMode gameMode, boolean debugWorld, boolean flatWorld, boolean keepPlayerAttributes) {
         this.dimension = dimension;
         this.sha256Seed = sha256Seed;
         this.gameMode = gameMode;
-        this.field_24620 = bl;
-        this.field_24621 = bl2;
-        this.field_24451 = bl3;
+        this.debugWorld = debugWorld;
+        this.flatWorld = flatWorld;
+        this.keepPlayerAttributes = keepPlayerAttributes;
     }
 
     @Override
@@ -43,9 +43,9 @@ implements Packet<ClientPlayPacketListener> {
         this.dimension = DimensionType.byRawId(buf.readInt());
         this.sha256Seed = buf.readLong();
         this.gameMode = GameMode.byId(buf.readUnsignedByte());
-        this.field_24620 = buf.readBoolean();
-        this.field_24621 = buf.readBoolean();
-        this.field_24451 = buf.readBoolean();
+        this.debugWorld = buf.readBoolean();
+        this.flatWorld = buf.readBoolean();
+        this.keepPlayerAttributes = buf.readBoolean();
     }
 
     @Override
@@ -53,9 +53,9 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeInt(this.dimension.getRawId());
         buf.writeLong(this.sha256Seed);
         buf.writeByte(this.gameMode.getId());
-        buf.writeBoolean(this.field_24620);
-        buf.writeBoolean(this.field_24621);
-        buf.writeBoolean(this.field_24451);
+        buf.writeBoolean(this.debugWorld);
+        buf.writeBoolean(this.flatWorld);
+        buf.writeBoolean(this.keepPlayerAttributes);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -74,18 +74,18 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_28120() {
-        return this.field_24620;
+    public boolean isDebugWorld() {
+        return this.debugWorld;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_28121() {
-        return this.field_24621;
+    public boolean isFlatWorld() {
+        return this.flatWorld;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_27904() {
-        return this.field_24451;
+    public boolean shouldKeepPlayerAttributes() {
+        return this.keepPlayerAttributes;
     }
 }
 

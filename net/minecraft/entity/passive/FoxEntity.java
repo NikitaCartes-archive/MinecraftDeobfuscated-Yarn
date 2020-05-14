@@ -1057,7 +1057,7 @@ extends AnimalEntity {
         }
 
         protected boolean isAtFavoredLocation() {
-            BlockPos blockPos = new BlockPos(FoxEntity.this.getX(), FoxEntity.this.getBoundingBox().y2, FoxEntity.this.getZ());
+            BlockPos blockPos = new BlockPos(FoxEntity.this.getX(), FoxEntity.this.getBoundingBox().maxY, FoxEntity.this.getZ());
             return !FoxEntity.this.world.isSkyVisible(blockPos) && FoxEntity.this.getPathfindingFavor(blockPos) >= 0.0f;
         }
 

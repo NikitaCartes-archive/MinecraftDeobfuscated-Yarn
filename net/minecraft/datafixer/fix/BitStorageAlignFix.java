@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -19,10 +19,10 @@ import java.util.stream.LongStream;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.math.MathHelper;
 
-public class class_5196
+public class BitStorageAlignFix
 extends DataFix {
-    public class_5196(Schema schema) {
-        super(schema, false);
+    public BitStorageAlignFix(Schema outputSchema) {
+        super(outputSchema, false);
     }
 
     @Override
@@ -35,11 +35,11 @@ extends DataFix {
         OpticFinder opticFinder3 = DSL.typeFinder(type3);
         Type<Pair<String, Dynamic<?>>> type4 = DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType());
         OpticFinder<Pair<String, Dynamic<?>>> opticFinder4 = DSL.fieldFinder("Palette", DSL.list(type4));
-        return this.fixTypeEverywhereTyped("BitStorageAlignFix", type, this.getOutputSchema().getType(TypeReferences.CHUNK), (Typed<?> typed2) -> typed2.updateTyped(opticFinder, typed -> this.method_27775(class_5196.method_27774(opticFinder2, opticFinder3, opticFinder4, typed))));
+        return this.fixTypeEverywhereTyped("BitStorageAlignFix", type, this.getOutputSchema().getType(TypeReferences.CHUNK), (Typed<?> typed2) -> typed2.updateTyped(opticFinder, typed -> this.method_27775(BitStorageAlignFix.method_27774(opticFinder2, opticFinder3, opticFinder4, typed))));
     }
 
     private Typed<?> method_27775(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("Heightmaps", dynamic2 -> dynamic2.updateMapValues(pair -> pair.mapSecond(dynamic2 -> class_5196.method_27772(dynamic, dynamic2, 256, 9)))));
+        return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("Heightmaps", dynamic2 -> dynamic2.updateMapValues(pair -> pair.mapSecond(dynamic2 -> BitStorageAlignFix.method_27772(dynamic, dynamic2, 256, 9)))));
     }
 
     private static Typed<?> method_27774(OpticFinder<?> opticFinder, OpticFinder<?> opticFinder2, OpticFinder<List<Pair<String, Dynamic<?>>>> opticFinder3, Typed<?> typed) {
@@ -48,13 +48,13 @@ extends DataFix {
             if (i == 0 || MathHelper.isPowerOfTwo(i)) {
                 return typed;
             }
-            return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("BlockStates", dynamic2 -> class_5196.method_27772(dynamic, dynamic2, 4096, i)));
+            return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("BlockStates", dynamic2 -> BitStorageAlignFix.method_27772(dynamic, dynamic2, 4096, i)));
         }));
     }
 
     private static Dynamic<?> method_27772(Dynamic<?> dynamic, Dynamic<?> dynamic2, int i, int j) {
         long[] ls = dynamic2.asLongStream().toArray();
-        long[] ms = class_5196.method_27288(i, j, ls);
+        long[] ms = BitStorageAlignFix.method_27288(i, j, ls);
         return dynamic.createLongList(LongStream.of(ms));
     }
 

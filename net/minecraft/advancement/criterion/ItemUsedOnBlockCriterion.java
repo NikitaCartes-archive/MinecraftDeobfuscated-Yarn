@@ -18,13 +18,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-public class BlockUsedCriterion
+public class ItemUsedOnBlockCriterion
 extends AbstractCriterion<Conditions> {
-    private static final Identifier id = new Identifier("item_used_on_block");
+    private static final Identifier ID = new Identifier("item_used_on_block");
 
     @Override
     public Identifier getId() {
-        return id;
+        return ID;
     }
 
     @Override
@@ -46,21 +46,21 @@ extends AbstractCriterion<Conditions> {
 
     public static class Conditions
     extends AbstractCriterionConditions {
-        private final LocationPredicate field_24495;
+        private final LocationPredicate location;
         private final ItemPredicate item;
 
-        public Conditions(EntityPredicate.Extended extended, LocationPredicate locationPredicate, ItemPredicate itemPredicate) {
-            super(id, extended);
-            this.field_24495 = locationPredicate;
-            this.item = itemPredicate;
+        public Conditions(EntityPredicate.Extended extended, LocationPredicate location, ItemPredicate item) {
+            super(ID, extended);
+            this.location = location;
+            this.item = item;
         }
 
-        public static Conditions method_27981(LocationPredicate.Builder builder, ItemPredicate.Builder builder2) {
+        public static Conditions create(LocationPredicate.Builder builder, ItemPredicate.Builder builder2) {
             return new Conditions(EntityPredicate.Extended.EMPTY, builder.build(), builder2.build());
         }
 
         public boolean test(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
-            if (!this.field_24495.test(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5)) {
+            if (!this.location.test(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5)) {
                 return false;
             }
             return this.item.test(stack);
@@ -69,7 +69,7 @@ extends AbstractCriterion<Conditions> {
         @Override
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
-            jsonObject.add("location", this.field_24495.toJson());
+            jsonObject.add("location", this.location.toJson());
             jsonObject.add("item", this.item.toJson());
             return jsonObject;
         }

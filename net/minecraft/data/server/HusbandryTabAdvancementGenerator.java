@@ -9,12 +9,12 @@ import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
 import net.minecraft.advancement.criterion.BeeNestDestroyedCriterion;
-import net.minecraft.advancement.criterion.BlockUsedCriterion;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
 import net.minecraft.advancement.criterion.FilledBucketCriterion;
 import net.minecraft.advancement.criterion.FishingRodHookedCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.block.Blocks;
@@ -53,7 +53,7 @@ implements Consumer<Consumer<Advancement>> {
         Advancement advancement5 = this.requireListedFishCaught(Advancement.Task.create()).parent(advancement).criteriaMerger(CriteriaMerger.OR).display(Items.FISHING_ROD, (Text)new TranslatableText("advancements.husbandry.fishy_business.title"), (Text)new TranslatableText("advancements.husbandry.fishy_business.description"), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/fishy_business");
         this.requireListedFishBucketsFilled(Advancement.Task.create()).parent(advancement5).criteriaMerger(CriteriaMerger.OR).display(Items.PUFFERFISH_BUCKET, (Text)new TranslatableText("advancements.husbandry.tactical_fishing.title"), (Text)new TranslatableText("advancements.husbandry.tactical_fishing.description"), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/tactical_fishing");
         this.requireAllCatsTamed(Advancement.Task.create()).parent(advancement4).display(Items.COD, (Text)new TranslatableText("advancements.husbandry.complete_catalogue.title"), (Text)new TranslatableText("advancements.husbandry.complete_catalogue.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(50)).build(consumer, "husbandry/complete_catalogue");
-        Advancement.Task.create().parent(advancement).criterion("safely_harvest_honey", BlockUsedCriterion.Conditions.method_27981(LocationPredicate.Builder.create().method_27989(BlockPredicate.Builder.create().method_27962(Blocks.BEEHIVE).build()).method_27990(true), ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE))).display(Items.HONEY_BOTTLE, (Text)new TranslatableText("advancements.husbandry.safely_harvest_honey.title"), (Text)new TranslatableText("advancements.husbandry.safely_harvest_honey.description"), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/safely_harvest_honey");
+        Advancement.Task.create().parent(advancement).criterion("safely_harvest_honey", ItemUsedOnBlockCriterion.Conditions.create(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(Blocks.BEEHIVE).build()).smokey(true), ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE))).display(Items.HONEY_BOTTLE, (Text)new TranslatableText("advancements.husbandry.safely_harvest_honey.title"), (Text)new TranslatableText("advancements.husbandry.safely_harvest_honey.description"), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/safely_harvest_honey");
         Advancement.Task.create().parent(advancement).criterion("silk_touch_nest", BeeNestDestroyedCriterion.Conditions.create(Blocks.BEE_NEST, ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))), NumberRange.IntRange.exactly(3))).display(Blocks.BEE_NEST, (Text)new TranslatableText("advancements.husbandry.silk_touch_nest.title"), (Text)new TranslatableText("advancements.husbandry.silk_touch_nest.description"), null, AdvancementFrame.TASK, true, true, false).build(consumer, "husbandry/silk_touch_nest");
     }
 

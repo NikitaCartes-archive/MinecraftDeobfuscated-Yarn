@@ -88,40 +88,40 @@ public class EntityEquipmentPredicate {
         return jsonObject;
     }
 
-    public static class class_5278 {
-        private ItemPredicate field_24482 = ItemPredicate.ANY;
-        private ItemPredicate field_24483 = ItemPredicate.ANY;
-        private ItemPredicate field_24484 = ItemPredicate.ANY;
-        private ItemPredicate field_24485 = ItemPredicate.ANY;
-        private ItemPredicate field_24486 = ItemPredicate.ANY;
-        private ItemPredicate field_24487 = ItemPredicate.ANY;
+    public static class Builder {
+        private ItemPredicate head = ItemPredicate.ANY;
+        private ItemPredicate chest = ItemPredicate.ANY;
+        private ItemPredicate legs = ItemPredicate.ANY;
+        private ItemPredicate feet = ItemPredicate.ANY;
+        private ItemPredicate mainhand = ItemPredicate.ANY;
+        private ItemPredicate offhand = ItemPredicate.ANY;
 
-        public static class_5278 method_27965() {
-            return new class_5278();
+        public static Builder create() {
+            return new Builder();
         }
 
-        public class_5278 method_27966(ItemPredicate itemPredicate) {
-            this.field_24482 = itemPredicate;
+        public Builder head(ItemPredicate head) {
+            this.head = head;
             return this;
         }
 
-        public class_5278 method_27968(ItemPredicate itemPredicate) {
-            this.field_24483 = itemPredicate;
+        public Builder chest(ItemPredicate chest) {
+            this.chest = chest;
             return this;
         }
 
-        public class_5278 method_27969(ItemPredicate itemPredicate) {
-            this.field_24484 = itemPredicate;
+        public Builder legs(ItemPredicate legs) {
+            this.legs = legs;
             return this;
         }
 
-        public class_5278 method_27970(ItemPredicate itemPredicate) {
-            this.field_24485 = itemPredicate;
+        public Builder feet(ItemPredicate feet) {
+            this.feet = feet;
             return this;
         }
 
-        public EntityEquipmentPredicate method_27967() {
-            return new EntityEquipmentPredicate(this.field_24482, this.field_24483, this.field_24484, this.field_24485, this.field_24486, this.field_24487);
+        public EntityEquipmentPredicate build() {
+            return new EntityEquipmentPredicate(this.head, this.chest, this.legs, this.feet, this.mainhand, this.offhand);
         }
     }
 }

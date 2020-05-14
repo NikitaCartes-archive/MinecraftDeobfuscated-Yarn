@@ -124,7 +124,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         return BlockLootTableGenerator.drops(drop, WITH_SHEARS, child);
     }
 
-    private static LootTable.Builder dropsWithSilkTouchShears(Block drop, LootEntry.Builder<?> child) {
+    private static LootTable.Builder dropsWithSilkTouchOrShears(Block drop, LootEntry.Builder<?> child) {
         return BlockLootTableGenerator.drops(drop, WITH_SILK_TOUCH_OR_SHEARS, child);
     }
 
@@ -201,7 +201,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     private static LootTable.Builder leavesDrop(Block leaves, Block drop, float ... chance) {
-        return BlockLootTableGenerator.dropsWithSilkTouchShears(leaves, ((LeafEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionCondition(leaves, ItemEntry.builder(drop))).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, chance))).pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS).with((LootEntry.Builder<?>)((LeafEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(leaves, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0f, 2.0f))))).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.02f, 0.022222223f, 0.025f, 0.033333335f, 0.1f))));
+        return BlockLootTableGenerator.dropsWithSilkTouchOrShears(leaves, ((LeafEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionCondition(leaves, ItemEntry.builder(drop))).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, chance))).pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS).with((LootEntry.Builder<?>)((LeafEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(leaves, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0f, 2.0f))))).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.02f, 0.022222223f, 0.025f, 0.033333335f, 0.1f))));
     }
 
     private static LootTable.Builder oakLeavesDrop(Block leaves, Block drop, float ... chance) {
@@ -823,7 +823,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.DIAMOND_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.DIAMOND));
         this.addDrop(Blocks.NETHER_GOLD_ORE, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouch(block, (LootEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ((LeafEntry.Builder)ItemEntry.builder(Items.GOLD_NUGGET).apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 6.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))));
         this.addDrop(Blocks.LAPIS_ORE, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouch(block, (LootEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ((LeafEntry.Builder)ItemEntry.builder(Items.LAPIS_LAZULI).apply(SetCountLootFunction.builder(UniformLootTableRange.between(4.0f, 9.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))));
-        this.addDrop(Blocks.COBWEB, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouchShears(block, (LootEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionCondition(block, ItemEntry.builder(Items.STRING))));
+        this.addDrop(Blocks.COBWEB, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouchOrShears(block, (LootEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionCondition(block, ItemEntry.builder(Items.STRING))));
         this.addDrop(Blocks.DEAD_BUSH, (Block block) -> BlockLootTableGenerator.dropsWithShears(block, (LootEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0f, 2.0f))))));
         this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
@@ -936,7 +936,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     private void addVinePlantDrop(Block block, Block drop) {
-        LootTable.Builder builder = BlockLootTableGenerator.dropsWithSilkTouchShears(block, ItemEntry.builder(block).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.33f, 0.55f, 0.77f, 1.0f)));
+        LootTable.Builder builder = BlockLootTableGenerator.dropsWithSilkTouchOrShears(block, ItemEntry.builder(block).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.33f, 0.55f, 0.77f, 1.0f)));
         this.addDrop(block, builder);
         this.addDrop(drop, builder);
     }

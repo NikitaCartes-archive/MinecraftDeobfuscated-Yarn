@@ -344,7 +344,7 @@ extends Fluid {
             return false;
         }
         Material material = state.getMaterial();
-        if (material == Material.PORTAL || material == Material.STRUCTURE_VOID || material == Material.UNDERWATER_PLANT || material == Material.SEAGRASS) {
+        if (material == Material.PORTAL || material == Material.STRUCTURE_VOID || material == Material.UNDERWATER_PLANT || material == Material.REPLACEABLE_UNDERWATER_PLANT) {
             return false;
         }
         return !material.blocksMovement();

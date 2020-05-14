@@ -31,45 +31,45 @@ public class InputUtil {
     @Nullable
     private static final MethodHandle GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE;
     private static final int GLFW_RAW_MOUSE_MOTION;
-    public static final KeyCode UNKNOWN_KEYCODE;
+    public static final Key UNKNOWN_KEY;
 
-    public static KeyCode getKeyCode(int i, int j) {
-        if (i == -1) {
-            return Type.SCANCODE.createFromCode(j);
+    public static Key fromKeyCode(int keyCode, int scanCode) {
+        if (keyCode == -1) {
+            return Type.SCANCODE.createFromCode(scanCode);
         }
-        return Type.KEYSYM.createFromCode(i);
+        return Type.KEYSYM.createFromCode(keyCode);
     }
 
-    public static KeyCode fromName(String s) {
-        if (KeyCode.NAMES.containsKey(s)) {
-            return (KeyCode)KeyCode.NAMES.get(s);
+    public static Key fromTranslationKey(String translationKey) {
+        if (Key.KEYS.containsKey(translationKey)) {
+            return (Key)Key.KEYS.get(translationKey);
         }
         for (Type type : Type.values()) {
-            if (!s.startsWith(type.name)) continue;
-            String string = s.substring(type.name.length() + 1);
+            if (!translationKey.startsWith(type.name)) continue;
+            String string = translationKey.substring(type.name.length() + 1);
             return type.createFromCode(Integer.parseInt(string));
         }
-        throw new IllegalArgumentException("Unknown key name: " + s);
+        throw new IllegalArgumentException("Unknown key name: " + translationKey);
     }
 
-    public static boolean isKeyPressed(long handle, int i) {
-        return GLFW.glfwGetKey(handle, i) == 1;
+    public static boolean isKeyPressed(long handle, int code) {
+        return GLFW.glfwGetKey(handle, code) == 1;
     }
 
-    public static void setKeyboardCallbacks(long handle, GLFWKeyCallbackI gLFWKeyCallbackI, GLFWCharModsCallbackI gLFWCharModsCallbackI) {
-        GLFW.glfwSetKeyCallback(handle, gLFWKeyCallbackI);
-        GLFW.glfwSetCharModsCallback(handle, gLFWCharModsCallbackI);
+    public static void setKeyboardCallbacks(long handle, GLFWKeyCallbackI keyCallback, GLFWCharModsCallbackI charModsCallback) {
+        GLFW.glfwSetKeyCallback(handle, keyCallback);
+        GLFW.glfwSetCharModsCallback(handle, charModsCallback);
     }
 
-    public static void setMouseCallbacks(long handle, GLFWCursorPosCallbackI gLFWCursorPosCallbackI, GLFWMouseButtonCallbackI gLFWMouseButtonCallbackI, GLFWScrollCallbackI gLFWScrollCallbackI) {
-        GLFW.glfwSetCursorPosCallback(handle, gLFWCursorPosCallbackI);
-        GLFW.glfwSetMouseButtonCallback(handle, gLFWMouseButtonCallbackI);
-        GLFW.glfwSetScrollCallback(handle, gLFWScrollCallbackI);
+    public static void setMouseCallbacks(long handle, GLFWCursorPosCallbackI cursorPosCallback, GLFWMouseButtonCallbackI mouseButtonCallback, GLFWScrollCallbackI scrollCallback) {
+        GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
+        GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
+        GLFW.glfwSetScrollCallback(handle, scrollCallback);
     }
 
-    public static void setCursorParameters(long l, int i, double d, double e) {
-        GLFW.glfwSetCursorPos(l, d, e);
-        GLFW.glfwSetInputMode(l, 208897, i);
+    public static void setCursorParameters(long handler, int i, double d, double e) {
+        GLFW.glfwSetCursorPos(handler, d, e);
+        GLFW.glfwSetInputMode(handler, 208897, i);
     }
 
     public static boolean isRawMouseMotionSupported() {
@@ -101,58 +101,58 @@ public class InputUtil {
         }
         GLFW_RAW_MOUSE_MOTION_SUPPORTED_HANDLE = methodHandle;
         GLFW_RAW_MOUSE_MOTION = i;
-        UNKNOWN_KEYCODE = Type.KEYSYM.createFromCode(-1);
+        UNKNOWN_KEY = Type.KEYSYM.createFromCode(-1);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static final class KeyCode {
-        private final String name;
+    public static final class Key {
+        private final String translationKey;
         private final Type type;
-        private final int keyCode;
-        private final Lazy<Text> field_24196;
-        private static final Map<String, KeyCode> NAMES = Maps.newHashMap();
+        private final int code;
+        private final Lazy<Text> localizedText;
+        private static final Map<String, Key> KEYS = Maps.newHashMap();
 
-        private KeyCode(String keyName, Type type, int i) {
-            this.name = keyName;
+        private Key(String translationKey, Type type, int code) {
+            this.translationKey = translationKey;
             this.type = type;
-            this.keyCode = i;
-            this.field_24196 = new Lazy<Text>(() -> (Text)type.field_24197.apply(i, keyName));
-            NAMES.put(keyName, this);
+            this.code = code;
+            this.localizedText = new Lazy<Text>(() -> (Text)type.textTranslator.apply(code, translationKey));
+            KEYS.put(translationKey, this);
         }
 
         public Type getCategory() {
             return this.type;
         }
 
-        public int getKeyCode() {
-            return this.keyCode;
+        public int getCode() {
+            return this.code;
         }
 
-        public String getName() {
-            return this.name;
+        public String getTranslationKey() {
+            return this.translationKey;
         }
 
-        public Text method_27445() {
-            return this.field_24196.get();
+        public Text getLocalizedText() {
+            return this.localizedText.get();
         }
 
-        public boolean equals(Object o) {
-            if (this == o) {
+        public boolean equals(Object other) {
+            if (this == other) {
                 return true;
             }
-            if (o == null || this.getClass() != o.getClass()) {
+            if (other == null || this.getClass() != other.getClass()) {
                 return false;
             }
-            KeyCode keyCode = (KeyCode)o;
-            return this.keyCode == keyCode.keyCode && this.type == keyCode.type;
+            Key key = (Key)other;
+            return this.code == key.code && this.type == key.type;
         }
 
         public int hashCode() {
-            return Objects.hash(new Object[]{this.type, this.keyCode});
+            return Objects.hash(new Object[]{this.type, this.code});
         }
 
         public String toString() {
-            return this.name;
+            return this.translationKey;
         }
     }
 
@@ -168,28 +168,28 @@ public class InputUtil {
         }),
         MOUSE("key.mouse", (integer, string) -> new TranslatableText((String)string));
 
-        private final Int2ObjectMap<KeyCode> map = new Int2ObjectOpenHashMap<KeyCode>();
+        private final Int2ObjectMap<Key> map = new Int2ObjectOpenHashMap<Key>();
         private final String name;
-        private final BiFunction<Integer, String, Text> field_24197;
+        private final BiFunction<Integer, String, Text> textTranslator;
 
-        private static void mapKey(Type type, String name, int keyCode) {
-            KeyCode keyCode2 = new KeyCode(name, type, keyCode);
-            type.map.put(keyCode, keyCode2);
+        private static void mapKey(Type type, String translationKey, int keyCode) {
+            Key key = new Key(translationKey, type, keyCode);
+            type.map.put(keyCode, key);
         }
 
-        private Type(String string2, BiFunction<Integer, String, Text> biFunction) {
-            this.name = string2;
-            this.field_24197 = biFunction;
+        private Type(String name, BiFunction<Integer, String, Text> textTranslator) {
+            this.name = name;
+            this.textTranslator = textTranslator;
         }
 
-        public KeyCode createFromCode(int i2) {
-            return this.map.computeIfAbsent(i2, i -> {
-                int j = i;
+        public Key createFromCode(int code2) {
+            return this.map.computeIfAbsent(code2, code -> {
+                int i = code;
                 if (this == MOUSE) {
-                    ++j;
+                    ++i;
                 }
-                String string = this.name + "." + j;
-                return new KeyCode(string, this, i);
+                String string = this.name + "." + i;
+                return new Key(string, this, code);
             });
         }
 

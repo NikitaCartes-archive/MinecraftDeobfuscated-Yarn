@@ -39,7 +39,7 @@ public class NetherFossilGenerator {
         private final BlockRotation structureRotation;
 
         public Piece(StructureManager manager, Identifier template, BlockPos pos, BlockRotation rotation) {
-            super(StructurePieceType.NE_FOS, 0);
+            super(StructurePieceType.NETHER_FOSSIL, 0);
             this.template = template;
             this.pos = pos;
             this.structureRotation = rotation;
@@ -47,7 +47,7 @@ public class NetherFossilGenerator {
         }
 
         public Piece(StructureManager manager, CompoundTag tag) {
-            super(StructurePieceType.NE_FOS, tag);
+            super(StructurePieceType.NETHER_FOSSIL, tag);
             this.template = new Identifier(tag.getString("Template"));
             this.structureRotation = BlockRotation.valueOf(tag.getString("Rot"));
             this.initializeStructureData(manager);

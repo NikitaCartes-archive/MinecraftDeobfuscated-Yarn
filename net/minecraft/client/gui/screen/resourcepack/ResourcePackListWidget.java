@@ -100,68 +100,68 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         @Override
-        public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-            int j;
+        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            int i;
             ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
             if (!resourcePackCompatibility.isCompatible()) {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                DrawableHelper.fill(matrices, width - 1, y - 1, width + height - 9, y + mouseX + 1, -8978432);
+                DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
             }
             this.drawIcon();
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.drawTexture(matrices, width, y, 0.0f, 0.0f, 32, 32, 32, 32);
+            DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             Text text = this.pack.getDisplayName();
             Text text2 = this.pack.getDescription();
-            if (this.isMoveable() && (this.client.options.touchscreen || bl)) {
+            if (this.isMoveable() && (this.client.options.touchscreen || hovered)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_LOCATION);
-                DrawableHelper.fill(matrices, width, y, width + 32, y + 32, -1601138544);
+                DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                j = mouseY - width;
-                int k = i - y;
+                i = mouseX - x;
+                int j = mouseY - y;
                 if (!resourcePackCompatibility.isCompatible()) {
                     text = INCOMPATIBLE;
                     text2 = resourcePackCompatibility.getNotification();
                 }
                 if (this.isSelectable()) {
-                    if (j < 32) {
-                        DrawableHelper.drawTexture(matrices, width, y, 0.0f, 32.0f, 32, 32, 256, 256);
+                    if (i < 32) {
+                        DrawableHelper.drawTexture(matrices, x, y, 0.0f, 32.0f, 32, 32, 256, 256);
                     } else {
-                        DrawableHelper.drawTexture(matrices, width, y, 0.0f, 0.0f, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 256, 256);
                     }
                 } else {
                     if (this.isRemovable()) {
-                        if (j < 16) {
-                            DrawableHelper.drawTexture(matrices, width, y, 32.0f, 32.0f, 32, 32, 256, 256);
+                        if (i < 16) {
+                            DrawableHelper.drawTexture(matrices, x, y, 32.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.drawTexture(matrices, width, y, 32.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.drawTexture(matrices, x, y, 32.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                     if (this.canMoveUp()) {
-                        if (j < 32 && j > 16 && k < 16) {
-                            DrawableHelper.drawTexture(matrices, width, y, 96.0f, 32.0f, 32, 32, 256, 256);
+                        if (i < 32 && i > 16 && j < 16) {
+                            DrawableHelper.drawTexture(matrices, x, y, 96.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.drawTexture(matrices, width, y, 96.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.drawTexture(matrices, x, y, 96.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                     if (this.canMoveDown()) {
-                        if (j < 32 && j > 16 && k > 16) {
-                            DrawableHelper.drawTexture(matrices, width, y, 64.0f, 32.0f, 32, 32, 256, 256);
+                        if (i < 32 && i > 16 && j > 16) {
+                            DrawableHelper.drawTexture(matrices, x, y, 64.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.drawTexture(matrices, width, y, 64.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.drawTexture(matrices, x, y, 64.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                 }
             }
-            if ((j = this.client.textRenderer.getWidth(text)) > 157) {
+            if ((i = this.client.textRenderer.getWidth(text)) > 157) {
                 MutableText text3 = this.client.textRenderer.trimToWidth(text, 157 - this.client.textRenderer.getWidth("...")).append("...");
-                this.client.textRenderer.drawWithShadow(matrices, text3, (float)(width + 32 + 2), (float)(y + 1), 0xFFFFFF);
+                this.client.textRenderer.drawWithShadow(matrices, text3, (float)(x + 32 + 2), (float)(y + 1), 0xFFFFFF);
             } else {
-                this.client.textRenderer.drawWithShadow(matrices, text, (float)(width + 32 + 2), (float)(y + 1), 0xFFFFFF);
+                this.client.textRenderer.drawWithShadow(matrices, text, (float)(x + 32 + 2), (float)(y + 1), 0xFFFFFF);
             }
-            this.client.textRenderer.drawWithShadow(matrices, text, (float)(width + 32 + 2), (float)(y + 1), 0xFFFFFF);
+            this.client.textRenderer.drawWithShadow(matrices, text, (float)(x + 32 + 2), (float)(y + 1), 0xFFFFFF);
             List<Text> list = this.client.textRenderer.wrapLines(text2, 157);
-            for (int l = 0; l < 2 && l < list.size(); ++l) {
-                this.client.textRenderer.drawWithShadow(matrices, list.get(l), (float)(width + 32 + 2), (float)(y + 12 + 10 * l), 0x808080);
+            for (int k = 0; k < 2 && k < list.size(); ++k) {
+                this.client.textRenderer.drawWithShadow(matrices, list.get(k), (float)(x + 32 + 2), (float)(y + 12 + 10 * k), 0x808080);
             }
         }
 

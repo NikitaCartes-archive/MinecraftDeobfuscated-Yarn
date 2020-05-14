@@ -908,12 +908,12 @@ Saddleable {
     @Nullable
     private Vec3d method_27930(Vec3d vec3d, LivingEntity livingEntity) {
         double d = this.getX() + vec3d.x;
-        double e = this.getBoundingBox().y1;
+        double e = this.getBoundingBox().minY;
         double f = this.getZ() + vec3d.z;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         block0: for (EntityPose entityPose : livingEntity.getPoses()) {
             mutable.set(d, e, f);
-            double g = this.getBoundingBox().y2 + 0.75;
+            double g = this.getBoundingBox().maxY + 0.75;
             do {
                 Vec3d vec3d2;
                 Box box;
