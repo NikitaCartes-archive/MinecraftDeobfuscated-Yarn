@@ -19,7 +19,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 import org.jetbrains.annotations.Nullable;
@@ -66,9 +65,7 @@ BiomeAccess.Storage {
     @Deprecated
     public int getSeaLevel();
 
-    public Dimension getDimension();
-
-    public DimensionType method_27983();
+    public DimensionType getDimension();
 
     default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
         return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());
@@ -99,7 +96,7 @@ BiomeAccess.Storage {
 
     @Deprecated
     default public float getBrightness(BlockPos pos) {
-        return this.getDimension().getBrightness(this.getLightLevel(pos));
+        return this.getDimension().method_28516(this.getLightLevel(pos));
     }
 
     default public int getStrongRedstonePower(BlockPos pos, Direction direction) {

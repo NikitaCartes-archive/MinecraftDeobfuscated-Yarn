@@ -3,39 +3,31 @@
  */
 package net.minecraft.world.gen.stateprovider;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
 public class SimpleBlockStateProvider
 extends BlockStateProvider {
+    public static final Codec<SimpleBlockStateProvider> field_24945 = ((MapCodec)BlockState.field_24734.fieldOf("state")).xmap(SimpleBlockStateProvider::new, simpleBlockStateProvider -> simpleBlockStateProvider.state).codec();
     private final BlockState state;
 
-    public SimpleBlockStateProvider(BlockState state) {
-        super(BlockStateProviderType.SIMPLE_STATE_PROVIDER);
-        this.state = state;
+    public SimpleBlockStateProvider(BlockState blockState) {
+        this.state = blockState;
     }
 
-    public <T> SimpleBlockStateProvider(Dynamic<T> configDeserializer) {
-        this(BlockState.deserialize(configDeserializer.get("state").orElseEmptyMap()));
+    @Override
+    protected BlockStateProviderType<?> method_28862() {
+        return BlockStateProviderType.SIMPLE_STATE_PROVIDER;
     }
 
     @Override
     public BlockState getBlockState(Random random, BlockPos pos) {
         return this.state;
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("type"), ops.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString())).put(ops.createString("state"), BlockState.serialize(ops, this.state).getValue());
-        return new Dynamic<T>(ops, ops.createMap(builder.build())).getValue();
     }
 }
 

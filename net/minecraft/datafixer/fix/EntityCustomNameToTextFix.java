@@ -5,13 +5,14 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
@@ -23,7 +24,7 @@ extends DataFix {
 
     @Override
     public TypeRewriteRule makeRule() {
-        OpticFinder<String> opticFinder = DSL.fieldFinder("id", DSL.namespacedString());
+        OpticFinder<String> opticFinder = DSL.fieldFinder("id", IdentifierNormalizingSchema.method_28295());
         return this.fixTypeEverywhereTyped("EntityCustomNameToComponentFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
             Optional optional = typed.getOptional(opticFinder);
             if (optional.isPresent() && Objects.equals(optional.get(), "minecraft:commandblock_minecart")) {
@@ -33,12 +34,12 @@ extends DataFix {
         }));
     }
 
-    public static Dynamic<?> fixCustomName(Dynamic<?> tag) {
-        String string = tag.get("CustomName").asString("");
+    public static Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
+        String string = dynamic.get("CustomName").asString("");
         if (string.isEmpty()) {
-            return tag.remove("CustomName");
+            return dynamic.remove("CustomName");
         }
-        return tag.set("CustomName", tag.createString(Text.Serializer.toJson(new LiteralText(string))));
+        return dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(new LiteralText(string))));
     }
 }
 

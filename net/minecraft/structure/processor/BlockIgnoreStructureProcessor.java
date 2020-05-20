@@ -4,10 +4,10 @@
 package net.minecraft.structure.processor;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockIgnoreStructureProcessor
 extends StructureProcessor {
+    public static final Codec<BlockIgnoreStructureProcessor> field_24998 = ((MapCodec)BlockState.field_24734.xmap(AbstractBlock.AbstractBlockState::getBlock, Block::getDefaultState).listOf().fieldOf("blocks")).xmap(BlockIgnoreStructureProcessor::new, blockIgnoreStructureProcessor -> blockIgnoreStructureProcessor.blocks).codec();
     public static final BlockIgnoreStructureProcessor IGNORE_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.STRUCTURE_BLOCK));
     public static final BlockIgnoreStructureProcessor IGNORE_AIR = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.AIR));
     public static final BlockIgnoreStructureProcessor IGNORE_AIR_AND_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.AIR, Blocks.STRUCTURE_BLOCK));
@@ -28,10 +29,6 @@ extends StructureProcessor {
 
     public BlockIgnoreStructureProcessor(List<Block> list) {
         this.blocks = ImmutableList.copyOf(list);
-    }
-
-    public BlockIgnoreStructureProcessor(Dynamic<?> dynamic2) {
-        this(dynamic2.get("blocks").asList(dynamic -> BlockState.deserialize(dynamic).getBlock()));
     }
 
     @Override
@@ -44,13 +41,8 @@ extends StructureProcessor {
     }
 
     @Override
-    protected StructureProcessorType getType() {
+    protected StructureProcessorType<?> getType() {
         return StructureProcessorType.BLOCK_IGNORE;
-    }
-
-    @Override
-    protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("blocks"), dynamicOps.createList(this.blocks.stream().map(block -> BlockState.serialize(dynamicOps, block.getDefaultState()).getValue())))));
     }
 }
 

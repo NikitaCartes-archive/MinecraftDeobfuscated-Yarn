@@ -18,7 +18,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -107,9 +107,9 @@ extends Task<VillagerEntity> {
                 serverWorld.breakBlock(this.currentTarget, true, villagerEntity);
             }
             if (blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant) {
-                BasicInventory basicInventory = villagerEntity.getInventory();
-                for (int i = 0; i < basicInventory.size(); ++i) {
-                    ItemStack itemStack = basicInventory.getStack(i);
+                SimpleInventory simpleInventory = villagerEntity.getInventory();
+                for (int i = 0; i < simpleInventory.size(); ++i) {
+                    ItemStack itemStack = simpleInventory.getStack(i);
                     boolean bl = false;
                     if (!itemStack.isEmpty()) {
                         if (itemStack.getItem() == Items.WHEAT_SEEDS) {
@@ -130,7 +130,7 @@ extends Task<VillagerEntity> {
                     serverWorld.playSound(null, (double)this.currentTarget.getX(), (double)this.currentTarget.getY(), this.currentTarget.getZ(), SoundEvents.ITEM_CROP_PLANT, SoundCategory.BLOCKS, 1.0f, 1.0f);
                     itemStack.decrement(1);
                     if (!itemStack.isEmpty()) break;
-                    basicInventory.setStack(i, ItemStack.EMPTY);
+                    simpleInventory.setStack(i, ItemStack.EMPTY);
                     break;
                 }
             }

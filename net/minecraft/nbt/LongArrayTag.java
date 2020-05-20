@@ -188,6 +188,11 @@ extends AbstractListTag<LongTag> {
     }
 
     @Override
+    public byte getElementType() {
+        return 4;
+    }
+
+    @Override
     public void clear() {
         this.value = new long[0];
     }

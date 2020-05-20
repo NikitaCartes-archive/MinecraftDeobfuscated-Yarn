@@ -4,9 +4,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,8 +23,8 @@ public class BasaltColumnsFeature
 extends Feature<BasaltColumnsFeatureConfig> {
     private static final ImmutableList<Block> field_24132 = ImmutableList.of(Blocks.LAVA, Blocks.BEDROCK, Blocks.MAGMA_BLOCK, Blocks.SOUL_SAND, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER);
 
-    public BasaltColumnsFeature(Function<Dynamic<?>, ? extends BasaltColumnsFeatureConfig> function) {
-        super(function);
+    public BasaltColumnsFeature(Codec<BasaltColumnsFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

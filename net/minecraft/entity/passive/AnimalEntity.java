@@ -85,7 +85,7 @@ extends PassiveEntity {
         super.writeCustomDataToTag(tag);
         tag.putInt("InLove", this.loveTicks);
         if (this.lovingPlayer != null) {
-            tag.putUuidNew("LoveCause", this.lovingPlayer);
+            tag.putUuid("LoveCause", this.lovingPlayer);
         }
     }
 
@@ -98,7 +98,7 @@ extends PassiveEntity {
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         this.loveTicks = tag.getInt("InLove");
-        this.lovingPlayer = tag.containsUuidNew("LoveCause") ? tag.getUuidNew("LoveCause") : null;
+        this.lovingPlayer = tag.containsUuid("LoveCause") ? tag.getUuid("LoveCause") : null;
     }
 
     public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

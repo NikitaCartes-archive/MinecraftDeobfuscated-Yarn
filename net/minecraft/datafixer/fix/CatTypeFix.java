@@ -4,9 +4,9 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.ChoiceFix;
 
@@ -16,11 +16,11 @@ extends ChoiceFix {
         super(outputSchema, changesType, "CatTypeFix", TypeReferences.ENTITY, "minecraft:cat");
     }
 
-    public Dynamic<?> fixCatTypeData(Dynamic<?> tag) {
-        if (tag.get("CatType").asInt(0) == 9) {
-            return tag.set("CatType", tag.createInt(10));
+    public Dynamic<?> fixCatTypeData(Dynamic<?> dynamic) {
+        if (dynamic.get("CatType").asInt(0) == 9) {
+            return dynamic.set("CatType", dynamic.createInt(10));
         }
-        return tag;
+        return dynamic;
     }
 
     @Override

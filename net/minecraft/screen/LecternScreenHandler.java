@@ -6,8 +6,8 @@ package net.minecraft.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
@@ -21,7 +21,7 @@ extends ScreenHandler {
     private final PropertyDelegate propertyDelegate;
 
     public LecternScreenHandler(int syncId) {
-        this(syncId, new BasicInventory(1), new ArrayPropertyDelegate(1));
+        this(syncId, new SimpleInventory(1), new ArrayPropertyDelegate(1));
     }
 
     public LecternScreenHandler(int syncId, Inventory inventory, PropertyDelegate propertyDelegate) {

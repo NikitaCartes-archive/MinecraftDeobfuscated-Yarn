@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class RepeatedNarrator {
@@ -29,7 +30,7 @@ public class RepeatedNarrator {
             return parameters;
         });
         if (parameters2.rateLimiter.tryAcquire(1)) {
-            NarratorManager.INSTANCE.onChatMessage(MessageType.SYSTEM, new LiteralText(message));
+            NarratorManager.INSTANCE.onChatMessage(MessageType.SYSTEM, new LiteralText(message), Util.field_25140);
         }
     }
 

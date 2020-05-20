@@ -65,6 +65,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public class DolphinEntity
@@ -403,10 +405,11 @@ extends WaterCreatureEntity {
             this.noPathToStructure = false;
             this.dolphin.getNavigation().stop();
             BlockPos blockPos = this.dolphin.getBlockPos();
-            String string = (double)serverWorld.random.nextFloat() >= 0.5 ? "Ocean_Ruin" : "Shipwreck";
-            BlockPos blockPos2 = serverWorld.locateStructure(string, blockPos, 50, false);
+            StructureFeature<FeatureConfig> structureFeature = (double)serverWorld.random.nextFloat() >= 0.5 ? StructureFeature.OCEAN_RUIN : StructureFeature.SHIPWRECK;
+            BlockPos blockPos2 = serverWorld.locateStructure(structureFeature, blockPos, 50, false);
             if (blockPos2 == null) {
-                BlockPos blockPos3 = serverWorld.locateStructure(string.equals("Ocean_Ruin") ? "Shipwreck" : "Ocean_Ruin", blockPos, 50, false);
+                StructureFeature<FeatureConfig> structureFeature2 = structureFeature.equals(StructureFeature.OCEAN_RUIN) ? StructureFeature.SHIPWRECK : StructureFeature.OCEAN_RUIN;
+                BlockPos blockPos3 = serverWorld.locateStructure(structureFeature2, blockPos, 50, false);
                 if (blockPos3 == null) {
                     this.noPathToStructure = true;
                     return;

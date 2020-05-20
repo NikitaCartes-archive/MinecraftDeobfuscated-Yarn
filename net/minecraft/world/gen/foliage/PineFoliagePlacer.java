@@ -3,9 +3,10 @@
  */
 package net.minecraft.world.gen.foliage;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
@@ -16,17 +17,19 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class PineFoliagePlacer
 extends FoliagePlacer {
+    public static final Codec<PineFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> PineFoliagePlacer.method_28846(instance).and(instance.group(((MapCodec)Codec.INT.fieldOf("height")).forGetter(pineFoliagePlacer -> pineFoliagePlacer.height), ((MapCodec)Codec.INT.fieldOf("height_random")).forGetter(pineFoliagePlacer -> pineFoliagePlacer.randomHeight))).apply((Applicative<PineFoliagePlacer, ?>)instance, PineFoliagePlacer::new));
     private final int height;
     private final int randomHeight;
 
     public PineFoliagePlacer(int i, int j, int k, int l, int m, int n) {
-        super(i, j, k, l, FoliagePlacerType.PINE_FOLIAGE_PLACER);
+        super(i, j, k, l);
         this.height = m;
         this.randomHeight = n;
     }
 
-    public <T> PineFoliagePlacer(Dynamic<T> data) {
-        this(data.get("radius").asInt(0), data.get("radius_random").asInt(0), data.get("offset").asInt(0), data.get("offset_random").asInt(0), data.get("height").asInt(0), data.get("height_random").asInt(0));
+    @Override
+    protected FoliagePlacerType<?> method_28843() {
+        return FoliagePlacerType.PINE_FOLIAGE_PLACER;
     }
 
     @Override
@@ -56,13 +59,6 @@ extends FoliagePlacer {
     @Override
     protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
         return baseHeight == dz && dy == dz && dz > 0;
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("height"), ops.createInt(this.height)).put(ops.createString("height_random"), ops.createInt(this.randomHeight));
-        return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
     }
 }
 

@@ -6,6 +6,6 @@ package net.minecraft.world.gen.carver;
 import net.minecraft.world.gen.carver.DefaultCarverConfig;
 
 public interface CarverConfig {
-    public static final DefaultCarverConfig DEFAULT = new DefaultCarverConfig();
+    public static final DefaultCarverConfig DEFAULT = DefaultCarverConfig.field_24830;
 }
 

@@ -75,8 +75,8 @@ implements RecipeBookProvider {
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-        this.textRenderer.draw(matrixStack, this.title, 97.0f, 8.0f, 0x404040);
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        this.textRenderer.draw(matrices, this.title, 97.0f, 8.0f, 0x404040);
     }
 
     @Override
@@ -98,13 +98,13 @@ implements RecipeBookProvider {
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-        int j = this.x;
-        int k = this.y;
-        this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
-        InventoryScreen.drawEntity(j + 51, k + 75, 30, (float)(j + 51) - this.mouseX, (float)(k + 75 - 50) - this.mouseY, this.client.player);
+        int i = this.x;
+        int j = this.y;
+        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        InventoryScreen.drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.client.player);
     }
 
     public static void drawEntity(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity) {

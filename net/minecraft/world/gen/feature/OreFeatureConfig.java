@@ -3,9 +3,10 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -13,10 +14,12 @@ import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.predicate.block.BlockPredicate;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class OreFeatureConfig
 implements FeatureConfig {
+    public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Target.field_24898.fieldOf("target")).forGetter(oreFeatureConfig -> oreFeatureConfig.target), ((MapCodec)BlockState.field_24734.fieldOf("state")).forGetter(oreFeatureConfig -> oreFeatureConfig.state), ((MapCodec)Codec.INT.fieldOf("size")).withDefault(0).forGetter(oreFeatureConfig -> oreFeatureConfig.size)).apply((Applicative<OreFeatureConfig, ?>)instance, OreFeatureConfig::new));
     public final Target target;
     public final int size;
     public final BlockState state;
@@ -27,27 +30,23 @@ implements FeatureConfig {
         this.target = target;
     }
 
-    @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("size"), ops.createInt(this.size), ops.createString("target"), ops.createString(this.target.getName()), ops.createString("state"), BlockState.serialize(ops, this.state).getValue())));
-    }
-
-    public static OreFeatureConfig deserialize(Dynamic<?> dynamic) {
-        int i = dynamic.get("size").asInt(0);
-        Target target = Target.byName(dynamic.get("target").asString(""));
-        BlockState blockState = dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
-        return new OreFeatureConfig(target, blockState, i);
-    }
-
-    public static enum Target {
+    public static enum Target implements StringIdentifiable
+    {
         NATURAL_STONE("natural_stone", blockState -> {
             if (blockState != null) {
                 return blockState.isOf(Blocks.STONE) || blockState.isOf(Blocks.GRANITE) || blockState.isOf(Blocks.DIORITE) || blockState.isOf(Blocks.ANDESITE);
             }
             return false;
         }),
-        NETHERRACK("netherrack", new BlockPredicate(Blocks.NETHERRACK));
+        NETHERRACK("netherrack", new BlockPredicate(Blocks.NETHERRACK)),
+        NETHER_ORE_REPLACEABLES("nether_ore_replaceables", blockState -> {
+            if (blockState != null) {
+                return blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.BASALT) || blockState.isOf(Blocks.BLACKSTONE);
+            }
+            return false;
+        });
 
+        public static final Codec<Target> field_24898;
         private static final Map<String, Target> nameMap;
         private final String name;
         private final Predicate<BlockState> predicate;
@@ -69,7 +68,13 @@ implements FeatureConfig {
             return this.predicate;
         }
 
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
         static {
+            field_24898 = StringIdentifiable.method_28140(Target::values, Target::byName);
             nameMap = Arrays.stream(Target.values()).collect(Collectors.toMap(Target::getName, target -> target));
         }
     }

@@ -4,7 +4,7 @@
 package net.minecraft.world.gen.carver;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,8 +21,8 @@ import net.minecraft.world.gen.carver.CaveCarver;
 
 public class NetherCaveCarver
 extends CaveCarver {
-    public NetherCaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer) {
-        super(configDeserializer, 128);
+    public NetherCaveCarver(Codec<ProbabilityConfig> codec) {
+        super(codec, 128);
         this.alwaysCarvableBlocks = ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, new Block[]{Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.NETHERRACK, Blocks.SOUL_SAND, Blocks.SOUL_SOIL, Blocks.CRIMSON_NYLIUM, Blocks.WARPED_NYLIUM, Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK, Blocks.BASALT, Blocks.BLACKSTONE});
         this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
     }

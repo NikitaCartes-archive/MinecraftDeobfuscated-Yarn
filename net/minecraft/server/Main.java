@@ -6,6 +6,7 @@ package net.minecraft.server;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.datafixers.DataFixer;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.net.Proxy;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BooleanSupplier;
 import joptsimple.AbstractOptionSpec;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.NonOptionArgumentSpec;
@@ -20,7 +22,6 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 import net.minecraft.Bootstrap;
-import net.minecraft.class_5219;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressLogger;
@@ -28,13 +29,17 @@ import net.minecraft.server.dedicated.EulaReader;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
+import net.minecraft.text.Text;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.updater.WorldUpdater;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,6 +63,7 @@ public class Main {
         NonOptionArgumentSpec<String> optionSpec13 = optionParser.nonOptions();
         try {
             boolean bl;
+            SaveProperties saveProperties;
             OptionSet optionSet = optionParser.parse(args);
             if (optionSet.has(optionSpec7)) {
                 optionParser.printHelpOn(System.err);
@@ -72,7 +78,7 @@ public class Main {
             Path path2 = Paths.get("eula.txt", new String[0]);
             EulaReader eulaReader = new EulaReader(path2);
             if (optionSet.has(optionSpec2)) {
-                LOGGER.info("Initialized '" + path.toAbsolutePath().toString() + "' and '" + path2.toAbsolutePath().toString() + "'");
+                LOGGER.info("Initialized '{}' and '{}'", (Object)path.toAbsolutePath(), (Object)path2.toAbsolutePath());
                 return;
             }
             if (!eulaReader.isEulaAgreedTo()) {
@@ -87,19 +93,21 @@ public class Main {
             String string = Optional.ofNullable(optionSet.valueOf(optionSpec10)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
             LevelStorage levelStorage = LevelStorage.create(file.toPath());
             LevelStorage.Session session = levelStorage.createSession(string);
-            MinecraftServer.method_27725(session, Schemas.getFixer(), optionSet.has(optionSpec5), optionSet.has(optionSpec6), () -> true);
-            class_5219 lv = session.readLevelProperties();
-            if (lv == null) {
+            MinecraftServer.method_27725(session);
+            if (optionSet.has(optionSpec5)) {
+                Main.method_29173(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true);
+            }
+            if ((saveProperties = session.readLevelProperties()) == null) {
                 LevelInfo levelInfo;
                 if (optionSet.has(optionSpec3)) {
                     levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
                 } else {
                     ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
-                    levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), optionSet.has(optionSpec4) ? serverPropertiesHandler.field_24623 : serverPropertiesHandler.field_24623.method_28036());
+                    levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), optionSet.has(optionSpec4) ? serverPropertiesHandler.field_24623.withBonusChest() : serverPropertiesHandler.field_24623);
                 }
-                lv = new LevelProperties(levelInfo);
+                saveProperties = new LevelProperties(levelInfo);
             }
-            final MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer(session, lv, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
+            final MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer(session, saveProperties, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
             minecraftDedicatedServer.setServerName(optionSet.valueOf(optionSpec8));
             minecraftDedicatedServer.setServerPort(optionSet.valueOf(optionSpec11));
             minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
@@ -120,6 +128,34 @@ public class Main {
             Runtime.getRuntime().addShutdownHook(thread);
         } catch (Exception exception) {
             LOGGER.fatal("Failed to start the minecraft server", (Throwable)exception);
+        }
+    }
+
+    private static void method_29173(LevelStorage.Session session, DataFixer dataFixer, boolean bl, BooleanSupplier booleanSupplier) {
+        LOGGER.info("Forcing world upgrade!");
+        SaveProperties saveProperties = session.readLevelProperties();
+        if (saveProperties != null) {
+            WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, saveProperties, bl);
+            Text text = null;
+            while (!worldUpdater.isDone()) {
+                int i;
+                Text text2 = worldUpdater.getStatus();
+                if (text != text2) {
+                    text = text2;
+                    LOGGER.info(worldUpdater.getStatus().getString());
+                }
+                if ((i = worldUpdater.getTotalChunkCount()) > 0) {
+                    int j = worldUpdater.getUpgradedChunkCount() + worldUpdater.getSkippedChunkCount();
+                    LOGGER.info("{}% completed ({} / {} chunks)...", (Object)MathHelper.floor((float)j / (float)i * 100.0f), (Object)j, (Object)i);
+                }
+                if (!booleanSupplier.getAsBoolean()) {
+                    worldUpdater.cancel();
+                    continue;
+                }
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException interruptedException) {}
+            }
         }
     }
 }

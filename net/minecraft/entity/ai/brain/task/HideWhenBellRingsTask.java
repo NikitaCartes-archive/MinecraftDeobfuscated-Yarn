@@ -24,7 +24,7 @@ extends Task<LivingEntity> {
         Brain<?> brain = entity.getBrain();
         Raid raid = world.getRaidAt(entity.getBlockPos());
         if (raid == null) {
-            brain.method_24526(Activity.HIDE);
+            brain.doExclusively(Activity.HIDE);
         }
     }
 }

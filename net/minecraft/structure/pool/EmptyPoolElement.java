@@ -3,8 +3,7 @@
  */
 package net.minecraft.structure.pool;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -22,6 +21,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class EmptyPoolElement
 extends StructurePoolElement {
+    public static final Codec<EmptyPoolElement> field_24947 = Codec.unit(() -> INSTANCE);
     public static final EmptyPoolElement INSTANCE = new EmptyPoolElement();
 
     private EmptyPoolElement() {
@@ -44,13 +44,8 @@ extends StructurePoolElement {
     }
 
     @Override
-    public StructurePoolElementType getType() {
+    public StructurePoolElementType<?> getType() {
         return StructurePoolElementType.EMPTY_POOL_ELEMENT;
-    }
-
-    @Override
-    public <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.emptyMap());
     }
 
     public String toString() {

@@ -3,9 +3,8 @@
  */
 package net.minecraft.structure.rule;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.rule.RuleTest;
@@ -13,14 +12,11 @@ import net.minecraft.structure.rule.RuleTestType;
 
 public class BlockStateMatchRuleTest
 extends RuleTest {
+    public static final Codec<BlockStateMatchRuleTest> field_25001 = ((MapCodec)BlockState.field_24734.fieldOf("block_state")).xmap(BlockStateMatchRuleTest::new, blockStateMatchRuleTest -> blockStateMatchRuleTest.blockState).codec();
     private final BlockState blockState;
 
     public BlockStateMatchRuleTest(BlockState blockState) {
         this.blockState = blockState;
-    }
-
-    public <T> BlockStateMatchRuleTest(Dynamic<T> dynamic) {
-        this(BlockState.deserialize(dynamic.get("blockstate").orElseEmptyMap()));
     }
 
     @Override
@@ -29,13 +25,8 @@ extends RuleTest {
     }
 
     @Override
-    protected RuleTestType getType() {
+    protected RuleTestType<?> getType() {
         return RuleTestType.BLOCKSTATE_MATCH;
-    }
-
-    @Override
-    protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("blockstate"), BlockState.serialize(ops, this.blockState).getValue())));
     }
 }
 

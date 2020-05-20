@@ -178,6 +178,7 @@ implements RangedAttackMob {
 
     @Override
     protected boolean receiveFood(PlayerEntity player, ItemStack item) {
+        SoundEvent soundEvent;
         int i = 0;
         int j = 0;
         float f = 0.0f;
@@ -213,8 +214,8 @@ implements RangedAttackMob {
                 this.addTemper(j);
             }
         }
-        if (bl && !this.isSilent()) {
-            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LLAMA_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
+        if (bl && !this.isSilent() && (soundEvent = this.method_28368()) != null) {
+            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), this.method_28368(), this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
         }
         return bl;
     }
@@ -257,6 +258,12 @@ implements RangedAttackMob {
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_LLAMA_DEATH;
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent method_28368() {
+        return SoundEvents.ENTITY_LLAMA_EAT;
     }
 
     @Override

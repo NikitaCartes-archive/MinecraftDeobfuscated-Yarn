@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.surfacebuilder;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,8 +20,8 @@ extends BadlandsSurfaceBuilder {
     private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
     private static final BlockState TERACOTTA = Blocks.TERRACOTTA.getDefaultState();
 
-    public ErodedBadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-        super(function);
+    public ErodedBadlandsSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+        super(codec);
     }
 
     @Override

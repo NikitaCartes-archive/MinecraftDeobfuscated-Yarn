@@ -9,8 +9,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -66,7 +66,7 @@ Tickable {
             int n = i;
             this.cookingTimes[n] = this.cookingTimes[n] + 1;
             if (this.cookingTimes[i] < this.cookingTotalTimes[i]) continue;
-            BasicInventory inventory = new BasicInventory(itemStack);
+            SimpleInventory inventory = new SimpleInventory(itemStack);
             ItemStack itemStack2 = this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, this.world).map(campfireCookingRecipe -> campfireCookingRecipe.craft(inventory)).orElse(itemStack);
             BlockPos blockPos = this.getPos();
             ItemScatterer.spawn(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
@@ -151,7 +151,7 @@ Tickable {
         if (this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)) {
             return Optional.empty();
         }
-        return this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(item), this.world);
+        return this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new SimpleInventory(item), this.world);
     }
 
     public boolean addItem(ItemStack item, int integer) {

@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.predicate.block.BlockStatePredicate;
@@ -24,8 +23,8 @@ extends Feature<DefaultFeatureConfig> {
     private final BlockState wall = Blocks.SANDSTONE.getDefaultState();
     private final BlockState fluidInside = Blocks.WATER.getDefaultState();
 
-    public DesertWellFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public DesertWellFeature(Codec<DefaultFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

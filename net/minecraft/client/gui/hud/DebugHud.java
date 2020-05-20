@@ -62,7 +62,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -197,7 +196,7 @@ extends DrawableHelper {
         if (string3 != null) {
             list.add(string3);
         }
-        list.add(DimensionType.getId(this.client.world.method_27983()).toString() + " FC: " + Integer.toString(longSet.size()));
+        list.add(this.client.world.method_27983().getValue() + " FC: " + longSet.size());
         list.add("");
         list.add(String.format(Locale.ROOT, "XYZ: %.3f / %.5f / %.3f", this.client.getCameraEntity().getX(), this.client.getCameraEntity().getY(), this.client.getCameraEntity().getZ()));
         list.add(String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
@@ -223,14 +222,14 @@ extends DrawableHelper {
                     StringBuilder stringBuilder = new StringBuilder("CH");
                     for (Heightmap.Type type : Heightmap.Type.values()) {
                         if (!type.shouldSendToClient()) continue;
-                        stringBuilder.append(" ").append(HEIGHT_MAP_TYPES.get((Object)type)).append(": ").append(worldChunk.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
+                        stringBuilder.append(" ").append(HEIGHT_MAP_TYPES.get(type)).append(": ").append(worldChunk.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
                     }
                     list.add(stringBuilder.toString());
                     stringBuilder.setLength(0);
                     stringBuilder.append("SH");
                     for (Heightmap.Type type : Heightmap.Type.values()) {
                         if (!type.isStoredServerSide()) continue;
-                        stringBuilder.append(" ").append(HEIGHT_MAP_TYPES.get((Object)type)).append(": ");
+                        stringBuilder.append(" ").append(HEIGHT_MAP_TYPES.get(type)).append(": ");
                         if (worldChunk2 != null) {
                             stringBuilder.append(worldChunk2.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
                             continue;

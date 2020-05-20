@@ -5,10 +5,9 @@ package net.minecraft.world.gen.surfacebuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Comparator;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -26,8 +25,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     private ImmutableMap<BlockState, OctavePerlinNoiseSampler> field_23922 = ImmutableMap.of();
     private OctavePerlinNoiseSampler field_23923;
 
-    public AbstractNetherSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-        super(function);
+    public AbstractNetherSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+        super(codec);
     }
 
     @Override

@@ -39,8 +39,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ZombifiedPiglinEntity
 extends ZombieEntity {
-    private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
-    private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION);
+    private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
+    private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION);
     private int anger;
     private int angrySoundDelay;
     private UUID angerTarget;
@@ -123,7 +123,7 @@ extends ZombieEntity {
         super.writeCustomDataToTag(tag);
         tag.putShort("Anger", (short)this.anger);
         if (this.angerTarget != null) {
-            tag.putUuidNew("HurtBy", this.angerTarget);
+            tag.putUuid("HurtBy", this.angerTarget);
         }
     }
 
@@ -131,8 +131,8 @@ extends ZombieEntity {
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         this.anger = tag.getShort("Anger");
-        if (tag.containsUuidNew("HurtBy")) {
-            this.angerTarget = tag.getUuidNew("HurtBy");
+        if (tag.containsUuid("HurtBy")) {
+            this.angerTarget = tag.getUuid("HurtBy");
             PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
             this.setAttacker(playerEntity);
             if (playerEntity != null) {

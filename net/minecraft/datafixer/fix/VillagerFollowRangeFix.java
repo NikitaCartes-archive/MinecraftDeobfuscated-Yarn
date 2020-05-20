@@ -4,9 +4,9 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.ChoiceFix;
 
@@ -23,7 +23,7 @@ extends ChoiceFix {
 
     private static Dynamic<?> method_27914(Dynamic<?> dynamic) {
         return dynamic.update("Attributes", dynamic22 -> dynamic.createList(dynamic22.asStream().map(dynamic -> {
-            if (!dynamic.get("Name").asString().orElse("").equals("generic.follow_range") || dynamic.get("Base").asNumber().orElse(0).doubleValue() != 16.0) {
+            if (!dynamic.get("Name").asString("").equals("generic.follow_range") || dynamic.get("Base").asDouble(0.0) != 16.0) {
                 return dynamic;
             }
             return dynamic.set("Base", dynamic.createDouble(48.0));

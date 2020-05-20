@@ -75,14 +75,14 @@ public class EntityAttributeModifier {
         compoundTag.putString("Name", this.getName());
         compoundTag.putDouble("Amount", this.value);
         compoundTag.putInt("Operation", this.operation.getId());
-        compoundTag.putUuidNew("UUID", this.uuid);
+        compoundTag.putUuid("UUID", this.uuid);
         return compoundTag;
     }
 
     @Nullable
     public static EntityAttributeModifier fromTag(CompoundTag tag) {
         try {
-            UUID uUID = tag.getUuidNew("UUID");
+            UUID uUID = tag.getUuid("UUID");
             Operation operation = Operation.fromId(tag.getInt("Operation"));
             return new EntityAttributeModifier(uUID, tag.getString("Name"), tag.getDouble("Amount"), operation);
         } catch (Exception exception) {

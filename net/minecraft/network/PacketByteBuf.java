@@ -3,6 +3,8 @@
  */
 package net.minecraft.network;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -25,11 +27,13 @@ import java.util.Date;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.PositionTracker;
+import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -53,6 +57,23 @@ extends ByteBuf {
             return j;
         }
         return 5;
+    }
+
+    public <T> T decode(Codec<T> codec) throws IOException {
+        CompoundTag compoundTag = this.readCompoundTag();
+        DataResult dataResult = codec.parse(NbtOps.INSTANCE, compoundTag);
+        if (dataResult.error().isPresent()) {
+            throw new IOException("Failed to decode: " + dataResult.error().get().message() + " " + compoundTag);
+        }
+        return (T)dataResult.result().get();
+    }
+
+    public <T> void encode(Codec<T> codec, T object) throws IOException {
+        DataResult<Tag> dataResult = codec.encodeStart(NbtOps.INSTANCE, (Tag)object);
+        if (dataResult.error().isPresent()) {
+            throw new IOException("Failed to encode: " + dataResult.error().get().message() + " " + object);
+        }
+        this.writeCompoundTag((CompoundTag)dataResult.result().get());
     }
 
     public PacketByteBuf writeByteArray(byte[] bs) {

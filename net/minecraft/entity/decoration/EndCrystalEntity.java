@@ -19,9 +19,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,9 +56,9 @@ extends Entity {
     @Override
     public void tick() {
         ++this.endCrystalAge;
-        if (!this.world.isClient) {
+        if (this.world instanceof ServerWorld) {
             BlockPos blockPos = this.getBlockPos();
-            if (this.world.getDimension() instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
+            if (((ServerWorld)this.world).method_29198() != null && this.world.getBlockState(blockPos).isAir()) {
                 this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
             }
         }
@@ -112,9 +112,8 @@ extends Entity {
     }
 
     private void crystalDestroyed(DamageSource source) {
-        TheEndDimension theEndDimension;
         EnderDragonFight enderDragonFight;
-        if (this.world.getDimension() instanceof TheEndDimension && (enderDragonFight = (theEndDimension = (TheEndDimension)this.world.getDimension()).getEnderDragonFight()) != null) {
+        if (this.world instanceof ServerWorld && (enderDragonFight = ((ServerWorld)this.world).method_29198()) != null) {
             enderDragonFight.crystalDestroyed(this, source);
         }
     }

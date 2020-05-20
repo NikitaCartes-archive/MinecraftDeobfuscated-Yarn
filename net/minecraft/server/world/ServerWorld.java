@@ -41,7 +41,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_5268;
+import net.minecraft.class_5304;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -52,6 +52,7 @@ import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
@@ -126,7 +127,6 @@ import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.TickScheduler;
-import net.minecraft.world.WanderingTraderManager;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -134,10 +134,13 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -149,6 +152,7 @@ import org.jetbrains.annotations.Nullable;
 public class ServerWorld
 extends World
 implements ServerWorldAccess {
+    public static final BlockPos field_25144 = new BlockPos(100, 50, 0);
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<Entity> globalEntities = Lists.newArrayList();
     private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectLinkedOpenHashMap<Entity>();
@@ -158,7 +162,7 @@ implements ServerWorldAccess {
     private final ServerChunkManager field_24624;
     boolean inEntityTick;
     private final MinecraftServer server;
-    private final class_5268 field_24456;
+    private final ServerWorldProperties field_24456;
     public boolean savingDisabled;
     private boolean allPlayersSleeping;
     private int idleTimeout;
@@ -169,25 +173,29 @@ implements ServerWorldAccess {
     protected final RaidManager raidManager;
     private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet();
     private boolean inBlockTick;
+    private final List<class_5304> field_25141;
     @Nullable
-    private final WanderingTraderManager wanderingTraderManager;
+    private final EnderDragonFight enderDragonFight;
     private final StructureAccessor structureAccessor;
+    private final boolean field_25143;
 
-    public ServerWorld(MinecraftServer minecraftServer, Executor workerExecutor, LevelStorage.Session session, class_5268 properties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean bl, long l) {
-        super(properties, dimensionType, minecraftServer::getProfiler, false, bl, l);
-        this.field_24624 = new ServerChunkManager(this, session, minecraftServer.getDataFixer(), minecraftServer.getStructureManager(), workerExecutor, chunkGenerator, minecraftServer.getPlayerManager().getViewDistance(), minecraftServer.syncChunkWrites(), worldGenerationProgressListener, () -> minecraftServer.getWorld(DimensionType.OVERWORLD).getPersistentStateManager());
+    public ServerWorld(MinecraftServer minecraftServer, Executor executor, LevelStorage.Session session, ServerWorldProperties serverWorldProperties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean bl, long l, List<class_5304> list, boolean bl2) {
+        super(serverWorldProperties, dimensionType, minecraftServer::getProfiler, false, bl, l);
+        this.field_25143 = bl2;
         this.server = minecraftServer;
-        this.field_24456 = properties;
+        this.field_25141 = list;
+        this.field_24456 = serverWorldProperties;
+        this.field_24624 = new ServerChunkManager(this, session, minecraftServer.getDataFixer(), minecraftServer.getStructureManager(), executor, chunkGenerator, minecraftServer.getPlayerManager().getViewDistance(), minecraftServer.syncChunkWrites(), worldGenerationProgressListener, () -> minecraftServer.getWorld(DimensionType.OVERWORLD_REGISTRY_KEY).getPersistentStateManager());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
         this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
-        this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.method_27983()));
+        this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
         if (!minecraftServer.isSinglePlayer()) {
-            properties.setGameMode(minecraftServer.getDefaultGameMode());
+            serverWorldProperties.setGameMode(minecraftServer.getDefaultGameMode());
         }
-        this.wanderingTraderManager = this.method_27983() == DimensionType.OVERWORLD ? new WanderingTraderManager(this, this.field_24456) : null;
         this.structureAccessor = new StructureAccessor(this, minecraftServer.method_27728().method_28057());
+        this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, minecraftServer.method_27728().method_29036()) : null;
     }
 
     public void method_27910(int i, int j, boolean bl, boolean bl2) {
@@ -216,7 +224,7 @@ implements ServerWorldAccess {
         this.getWorldBorder().tick();
         profiler.swap("weather");
         boolean bl = this.isRaining();
-        if (this.method_27983().hasSkyLight()) {
+        if (this.getDimension().hasSkyLight()) {
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
                 int i = this.field_24456.getClearWeatherTime();
                 j = this.field_24456.getThunderTime();
@@ -277,7 +285,7 @@ implements ServerWorldAccess {
             this.allPlayersSleeping = false;
             if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
                 long l = this.properties.getTimeOfDay() + 24000L;
-                this.setTimeOfDay(l - l % 24000L);
+                this.method_29199(l - l % 24000L);
             }
             this.wakeSleepingPlayers();
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
@@ -285,19 +293,16 @@ implements ServerWorldAccess {
             }
         }
         this.calculateAmbientDarkness();
-        this.tickTime();
+        this.method_29203();
         profiler.swap("chunkSource");
         this.getChunkManager().tick(shouldKeepTicking);
         profiler.swap("tickPending");
-        if (!this.method_27982()) {
+        if (!this.isDebugWorld()) {
             this.blockTickScheduler.tick();
             this.fluidTickScheduler.tick();
         }
         profiler.swap("raid");
         this.raidManager.tick();
-        if (this.wanderingTraderManager != null) {
-            this.wanderingTraderManager.tick();
-        }
         profiler.swap("blockEvents");
         this.processSyncedBlockEvents();
         this.inBlockTick = false;
@@ -308,7 +313,9 @@ implements ServerWorldAccess {
         }
         if (bl4 || this.idleTimeout++ < 300) {
             Entity entity2;
-            this.getDimension().update();
+            if (this.enderDragonFight != null) {
+                this.enderDragonFight.tick();
+            }
             profiler.push("global");
             for (j = 0; j < this.globalEntities.size(); ++j) {
                 Entity entity3 = this.globalEntities.get(j);
@@ -362,6 +369,28 @@ implements ServerWorldAccess {
             this.tickBlockEntities();
         }
         profiler.pop();
+    }
+
+    protected void method_29203() {
+        if (!this.field_25143) {
+            return;
+        }
+        long l = this.properties.getTime() + 1L;
+        this.field_24456.method_29034(l);
+        this.field_24456.getScheduledEvents().processEvents(this.server, l);
+        if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
+            this.method_29199(this.properties.getTimeOfDay() + 1L);
+        }
+    }
+
+    public void method_29199(long l) {
+        this.field_24456.method_29035(l);
+    }
+
+    public void method_29202(boolean bl, boolean bl2) {
+        for (class_5304 lv : this.field_25141) {
+            lv.spawn(this, bl, bl2);
+        }
     }
 
     private void wakeSleepingPlayers() {
@@ -564,11 +593,6 @@ implements ServerWorldAccess {
         return !this.server.isSpawnProtected(this, pos, player) && this.getWorldBorder().contains(pos);
     }
 
-    @Nullable
-    public BlockPos getForcedSpawnPoint() {
-        return this.getDimension().getForcedSpawnPoint();
-    }
-
     public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) {
         ServerChunkManager serverChunkManager = this.getChunkManager();
         if (bl) {
@@ -584,8 +608,10 @@ implements ServerWorldAccess {
         serverChunkManager.save(flush);
     }
 
-    protected void saveLevel() {
-        this.getDimension().saveWorldData(this.field_24456);
+    private void saveLevel() {
+        if (this.enderDragonFight != null) {
+            this.server.method_27728().method_29037(this.enderDragonFight.toTag());
+        }
         this.getChunkManager().getPersistentStateManager().save();
     }
 
@@ -944,11 +970,11 @@ implements ServerWorldAccess {
     }
 
     @Nullable
-    public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
-        if (!this.server.method_27728().method_28057().method_28029()) {
+    public BlockPos locateStructure(StructureFeature<?> structureFeature, BlockPos blockPos, int i, boolean bl) {
+        if (!this.server.method_27728().method_28057().shouldGenerateStructures()) {
             return null;
         }
-        return this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
+        return this.getChunkManager().getChunkGenerator().locateStructure(this, structureFeature, blockPos, i, bl);
     }
 
     @Nullable
@@ -967,14 +993,13 @@ implements ServerWorldAccess {
     }
 
     @Override
-    public void setTime(long time) {
-        super.setTime(time);
-        this.field_24456.getScheduledEvents().processEvents(this.server, time);
+    public boolean isSavingDisabled() {
+        return this.savingDisabled;
     }
 
     @Override
-    public boolean isSavingDisabled() {
-        return this.savingDisabled;
+    public DimensionTracker method_28380() {
+        return this.server.method_29174();
     }
 
     public PersistentStateManager getPersistentStateManager() {
@@ -984,17 +1009,17 @@ implements ServerWorldAccess {
     @Override
     @Nullable
     public MapState getMapState(String id) {
-        return this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().get(() -> new MapState(id), id);
+        return this.getServer().getWorld(DimensionType.OVERWORLD_REGISTRY_KEY).getPersistentStateManager().get(() -> new MapState(id), id);
     }
 
     @Override
     public void putMapState(MapState mapState) {
-        this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().set(mapState);
+        this.getServer().getWorld(DimensionType.OVERWORLD_REGISTRY_KEY).getPersistentStateManager().set(mapState);
     }
 
     @Override
     public int getNextMapId() {
-        return this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().getOrCreate(IdCountsState::new, "idcounts").getNextMapId();
+        return this.getServer().getWorld(DimensionType.OVERWORLD_REGISTRY_KEY).getPersistentStateManager().getOrCreate(IdCountsState::new, "idcounts").getNextMapId();
     }
 
     public void setSpawnPos(BlockPos blockPos) {
@@ -1005,7 +1030,7 @@ implements ServerWorldAccess {
         this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(blockPos));
     }
 
-    public BlockPos method_27911() {
+    public BlockPos getSpawnPos() {
         BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
         if (!this.getWorldBorder().contains(blockPos)) {
             blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
@@ -1108,7 +1133,7 @@ implements ServerWorldAccess {
             info = this.getChunkManager().getSpawnInfo();
             if (info != null) {
                 for (Object2IntMap.Entry entry : ((SpawnHelper.Info)info).getGroupToCount().object2IntEntrySet()) {
-                    writer.write(String.format("spawn_count.%s: %d\n", ((SpawnGroup)((Object)entry.getKey())).getName(), entry.getIntValue()));
+                    writer.write(String.format("spawn_count.%s: %d\n", ((SpawnGroup)entry.getKey()).getName(), entry.getIntValue()));
                 }
             }
             writer.write(String.format("entities: %d\n", this.entitiesById.size()));
@@ -1203,7 +1228,7 @@ implements ServerWorldAccess {
 
     @Override
     public void updateNeighbors(BlockPos pos, Block block) {
-        if (!this.method_27982()) {
+        if (!this.isDebugWorld()) {
             this.updateNeighborsAlways(pos, block);
         }
     }
@@ -1223,12 +1248,26 @@ implements ServerWorldAccess {
     }
 
     public boolean method_28125() {
-        return this.server.method_27728().method_28057().method_28034();
+        return this.server.method_27728().method_28057().isFlatWorld();
     }
 
     @Override
     public long getSeed() {
-        return this.server.method_27728().method_28057().method_28028();
+        return this.server.method_27728().method_28057().getSeed();
+    }
+
+    @Nullable
+    public EnderDragonFight method_29198() {
+        return this.enderDragonFight;
+    }
+
+    public static void method_29200(ServerWorld serverWorld) {
+        BlockPos blockPos2 = field_25144;
+        int i = blockPos2.getX();
+        int j = blockPos2.getY() - 2;
+        int k = blockPos2.getZ();
+        BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach(blockPos -> serverWorld.setBlockState((BlockPos)blockPos, Blocks.AIR.getDefaultState()));
+        BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach(blockPos -> serverWorld.setBlockState((BlockPos)blockPos, Blocks.OBSIDIAN.getDefaultState()));
     }
 
     @Override

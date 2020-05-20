@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
@@ -16,8 +15,8 @@ import net.minecraft.world.gen.decorator.Decorator;
 
 public class CountHeight64Decorator
 extends Decorator<CountDecoratorConfig> {
-    public CountHeight64Decorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function) {
-        super(function);
+    public CountHeight64Decorator(Codec<CountDecoratorConfig> codec) {
+        super(codec);
     }
 
     @Override

@@ -4,7 +4,6 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -32,7 +31,7 @@ extends Task<MobEntityWithAi> {
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
         Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.memoryModuleType);
-        return optional.isPresent() && Objects.equals(serverWorld.method_27983(), optional.get().getDimension()) && optional.get().getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
+        return optional.isPresent() && serverWorld.method_27983() == optional.get().getDimension() && optional.get().getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
     }
 
     @Override

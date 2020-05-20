@@ -6,9 +6,9 @@ package net.minecraft.datafixer.fix;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
@@ -21,15 +21,15 @@ extends DataFix {
         super(outputSchema, changesType);
     }
 
-    private static Dynamic<?> updateBlockState(Dynamic<?> blockStateData) {
-        Optional<String> optional = blockStateData.get("Name").asString();
+    private static Dynamic<?> updateBlockState(Dynamic<?> dynamic2) {
+        Optional<String> optional = dynamic2.get("Name").asString().result();
         if (optional.equals(Optional.of("minecraft:jigsaw"))) {
-            return blockStateData.update("Properties", dynamic -> {
+            return dynamic2.update("Properties", dynamic -> {
                 String string = dynamic.get("facing").asString("north");
                 return dynamic.remove("facing").set("orientation", dynamic.createString(ORIENTATION_UPDATES.getOrDefault(string, string)));
             });
         }
-        return blockStateData;
+        return dynamic2;
     }
 
     @Override

@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
@@ -18,8 +17,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class EndGatewayFeature
 extends Feature<EndGatewayFeatureConfig> {
-    public EndGatewayFeature(Function<Dynamic<?>, ? extends EndGatewayFeatureConfig> function) {
-        super(function);
+    public EndGatewayFeature(Codec<EndGatewayFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

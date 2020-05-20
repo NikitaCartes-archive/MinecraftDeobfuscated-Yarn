@@ -30,7 +30,6 @@ import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerTickScheduler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.SimpleTickScheduler;
-import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
@@ -56,6 +55,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -83,7 +83,7 @@ public class ChunkSerializer {
         ListTag listTag = compoundTag.getList("Sections", 10);
         int i = 16;
         ChunkSection[] chunkSections = new ChunkSection[16];
-        boolean bl2 = world.method_27983().hasSkyLight();
+        boolean bl2 = world.getDimension().hasSkyLight();
         ServerChunkManager chunkManager = world.getChunkManager();
         LightingProvider lightingProvider = ((ChunkManager)chunkManager).getLightingProvider();
         if (bl) {
@@ -256,7 +256,9 @@ public class ChunkSerializer {
             compoundTag2.put("Lights", ChunkSerializer.toNbt(protoChunk.getLightSourcesBySection()));
             compoundTag4 = new CompoundTag();
             for (GenerationStep.Carver carver : GenerationStep.Carver.values()) {
-                compoundTag4.putByteArray(carver.toString(), chunk.getCarvingMask(carver).toByteArray());
+                BitSet bitSet = protoChunk.getCarvingMask(carver);
+                if (bitSet == null) continue;
+                compoundTag4.putByteArray(carver.toString(), bitSet.toByteArray());
             }
             compoundTag2.put("CarvingMasks", compoundTag4);
         }
@@ -280,7 +282,7 @@ public class ChunkSerializer {
         compoundTag2.put("PostProcessing", ChunkSerializer.toNbt(chunk.getPostProcessingLists()));
         compoundTag3 = new CompoundTag();
         for (Map.Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
-            if (!chunk.getStatus().getHeightmapTypes().contains((Object)entry.getKey())) continue;
+            if (!chunk.getStatus().getHeightmapTypes().contains(entry.getKey())) continue;
             ((CompoundTag)compoundTag3).put(entry.getKey().getName(), new LongArrayTag(entry.getValue().asLongArray()));
         }
         compoundTag2.put("Heightmaps", (Tag)compoundTag3);
@@ -322,10 +324,10 @@ public class ChunkSerializer {
         }
     }
 
-    private static CompoundTag writeStructures(ChunkPos pos, Map<String, StructureStart> structureStarts, Map<String, LongSet> structureReferences) {
+    private static CompoundTag writeStructures(ChunkPos pos, Map<String, StructureStart<?>> structureStarts, Map<String, LongSet> structureReferences) {
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag compoundTag2 = new CompoundTag();
-        for (Map.Entry<String, StructureStart> entry : structureStarts.entrySet()) {
+        for (Map.Entry<String, StructureStart<?>> entry : structureStarts.entrySet()) {
             compoundTag2.put(entry.getKey(), entry.getValue().toTag(pos.x, pos.z));
         }
         compoundTag.put("Starts", compoundTag2);
@@ -337,11 +339,11 @@ public class ChunkSerializer {
         return compoundTag;
     }
 
-    private static Map<String, StructureStart> readStructureStarts(StructureManager structureManager, CompoundTag compoundTag, long l) {
-        HashMap<String, StructureStart> map = Maps.newHashMap();
+    private static Map<String, StructureStart<?>> readStructureStarts(StructureManager structureManager, CompoundTag compoundTag, long l) {
+        HashMap<String, StructureStart<?>> map = Maps.newHashMap();
         CompoundTag compoundTag2 = compoundTag.getCompound("Starts");
         for (String string : compoundTag2.getKeys()) {
-            map.put(string, StructureFeatures.readStructureStart(structureManager, compoundTag2.getCompound(string), l));
+            map.put(string, StructureFeature.method_28660(structureManager, compoundTag2.getCompound(string), l));
         }
         return map;
     }

@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.KelpBlock;
@@ -19,8 +18,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class KelpFeature
 extends Feature<DefaultFeatureConfig> {
-    public KelpFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public KelpFeature(Codec<DefaultFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

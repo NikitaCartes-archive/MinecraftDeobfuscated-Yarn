@@ -5,10 +5,10 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Dynamic;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,27 +32,27 @@ extends DataFix {
         return typed2.updateTyped(DSL.namedChoice(name, type), type2, (Typed<?> typed) -> typed.update(DSL.remainderFinder(), updater));
     }
 
-    protected static Optional<Dynamic<?>> updateStringUuid(Dynamic<?> parent, String oldKey, String newKey) {
-        return AbstractUuidFix.createArrayFromStringUuid(parent, oldKey).map(dynamic2 -> parent.remove(oldKey).set(newKey, (Dynamic<?>)dynamic2));
+    protected static Optional<Dynamic<?>> updateStringUuid(Dynamic<?> dynamic, String oldKey, String newKey) {
+        return AbstractUuidFix.createArrayFromStringUuid(dynamic, oldKey).map(dynamic2 -> dynamic.remove(oldKey).set(newKey, (Dynamic<?>)dynamic2));
     }
 
-    protected static Optional<Dynamic<?>> updateCompoundUuid(Dynamic<?> parent, String oldKey, String newKey) {
-        return parent.get(oldKey).get().flatMap(AbstractUuidFix::createArrayFromCompoundUuid).map(dynamic2 -> parent.remove(oldKey).set(newKey, (Dynamic<?>)dynamic2));
+    protected static Optional<Dynamic<?>> updateCompoundUuid(Dynamic<?> dynamic, String oldKey, String newKey) {
+        return dynamic.get(oldKey).result().flatMap(AbstractUuidFix::createArrayFromCompoundUuid).map(dynamic2 -> dynamic.remove(oldKey).set(newKey, (Dynamic<?>)dynamic2));
     }
 
-    protected static Optional<Dynamic<?>> updateRegularMostLeast(Dynamic<?> parent, String oldKey, String newKey) {
+    protected static Optional<Dynamic<?>> updateRegularMostLeast(Dynamic<?> dynamic, String oldKey, String newKey) {
         String string = oldKey + "Most";
         String string2 = oldKey + "Least";
-        return AbstractUuidFix.createArrayFromMostLeastTags(parent, string, string2).map(dynamic2 -> parent.remove(string).remove(string2).set(newKey, (Dynamic<?>)dynamic2));
+        return AbstractUuidFix.createArrayFromMostLeastTags(dynamic, string, string2).map(dynamic2 -> dynamic.remove(string).remove(string2).set(newKey, (Dynamic<?>)dynamic2));
     }
 
-    protected static Optional<Dynamic<?>> createArrayFromStringUuid(Dynamic<?> parent, String key) {
-        return parent.get(key).get().flatMap(dynamic2 -> {
+    protected static Optional<Dynamic<?>> createArrayFromStringUuid(Dynamic<?> dynamic, String key) {
+        return dynamic.get(key).result().flatMap(dynamic2 -> {
             String string = dynamic2.asString(null);
             if (string != null) {
                 try {
                     UUID uUID = UUID.fromString(string);
-                    return AbstractUuidFix.createArray(parent, uUID.getMostSignificantBits(), uUID.getLeastSignificantBits());
+                    return AbstractUuidFix.createArray(dynamic, uUID.getMostSignificantBits(), uUID.getLeastSignificantBits());
                 } catch (IllegalArgumentException illegalArgumentException) {
                     // empty catch block
                 }
@@ -61,21 +61,21 @@ extends DataFix {
         });
     }
 
-    protected static Optional<Dynamic<?>> createArrayFromCompoundUuid(Dynamic<?> uuidCompound) {
-        return AbstractUuidFix.createArrayFromMostLeastTags(uuidCompound, "M", "L");
+    protected static Optional<Dynamic<?>> createArrayFromCompoundUuid(Dynamic<?> dynamic) {
+        return AbstractUuidFix.createArrayFromMostLeastTags(dynamic, "M", "L");
     }
 
-    protected static Optional<Dynamic<?>> createArrayFromMostLeastTags(Dynamic<?> parent, String mostBitsKey, String leastBitsKey) {
-        long l = parent.get(mostBitsKey).asLong(0L);
-        long m = parent.get(leastBitsKey).asLong(0L);
+    protected static Optional<Dynamic<?>> createArrayFromMostLeastTags(Dynamic<?> dynamic, String mostBitsKey, String leastBitsKey) {
+        long l = dynamic.get(mostBitsKey).asLong(0L);
+        long m = dynamic.get(leastBitsKey).asLong(0L);
         if (l == 0L || m == 0L) {
             return Optional.empty();
         }
-        return AbstractUuidFix.createArray(parent, l, m);
+        return AbstractUuidFix.createArray(dynamic, l, m);
     }
 
-    protected static Optional<Dynamic<?>> createArray(Dynamic<?> parent, long mostBits, long leastBits) {
-        return Optional.of(parent.createIntList(Arrays.stream(new int[]{(int)(mostBits >> 32), (int)mostBits, (int)(leastBits >> 32), (int)leastBits})));
+    protected static Optional<Dynamic<?>> createArray(Dynamic<?> dynamic, long mostBits, long leastBits) {
+        return Optional.of(dynamic.createIntList(Arrays.stream(new int[]{(int)(mostBits >> 32), (int)mostBits, (int)(leastBits >> 32), (int)leastBits})));
     }
 }
 

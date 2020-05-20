@@ -4,8 +4,7 @@
 package net.minecraft.world.gen.surfacebuilder;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
-import java.util.function.Function;
+import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.gen.surfacebuilder.AbstractNetherSurfaceBuilder;
@@ -19,8 +18,8 @@ extends AbstractNetherSurfaceBuilder {
     private static final ImmutableList<BlockState> field_23918 = ImmutableList.of(BASALT, BLACKSTONE);
     private static final ImmutableList<BlockState> field_23919 = ImmutableList.of(BASALT);
 
-    public BasaltDeltasSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-        super(function);
+    public BasaltDeltasSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+        super(codec);
     }
 
     @Override

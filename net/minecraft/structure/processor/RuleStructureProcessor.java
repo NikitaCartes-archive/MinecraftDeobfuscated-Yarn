@@ -4,9 +4,8 @@
 package net.minecraft.structure.processor;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.BlockState;
@@ -22,14 +21,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class RuleStructureProcessor
 extends StructureProcessor {
+    public static final Codec<RuleStructureProcessor> field_25011 = ((MapCodec)StructureProcessorRule.CODEC.listOf().fieldOf("rules")).xmap(RuleStructureProcessor::new, ruleStructureProcessor -> ruleStructureProcessor.rules).codec();
     private final ImmutableList<StructureProcessorRule> rules;
 
-    public RuleStructureProcessor(List<StructureProcessorRule> list) {
+    public RuleStructureProcessor(List<? extends StructureProcessorRule> list) {
         this.rules = ImmutableList.copyOf(list);
-    }
-
-    public RuleStructureProcessor(Dynamic<?> dynamic) {
-        this(dynamic.get("rules").asList(StructureProcessorRule::fromDynamic));
     }
 
     @Override
@@ -45,13 +41,8 @@ extends StructureProcessor {
     }
 
     @Override
-    protected StructureProcessorType getType() {
+    protected StructureProcessorType<?> getType() {
         return StructureProcessorType.RULE;
-    }
-
-    @Override
-    protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("rules"), dynamicOps.createList(this.rules.stream().map(structureProcessorRule -> structureProcessorRule.toDynamic(dynamicOps).getValue())))));
     }
 }
 

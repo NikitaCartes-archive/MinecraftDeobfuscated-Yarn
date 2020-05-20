@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.dimension.DimensionTracker;
 
 public interface CommandSource {
     public Collection<String> getPlayerNames();
@@ -42,6 +43,8 @@ public interface CommandSource {
     default public Collection<RelativePosition> getPositionSuggestions() {
         return Collections.singleton(RelativePosition.ZERO_WORLD);
     }
+
+    public DimensionTracker method_29038();
 
     public boolean hasPermissionLevel(int var1);
 

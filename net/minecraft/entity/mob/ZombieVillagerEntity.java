@@ -3,7 +3,8 @@
  */
 package net.minecraft.entity.mob;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -72,27 +73,28 @@ implements VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
+    public void writeCustomDataToTag(CompoundTag tag2) {
+        super.writeCustomDataToTag(tag2);
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("VillagerData", (Tag)tag));
         if (this.offerData != null) {
-            tag.put("Offers", this.offerData);
+            tag2.put("Offers", this.offerData);
         }
         if (this.gossipData != null) {
-            tag.put("Gossips", this.gossipData);
+            tag2.put("Gossips", this.gossipData);
         }
-        tag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
+        tag2.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
         if (this.converter != null) {
-            tag.putUuidNew("ConversionPlayer", this.converter);
+            tag2.putUuid("ConversionPlayer", this.converter);
         }
-        tag.putInt("Xp", this.xp);
+        tag2.putInt("Xp", this.xp);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         if (tag.contains("VillagerData", 10)) {
-            this.setVillagerData(new VillagerData(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData"))));
+            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData")));
+            dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
         if (tag.contains("Offers", 10)) {
             this.offerData = tag.getCompound("Offers");
@@ -101,7 +103,7 @@ implements VillagerDataContainer {
             this.gossipData = tag.getList("Gossips", 10);
         }
         if (tag.contains("ConversionTime", 99) && tag.getInt("ConversionTime") > -1) {
-            this.setConverting(tag.containsUuidNew("ConversionPlayer") ? tag.getUuidNew("ConversionPlayer") : null, tag.getInt("ConversionTime"));
+            this.setConverting(tag.containsUuid("ConversionPlayer") ? tag.getUuid("ConversionPlayer") : null, tag.getInt("ConversionTime"));
         }
         if (tag.contains("Xp", 3)) {
             this.xp = tag.getInt("Xp");

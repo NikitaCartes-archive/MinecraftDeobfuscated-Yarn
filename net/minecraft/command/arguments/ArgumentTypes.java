@@ -15,7 +15,6 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Collection;
 import java.util.Map;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5242;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.command.arguments.BlockStateArgumentType;
@@ -52,6 +51,7 @@ import net.minecraft.command.arguments.TestClassArgumentType;
 import net.minecraft.command.arguments.TestFunctionArgumentType;
 import net.minecraft.command.arguments.TextArgumentType;
 import net.minecraft.command.arguments.TimeArgumentType;
+import net.minecraft.command.arguments.UuidArgumentType;
 import net.minecraft.command.arguments.Vec2ArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
@@ -123,7 +123,7 @@ public class ArgumentTypes {
         ArgumentTypes.register("entity_summon", EntitySummonArgumentType.class, new ConstantArgumentSerializer<EntitySummonArgumentType>(EntitySummonArgumentType::entitySummon));
         ArgumentTypes.register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer<DimensionArgumentType>(DimensionArgumentType::dimension));
         ArgumentTypes.register("time", TimeArgumentType.class, new ConstantArgumentSerializer<TimeArgumentType>(TimeArgumentType::time));
-        ArgumentTypes.register("uuid", class_5242.class, new ConstantArgumentSerializer<class_5242>(class_5242::method_27643));
+        ArgumentTypes.register("uuid", UuidArgumentType.class, new ConstantArgumentSerializer<UuidArgumentType>(UuidArgumentType::uuid));
         if (SharedConstants.isDevelopment) {
             ArgumentTypes.register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer<TestFunctionArgumentType>(TestFunctionArgumentType::testFunction));
             ArgumentTypes.register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer<TestClassArgumentType>(TestClassArgumentType::testClass));

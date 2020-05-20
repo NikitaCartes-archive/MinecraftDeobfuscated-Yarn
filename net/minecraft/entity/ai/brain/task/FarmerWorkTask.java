@@ -12,7 +12,7 @@ import net.minecraft.block.ComposterBlock;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.VillagerWorkTask;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -44,11 +44,11 @@ extends VillagerWorkTask {
         int i = 20;
         int j = 10;
         int[] is = new int[COMPOSTABLES.size()];
-        BasicInventory basicInventory = entity.getInventory();
-        int k = basicInventory.size();
+        SimpleInventory simpleInventory = entity.getInventory();
+        int k = simpleInventory.size();
         for (int l = k - 1; l >= 0 && i > 0; --l) {
             int o;
-            ItemStack itemStack = basicInventory.getStack(l);
+            ItemStack itemStack = simpleInventory.getStack(l);
             int m = COMPOSTABLES.indexOf(itemStack.getItem());
             if (m == -1) continue;
             int n = itemStack.getCount();
@@ -64,11 +64,11 @@ extends VillagerWorkTask {
     }
 
     private void craftAndDropBread(VillagerEntity entity) {
-        BasicInventory basicInventory = entity.getInventory();
-        if (basicInventory.count(Items.BREAD) > 36) {
+        SimpleInventory simpleInventory = entity.getInventory();
+        if (simpleInventory.count(Items.BREAD) > 36) {
             return;
         }
-        int i = basicInventory.count(Items.WHEAT);
+        int i = simpleInventory.count(Items.WHEAT);
         int j = 3;
         int k = 3;
         int l = Math.min(3, i / 3);
@@ -76,8 +76,8 @@ extends VillagerWorkTask {
             return;
         }
         int m = l * 3;
-        basicInventory.removeItem(Items.WHEAT, m);
-        ItemStack itemStack = basicInventory.addStack(new ItemStack(Items.BREAD, l));
+        simpleInventory.removeItem(Items.WHEAT, m);
+        ItemStack itemStack = simpleInventory.addStack(new ItemStack(Items.BREAD, l));
         if (!itemStack.isEmpty()) {
             entity.dropStack(itemStack, 0.5f);
         }

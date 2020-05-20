@@ -59,14 +59,14 @@ implements Tickable {
     @Override
     public void fromTag(BlockState state, CompoundTag tag) {
         super.fromTag(state, tag);
-        this.targetUuid = tag.containsUuidNew("Target") ? tag.getUuidNew("Target") : null;
+        this.targetUuid = tag.containsUuid("Target") ? tag.getUuid("Target") : null;
     }
 
     @Override
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
         if (this.targetEntity != null) {
-            tag.putUuidNew("Target", this.targetEntity.getUuid());
+            tag.putUuid("Target", this.targetEntity.getUuid());
         }
         return tag;
     }

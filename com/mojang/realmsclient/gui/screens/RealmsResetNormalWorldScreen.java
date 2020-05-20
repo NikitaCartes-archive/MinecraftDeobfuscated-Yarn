@@ -24,7 +24,7 @@ extends RealmsScreen {
     private TextFieldWidget seedEdit;
     private Boolean generateStructures = true;
     private Integer levelTypeIndex = 0;
-    private Text[] field_24205 = new Text[]{new TranslatableText("generator.default"), new TranslatableText("generator.flat"), new TranslatableText("generator.largeBiomes"), new TranslatableText("generator.amplified")};
+    private Text[] field_24205 = new Text[]{new TranslatableText("generator.default"), new TranslatableText("generator.flat"), new TranslatableText("generator.large_biomes"), new TranslatableText("generator.amplified")};
     private Text field_24206;
 
     public RealmsResetNormalWorldScreen(RealmsResetWorldScreen realmsResetWorldScreen, Text text) {

@@ -182,6 +182,11 @@ extends AbstractListTag<IntTag> {
     }
 
     @Override
+    public byte getElementType() {
+        return 3;
+    }
+
+    @Override
     public void clear() {
         this.value = new int[0];
     }

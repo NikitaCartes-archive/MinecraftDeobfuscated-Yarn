@@ -71,25 +71,25 @@ implements RecipeBookProvider {
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-        this.textRenderer.draw(matrixStack, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0f, 0x404040);
-        this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        this.textRenderer.draw(matrices, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0f, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
-        int l;
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        int k;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(this.background);
-        int j = this.x;
-        int k = this.y;
-        this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        int i = this.x;
+        int j = this.y;
+        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         if (((AbstractFurnaceScreenHandler)this.handler).isBurning()) {
-            l = ((AbstractFurnaceScreenHandler)this.handler).getFuelProgress();
-            this.drawTexture(matrixStack, j + 56, k + 36 + 12 - l, 176, 12 - l, 14, l + 1);
+            k = ((AbstractFurnaceScreenHandler)this.handler).getFuelProgress();
+            this.drawTexture(matrices, i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
         }
-        l = ((AbstractFurnaceScreenHandler)this.handler).getCookProgress();
-        this.drawTexture(matrixStack, j + 79, k + 34, 176, 14, l + 1, 16);
+        k = ((AbstractFurnaceScreenHandler)this.handler).getCookProgress();
+        this.drawTexture(matrices, i + 79, j + 34, 176, 14, k + 1, 16);
     }
 
     @Override

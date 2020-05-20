@@ -21,7 +21,7 @@ extends Feature<DefaultFeatureConfig> {
     private final boolean open;
 
     public EndPortalFeature(boolean open) {
-        super(DefaultFeatureConfig::deserialize);
+        super(DefaultFeatureConfig.CODEC);
         this.open = open;
     }
 

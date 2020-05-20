@@ -22,7 +22,7 @@ extends Task<LivingEntity> {
     private final float maxDistanceSquared;
 
     public FollowMobTask(SpawnGroup group, float maxDistance) {
-        this((LivingEntity livingEntity) -> group.equals((Object)livingEntity.getType().getSpawnGroup()), maxDistance);
+        this((LivingEntity livingEntity) -> group.equals(livingEntity.getType().getSpawnGroup()), maxDistance);
     }
 
     public FollowMobTask(EntityType<?> type, float maxDistance) {

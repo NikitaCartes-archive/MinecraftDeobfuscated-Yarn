@@ -9,12 +9,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.dimension.DimensionType;
 
 public class PlayerRespawnS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private DimensionType dimension;
+    private Identifier dimension;
     private long sha256Seed;
     private GameMode gameMode;
     private boolean debugWorld;
@@ -24,8 +24,8 @@ implements Packet<ClientPlayPacketListener> {
     public PlayerRespawnS2CPacket() {
     }
 
-    public PlayerRespawnS2CPacket(DimensionType dimension, long sha256Seed, GameMode gameMode, boolean debugWorld, boolean flatWorld, boolean keepPlayerAttributes) {
-        this.dimension = dimension;
+    public PlayerRespawnS2CPacket(Identifier identifier, long sha256Seed, GameMode gameMode, boolean debugWorld, boolean flatWorld, boolean keepPlayerAttributes) {
+        this.dimension = identifier;
         this.sha256Seed = sha256Seed;
         this.gameMode = gameMode;
         this.debugWorld = debugWorld;
@@ -40,7 +40,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void read(PacketByteBuf buf) throws IOException {
-        this.dimension = DimensionType.byRawId(buf.readInt());
+        this.dimension = buf.readIdentifier();
         this.sha256Seed = buf.readLong();
         this.gameMode = GameMode.byId(buf.readUnsignedByte());
         this.debugWorld = buf.readBoolean();
@@ -50,7 +50,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void write(PacketByteBuf buf) throws IOException {
-        buf.writeInt(this.dimension.getRawId());
+        buf.writeIdentifier(this.dimension);
         buf.writeLong(this.sha256Seed);
         buf.writeByte(this.gameMode.getId());
         buf.writeBoolean(this.debugWorld);
@@ -59,7 +59,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public DimensionType getDimension() {
+    public Identifier getDimension() {
         return this.dimension;
     }
 

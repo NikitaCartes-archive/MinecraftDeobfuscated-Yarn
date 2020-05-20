@@ -11,7 +11,6 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.DynamicSerializableBoolean;
 
 public class AdmireItemTask<E extends PiglinEntity>
 extends Task<E> {
@@ -30,7 +29,7 @@ extends Task<E> {
 
     @Override
     protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-        ((PiglinEntity)piglinEntity).getBrain().remember(MemoryModuleType.ADMIRING_ITEM, DynamicSerializableBoolean.of(true), this.duration);
+        ((PiglinEntity)piglinEntity).getBrain().remember(MemoryModuleType.ADMIRING_ITEM, true, this.duration);
     }
 }
 

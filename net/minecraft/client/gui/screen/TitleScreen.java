@@ -7,13 +7,14 @@ import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
+import java.lang.invoke.LambdaMetafactory;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5219;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -35,10 +36,12 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -131,14 +134,14 @@ extends Screen {
 
     private void initWidgetsNormal(int y, int spacingY) {
         this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), buttonWidget -> this.client.openScreen(new SelectWorldScreen(this))));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.multiplayer"), buttonWidget -> {
-            if (this.client.options.skipMultiplayerWarning) {
-                this.client.openScreen(new MultiplayerScreen(this));
-            } else {
-                this.client.openScreen(new MultiplayerWarningScreen(this));
+        boolean bl = this.client.isMultiplayerEnabled();
+        ButtonWidget.class_5316 lv = bl ? ButtonWidget.field_25035 : (buttonWidget, matrixStack, i, j) -> {
+            if (!buttonWidget.active) {
+                this.renderTooltip(matrixStack, this.client.textRenderer.wrapLines(new TranslatableText("title.multiplayer.disabled"), Math.max(this.width / 2 - 43, 170)), i, j);
             }
-        }));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, new TranslatableText("menu.online"), buttonWidget -> this.switchToRealms()));
+        };
+        this.addButton(new ButtonWidget((int)(this.width / 2 - 100), (int)(y + spacingY * 1), (int)200, (int)20, (Text)new TranslatableText((String)"menu.multiplayer"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, method_19860(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this), (ButtonWidget.class_5316)lv)).active = bl;
+        this.addButton(new ButtonWidget((int)(this.width / 2 - 100), (int)(y + spacingY * 2), (int)200, (int)20, (Text)new TranslatableText((String)"menu.online"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, method_19859(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this), (ButtonWidget.class_5316)lv)).active = bl;
     }
 
     private void initWidgetsDemo(int y, int spacingY) {
@@ -146,9 +149,9 @@ extends Screen {
         this.buttonResetDemo = this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.resetdemo"), buttonWidget -> {
             LevelStorage levelStorage = this.client.getLevelStorage();
             try (LevelStorage.Session session = levelStorage.createSession("Demo_World");){
-                class_5219 lv = session.readLevelProperties();
-                if (lv != null) {
-                    this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", lv.getLevelName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
+                SaveProperties saveProperties = session.readLevelProperties();
+                if (saveProperties != null) {
+                    this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", saveProperties.getLevelName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
                 }
             } catch (IOException iOException) {
                 SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
@@ -156,8 +159,8 @@ extends Screen {
             }
         }));
         try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World");){
-            class_5219 lv = session.readLevelProperties();
-            if (lv == null) {
+            SaveProperties saveProperties = session.readLevelProperties();
+            if (saveProperties == null) {
                 this.buttonResetDemo.active = false;
             }
         } catch (IOException iOException) {
@@ -195,14 +198,18 @@ extends Screen {
         this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, g);
         if (this.isMinceraft) {
-            this.drawTexture(matrices, j + 0, 30, 0, 0, 99, 44);
-            this.drawTexture(matrices, j + 99, 30, 129, 0, 27, 44);
-            this.drawTexture(matrices, j + 99 + 26, 30, 126, 0, 3, 44);
-            this.drawTexture(matrices, j + 99 + 26 + 3, 30, 99, 0, 26, 44);
-            this.drawTexture(matrices, j + 155, 30, 0, 45, 155, 44);
+            this.method_29063(j, 30, (integer, integer2) -> {
+                this.drawTexture(matrices, integer + 0, (int)integer2, 0, 0, 99, 44);
+                this.drawTexture(matrices, integer + 99, (int)integer2, 129, 0, 27, 44);
+                this.drawTexture(matrices, integer + 99 + 26, (int)integer2, 126, 0, 3, 44);
+                this.drawTexture(matrices, integer + 99 + 26 + 3, (int)integer2, 99, 0, 26, 44);
+                this.drawTexture(matrices, integer + 155, (int)integer2, 0, 45, 155, 44);
+            });
         } else {
-            this.drawTexture(matrices, j + 0, 30, 0, 0, 155, 44);
-            this.drawTexture(matrices, j + 155, 30, 0, 45, 155, 44);
+            this.method_29063(j, 30, (integer, integer2) -> {
+                this.drawTexture(matrices, integer + 0, (int)integer2, 0, 0, 155, 44);
+                this.drawTexture(matrices, integer + 155, (int)integer2, 0, 45, 155, 44);
+            });
         }
         this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
         TitleScreen.drawTexture(matrices, j + 88, 67, 0.0f, 0.0f, 98, 14, 128, 16);
@@ -233,6 +240,14 @@ extends Screen {
         if (this.areRealmsNotificationsEnabled() && g >= 1.0f) {
             this.realmsNotificationGui.render(matrices, mouseX, mouseY, delta);
         }
+    }
+
+    private void method_29063(int i, int j, BiConsumer<Integer, Integer> biConsumer) {
+        biConsumer.accept(i + 1, j);
+        biConsumer.accept(i - 1, j);
+        biConsumer.accept(i, j + 1);
+        biConsumer.accept(i, j - 1);
+        biConsumer.accept(i, j);
     }
 
     @Override
@@ -266,6 +281,15 @@ extends Screen {
             }
         }
         this.client.openScreen(this);
+    }
+
+    private /* synthetic */ void method_19859(ButtonWidget buttonWidget) {
+        this.switchToRealms();
+    }
+
+    private /* synthetic */ void method_19860(ButtonWidget buttonWidget) {
+        Screen screen = this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this);
+        this.client.openScreen(screen);
     }
 }
 

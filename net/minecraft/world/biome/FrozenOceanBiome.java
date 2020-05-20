@@ -13,14 +13,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.MineshaftFeature;
-import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.OceanRuinFeature;
-import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
-import net.minecraft.world.gen.feature.RuinedPortalFeature;
-import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
-import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class FrozenOceanBiome
@@ -29,12 +21,10 @@ extends Biome {
 
     public FrozenOceanBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.SNOW).category(Biome.Category.OCEAN).depth(-1.0f).scale(0.1f).temperature(0.0f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
-        this.addStructureFeature(Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.9f)));
-        this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-        this.addStructureFeature(Feature.SHIPWRECK.configure(new ShipwreckFeatureConfig(false)));
-        this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.OCEAN)));
+        this.addStructureFeature(DefaultBiomeFeatures.field_24699);
+        DefaultBiomeFeatures.method_28441(this);
+        this.addStructureFeature(DefaultBiomeFeatures.field_24685);
         DefaultBiomeFeatures.addOceanCarvers(this);
-        DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addIcebergs(this);
         DefaultBiomeFeatures.addDungeons(this);

@@ -3,16 +3,13 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.decorator.TreeDecorator;
@@ -22,15 +19,16 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AlterGroundTreeDecorator
 extends TreeDecorator {
+    public static final Codec<AlterGroundTreeDecorator> field_24957 = ((MapCodec)BlockStateProvider.field_24937.fieldOf("provider")).xmap(AlterGroundTreeDecorator::new, alterGroundTreeDecorator -> alterGroundTreeDecorator.field_21316).codec();
     private final BlockStateProvider field_21316;
 
     public AlterGroundTreeDecorator(BlockStateProvider blockStateProvider) {
-        super(TreeDecoratorType.ALTER_GROUND);
         this.field_21316 = blockStateProvider;
     }
 
-    public <T> AlterGroundTreeDecorator(Dynamic<T> dynamic) {
-        this((BlockStateProvider)Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic.get("provider").get("type").asString().orElseThrow(RuntimeException::new))).deserialize(dynamic.get("provider").orElseEmptyMap()));
+    @Override
+    protected TreeDecoratorType<?> method_28893() {
+        return TreeDecoratorType.ALTER_GROUND;
     }
 
     @Override
@@ -69,11 +67,6 @@ extends TreeDecorator {
             }
             if (!Feature.method_27370(modifiableTestableWorld, blockPos2) && i < 0) break;
         }
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString()), ops.createString("provider"), this.field_21316.serialize(ops)))).getValue();
     }
 }
 

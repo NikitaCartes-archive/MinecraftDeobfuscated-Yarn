@@ -3,8 +3,7 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
-import java.util.function.Function;
+import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.NetherFossilGenerator;
@@ -17,72 +16,45 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.AbstractTempleFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class NetherFossilFeature
-extends AbstractTempleFeature<DefaultFeatureConfig> {
-    public NetherFossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+extends StructureFeature<DefaultFeatureConfig> {
+    public NetherFossilFeature(Codec<DefaultFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override
-    protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return 14357921;
-    }
-
-    @Override
-    public StructureFeature.StructureStartFactory getStructureStartFactory() {
+    public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
         return Start::new;
     }
 
-    @Override
-    public String getName() {
-        return "Nether_Fossil";
-    }
-
-    @Override
-    protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return 2;
-    }
-
-    @Override
-    protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return 1;
-    }
-
-    @Override
-    public int getRadius() {
-        return 3;
-    }
-
     public static class Start
-    extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+    extends StructureStart<DefaultFeatureConfig> {
+        public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
             super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override
-        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-            int l;
-            ChunkPos chunkPos = new ChunkPos(x, z);
-            int i = chunkPos.getStartX() + this.random.nextInt(16);
-            int j = chunkPos.getStartZ() + this.random.nextInt(16);
-            int k = chunkGenerator.getSeaLevel();
-            BlockView blockView = chunkGenerator.getColumnSample(i, j);
-            BlockPos.Mutable mutable = new BlockPos.Mutable(i, l, j);
-            for (l = k + this.random.nextInt(chunkGenerator.getMaxY() - 2 - k); l > k; --l) {
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
+            int n;
+            ChunkPos chunkPos = new ChunkPos(i, j);
+            int k = chunkPos.getStartX() + this.random.nextInt(16);
+            int l = chunkPos.getStartZ() + this.random.nextInt(16);
+            int m = chunkGenerator.getSeaLevel();
+            BlockView blockView = chunkGenerator.getColumnSample(k, l);
+            BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l);
+            for (n = m + this.random.nextInt(chunkGenerator.getMaxY() - 2 - m); n > m; --n) {
                 BlockState blockState = blockView.getBlockState(mutable);
                 mutable.move(Direction.DOWN);
                 BlockState blockState2 = blockView.getBlockState(mutable);
                 if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(blockView, mutable, Direction.UP))) break;
             }
-            if (l <= k) {
+            if (n <= m) {
                 return;
             }
-            NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(i, l, j));
+            NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(k, n, l));
             this.setBoundingBoxFromChildren();
         }
     }

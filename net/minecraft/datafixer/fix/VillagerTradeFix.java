@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.ChoiceFix;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class VillagerTradeFix
 extends ChoiceFix {
@@ -35,7 +36,7 @@ extends ChoiceFix {
         OpticFinder<?> opticFinder4 = type2.findField("buy");
         OpticFinder<?> opticFinder5 = type2.findField("buyB");
         OpticFinder<?> opticFinder6 = type2.findField("sell");
-        OpticFinder<Pair<String, String>> opticFinder7 = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString()));
+        OpticFinder<Pair<String, String>> opticFinder7 = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295()));
         Function<Typed, Typed> function = typed -> this.fixPumpkinTrade(opticFinder7, (Typed<?>)typed);
         return inputType.updateTyped(opticFinder, typed -> typed.updateTyped(opticFinder2, typed2 -> typed2.updateTyped(opticFinder3, typed -> typed.updateTyped(opticFinder4, function).updateTyped(opticFinder5, function).updateTyped(opticFinder6, function))));
     }

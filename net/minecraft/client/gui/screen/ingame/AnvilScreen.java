@@ -85,28 +85,28 @@ extends ForgingScreen<AnvilScreenHandler> {
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         RenderSystem.disableBlend();
-        this.textRenderer.draw(matrixStack, this.title, 60.0f, 6.0f, 0x404040);
-        this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
-        int k = ((AnvilScreenHandler)this.handler).getLevelCost();
-        if (k > 0) {
-            int l = 8453920;
+        this.textRenderer.draw(matrices, this.title, 60.0f, 6.0f, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
+        int i = ((AnvilScreenHandler)this.handler).getLevelCost();
+        if (i > 0) {
+            int j = 8453920;
             boolean bl = true;
-            String string = I18n.translate("container.repair.cost", k);
-            if (k >= 40 && !this.client.player.abilities.creativeMode) {
+            String string = I18n.translate("container.repair.cost", i);
+            if (i >= 40 && !this.client.player.abilities.creativeMode) {
                 string = I18n.translate("container.repair.expensive", new Object[0]);
-                l = 0xFF6060;
+                j = 0xFF6060;
             } else if (!((AnvilScreenHandler)this.handler).getSlot(2).hasStack()) {
                 bl = false;
             } else if (!((AnvilScreenHandler)this.handler).getSlot(2).canTakeItems(this.playerInventory.player)) {
-                l = 0xFF6060;
+                j = 0xFF6060;
             }
             if (bl) {
-                int m = this.backgroundWidth - 8 - this.textRenderer.getWidth(string) - 2;
-                int n = 69;
-                AnvilScreen.fill(matrixStack, m - 2, 67, this.backgroundWidth - 8, 79, 0x4F000000);
-                this.textRenderer.drawWithShadow(matrixStack, string, (float)m, 69.0f, l);
+                int k = this.backgroundWidth - 8 - this.textRenderer.getWidth(string) - 2;
+                int l = 69;
+                AnvilScreen.fill(matrices, k - 2, 67, this.backgroundWidth - 8, 79, 0x4F000000);
+                this.textRenderer.drawWithShadow(matrices, string, (float)k, 69.0f, j);
             }
         }
     }

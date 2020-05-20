@@ -7,12 +7,12 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Dynamic;
 import java.util.Map;
 import net.minecraft.datafixer.TypeReferences;
 
@@ -31,16 +31,16 @@ extends DataFix {
         return TypeRewriteRule.seq(this.fixTypeEverywhereTyped("Rename ItemStack Attributes", type, typed -> typed.updateTyped(opticFinder, RenameItemStackAttributesFix::updateAttributeModifiers)), this.fixTypeEverywhereTyped("Rename Entity Attributes", this.getInputSchema().getType(TypeReferences.ENTITY), RenameItemStackAttributesFix::updatePlayerAttributes), this.fixTypeEverywhereTyped("Rename Player Attributes", this.getInputSchema().getType(TypeReferences.PLAYER), RenameItemStackAttributesFix::updatePlayerAttributes));
     }
 
-    private static Dynamic<?> updateAttributeName(Dynamic<?> data) {
-        return DataFixUtils.orElse(data.asString().map(string -> RENAMES.getOrDefault(string, (String)string)).map(data::createString), data);
+    private static Dynamic<?> updateAttributeName(Dynamic<?> dynamic) {
+        return DataFixUtils.orElse(dynamic.asString().result().map(string -> RENAMES.getOrDefault(string, (String)string)).map(dynamic::createString), dynamic);
     }
 
     private static Typed<?> updateAttributeModifiers(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("AttributeModifiers", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(stream -> stream.map(dynamic -> dynamic.update("AttributeName", RenameItemStackAttributesFix::updateAttributeName))).map(dynamic::createList), dynamic)));
+        return typed.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("AttributeModifiers", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().result().map(stream -> stream.map(dynamic -> dynamic.update("AttributeName", RenameItemStackAttributesFix::updateAttributeName))).map(dynamic::createList), dynamic)));
     }
 
     private static Typed<?> updatePlayerAttributes(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("Attributes", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().map(stream -> stream.map(dynamic -> dynamic.update("Name", RenameItemStackAttributesFix::updateAttributeName))).map(dynamic::createList), dynamic)));
+        return typed.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("Attributes", dynamic -> DataFixUtils.orElse(dynamic.asStreamOpt().result().map(stream -> stream.map(dynamic -> dynamic.update("Name", RenameItemStackAttributesFix::updateAttributeName))).map(dynamic::createList), dynamic)));
     }
 }
 

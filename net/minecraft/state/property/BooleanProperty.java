@@ -6,10 +6,10 @@ package net.minecraft.state.property;
 import com.google.common.collect.ImmutableSet;
 import java.util.Collection;
 import java.util.Optional;
-import net.minecraft.state.property.AbstractProperty;
+import net.minecraft.state.property.Property;
 
 public class BooleanProperty
-extends AbstractProperty<Boolean> {
+extends Property<Boolean> {
     private final ImmutableSet<Boolean> values = ImmutableSet.of(Boolean.valueOf(true), Boolean.valueOf(false));
 
     protected BooleanProperty(String name) {

@@ -3,8 +3,7 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
-import java.util.function.Function;
+import com.mojang.serialization.Codec;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.VillageStructureStart;
@@ -12,65 +11,37 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.BastionRemnantFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class BastionRemnantFeature
 extends StructureFeature<BastionRemnantFeatureConfig> {
-    public BastionRemnantFeature(Function<Dynamic<?>, ? extends BastionRemnantFeatureConfig> function) {
-        super(function);
+    public BastionRemnantFeature(Codec<BastionRemnantFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override
-    protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getNetherStructureSpacing();
-    }
-
-    @Override
-    protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getNetherStructureSeparation();
-    }
-
-    @Override
-    protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getNetherStructureSeedModifier();
-    }
-
-    @Override
-    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, BastionRemnantFeatureConfig bastionRemnantFeatureConfig) {
         return chunkRandom.nextInt(6) >= 2;
     }
 
     @Override
-    public StructureFeature.StructureStartFactory getStructureStartFactory() {
+    public StructureFeature.StructureStartFactory<BastionRemnantFeatureConfig> getStructureStartFactory() {
         return Start::new;
     }
 
-    @Override
-    public String getName() {
-        return "Bastion_Remnant";
-    }
-
-    @Override
-    public int getRadius() {
-        return 8;
-    }
-
     public static class Start
-    extends VillageStructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+    extends VillageStructureStart<BastionRemnantFeatureConfig> {
+        public Start(StructureFeature<BastionRemnantFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
             super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override
-        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-            BastionRemnantFeatureConfig bastionRemnantFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.BASTION_REMNANT);
-            BlockPos blockPos = new BlockPos(x * 16, 33, z * 16);
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, BastionRemnantFeatureConfig bastionRemnantFeatureConfig) {
+            BlockPos blockPos = new BlockPos(i * 16, 33, j * 16);
             BastionRemnantGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random, bastionRemnantFeatureConfig);
             this.setBoundingBoxFromChildren();
         }

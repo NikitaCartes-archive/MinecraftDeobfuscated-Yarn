@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.surfacebuilder;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -14,8 +13,8 @@ import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
 public class NopeSurfaceBuilder
 extends SurfaceBuilder<TernarySurfaceConfig> {
-    public NopeSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-        super(function);
+    public NopeSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+        super(codec);
     }
 
     @Override

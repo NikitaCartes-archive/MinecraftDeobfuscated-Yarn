@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -77,12 +77,12 @@ extends Task<VillagerEntity> {
     }
 
     private static void giveHalfOfStack(VillagerEntity villager, Set<Item> validItems, LivingEntity target) {
-        BasicInventory basicInventory = villager.getInventory();
+        SimpleInventory simpleInventory = villager.getInventory();
         ItemStack itemStack = ItemStack.EMPTY;
-        for (int i = 0; i < basicInventory.size(); ++i) {
+        for (int i = 0; i < simpleInventory.size(); ++i) {
             int j;
             Item item;
-            ItemStack itemStack2 = basicInventory.getStack(i);
+            ItemStack itemStack2 = simpleInventory.getStack(i);
             if (itemStack2.isEmpty() || !validItems.contains(item = itemStack2.getItem())) continue;
             if (itemStack2.getCount() > itemStack2.getMaxCount() / 2) {
                 j = itemStack2.getCount() / 2;

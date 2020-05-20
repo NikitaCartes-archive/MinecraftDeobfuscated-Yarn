@@ -3,8 +3,7 @@
  */
 package net.minecraft.structure.processor;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.StructureProcessor;
@@ -15,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class NopStructureProcessor
 extends StructureProcessor {
+    public static final Codec<NopStructureProcessor> field_25005 = Codec.unit(() -> INSTANCE);
     public static final NopStructureProcessor INSTANCE = new NopStructureProcessor();
 
     private NopStructureProcessor() {
@@ -27,13 +27,8 @@ extends StructureProcessor {
     }
 
     @Override
-    protected StructureProcessorType getType() {
+    protected StructureProcessorType<?> getType() {
         return StructureProcessorType.NOP;
-    }
-
-    @Override
-    protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.emptyMap());
     }
 }
 

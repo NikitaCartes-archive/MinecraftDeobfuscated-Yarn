@@ -4,10 +4,10 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.fix.EntityTransformFix;
 
 public abstract class EntitySimpleTransformFix

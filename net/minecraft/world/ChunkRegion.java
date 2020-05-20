@@ -14,7 +14,6 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_5217;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -37,6 +36,7 @@ import net.minecraft.world.MultiTickScheduler;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
@@ -44,7 +44,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,9 +58,9 @@ implements ServerWorldAccess {
     private final int width;
     private final ServerWorld world;
     private final long seed;
-    private final class_5217 levelProperties;
+    private final WorldProperties levelProperties;
     private final Random random;
-    private final Dimension dimension;
+    private final DimensionType dimension;
     private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<Block>(blockPos -> this.getChunk((BlockPos)blockPos).getBlockTickScheduler());
     private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(blockPos -> this.getChunk((BlockPos)blockPos).getFluidTickScheduler());
     private final BiomeAccess biomeAccess;
@@ -83,7 +82,7 @@ implements ServerWorldAccess {
         this.levelProperties = world.getLevelProperties();
         this.random = world.getRandom();
         this.dimension = world.getDimension();
-        this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.method_27983().getBiomeAccessType());
+        this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
         this.field_23788 = chunks.get(0).getPos();
         this.field_23789 = chunks.get(chunks.size() - 1).getPos();
     }
@@ -279,7 +278,7 @@ implements ServerWorldAccess {
     }
 
     @Override
-    public class_5217 getLevelProperties() {
+    public WorldProperties getLevelProperties() {
         return this.levelProperties;
     }
 
@@ -339,13 +338,8 @@ implements ServerWorldAccess {
     }
 
     @Override
-    public Dimension getDimension() {
+    public DimensionType getDimension() {
         return this.dimension;
-    }
-
-    @Override
-    public DimensionType method_27983() {
-        return this.dimension.getType();
     }
 
     @Override

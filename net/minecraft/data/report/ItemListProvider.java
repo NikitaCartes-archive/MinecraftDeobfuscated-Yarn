@@ -14,7 +14,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DefaultedRegistry;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 
 public class ItemListProvider
@@ -29,23 +28,23 @@ implements DataProvider {
     @Override
     public void run(DataCache cache) throws IOException {
         JsonObject jsonObject = new JsonObject();
-        Registry.REGISTRIES.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), ItemListProvider.toJson((MutableRegistry)Registry.REGISTRIES.get((Identifier)identifier))));
+        Registry.REGISTRIES.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), ItemListProvider.toJson(Registry.REGISTRIES.get((Identifier)identifier))));
         Path path = this.root.getOutput().resolve("reports/registries.json");
         DataProvider.writeToPath(GSON, cache, jsonObject, path);
     }
 
-    private static <T> JsonElement toJson(MutableRegistry<T> mutableRegistry) {
+    private static <T> JsonElement toJson(Registry<T> registry) {
         JsonObject jsonObject = new JsonObject();
-        if (mutableRegistry instanceof DefaultedRegistry) {
-            Identifier identifier = ((DefaultedRegistry)mutableRegistry).getDefaultId();
+        if (registry instanceof DefaultedRegistry) {
+            Identifier identifier = ((DefaultedRegistry)registry).getDefaultId();
             jsonObject.addProperty("default", identifier.toString());
         }
-        int i = Registry.REGISTRIES.getRawId(mutableRegistry);
+        int i = Registry.REGISTRIES.getRawId(registry);
         jsonObject.addProperty("protocol_id", i);
         JsonObject jsonObject2 = new JsonObject();
-        for (Identifier identifier2 : mutableRegistry.getIds()) {
-            Object object = mutableRegistry.get(identifier2);
-            int j = mutableRegistry.getRawId(object);
+        for (Identifier identifier2 : registry.getIds()) {
+            T object = registry.get(identifier2);
+            int j = registry.getRawId(object);
             JsonObject jsonObject3 = new JsonObject();
             jsonObject3.addProperty("protocol_id", j);
             jsonObject2.add(identifier2.toString(), jsonObject3);

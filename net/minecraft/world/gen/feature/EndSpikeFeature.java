@@ -6,16 +6,16 @@ package net.minecraft.world.gen.feature;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
@@ -37,8 +37,8 @@ public class EndSpikeFeature
 extends Feature<EndSpikeFeatureConfig> {
     private static final LoadingCache<Long, List<Spike>> CACHE = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build(new SpikeCache());
 
-    public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> function) {
-        super(function);
+    public EndSpikeFeature(Codec<EndSpikeFeatureConfig> codec) {
+        super(codec);
     }
 
     public static List<Spike> getSpikes(ServerWorldAccess serverWorldAccess) {
@@ -128,6 +128,7 @@ extends Feature<EndSpikeFeatureConfig> {
     }
 
     public static class Spike {
+        public static final Codec<Spike> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("centerX")).withDefault(0).forGetter(spike -> spike.centerX), ((MapCodec)Codec.INT.fieldOf("centerZ")).withDefault(0).forGetter(spike -> spike.centerZ), ((MapCodec)Codec.INT.fieldOf("radius")).withDefault(0).forGetter(spike -> spike.radius), ((MapCodec)Codec.INT.fieldOf("height")).withDefault(0).forGetter(spike -> spike.height), ((MapCodec)Codec.BOOL.fieldOf("guarded")).withDefault(false).forGetter(spike -> spike.guarded)).apply((Applicative<Spike, ?>)instance, Spike::new));
         private final int centerX;
         private final int centerZ;
         private final int radius;
@@ -170,20 +171,6 @@ extends Feature<EndSpikeFeatureConfig> {
 
         public Box getBoundingBox() {
             return this.boundingBox;
-        }
-
-        public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-            ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-            builder.put(ops.createString("centerX"), ops.createInt(this.centerX));
-            builder.put(ops.createString("centerZ"), ops.createInt(this.centerZ));
-            builder.put(ops.createString("radius"), ops.createInt(this.radius));
-            builder.put(ops.createString("height"), ops.createInt(this.height));
-            builder.put(ops.createString("guarded"), ops.createBoolean(this.guarded));
-            return new Dynamic<T>(ops, ops.createMap(builder.build()));
-        }
-
-        public static <T> Spike deserialize(Dynamic<T> dynamic) {
-            return new Spike(dynamic.get("centerX").asInt(0), dynamic.get("centerZ").asInt(0), dynamic.get("radius").asInt(0), dynamic.get("height").asInt(0), dynamic.get("guarded").asBoolean(false));
         }
     }
 }

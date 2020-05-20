@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
@@ -16,8 +15,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class DecoratedFeature
 extends Feature<DecoratedFeatureConfig> {
-    public DecoratedFeature(Function<Dynamic<?>, ? extends DecoratedFeatureConfig> function) {
-        super(function);
+    public DecoratedFeature(Codec<DecoratedFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

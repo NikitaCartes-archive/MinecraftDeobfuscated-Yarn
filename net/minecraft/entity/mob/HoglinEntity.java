@@ -4,7 +4,7 @@
 package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -51,7 +51,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public class HoglinEntity
@@ -112,9 +111,13 @@ Hoglin {
         return bl;
     }
 
+    protected Brain.Profile<HoglinEntity> createBrainProfile() {
+        return Brain.createProfile(MEMORY_MODULE_TYPES, SENSOR_TYPES);
+    }
+
     @Override
-    protected Brain<?> deserializeBrain(Dynamic<?> data) {
-        return HoglinBrain.create(data);
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        return HoglinBrain.create(this.createBrainProfile().deserialize(dynamic));
     }
 
     public Brain<HoglinEntity> getBrain() {
@@ -288,7 +291,7 @@ Hoglin {
     }
 
     public boolean canConvert() {
-        return this.world.method_27983() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
+        return !this.world.getDimension().isNether() && !this.isImmuneToZombification() && !this.isAiDisabled();
     }
 
     private void setCannotBeHunted(boolean cannotBeHunted) {

@@ -4,8 +4,8 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.structure.pool.StructurePool;
 
 public class JigsawJunction {
@@ -41,7 +41,7 @@ public class JigsawJunction {
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build()));
     }
 
-    public static <T> JigsawJunction deserialize(Dynamic<T> dynamic) {
+    public static <T> JigsawJunction method_28873(Dynamic<T> dynamic) {
         return new JigsawJunction(dynamic.get("source_x").asInt(0), dynamic.get("source_ground_y").asInt(0), dynamic.get("source_z").asInt(0), dynamic.get("delta_y").asInt(0), StructurePool.Projection.getById(dynamic.get("dest_proj").asString("")));
     }
 
@@ -75,7 +75,7 @@ public class JigsawJunction {
     }
 
     public String toString() {
-        return "JigsawJunction{sourceX=" + this.sourceX + ", sourceGroundY=" + this.sourceGroundY + ", sourceZ=" + this.sourceZ + ", deltaY=" + this.deltaY + ", destProjection=" + (Object)((Object)this.destProjection) + '}';
+        return "JigsawJunction{sourceX=" + this.sourceX + ", sourceGroundY=" + this.sourceGroundY + ", sourceZ=" + this.sourceZ + ", deltaY=" + this.deltaY + ", destProjection=" + this.destProjection + '}';
     }
 }
 

@@ -15,6 +15,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
 public class SpawnPointCommand {
@@ -23,11 +24,11 @@ public class SpawnPointCommand {
     }
 
     private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, BlockPos pos) {
-        DimensionType dimensionType = source.getWorld().method_27983();
+        RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
         for (ServerPlayerEntity serverPlayerEntity : targets) {
-            serverPlayerEntity.setSpawnPoint(dimensionType, pos, true, false);
+            serverPlayerEntity.setSpawnPoint(registryKey, pos, true, false);
         }
-        String string = DimensionType.getId(dimensionType).toString();
+        String string = registryKey.getValue().toString();
         if (targets.size() == 1) {
             source.sendFeedback(new TranslatableText("commands.spawnpoint.success.single", pos.getX(), pos.getY(), pos.getZ(), string, targets.iterator().next().getDisplayName()), true);
         } else {

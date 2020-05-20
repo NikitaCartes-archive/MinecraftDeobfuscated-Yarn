@@ -144,9 +144,9 @@ implements ScreenHandlerProvider<T> {
         RenderSystem.enableDepthTest();
     }
 
-    protected void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j) {
+    protected void drawMouseoverTooltip(MatrixStack matrices, int x, int y) {
         if (this.client.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
-            this.renderTooltip(matrixStack, this.focusedSlot.getStack(), i, j);
+            this.renderTooltip(matrices, this.focusedSlot.getStack(), x, y);
         }
     }
 
@@ -160,12 +160,12 @@ implements ScreenHandlerProvider<T> {
         this.itemRenderer.zOffset = 0.0f;
     }
 
-    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
     }
 
     protected abstract void drawBackground(MatrixStack var1, float var2, int var3, int var4);
 
-    private void drawSlot(MatrixStack matrixStack, Slot slot) {
+    private void drawSlot(MatrixStack matrices, Slot slot) {
         Pair<Identifier, Identifier> pair;
         int i = slot.x;
         int j = slot.y;
@@ -200,12 +200,12 @@ implements ScreenHandlerProvider<T> {
         if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (pair = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
             this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-            HandledScreen.drawSprite(matrixStack, i, j, this.getZOffset(), 16, 16, sprite);
+            HandledScreen.drawSprite(matrices, i, j, this.getZOffset(), 16, 16, sprite);
             bl2 = true;
         }
         if (!bl2) {
             if (bl) {
-                HandledScreen.fill(matrixStack, i, j, i + 16, j + 16, -2130706433);
+                HandledScreen.fill(matrices, i, j, i + 16, j + 16, -2130706433);
             }
             RenderSystem.enableDepthTest();
             this.itemRenderer.method_27951(this.client.player, itemStack, i, j);

@@ -5,6 +5,7 @@ package net.minecraft.world.gen;
 
 import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_5304;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -21,11 +22,13 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
 
-public class PhantomSpawner {
+public class PhantomSpawner
+implements class_5304 {
     private int ticksUntilNextSpawn;
 
-    public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-        if (!spawnMonsters) {
+    @Override
+    public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
+        if (!bl) {
             return 0;
         }
         if (!serverWorld.getGameRules().getBoolean(GameRules.DO_INSOMNIA)) {
@@ -37,7 +40,7 @@ public class PhantomSpawner {
             return 0;
         }
         this.ticksUntilNextSpawn += (60 + random.nextInt(60)) * 20;
-        if (serverWorld.getAmbientDarkness() < 5 && serverWorld.method_27983().hasSkyLight()) {
+        if (serverWorld.getAmbientDarkness() < 5 && serverWorld.getDimension().hasSkyLight()) {
             return 0;
         }
         int i = 0;
@@ -48,11 +51,11 @@ public class PhantomSpawner {
             LocalDifficulty localDifficulty;
             if (playerEntity.isSpectator()) continue;
             BlockPos blockPos = playerEntity.getBlockPos();
-            if (serverWorld.method_27983().hasSkyLight() && (blockPos.getY() < serverWorld.getSeaLevel() || !serverWorld.isSkyVisible(blockPos)) || !(localDifficulty = serverWorld.getLocalDifficulty(blockPos)).isHarderThan(random.nextFloat() * 3.0f)) continue;
+            if (serverWorld.getDimension().hasSkyLight() && (blockPos.getY() < serverWorld.getSeaLevel() || !serverWorld.isSkyVisible(blockPos)) || !(localDifficulty = serverWorld.getLocalDifficulty(blockPos)).isHarderThan(random.nextFloat() * 3.0f)) continue;
             ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).getStatHandler();
             int j = MathHelper.clamp(serverStatHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
             int k = 24000;
-            if (random.nextInt(j) < 72000 || !SpawnHelper.isClearForSpawn(serverWorld, blockPos2 = blockPos.up(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21)), blockState = serverWorld.getBlockState(blockPos2), fluidState = serverWorld.getFluidState(blockPos2))) continue;
+            if (random.nextInt(j) < 72000 || !SpawnHelper.isClearForSpawn(serverWorld, blockPos2 = blockPos.up(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21)), blockState = serverWorld.getBlockState(blockPos2), fluidState = serverWorld.getFluidState(blockPos2), EntityType.PHANTOM)) continue;
             EntityData entityData = null;
             int l = 1 + random.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
             for (int m = 0; m < l; ++m) {

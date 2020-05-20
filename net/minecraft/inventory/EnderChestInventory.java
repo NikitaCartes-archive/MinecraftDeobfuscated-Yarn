@@ -5,13 +5,13 @@ package net.minecraft.inventory;
 
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
 public class EnderChestInventory
-extends BasicInventory {
+extends SimpleInventory {
     private EnderChestBlockEntity activeBlockEntity;
 
     public EnderChestInventory() {

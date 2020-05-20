@@ -5,12 +5,17 @@ package net.minecraft.structure.pool;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.StructurePoolElement;
@@ -18,10 +23,16 @@ import net.minecraft.structure.processor.GravityStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StructurePool {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Codec<StructurePool> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Identifier.field_25139.fieldOf("name")).forGetter(StructurePool::getId), ((MapCodec)Identifier.field_25139.fieldOf("fallback")).forGetter(StructurePool::getTerminatorsId), ((MapCodec)Codec.mapPair(StructurePoolElement.field_24953.fieldOf("element"), Codec.INT.fieldOf("weight")).codec().listOf().promotePartial((Consumer)Util.method_29188("Pool element: ", LOGGER::error)).fieldOf("elements")).forGetter(structurePool -> structurePool.elementCounts), ((MapCodec)Projection.field_24956.fieldOf("projection")).forGetter(structurePool -> structurePool.projection)).apply((Applicative<StructurePool, ?>)instance, StructurePool::new));
     public static final StructurePool EMPTY = new StructurePool(new Identifier("empty"), new Identifier("empty"), ImmutableList.of(), Projection.RIGID);
     public static final StructurePool INVALID = new StructurePool(new Identifier("invalid"), new Identifier("invalid"), ImmutableList.of(), Projection.RIGID);
     private final Identifier id;
@@ -36,11 +47,8 @@ public class StructurePool {
         this.elementCounts = ImmutableList.copyOf(elementCounts);
         this.elements = Lists.newArrayList();
         for (Pair<StructurePoolElement, Integer> pair : elementCounts) {
-            Integer integer = 0;
-            while (integer < pair.getSecond()) {
+            for (int i = 0; i < pair.getSecond(); ++i) {
                 this.elements.add(pair.getFirst().setProjection(projection));
-                Integer n = integer;
-                Integer n2 = integer = Integer.valueOf(integer + 1);
             }
         }
         this.terminatorsId = terminatorsId;
@@ -74,10 +82,12 @@ public class StructurePool {
         return this.elements.size();
     }
 
-    public static enum Projection {
+    public static enum Projection implements StringIdentifiable
+    {
         TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.WORLD_SURFACE_WG, -1))),
         RIGID("rigid", ImmutableList.of());
 
+        public static final Codec<Projection> field_24956;
         private static final Map<String, Projection> PROJECTIONS_BY_ID;
         private final String id;
         private final ImmutableList<StructureProcessor> processors;
@@ -99,7 +109,13 @@ public class StructurePool {
             return this.processors;
         }
 
+        @Override
+        public String asString() {
+            return this.id;
+        }
+
         static {
+            field_24956 = StringIdentifiable.method_28140(Projection::values, Projection::getById);
             PROJECTIONS_BY_ID = Arrays.stream(Projection.values()).collect(Collectors.toMap(Projection::getId, projection -> projection));
         }
     }

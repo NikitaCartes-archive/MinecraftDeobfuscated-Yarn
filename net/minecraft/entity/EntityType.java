@@ -3,15 +3,12 @@
  */
 package net.minecraft.entity;
 
-import com.mojang.datafixers.DataFixUtils;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
@@ -559,14 +556,7 @@ public class EntityType<T extends Entity> {
 
         public EntityType<T> build(String id) {
             if (this.saveable) {
-                try {
-                    Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.ENTITY_TREE, id);
-                } catch (IllegalArgumentException illegalArgumentException) {
-                    if (SharedConstants.isDevelopment) {
-                        throw illegalArgumentException;
-                    }
-                    LOGGER.warn("No data fixer registered for entity {}", (Object)id);
-                }
+                Util.method_29187(TypeReferences.ENTITY_TREE, id);
             }
             return new EntityType<T>(this.factory, this.spawnGroup, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.dimensions, this.maxTrackingRange, this.trackingTickInterval);
         }

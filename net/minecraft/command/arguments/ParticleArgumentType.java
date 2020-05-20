@@ -46,7 +46,7 @@ implements ArgumentType<ParticleEffect> {
 
     public static ParticleEffect readParameters(StringReader reader) throws CommandSyntaxException {
         Identifier identifier = Identifier.fromCommandInput(reader);
-        ParticleType<? extends ParticleEffect> particleType = Registry.PARTICLE_TYPE.getOrEmpty(identifier).orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
+        ParticleType<?> particleType = Registry.PARTICLE_TYPE.getOrEmpty(identifier).orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
         return ParticleArgumentType.readParameters(reader, particleType);
     }
 

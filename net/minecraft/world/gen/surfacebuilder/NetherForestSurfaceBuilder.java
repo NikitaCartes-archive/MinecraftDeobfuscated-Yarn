@@ -4,9 +4,8 @@
 package net.minecraft.world.gen.surfacebuilder;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -23,8 +22,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     protected long seed;
     private OctavePerlinNoiseSampler field_22203;
 
-    public NetherForestSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-        super(function);
+    public NetherForestSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+        super(codec);
     }
 
     @Override

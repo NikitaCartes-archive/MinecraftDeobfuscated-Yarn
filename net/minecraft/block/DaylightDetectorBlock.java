@@ -54,7 +54,7 @@ extends BlockWithEntity {
     }
 
     public static void updateState(BlockState state, World world, BlockPos pos) {
-        if (!world.method_27983().hasSkyLight()) {
+        if (!world.getDimension().hasSkyLight()) {
             return;
         }
         int i = world.getLightLevel(LightType.SKY, pos) - world.getAmbientDarkness();

@@ -22,8 +22,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.class_5217;
-import net.minecraft.class_5269;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -54,13 +52,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
@@ -69,7 +70,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
@@ -95,20 +96,31 @@ AutoCloseable {
     protected float thunderGradientPrev;
     protected float thunderGradient;
     public final Random random = new Random();
-    private final Dimension dimension;
-    protected final class_5269 properties;
+    private final DimensionType dimension;
+    protected final MutableWorldProperties properties;
     private final Supplier<Profiler> profiler;
     public final boolean isClient;
     protected boolean iteratingTickingBlockEntities;
     private final WorldBorder border;
     private final BiomeAccess biomeAccess;
 
-    protected World(class_5269 arg, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l) {
+    protected World(MutableWorldProperties mutableWorldProperties, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l) {
         this.profiler = supplier;
-        this.properties = arg;
-        this.dimension = dimensionType.create(this);
+        this.properties = mutableWorldProperties;
+        this.dimension = dimensionType;
         this.isClient = bl;
-        this.border = this.getDimension().createWorldBorder();
+        this.border = dimensionType.isShrunk() ? new WorldBorder(){
+
+            @Override
+            public double getCenterX() {
+                return super.getCenterX() / 8.0;
+            }
+
+            @Override
+            public double getCenterZ() {
+                return super.getCenterZ() / 8.0;
+            }
+        } : new WorldBorder();
         this.thread = Thread.currentThread();
         this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
         this.field_24496 = bl2;
@@ -156,18 +168,18 @@ AutoCloseable {
         return y < 0 || y >= 256;
     }
 
-    public double method_26372(BlockPos blockPos) {
-        return this.method_26097(blockPos, blockState -> false);
+    public double getCollisionHeightAt(BlockPos pos) {
+        return this.getCollisionHeightAt(pos, blockState -> false);
     }
 
-    public double method_26097(BlockPos blockPos, Predicate<BlockState> predicate) {
+    public double getCollisionHeightAt(BlockPos pos, Predicate<BlockState> predicate) {
         VoxelShape voxelShape;
-        BlockState blockState = this.getBlockState(blockPos);
-        VoxelShape voxelShape2 = voxelShape = predicate.test(blockState) ? VoxelShapes.empty() : blockState.getCollisionShape(this, blockPos);
+        BlockState blockState = this.getBlockState(pos);
+        VoxelShape voxelShape2 = voxelShape = predicate.test(blockState) ? VoxelShapes.empty() : blockState.getCollisionShape(this, pos);
         if (voxelShape.isEmpty()) {
-            BlockPos blockPos2 = blockPos.down();
-            BlockState blockState2 = this.getBlockState(blockPos2);
-            VoxelShape voxelShape22 = predicate.test(blockState2) ? VoxelShapes.empty() : blockState2.getCollisionShape(this, blockPos2);
+            BlockPos blockPos = pos.down();
+            BlockState blockState2 = this.getBlockState(blockPos);
+            VoxelShape voxelShape22 = predicate.test(blockState2) ? VoxelShapes.empty() : blockState2.getCollisionShape(this, blockPos);
             double d = voxelShape22.getMaximum(Direction.Axis.Y);
             if (d >= 1.0) {
                 return d - 1.0;
@@ -213,7 +225,7 @@ AutoCloseable {
         if (World.isHeightInvalid(pos)) {
             return false;
         }
-        if (!this.isClient && this.method_27982()) {
+        if (!this.isClient && this.isDebugWorld()) {
             return false;
         }
         WorldChunk worldChunk = this.getWorldChunk(pos);
@@ -369,11 +381,11 @@ AutoCloseable {
     }
 
     public boolean isDay() {
-        return this.method_27983() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
+        return this.getDimension().isOverworld() && this.ambientDarkness < 4;
     }
 
     public boolean isNight() {
-        return this.method_27983() == DimensionType.OVERWORLD && !this.isDay();
+        return this.getDimension().isOverworld() && !this.isDay();
     }
 
     @Override
@@ -890,27 +902,12 @@ AutoCloseable {
     public void disconnect() {
     }
 
-    public void setTime(long time) {
-        this.properties.setTime(time);
-    }
-
     public long getTime() {
         return this.properties.getTime();
     }
 
     public long getTimeOfDay() {
         return this.properties.getTimeOfDay();
-    }
-
-    public void setTimeOfDay(long time) {
-        this.properties.setTimeOfDay(time);
-    }
-
-    protected void tickTime() {
-        this.setTime(this.properties.getTime() + 1L);
-        if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-            this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
-        }
     }
 
     public boolean canPlayerModifyAt(PlayerEntity player, BlockPos pos) {
@@ -925,7 +922,7 @@ AutoCloseable {
     }
 
     @Override
-    public class_5217 getLevelProperties() {
+    public WorldProperties getLevelProperties() {
         return this.properties;
     }
 
@@ -954,7 +951,7 @@ AutoCloseable {
     }
 
     public boolean isThundering() {
-        if (!this.method_27983().hasSkyLight() || this.method_27983().method_27998()) {
+        if (!this.getDimension().hasSkyLight() || this.getDimension().hasCeiling()) {
             return false;
         }
         return (double)this.getThunderGradient(1.0f) > 0.9;
@@ -997,7 +994,7 @@ AutoCloseable {
         CrashReportSection crashReportSection = report.addElement("Affected level", 1);
         crashReportSection.add("All players", () -> this.getPlayers().size() + " total; " + this.getPlayers());
         crashReportSection.add("Chunk stats", this.getChunkManager()::getDebugString);
-        crashReportSection.add("Level dimension", () -> this.method_27983().toString());
+        crashReportSection.add("Level dimension", () -> this.method_27983().getValue().toString());
         try {
             this.properties.populateCrashReport(crashReportSection);
         } catch (Throwable throwable) {
@@ -1057,13 +1054,12 @@ AutoCloseable {
     }
 
     @Override
-    public Dimension getDimension() {
+    public DimensionType getDimension() {
         return this.dimension;
     }
 
-    @Override
-    public DimensionType method_27983() {
-        return this.dimension.getType();
+    public RegistryKey<DimensionType> method_27983() {
+        return this.method_28380().getRegistry().getKey(this.dimension);
     }
 
     @Override
@@ -1103,9 +1099,11 @@ AutoCloseable {
         return this.biomeAccess;
     }
 
-    public final boolean method_27982() {
+    public final boolean isDebugWorld() {
         return this.field_24496;
     }
+
+    public abstract DimensionTracker method_28380();
 
     @Override
     public /* synthetic */ Chunk getChunk(int chunkX, int chunkZ) {

@@ -4,8 +4,7 @@
 package net.minecraft.structure.processor;
 
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,6 +21,7 @@ import net.minecraft.world.WorldView;
 
 public class BlackstoneReplacementStructureProcessor
 extends StructureProcessor {
+    public static final Codec<BlackstoneReplacementStructureProcessor> field_24996 = Codec.unit(() -> INSTANCE);
     public static final BlackstoneReplacementStructureProcessor INSTANCE = new BlackstoneReplacementStructureProcessor();
     private final Map<Block, Block> replacementMap = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(Blocks.COBBLESTONE, Blocks.BLACKSTONE);
@@ -49,6 +49,9 @@ extends StructureProcessor {
         hashMap.put(Blocks.IRON_BARS, Blocks.CHAIN);
     });
 
+    private BlackstoneReplacementStructureProcessor() {
+    }
+
     @Override
     public Structure.StructureBlockInfo process(WorldView worldView, BlockPos pos, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
         Block block = this.replacementMap.get(structureBlockInfo2.state.getBlock());
@@ -70,13 +73,8 @@ extends StructureProcessor {
     }
 
     @Override
-    protected StructureProcessorType getType() {
+    protected StructureProcessorType<?> getType() {
         return StructureProcessorType.BLACKSTONE_REPLACE;
-    }
-
-    @Override
-    protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.emptyMap());
     }
 }
 

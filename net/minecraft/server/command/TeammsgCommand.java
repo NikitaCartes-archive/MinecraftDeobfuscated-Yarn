@@ -42,11 +42,11 @@ public class TeamMsgCommand {
         List<ServerPlayerEntity> list = source.getMinecraftServer().getPlayerManager().getPlayerList();
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (serverPlayerEntity == entity) {
-                serverPlayerEntity.sendSystemMessage(new TranslatableText("chat.type.team.sent", text, source.getDisplayName(), message));
+                serverPlayerEntity.sendSystemMessage(new TranslatableText("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());
                 continue;
             }
             if (serverPlayerEntity.getScoreboardTeam() != team) continue;
-            serverPlayerEntity.sendSystemMessage(new TranslatableText("chat.type.team.text", text, source.getDisplayName(), message));
+            serverPlayerEntity.sendSystemMessage(new TranslatableText("chat.type.team.text", text, source.getDisplayName(), message), entity.getUuid());
         }
         return list.size();
     }

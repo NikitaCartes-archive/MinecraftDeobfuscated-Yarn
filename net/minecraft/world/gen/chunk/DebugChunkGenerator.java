@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.gen.chunk;
 
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -10,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5311;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -24,12 +26,12 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 
 public class DebugChunkGenerator
 extends ChunkGenerator {
-    public static final ChunkGenerator generator = new DebugChunkGenerator();
+    public static final DebugChunkGenerator INSTANCE = new DebugChunkGenerator();
+    public static final Codec<DebugChunkGenerator> field_24768 = Codec.unit(() -> INSTANCE).stable();
     private static final List<BlockState> BLOCK_STATES = StreamSupport.stream(Registry.BLOCK.spliterator(), false).flatMap(block -> block.getStateManager().getStates().stream()).collect(Collectors.toList());
     private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size()));
     private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
@@ -37,12 +39,17 @@ extends ChunkGenerator {
     protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
 
     private DebugChunkGenerator() {
-        super(new FixedBiomeSource(Biomes.PLAINS), new ChunkGeneratorConfig());
+        super(new FixedBiomeSource(Biomes.PLAINS), new class_5311(false));
+    }
+
+    @Override
+    protected Codec<? extends ChunkGenerator> method_28506() {
+        return field_24768;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ChunkGenerator create(long seed) {
+    public ChunkGenerator withSeed(long seed) {
         return this;
     }
 

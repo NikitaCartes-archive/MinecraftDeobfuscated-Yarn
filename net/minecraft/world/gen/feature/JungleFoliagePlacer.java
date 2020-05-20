@@ -3,9 +3,10 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
@@ -16,15 +17,17 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class JungleFoliagePlacer
 extends FoliagePlacer {
+    public static final Codec<JungleFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> JungleFoliagePlacer.method_28846(instance).and(((MapCodec)Codec.INT.fieldOf("height")).forGetter(jungleFoliagePlacer -> jungleFoliagePlacer.height)).apply((Applicative<JungleFoliagePlacer, ?>)instance, JungleFoliagePlacer::new));
     protected final int height;
 
-    public JungleFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, int height) {
-        super(radius, randomRadius, offset, randomOffset, FoliagePlacerType.JUNGLE_FOLIAGE_PLACER);
-        this.height = height;
+    public JungleFoliagePlacer(int i, int j, int k, int l, int m) {
+        super(i, j, k, l);
+        this.height = m;
     }
 
-    public <T> JungleFoliagePlacer(Dynamic<T> dynamic) {
-        this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0), dynamic.get("offset").asInt(0), dynamic.get("offset_random").asInt(0), dynamic.get("height").asInt(0));
+    @Override
+    protected FoliagePlacerType<?> method_28843() {
+        return FoliagePlacerType.JUNGLE_FOLIAGE_PLACER;
     }
 
     @Override
@@ -47,13 +50,6 @@ extends FoliagePlacer {
             return true;
         }
         return baseHeight * baseHeight + dy * dy > dz * dz;
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("height"), ops.createInt(this.height));
-        return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
     }
 }
 

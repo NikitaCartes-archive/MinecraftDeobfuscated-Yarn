@@ -3,73 +3,60 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class MineshaftFeature
 extends StructureFeature<MineshaftFeatureConfig> {
-    public MineshaftFeature(Function<Dynamic<?>, ? extends MineshaftFeatureConfig> function) {
-        super(function);
+    public MineshaftFeature(Codec<MineshaftFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override
-    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, MineshaftFeatureConfig mineshaftFeatureConfig) {
         chunkRandom.setCarverSeed(l, i, j);
-        MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
         double d = mineshaftFeatureConfig.probability;
         return chunkRandom.nextDouble() < d;
     }
 
     @Override
-    public StructureFeature.StructureStartFactory getStructureStartFactory() {
+    public StructureFeature.StructureStartFactory<MineshaftFeatureConfig> getStructureStartFactory() {
         return Start::new;
     }
 
-    @Override
-    public String getName() {
-        return "Mineshaft";
-    }
-
-    @Override
-    public int getRadius() {
-        return 8;
-    }
-
     public static class Start
-    extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+    extends StructureStart<MineshaftFeatureConfig> {
+        public Start(StructureFeature<MineshaftFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
             super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override
-        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-            MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
-            MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, this.random, (x << 4) + 2, (z << 4) + 2, mineshaftFeatureConfig.type);
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig) {
+            MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, this.random, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type);
             this.children.add(mineshaftRoom);
             mineshaftRoom.placeJigsaw(mineshaftRoom, this.children, this.random);
             this.setBoundingBoxFromChildren();
             if (mineshaftFeatureConfig.type == Type.MESA) {
-                int i = -5;
-                int j = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
-                this.boundingBox.offset(0, j, 0);
+                int k = -5;
+                int l = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
+                this.boundingBox.offset(0, l, 0);
                 for (StructurePiece structurePiece : this.children) {
-                    structurePiece.translate(0, j, 0);
+                    structurePiece.translate(0, l, 0);
                 }
             } else {
                 this.method_14978(chunkGenerator.getSeaLevel(), this.random, 10);
@@ -77,10 +64,12 @@ extends StructureFeature<MineshaftFeatureConfig> {
         }
     }
 
-    public static enum Type {
+    public static enum Type implements StringIdentifiable
+    {
         NORMAL("normal"),
         MESA("mesa");
 
+        public static final Codec<Type> field_24839;
         private static final Map<String, Type> nameMap;
         private final String name;
 
@@ -92,7 +81,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
             return this.name;
         }
 
-        public static Type byName(String nam) {
+        private static Type byName(String nam) {
             return nameMap.get(nam);
         }
 
@@ -103,7 +92,13 @@ extends StructureFeature<MineshaftFeatureConfig> {
             return Type.values()[index];
         }
 
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
         static {
+            field_24839 = StringIdentifiable.method_28140(Type::values, Type::byName);
             nameMap = Arrays.stream(Type.values()).collect(Collectors.toMap(Type::getName, type -> type));
         }
     }

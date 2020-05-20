@@ -23,9 +23,9 @@ extends HandledScreen<GrindstoneScreenHandler> {
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-        this.textRenderer.draw(matrixStack, this.title, 8.0f, 6.0f, 0x404040);
-        this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        this.textRenderer.draw(matrices, this.title, 8.0f, 6.0f, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
     }
 
     @Override
@@ -37,14 +37,14 @@ extends HandledScreen<GrindstoneScreenHandler> {
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(TEXTURE);
-        int j = (this.width - this.backgroundWidth) / 2;
-        int k = (this.height - this.backgroundHeight) / 2;
-        this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        int i = (this.width - this.backgroundWidth) / 2;
+        int j = (this.height - this.backgroundHeight) / 2;
+        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         if ((((GrindstoneScreenHandler)this.handler).getSlot(0).hasStack() || ((GrindstoneScreenHandler)this.handler).getSlot(1).hasStack()) && !((GrindstoneScreenHandler)this.handler).getSlot(2).hasStack()) {
-            this.drawTexture(matrixStack, j + 92, k + 31, this.backgroundWidth, 0, 28, 21);
+            this.drawTexture(matrices, i + 92, j + 31, this.backgroundWidth, 0, 28, 21);
         }
     }
 }

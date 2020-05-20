@@ -65,75 +65,75 @@ extends HandledScreen<LoomScreenHandler> {
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-        this.textRenderer.draw(matrixStack, this.title, 8.0f, 4.0f, 0x404040);
-        this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        this.textRenderer.draw(matrices, this.title, 8.0f, 4.0f, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
-        this.renderBackground(matrixStack);
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        this.renderBackground(matrices);
         this.client.getTextureManager().bindTexture(TEXTURE);
-        int j = this.x;
-        int k = this.y;
-        this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        int i = this.x;
+        int j = this.y;
+        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         Slot slot = ((LoomScreenHandler)this.handler).getBannerSlot();
         Slot slot2 = ((LoomScreenHandler)this.handler).getDyeSlot();
         Slot slot3 = ((LoomScreenHandler)this.handler).getPatternSlot();
         Slot slot4 = ((LoomScreenHandler)this.handler).getOutputSlot();
         if (!slot.hasStack()) {
-            this.drawTexture(matrixStack, j + slot.x, k + slot.y, this.backgroundWidth, 0, 16, 16);
+            this.drawTexture(matrices, i + slot.x, j + slot.y, this.backgroundWidth, 0, 16, 16);
         }
         if (!slot2.hasStack()) {
-            this.drawTexture(matrixStack, j + slot2.x, k + slot2.y, this.backgroundWidth + 16, 0, 16, 16);
+            this.drawTexture(matrices, i + slot2.x, j + slot2.y, this.backgroundWidth + 16, 0, 16, 16);
         }
         if (!slot3.hasStack()) {
-            this.drawTexture(matrixStack, j + slot3.x, k + slot3.y, this.backgroundWidth + 32, 0, 16, 16);
+            this.drawTexture(matrices, i + slot3.x, j + slot3.y, this.backgroundWidth + 32, 0, 16, 16);
         }
-        int l = (int)(41.0f * this.scrollPosition);
-        this.drawTexture(matrixStack, j + 119, k + 13 + l, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
+        int k = (int)(41.0f * this.scrollPosition);
+        this.drawTexture(matrices, i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
         DiffuseLighting.disableGuiDepthLighting();
         if (this.field_21841 != null && !this.hasTooManyPatterns) {
             VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-            matrixStack.push();
-            matrixStack.translate(j + 139, k + 52, 0.0);
-            matrixStack.scale(24.0f, -24.0f, 1.0f);
-            matrixStack.translate(0.5, 0.5, 0.5);
-            float g = 0.6666667f;
-            matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
+            matrices.push();
+            matrices.translate(i + 139, j + 52, 0.0);
+            matrices.scale(24.0f, -24.0f, 1.0f);
+            matrices.translate(0.5, 0.5, 0.5);
+            float f = 0.6666667f;
+            matrices.scale(0.6666667f, -0.6666667f, -0.6666667f);
             this.bannerField.pitch = 0.0f;
             this.bannerField.pivotY = -32.0f;
-            BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.field_21841);
-            matrixStack.pop();
+            BannerBlockEntityRenderer.renderCanvas(matrices, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.field_21841);
+            matrices.pop();
             immediate.draw();
         } else if (this.hasTooManyPatterns) {
-            this.drawTexture(matrixStack, j + slot4.x - 2, k + slot4.y - 2, this.backgroundWidth, 17, 17, 16);
+            this.drawTexture(matrices, i + slot4.x - 2, j + slot4.y - 2, this.backgroundWidth, 17, 17, 16);
         }
         if (this.canApplyDyePattern) {
-            int m = j + 60;
-            int n = k + 13;
-            int o = this.firstPatternButtonId + 16;
-            for (int p = this.firstPatternButtonId; p < o && p < BannerPattern.COUNT - BannerPattern.field_24417; ++p) {
-                int q = p - this.firstPatternButtonId;
-                int r = m + q % 4 * 14;
-                int s = n + q / 4 * 14;
+            int l = i + 60;
+            int m = j + 13;
+            int n = this.firstPatternButtonId + 16;
+            for (int o = this.firstPatternButtonId; o < n && o < BannerPattern.COUNT - BannerPattern.field_24417; ++o) {
+                int p = o - this.firstPatternButtonId;
+                int q = l + p % 4 * 14;
+                int r = m + p / 4 * 14;
                 this.client.getTextureManager().bindTexture(TEXTURE);
-                int t = this.backgroundHeight;
-                if (p == ((LoomScreenHandler)this.handler).getSelectedPattern()) {
-                    t += 14;
-                } else if (mouseY >= r && i >= s && mouseY < r + 14 && i < s + 14) {
-                    t += 28;
+                int s = this.backgroundHeight;
+                if (o == ((LoomScreenHandler)this.handler).getSelectedPattern()) {
+                    s += 14;
+                } else if (mouseX >= q && mouseY >= r && mouseX < q + 14 && mouseY < r + 14) {
+                    s += 28;
                 }
-                this.drawTexture(matrixStack, r, s, 0, t, 14, 14);
-                this.method_22692(p, r, s);
+                this.drawTexture(matrices, q, r, 0, s, 14, 14);
+                this.method_22692(o, q, r);
             }
         } else if (this.canApplySpecialPattern) {
-            int m = j + 60;
-            int n = k + 13;
+            int l = i + 60;
+            int m = j + 13;
             this.client.getTextureManager().bindTexture(TEXTURE);
-            this.drawTexture(matrixStack, m, n, 0, this.backgroundHeight, 14, 14);
-            int o = ((LoomScreenHandler)this.handler).getSelectedPattern();
-            this.method_22692(o, m, n);
+            this.drawTexture(matrices, l, m, 0, this.backgroundHeight, 14, 14);
+            int n = ((LoomScreenHandler)this.handler).getSelectedPattern();
+            this.method_22692(n, l, m);
         }
         DiffuseLighting.enableGuiDepthLighting();
     }

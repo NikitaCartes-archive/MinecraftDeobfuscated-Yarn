@@ -4,17 +4,15 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.AbstractIterator;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Spliterator;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.dynamic.DynamicSerializable;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.Direction;
@@ -37,8 +35,8 @@ import org.jetbrains.annotations.Unmodifiable;
  */
 @Unmodifiable
 public class BlockPos
-extends Vec3i
-implements DynamicSerializable {
+extends Vec3i {
+    public static final Codec<BlockPos> field_25064 = Codec.INT_STREAM.comapFlatMap(intStream -> Util.method_29190(intStream, 3).map(is -> new BlockPos(is[0], is[1], is[2])), blockPos -> IntStream.of(blockPos.getX(), blockPos.getY(), blockPos.getZ())).stable();
     private static final Logger LOGGER = LogManager.getLogger();
     /**
      * The block position which x, y, and z values are all zero.
@@ -71,24 +69,6 @@ implements DynamicSerializable {
 
     public BlockPos(Vec3i pos) {
         this(pos.getX(), pos.getY(), pos.getZ());
-    }
-
-    public static <T> BlockPos deserialize(Dynamic<T> dynamic) {
-        int[] is;
-        Spliterator.OfInt ofInt = dynamic.asIntStream().spliterator();
-        if (ofInt.tryAdvance(arg_0 -> BlockPos.method_19441(is = new int[3], arg_0)) && ofInt.tryAdvance(i -> {
-            is[1] = i;
-        })) {
-            ofInt.tryAdvance(i -> {
-                is[2] = i;
-            });
-        }
-        return new BlockPos(is[0], is[1], is[2]);
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        return ops.createIntList(IntStream.of(this.getX(), this.getY(), this.getZ()));
     }
 
     public static long offset(long value, Direction direction) {
@@ -424,10 +404,6 @@ implements DynamicSerializable {
     @Override
     public /* synthetic */ Vec3i down() {
         return this.down();
-    }
-
-    private static /* synthetic */ void method_19441(int[] is, int i) {
-        is[0] = i;
     }
 
     static {

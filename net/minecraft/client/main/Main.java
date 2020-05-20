@@ -51,6 +51,8 @@ public class Main {
         OptionParser optionParser = new OptionParser();
         optionParser.allowsUnrecognizedOptions();
         optionParser.accepts("demo");
+        optionParser.accepts("disableMultiplayer");
+        optionParser.accepts("disableChat");
         optionParser.accepts("fullscreen");
         optionParser.accepts("checkGlErrors");
         ArgumentAcceptingOptionSpec<String> optionSpec = optionParser.accepts("server").withRequiredArg();
@@ -107,6 +109,8 @@ public class Main {
         OptionalInt optionalInt2 = Main.toOptional(Main.getOption(optionSet, optionSpec17));
         boolean bl = optionSet.has("fullscreen");
         boolean bl2 = optionSet.has("demo");
+        boolean bl3 = optionSet.has("disableMultiplayer");
+        boolean bl4 = optionSet.has("disableChat");
         String string4 = Main.getOption(optionSet, optionSpec13);
         Gson gson = new GsonBuilder().registerTypeAdapter((Type)((Object)PropertyMap.class), new PropertyMap.Serializer()).create();
         PropertyMap propertyMap = JsonHelper.deserialize(gson, Main.getOption(optionSet, optionSpec18), PropertyMap.class);
@@ -121,7 +125,7 @@ public class Main {
         Integer integer = Main.getOption(optionSet, optionSpec2);
         CrashReport.initCrashReport();
         Session session = new Session((String)optionSpec10.value(optionSet), string6, (String)optionSpec12.value(optionSet), (String)optionSpec21.value(optionSet));
-        RunArgs runArgs = new RunArgs(new RunArgs.Network(session, propertyMap, propertyMap2, proxy), new WindowSettings(i, j, optionalInt, optionalInt2, bl), new RunArgs.Directories(file, file3, file2, string7), new RunArgs.Game(bl2, string4, string5), new RunArgs.AutoConnect(string8, integer));
+        RunArgs runArgs = new RunArgs(new RunArgs.Network(session, propertyMap, propertyMap2, proxy), new WindowSettings(i, j, optionalInt, optionalInt2, bl), new RunArgs.Directories(file, file3, file2, string7), new RunArgs.Game(bl2, string4, string5, bl3, bl4), new RunArgs.AutoConnect(string8, integer));
         Thread thread = new Thread("Client Shutdown Thread"){
 
             @Override

@@ -5,8 +5,8 @@ package net.minecraft.screen;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -17,7 +17,7 @@ extends ScreenHandler {
     private final Inventory inventory;
 
     public Generic3x3ContainerScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new BasicInventory(9));
+        this(syncId, playerInventory, new SimpleInventory(9));
     }
 
     public Generic3x3ContainerScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {

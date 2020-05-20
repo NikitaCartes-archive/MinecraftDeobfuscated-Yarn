@@ -43,7 +43,7 @@ extends ChunkManager {
     public ClientChunkManager(ClientWorld world, int loadDistance) {
         this.world = world;
         this.emptyChunk = new EmptyChunk((World)world, new ChunkPos(0, 0));
-        this.lightingProvider = new LightingProvider(this, true, world.method_27983().hasSkyLight());
+        this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
         this.chunks = new ClientChunkMap(ClientChunkManager.getChunkMapRadius(loadDistance));
     }
 
@@ -119,7 +119,7 @@ extends ChunkManager {
         return worldChunk;
     }
 
-    public void method_28102(BooleanSupplier booleanSupplier) {
+    public void tick(BooleanSupplier shouldKeepTicking) {
     }
 
     public void setChunkMapCenter(int x, int z) {

@@ -18,7 +18,7 @@ extends DataFix {
 
     @Override
     public TypeRewriteRule makeRule() {
-        return this.fixTypeEverywhereTyped("OptionsAddTextBackgroundFix", this.getInputSchema().getType(TypeReferences.OPTIONS), typed -> typed.update(DSL.remainderFinder(), dynamic -> DataFixUtils.orElse(dynamic.get("chatOpacity").asString().map(string -> dynamic.set("textBackgroundOpacity", dynamic.createDouble(this.convertToTextBackgroundOpacity((String)string)))), dynamic)));
+        return this.fixTypeEverywhereTyped("OptionsAddTextBackgroundFix", this.getInputSchema().getType(TypeReferences.OPTIONS), typed -> typed.update(DSL.remainderFinder(), dynamic -> DataFixUtils.orElse(dynamic.get("chatOpacity").asString().map(string -> dynamic.set("textBackgroundOpacity", dynamic.createDouble(this.convertToTextBackgroundOpacity((String)string)))).result(), dynamic)));
     }
 
     private double convertToTextBackgroundOpacity(String chatOpacity) {

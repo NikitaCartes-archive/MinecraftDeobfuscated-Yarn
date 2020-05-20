@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TallSeagrassBlock;
@@ -20,8 +19,8 @@ import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 
 public class SeagrassFeature
 extends Feature<SeagrassFeatureConfig> {
-    public SeagrassFeature(Function<Dynamic<?>, ? extends SeagrassFeatureConfig> function) {
-        super(function);
+    public SeagrassFeature(Codec<SeagrassFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

@@ -3,9 +3,10 @@
  */
 package net.minecraft.world.gen.trunk;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -25,17 +26,22 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public abstract class TrunkPlacer {
-    private final int baseHeight;
-    private final int firstRandomHeight;
-    private final int secondRandomHeight;
-    protected final TrunkPlacerType<?> type;
+    public static final Codec<TrunkPlacer> field_24972 = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::method_28903, TrunkPlacerType::method_28908);
+    protected final int baseHeight;
+    protected final int firstRandomHeight;
+    protected final int secondRandomHeight;
 
-    public TrunkPlacer(int baseHeight, int firstRandomHeight, int secondRandomHeight, TrunkPlacerType<?> type) {
+    protected static <P extends TrunkPlacer> Products.P3<RecordCodecBuilder.Mu<P>, Integer, Integer, Integer> method_28904(RecordCodecBuilder.Instance<P> instance) {
+        return instance.group(((MapCodec)Codec.INT.fieldOf("base_height")).forGetter(trunkPlacer -> trunkPlacer.baseHeight), ((MapCodec)Codec.INT.fieldOf("height_rand_a")).forGetter(trunkPlacer -> trunkPlacer.firstRandomHeight), ((MapCodec)Codec.INT.fieldOf("height_rand_b")).forGetter(trunkPlacer -> trunkPlacer.secondRandomHeight));
+    }
+
+    public TrunkPlacer(int baseHeight, int firstRandomHeight, int secondRandomHeight) {
         this.baseHeight = baseHeight;
         this.firstRandomHeight = firstRandomHeight;
         this.secondRandomHeight = secondRandomHeight;
-        this.type = type;
     }
+
+    protected abstract TrunkPlacerType<?> method_28903();
 
     /**
      * Generates the trunk blocks and return a list of tree nodes to place foliage around
@@ -77,12 +83,6 @@ public abstract class TrunkPlacer {
         if (TreeFeature.canTreeReplace(modifiableTestableWorld, mutable)) {
             TrunkPlacer.method_27402(modifiableTestableWorld, random, mutable, set, blockBox, treeFeatureConfig);
         }
-    }
-
-    public <T> T serialize(DynamicOps<T> ops) {
-        ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("type"), ops.createString(Registry.TRUNK_PLACER_TYPE.getId(this.type).toString())).put(ops.createString("base_height"), ops.createInt(this.baseHeight)).put(ops.createString("height_rand_a"), ops.createInt(this.firstRandomHeight)).put(ops.createString("height_rand_b"), ops.createInt(this.secondRandomHeight));
-        return new Dynamic<T>(ops, ops.createMap(builder.build())).getValue();
     }
 }
 

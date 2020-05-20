@@ -51,7 +51,7 @@ extends Task<VillagerEntity> {
                 int i;
                 Vec3d vec3d = null;
                 int j = 1000;
-                for (i = 0; i < 1000 && (vec3d == null || this.exceedsMaxRange(serverWorld, villagerEntity, GlobalPos.create(villagerEntity.dimension, new BlockPos(vec3d)))); ++i) {
+                for (i = 0; i < 1000 && (vec3d == null || this.exceedsMaxRange(serverWorld, villagerEntity, GlobalPos.create(serverWorld.method_27983(), new BlockPos(vec3d)))); ++i) {
                     vec3d = TargetFinder.findTargetTowards(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()));
                 }
                 if (i == 1000) {

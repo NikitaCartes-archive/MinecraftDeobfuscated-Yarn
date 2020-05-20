@@ -5,13 +5,11 @@ package net.minecraft.client.gui.screen.world;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5219;
-import net.minecraft.class_5285;
-import net.minecraft.class_5292;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
+import net.minecraft.client.gui.screen.world.MoreOptionsDialog;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -24,6 +22,8 @@ import net.minecraft.util.FileNameUtil;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,16 +53,16 @@ extends Screen {
     private Text secondGameModeDescriptionLine;
     private String levelName;
     private GameRules gameRules = new GameRules();
-    public final class_5292 field_24588;
+    public final MoreOptionsDialog moreOptionsDialog;
 
-    public CreateWorldScreen(@Nullable Screen screen, class_5219 arg) {
-        this(screen, new class_5292(arg.getLevelInfo().getGeneratorOptions()));
-        LevelInfo levelInfo = arg.getLevelInfo();
+    public CreateWorldScreen(@Nullable Screen screen, SaveProperties saveProperties) {
+        this(screen, new MoreOptionsDialog(saveProperties.getLevelInfo().getGeneratorOptions()));
+        LevelInfo levelInfo = saveProperties.getLevelInfo();
         this.levelName = levelInfo.getLevelName();
         this.cheatsEnabled = levelInfo.isHardcore();
         this.tweakedCheats = true;
         this.field_24290 = this.field_24289 = levelInfo.getDifficulty();
-        this.gameRules.setAllValues(arg.getGameRules(), null);
+        this.gameRules.setAllValues(saveProperties.getGameRules(), null);
         if (levelInfo.hasStructures()) {
             this.currentMode = Mode.HARDCORE;
         } else if (levelInfo.getGameMode().isSurvivalLike()) {
@@ -73,20 +73,20 @@ extends Screen {
     }
 
     public CreateWorldScreen(@Nullable Screen parent) {
-        this(parent, new class_5292());
+        this(parent, new MoreOptionsDialog());
     }
 
-    private CreateWorldScreen(@Nullable Screen screen, class_5292 arg) {
+    private CreateWorldScreen(@Nullable Screen screen, MoreOptionsDialog moreOptionsDialog) {
         super(new TranslatableText("selectWorld.create"));
         this.parent = screen;
         this.levelName = I18n.translate("selectWorld.newWorld", new Object[0]);
-        this.field_24588 = arg;
+        this.moreOptionsDialog = moreOptionsDialog;
     }
 
     @Override
     public void tick() {
         this.levelNameField.tick();
-        this.field_24588.tick();
+        this.moreOptionsDialog.tick();
     }
 
     @Override
@@ -106,7 +106,7 @@ extends Screen {
             this.updateSaveFolderName();
         });
         this.children.add(this.levelNameField);
-        this.gameModeSwitchButton = this.addButton(new ButtonWidget(this.width / 2 - 155, 115, 150, 20, new TranslatableText("selectWorld.gameMode"), buttonWidget -> {
+        this.gameModeSwitchButton = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, new TranslatableText("selectWorld.gameMode"), buttonWidget -> {
             switch (this.currentMode) {
                 case SURVIVAL: {
                     this.tweakDefaultsTo(Mode.HARDCORE);
@@ -133,7 +133,7 @@ extends Screen {
                 return super.getNarrationMessage().append(". ").append(CreateWorldScreen.this.firstGameModeDescriptionLine).append(" ").append(CreateWorldScreen.this.secondGameModeDescriptionLine);
             }
         });
-        this.field_24286 = this.addButton(new ButtonWidget(this.width / 2 + 5, 115, 150, 20, new TranslatableText("options.difficulty"), buttonWidget -> {
+        this.field_24286 = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, new TranslatableText("options.difficulty"), buttonWidget -> {
             this.field_24290 = this.field_24289 = this.field_24289.cycle();
             buttonWidget.queueNarration(250);
         }){
@@ -143,7 +143,6 @@ extends Screen {
                 return new TranslatableText("options.difficulty").append(": ").append(CreateWorldScreen.this.field_24290.getTranslatableName());
             }
         });
-        this.field_24588.method_28092(this, this.client, this.textRenderer);
         this.enableCheatsButton = this.addButton(new ButtonWidget(this.width / 2 - 155, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), buttonWidget -> {
             this.tweakedCheats = true;
             this.cheatsEnabled = !this.cheatsEnabled;
@@ -160,18 +159,18 @@ extends Screen {
                 return super.getNarrationMessage().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"));
             }
         });
-        this.enableCheatsButton.visible = false;
-        this.createLevelButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.createLevel()));
-        this.createLevelButton.active = !this.levelName.isEmpty();
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
-        this.moreOptionsButton = this.addButton(new ButtonWidget(this.width / 2 + 5, 185, 150, 20, new TranslatableText("selectWorld.moreWorldOptions"), buttonWidget -> this.toggleMoreOptions()));
         this.gameRulesButton = this.addButton(new ButtonWidget(this.width / 2 - 155, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), buttonWidget -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
             this.client.openScreen(this);
             optional.ifPresent(gameRules -> {
                 this.gameRules = gameRules;
             });
         }))));
-        this.method_28084();
+        this.moreOptionsDialog.method_28092(this, this.client, this.textRenderer);
+        this.moreOptionsButton = this.addButton(new ButtonWidget(this.width / 2 + 5, 185, 150, 20, new TranslatableText("selectWorld.moreWorldOptions"), buttonWidget -> this.toggleMoreOptions()));
+        this.createLevelButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.createLevel()));
+        this.createLevelButton.active = !this.levelName.isEmpty();
+        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+        this.setMoreOptionsOpen();
         this.setInitialFocus(this.levelNameField);
         this.tweakDefaultsTo(this.currentMode);
         this.updateSaveFolderName();
@@ -211,13 +210,13 @@ extends Screen {
             return;
         }
         this.creatingLevel = true;
-        class_5285 lv = this.field_24588.method_28096(this.hardcore);
-        if (lv.method_28033()) {
+        GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptions(this.hardcore);
+        if (generatorOptions.isDebugWorld()) {
             GameRules gameRules = new GameRules();
             gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
-            levelInfo = new LevelInfo(this.levelNameField.getText().trim(), GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, lv);
+            levelInfo = new LevelInfo(this.levelNameField.getText().trim(), GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, generatorOptions);
         } else {
-            levelInfo = new LevelInfo(this.levelNameField.getText().trim(), this.currentMode.defaultGameMode, this.hardcore, this.field_24290, this.cheatsEnabled && !this.hardcore, this.gameRules, lv);
+            levelInfo = new LevelInfo(this.levelNameField.getText().trim(), this.currentMode.defaultGameMode, this.hardcore, this.field_24290, this.cheatsEnabled && !this.hardcore, this.gameRules, generatorOptions);
         }
         this.client.startIntegratedServer(this.saveDirectoryName, levelInfo);
     }
@@ -233,13 +232,13 @@ extends Screen {
         if (mode == Mode.HARDCORE) {
             this.hardcore = true;
             this.enableCheatsButton.active = false;
-            this.field_24588.field_24589.active = false;
+            this.moreOptionsDialog.bonusItemsButton.active = false;
             this.field_24290 = Difficulty.HARD;
             this.field_24286.active = false;
         } else {
             this.hardcore = false;
             this.enableCheatsButton.active = true;
-            this.field_24588.field_24589.active = true;
+            this.moreOptionsDialog.bonusItemsButton.active = true;
             this.field_24290 = this.field_24289;
             this.field_24286.active = true;
         }
@@ -247,7 +246,7 @@ extends Screen {
         this.updateSettingsLabels();
     }
 
-    public void method_28084() {
+    public void setMoreOptionsOpen() {
         this.setMoreOptionsOpen(this.moreOptionsOpen);
     }
 
@@ -255,7 +254,7 @@ extends Screen {
         this.moreOptionsOpen = moreOptionsOpen;
         this.gameModeSwitchButton.visible = !this.moreOptionsOpen;
         boolean bl = this.field_24286.visible = !this.moreOptionsOpen;
-        if (this.field_24588.method_28085()) {
+        if (this.moreOptionsDialog.isDebugWorld()) {
             this.gameModeSwitchButton.active = false;
             if (this.lastMode == null) {
                 this.lastMode = this.currentMode;
@@ -267,9 +266,9 @@ extends Screen {
             if (this.lastMode != null) {
                 this.tweakDefaultsTo(this.lastMode);
             }
-            this.enableCheatsButton.visible = this.moreOptionsOpen;
+            this.enableCheatsButton.visible = !this.moreOptionsOpen;
         }
-        this.field_24588.method_28101(this.moreOptionsOpen);
+        this.moreOptionsDialog.setVisible(this.moreOptionsOpen);
         this.levelNameField.setVisible(!this.moreOptionsOpen);
         if (this.moreOptionsOpen) {
             this.moreOptionsButton.setMessage(ScreenTexts.DONE);
@@ -307,16 +306,16 @@ extends Screen {
         if (this.moreOptionsOpen) {
             this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.enterSeed", new Object[0]), this.width / 2 - 100, 47, -6250336);
             this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.seedInfo", new Object[0]), this.width / 2 - 100, 85, -6250336);
-            if (this.enableCheatsButton.visible) {
-                this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.allowCommands.info", new Object[0]), this.width / 2 - 150, 172, -6250336);
-            }
-            this.field_24588.render(matrices, mouseX, mouseY, delta);
+            this.moreOptionsDialog.render(matrices, mouseX, mouseY, delta);
         } else {
             this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.enterName", new Object[0]), this.width / 2 - 100, 47, -6250336);
             this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.resultFolder", new Object[0]) + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
             this.levelNameField.render(matrices, mouseX, mouseY, delta);
-            this.drawCenteredText(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 155 + 75, 137, -6250336);
-            this.drawCenteredText(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 155 + 75, 149, -6250336);
+            this.drawCenteredText(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 155 + 75, 122, -6250336);
+            this.drawCenteredText(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 155 + 75, 134, -6250336);
+            if (this.enableCheatsButton.visible) {
+                this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.allowCommands.info", new Object[0]), this.width / 2 - 150, 172, -6250336);
+            }
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

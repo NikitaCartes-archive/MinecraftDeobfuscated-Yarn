@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import net.minecraft.state.property.AbstractProperty;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.StringIdentifiable;
 
 public class EnumProperty<T extends Enum<T>>
-extends AbstractProperty<T> {
+extends Property<T> {
     private final ImmutableSet<T> values;
     private final Map<String, T> byName = Maps.newHashMap();
 

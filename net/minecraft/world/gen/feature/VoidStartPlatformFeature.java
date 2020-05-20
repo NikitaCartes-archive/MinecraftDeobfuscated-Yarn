@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -20,8 +19,8 @@ extends Feature<DefaultFeatureConfig> {
     private static final BlockPos START_BLOCK = new BlockPos(8, 3, 8);
     private static final ChunkPos START_CHUNK = new ChunkPos(START_BLOCK);
 
-    public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public VoidStartPlatformFeature(Codec<DefaultFeatureConfig> codec) {
+        super(codec);
     }
 
     private static int getDistance(int x1, int z1, int x2, int z2) {

@@ -4,11 +4,10 @@
 package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -21,33 +20,17 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class WoodlandMansionFeature
 extends StructureFeature<DefaultFeatureConfig> {
-    public WoodlandMansionFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
-    }
-
-    @Override
-    protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getMansionSpacing();
-    }
-
-    @Override
-    protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return chunkGeneratorConfig.getMansionSeparation();
-    }
-
-    @Override
-    protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
-        return 10387319;
+    public WoodlandMansionFeature(Codec<DefaultFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override
@@ -56,60 +39,50 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos) {
-        Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32);
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig) {
+        Set<Biome> set = biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32);
         for (Biome biome2 : set) {
-            if (chunkGenerator.hasStructure(biome2, this)) continue;
+            if (biome2.hasStructureFeature(this)) continue;
             return false;
         }
         return true;
     }
 
     @Override
-    public StructureFeature.StructureStartFactory getStructureStartFactory() {
+    public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
         return Start::new;
     }
 
-    @Override
-    public String getName() {
-        return "Mansion";
-    }
-
-    @Override
-    public int getRadius() {
-        return 8;
-    }
-
     public static class Start
-    extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+    extends StructureStart<DefaultFeatureConfig> {
+        public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
             super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override
-        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
             BlockRotation blockRotation = BlockRotation.random(this.random);
-            int i = 5;
-            int j = 5;
+            int k = 5;
+            int l = 5;
             if (blockRotation == BlockRotation.CLOCKWISE_90) {
-                i = -5;
+                k = -5;
             } else if (blockRotation == BlockRotation.CLOCKWISE_180) {
-                i = -5;
-                j = -5;
+                k = -5;
+                l = -5;
             } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
-                j = -5;
+                l = -5;
             }
-            int k = (x << 4) + 7;
-            int l = (z << 4) + 7;
-            int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG);
-            int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG);
-            int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG);
-            int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG);
-            int q = Math.min(Math.min(m, n), Math.min(o, p));
-            if (q < 60) {
+            int m = (i << 4) + 7;
+            int n = (j << 4) + 7;
+            int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+            int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+            int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+            int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+            int s = Math.min(Math.min(o, p), Math.min(q, r));
+            if (s < 60) {
                 return;
             }
-            BlockPos blockPos = new BlockPos(x * 16 + 8, q + 1, z * 16 + 8);
+            BlockPos blockPos = new BlockPos(i * 16 + 8, s + 1, j * 16 + 8);
             LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
             WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
             this.children.addAll(list);

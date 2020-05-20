@@ -3,19 +3,12 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class DefaultFeatureConfig
 implements FeatureConfig {
-    @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.emptyMap());
-    }
-
-    public static <T> DefaultFeatureConfig deserialize(Dynamic<T> dynamic) {
-        return DEFAULT;
-    }
+    public static final Codec<DefaultFeatureConfig> CODEC = Codec.unit(() -> INSTANCE);
+    public static final DefaultFeatureConfig INSTANCE = new DefaultFeatureConfig();
 }
 

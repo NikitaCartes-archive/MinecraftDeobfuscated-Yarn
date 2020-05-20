@@ -5,9 +5,9 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class RedstoneConnectionsFix
@@ -22,16 +22,16 @@ extends DataFix {
         return this.fixTypeEverywhereTyped("RedstoneConnectionsFix", schema.getType(TypeReferences.BLOCK_STATE), typed -> typed.update(DSL.remainderFinder(), this::updateBlockState));
     }
 
-    private <T> Dynamic<T> updateBlockState(Dynamic<T> data) {
-        boolean bl = data.get("Name").asString().filter("minecraft:redstone_wire"::equals).isPresent();
+    private <T> Dynamic<T> updateBlockState(Dynamic<T> dynamic) {
+        boolean bl = dynamic.get("Name").asString().result().filter("minecraft:redstone_wire"::equals).isPresent();
         if (!bl) {
-            return data;
+            return dynamic;
         }
-        return data.update("Properties", dynamic2 -> {
-            String string = dynamic2.get("east").asString().orElseGet(() -> "none");
-            String string2 = dynamic2.get("west").asString().orElseGet(() -> "none");
-            String string3 = dynamic2.get("north").asString().orElseGet(() -> "none");
-            String string4 = dynamic2.get("south").asString().orElseGet(() -> "none");
+        return dynamic.update("Properties", dynamic2 -> {
+            String string = dynamic2.get("east").asString("none");
+            String string2 = dynamic2.get("west").asString("none");
+            String string3 = dynamic2.get("north").asString("none");
+            String string4 = dynamic2.get("south").asString("none");
             boolean bl = RedstoneConnectionsFix.hasObsoleteValue(string) || RedstoneConnectionsFix.hasObsoleteValue(string2);
             boolean bl2 = RedstoneConnectionsFix.hasObsoleteValue(string3) || RedstoneConnectionsFix.hasObsoleteValue(string4);
             String string5 = !RedstoneConnectionsFix.hasObsoleteValue(string) && !bl2 ? "side" : string;

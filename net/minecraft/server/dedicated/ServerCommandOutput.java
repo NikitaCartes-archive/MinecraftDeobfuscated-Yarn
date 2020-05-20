@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.dedicated;
 
+import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -31,12 +32,12 @@ implements CommandOutput {
     }
 
     public ServerCommandSource createReconCommandSource() {
-        ServerWorld serverWorld = this.server.getWorld(DimensionType.OVERWORLD);
-        return new ServerCommandSource(this, Vec3d.of(serverWorld.method_27911()), Vec2f.ZERO, serverWorld, 4, "Recon", new LiteralText("Rcon"), this.server, null);
+        ServerWorld serverWorld = this.server.getWorld(DimensionType.OVERWORLD_REGISTRY_KEY);
+        return new ServerCommandSource(this, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Recon", new LiteralText("Rcon"), this.server, null);
     }
 
     @Override
-    public void sendSystemMessage(Text message) {
+    public void sendSystemMessage(Text message, UUID uUID) {
         this.buffer.append(message.getString());
     }
 

@@ -3,8 +3,7 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
-import java.util.function.Function;
+import com.mojang.serialization.Codec;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.AlterGroundTreeDecorator;
 import net.minecraft.world.gen.decorator.BeehiveTreeDecorator;
@@ -14,23 +13,23 @@ import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TrunkVineTreeDecorator;
 
 public class TreeDecoratorType<P extends TreeDecorator> {
-    public static final TreeDecoratorType<TrunkVineTreeDecorator> TRUNK_VINE = TreeDecoratorType.register("trunk_vine", TrunkVineTreeDecorator::new);
-    public static final TreeDecoratorType<LeaveVineTreeDecorator> LEAVE_VINE = TreeDecoratorType.register("leave_vine", LeaveVineTreeDecorator::new);
-    public static final TreeDecoratorType<CocoaBeansTreeDecorator> COCOA = TreeDecoratorType.register("cocoa", CocoaBeansTreeDecorator::new);
-    public static final TreeDecoratorType<BeehiveTreeDecorator> BEEHIVE = TreeDecoratorType.register("beehive", BeehiveTreeDecorator::new);
-    public static final TreeDecoratorType<AlterGroundTreeDecorator> ALTER_GROUND = TreeDecoratorType.register("alter_ground", AlterGroundTreeDecorator::new);
-    private final Function<Dynamic<?>, P> field_21325;
+    public static final TreeDecoratorType<TrunkVineTreeDecorator> TRUNK_VINE = TreeDecoratorType.method_28895("trunk_vine", TrunkVineTreeDecorator.field_24964);
+    public static final TreeDecoratorType<LeaveVineTreeDecorator> LEAVE_VINE = TreeDecoratorType.method_28895("leave_vine", LeaveVineTreeDecorator.field_24960);
+    public static final TreeDecoratorType<CocoaBeansTreeDecorator> COCOA = TreeDecoratorType.method_28895("cocoa", CocoaBeansTreeDecorator.field_24959);
+    public static final TreeDecoratorType<BeehiveTreeDecorator> BEEHIVE = TreeDecoratorType.method_28895("beehive", BeehiveTreeDecorator.field_24958);
+    public static final TreeDecoratorType<AlterGroundTreeDecorator> ALTER_GROUND = TreeDecoratorType.method_28895("alter_ground", AlterGroundTreeDecorator.field_24957);
+    private final Codec<P> field_24963;
 
-    private static <P extends TreeDecorator> TreeDecoratorType<P> register(String string, Function<Dynamic<?>, P> function) {
-        return Registry.register(Registry.TREE_DECORATOR_TYPE, string, new TreeDecoratorType<P>(function));
+    private static <P extends TreeDecorator> TreeDecoratorType<P> method_28895(String string, Codec<P> codec) {
+        return Registry.register(Registry.TREE_DECORATOR_TYPE, string, new TreeDecoratorType<P>(codec));
     }
 
-    private TreeDecoratorType(Function<Dynamic<?>, P> function) {
-        this.field_21325 = function;
+    private TreeDecoratorType(Codec<P> codec) {
+        this.field_24963 = codec;
     }
 
-    public P method_23472(Dynamic<?> dynamic) {
-        return (P)((TreeDecorator)this.field_21325.apply(dynamic));
+    public Codec<P> method_28894() {
+        return this.field_24963;
     }
 }
 

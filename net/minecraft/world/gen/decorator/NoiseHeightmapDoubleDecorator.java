@@ -3,10 +3,9 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
@@ -19,8 +18,8 @@ import net.minecraft.world.gen.decorator.NoiseHeightmapDecoratorConfig;
 
 public class NoiseHeightmapDoubleDecorator
 extends Decorator<NoiseHeightmapDecoratorConfig> {
-    public NoiseHeightmapDoubleDecorator(Function<Dynamic<?>, ? extends NoiseHeightmapDecoratorConfig> function) {
-        super(function);
+    public NoiseHeightmapDoubleDecorator(Codec<NoiseHeightmapDecoratorConfig> codec) {
+        super(codec);
     }
 
     @Override

@@ -5,6 +5,7 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -42,6 +43,10 @@ implements ParticleEffect {
     };
     private final ParticleType<BlockStateParticleEffect> type;
     private final BlockState blockState;
+
+    public static Codec<BlockStateParticleEffect> method_29128(ParticleType<BlockStateParticleEffect> particleType) {
+        return BlockState.field_24734.xmap(blockState -> new BlockStateParticleEffect(particleType, (BlockState)blockState), blockStateParticleEffect -> blockStateParticleEffect.blockState);
+    }
 
     public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> type, BlockState blockState) {
         this.type = type;

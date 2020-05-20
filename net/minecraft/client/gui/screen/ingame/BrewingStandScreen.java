@@ -32,31 +32,31 @@ extends HandledScreen<BrewingStandScreenHandler> {
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-        this.textRenderer.draw(matrixStack, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0f, 0x404040);
-        this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        this.textRenderer.draw(matrices, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0f, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
-        int n;
+    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        int m;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(TEXTURE);
-        int j = (this.width - this.backgroundWidth) / 2;
-        int k = (this.height - this.backgroundHeight) / 2;
-        this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
-        int l = ((BrewingStandScreenHandler)this.handler).getFuel();
-        int m = MathHelper.clamp((18 * l + 20 - 1) / 20, 0, 18);
-        if (m > 0) {
-            this.drawTexture(matrixStack, j + 60, k + 44, 176, 29, m, 4);
+        int i = (this.width - this.backgroundWidth) / 2;
+        int j = (this.height - this.backgroundHeight) / 2;
+        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        int k = ((BrewingStandScreenHandler)this.handler).getFuel();
+        int l = MathHelper.clamp((18 * k + 20 - 1) / 20, 0, 18);
+        if (l > 0) {
+            this.drawTexture(matrices, i + 60, j + 44, 176, 29, l, 4);
         }
-        if ((n = ((BrewingStandScreenHandler)this.handler).getBrewTime()) > 0) {
-            int o = (int)(28.0f * (1.0f - (float)n / 400.0f));
-            if (o > 0) {
-                this.drawTexture(matrixStack, j + 97, k + 16, 176, 0, 9, o);
+        if ((m = ((BrewingStandScreenHandler)this.handler).getBrewTime()) > 0) {
+            int n = (int)(28.0f * (1.0f - (float)m / 400.0f));
+            if (n > 0) {
+                this.drawTexture(matrices, i + 97, j + 16, 176, 0, 9, n);
             }
-            if ((o = BUBBLE_PROGRESS[n / 2 % 7]) > 0) {
-                this.drawTexture(matrixStack, j + 63, k + 14 + 29 - o, 185, 29 - o, 12, o);
+            if ((n = BUBBLE_PROGRESS[m / 2 % 7]) > 0) {
+                this.drawTexture(matrices, i + 63, j + 14 + 29 - n, 185, 29 - n, 12, n);
             }
         }
     }

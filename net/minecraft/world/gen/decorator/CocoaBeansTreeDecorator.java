@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -15,7 +14,6 @@ import net.minecraft.block.CocoaBlock;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
@@ -23,15 +21,16 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class CocoaBeansTreeDecorator
 extends TreeDecorator {
+    public static final Codec<CocoaBeansTreeDecorator> field_24959 = ((MapCodec)Codec.FLOAT.fieldOf("probability")).xmap(CocoaBeansTreeDecorator::new, cocoaBeansTreeDecorator -> Float.valueOf(cocoaBeansTreeDecorator.field_21318)).codec();
     private final float field_21318;
 
     public CocoaBeansTreeDecorator(float f) {
-        super(TreeDecoratorType.COCOA);
         this.field_21318 = f;
     }
 
-    public <T> CocoaBeansTreeDecorator(Dynamic<T> dynamic) {
-        this(dynamic.get("probability").asFloat(0.0f));
+    @Override
+    protected TreeDecoratorType<?> method_28893() {
+        return TreeDecoratorType.COCOA;
     }
 
     @Override
@@ -49,11 +48,6 @@ extends TreeDecorator {
                 this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
             }
         });
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString()), ops.createString("probability"), ops.createFloat(this.field_21318)))).getValue();
     }
 }
 

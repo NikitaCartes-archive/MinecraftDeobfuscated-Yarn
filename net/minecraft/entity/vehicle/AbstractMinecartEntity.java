@@ -19,7 +19,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.enums.RailShape;
-import net.minecraft.class_5275;
+import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -172,17 +172,17 @@ extends Entity {
     }
 
     @Override
-    public Vec3d method_24829(LivingEntity livingEntity) {
+    public Vec3d updatePassengerForDismount(LivingEntity passenger) {
         Direction direction = this.getMovementDirection();
         if (direction.getAxis() == Direction.Axis.Y) {
-            return super.method_24829(livingEntity);
+            return super.updatePassengerForDismount(passenger);
         }
-        int[][] is = class_5275.method_27934(direction);
+        int[][] is = Dismounting.getDismountOffsets(direction);
         BlockPos blockPos = this.getBlockPos();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        ImmutableList<EntityPose> immutableList = livingEntity.getPoses();
+        ImmutableList<EntityPose> immutableList = passenger.getPoses();
         for (EntityPose entityPose : immutableList) {
-            EntityDimensions entityDimensions = livingEntity.getDimensions(entityPose);
+            EntityDimensions entityDimensions = passenger.getDimensions(entityPose);
             float f = Math.min(entityDimensions.width, 1.0f) / 2.0f;
             Iterator iterator = field_24464.get((Object)entityPose).iterator();
             while (iterator.hasNext()) {
@@ -191,14 +191,14 @@ extends Entity {
                     Vec3d vec3d;
                     Box box;
                     mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
-                    double d = this.world.method_26097(mutable, blockState -> {
+                    double d = this.world.getCollisionHeightAt(mutable, blockState -> {
                         if (blockState.isIn(BlockTags.CLIMBABLE)) {
                             return true;
                         }
                         return blockState.getBlock() instanceof TrapdoorBlock && blockState.get(TrapdoorBlock.OPEN) != false;
                     });
-                    if (!class_5275.method_27932(d) || !class_5275.method_27933(this.world, livingEntity, (box = new Box(-f, d, -f, f, d + (double)entityDimensions.height, f)).offset(vec3d = Vec3d.ofCenter(mutable, d)))) continue;
-                    livingEntity.setPose(entityPose);
+                    if (!Dismounting.canDismountInBlock(d) || !Dismounting.canPlaceEntityAt(this.world, passenger, (box = new Box(-f, d, -f, f, d + (double)entityDimensions.height, f)).offset(vec3d = Vec3d.ofCenter(mutable, d)))) continue;
+                    passenger.setPose(entityPose);
                     return vec3d;
                 }
             }
@@ -206,13 +206,13 @@ extends Entity {
         double e = this.getBoundingBox().maxY;
         mutable.set((double)blockPos.getX(), e, (double)blockPos.getZ());
         for (EntityPose entityPose2 : immutableList) {
-            double g = livingEntity.getDimensions((EntityPose)entityPose2).height;
+            double g = passenger.getDimensions((EntityPose)entityPose2).height;
             double h = (double)mutable.getY() + this.world.method_26096(mutable, e - (double)mutable.getY() + g);
             if (!(e + g <= h)) continue;
-            livingEntity.setPose(entityPose2);
+            passenger.setPose(entityPose2);
             break;
         }
-        return super.method_24829(livingEntity);
+        return super.updatePassengerForDismount(passenger);
     }
 
     @Override

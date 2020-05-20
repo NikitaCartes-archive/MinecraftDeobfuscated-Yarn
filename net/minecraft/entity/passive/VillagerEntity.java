@@ -6,8 +6,9 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.Raid;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -124,16 +125,19 @@ VillagerDataContainer {
         this.getNavigation().setCanSwim(true);
         this.setCanPickUpLoot(true);
         this.setVillagerData(this.getVillagerData().withType(type).withProfession(VillagerProfession.NONE));
-        this.brain = this.deserializeBrain(new Dynamic<CompoundTag>(NbtOps.INSTANCE, new CompoundTag()));
     }
 
     public Brain<VillagerEntity> getBrain() {
         return super.getBrain();
     }
 
+    protected Brain.Profile<VillagerEntity> createBrainProfile() {
+        return Brain.createProfile(MEMORY_MODULES, SENSORS);
+    }
+
     @Override
-    protected Brain<?> deserializeBrain(Dynamic<?> data) {
-        Brain<VillagerEntity> brain = new Brain<VillagerEntity>(MEMORY_MODULES, SENSORS, data);
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        Brain<VillagerEntity> brain = this.createBrainProfile().deserialize(dynamic);
         this.initBrain(brain);
         return brain;
     }
@@ -165,7 +169,7 @@ VillagerDataContainer {
         brain.setTaskList(Activity.HIDE, VillagerTaskListProvider.createHideTasks(villagerProfession, 0.5f));
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
-        brain.method_24526(Activity.IDLE);
+        brain.doExclusively(Activity.IDLE);
         brain.refreshActivities(this.world.getTimeOfDay(), this.world.getTime());
     }
 
@@ -367,22 +371,23 @@ VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
-        tag.putByte("FoodLevel", this.foodLevel);
-        tag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
-        tag.putInt("Xp", this.experience);
-        tag.putLong("LastRestock", this.lastRestockTime);
-        tag.putLong("LastGossipDecay", this.lastGossipDecayTime);
-        tag.putInt("RestocksToday", this.restocksToday);
+    public void writeCustomDataToTag(CompoundTag tag2) {
+        super.writeCustomDataToTag(tag2);
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("VillagerData", (Tag)tag));
+        tag2.putByte("FoodLevel", this.foodLevel);
+        tag2.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
+        tag2.putInt("Xp", this.experience);
+        tag2.putLong("LastRestock", this.lastRestockTime);
+        tag2.putLong("LastGossipDecay", this.lastGossipDecayTime);
+        tag2.putInt("RestocksToday", this.restocksToday);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         if (tag.contains("VillagerData", 10)) {
-            this.setVillagerData(new VillagerData(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData"))));
+            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData")));
+            dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
         if (tag.contains("Offers", 10)) {
             this.offers = new TraderOfferList(tag.getCompound("Offers"));
@@ -633,14 +638,14 @@ VillagerDataContainer {
     protected void loot(ItemEntity item) {
         ItemStack itemStack = item.getStack();
         if (this.canGather(itemStack)) {
-            BasicInventory basicInventory = this.getInventory();
-            boolean bl = basicInventory.canInsert(itemStack);
+            SimpleInventory simpleInventory = this.getInventory();
+            boolean bl = simpleInventory.canInsert(itemStack);
             if (!bl) {
                 return;
             }
             this.method_27964(item);
             this.sendPickup(item, itemStack.getCount());
-            ItemStack itemStack2 = basicInventory.addStack(itemStack);
+            ItemStack itemStack2 = simpleInventory.addStack(itemStack);
             if (itemStack2.isEmpty()) {
                 item.remove();
             } else {
@@ -664,8 +669,8 @@ VillagerDataContainer {
     }
 
     private int getAvailableFood() {
-        BasicInventory basicInventory = this.getInventory();
-        return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.count((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
+        SimpleInventory simpleInventory = this.getInventory();
+        return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> simpleInventory.count((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
     }
 
     public boolean hasSeedToPlant() {

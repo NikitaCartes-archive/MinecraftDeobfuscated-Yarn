@@ -17,7 +17,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -65,12 +64,6 @@ extends HorseBaseEntity {
     @Override
     public double getMountedHeightOffset() {
         return super.getMountedHeightOffset() - 0.25;
-    }
-
-    @Override
-    protected SoundEvent getAngrySound() {
-        super.getAngrySound();
-        return SoundEvents.ENTITY_DONKEY_ANGRY;
     }
 
     @Override

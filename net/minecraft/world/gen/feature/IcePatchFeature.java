@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -19,8 +18,8 @@ public class IcePatchFeature
 extends Feature<IcePatchFeatureConfig> {
     private final Block ICE = Blocks.PACKED_ICE;
 
-    public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> function) {
-        super(function);
+    public IcePatchFeature(Codec<IcePatchFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

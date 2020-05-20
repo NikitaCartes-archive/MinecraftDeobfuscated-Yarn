@@ -5,8 +5,8 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
@@ -61,17 +61,21 @@ implements Monster,
 Hoglin {
     private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int movementCooldownTicks;
-    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> field_23731 = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS);
-    protected static final ImmutableList<? extends MemoryModuleType<?>> field_23733 = ImmutableList.of(MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN);
+    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> USED_SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS);
+    protected static final ImmutableList<? extends MemoryModuleType<?>> USED_MEMORY_MODULES = ImmutableList.of(MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN);
 
     public ZoglinEntity(EntityType<? extends ZoglinEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
         this.experiencePoints = 5;
     }
 
+    protected Brain.Profile<ZoglinEntity> createBrainProfile() {
+        return Brain.createProfile(USED_MEMORY_MODULES, USED_SENSORS);
+    }
+
     @Override
-    protected Brain<?> deserializeBrain(Dynamic<?> data) {
-        Brain<ZoglinEntity> brain = new Brain<ZoglinEntity>(field_23733, field_23731, data);
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        Brain<ZoglinEntity> brain = this.createBrainProfile().deserialize(dynamic);
         ZoglinEntity.method_26928(brain);
         ZoglinEntity.method_26929(brain);
         ZoglinEntity.method_26930(brain);

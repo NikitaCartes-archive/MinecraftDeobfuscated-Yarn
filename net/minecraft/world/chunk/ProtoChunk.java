@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -63,13 +64,13 @@ implements Chunk {
     private final List<CompoundTag> entities = Lists.newArrayList();
     private final List<BlockPos> lightSources = Lists.newArrayList();
     private final ShortList[] postProcessingLists = new ShortList[16];
-    private final Map<String, StructureStart> structureStarts = Maps.newHashMap();
+    private final Map<String, StructureStart<?>> structureStarts = Maps.newHashMap();
     private final Map<String, LongSet> structureReferences = Maps.newHashMap();
     private final UpgradeData upgradeData;
     private final ChunkTickScheduler<Block> blockTickScheduler;
     private final ChunkTickScheduler<Fluid> fluidTickScheduler;
     private long inhabitedTime;
-    private final Map<GenerationStep.Carver, BitSet> carvingMasks = Maps.newHashMap();
+    private final Map<GenerationStep.Carver, BitSet> carvingMasks = new Object2ObjectArrayMap<GenerationStep.Carver, BitSet>();
     private volatile boolean lightOn;
 
     public ProtoChunk(ChunkPos chunkPos, UpgradeData upgradeData) {
@@ -161,7 +162,7 @@ implements Chunk {
         EnumSet<Heightmap.Type> enumSet = this.getStatus().getHeightmapTypes();
         EnumSet<Heightmap.Type> enumSet2 = null;
         for (Heightmap.Type type : enumSet) {
-            Heightmap heightmap = this.heightmaps.get((Object)type);
+            Heightmap heightmap = this.heightmaps.get(type);
             if (heightmap != null) continue;
             if (enumSet2 == null) {
                 enumSet2 = EnumSet.noneOf(Heightmap.Type.class);
@@ -172,7 +173,7 @@ implements Chunk {
             Heightmap.populateHeightmaps(this, enumSet2);
         }
         for (Heightmap.Type type : enumSet) {
-            this.heightmaps.get((Object)type).trackUpdate(i & 0xF, j, k & 0xF, state);
+            this.heightmaps.get(type).trackUpdate(i & 0xF, j, k & 0xF, state);
         }
         return blockState;
     }
@@ -277,15 +278,15 @@ implements Chunk {
 
     @Override
     public Heightmap getHeightmap(Heightmap.Type type2) {
-        return this.heightmaps.computeIfAbsent(type2, type -> new Heightmap(this, (Heightmap.Type)((Object)type)));
+        return this.heightmaps.computeIfAbsent(type2, type -> new Heightmap(this, (Heightmap.Type)type));
     }
 
     @Override
     public int sampleHeightmap(Heightmap.Type type, int x, int z) {
-        Heightmap heightmap = this.heightmaps.get((Object)type);
+        Heightmap heightmap = this.heightmaps.get(type);
         if (heightmap == null) {
             Heightmap.populateHeightmaps(this, EnumSet.of(type));
-            heightmap = this.heightmaps.get((Object)type);
+            heightmap = this.heightmaps.get(type);
         }
         return heightmap.get(x & 0xF, z & 0xF) - 1;
     }
@@ -301,23 +302,23 @@ implements Chunk {
 
     @Override
     @Nullable
-    public StructureStart getStructureStart(String structure) {
+    public StructureStart<?> getStructureStart(String structure) {
         return this.structureStarts.get(structure);
     }
 
     @Override
-    public void setStructureStart(String structure, StructureStart start) {
+    public void setStructureStart(String structure, StructureStart<?> start) {
         this.structureStarts.put(structure, start);
         this.shouldSave = true;
     }
 
     @Override
-    public Map<String, StructureStart> getStructureStarts() {
+    public Map<String, StructureStart<?>> getStructureStarts() {
         return Collections.unmodifiableMap(this.structureStarts);
     }
 
     @Override
-    public void setStructureStarts(Map<String, StructureStart> map) {
+    public void setStructureStarts(Map<String, StructureStart<?>> map) {
         this.structureStarts.clear();
         this.structureStarts.putAll(map);
         this.shouldSave = true;
@@ -433,8 +434,12 @@ implements Chunk {
         this.blockEntityTags.remove(pos);
     }
 
-    @Override
-    public BitSet getCarvingMask(GenerationStep.Carver carver2) {
+    @Nullable
+    public BitSet getCarvingMask(GenerationStep.Carver carver) {
+        return this.carvingMasks.get(carver);
+    }
+
+    public BitSet method_28510(GenerationStep.Carver carver2) {
         return this.carvingMasks.computeIfAbsent(carver2, carver -> new BitSet(65536));
     }
 

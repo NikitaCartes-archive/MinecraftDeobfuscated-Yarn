@@ -3,6 +3,7 @@
  */
 package net.minecraft.village;
 
+import net.minecraft.class_5304;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.HostileEntity;
@@ -16,7 +17,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
-public class ZombieSiegeManager {
+public class ZombieSiegeManager
+implements class_5304 {
     private boolean spawned;
     private State state = State.SIEGE_DONE;
     private int remaining;
@@ -25,21 +27,22 @@ public class ZombieSiegeManager {
     private int startY;
     private int startZ;
 
-    public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
-        if (world.isDay() || !spawnMonsters) {
+    @Override
+    public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
+        if (serverWorld.isDay() || !bl) {
             this.state = State.SIEGE_DONE;
             this.spawned = false;
             return 0;
         }
-        float f = world.getSkyAngle(0.0f);
+        float f = serverWorld.getSkyAngle(0.0f);
         if ((double)f == 0.5) {
-            State state = this.state = world.random.nextInt(10) == 0 ? State.SIEGE_TONIGHT : State.SIEGE_DONE;
+            State state = this.state = serverWorld.random.nextInt(10) == 0 ? State.SIEGE_TONIGHT : State.SIEGE_DONE;
         }
         if (this.state == State.SIEGE_DONE) {
             return 0;
         }
         if (!this.spawned) {
-            if (this.spawn(world)) {
+            if (this.spawn(serverWorld)) {
                 this.spawned = true;
             } else {
                 return 0;
@@ -51,7 +54,7 @@ public class ZombieSiegeManager {
         }
         this.countdown = 2;
         if (this.remaining > 0) {
-            this.trySpawnZombie(world);
+            this.trySpawnZombie(serverWorld);
             --this.remaining;
         } else {
             this.state = State.SIEGE_DONE;

@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -149,7 +150,7 @@ public final class SpawnHelper {
         if (squaredDistance <= 576.0) {
             return false;
         }
-        if (world.method_27911().isWithinDistance(new Vec3d((float)pos.getX() + 0.5f, pos.getY(), (float)pos.getZ() + 0.5f), 24.0)) {
+        if (world.getSpawnPos().isWithinDistance(new Vec3d((float)pos.getX() + 0.5f, pos.getY(), (float)pos.getZ() + 0.5f), 24.0)) {
             return false;
         }
         ChunkPos chunkPos = new ChunkPos(pos);
@@ -222,7 +223,7 @@ public final class SpawnHelper {
         return new BlockPos(i, l, j);
     }
 
-    public static boolean isClearForSpawn(BlockView blockView, BlockPos pos, BlockState state, FluidState fluidState) {
+    public static boolean isClearForSpawn(BlockView blockView, BlockPos pos, BlockState state, FluidState fluidState, EntityType entityType) {
         if (state.isFullCube(blockView, pos)) {
             return false;
         }
@@ -232,7 +233,10 @@ public final class SpawnHelper {
         if (!fluidState.isEmpty()) {
             return false;
         }
-        return !state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE);
+        if (state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE)) {
+            return false;
+        }
+        return !state.isOf(Blocks.WITHER_ROSE) || entityType == EntityType.WITHER_SKELETON;
     }
 
     public static boolean canSpawn(SpawnRestriction.Location location, WorldView world, BlockPos pos, @Nullable EntityType<?> entityType) {
@@ -258,7 +262,7 @@ public final class SpawnHelper {
         if (!blockState2.allowsSpawning(world, blockPos2, entityType)) {
             return false;
         }
-        return SpawnHelper.isClearForSpawn(world, pos, blockState, fluidState) && SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos));
+        return SpawnHelper.isClearForSpawn(world, pos, blockState, fluidState, entityType) && SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos), entityType);
     }
 
     public static void populateEntities(WorldAccess world, Biome biome, int chunkX, int chunkZ, Random random) {
@@ -389,7 +393,7 @@ public final class SpawnHelper {
 
         private boolean isBelowCap(SpawnGroup group) {
             int i = group.getCapacity() * this.spawningChunkCount / CHUNK_AREA;
-            return this.groupToCount.getInt((Object)group) < i;
+            return this.groupToCount.getInt(group) < i;
         }
     }
 }

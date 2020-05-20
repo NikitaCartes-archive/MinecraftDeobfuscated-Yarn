@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.class_5217;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -26,9 +25,10 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkManager;
-import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public interface WorldAccess
@@ -36,16 +36,16 @@ extends EntityView,
 WorldView,
 ModifiableTestableWorld {
     default public float getMoonSize() {
-        return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
+        return DimensionType.field_24752[this.getDimension().method_28531(this.getLevelProperties().getTimeOfDay())];
     }
 
     default public float getSkyAngle(float tickDelta) {
-        return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), tickDelta);
+        return this.getDimension().method_28528(this.getLevelProperties().getTimeOfDay());
     }
 
     @Environment(value=EnvType.CLIENT)
     default public int getMoonPhase() {
-        return this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay());
+        return this.getDimension().method_28531(this.getLevelProperties().getTimeOfDay());
     }
 
     public TickScheduler<Block> getBlockTickScheduler();
@@ -54,7 +54,7 @@ ModifiableTestableWorld {
 
     public World getWorld();
 
-    public class_5217 getLevelProperties();
+    public WorldProperties getLevelProperties();
 
     public LocalDifficulty getLocalDifficulty(BlockPos var1);
 
@@ -81,7 +81,7 @@ ModifiableTestableWorld {
     public void syncWorldEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
 
     default public int getDimensionHeight() {
-        return this.method_27983().method_27998() ? 128 : 256;
+        return this.getDimension().hasCeiling() ? 128 : 256;
     }
 
     default public void syncWorldEvent(int eventId, BlockPos pos, int data) {
@@ -99,8 +99,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
-        return WorldView.super.getTopPosition(type, pos);
+    default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+        return WorldView.super.getTopPosition(heightmap, pos);
     }
 }
 

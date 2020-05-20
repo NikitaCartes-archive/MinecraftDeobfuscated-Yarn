@@ -4,7 +4,7 @@
 package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -43,7 +43,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
@@ -58,7 +58,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public class PiglinEntity
@@ -67,10 +66,10 @@ implements CrossbowUser {
     private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final UUID BABY_SPEED_BOOST_MODIFIER_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
-    private static final EntityAttributeModifier BABY_SPEED_BOOST_MODIFIER = new EntityAttributeModifier(BABY_SPEED_BOOST_MODIFIER_ID, "Baby speed boost", (double)0.2f, EntityAttributeModifier.Operation.MULTIPLY_BASE);
+    private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
+    private static final EntityAttributeModifier BABY_SPEED_BOOST = new EntityAttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", (double)0.2f, EntityAttributeModifier.Operation.MULTIPLY_BASE);
     private int conversionTicks = 0;
-    private final BasicInventory inventory = new BasicInventory(8);
+    private final SimpleInventory inventory = new SimpleInventory(8);
     private boolean cannotHunt = false;
     protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.INTERACTABLE_DOORS, SensorType.PIGLIN_SPECIFIC_SENSOR);
     protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEAREST_ADULT_PIGLINS, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, new MemoryModuleType[]{MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.PATH, MemoryModuleType.ANGRY_AT, MemoryModuleType.AVOID_TARGET, MemoryModuleType.ADMIRING_ITEM, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_BABY_PIGLIN, MemoryModuleType.NEAREST_VISIBLE_WITHER_SKELETON, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.RIDE_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.NEAREST_REPELLENT});
@@ -189,9 +188,13 @@ implements CrossbowUser {
         }
     }
 
+    protected Brain.Profile<PiglinEntity> createBrainProfile() {
+        return Brain.createProfile(MEMORY_MODULE_TYPES, SENSOR_TYPES);
+    }
+
     @Override
-    protected Brain<?> deserializeBrain(Dynamic<?> data) {
-        return PiglinBrain.create(this, data);
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        return PiglinBrain.create(this, this.createBrainProfile().deserialize(dynamic));
     }
 
     public Brain<PiglinEntity> getBrain() {
@@ -219,9 +222,9 @@ implements CrossbowUser {
         this.getDataTracker().set(BABY, baby);
         if (!this.world.isClient) {
             EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-            entityAttributeInstance.removeModifier(BABY_SPEED_BOOST_MODIFIER);
+            entityAttributeInstance.removeModifier(BABY_SPEED_BOOST);
             if (baby) {
-                entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST_MODIFIER);
+                entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST);
             }
         }
     }
@@ -252,7 +255,7 @@ implements CrossbowUser {
     }
 
     public boolean canConvert() {
-        return this.world.method_27983() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
+        return !this.world.getDimension().isNether() && !this.isImmuneToZombification() && !this.isAiDisabled();
     }
 
     @Override
@@ -399,8 +402,9 @@ implements CrossbowUser {
 
     @Override
     protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack) {
-        boolean bl = PiglinBrain.isGoldenItem(newStack.getItem());
-        boolean bl2 = PiglinBrain.isGoldenItem(oldStack.getItem());
+        boolean bl2;
+        boolean bl = PiglinBrain.isGoldenItem(newStack.getItem()) || newStack.getItem() == Items.CROSSBOW;
+        boolean bl3 = bl2 = PiglinBrain.isGoldenItem(oldStack.getItem()) || oldStack.getItem() == Items.CROSSBOW;
         if (bl && !bl2) {
             return true;
         }

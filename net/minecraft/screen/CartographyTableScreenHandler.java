@@ -6,9 +6,9 @@ package net.minecraft.screen;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,7 +27,7 @@ extends ScreenHandler {
     private final ScreenHandlerContext context;
     private boolean currentlyTakingItem;
     private long lastTakeResultTime;
-    public final Inventory inventory = new BasicInventory(2){
+    public final Inventory inventory = new SimpleInventory(2){
 
         @Override
         public void markDirty() {

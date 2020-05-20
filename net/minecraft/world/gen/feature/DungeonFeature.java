@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -32,8 +31,8 @@ extends Feature<DefaultFeatureConfig> {
     private static final EntityType<?>[] MOB_SPAWNER_ENTITIES = new EntityType[]{EntityType.SKELETON, EntityType.ZOMBIE, EntityType.ZOMBIE, EntityType.SPIDER};
     private static final BlockState AIR = Blocks.CAVE_AIR.getDefaultState();
 
-    public DungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public DungeonFeature(Codec<DefaultFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

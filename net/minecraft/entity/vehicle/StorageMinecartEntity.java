@@ -26,6 +26,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -121,7 +122,7 @@ NamedScreenHandlerFactory {
 
     @Override
     @Nullable
-    public Entity changeDimension(DimensionType newDimension) {
+    public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
         this.field_7733 = false;
         return super.changeDimension(newDimension);
     }

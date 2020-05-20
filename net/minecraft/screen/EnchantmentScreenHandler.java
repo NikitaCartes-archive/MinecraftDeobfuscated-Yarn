@@ -13,8 +13,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -33,7 +33,7 @@ import net.minecraft.util.registry.Registry;
 
 public class EnchantmentScreenHandler
 extends ScreenHandler {
-    private final Inventory inventory = new BasicInventory(2){
+    private final Inventory inventory = new SimpleInventory(2){
 
         @Override
         public void markDirty() {

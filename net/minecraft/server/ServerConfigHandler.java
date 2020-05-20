@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import net.minecraft.class_5218;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.BanEntry;
 import net.minecraft.server.BannedIpEntry;
@@ -37,6 +36,7 @@ import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.ChatUtil;
+import net.minecraft.util.WorldSavePath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -415,7 +415,7 @@ public class ServerConfigHandler {
     }
 
     private static File getLevelPlayersFolder(MinecraftServer server) {
-        return server.method_27050(class_5218.field_24183).toFile();
+        return server.method_27050(WorldSavePath.PLAYERS).toFile();
     }
 
     private static void markFileConverted(File file) {

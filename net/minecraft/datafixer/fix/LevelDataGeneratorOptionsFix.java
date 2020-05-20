@@ -9,14 +9,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.datafixers.types.DynamicOps;
-import com.mojang.datafixers.types.JsonOps;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -116,10 +116,9 @@ extends DataFix {
     @Override
     protected TypeRewriteRule makeRule() {
         Type<?> type = this.getOutputSchema().getType(TypeReferences.LEVEL);
-        return this.fixTypeEverywhereTyped("LevelDataGeneratorOptionsFix", this.getInputSchema().getType(TypeReferences.LEVEL), type, (Typed<?> typed) -> {
+        return this.fixTypeEverywhereTyped("LevelDataGeneratorOptionsFix", this.getInputSchema().getType(TypeReferences.LEVEL), type, (Typed<?> typed) -> typed.write().flatMap(dynamic -> {
             Dynamic dynamic2;
-            Dynamic dynamic = typed.write();
-            Optional<String> optional = dynamic.get("generatorOptions").asString();
+            Optional<String> optional = dynamic.get("generatorOptions").asString().result();
             if ("flat".equalsIgnoreCase(dynamic.get("generatorName").asString(""))) {
                 String string = optional.orElse("");
                 dynamic2 = dynamic.set("generatorOptions", LevelDataGeneratorOptionsFix.fixGeneratorOptions(string, dynamic.getOps()));
@@ -129,11 +128,11 @@ extends DataFix {
             } else {
                 dynamic2 = dynamic;
             }
-            return type.readTyped(dynamic2).getSecond().orElseThrow(() -> new IllegalStateException("Could not read new level type."));
-        });
+            return type.readTyped(dynamic2);
+        }).map(Pair::getFirst).result().orElseThrow(() -> new IllegalStateException("Could not read new level type.")));
     }
 
-    private static <T> Dynamic<T> fixGeneratorOptions(String generatorOptions, DynamicOps<T> ops) {
+    private static <T> Dynamic<T> fixGeneratorOptions(String generatorOptions, DynamicOps<T> dynamicOps) {
         List<Object> list;
         Iterator<String> iterator = Splitter.on(';').split(generatorOptions).iterator();
         String string = "minecraft:plains";
@@ -169,9 +168,9 @@ extends DataFix {
             list.add(Pair.of(1, "minecraft:grass_block"));
             map.put("village", Maps.newHashMap());
         }
-        Object object = ops.createList(list.stream().map(pair -> ops.createMap(ImmutableMap.of(ops.createString("height"), ops.createInt((Integer)pair.getFirst()), ops.createString("block"), ops.createString((String)pair.getSecond())))));
-        Object object2 = ops.createMap(map.entrySet().stream().map(entry2 -> Pair.of(ops.createString(((String)entry2.getKey()).toLowerCase(Locale.ROOT)), ops.createMap(((Map)entry2.getValue()).entrySet().stream().map(entry -> Pair.of(ops.createString((String)entry.getKey()), ops.createString((String)entry.getValue()))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
-        return new Dynamic<Object>(ops, ops.createMap(ImmutableMap.of(ops.createString("layers"), object, ops.createString("biome"), ops.createString(string), ops.createString("structures"), object2)));
+        Object object = dynamicOps.createList(list.stream().map(pair -> dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("height"), dynamicOps.createInt((Integer)pair.getFirst()), dynamicOps.createString("block"), dynamicOps.createString((String)pair.getSecond())))));
+        Object object2 = dynamicOps.createMap(map.entrySet().stream().map(entry2 -> Pair.of(dynamicOps.createString(((String)entry2.getKey()).toLowerCase(Locale.ROOT)), dynamicOps.createMap(((Map)entry2.getValue()).entrySet().stream().map(entry -> Pair.of(dynamicOps.createString((String)entry.getKey()), dynamicOps.createString((String)entry.getValue()))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
+        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("layers"), object, dynamicOps.createString("biome"), dynamicOps.createString(string), dynamicOps.createString("structures"), object2)));
     }
 
     @Nullable

@@ -3,10 +3,11 @@
  */
 package net.minecraft.structure.pool;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -34,6 +35,7 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class FeaturePoolElement
 extends StructurePoolElement {
+    public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.field_24833.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.method_28883()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
     private final ConfiguredFeature<?, ?> feature;
     private final CompoundTag tag;
 
@@ -45,12 +47,6 @@ extends StructurePoolElement {
     private FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
         super(projection);
         this.feature = configuredFeature;
-        this.tag = this.createDefaultJigsawTag();
-    }
-
-    public <T> FeaturePoolElement(Dynamic<T> dynamic) {
-        super(dynamic);
-        this.feature = ConfiguredFeature.deserialize(dynamic.get("feature").orElseEmptyMap());
         this.tag = this.createDefaultJigsawTag();
     }
 
@@ -87,12 +83,7 @@ extends StructurePoolElement {
     }
 
     @Override
-    public <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("feature"), this.feature.serialize(dynamicOps).getValue())));
-    }
-
-    @Override
-    public StructurePoolElementType getType() {
+    public StructurePoolElementType<?> getType() {
         return StructurePoolElementType.FEATURE_POOL_ELEMENT;
     }
 

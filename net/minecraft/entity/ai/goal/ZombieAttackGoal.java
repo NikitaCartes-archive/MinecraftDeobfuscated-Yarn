@@ -32,7 +32,7 @@ extends MeleeAttackGoal {
     public void tick() {
         super.tick();
         ++this.ticks;
-        if (this.ticks >= 5 && this.ticksUntilAttack < 10) {
+        if (this.ticks >= 5 && this.method_28348() < this.method_28349() / 2) {
             this.zombie.setAttacking(true);
         } else {
             this.zombie.setAttacking(false);

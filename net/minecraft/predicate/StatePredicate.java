@@ -50,7 +50,7 @@ public class StatePredicate {
         this.conditions = ImmutableList.copyOf(testers);
     }
 
-    public <S extends State<S>> boolean test(StateManager<?, S> stateManager, S container) {
+    public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S container) {
         for (Condition condition : this.conditions) {
             if (condition.test(stateManager, container)) continue;
             return false;
@@ -139,7 +139,7 @@ public class StatePredicate {
         }
 
         @Override
-        protected <T extends Comparable<T>> boolean test(State<?> state, Property<T> property) {
+        protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
             Optional<T> optional;
             T comparable = state.get(property);
             if (!(this.min == null || (optional = property.parse(this.min)).isPresent() && comparable.compareTo(optional.get()) >= 0)) {
@@ -171,7 +171,7 @@ public class StatePredicate {
         }
 
         @Override
-        protected <T extends Comparable<T>> boolean test(State<?> state, Property<T> property) {
+        protected <T extends Comparable<T>> boolean test(State<?, ?> state, Property<T> property) {
             T comparable = state.get(property);
             Optional<T> optional = property.parse(this.value);
             return optional.isPresent() && comparable.compareTo(optional.get()) == 0;
@@ -190,7 +190,7 @@ public class StatePredicate {
             this.key = key;
         }
 
-        public <S extends State<S>> boolean test(StateManager<?, S> stateManager, S state) {
+        public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S state) {
             Property<?> property = stateManager.getProperty(this.key);
             if (property == null) {
                 return false;
@@ -198,7 +198,7 @@ public class StatePredicate {
             return this.test(state, property);
         }
 
-        protected abstract <T extends Comparable<T>> boolean test(State<?> var1, Property<T> var2);
+        protected abstract <T extends Comparable<T>> boolean test(State<?, ?> var1, Property<T> var2);
 
         public abstract JsonElement toJson();
 

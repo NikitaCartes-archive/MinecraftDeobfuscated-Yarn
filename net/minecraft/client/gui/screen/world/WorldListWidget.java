@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5219;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -49,6 +48,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -197,10 +197,16 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     }
                 } else if (this.level.isDifferentVersion()) {
                     DrawableHelper.drawTexture(matrices, x, y, 32.0f, j, 32, 32, 256, 256);
-                    if (this.level.isLegacyCustomizedWorld()) {
+                    if (this.level.method_29020()) {
                         DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                         if (bl) {
                             MutableText text2 = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
+                            this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
+                        }
+                    } else if (this.level.isLegacyCustomizedWorld()) {
+                        DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
+                        if (bl) {
+                            MutableText text2 = new TranslatableText("selectWorld.tooltip.experimental").formatted(Formatting.RED);
                             this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
                         }
                     } else if (this.level.isFutureLevel()) {
@@ -243,12 +249,18 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             if (this.level.isLocked()) {
                 return;
             }
-            if (this.level.isOutdatedLevel() || this.level.isLegacyCustomizedWorld()) {
-                TranslatableText text = new TranslatableText("selectWorld.backupQuestion");
-                TranslatableText text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion(), SharedConstants.getGameVersion().getName());
-                if (this.level.isLegacyCustomizedWorld()) {
+            if (this.level.isOutdatedLevel() || this.level.method_29020() || this.level.isLegacyCustomizedWorld()) {
+                TranslatableText text2;
+                TranslatableText text;
+                if (this.level.method_29020()) {
                     text = new TranslatableText("selectWorld.backupQuestion.customized");
                     text2 = new TranslatableText("selectWorld.backupWarning.customized");
+                } else if (this.level.isLegacyCustomizedWorld()) {
+                    text = new TranslatableText("selectWorld.backupQuestion.experimental");
+                    text2 = new TranslatableText("selectWorld.backupWarning.experimental");
+                } else {
+                    text = new TranslatableText("selectWorld.backupQuestion");
+                    text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion(), SharedConstants.getGameVersion().getName());
                 }
                 this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
                     if (bl) {
@@ -324,10 +336,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             try {
                 this.client.openScreen(new ProgressScreen());
                 try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());){
-                    class_5219 lv = session.readLevelProperties();
-                    if (lv != null) {
-                        CreateWorldScreen createWorldScreen = new CreateWorldScreen((Screen)this.screen, lv);
-                        if (this.level.isLegacyCustomizedWorld()) {
+                    SaveProperties saveProperties = session.readLevelProperties();
+                    if (saveProperties != null) {
+                        CreateWorldScreen createWorldScreen = new CreateWorldScreen((Screen)this.screen, saveProperties);
+                        if (this.level.method_29020()) {
                             this.client.openScreen(new ConfirmScreen(bl -> this.client.openScreen(bl ? createWorldScreen : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
                         } else {
                             this.client.openScreen(createWorldScreen);

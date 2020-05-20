@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -46,8 +45,8 @@ extends Feature<DefaultFeatureConfig> {
     private static final Identifier[] FOSSILS = new Identifier[]{SPINE_1, SPINE_2, SPINE_3, SPINE_4, SKULL_1, SKULL_2, SKULL_3, SKULL_4};
     private static final Identifier[] COAL_FOSSILS = new Identifier[]{SPINE_1_COAL, SPINE_2_COAL, SPINE_3_COAL, SPINE_4_COAL, SKULL_1_COAL, SKULL_2_COAL, SKULL_3_COAL, SKULL_4_COAL};
 
-    public FossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-        super(function);
+    public FossilFeature(Codec<DefaultFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

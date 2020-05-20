@@ -4,7 +4,8 @@
 package net.minecraft.world.gen.carver;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.Set;
@@ -26,33 +27,38 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.CaveCarver;
+import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.NetherCaveCarver;
 import net.minecraft.world.gen.carver.RavineCarver;
 import net.minecraft.world.gen.carver.UnderwaterCaveCarver;
 import net.minecraft.world.gen.carver.UnderwaterRavineCarver;
 
 public abstract class Carver<C extends CarverConfig> {
-    public static final Carver<ProbabilityConfig> CAVE = Carver.register("cave", new CaveCarver((Function<Dynamic<?>, ? extends ProbabilityConfig>)((Function<Dynamic<?>, ProbabilityConfig>)ProbabilityConfig::deserialize), 256));
-    public static final Carver<ProbabilityConfig> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(ProbabilityConfig::deserialize));
-    public static final Carver<ProbabilityConfig> CANYON = Carver.register("canyon", new RavineCarver(ProbabilityConfig::deserialize));
-    public static final Carver<ProbabilityConfig> UNDERWATER_CANYON = Carver.register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig::deserialize));
-    public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = Carver.register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig::deserialize));
+    public static final Carver<ProbabilityConfig> CAVE = Carver.register("cave", new CaveCarver(ProbabilityConfig.CODEC, 256));
+    public static final Carver<ProbabilityConfig> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(ProbabilityConfig.CODEC));
+    public static final Carver<ProbabilityConfig> CANYON = Carver.register("canyon", new RavineCarver(ProbabilityConfig.CODEC));
+    public static final Carver<ProbabilityConfig> UNDERWATER_CANYON = Carver.register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig.CODEC));
+    public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = Carver.register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig.CODEC));
     protected static final BlockState AIR = Blocks.AIR.getDefaultState();
     protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
     protected static final FluidState WATER = Fluids.WATER.getDefaultState();
     protected static final FluidState LAVA = Fluids.LAVA.getDefaultState();
     protected Set<Block> alwaysCarvableBlocks = ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, new Block[]{Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.TERRACOTTA, Blocks.WHITE_TERRACOTTA, Blocks.ORANGE_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.YELLOW_TERRACOTTA, Blocks.LIME_TERRACOTTA, Blocks.PINK_TERRACOTTA, Blocks.GRAY_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA, Blocks.CYAN_TERRACOTTA, Blocks.PURPLE_TERRACOTTA, Blocks.BLUE_TERRACOTTA, Blocks.BROWN_TERRACOTTA, Blocks.GREEN_TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.BLACK_TERRACOTTA, Blocks.SANDSTONE, Blocks.RED_SANDSTONE, Blocks.MYCELIUM, Blocks.SNOW, Blocks.PACKED_ICE});
     protected Set<Fluid> carvableFluids = ImmutableSet.of(Fluids.WATER);
-    private final Function<Dynamic<?>, ? extends C> configDeserializer;
+    private final Codec<ConfiguredCarver<C>> field_24831;
     protected final int heightLimit;
 
     private static <C extends CarverConfig, F extends Carver<C>> F register(String string, F carver) {
         return (F)Registry.register(Registry.CARVER, string, carver);
     }
 
-    public Carver(Function<Dynamic<?>, ? extends C> configDeserializer, int heightLimit) {
-        this.configDeserializer = configDeserializer;
+    public Carver(Codec<C> codec, int heightLimit) {
         this.heightLimit = heightLimit;
+        this.field_24831 = ((MapCodec)codec.fieldOf("config")).xmap(carverConfig -> new ConfiguredCarver<CarverConfig>(this, (CarverConfig)carverConfig), configuredCarver -> configuredCarver.config).codec();
+    }
+
+    public Codec<ConfiguredCarver<C>> method_28616() {
+        return this.field_24831;
     }
 
     public int getBranchFactor() {

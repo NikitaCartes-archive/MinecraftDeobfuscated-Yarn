@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.foliage;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
@@ -16,12 +15,15 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class DarkOakFoliagePlacer
 extends FoliagePlacer {
-    public DarkOakFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset) {
-        super(radius, randomRadius, offset, randomOffset, FoliagePlacerType.DARK_OAK_FOLIAGE_PLACER);
+    public static final Codec<DarkOakFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> DarkOakFoliagePlacer.method_28846(instance).apply(instance, DarkOakFoliagePlacer::new));
+
+    public DarkOakFoliagePlacer(int i, int j, int k, int l) {
+        super(i, j, k, l);
     }
 
-    public <T> DarkOakFoliagePlacer(Dynamic<T> dynamic) {
-        this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0), dynamic.get("offset").asInt(0), dynamic.get("offset_random").asInt(0));
+    @Override
+    protected FoliagePlacerType<?> method_28843() {
+        return FoliagePlacerType.DARK_OAK_FOLIAGE_PLACER;
     }
 
     @Override
@@ -63,12 +65,6 @@ extends FoliagePlacer {
             return baseHeight + dy > dz * 2 - 2;
         }
         return false;
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        ImmutableMap.Builder builder = ImmutableMap.builder();
-        return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
     }
 }
 

@@ -82,6 +82,6 @@ public class TypeReferences {
     /**
      * A type reference which refers to chunk generator settings.
      */
-    public static final DSL.TypeReference CHUNK_GENERATOR_SETTINGS = () -> "chunk_generator_settings";
+    public static final DSL.TypeReference CHUNK_GENERATOR_SETTINGS = () -> "world_gen_settings";
 }
 

@@ -4,7 +4,7 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.datafixer.NbtOps;
@@ -18,17 +18,18 @@ import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class PoolStructurePiece
 extends StructurePiece {
+    private static final Logger field_24991 = LogManager.getLogger();
     protected final StructurePoolElement poolElement;
     protected BlockPos pos;
     private final int groundLevelDelta;
@@ -51,27 +52,27 @@ extends StructurePiece {
         this.structureManager = manager;
         this.pos = new BlockPos(tag2.getInt("PosX"), tag2.getInt("PosY"), tag2.getInt("PosZ"));
         this.groundLevelDelta = tag2.getInt("ground_level_delta");
-        this.poolElement = DynamicDeserializer.deserialize(new Dynamic<CompoundTag>(NbtOps.INSTANCE, tag2.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE);
+        this.poolElement = StructurePoolElement.field_24953.parse(NbtOps.INSTANCE, tag2.getCompound("pool_element")).resultOrPartial(field_24991::error).orElse(EmptyPoolElement.INSTANCE);
         this.rotation = BlockRotation.valueOf(tag2.getString("rotation"));
         this.boundingBox = this.poolElement.getBoundingBox(manager, this.pos, this.rotation);
         ListTag listTag = tag2.getList("junctions", 10);
         this.junctions.clear();
-        listTag.forEach(tag -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<Tag>(NbtOps.INSTANCE, (Tag)tag))));
+        listTag.forEach(tag -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<Tag>(NbtOps.INSTANCE, (Tag)tag))));
     }
 
     @Override
-    protected void toNbt(CompoundTag tag) {
-        tag.putInt("PosX", this.pos.getX());
-        tag.putInt("PosY", this.pos.getY());
-        tag.putInt("PosZ", this.pos.getZ());
-        tag.putInt("ground_level_delta", this.groundLevelDelta);
-        tag.put("pool_element", this.poolElement.toDynamic(NbtOps.INSTANCE).getValue());
-        tag.putString("rotation", this.rotation.name());
+    protected void toNbt(CompoundTag tag2) {
+        tag2.putInt("PosX", this.pos.getX());
+        tag2.putInt("PosY", this.pos.getY());
+        tag2.putInt("PosZ", this.pos.getZ());
+        tag2.putInt("ground_level_delta", this.groundLevelDelta);
+        StructurePoolElement.field_24953.encodeStart(NbtOps.INSTANCE, this.poolElement).resultOrPartial(field_24991::error).ifPresent(tag -> tag2.put("pool_element", (Tag)tag));
+        tag2.putString("rotation", this.rotation.name());
         ListTag listTag = new ListTag();
         for (JigsawJunction jigsawJunction : this.junctions) {
             listTag.add(jigsawJunction.serialize(NbtOps.INSTANCE).getValue());
         }
-        tag.put("junctions", listTag);
+        tag2.put("junctions", listTag);
     }
 
     @Override

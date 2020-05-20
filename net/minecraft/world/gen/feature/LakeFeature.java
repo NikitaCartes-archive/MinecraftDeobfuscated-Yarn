@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -18,13 +17,14 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class LakeFeature
 extends Feature<SingleStateFeatureConfig> {
     private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-    public LakeFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
-        super(function);
+    public LakeFeature(Codec<SingleStateFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override
@@ -37,7 +37,7 @@ extends Feature<SingleStateFeatureConfig> {
         if (blockPos.getY() <= 4) {
             return false;
         }
-        if (structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos = blockPos.down(4)), Feature.VILLAGE).findAny().isPresent()) {
+        if (structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos = blockPos.down(4)), StructureFeature.VILLAGE).findAny().isPresent()) {
             return false;
         }
         boolean[] bls = new boolean[2048];

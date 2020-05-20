@@ -3,10 +3,10 @@
  */
 package net.minecraft.datafixer.fix;
 
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.AbstractUuidFix;
 
@@ -25,12 +25,12 @@ extends AbstractUuidFix {
         });
     }
 
-    private Dynamic<?> updateSkull(Dynamic<?> root) {
-        return root.get("Owner").get().map(dynamic -> BlockEntityUuidFix.updateStringUuid(dynamic, "Id", "Id").orElse((Dynamic<?>)dynamic)).map(dynamic2 -> root.remove("Owner").set("SkullOwner", (Dynamic<?>)dynamic2)).orElse(root);
+    private Dynamic<?> updateSkull(Dynamic<?> dynamic3) {
+        return dynamic3.get("Owner").get().map(dynamic -> BlockEntityUuidFix.updateStringUuid(dynamic, "Id", "Id").orElse((Dynamic<?>)dynamic)).map(dynamic2 -> dynamic3.remove("Owner").set("SkullOwner", (Dynamic<?>)dynamic2)).result().orElse(dynamic3);
     }
 
-    private Dynamic<?> updateConduit(Dynamic<?> root) {
-        return BlockEntityUuidFix.updateCompoundUuid(root, "target_uuid", "Target").orElse(root);
+    private Dynamic<?> updateConduit(Dynamic<?> dynamic) {
+        return BlockEntityUuidFix.updateCompoundUuid(dynamic, "target_uuid", "Target").orElse(dynamic);
     }
 }
 

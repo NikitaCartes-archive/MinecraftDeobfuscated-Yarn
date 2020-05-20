@@ -3,13 +3,15 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public class ChanceRangeDecoratorConfig
 implements DecoratorConfig {
+    public static final Codec<ChanceRangeDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("chance")).forGetter(chanceRangeDecoratorConfig -> Float.valueOf(chanceRangeDecoratorConfig.chance)), ((MapCodec)Codec.INT.fieldOf("bottom_offset")).withDefault(0).forGetter(chanceRangeDecoratorConfig -> chanceRangeDecoratorConfig.bottomOffset), ((MapCodec)Codec.INT.fieldOf("top_offset")).withDefault(0).forGetter(chanceRangeDecoratorConfig -> chanceRangeDecoratorConfig.topOffset), ((MapCodec)Codec.INT.fieldOf("top")).withDefault(0).forGetter(chanceRangeDecoratorConfig -> chanceRangeDecoratorConfig.top)).apply((Applicative<ChanceRangeDecoratorConfig, ?>)instance, ChanceRangeDecoratorConfig::new));
     public final float chance;
     public final int bottomOffset;
     public final int topOffset;
@@ -20,19 +22,6 @@ implements DecoratorConfig {
         this.bottomOffset = bottomOffset;
         this.topOffset = topOffset;
         this.top = top;
-    }
-
-    @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("chance"), ops.createFloat(this.chance), ops.createString("bottom_offset"), ops.createInt(this.bottomOffset), ops.createString("top_offset"), ops.createInt(this.topOffset), ops.createString("top"), ops.createInt(this.top))));
-    }
-
-    public static ChanceRangeDecoratorConfig deserialize(Dynamic<?> dynamic) {
-        float f = dynamic.get("chance").asFloat(0.0f);
-        int i = dynamic.get("bottom_offset").asInt(0);
-        int j = dynamic.get("top_offset").asInt(0);
-        int k = dynamic.get("top").asInt(0);
-        return new ChanceRangeDecoratorConfig(f, i, j, k);
     }
 }
 

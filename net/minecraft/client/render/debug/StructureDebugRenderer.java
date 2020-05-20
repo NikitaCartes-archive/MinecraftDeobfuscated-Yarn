@@ -37,7 +37,7 @@ implements DebugRenderer.Renderer {
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         Camera camera = this.field_4624.gameRenderer.getCamera();
         ClientWorld worldAccess = this.field_4624.world;
-        DimensionType dimensionType = worldAccess.method_27983();
+        DimensionType dimensionType = worldAccess.getDimension();
         BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
         if (this.field_4626.containsKey(dimensionType)) {

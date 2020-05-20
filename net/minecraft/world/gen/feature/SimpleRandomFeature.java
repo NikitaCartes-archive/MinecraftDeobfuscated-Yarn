@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -16,8 +15,8 @@ import net.minecraft.world.gen.feature.SimpleRandomFeatureConfig;
 
 public class SimpleRandomFeature
 extends Feature<SimpleRandomFeatureConfig> {
-    public SimpleRandomFeature(Function<Dynamic<?>, ? extends SimpleRandomFeatureConfig> function) {
-        super(function);
+    public SimpleRandomFeature(Codec<SimpleRandomFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

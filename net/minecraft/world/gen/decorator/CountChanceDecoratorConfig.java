@@ -3,30 +3,21 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public class CountChanceDecoratorConfig
 implements DecoratorConfig {
+    public static final Codec<CountChanceDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("count")).forGetter(countChanceDecoratorConfig -> countChanceDecoratorConfig.count), ((MapCodec)Codec.FLOAT.fieldOf("chance")).forGetter(countChanceDecoratorConfig -> Float.valueOf(countChanceDecoratorConfig.chance))).apply((Applicative<CountChanceDecoratorConfig, ?>)instance, CountChanceDecoratorConfig::new));
     public final int count;
     public final float chance;
 
     public CountChanceDecoratorConfig(int count, float chance) {
         this.count = count;
         this.chance = chance;
-    }
-
-    @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("count"), ops.createInt(this.count), ops.createString("chance"), ops.createFloat(this.chance))));
-    }
-
-    public static CountChanceDecoratorConfig deserialize(Dynamic<?> dynamic) {
-        int i = dynamic.get("count").asInt(0);
-        float f = dynamic.get("chance").asFloat(0.0f);
-        return new CountChanceDecoratorConfig(i, f);
     }
 }
 

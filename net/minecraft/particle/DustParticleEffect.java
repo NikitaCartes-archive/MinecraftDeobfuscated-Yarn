@@ -5,6 +5,10 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,6 +22,7 @@ import net.minecraft.util.registry.Registry;
 public class DustParticleEffect
 implements ParticleEffect {
     public static final DustParticleEffect RED = new DustParticleEffect(1.0f, 0.0f, 0.0f, 1.0f);
+    public static final Codec<DustParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("r")).forGetter(dustParticleEffect -> Float.valueOf(dustParticleEffect.red)), ((MapCodec)Codec.FLOAT.fieldOf("g")).forGetter(dustParticleEffect -> Float.valueOf(dustParticleEffect.green)), ((MapCodec)Codec.FLOAT.fieldOf("b")).forGetter(dustParticleEffect -> Float.valueOf(dustParticleEffect.blue)), ((MapCodec)Codec.FLOAT.fieldOf("scale")).forGetter(dustParticleEffect -> Float.valueOf(dustParticleEffect.scale))).apply((Applicative<DustParticleEffect, ?>)instance, DustParticleEffect::new));
     public static final ParticleEffect.Factory<DustParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<DustParticleEffect>(){
 
         @Override

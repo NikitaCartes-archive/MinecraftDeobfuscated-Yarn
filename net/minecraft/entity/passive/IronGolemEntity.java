@@ -270,10 +270,10 @@ extends GolemEntity {
             for (int i = 1; i < 3; ++i) {
                 BlockState blockState2;
                 BlockPos blockPos3 = blockPos.up(i);
-                if (SpawnHelper.isClearForSpawn(world, blockPos3, blockState2 = world.getBlockState(blockPos3), blockState2.getFluidState())) continue;
+                if (SpawnHelper.isClearForSpawn(world, blockPos3, blockState2 = world.getBlockState(blockPos3), blockState2.getFluidState(), EntityType.IRON_GOLEM)) continue;
                 return false;
             }
-            return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && world.intersectsEntities(this);
+            return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState(), EntityType.IRON_GOLEM) && world.intersectsEntities(this);
         }
         return false;
     }

@@ -4,7 +4,8 @@
 package net.minecraft.world.gen.trunk;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,12 +21,15 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public class ForkingTrunkPlacer
 extends TrunkPlacer {
-    public ForkingTrunkPlacer(int baseHeight, int firstRandomHeight, int secondRandomHeight) {
-        super(baseHeight, firstRandomHeight, secondRandomHeight, TrunkPlacerType.FORKING_TRUNK_PLACER);
+    public static final Codec<ForkingTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> ForkingTrunkPlacer.method_28904(instance).apply(instance, ForkingTrunkPlacer::new));
+
+    public ForkingTrunkPlacer(int i, int j, int k) {
+        super(i, j, k);
     }
 
-    public <T> ForkingTrunkPlacer(Dynamic<T> data) {
-        this(data.get("base_height").asInt(0), data.get("height_rand_a").asInt(0), data.get("height_rand_b").asInt(0));
+    @Override
+    protected TrunkPlacerType<?> method_28903() {
+        return TrunkPlacerType.FORKING_TRUNK_PLACER;
     }
 
     @Override

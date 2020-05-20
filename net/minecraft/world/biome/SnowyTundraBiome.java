@@ -10,27 +10,18 @@ import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.MineshaftFeature;
-import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.RuinedPortalFeature;
-import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
-import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class SnowyTundraBiome
 extends Biome {
     public SnowyTundraBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.SNOW).category(Biome.Category.ICY).depth(0.125f).scale(0.05f).temperature(0.0f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f))));
-        this.addStructureFeature(Feature.VILLAGE.configure(new StructurePoolFeatureConfig("village/snowy/town_centers", 6)));
-        this.addStructureFeature(Feature.IGLOO.configure(FeatureConfig.DEFAULT));
-        this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-        this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
-        this.addStructureFeature(Feature.PILLAGER_OUTPOST.configure(FeatureConfig.DEFAULT));
-        this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD)));
+        this.addStructureFeature(DefaultBiomeFeatures.field_24709);
+        this.addStructureFeature(DefaultBiomeFeatures.field_24693);
+        DefaultBiomeFeatures.method_28440(this);
+        this.addStructureFeature(DefaultBiomeFeatures.field_24687);
+        this.addStructureFeature(DefaultBiomeFeatures.field_24711);
         DefaultBiomeFeatures.addLandCarvers(this);
-        DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);
         DefaultBiomeFeatures.addMineables(this);

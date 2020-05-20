@@ -3,11 +3,16 @@
  */
 package net.minecraft.sound;
 
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.sound.SoundEvent;
 
 public class MusicSound {
+    public static final Codec<MusicSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.field_24628.fieldOf("sound")).forGetter(musicSound -> musicSound.event), ((MapCodec)Codec.INT.fieldOf("min_delay")).forGetter(musicSound -> musicSound.field_24058), ((MapCodec)Codec.INT.fieldOf("max_delay")).forGetter(musicSound -> musicSound.field_24059), ((MapCodec)Codec.BOOL.fieldOf("replace_current_music")).forGetter(musicSound -> musicSound.field_24060)).apply((Applicative<MusicSound, ?>)instance, MusicSound::new));
     private final SoundEvent event;
     private final int field_24058;
     private final int field_24059;

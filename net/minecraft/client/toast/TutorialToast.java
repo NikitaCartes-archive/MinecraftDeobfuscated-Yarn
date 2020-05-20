@@ -37,7 +37,7 @@ implements Toast {
     public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
         manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-        manager.drawTexture(matrices, 0, 0, 0, 96, 160, 32);
+        manager.drawTexture(matrices, 0, 0, 0, 96, this.method_29049(), this.method_29050());
         this.type.drawIcon(matrices, manager, 6, 6);
         if (this.description == null) {
             manager.getGame().textRenderer.draw(matrices, this.title, 30.0f, 12.0f, -11534256);

@@ -3,9 +3,8 @@
  */
 package net.minecraft.structure.processor;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
@@ -17,14 +16,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockRotStructureProcessor
 extends StructureProcessor {
+    public static final Codec<BlockRotStructureProcessor> field_25000 = ((MapCodec)Codec.FLOAT.fieldOf("integrity")).withDefault(Float.valueOf(1.0f)).xmap(BlockRotStructureProcessor::new, blockRotStructureProcessor -> Float.valueOf(blockRotStructureProcessor.integrity)).codec();
     private final float integrity;
 
-    public BlockRotStructureProcessor(float integrity) {
-        this.integrity = integrity;
-    }
-
-    public BlockRotStructureProcessor(Dynamic<?> dynamic) {
-        this(dynamic.get("integrity").asFloat(1.0f));
+    public BlockRotStructureProcessor(float f) {
+        this.integrity = f;
     }
 
     @Override
@@ -38,13 +34,8 @@ extends StructureProcessor {
     }
 
     @Override
-    protected StructureProcessorType getType() {
+    protected StructureProcessorType<?> getType() {
         return StructureProcessorType.BLOCK_ROT;
-    }
-
-    @Override
-    protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("integrity"), dynamicOps.createFloat(this.integrity))));
     }
 }
 

@@ -3,8 +3,10 @@
  */
 package net.minecraft.world.biome.source;
 
-import com.google.common.collect.ImmutableSet;
-import java.util.Set;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
@@ -16,19 +18,27 @@ import net.minecraft.world.gen.ChunkRandom;
 
 public class TheEndBiomeSource
 extends BiomeSource {
+    public static final Codec<TheEndBiomeSource> field_24730 = ((MapCodec)Codec.LONG.fieldOf("seed")).xmap(TheEndBiomeSource::new, theEndBiomeSource -> theEndBiomeSource.field_24731).stable().codec();
     private final SimplexNoiseSampler noise;
-    private static final Set<Biome> BIOMES = ImmutableSet.of(Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS);
+    private static final List<Biome> BIOMES = ImmutableList.of(Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS);
+    private final long field_24731;
 
     public TheEndBiomeSource(long l) {
         super(BIOMES);
+        this.field_24731 = l;
         ChunkRandom chunkRandom = new ChunkRandom(l);
         chunkRandom.consume(17292);
         this.noise = new SimplexNoiseSampler(chunkRandom);
     }
 
     @Override
+    protected Codec<? extends BiomeSource> method_28442() {
+        return field_24730;
+    }
+
+    @Override
     @Environment(value=EnvType.CLIENT)
-    public BiomeSource create(long seed) {
+    public BiomeSource withSeed(long seed) {
         return new TheEndBiomeSource(seed);
     }
 
@@ -39,7 +49,7 @@ extends BiomeSource {
         if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
             return Biomes.THE_END;
         }
-        float f = this.getNoiseAt(i * 2 + 1, j * 2 + 1);
+        float f = TheEndBiomeSource.getNoiseAt(this.noise, i * 2 + 1, j * 2 + 1);
         if (f > 40.0f) {
             return Biomes.END_HIGHLANDS;
         }
@@ -52,25 +62,28 @@ extends BiomeSource {
         return Biomes.END_BARRENS;
     }
 
-    @Override
-    public float getNoiseAt(int x, int z) {
-        int i = x / 2;
-        int j = z / 2;
-        int k = x % 2;
-        int l = z % 2;
-        float f = 100.0f - MathHelper.sqrt(x * x + z * z) * 8.0f;
+    public boolean method_28479(long l) {
+        return this.field_24731 == l;
+    }
+
+    public static float getNoiseAt(SimplexNoiseSampler simplexNoiseSampler, int i, int j) {
+        int k = i / 2;
+        int l = j / 2;
+        int m = i % 2;
+        int n = j % 2;
+        float f = 100.0f - MathHelper.sqrt(i * i + j * j) * 8.0f;
         f = MathHelper.clamp(f, -100.0f, 80.0f);
-        for (int m = -12; m <= 12; ++m) {
-            for (int n = -12; n <= 12; ++n) {
-                long o = i + m;
-                long p = j + n;
-                if (o * o + p * p <= 4096L || !(this.noise.sample(o, p) < (double)-0.9f)) continue;
-                float g = (MathHelper.abs(o) * 3439.0f + MathHelper.abs(p) * 147.0f) % 13.0f + 9.0f;
-                float h = k - m * 2;
-                float q = l - n * 2;
-                float r = 100.0f - MathHelper.sqrt(h * h + q * q) * g;
-                r = MathHelper.clamp(r, -100.0f, 80.0f);
-                f = Math.max(f, r);
+        for (int o = -12; o <= 12; ++o) {
+            for (int p = -12; p <= 12; ++p) {
+                long q = k + o;
+                long r = l + p;
+                if (q * q + r * r <= 4096L || !(simplexNoiseSampler.sample(q, r) < (double)-0.9f)) continue;
+                float g = (MathHelper.abs(q) * 3439.0f + MathHelper.abs(r) * 147.0f) % 13.0f + 9.0f;
+                float h = m - o * 2;
+                float s = n - p * 2;
+                float t = 100.0f - MathHelper.sqrt(h * h + s * s) * g;
+                t = MathHelper.clamp(t, -100.0f, 80.0f);
+                f = Math.max(f, t);
             }
         }
         return f;

@@ -3,6 +3,10 @@
  */
 package net.minecraft.world.biome;
 
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
@@ -14,6 +18,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.biome.BiomeParticleConfig;
 
 public class BiomeEffects {
+    public static final Codec<BiomeEffects> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("fog_color")).forGetter(biomeEffects -> biomeEffects.fogColor), ((MapCodec)Codec.INT.fieldOf("water_color")).forGetter(biomeEffects -> biomeEffects.waterColor), ((MapCodec)Codec.INT.fieldOf("water_fog_color")).forGetter(biomeEffects -> biomeEffects.waterFogColor), BiomeParticleConfig.CODEC.optionalFieldOf("particle").forGetter(biomeEffects -> biomeEffects.particleConfig), SoundEvent.field_24628.optionalFieldOf("ambient_sound").forGetter(biomeEffects -> biomeEffects.loopSound), BiomeMoodSound.CODEC.optionalFieldOf("mood_sound").forGetter(biomeEffects -> biomeEffects.moodSound), BiomeAdditionsSound.field_24673.optionalFieldOf("additions_sound").forGetter(biomeEffects -> biomeEffects.additionsSound), MusicSound.CODEC.optionalFieldOf("music").forGetter(biomeEffects -> biomeEffects.music)).apply((Applicative<BiomeEffects, ?>)instance, BiomeEffects::new));
     private final int fogColor;
     private final int waterColor;
     private final int waterFogColor;

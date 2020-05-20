@@ -3,9 +3,9 @@
  */
 package net.minecraft.datafixer.fix;
 
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 import net.minecraft.datafixer.fix.EntitySimpleTransformFix;
 
@@ -16,8 +16,8 @@ extends EntitySimpleTransformFix {
     }
 
     @Override
-    protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> tag) {
-        return Pair.of(Objects.equals(choice, "Guardian") && tag.get("Elder").asBoolean(false) ? "ElderGuardian" : choice, tag);
+    protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> dynamic) {
+        return Pair.of(Objects.equals(choice, "Guardian") && dynamic.get("Elder").asBoolean(false) ? "ElderGuardian" : choice, dynamic);
     }
 }
 

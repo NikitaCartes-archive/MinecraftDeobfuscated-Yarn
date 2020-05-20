@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -15,8 +14,8 @@ import net.minecraft.world.gen.feature.RandomBooleanFeatureConfig;
 
 public class RandomBooleanFeature
 extends Feature<RandomBooleanFeatureConfig> {
-    public RandomBooleanFeature(Function<Dynamic<?>, ? extends RandomBooleanFeatureConfig> function) {
-        super(function);
+    public RandomBooleanFeature(Codec<RandomBooleanFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

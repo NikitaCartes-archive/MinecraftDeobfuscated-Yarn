@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
@@ -105,7 +106,7 @@ public class ModelPredicateProviderRegistry {
                 if (clientWorld == null) {
                     return 0.0f;
                 }
-                double d = clientWorld.getDimension().hasVisibleSky() ? (double)clientWorld.getSkyAngle(1.0f) : Math.random();
+                double d = clientWorld.getDimension().isNatural() ? (double)clientWorld.getSkyAngle(1.0f) : Math.random();
                 d = this.getTime(clientWorld, d);
                 return (float)d;
             }
@@ -172,16 +173,16 @@ public class ModelPredicateProviderRegistry {
 
             @Nullable
             private BlockPos getSpawnPos(ClientWorld world) {
-                return world.getDimension().hasVisibleSky() ? world.getSpawnPos() : null;
+                return world.getDimension().isNatural() ? world.getSpawnPos() : null;
             }
 
             @Nullable
             private BlockPos getLodestonePos(World world, CompoundTag tag) {
-                Optional<DimensionType> optional;
+                Optional<RegistryKey<DimensionType>> optional;
                 boolean bl = tag.contains("LodestonePos");
                 boolean bl2 = tag.contains("LodestoneDimension");
-                if (bl && bl2 && (optional = CompassItem.getLodestoneDimension(tag)).isPresent() && world.method_27983().equals(optional.get())) {
-                    return NbtHelper.toBlockPos((CompoundTag)tag.get("LodestonePos"));
+                if (bl && bl2 && (optional = CompassItem.getLodestoneDimension(tag)).isPresent() && world.method_27983() == optional.get()) {
+                    return NbtHelper.toBlockPos(tag.getCompound("LodestonePos"));
                 }
                 return null;
             }

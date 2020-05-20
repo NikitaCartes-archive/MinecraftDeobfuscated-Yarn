@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.class_5275;
+import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
@@ -215,9 +215,9 @@ Saddleable {
     }
 
     @Override
-    public Vec3d method_24829(LivingEntity livingEntity) {
+    public Vec3d updatePassengerForDismount(LivingEntity passenger) {
         double f;
-        Vec3d[] vec3ds = new Vec3d[]{StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw - 22.5f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw + 22.5f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw - 45.0f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw + 45.0f)};
+        Vec3d[] vec3ds = new Vec3d[]{StriderEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), passenger.yaw), StriderEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), passenger.yaw - 22.5f), StriderEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), passenger.yaw + 22.5f), StriderEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), passenger.yaw - 45.0f), StriderEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), passenger.yaw + 45.0f)};
         LinkedHashSet<BlockPos> set = Sets.newLinkedHashSet();
         double d = this.getBoundingBox().maxY;
         double e = this.getBoundingBox().minY - 0.5;
@@ -231,12 +231,12 @@ Saddleable {
         }
         for (BlockPos blockPos : set) {
             if (this.world.getFluidState(blockPos).matches(FluidTags.LAVA)) continue;
-            for (EntityPose entityPose : livingEntity.getPoses()) {
+            for (EntityPose entityPose : passenger.getPoses()) {
                 Vec3d vec3d2;
                 Box box;
-                f = this.world.method_26372(blockPos);
-                if (!class_5275.method_27932(f) || !class_5275.method_27933(this.world, livingEntity, (box = livingEntity.method_24833(entityPose)).offset(vec3d2 = Vec3d.ofCenter(blockPos, f)))) continue;
-                livingEntity.setPose(entityPose);
+                f = this.world.getCollisionHeightAt(blockPos);
+                if (!Dismounting.canDismountInBlock(f) || !Dismounting.canPlaceEntityAt(this.world, passenger, (box = passenger.getBoundingBox(entityPose)).offset(vec3d2 = Vec3d.ofCenter(blockPos, f)))) continue;
+                passenger.setPose(entityPose);
                 return vec3d2;
             }
         }

@@ -6,9 +6,11 @@ package net.minecraft.world.storage;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.OptionalDynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.OptionalDynamic;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
@@ -16,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import net.minecraft.SharedConstants;
@@ -29,7 +30,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.StorageIoWorker;
-import net.minecraft.world.storage.StorageSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -40,18 +40,16 @@ implements AutoCloseable {
     private final StorageIoWorker worker;
     private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<Optional<R>>();
     private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();
-    private final StorageSerializer<R> serializer;
-    private final BiFunction<Runnable, Dynamic<?>, R> deserializer;
+    private final Function<Runnable, Codec<R>> field_24750;
     private final Function<Runnable, R> factory;
     private final DataFixer dataFixer;
     private final DataFixTypes dataFixType;
 
-    public SerializingRegionBasedStorage(File directory, StorageSerializer<R> serializer, BiFunction<Runnable, Dynamic<?>, R> deserializer, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixType, boolean bl) {
-        this.serializer = serializer;
-        this.deserializer = deserializer;
-        this.factory = factory;
+    public SerializingRegionBasedStorage(File directory, Function<Runnable, Codec<R>> function, Function<Runnable, R> function2, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean bl) {
+        this.field_24750 = function;
+        this.factory = function2;
         this.dataFixer = dataFixer;
-        this.dataFixType = dataFixType;
+        this.dataFixType = dataFixTypes;
         this.worker = new StorageIoWorker(directory, bl, directory.getName());
     }
 
@@ -112,21 +110,21 @@ implements AutoCloseable {
         }
     }
 
-    private <T> void update(ChunkPos pos, DynamicOps<T> ops, @Nullable T data) {
+    private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
         if (data == null) {
             for (int i = 0; i < 16; ++i) {
                 this.loadedElements.put(ChunkSectionPos.from(pos, i).asLong(), (Optional<R>)Optional.empty());
             }
         } else {
             int k;
-            Dynamic<T> dynamic2 = new Dynamic<T>(ops, data);
+            Dynamic<T> dynamic2 = new Dynamic<T>(dynamicOps, data);
             int j = SerializingRegionBasedStorage.getDataVersion(dynamic2);
             boolean bl = j != (k = SharedConstants.getGameVersion().getWorldVersion());
             Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixType.getTypeReference(), dynamic2, j, k);
             OptionalDynamic<T> optionalDynamic = dynamic22.get("Sections");
             for (int l = 0; l < 16; ++l) {
                 long m = ChunkSectionPos.from(pos, l).asLong();
-                Optional<Object> optional = optionalDynamic.get(Integer.toString(l)).get().map(dynamic -> this.deserializer.apply(() -> this.onUpdate(m), (Dynamic<?>)dynamic));
+                Optional optional = optionalDynamic.get(Integer.toString(l)).result().flatMap(dynamic -> this.field_24750.apply(() -> this.onUpdate(m)).parse(dynamic).resultOrPartial(LOGGER::error));
                 this.loadedElements.put(m, (Optional<R>)optional);
                 optional.ifPresent(object -> {
                     this.onLoad(m);
@@ -149,13 +147,15 @@ implements AutoCloseable {
     }
 
     private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
-        HashMap<T, T> map = Maps.newHashMap();
+        HashMap map = Maps.newHashMap();
         for (int i = 0; i < 16; ++i) {
             long l = ChunkSectionPos.from(chunkPos, i).asLong();
             this.unsavedElements.remove(l);
             Optional optional = (Optional)this.loadedElements.get(l);
             if (optional == null || !optional.isPresent()) continue;
-            map.put(dynamicOps.createString(Integer.toString(i)), this.serializer.serialize(optional.get(), dynamicOps));
+            DataResult<T> dataResult = this.field_24750.apply(() -> this.onUpdate(l)).encodeStart(dynamicOps, optional.get());
+            String string = Integer.toString(i);
+            dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(dynamicOps.createString(string), object));
         }
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Sections"), dynamicOps.createMap(map), dynamicOps.createString("DataVersion"), dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
     }
@@ -173,7 +173,7 @@ implements AutoCloseable {
     }
 
     private static int getDataVersion(Dynamic<?> dynamic) {
-        return dynamic.get("DataVersion").asNumber().orElse(1945).intValue();
+        return dynamic.get("DataVersion").asInt(1945);
     }
 
     public void method_20436(ChunkPos chunkPos) {

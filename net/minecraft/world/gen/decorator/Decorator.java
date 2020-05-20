@@ -3,10 +3,10 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -71,60 +71,60 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public abstract class Decorator<DC extends DecoratorConfig> {
-    public static final Decorator<NopeDecoratorConfig> NOPE = Decorator.register("nope", new NopeDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP = Decorator.register("count_heightmap", new CountHeightmapDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> COUNT_TOP_SOLID = Decorator.register("count_top_solid", new CountTopSolidDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP_32 = Decorator.register("count_heightmap_32", new CountHeightmap32Decorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP_DOUBLE = Decorator.register("count_heightmap_double", new CountHeightmapDoubleDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> COUNT_HEIGHT_64 = Decorator.register("count_height_64", new CountHeight64Decorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<NoiseHeightmapDecoratorConfig> NOISE_HEIGHTMAP_32 = Decorator.register("noise_heightmap_32", new NoiseHeightmap32Decorator((Function<Dynamic<?>, ? extends NoiseHeightmapDecoratorConfig>)((Function<Dynamic<?>, NoiseHeightmapDecoratorConfig>)NoiseHeightmapDecoratorConfig::deserialize)));
-    public static final Decorator<NoiseHeightmapDecoratorConfig> NOISE_HEIGHTMAP_DOUBLE = Decorator.register("noise_heightmap_double", new NoiseHeightmapDoubleDecorator((Function<Dynamic<?>, ? extends NoiseHeightmapDecoratorConfig>)((Function<Dynamic<?>, NoiseHeightmapDecoratorConfig>)NoiseHeightmapDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP = Decorator.register("chance_heightmap", new ChanceHeightmapDecorator((Function<Dynamic<?>, ? extends ChanceDecoratorConfig>)((Function<Dynamic<?>, ChanceDecoratorConfig>)ChanceDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP_DOUBLE = Decorator.register("chance_heightmap_double", new ChanceHeightmapDoubleDecorator((Function<Dynamic<?>, ? extends ChanceDecoratorConfig>)((Function<Dynamic<?>, ChanceDecoratorConfig>)ChanceDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceDecoratorConfig> CHANCE_PASSTHROUGH = Decorator.register("chance_passthrough", new ChancePassthroughDecorator((Function<Dynamic<?>, ? extends ChanceDecoratorConfig>)((Function<Dynamic<?>, ChanceDecoratorConfig>)ChanceDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceDecoratorConfig> CHANCE_TOP_SOLID_HEIGHTMAP = Decorator.register("chance_top_solid_heightmap", new ChanceTopSolidHeightmapDecorator((Function<Dynamic<?>, ? extends ChanceDecoratorConfig>)((Function<Dynamic<?>, ChanceDecoratorConfig>)ChanceDecoratorConfig::deserialize)));
-    public static final Decorator<CountExtraChanceDecoratorConfig> COUNT_EXTRA_HEIGHTMAP = Decorator.register("count_extra_heightmap", new CountExtraHeightmapDecorator((Function<Dynamic<?>, ? extends CountExtraChanceDecoratorConfig>)((Function<Dynamic<?>, CountExtraChanceDecoratorConfig>)CountExtraChanceDecoratorConfig::deserialize)));
-    public static final Decorator<RangeDecoratorConfig> COUNT_RANGE = Decorator.register("count_range", new CountRangeDecorator((Function<Dynamic<?>, ? extends RangeDecoratorConfig>)((Function<Dynamic<?>, RangeDecoratorConfig>)RangeDecoratorConfig::deserialize)));
-    public static final Decorator<RangeDecoratorConfig> COUNT_BIASED_RANGE = Decorator.register("count_biased_range", new CountBiasedRangeDecorator((Function<Dynamic<?>, ? extends RangeDecoratorConfig>)((Function<Dynamic<?>, RangeDecoratorConfig>)RangeDecoratorConfig::deserialize)));
-    public static final Decorator<RangeDecoratorConfig> COUNT_VERY_BIASED_RANGE = Decorator.register("count_very_biased_range", new CountVeryBiasedRangeDecorator((Function<Dynamic<?>, ? extends RangeDecoratorConfig>)((Function<Dynamic<?>, RangeDecoratorConfig>)RangeDecoratorConfig::deserialize)));
-    public static final Decorator<RangeDecoratorConfig> RANDOM_COUNT_RANGE = Decorator.register("random_count_range", new RandomCountRangeDecorator((Function<Dynamic<?>, ? extends RangeDecoratorConfig>)((Function<Dynamic<?>, RangeDecoratorConfig>)RangeDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceRangeDecoratorConfig> CHANCE_RANGE = Decorator.register("chance_range", new ChanceRangeDecorator((Function<Dynamic<?>, ? extends ChanceRangeDecoratorConfig>)((Function<Dynamic<?>, ChanceRangeDecoratorConfig>)ChanceRangeDecoratorConfig::deserialize)));
-    public static final Decorator<CountChanceDecoratorConfig> COUNT_CHANCE_HEIGHTMAP = Decorator.register("count_chance_heightmap", new CountChanceHeightmapDecorator((Function<Dynamic<?>, ? extends CountChanceDecoratorConfig>)((Function<Dynamic<?>, CountChanceDecoratorConfig>)CountChanceDecoratorConfig::deserialize)));
-    public static final Decorator<CountChanceDecoratorConfig> COUNT_CHANCE_HEIGHTMAP_DOUBLE = Decorator.register("count_chance_heightmap_double", new CountChanceHeightmapDoubleDecorator((Function<Dynamic<?>, ? extends CountChanceDecoratorConfig>)((Function<Dynamic<?>, CountChanceDecoratorConfig>)CountChanceDecoratorConfig::deserialize)));
-    public static final Decorator<CountDepthDecoratorConfig> COUNT_DEPTH_AVERAGE = Decorator.register("count_depth_average", new CountDepthAverageDecorator((Function<Dynamic<?>, ? extends CountDepthDecoratorConfig>)((Function<Dynamic<?>, CountDepthDecoratorConfig>)CountDepthDecoratorConfig::deserialize)));
-    public static final Decorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.register("top_solid_heightmap", new HeightmapDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
-    public static final Decorator<HeightmapRangeDecoratorConfig> TOP_SOLID_HEIGHTMAP_RANGE = Decorator.register("top_solid_heightmap_range", new HeightmapRangeDecorator((Function<Dynamic<?>, ? extends HeightmapRangeDecoratorConfig>)((Function<Dynamic<?>, HeightmapRangeDecoratorConfig>)HeightmapRangeDecoratorConfig::deserialize)));
-    public static final Decorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> TOP_SOLID_HEIGHTMAP_NOISE_BIASED = Decorator.register("top_solid_heightmap_noise_biased", new HeightmapNoiseBiasedDecorator((Function<Dynamic<?>, ? extends TopSolidHeightmapNoiseBiasedDecoratorConfig>)((Function<Dynamic<?>, TopSolidHeightmapNoiseBiasedDecoratorConfig>)TopSolidHeightmapNoiseBiasedDecoratorConfig::deserialize)));
-    public static final Decorator<CarvingMaskDecoratorConfig> CARVING_MASK = Decorator.register("carving_mask", new CarvingMaskDecorator((Function<Dynamic<?>, ? extends CarvingMaskDecoratorConfig>)((Function<Dynamic<?>, CarvingMaskDecoratorConfig>)CarvingMaskDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> FOREST_ROCK = Decorator.register("forest_rock", new ForestRockDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> FIRE = Decorator.register("fire", new HellFireDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> MAGMA = Decorator.register("magma", new MagmaDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<NopeDecoratorConfig> EMERALD_ORE = Decorator.register("emerald_ore", new EmeraldOreDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = Decorator.register("lava_lake", new LavaLakeDecorator((Function<Dynamic<?>, ? extends ChanceDecoratorConfig>)((Function<Dynamic<?>, ChanceDecoratorConfig>)ChanceDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceDecoratorConfig> WATER_LAKE = Decorator.register("water_lake", new WaterLakeDecorator((Function<Dynamic<?>, ? extends ChanceDecoratorConfig>)((Function<Dynamic<?>, ChanceDecoratorConfig>)ChanceDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceDecoratorConfig> DUNGEONS = Decorator.register("dungeons", new DungeonsDecorator((Function<Dynamic<?>, ? extends ChanceDecoratorConfig>)((Function<Dynamic<?>, ChanceDecoratorConfig>)ChanceDecoratorConfig::deserialize)));
-    public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = Decorator.register("dark_oak_tree", new DarkOakTreeDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
-    public static final Decorator<ChanceDecoratorConfig> ICEBERG = Decorator.register("iceberg", new IcebergDecorator((Function<Dynamic<?>, ? extends ChanceDecoratorConfig>)((Function<Dynamic<?>, ChanceDecoratorConfig>)ChanceDecoratorConfig::deserialize)));
-    public static final Decorator<CountDecoratorConfig> LIGHT_GEM_CHANCE = Decorator.register("light_gem_chance", new LightGemChanceDecorator((Function<Dynamic<?>, ? extends CountDecoratorConfig>)((Function<Dynamic<?>, CountDecoratorConfig>)CountDecoratorConfig::deserialize)));
-    public static final Decorator<NopeDecoratorConfig> END_ISLAND = Decorator.register("end_island", new EndIslandDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
-    public static final Decorator<NopeDecoratorConfig> CHORUS_PLANT = Decorator.register("chorus_plant", new ChorusPlantDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
-    public static final Decorator<NopeDecoratorConfig> END_GATEWAY = Decorator.register("end_gateway", new EndGatewayDecorator((Function<Dynamic<?>, ? extends NopeDecoratorConfig>)((Function<Dynamic<?>, NopeDecoratorConfig>)NopeDecoratorConfig::deserialize)));
-    private final Function<Dynamic<?>, ? extends DC> configDeserializer;
+    public static final Decorator<NopeDecoratorConfig> NOPE = Decorator.register("nope", new NopeDecorator(NopeDecoratorConfig.field_24891));
+    public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP = Decorator.register("count_heightmap", new CountHeightmapDecorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<CountDecoratorConfig> COUNT_TOP_SOLID = Decorator.register("count_top_solid", new CountTopSolidDecorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP_32 = Decorator.register("count_heightmap_32", new CountHeightmap32Decorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<CountDecoratorConfig> COUNT_HEIGHTMAP_DOUBLE = Decorator.register("count_heightmap_double", new CountHeightmapDoubleDecorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<CountDecoratorConfig> COUNT_HEIGHT_64 = Decorator.register("count_height_64", new CountHeight64Decorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<NoiseHeightmapDecoratorConfig> NOISE_HEIGHTMAP_32 = Decorator.register("noise_heightmap_32", new NoiseHeightmap32Decorator(NoiseHeightmapDecoratorConfig.CODEC));
+    public static final Decorator<NoiseHeightmapDecoratorConfig> NOISE_HEIGHTMAP_DOUBLE = Decorator.register("noise_heightmap_double", new NoiseHeightmapDoubleDecorator(NoiseHeightmapDecoratorConfig.CODEC));
+    public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP = Decorator.register("chance_heightmap", new ChanceHeightmapDecorator(ChanceDecoratorConfig.field_24980));
+    public static final Decorator<ChanceDecoratorConfig> CHANCE_HEIGHTMAP_DOUBLE = Decorator.register("chance_heightmap_double", new ChanceHeightmapDoubleDecorator(ChanceDecoratorConfig.field_24980));
+    public static final Decorator<ChanceDecoratorConfig> CHANCE_PASSTHROUGH = Decorator.register("chance_passthrough", new ChancePassthroughDecorator(ChanceDecoratorConfig.field_24980));
+    public static final Decorator<ChanceDecoratorConfig> CHANCE_TOP_SOLID_HEIGHTMAP = Decorator.register("chance_top_solid_heightmap", new ChanceTopSolidHeightmapDecorator(ChanceDecoratorConfig.field_24980));
+    public static final Decorator<CountExtraChanceDecoratorConfig> COUNT_EXTRA_HEIGHTMAP = Decorator.register("count_extra_heightmap", new CountExtraHeightmapDecorator(CountExtraChanceDecoratorConfig.CODEC));
+    public static final Decorator<RangeDecoratorConfig> COUNT_RANGE = Decorator.register("count_range", new CountRangeDecorator(RangeDecoratorConfig.CODEC));
+    public static final Decorator<RangeDecoratorConfig> COUNT_BIASED_RANGE = Decorator.register("count_biased_range", new CountBiasedRangeDecorator(RangeDecoratorConfig.CODEC));
+    public static final Decorator<RangeDecoratorConfig> COUNT_VERY_BIASED_RANGE = Decorator.register("count_very_biased_range", new CountVeryBiasedRangeDecorator(RangeDecoratorConfig.CODEC));
+    public static final Decorator<RangeDecoratorConfig> RANDOM_COUNT_RANGE = Decorator.register("random_count_range", new RandomCountRangeDecorator(RangeDecoratorConfig.CODEC));
+    public static final Decorator<ChanceRangeDecoratorConfig> CHANCE_RANGE = Decorator.register("chance_range", new ChanceRangeDecorator(ChanceRangeDecoratorConfig.CODEC));
+    public static final Decorator<CountChanceDecoratorConfig> COUNT_CHANCE_HEIGHTMAP = Decorator.register("count_chance_heightmap", new CountChanceHeightmapDecorator(CountChanceDecoratorConfig.CODEC));
+    public static final Decorator<CountChanceDecoratorConfig> COUNT_CHANCE_HEIGHTMAP_DOUBLE = Decorator.register("count_chance_heightmap_double", new CountChanceHeightmapDoubleDecorator(CountChanceDecoratorConfig.CODEC));
+    public static final Decorator<CountDepthDecoratorConfig> COUNT_DEPTH_AVERAGE = Decorator.register("count_depth_average", new CountDepthAverageDecorator(CountDepthDecoratorConfig.field_24982));
+    public static final Decorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.register("top_solid_heightmap", new HeightmapDecorator(NopeDecoratorConfig.field_24891));
+    public static final Decorator<HeightmapRangeDecoratorConfig> TOP_SOLID_HEIGHTMAP_RANGE = Decorator.register("top_solid_heightmap_range", new HeightmapRangeDecorator(HeightmapRangeDecoratorConfig.CODEC));
+    public static final Decorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> TOP_SOLID_HEIGHTMAP_NOISE_BIASED = Decorator.register("top_solid_heightmap_noise_biased", new HeightmapNoiseBiasedDecorator(TopSolidHeightmapNoiseBiasedDecoratorConfig.CODEC));
+    public static final Decorator<CarvingMaskDecoratorConfig> CARVING_MASK = Decorator.register("carving_mask", new CarvingMaskDecorator(CarvingMaskDecoratorConfig.CODEC));
+    public static final Decorator<CountDecoratorConfig> FOREST_ROCK = Decorator.register("forest_rock", new ForestRockDecorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<CountDecoratorConfig> FIRE = Decorator.register("fire", new HellFireDecorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<CountDecoratorConfig> MAGMA = Decorator.register("magma", new MagmaDecorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<NopeDecoratorConfig> EMERALD_ORE = Decorator.register("emerald_ore", new EmeraldOreDecorator(NopeDecoratorConfig.field_24891));
+    public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = Decorator.register("lava_lake", new LavaLakeDecorator(ChanceDecoratorConfig.field_24980));
+    public static final Decorator<ChanceDecoratorConfig> WATER_LAKE = Decorator.register("water_lake", new WaterLakeDecorator(ChanceDecoratorConfig.field_24980));
+    public static final Decorator<ChanceDecoratorConfig> DUNGEONS = Decorator.register("dungeons", new DungeonsDecorator(ChanceDecoratorConfig.field_24980));
+    public static final Decorator<NopeDecoratorConfig> DARK_OAK_TREE = Decorator.register("dark_oak_tree", new DarkOakTreeDecorator(NopeDecoratorConfig.field_24891));
+    public static final Decorator<ChanceDecoratorConfig> ICEBERG = Decorator.register("iceberg", new IcebergDecorator(ChanceDecoratorConfig.field_24980));
+    public static final Decorator<CountDecoratorConfig> LIGHT_GEM_CHANCE = Decorator.register("light_gem_chance", new LightGemChanceDecorator(CountDecoratorConfig.field_24985));
+    public static final Decorator<NopeDecoratorConfig> END_ISLAND = Decorator.register("end_island", new EndIslandDecorator(NopeDecoratorConfig.field_24891));
+    public static final Decorator<NopeDecoratorConfig> CHORUS_PLANT = Decorator.register("chorus_plant", new ChorusPlantDecorator(NopeDecoratorConfig.field_24891));
+    public static final Decorator<NopeDecoratorConfig> END_GATEWAY = Decorator.register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig.field_24891));
+    private final Codec<ConfiguredDecorator<DC>> field_24983;
 
     private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String registryName, G decorator) {
         return (G)Registry.register(Registry.DECORATOR, registryName, decorator);
     }
 
-    public Decorator(Function<Dynamic<?>, ? extends DC> configDeserializer) {
-        this.configDeserializer = configDeserializer;
-    }
-
-    public DC deserialize(Dynamic<?> dynamic) {
-        return (DC)((DecoratorConfig)this.configDeserializer.apply(dynamic));
+    public Decorator(Codec<DC> codec) {
+        this.field_24983 = ((MapCodec)codec.fieldOf("config")).xmap(decoratorConfig -> new ConfiguredDecorator<DecoratorConfig>(this, (DecoratorConfig)decoratorConfig), configuredDecorator -> configuredDecorator.config).codec();
     }
 
     public ConfiguredDecorator<DC> configure(DC decoratorConfig) {
         return new ConfiguredDecorator<DC>(this, decoratorConfig);
+    }
+
+    public Codec<ConfiguredDecorator<DC>> method_28928() {
+        return this.field_24983;
     }
 
     protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {

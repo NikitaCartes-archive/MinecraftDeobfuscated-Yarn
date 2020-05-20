@@ -4,7 +4,6 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -28,7 +27,7 @@ extends Task<LivingEntity> {
     protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
         Brain<?> brain = entity.getBrain();
         Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.MEETING_POINT);
-        return world.getRandom().nextInt(100) == 0 && optional.isPresent() && Objects.equals(world.method_27983(), optional.get().getDimension()) && optional.get().getPos().isWithinDistance(entity.getPos(), 4.0) && brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().stream().anyMatch(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
+        return world.getRandom().nextInt(100) == 0 && optional.isPresent() && world.method_27983() == optional.get().getDimension() && optional.get().getPos().isWithinDistance(entity.getPos(), 4.0) && brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().stream().anyMatch(livingEntity -> EntityType.VILLAGER.equals(livingEntity.getType()));
     }
 
     @Override

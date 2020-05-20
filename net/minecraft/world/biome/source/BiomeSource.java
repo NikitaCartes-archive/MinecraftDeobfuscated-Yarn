@@ -6,37 +6,52 @@ package net.minecraft.world.biome.source;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.serialization.Codec;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.CheckerboardBiomeSource;
+import net.minecraft.world.biome.source.FixedBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
+import net.minecraft.world.biome.source.TheEndBiomeSource;
+import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BiomeSource
 implements BiomeAccess.Storage {
-    private static final List<Biome> SPAWN_BIOMES = Lists.newArrayList(Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.WOODED_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS);
+    public static final Codec<BiomeSource> field_24713;
+    private static final List<Biome> SPAWN_BIOMES;
     protected final Map<StructureFeature<?>, Boolean> structureFeatures = Maps.newHashMap();
     protected final Set<BlockState> topMaterials = Sets.newHashSet();
-    protected final Set<Biome> biomes;
+    protected final List<Biome> biomes;
 
-    protected BiomeSource(Set<Biome> biomes) {
+    protected BiomeSource(List<Biome> biomes) {
         this.biomes = biomes;
     }
 
+    protected abstract Codec<? extends BiomeSource> method_28442();
+
     @Environment(value=EnvType.CLIENT)
-    public abstract BiomeSource create(long var1);
+    public abstract BiomeSource withSeed(long var1);
 
     public List<Biome> getSpawnBiomes() {
         return SPAWN_BIOMES;
+    }
+
+    public List<Biome> method_28443() {
+        return this.biomes;
     }
 
     public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
@@ -63,6 +78,7 @@ implements BiomeAccess.Storage {
         return set;
     }
 
+    @Nullable
     public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> list, Random random) {
         return this.method_24385(x, y, z, radius, 1, list, random, false);
     }
@@ -101,12 +117,8 @@ implements BiomeAccess.Storage {
         return blockPos;
     }
 
-    public float getNoiseAt(int x, int z) {
-        return 0.0f;
-    }
-
     public boolean hasStructureFeature(StructureFeature<?> feature) {
-        return this.structureFeatures.computeIfAbsent(feature, structureFeature -> this.biomes.stream().anyMatch(biome -> biome.hasStructureFeature(structureFeature)));
+        return this.structureFeatures.computeIfAbsent(feature, structureFeature -> this.biomes.stream().anyMatch(biome -> biome.hasStructureFeature((StructureFeature<?>)structureFeature)));
     }
 
     public Set<BlockState> getTopMaterials() {
@@ -116,6 +128,16 @@ implements BiomeAccess.Storage {
             }
         }
         return this.topMaterials;
+    }
+
+    static {
+        Registry.register(Registry.BIOME_SOURCE, "fixed", FixedBiomeSource.field_24717);
+        Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
+        Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.field_24715);
+        Registry.register(Registry.BIOME_SOURCE, "vanilla_layered", VanillaLayeredBiomeSource.CODEC);
+        Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.field_24730);
+        field_24713 = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::method_28442, Function.identity());
+        SPAWN_BIOMES = Lists.newArrayList(Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.WOODED_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS);
     }
 }
 

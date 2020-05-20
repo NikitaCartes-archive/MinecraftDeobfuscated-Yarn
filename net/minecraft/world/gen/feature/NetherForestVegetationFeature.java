@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
@@ -19,8 +18,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class NetherForestVegetationFeature
 extends Feature<BlockPileFeatureConfig> {
-    public NetherForestVegetationFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> function) {
-        super(function);
+    public NetherForestVegetationFeature(Codec<BlockPileFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

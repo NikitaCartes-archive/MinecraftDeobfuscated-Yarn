@@ -172,7 +172,7 @@ implements Flutterer {
         tag.putInt("CropsGrownSincePollination", this.cropsGrownSincePollination);
         tag.putInt("Anger", this.getAnger());
         if (this.targetPlayer != null) {
-            tag.putUuidNew("HurtBy", this.targetPlayer);
+            tag.putUuid("HurtBy", this.targetPlayer);
         }
     }
 
@@ -193,8 +193,8 @@ implements Flutterer {
         this.ticksSincePollination = tag.getInt("TicksSincePollination");
         this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
         this.cropsGrownSincePollination = tag.getInt("CropsGrownSincePollination");
-        if (tag.containsUuidNew("HurtBy")) {
-            this.targetPlayer = tag.getUuidNew("HurtBy");
+        if (tag.containsUuid("HurtBy")) {
+            this.targetPlayer = tag.getUuid("HurtBy");
             PlayerEntity playerEntity = this.world.getPlayerByUuid(this.targetPlayer);
             this.setAttacker(playerEntity);
             if (playerEntity != null) {

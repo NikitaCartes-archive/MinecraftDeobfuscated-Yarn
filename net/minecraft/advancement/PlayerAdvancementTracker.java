@@ -15,8 +15,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.internal.Streams;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.JsonOps;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,12 +42,14 @@ import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -127,7 +129,7 @@ public class PlayerAdvancementTracker {
             try (JsonReader jsonReader = new JsonReader(new StringReader(Files.toString(this.advancementFile, StandardCharsets.UTF_8)));){
                 jsonReader.setLenient(false);
                 Dynamic<JsonElement> dynamic = new Dynamic<JsonElement>(JsonOps.INSTANCE, Streams.parse(jsonReader));
-                if (!dynamic.get("DataVersion").asNumber().isPresent()) {
+                if (!dynamic.get("DataVersion").asNumber().result().isPresent()) {
                     dynamic = dynamic.set("DataVersion", dynamic.createInt(1343));
                 }
                 dynamic = this.server.getDataFixer().update(DataFixTypes.ADVANCEMENTS.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
@@ -187,7 +189,7 @@ public class PlayerAdvancementTracker {
             if (!bl2 && advancementProgress.isDone()) {
                 advancement.getRewards().apply(this.owner);
                 if (advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceToChat() && this.owner.world.getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
-                    this.server.getPlayerManager().sendToAll(new TranslatableText("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()));
+                    this.server.getPlayerManager().broadcastChatMessage(new TranslatableText("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()), MessageType.SYSTEM, Util.field_25140);
                 }
             }
         }

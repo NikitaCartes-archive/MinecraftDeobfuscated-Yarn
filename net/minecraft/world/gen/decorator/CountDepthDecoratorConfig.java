@@ -3,13 +3,15 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public class CountDepthDecoratorConfig
 implements DecoratorConfig {
+    public static final Codec<CountDepthDecoratorConfig> field_24982 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("count")).forGetter(countDepthDecoratorConfig -> countDepthDecoratorConfig.count), ((MapCodec)Codec.INT.fieldOf("baseline")).forGetter(countDepthDecoratorConfig -> countDepthDecoratorConfig.baseline), ((MapCodec)Codec.INT.fieldOf("spread")).forGetter(countDepthDecoratorConfig -> countDepthDecoratorConfig.spread)).apply((Applicative<CountDepthDecoratorConfig, ?>)instance, CountDepthDecoratorConfig::new));
     public final int count;
     public final int baseline;
     public final int spread;
@@ -18,18 +20,6 @@ implements DecoratorConfig {
         this.count = count;
         this.baseline = baseline;
         this.spread = spread;
-    }
-
-    @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("count"), ops.createInt(this.count), ops.createString("baseline"), ops.createInt(this.baseline), ops.createString("spread"), ops.createInt(this.spread))));
-    }
-
-    public static CountDepthDecoratorConfig deserialize(Dynamic<?> dynamic) {
-        int i = dynamic.get("count").asInt(0);
-        int j = dynamic.get("baseline").asInt(0);
-        int k = dynamic.get("spread").asInt(0);
-        return new CountDepthDecoratorConfig(i, j, k);
     }
 }
 

@@ -16,6 +16,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkTickScheduler;
@@ -121,21 +122,21 @@ extends ProtoChunk {
 
     @Override
     @Nullable
-    public StructureStart getStructureStart(String structure) {
+    public StructureStart<?> getStructureStart(String structure) {
         return this.wrapped.getStructureStart(structure);
     }
 
     @Override
-    public void setStructureStart(String structure, StructureStart start) {
+    public void setStructureStart(String structure, StructureStart<?> start) {
     }
 
     @Override
-    public Map<String, StructureStart> getStructureStarts() {
+    public Map<String, StructureStart<?>> getStructureStarts() {
         return this.wrapped.getStructureStarts();
     }
 
     @Override
-    public void setStructureStarts(Map<String, StructureStart> map) {
+    public void setStructureStarts(Map<String, StructureStart<?>> map) {
     }
 
     @Override
@@ -220,7 +221,12 @@ extends ProtoChunk {
 
     @Override
     public BitSet getCarvingMask(GenerationStep.Carver carver) {
-        return this.wrapped.getCarvingMask(carver);
+        throw Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
+    }
+
+    @Override
+    public BitSet method_28510(GenerationStep.Carver carver) {
+        throw Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
     }
 
     public WorldChunk getWrappedChunk() {

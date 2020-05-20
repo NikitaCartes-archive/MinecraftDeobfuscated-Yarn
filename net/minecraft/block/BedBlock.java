@@ -50,7 +50,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
@@ -115,7 +114,7 @@ implements BlockEntityProvider {
     }
 
     public static boolean isOverworld(World world, BlockPos pos) {
-        return world.method_27983() == DimensionType.OVERWORLD;
+        return world.getDimension().isOverworld();
     }
 
     private boolean isFree(World world, BlockPos pos) {

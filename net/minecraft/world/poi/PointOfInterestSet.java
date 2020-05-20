@@ -3,13 +3,16 @@
  */
 package net.minecraft.world.poi;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -18,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.poi.PointOfInterest;
@@ -28,29 +30,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Supplier;
 
-public class PointOfInterestSet
-implements DynamicSerializable {
+public class PointOfInterestSet {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Short2ObjectMap<PointOfInterest> pointsOfInterestByPos = new Short2ObjectOpenHashMap<PointOfInterest>();
     private final Map<PointOfInterestType, Set<PointOfInterest>> pointsOfInterestByType = Maps.newHashMap();
     private final Runnable updateListener;
     private boolean valid;
 
-    public PointOfInterestSet(Runnable updateListener) {
-        this.updateListener = updateListener;
-        this.valid = true;
+    public static Codec<PointOfInterestSet> method_28364(Runnable runnable) {
+        return RecordCodecBuilder.create(instance -> instance.group(RecordCodecBuilder.point(runnable), ((MapCodec)Codec.BOOL.fieldOf("Valid")).forGetter(pointOfInterestSet -> pointOfInterestSet.valid), ((MapCodec)PointOfInterest.method_28359(runnable).listOf().fieldOf("Records")).forGetter(pointOfInterestSet -> ImmutableList.copyOf(pointOfInterestSet.pointsOfInterestByPos.values()))).apply((Applicative<PointOfInterestSet, ?>)instance, PointOfInterestSet::new)).withDefault(Util.method_29188("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(runnable, false, ImmutableList.of()));
     }
 
-    public <T> PointOfInterestSet(Runnable updateListener, Dynamic<T> dynamic2) {
-        this.updateListener = updateListener;
-        try {
-            this.valid = dynamic2.get("Valid").asBoolean(false);
-            dynamic2.get("Records").asStream().forEach(dynamic -> this.add(new PointOfInterest(dynamic, updateListener)));
-        } catch (Exception exception) {
-            LOGGER.error("Failed to load POI chunk", (Throwable)exception);
-            this.clear();
-            this.valid = false;
-        }
+    public PointOfInterestSet(Runnable updateListener) {
+        this(updateListener, true, ImmutableList.of());
+    }
+
+    private PointOfInterestSet(Runnable runnable, boolean bl, List<PointOfInterest> list) {
+        this.updateListener = runnable;
+        this.valid = bl;
+        list.forEach(this::add);
     }
 
     public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, PointOfInterestStorage.OccupationStatus occupationStatus) {
@@ -114,12 +112,6 @@ implements DynamicSerializable {
         short s = ChunkSectionPos.getPackedLocalPos(pos);
         PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(s);
         return pointOfInterest != null ? Optional.of(pointOfInterest.getType()) : Optional.empty();
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        Object object = ops.createList(this.pointsOfInterestByPos.values().stream().map(pointOfInterest -> pointOfInterest.serialize(ops)));
-        return (T)ops.createMap(ImmutableMap.of(ops.createString("Records"), object, ops.createString("Valid"), ops.createBoolean(this.valid)));
     }
 
     public void updatePointsOfInterest(Consumer<BiConsumer<BlockPos, PointOfInterestType>> consumer) {

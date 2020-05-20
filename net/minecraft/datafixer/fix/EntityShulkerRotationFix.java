@@ -4,9 +4,9 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.List;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.ChoiceFix;
@@ -17,7 +17,7 @@ extends ChoiceFix {
         super(outputSchema, false, "EntityShulkerRotationFix", TypeReferences.ENTITY, "minecraft:shulker");
     }
 
-    public Dynamic<?> fixShulkerRotation(Dynamic<?> dynamic2) {
+    public Dynamic<?> fixRotation(Dynamic<?> dynamic2) {
         List<Double> list = dynamic2.get("Rotation").asList(dynamic -> dynamic.asDouble(180.0));
         if (!list.isEmpty()) {
             list.set(0, list.get(0) - 180.0);
@@ -28,7 +28,7 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        return inputType.update(DSL.remainderFinder(), this::fixShulkerRotation);
+        return inputType.update(DSL.remainderFinder(), this::fixRotation);
     }
 }
 

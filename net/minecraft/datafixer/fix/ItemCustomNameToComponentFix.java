@@ -5,11 +5,11 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.text.LiteralText;
@@ -22,23 +22,23 @@ extends DataFix {
         super(outputSchema, changesType);
     }
 
-    private Dynamic<?> fixCustomName(Dynamic<?> tag) {
-        Optional<Dynamic<?>> optional = tag.get("display").get();
+    private Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
+        Optional<Dynamic<?>> optional = dynamic.get("display").result();
         if (optional.isPresent()) {
-            Dynamic dynamic = optional.get();
-            Optional<String> optional2 = dynamic.get("Name").asString();
+            Dynamic dynamic2 = optional.get();
+            Optional<String> optional2 = dynamic2.get("Name").asString().result();
             if (optional2.isPresent()) {
-                dynamic = dynamic.set("Name", dynamic.createString(Text.Serializer.toJson(new LiteralText(optional2.get()))));
+                dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(new LiteralText(optional2.get()))));
             } else {
-                Optional<String> optional3 = dynamic.get("LocName").asString();
+                Optional<String> optional3 = dynamic2.get("LocName").asString().result();
                 if (optional3.isPresent()) {
-                    dynamic = dynamic.set("Name", dynamic.createString(Text.Serializer.toJson(new TranslatableText(optional3.get()))));
-                    dynamic = dynamic.remove("LocName");
+                    dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(new TranslatableText(optional3.get()))));
+                    dynamic2 = dynamic2.remove("LocName");
                 }
             }
-            return tag.set("display", dynamic);
+            return dynamic.set("display", dynamic2);
         }
-        return tag;
+        return dynamic;
     }
 
     @Override

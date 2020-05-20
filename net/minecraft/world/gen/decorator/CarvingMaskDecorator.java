@@ -3,31 +3,34 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 
 public class CarvingMaskDecorator
 extends Decorator<CarvingMaskDecoratorConfig> {
-    public CarvingMaskDecorator(Function<Dynamic<?>, ? extends CarvingMaskDecoratorConfig> function) {
-        super(function);
+    public CarvingMaskDecorator(Codec<CarvingMaskDecoratorConfig> codec) {
+        super(codec);
     }
 
     @Override
     public Stream<BlockPos> getPositions(WorldAccess worldAccess, ChunkGenerator chunkGenerator, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos) {
         Chunk chunk = worldAccess.getChunk(blockPos);
         ChunkPos chunkPos = chunk.getPos();
-        BitSet bitSet = chunk.getCarvingMask(carvingMaskDecoratorConfig.step);
+        BitSet bitSet = ((ProtoChunk)chunk).getCarvingMask(carvingMaskDecoratorConfig.step);
+        if (bitSet == null) {
+            return Stream.empty();
+        }
         return IntStream.range(0, bitSet.length()).filter(i -> bitSet.get(i) && random.nextFloat() < carvingMaskDecoratorConfig.probability).mapToObj(i -> {
             int j = i & 0xF;
             int k = i >> 4 & 0xF;

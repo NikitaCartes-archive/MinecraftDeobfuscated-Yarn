@@ -16,7 +16,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -102,10 +102,10 @@ extends Task<VillagerEntity> {
             return;
         }
         ItemStack itemStack = ItemStack.EMPTY;
-        BasicInventory basicInventory = villagerEntity.getInventory();
-        int i = basicInventory.size();
+        SimpleInventory simpleInventory = villagerEntity.getInventory();
+        int i = simpleInventory.size();
         for (int j = 0; j < i; ++j) {
-            ItemStack itemStack2 = basicInventory.getStack(j);
+            ItemStack itemStack2 = simpleInventory.getStack(j);
             if (itemStack2.getItem() != Items.BONE_MEAL) continue;
             itemStack = itemStack2;
             break;

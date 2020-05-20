@@ -10,9 +10,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface StructureHolder {
     @Nullable
-    public StructureStart getStructureStart(String var1);
+    public StructureStart<?> getStructureStart(String var1);
 
-    public void setStructureStart(String var1, StructureStart var2);
+    public void setStructureStart(String var1, StructureStart<?> var2);
 
     public LongSet getStructureReferences(String var1);
 

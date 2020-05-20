@@ -6,16 +6,17 @@ package net.minecraft.datafixer.fix;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class ItemPotionFix
 extends DataFix {
@@ -157,7 +158,7 @@ extends DataFix {
     @Override
     public TypeRewriteRule makeRule() {
         Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
-        OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString()));
+        OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295()));
         OpticFinder<?> opticFinder2 = type.findField("tag");
         return this.fixTypeEverywhereTyped("ItemPotionFix", type, typed -> {
             Optional optional = typed.getOptional(opticFinder);
@@ -168,7 +169,7 @@ extends DataFix {
                 if (optional2.isPresent()) {
                     Typed<?> typed2 = typed;
                     Dynamic dynamic2 = optional2.get().get(DSL.remainderFinder());
-                    Optional<String> optional3 = dynamic2.get("Potion").asString();
+                    Optional<String> optional3 = dynamic2.get("Potion").asString().result();
                     if (!optional3.isPresent()) {
                         String string = ID_TO_POTIONS[s & 0x7F];
                         Typed<?> typed3 = optional2.get().set(DSL.remainderFinder(), dynamic2.set("Potion", dynamic2.createString(string == null ? "minecraft:water" : string)));

@@ -5,19 +5,22 @@ package net.minecraft.datafixer;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.PeekingIterator;
-import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.types.DynamicOps;
-import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -37,6 +40,7 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Used to represent a Minecraft NBT as a {@link com.mojang.datafixers.Dynamic} for DataFixerUpper.
@@ -54,57 +58,57 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public Type<?> getType(Tag tag) {
+    public <U> U convertTo(DynamicOps<U> dynamicOps, Tag tag) {
         switch (tag.getType()) {
             case 0: {
-                return DSL.nilType();
+                return dynamicOps.empty();
             }
             case 1: {
-                return DSL.byteType();
+                return dynamicOps.createByte(((AbstractNumberTag)tag).getByte());
             }
             case 2: {
-                return DSL.shortType();
+                return dynamicOps.createShort(((AbstractNumberTag)tag).getShort());
             }
             case 3: {
-                return DSL.intType();
+                return dynamicOps.createInt(((AbstractNumberTag)tag).getInt());
             }
             case 4: {
-                return DSL.longType();
+                return dynamicOps.createLong(((AbstractNumberTag)tag).getLong());
             }
             case 5: {
-                return DSL.floatType();
+                return dynamicOps.createFloat(((AbstractNumberTag)tag).getFloat());
             }
             case 6: {
-                return DSL.doubleType();
+                return dynamicOps.createDouble(((AbstractNumberTag)tag).getDouble());
             }
             case 7: {
-                return DSL.list(DSL.byteType());
+                return dynamicOps.createByteList(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray()));
             }
             case 8: {
-                return DSL.string();
+                return dynamicOps.createString(tag.asString());
             }
             case 9: {
-                return DSL.list(DSL.remainderType());
+                return this.convertList(dynamicOps, tag);
             }
             case 10: {
-                return DSL.compoundList(DSL.remainderType(), DSL.remainderType());
+                return this.convertMap(dynamicOps, tag);
             }
             case 11: {
-                return DSL.list(DSL.intType());
+                return dynamicOps.createIntList(Arrays.stream(((IntArrayTag)tag).getIntArray()));
             }
             case 12: {
-                return DSL.list(DSL.longType());
+                return dynamicOps.createLongList(Arrays.stream(((LongArrayTag)tag).getLongArray()));
             }
         }
-        return DSL.remainderType();
+        throw new IllegalStateException("Unknown tag type: " + tag);
     }
 
     @Override
-    public Optional<Number> getNumberValue(Tag tag) {
+    public DataResult<Number> getNumberValue(Tag tag) {
         if (tag instanceof AbstractNumberTag) {
-            return Optional.of(((AbstractNumberTag)tag).getNumber());
+            return DataResult.success(((AbstractNumberTag)tag).getNumber());
         }
-        return Optional.empty();
+        return DataResult.error("Not a number");
     }
 
     @Override
@@ -148,11 +152,11 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public Optional<String> getStringValue(Tag tag) {
+    public DataResult<String> getStringValue(Tag tag) {
         if (tag instanceof StringTag) {
-            return Optional.of(tag.asString());
+            return DataResult.success(tag.asString());
         }
-        return Optional.empty();
+        return DataResult.error("Not a string");
     }
 
     @Override
@@ -160,110 +164,190 @@ implements DynamicOps<Tag> {
         return StringTag.of(string);
     }
 
-    @Override
-    public Tag mergeInto(Tag tag, Tag tag2) {
-        if (tag2 instanceof EndTag) {
-            return tag;
+    private static AbstractListTag<?> method_29144(byte b, byte c) {
+        if (NbtOps.method_29145(b, c, (byte)4)) {
+            return new LongArrayTag(new long[0]);
         }
-        if (tag instanceof CompoundTag) {
-            if (tag2 instanceof CompoundTag) {
-                CompoundTag compoundTag = new CompoundTag();
-                CompoundTag compoundTag2 = (CompoundTag)tag;
-                for (String string : compoundTag2.getKeys()) {
-                    compoundTag.put(string, compoundTag2.get(string));
-                }
-                CompoundTag compoundTag3 = (CompoundTag)tag2;
-                for (String string2 : compoundTag3.getKeys()) {
-                    compoundTag.put(string2, compoundTag3.get(string2));
-                }
-                return compoundTag;
-            }
-            return tag;
+        if (NbtOps.method_29145(b, c, (byte)1)) {
+            return new ByteArrayTag(new byte[0]);
         }
-        if (tag instanceof EndTag) {
-            throw new IllegalArgumentException("mergeInto called with a null input.");
+        if (NbtOps.method_29145(b, c, (byte)3)) {
+            return new IntArrayTag(new int[0]);
         }
-        if (!(tag instanceof AbstractListTag)) {
-            return tag;
+        return new ListTag();
+    }
+
+    private static boolean method_29145(byte b, byte c, byte d) {
+        return !(b != d && b != 0 || c != d && c != 0);
+    }
+
+    private static <T extends Tag> void method_29151(AbstractListTag<T> abstractListTag, Tag tag2, Tag tag22) {
+        if (tag2 instanceof AbstractListTag) {
+            AbstractListTag abstractListTag2 = (AbstractListTag)tag2;
+            abstractListTag2.forEach(tag -> abstractListTag.add(tag));
         }
-        ListTag abstractListTag = new ListTag();
-        AbstractListTag abstractListTag2 = (AbstractListTag)tag;
-        abstractListTag.addAll(abstractListTag2);
-        abstractListTag.add(tag2);
-        return abstractListTag;
+        abstractListTag.add(tag22);
+    }
+
+    private static <T extends Tag> void method_29150(AbstractListTag<T> abstractListTag, Tag tag2, List<Tag> list) {
+        if (tag2 instanceof AbstractListTag) {
+            AbstractListTag abstractListTag2 = (AbstractListTag)tag2;
+            abstractListTag2.forEach(tag -> abstractListTag.add(tag));
+        }
+        list.forEach(tag -> abstractListTag.add(tag));
     }
 
     @Override
-    public Tag mergeInto(Tag tag, Tag tag2, Tag tag3) {
-        CompoundTag compoundTag;
-        if (tag instanceof EndTag) {
-            compoundTag = new CompoundTag();
-        } else if (tag instanceof CompoundTag) {
+    public DataResult<Tag> mergeToList(Tag tag, Tag tag2) {
+        if (!(tag instanceof AbstractListTag) && !(tag instanceof EndTag)) {
+            return DataResult.error("mergeToList called with not a list: " + tag, tag);
+        }
+        AbstractListTag<?> abstractListTag = NbtOps.method_29144(tag instanceof AbstractListTag ? ((AbstractListTag)tag).getElementType() : (byte)0, tag2.getType());
+        NbtOps.method_29151(abstractListTag, tag, tag2);
+        return DataResult.success(abstractListTag);
+    }
+
+    @Override
+    public DataResult<Tag> mergeToList(Tag tag, List<Tag> list) {
+        if (!(tag instanceof AbstractListTag) && !(tag instanceof EndTag)) {
+            return DataResult.error("mergeToList called with not a list: " + tag, tag);
+        }
+        AbstractListTag<?> abstractListTag = NbtOps.method_29144(tag instanceof AbstractListTag ? ((AbstractListTag)tag).getElementType() : (byte)0, list.stream().findFirst().map(Tag::getType).orElse((byte)0));
+        NbtOps.method_29150(abstractListTag, tag, list);
+        return DataResult.success(abstractListTag);
+    }
+
+    @Override
+    public DataResult<Tag> mergeToMap(Tag tag, Tag tag2, Tag tag3) {
+        if (!(tag instanceof CompoundTag) && !(tag instanceof EndTag)) {
+            return DataResult.error("mergeToMap called with not a map: " + tag, tag);
+        }
+        if (!(tag2 instanceof StringTag)) {
+            return DataResult.error("key is not a string: " + tag2, tag);
+        }
+        CompoundTag compoundTag = new CompoundTag();
+        if (tag instanceof CompoundTag) {
             CompoundTag compoundTag2 = (CompoundTag)tag;
-            compoundTag = new CompoundTag();
             compoundTag2.getKeys().forEach(string -> compoundTag.put((String)string, compoundTag2.get((String)string)));
-        } else {
-            return tag;
         }
         compoundTag.put(tag2.asString(), tag3);
-        return compoundTag;
+        return DataResult.success(compoundTag);
     }
 
     @Override
-    public Tag merge(Tag tag, Tag tag2) {
-        if (tag instanceof EndTag) {
-            return tag2;
+    public DataResult<Tag> mergeToMap(Tag tag, MapLike<Tag> mapLike) {
+        if (!(tag instanceof CompoundTag) && !(tag instanceof EndTag)) {
+            return DataResult.error("mergeToMap called with not a map: " + tag, tag);
         }
-        if (tag2 instanceof EndTag) {
-            return tag;
-        }
-        if (tag instanceof CompoundTag && tag2 instanceof CompoundTag) {
-            CompoundTag compoundTag = (CompoundTag)tag;
-            CompoundTag compoundTag2 = (CompoundTag)tag2;
-            CompoundTag compoundTag3 = new CompoundTag();
-            compoundTag.getKeys().forEach(string -> compoundTag3.put((String)string, compoundTag.get((String)string)));
-            compoundTag2.getKeys().forEach(string -> compoundTag3.put((String)string, compoundTag2.get((String)string)));
-            return compoundTag3;
-        }
-        if (tag instanceof AbstractListTag && tag2 instanceof AbstractListTag) {
-            ListTag listTag = new ListTag();
-            listTag.addAll((AbstractListTag)tag);
-            listTag.addAll((AbstractListTag)tag2);
-            return listTag;
-        }
-        throw new IllegalArgumentException("Could not merge " + tag + " and " + tag2);
-    }
-
-    @Override
-    public Optional<Map<Tag, Tag>> getMapValues(Tag tag) {
-        if (tag instanceof CompoundTag) {
-            CompoundTag compoundTag = (CompoundTag)tag;
-            return Optional.of(compoundTag.getKeys().stream().map(string -> Pair.of(this.createString((String)string), compoundTag.get((String)string))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public Tag createMap(Map<Tag, Tag> map) {
         CompoundTag compoundTag = new CompoundTag();
-        for (Map.Entry<Tag, Tag> entry : map.entrySet()) {
-            compoundTag.put(entry.getKey().asString(), entry.getValue());
+        if (tag instanceof CompoundTag) {
+            CompoundTag compoundTag2 = (CompoundTag)tag;
+            compoundTag2.getKeys().forEach(string -> compoundTag.put((String)string, compoundTag2.get((String)string)));
         }
+        ArrayList list = Lists.newArrayList();
+        mapLike.entries().forEach(pair -> {
+            Tag tag = (Tag)pair.getFirst();
+            if (!(tag instanceof StringTag)) {
+                list.add(tag);
+                return;
+            }
+            compoundTag.put(tag.asString(), (Tag)pair.getSecond());
+        });
+        if (!list.isEmpty()) {
+            return DataResult.error("some keys are not strings: " + list, compoundTag);
+        }
+        return DataResult.success(compoundTag);
+    }
+
+    @Override
+    public DataResult<Stream<Pair<Tag, Tag>>> getMapValues(Tag tag) {
+        if (!(tag instanceof CompoundTag)) {
+            return DataResult.error("Not a map: " + tag);
+        }
+        CompoundTag compoundTag = (CompoundTag)tag;
+        return DataResult.success(compoundTag.getKeys().stream().map(string -> Pair.of(this.createString((String)string), compoundTag.get((String)string))));
+    }
+
+    @Override
+    public DataResult<Consumer<BiConsumer<Tag, Tag>>> getMapEntries(Tag tag) {
+        if (!(tag instanceof CompoundTag)) {
+            return DataResult.error("Not a map: " + tag);
+        }
+        CompoundTag compoundTag = (CompoundTag)tag;
+        return DataResult.success(biConsumer -> compoundTag.getKeys().forEach(string -> biConsumer.accept(this.createString((String)string), compoundTag.get((String)string))));
+    }
+
+    @Override
+    public DataResult<MapLike<Tag>> getMap(Tag tag) {
+        if (!(tag instanceof CompoundTag)) {
+            return DataResult.error("Not a map: " + tag);
+        }
+        final CompoundTag compoundTag = (CompoundTag)tag;
+        return DataResult.success(new MapLike<Tag>(){
+
+            @Override
+            @Nullable
+            public Tag get(Tag tag) {
+                return compoundTag.get(tag.asString());
+            }
+
+            @Override
+            @Nullable
+            public Tag get(String string) {
+                return compoundTag.get(string);
+            }
+
+            @Override
+            public Stream<Pair<Tag, Tag>> entries() {
+                return compoundTag.getKeys().stream().map(string -> Pair.of(NbtOps.this.createString((String)string), compoundTag.get((String)string)));
+            }
+
+            public String toString() {
+                return "MapLike[" + compoundTag + "]";
+            }
+
+            @Override
+            @Nullable
+            public /* synthetic */ Object get(String string) {
+                return this.get(string);
+            }
+
+            @Override
+            @Nullable
+            public /* synthetic */ Object get(Object object) {
+                return this.get((Tag)object);
+            }
+        });
+    }
+
+    @Override
+    public Tag createMap(Stream<Pair<Tag, Tag>> stream) {
+        CompoundTag compoundTag = new CompoundTag();
+        stream.forEach(pair -> compoundTag.put(((Tag)pair.getFirst()).asString(), (Tag)pair.getSecond()));
         return compoundTag;
     }
 
     @Override
-    public Optional<Stream<Tag>> getStream(Tag tag2) {
+    public DataResult<Stream<Tag>> getStream(Tag tag2) {
         if (tag2 instanceof AbstractListTag) {
-            return Optional.of(((AbstractListTag)tag2).stream().map(tag -> tag));
+            return DataResult.success(((AbstractListTag)tag2).stream().map(tag -> tag));
         }
-        return Optional.empty();
+        return DataResult.error("Not a list");
     }
 
     @Override
-    public Optional<ByteBuffer> getByteBuffer(Tag tag) {
+    public DataResult<Consumer<Consumer<Tag>>> getList(Tag tag) {
+        if (tag instanceof AbstractListTag) {
+            AbstractListTag abstractListTag = (AbstractListTag)tag;
+            return DataResult.success(abstractListTag::forEach);
+        }
+        return DataResult.error("Not a list: " + tag);
+    }
+
+    @Override
+    public DataResult<ByteBuffer> getByteBuffer(Tag tag) {
         if (tag instanceof ByteArrayTag) {
-            return Optional.of(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray()));
+            return DataResult.success(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray()));
         }
         return DynamicOps.super.getByteBuffer(tag);
     }
@@ -274,9 +358,9 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public Optional<IntStream> getIntStream(Tag tag) {
+    public DataResult<IntStream> getIntStream(Tag tag) {
         if (tag instanceof IntArrayTag) {
-            return Optional.of(Arrays.stream(((IntArrayTag)tag).getIntArray()));
+            return DataResult.success(Arrays.stream(((IntArrayTag)tag).getIntArray()));
         }
         return DynamicOps.super.getIntStream(tag);
     }
@@ -287,9 +371,9 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public Optional<LongStream> getLongStream(Tag tag) {
+    public DataResult<LongStream> getLongStream(Tag tag) {
         if (tag instanceof LongArrayTag) {
-            return Optional.of(Arrays.stream(((LongArrayTag)tag).getLongArray()));
+            return DataResult.success(Arrays.stream(((LongArrayTag)tag).getLongArray()));
         }
         return DynamicOps.super.getLongStream(tag);
     }
@@ -343,6 +427,11 @@ implements DynamicOps<Tag> {
     }
 
     @Override
+    public RecordBuilder<Tag> mapBuilder() {
+        return new class_5320();
+    }
+
+    @Override
     public /* synthetic */ Object remove(Object object, String string) {
         return this.remove((Tag)object, string);
     }
@@ -353,7 +442,7 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public /* synthetic */ Optional getLongStream(Object object) {
+    public /* synthetic */ DataResult getLongStream(Object object) {
         return this.getLongStream((Tag)object);
     }
 
@@ -363,7 +452,7 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public /* synthetic */ Optional getIntStream(Object object) {
+    public /* synthetic */ DataResult getIntStream(Object object) {
         return this.getIntStream((Tag)object);
     }
 
@@ -373,7 +462,7 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public /* synthetic */ Optional getByteBuffer(Object object) {
+    public /* synthetic */ DataResult getByteBuffer(Object object) {
         return this.getByteBuffer((Tag)object);
     }
 
@@ -383,33 +472,53 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public /* synthetic */ Optional getStream(Object object) {
+    public /* synthetic */ DataResult getList(Object object) {
+        return this.getList((Tag)object);
+    }
+
+    @Override
+    public /* synthetic */ DataResult getStream(Object object) {
         return this.getStream((Tag)object);
     }
 
     @Override
-    public /* synthetic */ Object createMap(Map map) {
-        return this.createMap(map);
+    public /* synthetic */ DataResult getMap(Object object) {
+        return this.getMap((Tag)object);
     }
 
     @Override
-    public /* synthetic */ Optional getMapValues(Object object) {
+    public /* synthetic */ Object createMap(Stream stream) {
+        return this.createMap(stream);
+    }
+
+    @Override
+    public /* synthetic */ DataResult getMapEntries(Object object) {
+        return this.getMapEntries((Tag)object);
+    }
+
+    @Override
+    public /* synthetic */ DataResult getMapValues(Object object) {
         return this.getMapValues((Tag)object);
     }
 
     @Override
-    public /* synthetic */ Object merge(Object object, Object object2) {
-        return this.merge((Tag)object, (Tag)object2);
+    public /* synthetic */ DataResult mergeToMap(Object object, MapLike mapLike) {
+        return this.mergeToMap((Tag)object, (MapLike<Tag>)mapLike);
     }
 
     @Override
-    public /* synthetic */ Object mergeInto(Object object, Object object2, Object object3) {
-        return this.mergeInto((Tag)object, (Tag)object2, (Tag)object3);
+    public /* synthetic */ DataResult mergeToMap(Object object, Object object2, Object object3) {
+        return this.mergeToMap((Tag)object, (Tag)object2, (Tag)object3);
     }
 
     @Override
-    public /* synthetic */ Object mergeInto(Object object, Object object2) {
-        return this.mergeInto((Tag)object, (Tag)object2);
+    public /* synthetic */ DataResult mergeToList(Object object, List list) {
+        return this.mergeToList((Tag)object, (List<Tag>)list);
+    }
+
+    @Override
+    public /* synthetic */ DataResult mergeToList(Object object, Object object2) {
+        return this.mergeToList((Tag)object, (Tag)object2);
     }
 
     @Override
@@ -418,7 +527,7 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public /* synthetic */ Optional getStringValue(Object object) {
+    public /* synthetic */ DataResult getStringValue(Object object) {
         return this.getStringValue((Tag)object);
     }
 
@@ -463,18 +572,66 @@ implements DynamicOps<Tag> {
     }
 
     @Override
-    public /* synthetic */ Optional getNumberValue(Object object) {
+    public /* synthetic */ DataResult getNumberValue(Object object) {
         return this.getNumberValue((Tag)object);
     }
 
     @Override
-    public /* synthetic */ Type getType(Object object) {
-        return this.getType((Tag)object);
+    public /* synthetic */ Object convertTo(DynamicOps dynamicOps, Object object) {
+        return this.convertTo(dynamicOps, (Tag)object);
     }
 
     @Override
     public /* synthetic */ Object empty() {
         return this.empty();
+    }
+
+    class class_5320
+    extends RecordBuilder.AbstractStringBuilder<Tag, CompoundTag> {
+        protected class_5320() {
+            super(NbtOps.this);
+        }
+
+        @Override
+        protected CompoundTag initBuilder() {
+            return new CompoundTag();
+        }
+
+        @Override
+        protected CompoundTag append(String string, Tag tag, CompoundTag compoundTag) {
+            compoundTag.put(string, tag);
+            return compoundTag;
+        }
+
+        @Override
+        protected DataResult<Tag> build(CompoundTag compoundTag, Tag tag) {
+            if (tag == null || tag == EndTag.INSTANCE) {
+                return DataResult.success(compoundTag);
+            }
+            if (tag instanceof CompoundTag) {
+                CompoundTag compoundTag2 = new CompoundTag(Maps.newHashMap(((CompoundTag)tag).method_29143()));
+                for (Map.Entry<String, Tag> entry : compoundTag.method_29143().entrySet()) {
+                    compoundTag2.put(entry.getKey(), entry.getValue());
+                }
+                return DataResult.success(compoundTag2);
+            }
+            return DataResult.error("mergeToMap called with not a map: " + tag, tag);
+        }
+
+        @Override
+        protected /* synthetic */ Object append(String string, Object object, Object object2) {
+            return this.append(string, (Tag)object, (CompoundTag)object2);
+        }
+
+        @Override
+        protected /* synthetic */ DataResult build(Object object, Object object2) {
+            return this.build((CompoundTag)object, (Tag)object2);
+        }
+
+        @Override
+        protected /* synthetic */ Object initBuilder() {
+            return this.initBuilder();
+        }
     }
 }
 

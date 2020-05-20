@@ -4,6 +4,7 @@
 package net.minecraft.client.util;
 
 import com.mojang.text2speech.Narrator;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -28,7 +29,10 @@ implements ClientChatListener {
     private final Narrator narrator = Narrator.getNarrator();
 
     @Override
-    public void onChatMessage(MessageType messageType, Text message) {
+    public void onChatMessage(MessageType messageType, Text message, UUID uUID) {
+        if (MinecraftClient.getInstance().method_29042(uUID)) {
+            return;
+        }
         NarratorOption narratorOption = NarratorManager.getNarratorOption();
         if (narratorOption == NarratorOption.OFF || !this.narrator.active()) {
             return;

@@ -3,15 +3,22 @@
  */
 package net.minecraft.util.registry;
 
-import net.minecraft.util.Identifier;
+import com.mojang.serialization.Lifecycle;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 public abstract class MutableRegistry<T>
 extends Registry<T> {
-    public abstract <V extends T> V set(int var1, Identifier var2, V var3);
+    public MutableRegistry(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle) {
+        super(registryKey, lifecycle);
+    }
 
-    public abstract <V extends T> V add(Identifier var1, V var2);
+    public abstract <V extends T> V set(int var1, RegistryKey<T> var2, V var3);
 
-    public abstract boolean isEmpty();
+    public abstract <V extends T> V add(RegistryKey<T> var1, V var2);
+
+    public String toString() {
+        return "Registry[" + ROOT.getId(this) + "]";
+    }
 }
 

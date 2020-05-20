@@ -3,32 +3,35 @@
  */
 package net.minecraft.world.gen.feature.size;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.OptionalInt;
 import net.minecraft.world.gen.feature.size.FeatureSize;
 import net.minecraft.world.gen.feature.size.FeatureSizeType;
 
 public class ThreeLayersFeatureSize
 extends FeatureSize {
+    public static final Codec<ThreeLayersFeatureSize> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("limit")).withDefault(1).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.limit), ((MapCodec)Codec.INT.fieldOf("upper_limit")).withDefault(1).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.upperLimit), ((MapCodec)Codec.INT.fieldOf("lower_size")).withDefault(0).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.lowerSize), ((MapCodec)Codec.INT.fieldOf("middle_size")).withDefault(1).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.middleSize), ((MapCodec)Codec.INT.fieldOf("upper_size")).withDefault(1).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.upperSize), ThreeLayersFeatureSize.method_28820()).apply((Applicative<ThreeLayersFeatureSize, ?>)instance, ThreeLayersFeatureSize::new));
     private final int limit;
     private final int upperLimit;
     private final int lowerSize;
     private final int middleSize;
     private final int upperSize;
 
-    public ThreeLayersFeatureSize(int limit, int upperLimit, int lowerSize, int middleSize, int upperSize, OptionalInt minClippedHeight) {
-        super(FeatureSizeType.THREE_LAYERS_FEATURE_SIZE, minClippedHeight);
-        this.limit = limit;
-        this.upperLimit = upperLimit;
-        this.lowerSize = lowerSize;
-        this.middleSize = middleSize;
-        this.upperSize = upperSize;
+    public ThreeLayersFeatureSize(int i, int j, int k, int l, int m, OptionalInt optionalInt) {
+        super(optionalInt);
+        this.limit = i;
+        this.upperLimit = j;
+        this.lowerSize = k;
+        this.middleSize = l;
+        this.upperSize = m;
     }
 
-    public <T> ThreeLayersFeatureSize(Dynamic<T> dynamic) {
-        this(dynamic.get("limit").asInt(1), dynamic.get("upper_limit").asInt(1), dynamic.get("lower_size").asInt(0), dynamic.get("middle_size").asInt(1), dynamic.get("upper_size").asInt(1), dynamic.get("min_clipped_height").asNumber().map(number -> OptionalInt.of(number.intValue())).orElse(OptionalInt.empty()));
+    @Override
+    protected FeatureSizeType<?> method_28824() {
+        return FeatureSizeType.THREE_LAYERS_FEATURE_SIZE;
     }
 
     @Override
@@ -40,13 +43,6 @@ extends FeatureSize {
             return this.upperSize;
         }
         return this.middleSize;
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("limit"), ops.createInt(this.limit)).put(ops.createString("upper_limit"), ops.createInt(this.upperLimit)).put(ops.createString("lower_size"), ops.createInt(this.lowerSize)).put(ops.createString("middle_size"), ops.createInt(this.middleSize)).put(ops.createString("upper_size"), ops.createInt(this.upperSize));
-        return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
     }
 }
 

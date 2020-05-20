@@ -16,8 +16,8 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.SidedInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -298,7 +298,7 @@ implements InventoryProvider {
     }
 
     static class ComposterInventory
-    extends BasicInventory
+    extends SimpleInventory
     implements SidedInventory {
         private final BlockState state;
         private final WorldAccess world;
@@ -353,7 +353,7 @@ implements InventoryProvider {
     }
 
     static class FullComposterInventory
-    extends BasicInventory
+    extends SimpleInventory
     implements SidedInventory {
         private final BlockState state;
         private final WorldAccess world;
@@ -403,7 +403,7 @@ implements InventoryProvider {
     }
 
     static class DummyInventory
-    extends BasicInventory
+    extends SimpleInventory
     implements SidedInventory {
         public DummyInventory() {
             super(0);

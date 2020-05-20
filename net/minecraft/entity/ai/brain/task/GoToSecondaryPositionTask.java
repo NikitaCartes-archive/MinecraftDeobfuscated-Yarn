@@ -5,7 +5,6 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -43,7 +42,7 @@ extends Task<VillagerEntity> {
         Optional<GlobalPos> optional2 = villagerEntity.getBrain().getOptionalMemory(this.primaryPosition);
         if (optional.isPresent() && optional2.isPresent() && !(list = optional.get()).isEmpty()) {
             this.chosenPosition = list.get(serverWorld.getRandom().nextInt(list.size()));
-            return this.chosenPosition != null && Objects.equals(serverWorld.method_27983(), this.chosenPosition.getDimension()) && optional2.get().getPos().isWithinDistance(villagerEntity.getPos(), (double)this.primaryPositionActivationDistance);
+            return this.chosenPosition != null && serverWorld.method_27983() == this.chosenPosition.getDimension() && optional2.get().getPos().isWithinDistance(villagerEntity.getPos(), (double)this.primaryPositionActivationDistance);
         }
         return false;
     }

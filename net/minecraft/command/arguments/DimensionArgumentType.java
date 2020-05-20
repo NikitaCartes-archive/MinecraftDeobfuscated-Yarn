@@ -3,7 +3,6 @@
  */
 package net.minecraft.command.arguments;
 
-import com.google.common.collect.Streams;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -20,22 +19,25 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
 public class DimensionArgumentType
-implements ArgumentType<DimensionType> {
-    private static final Collection<String> EXAMPLES = Stream.of(DimensionType.OVERWORLD, DimensionType.THE_NETHER).map(dimensionType -> DimensionType.getId(dimensionType).toString()).collect(Collectors.toList());
-    public static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.dimension.invalid", object));
+implements ArgumentType<Identifier> {
+    private static final Collection<String> EXAMPLES = Stream.of(DimensionType.OVERWORLD_REGISTRY_KEY, DimensionType.THE_NETHER_REGISTRY_KEY).map(registryKey -> registryKey.getValue().toString()).collect(Collectors.toList());
+    private static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.dimension.invalid", object));
 
     @Override
-    public DimensionType parse(StringReader stringReader) throws CommandSyntaxException {
-        Identifier identifier = Identifier.fromCommandInput(stringReader);
-        return Registry.DIMENSION_TYPE.getOrEmpty(identifier).orElseThrow(() -> INVALID_DIMENSION_EXCEPTION.create(identifier));
+    public Identifier parse(StringReader stringReader) throws CommandSyntaxException {
+        return Identifier.fromCommandInput(stringReader);
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestIdentifiers(Streams.stream(DimensionType.getAll()).map(DimensionType::getId), builder);
+        if (context.getSource() instanceof CommandSource) {
+            return CommandSource.suggestIdentifiers(((CommandSource)context.getSource()).method_29038().getRegistry().getIds().stream(), builder);
+        }
+        return Suggestions.empty();
     }
 
     @Override
@@ -47,8 +49,13 @@ implements ArgumentType<DimensionType> {
         return new DimensionArgumentType();
     }
 
-    public static DimensionType getDimensionArgument(CommandContext<ServerCommandSource> context, String name) {
-        return context.getArgument(name, DimensionType.class);
+    public static RegistryKey<DimensionType> getDimensionArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        Identifier identifier = context.getArgument(name, Identifier.class);
+        RegistryKey<DimensionType> registryKey = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, identifier);
+        if (!context.getSource().getMinecraftServer().method_29174().getRegistry().containsKey(registryKey)) {
+            throw INVALID_DIMENSION_EXCEPTION.create(identifier);
+        }
+        return registryKey;
     }
 
     @Override

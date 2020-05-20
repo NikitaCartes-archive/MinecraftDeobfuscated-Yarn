@@ -20,7 +20,7 @@ extends IdentifierNormalizingSchema {
     @Override
     public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
         super.registerTypes(schema, entityTypes, blockEntityTypes);
-        schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.constType(DSL.namespacedString()));
+        schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.constType(Schema1451v4.method_28295()));
     }
 }
 

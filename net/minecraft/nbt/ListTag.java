@@ -309,7 +309,8 @@ extends AbstractListTag<Tag> {
         return mutableText2;
     }
 
-    public int getElementType() {
+    @Override
+    public byte getElementType() {
         return this.type;
     }
 

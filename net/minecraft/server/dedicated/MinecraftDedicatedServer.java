@@ -23,7 +23,6 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_5219;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
@@ -57,6 +56,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
@@ -76,8 +76,8 @@ implements DedicatedServer {
     @Nullable
     private DedicatedServerGui gui;
 
-    public MinecraftDedicatedServer(LevelStorage.Session session, class_5219 arg, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(session, arg, Proxy.NO_PROXY, dataFixer, new CommandManager(true), minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
+    public MinecraftDedicatedServer(LevelStorage.Session session, SaveProperties saveProperties, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(session, saveProperties, Proxy.NO_PROXY, dataFixer, new CommandManager(true), minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new ServerCommandOutput(this);
         new Thread("Server Infinisleeper"){
@@ -175,7 +175,7 @@ implements DedicatedServer {
         if (!ServerConfigHandler.checkSuccess(this)) {
             return false;
         }
-        this.setPlayerManager(new DedicatedPlayerManager(this, this.field_24371));
+        this.setPlayerManager(new DedicatedPlayerManager(this, this.field_25132, this.field_24371));
         long l = Util.getMeasuringTimeNano();
         this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
         SkullBlockEntity.setUserCache(this.getUserCache());
@@ -389,7 +389,7 @@ implements DedicatedServer {
     @Override
     public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
         int j;
-        if (serverWorld.method_27983() != DimensionType.OVERWORLD) {
+        if (serverWorld.method_27983() != DimensionType.OVERWORLD_REGISTRY_KEY) {
             return false;
         }
         if (this.getPlayerManager().getOpList().isEmpty()) {
@@ -401,7 +401,7 @@ implements DedicatedServer {
         if (this.getSpawnProtectionRadius() <= 0) {
             return false;
         }
-        BlockPos blockPos = serverWorld.method_27911();
+        BlockPos blockPos = serverWorld.getSpawnPos();
         int i = MathHelper.abs(pos.getX() - blockPos.getX());
         int k = Math.max(i, j = MathHelper.abs(pos.getZ() - blockPos.getZ()));
         return k <= this.getSpawnProtectionRadius();

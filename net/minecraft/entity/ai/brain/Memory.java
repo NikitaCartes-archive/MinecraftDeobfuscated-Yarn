@@ -3,42 +3,29 @@
  */
 package net.minecraft.entity.ai.brain;
 
-import com.google.common.collect.Maps;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
-import java.util.HashMap;
-import java.util.function.Function;
-import net.minecraft.util.dynamic.DynamicSerializable;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 
-public class Memory<T>
-implements DynamicSerializable {
+public class Memory<T> {
     private final T value;
     private long expiry;
 
-    public Memory(T value, long expiry) {
-        this.value = value;
-        this.expiry = expiry;
+    public Memory(T object, long l) {
+        this.value = object;
+        this.expiry = l;
     }
 
-    public Memory(T value) {
-        this(value, Long.MAX_VALUE);
-    }
-
-    public Memory(Function<Dynamic<?>, T> valueReader, Dynamic<?> data) {
-        this(valueReader.apply(data.get("value").get().orElseThrow(RuntimeException::new)), data.get("ttl").asLong(Long.MAX_VALUE));
-    }
-
-    public void method_24913() {
+    public void tick() {
         if (this.method_24914()) {
             --this.expiry;
         }
     }
 
-    /**
-     * Creates a permanent memory.
-     */
-    public static <T> Memory<T> permanent(T value) {
-        return new Memory<T>(value);
+    public static <T> Memory<T> method_28355(T object) {
+        return new Memory<T>(object, Long.MAX_VALUE);
     }
 
     /**
@@ -64,14 +51,8 @@ implements DynamicSerializable {
         return this.expiry != Long.MAX_VALUE;
     }
 
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        HashMap<T, T> map = Maps.newHashMap();
-        map.put(ops.createString("value"), ((DynamicSerializable)this.value).serialize(ops));
-        if (this.method_24914()) {
-            map.put(ops.createString("ttl"), ops.createLong(this.expiry));
-        }
-        return ops.createMap(map);
+    public static <T> Codec<Memory<T>> method_28353(Codec<T> codec) {
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf("value")).forGetter(memory -> memory.value), Codec.LONG.optionalFieldOf("ttl").forGetter(memory -> memory.method_24914() ? Optional.of(memory.expiry) : Optional.empty())).apply((Applicative<Memory, ?>)instance, (object, optional) -> new Memory<Object>(object, optional.orElse(Long.MAX_VALUE))));
     }
 }
 

@@ -3,27 +3,17 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class ShipwreckFeatureConfig
 implements FeatureConfig {
+    public static final Codec<ShipwreckFeatureConfig> field_24908 = ((MapCodec)Codec.BOOL.fieldOf("is_beached")).withDefault(false).xmap(ShipwreckFeatureConfig::new, shipwreckFeatureConfig -> shipwreckFeatureConfig.isBeached).codec();
     public final boolean isBeached;
 
     public ShipwreckFeatureConfig(boolean isBeached) {
         this.isBeached = isBeached;
-    }
-
-    @Override
-    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("is_beached"), ops.createBoolean(this.isBeached))));
-    }
-
-    public static <T> ShipwreckFeatureConfig deserialize(Dynamic<T> dynamic) {
-        boolean bl = dynamic.get("is_beached").asBoolean(false);
-        return new ShipwreckFeatureConfig(bl);
     }
 }
 

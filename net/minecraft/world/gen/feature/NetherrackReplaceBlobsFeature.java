@@ -3,9 +3,8 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -21,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class NetherrackReplaceBlobsFeature
 extends Feature<NetherrackReplaceBlobsFeatureConfig> {
-    public NetherrackReplaceBlobsFeature(Function<Dynamic<?>, ? extends NetherrackReplaceBlobsFeatureConfig> function) {
-        super(function);
+    public NetherrackReplaceBlobsFeature(Codec<NetherrackReplaceBlobsFeatureConfig> codec) {
+        super(codec);
     }
 
     @Override

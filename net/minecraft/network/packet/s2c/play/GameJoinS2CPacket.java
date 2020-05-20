@@ -9,8 +9,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTracker;
 
 public class GameJoinS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -18,7 +19,8 @@ implements Packet<ClientPlayPacketListener> {
     private long seed;
     private boolean hardcore;
     private GameMode gameMode;
-    private DimensionType dimension;
+    private DimensionTracker.Modifiable dimensionTracker;
+    private Identifier dimensionId;
     private int maxPlayers;
     private int chunkLoadDistance;
     private boolean reducedDebugInfo;
@@ -29,9 +31,10 @@ implements Packet<ClientPlayPacketListener> {
     public GameJoinS2CPacket() {
     }
 
-    public GameJoinS2CPacket(int playerEntityId, GameMode gameMode, long seed, boolean hardcore, DimensionType dimensionType, int maxPlayers, int chunkLoadDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld) {
+    public GameJoinS2CPacket(int playerEntityId, GameMode gameMode, long seed, boolean hardcore, DimensionTracker.Modifiable dimensionTracker, Identifier dimensionId, int maxPlayers, int chunkLoadDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld) {
         this.playerEntityId = playerEntityId;
-        this.dimension = dimensionType;
+        this.dimensionTracker = dimensionTracker;
+        this.dimensionId = dimensionId;
         this.seed = seed;
         this.gameMode = gameMode;
         this.maxPlayers = maxPlayers;
@@ -49,7 +52,8 @@ implements Packet<ClientPlayPacketListener> {
         int i = buf.readUnsignedByte();
         this.hardcore = (i & 8) == 8;
         this.gameMode = GameMode.byId(i &= 0xFFFFFFF7);
-        this.dimension = DimensionType.byRawId(buf.readInt());
+        this.dimensionTracker = buf.decode(DimensionTracker.Modifiable.CODEC);
+        this.dimensionId = buf.readIdentifier();
         this.seed = buf.readLong();
         this.maxPlayers = buf.readUnsignedByte();
         this.chunkLoadDistance = buf.readVarInt();
@@ -67,7 +71,8 @@ implements Packet<ClientPlayPacketListener> {
             i |= 8;
         }
         buf.writeByte(i);
-        buf.writeInt(this.dimension.getRawId());
+        buf.encode(DimensionTracker.Modifiable.CODEC, this.dimensionTracker);
+        buf.writeIdentifier(this.dimensionId);
         buf.writeLong(this.seed);
         buf.writeByte(this.maxPlayers);
         buf.writeVarInt(this.chunkLoadDistance);
@@ -103,8 +108,13 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public DimensionType getDimension() {
-        return this.dimension;
+    public DimensionTracker getDimension() {
+        return this.dimensionTracker;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Identifier getDimensionId() {
+        return this.dimensionId;
     }
 
     @Environment(value=EnvType.CLIENT)

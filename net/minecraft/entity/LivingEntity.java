@@ -5,8 +5,10 @@ package net.minecraft.entity;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -124,9 +126,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class LivingEntity
 extends Entity {
-    private static final UUID ATTR_SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
-    private static final UUID SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
-    private static final EntityAttributeModifier ATTR_SPRINTING_SPEED_BOOST = new EntityAttributeModifier(ATTR_SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", (double)0.3f, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+    private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
+    private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
+    private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", (double)0.3f, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
     protected static final TrackedData<Byte> LIVING_FLAGS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> POTION_SWIRLS_COLOR = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -217,15 +219,20 @@ extends Entity {
         this.randomLargeSeed = (float)Math.random() * 12398.0f;
         this.headYaw = this.yaw = (float)(Math.random() * 6.2831854820251465);
         this.stepHeight = 0.6f;
-        this.brain = this.deserializeBrain(new Dynamic<CompoundTag>(NbtOps.INSTANCE, new CompoundTag()));
+        NbtOps nbtOps = NbtOps.INSTANCE;
+        this.brain = this.deserializeBrain(new Dynamic<Tag>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), nbtOps.emptyMap()))));
     }
 
     public Brain<?> getBrain() {
         return this.brain;
     }
 
-    protected Brain<?> deserializeBrain(Dynamic<?> data) {
-        return new Brain(ImmutableList.of(), ImmutableList.of(), data);
+    protected Brain.Profile<?> createBrainProfile() {
+        return Brain.createProfile(ImmutableList.of(), ImmutableList.of());
+    }
+
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        return this.createBrainProfile().deserialize(dynamic);
     }
 
     @Override
@@ -284,8 +291,8 @@ extends Entity {
         if (this.firstUpdate) {
             this.getSleepingPosition().ifPresent(this::setPositionInBed);
         }
-        if (this.method_27302()) {
-            this.method_25937();
+        if (this.shouldGetSoulSpeedBoost()) {
+            this.applySoulSpeedClientEffects();
         }
         super.baseTick();
         this.world.getProfiler().push("livingEntityBaseTick");
@@ -328,7 +335,7 @@ extends Entity {
             }
             if (!this.world.isClient && !Objects.equal(this.lastBlockPos, blockPos = this.getBlockPos())) {
                 this.lastBlockPos = blockPos;
-                this.applyFrostWalker(blockPos);
+                this.applyMovementEffects(blockPos);
             }
         }
         if (this.isAlive() && this.isWet()) {
@@ -367,30 +374,30 @@ extends Entity {
         this.world.getProfiler().pop();
     }
 
-    public boolean method_27302() {
-        return this.age % 5 == 0 && this.getVelocity().x != 0.0 && this.getVelocity().z != 0.0 && !this.isSpectator() && EnchantmentHelper.hasSoulSpeed(this) && this.method_27303();
+    public boolean shouldGetSoulSpeedBoost() {
+        return this.age % 5 == 0 && this.getVelocity().x != 0.0 && this.getVelocity().z != 0.0 && !this.isSpectator() && EnchantmentHelper.hasSoulSpeed(this) && this.isOnSoulSpeedBlock();
     }
 
-    protected void method_25937() {
+    protected void applySoulSpeedClientEffects() {
         Vec3d vec3d = this.getVelocity();
         this.world.addParticle(ParticleTypes.SOUL, this.getX() + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), this.getY() + 0.1, this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), vec3d.x * -0.2, 0.1, vec3d.z * -0.2);
         float f = this.random.nextFloat() * 0.4f + this.random.nextFloat() > 0.9f ? 0.6f : 0.0f;
         this.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, f, 0.6f + this.random.nextFloat() * 0.4f);
     }
 
-    protected boolean method_27303() {
+    protected boolean isOnSoulSpeedBlock() {
         return this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS);
     }
 
     @Override
     protected float getVelocityMultiplier() {
-        if (this.method_27303() && EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this) > 0) {
+        if (this.isOnSoulSpeedBlock() && EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this) > 0) {
             return 1.0f;
         }
         return super.getVelocityMultiplier();
     }
 
-    protected void applyFrostWalker(BlockPos pos) {
+    protected void applyMovementEffects(BlockPos pos) {
         int i = EnchantmentHelper.getEquipmentLevel(Enchantments.FROST_WALKER, this);
         if (i > 0) {
             FrostWalkerEnchantment.freezeWater(this, this.world, pos, i);
@@ -398,11 +405,11 @@ extends Entity {
         if (!this.getLandingBlockState().isAir()) {
             int j;
             EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-            if (entityAttributeInstance.getModifier(SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID) != null) {
-                entityAttributeInstance.removeModifier(SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID);
+            if (entityAttributeInstance.getModifier(SOUL_SPEED_BOOST_ID) != null) {
+                entityAttributeInstance.removeModifier(SOUL_SPEED_BOOST_ID);
             }
-            if ((j = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this)) > 0 && this.method_27303()) {
-                entityAttributeInstance.addTemporaryModifier(new EntityAttributeModifier(SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID, "Soul speed boost", (double)(0.03f * (1.0f + (float)j * 0.35f)), EntityAttributeModifier.Operation.ADDITION));
+            if ((j = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this)) > 0 && this.isOnSoulSpeedBlock()) {
+                entityAttributeInstance.addTemporaryModifier(new EntityAttributeModifier(SOUL_SPEED_BOOST_ID, "Soul speed boost", (double)(0.03f * (1.0f + (float)j * 0.35f)), EntityAttributeModifier.Operation.ADDITION));
                 if (this.getRandom().nextFloat() < 0.04f) {
                     ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
                     itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.FEET));
@@ -520,27 +527,28 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        tag.putFloat("Health", this.getHealth());
-        tag.putShort("HurtTime", (short)this.hurtTime);
-        tag.putInt("HurtByTimestamp", this.lastAttackedTime);
-        tag.putShort("DeathTime", (short)this.deathTime);
-        tag.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
-        tag.put("Attributes", this.getAttributes().toTag());
+    public void writeCustomDataToTag(CompoundTag tag2) {
+        tag2.putFloat("Health", this.getHealth());
+        tag2.putShort("HurtTime", (short)this.hurtTime);
+        tag2.putInt("HurtByTimestamp", this.lastAttackedTime);
+        tag2.putShort("DeathTime", (short)this.deathTime);
+        tag2.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
+        tag2.put("Attributes", this.getAttributes().toTag());
         if (!this.activeStatusEffects.isEmpty()) {
             ListTag listTag = new ListTag();
             for (StatusEffectInstance statusEffectInstance : this.activeStatusEffects.values()) {
                 listTag.add(statusEffectInstance.toTag(new CompoundTag()));
             }
-            tag.put("ActiveEffects", listTag);
+            tag2.put("ActiveEffects", listTag);
         }
-        tag.putBoolean("FallFlying", this.isFallFlying());
+        tag2.putBoolean("FallFlying", this.isFallFlying());
         this.getSleepingPosition().ifPresent(blockPos -> {
-            tag.putInt("SleepingX", blockPos.getX());
-            tag.putInt("SleepingY", blockPos.getY());
-            tag.putInt("SleepingZ", blockPos.getZ());
+            tag2.putInt("SleepingX", blockPos.getX());
+            tag2.putInt("SleepingY", blockPos.getY());
+            tag2.putInt("SleepingZ", blockPos.getZ());
         });
-        tag.put("Brain", this.brain.serialize(NbtOps.INSTANCE));
+        DataResult<Tag> dataResult = this.brain.encode(NbtOps.INSTANCE);
+        dataResult.resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("Brain", (Tag)tag));
     }
 
     @Override
@@ -1583,11 +1591,11 @@ extends Entity {
     public void setSprinting(boolean sprinting) {
         super.setSprinting(sprinting);
         EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-        if (entityAttributeInstance.getModifier(ATTR_SPRINTING_SPEED_BOOST_ID) != null) {
-            entityAttributeInstance.removeModifier(ATTR_SPRINTING_SPEED_BOOST);
+        if (entityAttributeInstance.getModifier(SPRINTING_SPEED_BOOST_ID) != null) {
+            entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST);
         }
         if (sprinting) {
-            entityAttributeInstance.addTemporaryModifier(ATTR_SPRINTING_SPEED_BOOST);
+            entityAttributeInstance.addTemporaryModifier(SPRINTING_SPEED_BOOST);
         }
     }
 
@@ -1614,7 +1622,7 @@ extends Entity {
     }
 
     private void onDismounted(Entity vehicle) {
-        Vec3d vec3d = vehicle.removed || this.world.getBlockState(vehicle.getBlockPos()).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.method_24829(this);
+        Vec3d vec3d = vehicle.removed || this.world.getBlockState(vehicle.getBlockPos()).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.updatePassengerForDismount(this);
         this.requestTeleport(vec3d.x, vec3d.y, vec3d.z);
     }
 
@@ -2535,7 +2543,7 @@ extends Entity {
         return ImmutableList.of(EntityPose.STANDING);
     }
 
-    public Box method_24833(EntityPose entityPose) {
+    public Box getBoundingBox(EntityPose entityPose) {
         EntityDimensions entityDimensions = this.getDimensions(entityPose);
         return new Box(-entityDimensions.width / 2.0f, 0.0, -entityDimensions.width / 2.0f, entityDimensions.width / 2.0f, entityDimensions.height, entityDimensions.width / 2.0f);
     }

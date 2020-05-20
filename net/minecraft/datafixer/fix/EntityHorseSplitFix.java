@@ -4,11 +4,11 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.EntityTransformFix;
@@ -48,7 +48,7 @@ extends EntityTransformFix {
             }
             dynamic.remove("Type");
             Type<?> type = this.getOutputSchema().findChoiceType(TypeReferences.ENTITY).types().get(string);
-            return Pair.of(string, type.readTyped(typed.write()).getSecond().orElseThrow(() -> new IllegalStateException("Could not parse the new horse")));
+            return Pair.of(string, ((Pair)typed.write().flatMap(type::readTyped).result().orElseThrow(() -> new IllegalStateException("Could not parse the new horse"))).getFirst());
         }
         return Pair.of(choice, typed);
     }

@@ -180,6 +180,11 @@ extends AbstractListTag<ByteTag> {
     }
 
     @Override
+    public byte getElementType() {
+        return 1;
+    }
+
+    @Override
     public void clear() {
         this.value = new byte[0];
     }

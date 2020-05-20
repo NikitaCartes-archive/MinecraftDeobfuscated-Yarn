@@ -8,8 +8,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -30,7 +30,7 @@ extends ScreenHandler {
     private final Slot ingredientSlot;
 
     public BrewingStandScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new BasicInventory(5), new ArrayPropertyDelegate(2));
+        this(syncId, playerInventory, new SimpleInventory(5), new ArrayPropertyDelegate(2));
     }
 
     public BrewingStandScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {

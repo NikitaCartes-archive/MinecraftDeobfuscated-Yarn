@@ -11,9 +11,9 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 public class GrindstoneScreenHandler
 extends ScreenHandler {
     private final Inventory result = new CraftingResultInventory();
-    private final Inventory input = new BasicInventory(2){
+    private final Inventory input = new SimpleInventory(2){
 
         @Override
         public void markDirty() {

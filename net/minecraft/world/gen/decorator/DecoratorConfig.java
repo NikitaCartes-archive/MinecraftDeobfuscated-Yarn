@@ -3,13 +3,9 @@
  */
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
 
 public interface DecoratorConfig {
-    public static final NopeDecoratorConfig DEFAULT = new NopeDecoratorConfig();
-
-    public <T> Dynamic<T> serialize(DynamicOps<T> var1);
+    public static final NopeDecoratorConfig DEFAULT = NopeDecoratorConfig.field_24892;
 }
 

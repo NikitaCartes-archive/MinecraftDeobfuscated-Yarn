@@ -12,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -47,7 +48,7 @@ extends ServerPlayerInteractionManager {
                 if (m == 6L) {
                     this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 104.0f));
                 } else {
-                    this.player.sendSystemMessage(new TranslatableText("demo.day." + m));
+                    this.player.sendSystemMessage(new TranslatableText("demo.day." + m), Util.field_25140);
                 }
             }
         } else if (m == 1L) {
@@ -59,13 +60,13 @@ extends ServerPlayerInteractionManager {
                 this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 103.0f));
             }
         } else if (m == 5L && l % 24000L == 22000L) {
-            this.player.sendSystemMessage(new TranslatableText("demo.day.warning"));
+            this.player.sendSystemMessage(new TranslatableText("demo.day.warning"), Util.field_25140);
         }
     }
 
     private void sendDemoReminder() {
         if (this.reminderTicks > 100) {
-            this.player.sendSystemMessage(new TranslatableText("demo.reminder"));
+            this.player.sendSystemMessage(new TranslatableText("demo.reminder"), Util.field_25140);
             this.reminderTicks = 0;
         }
     }

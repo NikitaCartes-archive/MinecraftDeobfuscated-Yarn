@@ -3,7 +3,8 @@
  */
 package net.minecraft.world.gen.foliage;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
@@ -16,12 +17,10 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class LargeOakFoliagePlacer
 extends BlobFoliagePlacer {
+    public static final Codec<LargeOakFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> LargeOakFoliagePlacer.method_28838(instance).apply(instance, LargeOakFoliagePlacer::new));
+
     public LargeOakFoliagePlacer(int i, int j, int k, int l, int m) {
         super(i, j, k, l, m, FoliagePlacerType.FANCY_FOLIAGE_PLACER);
-    }
-
-    public <T> LargeOakFoliagePlacer(Dynamic<T> dynamic) {
-        this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0), dynamic.get("offset").asInt(0), dynamic.get("offset_random").asInt(0), dynamic.get("height").asInt(0));
     }
 
     @Override

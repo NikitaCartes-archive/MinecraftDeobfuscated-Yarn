@@ -4,15 +4,16 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.ChoiceFix;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class EntityHorseSaddleFix
 extends ChoiceFix {
@@ -22,7 +23,7 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString()));
+        OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295()));
         Type<?> type = this.getInputSchema().getTypeRaw(TypeReferences.ITEM_STACK);
         OpticFinder<?> opticFinder2 = DSL.fieldFinder("SaddleItem", type);
         Optional<Typed<?>> optional = inputType.getOptionalTyped(opticFinder2);

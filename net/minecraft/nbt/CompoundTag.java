@@ -6,6 +6,9 @@ package net.minecraft.nbt;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.ByteTag;
@@ -49,6 +53,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class CompoundTag
 implements Tag {
+    public static final Codec<CompoundTag> field_25128 = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
+        Tag tag = dynamic.convert(NbtOps.INSTANCE).getValue();
+        if (tag instanceof CompoundTag) {
+            return DataResult.success((CompoundTag)tag);
+        }
+        return DataResult.error("Not a compound tag: " + tag);
+    }, compoundTag -> new Dynamic<CompoundTag>(NbtOps.INSTANCE, (CompoundTag)compoundTag));
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Pattern PATTERN = Pattern.compile("[A-Za-z0-9._+-]+");
     public static final TagReader<CompoundTag> READER = new TagReader<CompoundTag>(){
@@ -88,7 +99,7 @@ implements Tag {
     };
     private final Map<String, Tag> tags;
 
-    private CompoundTag(Map<String, Tag> tags) {
+    protected CompoundTag(Map<String, Tag> tags) {
         this.tags = tags;
     }
 
@@ -144,30 +155,24 @@ implements Tag {
     }
 
     /**
-     * Reads a {@link UUID} from its NBT representation in this {@code CompoundTag}.
-     * 
-     * @since 20w10a
+     * Writes a {@link UUID} to its NBT representation in this {@code CompoundTag}.
      */
-    public void putUuidNew(String key, UUID value) {
+    public void putUuid(String key, UUID value) {
         this.tags.put(key, NbtHelper.fromUuidNew(value));
     }
 
     /**
      * Reads a {@link UUID} from its NBT representation in this {@code CompoundTag}.
-     * 
-     * @since 20w10a
      */
-    public UUID getUuidNew(String key) {
+    public UUID getUuid(String key) {
         return NbtHelper.toUuidNew(this.get(key));
     }
 
     /**
      * Returns {@code true} if this {@code CompoundTag} contains a valid UUID representation associated with the given key.
      * A valid UUID is represented by an int array of length 4.
-     * 
-     * @since 20w10a
      */
-    public boolean containsUuidNew(String key) {
+    public boolean containsUuid(String key) {
         Tag tag = this.get(key);
         return tag != null && tag.getReader() == IntArrayTag.READER && ((IntArrayTag)tag).getIntArray().length == 4;
     }
@@ -520,6 +525,10 @@ implements Tag {
         }
         mutableText.append("}");
         return mutableText;
+    }
+
+    protected Map<String, Tag> method_29143() {
+        return Collections.unmodifiableMap(this.tags);
     }
 
     @Override

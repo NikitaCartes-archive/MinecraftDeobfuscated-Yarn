@@ -3,9 +3,10 @@
  */
 package net.minecraft.world.gen.foliage;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
@@ -16,17 +17,19 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class SpruceFoliagePlacer
 extends FoliagePlacer {
+    public static final Codec<SpruceFoliagePlacer> field_24936 = RecordCodecBuilder.create(instance -> SpruceFoliagePlacer.method_28846(instance).and(instance.group(((MapCodec)Codec.INT.fieldOf("trunk_height")).forGetter(spruceFoliagePlacer -> spruceFoliagePlacer.trunkHeight), ((MapCodec)Codec.INT.fieldOf("trunk_height_random")).forGetter(spruceFoliagePlacer -> spruceFoliagePlacer.randomTrunkHeight))).apply((Applicative<SpruceFoliagePlacer, ?>)instance, SpruceFoliagePlacer::new));
     private final int trunkHeight;
     private final int randomTrunkHeight;
 
-    public SpruceFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, int trunkHeight, int randomTrunkHeight) {
-        super(radius, randomRadius, offset, randomOffset, FoliagePlacerType.SPRUCE_FOLIAGE_PLACER);
-        this.trunkHeight = trunkHeight;
-        this.randomTrunkHeight = randomTrunkHeight;
+    public SpruceFoliagePlacer(int i, int j, int k, int l, int m, int n) {
+        super(i, j, k, l);
+        this.trunkHeight = m;
+        this.randomTrunkHeight = n;
     }
 
-    public <T> SpruceFoliagePlacer(Dynamic<T> dynamic) {
-        this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0), dynamic.get("offset").asInt(0), dynamic.get("offset_random").asInt(0), dynamic.get("trunk_height").asInt(0), dynamic.get("trunk_height_random").asInt(0));
+    @Override
+    protected FoliagePlacerType<?> method_28843() {
+        return FoliagePlacerType.SPRUCE_FOLIAGE_PLACER;
     }
 
     @Override
@@ -55,13 +58,6 @@ extends FoliagePlacer {
     @Override
     protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
         return baseHeight == dz && dy == dz && dz > 0;
-    }
-
-    @Override
-    public <T> T serialize(DynamicOps<T> ops) {
-        ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("trunk_height"), ops.createInt(this.trunkHeight)).put(ops.createString("trunk_height_random"), ops.createInt(this.randomTrunkHeight));
-        return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
     }
 }
 

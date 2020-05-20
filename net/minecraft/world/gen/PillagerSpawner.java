@@ -5,6 +5,7 @@ package net.minecraft.world.gen;
 
 import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_5304;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.PatrolEntity;
@@ -17,11 +18,13 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
-public class PillagerSpawner {
+public class PillagerSpawner
+implements class_5304 {
     private int ticksUntilNextSpawn;
 
-    public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-        if (!spawnMonsters) {
+    @Override
+    public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
+        if (!bl) {
             return 0;
         }
         if (!serverWorld.getGameRules().getBoolean(GameRules.DO_PATROL_SPAWNING)) {
@@ -82,7 +85,7 @@ public class PillagerSpawner {
 
     private boolean spawnOneEntity(World world, BlockPos blockPos, Random random, boolean bl) {
         BlockState blockState = world.getBlockState(blockPos);
-        if (!SpawnHelper.isClearForSpawn(world, blockPos, blockState, blockState.getFluidState())) {
+        if (!SpawnHelper.isClearForSpawn(world, blockPos, blockState, blockState.getFluidState(), EntityType.PILLAGER)) {
             return false;
         }
         if (!PatrolEntity.canSpawn(EntityType.PILLAGER, world, SpawnReason.PATROL, blockPos, random)) {

@@ -27,6 +27,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.dimension.DimensionTracker;
 
 @Environment(value=EnvType.CLIENT)
 public class ClientCommandSource
@@ -116,6 +117,11 @@ implements CommandSource {
         }
         Vec3d vec3d = hitResult.getPos();
         return Collections.singleton(new CommandSource.RelativePosition(ClientCommandSource.format(vec3d.x), ClientCommandSource.format(vec3d.y), ClientCommandSource.format(vec3d.z)));
+    }
+
+    @Override
+    public DimensionTracker method_29038() {
+        return this.networkHandler.method_29091();
     }
 
     public void onCommandSuggestions(int completionId, Suggestions suggestions) {

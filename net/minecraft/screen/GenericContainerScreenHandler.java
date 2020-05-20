@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -20,7 +20,7 @@ extends ScreenHandler {
     private final int rows;
 
     private GenericContainerScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, int rows) {
-        this(type, syncId, playerInventory, new BasicInventory(9 * rows), rows);
+        this(type, syncId, playerInventory, new SimpleInventory(9 * rows), rows);
     }
 
     public static GenericContainerScreenHandler createGeneric9x1(int syncId, PlayerInventory playerInventory) {

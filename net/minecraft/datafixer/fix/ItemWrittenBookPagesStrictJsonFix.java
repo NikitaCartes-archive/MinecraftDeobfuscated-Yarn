@@ -7,11 +7,11 @@ import com.google.gson.JsonParseException;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.BlockEntitySignTextStrictJsonFix;
 import net.minecraft.text.LiteralText;
@@ -25,9 +25,9 @@ extends DataFix {
         super(outputSchema, changesType);
     }
 
-    public Dynamic<?> fixBookPages(Dynamic<?> tag) {
-        return tag.update("pages", dynamic2 -> DataFixUtils.orElse(dynamic2.asStreamOpt().map(stream -> stream.map(dynamic -> {
-            if (!dynamic.asString().isPresent()) {
+    public Dynamic<?> fixBookPages(Dynamic<?> dynamic) {
+        return dynamic.update("pages", dynamic2 -> DataFixUtils.orElse(dynamic2.asStreamOpt().map(stream -> stream.map(dynamic -> {
+            if (!dynamic.asString().result().isPresent()) {
                 return dynamic;
             }
             String string = dynamic.asString("");
@@ -64,7 +64,7 @@ extends DataFix {
                 text = new LiteralText(string);
             }
             return dynamic.createString(Text.Serializer.toJson(text));
-        })).map(tag::createList), tag.emptyList()));
+        })).map(dynamic::createList).result(), dynamic.emptyList()));
     }
 
     @Override

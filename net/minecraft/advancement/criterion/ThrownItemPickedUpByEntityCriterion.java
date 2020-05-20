@@ -32,7 +32,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(extended, itemPredicate, extended2);
     }
 
-    public void test(ServerPlayerEntity player, ItemStack stack, Entity entity) {
+    public void trigger(ServerPlayerEntity player, ItemStack stack, Entity entity) {
         LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
         this.test(player, conditions -> conditions.test(player, stack, lootContext));
     }

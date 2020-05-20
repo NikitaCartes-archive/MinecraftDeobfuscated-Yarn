@@ -9,8 +9,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.BannerPatternItem;
 import net.minecraft.item.DyeItem;
@@ -37,7 +37,7 @@ extends ScreenHandler {
     private final Slot patternSlot;
     private final Slot outputSlot;
     private long lastTakeResultTime;
-    private final Inventory input = new BasicInventory(3){
+    private final Inventory input = new SimpleInventory(3){
 
         @Override
         public void markDirty() {
@@ -46,7 +46,7 @@ extends ScreenHandler {
             LoomScreenHandler.this.inventoryChangeListener.run();
         }
     };
-    private final Inventory output = new BasicInventory(1){
+    private final Inventory output = new SimpleInventory(1){
 
         @Override
         public void markDirty() {

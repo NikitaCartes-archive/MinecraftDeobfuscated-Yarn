@@ -3,9 +3,10 @@
  */
 package net.minecraft.structure.rule;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.rule.RuleTest;
@@ -13,16 +14,13 @@ import net.minecraft.structure.rule.RuleTestType;
 
 public class RandomBlockStateMatchRuleTest
 extends RuleTest {
+    public static final Codec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.field_24734.fieldOf("block_state")).forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.blockState), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(randomBlockStateMatchRuleTest -> Float.valueOf(randomBlockStateMatchRuleTest.probability))).apply((Applicative<RandomBlockStateMatchRuleTest, ?>)instance, RandomBlockStateMatchRuleTest::new));
     private final BlockState blockState;
     private final float probability;
 
-    public RandomBlockStateMatchRuleTest(BlockState blockState, float probability) {
+    public RandomBlockStateMatchRuleTest(BlockState blockState, float f) {
         this.blockState = blockState;
-        this.probability = probability;
-    }
-
-    public <T> RandomBlockStateMatchRuleTest(Dynamic<T> dynamic) {
-        this(BlockState.deserialize(dynamic.get("blockstate").orElseEmptyMap()), dynamic.get("probability").asFloat(1.0f));
+        this.probability = f;
     }
 
     @Override
@@ -31,13 +29,8 @@ extends RuleTest {
     }
 
     @Override
-    protected RuleTestType getType() {
+    protected RuleTestType<?> getType() {
         return RuleTestType.RANDOM_BLOCKSTATE_MATCH;
-    }
-
-    @Override
-    protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("blockstate"), BlockState.serialize(ops, this.blockState).getValue(), ops.createString("probability"), ops.createFloat(this.probability))));
     }
 }
 

@@ -4,6 +4,7 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,10 +15,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
+import org.jetbrains.annotations.Nullable;
 
 public class Heightmap {
     private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> !blockState.isAir();
@@ -115,7 +118,8 @@ public class Heightmap {
         return SUFFOCATES;
     }
 
-    public static enum Type {
+    public static enum Type implements StringIdentifiable
+    {
         WORLD_SURFACE_WG("WORLD_SURFACE_WG", Purpose.WORLDGEN, Heightmap.method_16683()),
         WORLD_SURFACE("WORLD_SURFACE", Purpose.CLIENT, Heightmap.method_16683()),
         OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Purpose.WORLDGEN, Heightmap.method_16681()),
@@ -123,6 +127,7 @@ public class Heightmap {
         MOTION_BLOCKING("MOTION_BLOCKING", Purpose.CLIENT, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()),
         MOTION_BLOCKING_NO_LEAVES("MOTION_BLOCKING_NO_LEAVES", Purpose.LIVE_WORLD, blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock));
 
+        public static final Codec<Type> field_24772;
         private final String name;
         private final Purpose purpose;
         private final Predicate<BlockState> blockPredicate;
@@ -147,6 +152,7 @@ public class Heightmap {
             return this.purpose != Purpose.WORLDGEN;
         }
 
+        @Nullable
         public static Type byName(String name) {
             return BY_NAME.get(name);
         }
@@ -155,7 +161,13 @@ public class Heightmap {
             return this.blockPredicate;
         }
 
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
         static {
+            field_24772 = StringIdentifiable.method_28140(Type::values, Type::byName);
             BY_NAME = Util.make(Maps.newHashMap(), hashMap -> {
                 for (Type type : Type.values()) {
                     hashMap.put(type.name, type);

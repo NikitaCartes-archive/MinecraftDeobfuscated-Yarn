@@ -3,32 +3,155 @@
  */
 package net.minecraft.state;
 
+import com.google.common.collect.ArrayTable;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Table;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.state.property.Property;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
-public interface State<C> {
-    public static final Logger LOGGER = LogManager.getLogger();
+public abstract class State<O, S> {
+    private static final Function<Map.Entry<Property<?>, Comparable<?>>, String> PROPERTY_MAP_PRINTER = new Function<Map.Entry<Property<?>, Comparable<?>>, String>(){
 
-    public <T extends Comparable<T>> T get(Property<T> var1);
+        @Override
+        public String apply(@Nullable Map.Entry<Property<?>, Comparable<?>> entry) {
+            if (entry == null) {
+                return "<NULL>";
+            }
+            Property<?> property = entry.getKey();
+            return property.getName() + "=" + this.nameValue(property, entry.getValue());
+        }
 
-    public <T extends Comparable<T>, V extends T> C with(Property<T> var1, V var2);
+        private <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> value) {
+            return property.name(value);
+        }
 
-    public ImmutableMap<Property<?>, Comparable<?>> getEntries();
+        @Override
+        public /* synthetic */ Object apply(@Nullable Object object) {
+            return this.apply((Map.Entry)object);
+        }
+    };
+    protected final O owner;
+    private final ImmutableMap<Property<?>, Comparable<?>> entries;
+    private Table<Property<?>, Comparable<?>, S> withTable;
+    protected final MapCodec<S> field_24740;
 
-    public static <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> value) {
-        return property.name(value);
+    protected State(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> mapCodec) {
+        this.owner = owner;
+        this.entries = entries;
+        this.field_24740 = mapCodec;
     }
 
-    public static <S extends State<S>, T extends Comparable<T>> S tryRead(S state, Property<T> property, String propertyName, String input, String valueName) {
-        Optional<T> optional = property.parse(valueName);
-        if (optional.isPresent()) {
-            return (S)((State)state.with(property, (Comparable)((Comparable)optional.get())));
+    public <T extends Comparable<T>> S cycle(Property<T> property) {
+        return this.with(property, (Comparable)State.getNext(property.getValues(), this.get(property)));
+    }
+
+    protected static <T> T getNext(Collection<T> values, T value) {
+        Iterator<T> iterator = values.iterator();
+        while (iterator.hasNext()) {
+            if (!iterator.next().equals(value)) continue;
+            if (iterator.hasNext()) {
+                return iterator.next();
+            }
+            return values.iterator().next();
         }
-        LOGGER.warn("Unable to read property: {} with value: {} for input: {}", (Object)propertyName, (Object)valueName, (Object)input);
-        return state;
+        return iterator.next();
+    }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(this.owner);
+        if (!this.getEntries().isEmpty()) {
+            stringBuilder.append('[');
+            stringBuilder.append(this.getEntries().entrySet().stream().map(PROPERTY_MAP_PRINTER).collect(Collectors.joining(",")));
+            stringBuilder.append(']');
+        }
+        return stringBuilder.toString();
+    }
+
+    public Collection<Property<?>> getProperties() {
+        return Collections.unmodifiableCollection(this.entries.keySet());
+    }
+
+    public <T extends Comparable<T>> boolean contains(Property<T> property) {
+        return this.entries.containsKey(property);
+    }
+
+    public <T extends Comparable<T>> T get(Property<T> property) {
+        Comparable<?> comparable = this.entries.get(property);
+        if (comparable == null) {
+            throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
+        }
+        return (T)((Comparable)property.getType().cast(comparable));
+    }
+
+    public <T extends Comparable<T>> Optional<T> method_28500(Property<T> property) {
+        Comparable<?> comparable = this.entries.get(property);
+        if (comparable == null) {
+            return Optional.empty();
+        }
+        return Optional.of(property.getType().cast(comparable));
+    }
+
+    public <T extends Comparable<T>, V extends T> S with(Property<T> property, V value) {
+        Comparable<?> comparable = this.entries.get(property);
+        if (comparable == null) {
+            throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + this.owner);
+        }
+        if (comparable == value) {
+            return (S)this;
+        }
+        S object = this.withTable.get(property, value);
+        if (object == null) {
+            throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on " + this.owner + ", it is not an allowed value");
+        }
+        return object;
+    }
+
+    public void createWithTable(Map<Map<Property<?>, Comparable<?>>, S> states) {
+        if (this.withTable != null) {
+            throw new IllegalStateException();
+        }
+        HashBasedTable<Property, Comparable, S> table = HashBasedTable.create();
+        for (Map.Entry entry : this.entries.entrySet()) {
+            Property property = (Property)entry.getKey();
+            for (Comparable comparable : property.getValues()) {
+                if (comparable == entry.getValue()) continue;
+                table.put(property, comparable, states.get(this.toMapWith(property, comparable)));
+            }
+        }
+        this.withTable = table.isEmpty() ? table : ArrayTable.create(table);
+    }
+
+    private Map<Property<?>, Comparable<?>> toMapWith(Property<?> property, Comparable<?> value) {
+        HashMap<Property<?>, Comparable<?>> map = Maps.newHashMap(this.entries);
+        map.put(property, value);
+        return map;
+    }
+
+    public ImmutableMap<Property<?>, Comparable<?>> getEntries() {
+        return this.entries;
+    }
+
+    protected static <O, S extends State<O, S>> Codec<S> method_28494(Codec<O> codec, Function<O, S> function) {
+        return codec.dispatch("Name", state -> state.owner, object -> {
+            State state = (State)function.apply(object);
+            if (state.getEntries().isEmpty()) {
+                return Codec.unit(state);
+            }
+            return state.field_24740.fieldOf("Properties").codec();
+        });
     }
 }
 

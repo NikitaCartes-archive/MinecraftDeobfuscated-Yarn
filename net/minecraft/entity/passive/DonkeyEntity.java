@@ -13,6 +13,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class DonkeyEntity
 extends AbstractDonkeyEntity {
@@ -27,9 +28,21 @@ extends AbstractDonkeyEntity {
     }
 
     @Override
+    protected SoundEvent getAngrySound() {
+        super.getAngrySound();
+        return SoundEvents.ENTITY_DONKEY_ANGRY;
+    }
+
+    @Override
     protected SoundEvent getDeathSound() {
         super.getDeathSound();
         return SoundEvents.ENTITY_DONKEY_DEATH;
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent method_28368() {
+        return SoundEvents.ENTITY_DONKEY_EAT;
     }
 
     @Override

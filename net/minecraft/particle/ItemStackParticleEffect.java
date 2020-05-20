@@ -5,6 +5,7 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.command.arguments.ItemStackArgument;
@@ -44,6 +45,10 @@ implements ParticleEffect {
     };
     private final ParticleType<ItemStackParticleEffect> type;
     private final ItemStack stack;
+
+    public static Codec<ItemStackParticleEffect> method_29136(ParticleType<ItemStackParticleEffect> particleType) {
+        return ItemStack.CODEC.xmap(itemStack -> new ItemStackParticleEffect(particleType, (ItemStack)itemStack), itemStackParticleEffect -> itemStackParticleEffect.stack);
+    }
 
     public ItemStackParticleEffect(ParticleType<ItemStackParticleEffect> type, ItemStack stack) {
         this.type = type;
