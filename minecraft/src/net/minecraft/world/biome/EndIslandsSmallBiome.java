@@ -30,7 +30,6 @@ public class EndIslandsSmallBiome extends Biome {
 			GenerationStep.Feature.RAW_GENERATION,
 			Feature.END_ISLAND.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.END_ISLAND.configure(DecoratorConfig.DEFAULT))
 		);
-		DefaultBiomeFeatures.addEndCities(this);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

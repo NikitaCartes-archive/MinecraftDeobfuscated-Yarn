@@ -1,10 +1,9 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
@@ -20,8 +19,8 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
-	public BonusChestFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public BonusChestFeature(Codec<DefaultFeatureConfig> codec) {
+		super(codec);
 	}
 
 	public boolean generate(

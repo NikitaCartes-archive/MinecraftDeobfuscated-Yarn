@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -66,7 +67,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	private static MapState createMapState(
-		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, DimensionType dimension
+		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<DimensionType> dimension
 	) {
 		int i = world.getNextMapId();
 		MapState mapState = new MapState(getMapName(i));
@@ -88,7 +89,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 			int l = MathHelper.floor(entity.getX() - (double)j) / i + 64;
 			int m = MathHelper.floor(entity.getZ() - (double)k) / i + 64;
 			int n = 128 / i;
-			if (world.method_27983().method_27998()) {
+			if (world.getDimension().hasCeiling()) {
 				n /= 2;
 			}
 
@@ -116,7 +117,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 								int v = t & 15;
 								int w = 0;
 								double e = 0.0;
-								if (world.method_27983().method_27998()) {
+								if (world.getDimension().hasCeiling()) {
 									int x = s + t * 231871;
 									x = x * x * 31287121 + x * 11;
 									if ((x >> 20 & 1) == 0) {

@@ -1,10 +1,9 @@
 package net.minecraft.world.gen.surfacebuilder;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -29,8 +28,8 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 	protected OctaveSimplexNoiseSampler heightNoise;
 	protected OctaveSimplexNoiseSampler layerNoise;
 
-	public BadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public BadlandsSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+		super(codec);
 	}
 
 	public void generate(

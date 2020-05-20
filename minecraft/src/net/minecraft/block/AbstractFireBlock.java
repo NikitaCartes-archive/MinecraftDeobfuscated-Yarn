@@ -17,7 +17,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractFireBlock extends Block {
 	private final float damage;
@@ -141,7 +140,7 @@ public abstract class AbstractFireBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
-			if (world.method_27983() != DimensionType.OVERWORLD && world.method_27983() != DimensionType.THE_NETHER || !NetherPortalBlock.createPortalAt(world, pos)) {
+			if (!world.getDimension().isOverworld() && !world.getDimension().isNether() || !NetherPortalBlock.createPortalAt(world, pos)) {
 				if (!state.canPlaceAt(world, pos)) {
 					world.removeBlock(pos, false);
 				}

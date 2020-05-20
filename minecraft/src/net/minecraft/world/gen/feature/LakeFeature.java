@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -17,8 +16,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-	public LakeFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
-		super(function);
+	public LakeFeature(Codec<SingleStateFeatureConfig> codec) {
+		super(codec);
 	}
 
 	public boolean generate(
@@ -37,7 +36,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 			return false;
 		} else {
 			blockPos = blockPos.down(4);
-			if (structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), Feature.VILLAGE).findAny().isPresent()) {
+			if (structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), StructureFeature.VILLAGE).findAny().isPresent()) {
 				return false;
 			} else {
 				boolean[] bls = new boolean[2048];

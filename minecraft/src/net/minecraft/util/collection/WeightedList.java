@@ -1,48 +1,30 @@
 package net.minecraft.util.collection;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class WeightedList<U> {
-	protected final List<WeightedList<U>.Entry<? extends U>> entries = Lists.<WeightedList<U>.Entry<? extends U>>newArrayList();
-	private final Random random;
-
-	public WeightedList(Random random) {
-		this.random = random;
-	}
+	protected final List<WeightedList.Entry<U>> entries;
+	private final Random random = new Random();
 
 	public WeightedList() {
-		this(new Random());
+		this(Lists.<WeightedList.Entry<U>>newArrayList());
 	}
 
-	public <T> WeightedList(Dynamic<T> dynamic, Function<Dynamic<T>, U> function) {
-		this();
-		dynamic.asStream().forEach(dynamicx -> dynamicx.get("data").map(dynamic2 -> {
-				U object = (U)function.apply(dynamic2);
-				int i = dynamicx.get("weight").asInt(1);
-				return this.add(object, i);
-			}));
+	private WeightedList(List<WeightedList.Entry<U>> list) {
+		this.entries = list;
 	}
 
-	public <T> T serialize(DynamicOps<T> ops, Function<U, Dynamic<T>> entrySerializer) {
-		return ops.createList(
-			this.streamEntries()
-				.map(
-					entry -> ops.createMap(
-							ImmutableMap.<T, T>builder()
-								.put(ops.createString("data"), (T)((Dynamic)entrySerializer.apply(entry.getElement())).getValue())
-								.put(ops.createString("weight"), ops.createInt(entry.getWeight()))
-								.build()
-						)
-				)
-		);
+	public static <U> Codec<WeightedList<U>> method_28338(Codec<U> codec) {
+		return WeightedList.Entry.method_28341(codec).listOf().xmap(WeightedList::new, weightedList -> weightedList.entries);
 	}
 
 	public WeightedList<U> add(U item, int weight) {
@@ -60,12 +42,12 @@ public class WeightedList<U> {
 		return this;
 	}
 
-	public Stream<? extends U> stream() {
-		return this.entries.stream().map(WeightedList.Entry::getElement);
+	public boolean method_28339() {
+		return this.entries.isEmpty();
 	}
 
-	public Stream<WeightedList<U>.Entry<? extends U>> streamEntries() {
-		return this.entries.stream();
+	public Stream<U> stream() {
+		return this.entries.stream().map(WeightedList.Entry::getElement);
 	}
 
 	public U pickRandom(Random random) {
@@ -76,14 +58,14 @@ public class WeightedList<U> {
 		return "WeightedList[" + this.entries + "]";
 	}
 
-	public class Entry<T> {
+	public static class Entry<T> {
 		private final T item;
 		private final int weight;
 		private double shuffledOrder;
 
-		private Entry(T item, int weight) {
-			this.weight = weight;
-			this.item = item;
+		private Entry(T object, int i) {
+			this.weight = i;
+			this.item = object;
 		}
 
 		private double getShuffledOrder() {
@@ -98,12 +80,25 @@ public class WeightedList<U> {
 			return this.item;
 		}
 
-		public int getWeight() {
-			return this.weight;
-		}
-
 		public String toString() {
 			return "" + this.weight + ":" + this.item;
+		}
+
+		public static <E> Codec<WeightedList.Entry<E>> method_28341(Codec<E> codec) {
+			return new Codec<WeightedList.Entry<E>>() {
+				@Override
+				public <T> DataResult<Pair<WeightedList.Entry<E>, T>> decode(DynamicOps<T> dynamicOps, T object) {
+					Dynamic<T> dynamic = new Dynamic<>(dynamicOps, object);
+					return dynamic.get("data")
+						.flatMap(codec::parse)
+						.map(objectx -> new WeightedList.Entry(objectx, dynamic.get("weight").asInt(1)))
+						.map(entry -> Pair.of(entry, dynamicOps.empty()));
+				}
+
+				public <T> DataResult<T> encode(WeightedList.Entry<E> entry, DynamicOps<T> dynamicOps, T object) {
+					return dynamicOps.mapBuilder().add("weight", dynamicOps.createInt(entry.weight)).add("data", codec.encodeStart(dynamicOps, entry.item)).build(object);
+				}
+			};
 		}
 	}
 }

@@ -39,12 +39,12 @@ public class CustomizeFlatLevelScreen extends Screen {
 		this.config = flatChunkGeneratorConfig;
 	}
 
-	public String getConfigString() {
-		return this.config.toString();
+	public FlatChunkGeneratorConfig method_29055() {
+		return this.config;
 	}
 
-	public void setConfigString(String config) {
-		this.config = FlatChunkGeneratorConfig.fromString(config);
+	public void method_29054(FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+		this.config = flatChunkGeneratorConfig;
 	}
 
 	@Override

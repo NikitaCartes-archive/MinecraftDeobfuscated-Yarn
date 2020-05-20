@@ -1,6 +1,7 @@
 package net.minecraft.world.border;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.DynamicLike;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,7 +26,7 @@ public class WorldBorder {
 	private double centerZ;
 	private int maxWorldBorderRadius = 29999984;
 	private WorldBorder.Area area = new WorldBorder.StaticArea(6.0E7);
-	public static final WorldBorder.class_5200 field_24122 = new WorldBorder.class_5200(0.0, 0.0, 0.2, 5.0, 5, 15, 6.0E7, 0L, 0.0);
+	public static final WorldBorder.Properties DEFAULT_BORDER = new WorldBorder.Properties(0.0, 0.0, 0.2, 5.0, 5, 15, 6.0E7, 0L, 0.0);
 
 	public boolean contains(BlockPos pos) {
 		return (double)(pos.getX() + 1) > this.getBoundWest()
@@ -138,8 +139,8 @@ public class WorldBorder {
 		this.listeners.add(listener);
 	}
 
-	public void setMaxWorldBorderRadius(int i) {
-		this.maxWorldBorderRadius = i;
+	public void setMaxWorldBorderRadius(int radius) {
+		this.maxWorldBorderRadius = radius;
 		this.area.onMaxWorldBorderRadiusChanged();
 	}
 
@@ -204,20 +205,20 @@ public class WorldBorder {
 		this.area = this.area.getAreaInstance();
 	}
 
-	public WorldBorder.class_5200 method_27355() {
-		return new WorldBorder.class_5200(this);
+	public WorldBorder.Properties write() {
+		return new WorldBorder.Properties(this);
 	}
 
-	public void load(WorldBorder.class_5200 levelProperties) {
-		this.setCenter(levelProperties.method_27356(), levelProperties.method_27359());
-		this.setDamagePerBlock(levelProperties.method_27360());
-		this.setBuffer(levelProperties.method_27361());
-		this.setWarningBlocks(levelProperties.method_27362());
-		this.setWarningTime(levelProperties.method_27363());
-		if (levelProperties.method_27365() > 0L) {
-			this.interpolateSize(levelProperties.method_27364(), levelProperties.method_27366(), levelProperties.method_27365());
+	public void load(WorldBorder.Properties properties) {
+		this.setCenter(properties.getCenterX(), properties.getCenterZ());
+		this.setDamagePerBlock(properties.getDamagePerBlock());
+		this.setBuffer(properties.getBuffer());
+		this.setWarningBlocks(properties.getWarningBlocks());
+		this.setWarningTime(properties.getWarningTime());
+		if (properties.getTargetRemainingTime() > 0L) {
+			this.interpolateSize(properties.getSize(), properties.getTargetSize(), properties.getTargetRemainingTime());
 		} else {
-			this.setSize(levelProperties.method_27364());
+			this.setSize(properties.getSize());
 		}
 	}
 
@@ -344,6 +345,113 @@ public class WorldBorder {
 		}
 	}
 
+	public static class Properties {
+		private final double centerX;
+		private final double centerZ;
+		private final double damagePerBlock;
+		private final double buffer;
+		private final int warningBlocks;
+		private final int warningTime;
+		private final double size;
+		private final long targetRemainingTime;
+		private final double targetSize;
+
+		private Properties(
+			double centerX,
+			double centerZ,
+			double damagePerBlock,
+			double buffer,
+			int warningBlocks,
+			int warningTime,
+			double size,
+			long targetRemainingTime,
+			double targetSize
+		) {
+			this.centerX = centerX;
+			this.centerZ = centerZ;
+			this.damagePerBlock = damagePerBlock;
+			this.buffer = buffer;
+			this.warningBlocks = warningBlocks;
+			this.warningTime = warningTime;
+			this.size = size;
+			this.targetRemainingTime = targetRemainingTime;
+			this.targetSize = targetSize;
+		}
+
+		private Properties(WorldBorder worldBorder) {
+			this.centerX = worldBorder.getCenterX();
+			this.centerZ = worldBorder.getCenterZ();
+			this.damagePerBlock = worldBorder.getDamagePerBlock();
+			this.buffer = worldBorder.getBuffer();
+			this.warningBlocks = worldBorder.getWarningBlocks();
+			this.warningTime = worldBorder.getWarningTime();
+			this.size = worldBorder.getSize();
+			this.targetRemainingTime = worldBorder.getTargetRemainingTime();
+			this.targetSize = worldBorder.getTargetSize();
+		}
+
+		public double getCenterX() {
+			return this.centerX;
+		}
+
+		public double getCenterZ() {
+			return this.centerZ;
+		}
+
+		public double getDamagePerBlock() {
+			return this.damagePerBlock;
+		}
+
+		public double getBuffer() {
+			return this.buffer;
+		}
+
+		public int getWarningBlocks() {
+			return this.warningBlocks;
+		}
+
+		public int getWarningTime() {
+			return this.warningTime;
+		}
+
+		public double getSize() {
+			return this.size;
+		}
+
+		public long getTargetRemainingTime() {
+			return this.targetRemainingTime;
+		}
+
+		public double getTargetSize() {
+			return this.targetSize;
+		}
+
+		public static WorldBorder.Properties fromDynamic(DynamicLike<?> dynamicLike, WorldBorder.Properties properties) {
+			double d = dynamicLike.get("BorderCenterX").asDouble(properties.centerX);
+			double e = dynamicLike.get("BorderCenterZ").asDouble(properties.centerZ);
+			double f = dynamicLike.get("BorderSize").asDouble(properties.size);
+			long l = dynamicLike.get("BorderSizeLerpTime").asLong(properties.targetRemainingTime);
+			double g = dynamicLike.get("BorderSizeLerpTarget").asDouble(properties.targetSize);
+			double h = dynamicLike.get("BorderSafeZone").asDouble(properties.buffer);
+			double i = dynamicLike.get("BorderDamagePerBlock").asDouble(properties.damagePerBlock);
+			int j = dynamicLike.get("BorderWarningBlocks").asInt(properties.warningBlocks);
+			int k = dynamicLike.get("BorderWarningTime").asInt(properties.warningTime);
+			return new WorldBorder.Properties(d, e, i, h, j, k, f, l, g);
+		}
+
+		public void toTag(CompoundTag tag) {
+			tag.putDouble("BorderCenterX", this.centerX);
+			tag.putDouble("BorderCenterZ", this.centerZ);
+			tag.putDouble("BorderSize", this.size);
+			tag.putLong("BorderSizeLerpTime", this.targetRemainingTime);
+			tag.putDouble("BorderSafeZone", this.buffer);
+			tag.putDouble("BorderDamagePerBlock", this.damagePerBlock);
+			tag.putDouble("BorderSizeLerpTarget", this.targetSize);
+			tag.putDouble("BorderWarningBlocks", (double)this.warningBlocks);
+			tag.putDouble("BorderWarningTime", (double)this.warningTime);
+		}
+	}
+
 	class StaticArea implements WorldBorder.Area {
 		private final double size;
 		private double boundWest;
@@ -441,139 +549,6 @@ public class WorldBorder {
 		@Override
 		public VoxelShape asVoxelShape() {
 			return this.shape;
-		}
-	}
-
-	public static class class_5200 {
-		private final double field_24123;
-		private final double field_24124;
-		private final double field_24125;
-		private final double field_24126;
-		private final int field_24127;
-		private final int field_24128;
-		private final double field_24129;
-		private final long field_24130;
-		private final double field_24131;
-
-		private class_5200(double d, double e, double f, double g, int i, int j, double h, long l, double k) {
-			this.field_24123 = d;
-			this.field_24124 = e;
-			this.field_24125 = f;
-			this.field_24126 = g;
-			this.field_24127 = i;
-			this.field_24128 = j;
-			this.field_24129 = h;
-			this.field_24130 = l;
-			this.field_24131 = k;
-		}
-
-		private class_5200(WorldBorder worldBorder) {
-			this.field_24123 = worldBorder.getCenterX();
-			this.field_24124 = worldBorder.getCenterZ();
-			this.field_24125 = worldBorder.getDamagePerBlock();
-			this.field_24126 = worldBorder.getBuffer();
-			this.field_24127 = worldBorder.getWarningBlocks();
-			this.field_24128 = worldBorder.getWarningTime();
-			this.field_24129 = worldBorder.getSize();
-			this.field_24130 = worldBorder.getTargetRemainingTime();
-			this.field_24131 = worldBorder.getTargetSize();
-		}
-
-		public double method_27356() {
-			return this.field_24123;
-		}
-
-		public double method_27359() {
-			return this.field_24124;
-		}
-
-		public double method_27360() {
-			return this.field_24125;
-		}
-
-		public double method_27361() {
-			return this.field_24126;
-		}
-
-		public int method_27362() {
-			return this.field_24127;
-		}
-
-		public int method_27363() {
-			return this.field_24128;
-		}
-
-		public double method_27364() {
-			return this.field_24129;
-		}
-
-		public long method_27365() {
-			return this.field_24130;
-		}
-
-		public double method_27366() {
-			return this.field_24131;
-		}
-
-		public static WorldBorder.class_5200 method_27358(CompoundTag compoundTag, WorldBorder.class_5200 arg) {
-			double d = arg.field_24123;
-			double e = arg.field_24124;
-			double f = arg.field_24129;
-			long l = arg.field_24130;
-			double g = arg.field_24131;
-			double h = arg.field_24126;
-			double i = arg.field_24125;
-			int j = arg.field_24127;
-			int k = arg.field_24128;
-			if (compoundTag.contains("BorderCenterX", 99)) {
-				d = compoundTag.getDouble("BorderCenterX");
-			}
-
-			if (compoundTag.contains("BorderCenterZ", 99)) {
-				e = compoundTag.getDouble("BorderCenterZ");
-			}
-
-			if (compoundTag.contains("BorderSize", 99)) {
-				f = compoundTag.getDouble("BorderSize");
-			}
-
-			if (compoundTag.contains("BorderSizeLerpTime", 99)) {
-				l = compoundTag.getLong("BorderSizeLerpTime");
-			}
-
-			if (compoundTag.contains("BorderSizeLerpTarget", 99)) {
-				g = compoundTag.getDouble("BorderSizeLerpTarget");
-			}
-
-			if (compoundTag.contains("BorderSafeZone", 99)) {
-				h = compoundTag.getDouble("BorderSafeZone");
-			}
-
-			if (compoundTag.contains("BorderDamagePerBlock", 99)) {
-				i = compoundTag.getDouble("BorderDamagePerBlock");
-			}
-
-			if (compoundTag.contains("BorderWarningBlocks", 99)) {
-				j = compoundTag.getInt("BorderWarningBlocks");
-			}
-
-			if (compoundTag.contains("BorderWarningTime", 99)) {
-				k = compoundTag.getInt("BorderWarningTime");
-			}
-
-			return new WorldBorder.class_5200(d, e, i, h, j, k, f, l, g);
-		}
-
-		public void method_27357(CompoundTag compoundTag) {
-			compoundTag.putDouble("BorderCenterX", this.field_24123);
-			compoundTag.putDouble("BorderCenterZ", this.field_24124);
-			compoundTag.putDouble("BorderSize", this.field_24129);
-			compoundTag.putLong("BorderSizeLerpTime", this.field_24130);
-			compoundTag.putDouble("BorderSafeZone", this.field_24126);
-			compoundTag.putDouble("BorderDamagePerBlock", this.field_24125);
-			compoundTag.putDouble("BorderSizeLerpTarget", this.field_24131);
-			compoundTag.putDouble("BorderWarningBlocks", (double)this.field_24127);
-			compoundTag.putDouble("BorderWarningTime", (double)this.field_24128);
 		}
 	}
 }

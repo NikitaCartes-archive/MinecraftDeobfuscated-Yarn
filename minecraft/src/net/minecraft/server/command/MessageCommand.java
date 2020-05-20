@@ -4,12 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
+import java.util.UUID;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.MessageArgumentType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 
 public class MessageCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -32,10 +34,13 @@ public class MessageCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text message) {
+		UUID uUID = source.getEntity() == null ? Util.field_25140 : source.getEntity().getUuid();
+
 		for(ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.sendSystemMessage(
 				new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message)
-					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC})
+					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
+				uUID
 			);
 			source.sendFeedback(
 				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), message)

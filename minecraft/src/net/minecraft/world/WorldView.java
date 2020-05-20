@@ -13,7 +13,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 
@@ -55,9 +54,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	@Deprecated
 	int getSeaLevel();
 
-	Dimension getDimension();
-
-	DimensionType method_27983();
+	DimensionType getDimension();
 
 	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
 		return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());
@@ -89,7 +86,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Deprecated
 	default float getBrightness(BlockPos pos) {
-		return this.getDimension().getBrightness(this.getLightLevel(pos));
+		return this.getDimension().method_28516(this.getLightLevel(pos));
 	}
 
 	default int getStrongRedstonePower(BlockPos pos, Direction direction) {

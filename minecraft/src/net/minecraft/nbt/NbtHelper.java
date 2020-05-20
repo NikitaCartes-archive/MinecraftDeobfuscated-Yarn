@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -37,8 +37,8 @@ public final class NbtHelper {
 			string = tag.getString("Name");
 		}
 
-		if (tag.containsUuidNew("Id")) {
-			uUID = tag.getUuidNew("Id");
+		if (tag.containsUuid("Id")) {
+			uUID = tag.getUuid("Id");
 		}
 
 		try {
@@ -73,7 +73,7 @@ public final class NbtHelper {
 		}
 
 		if (profile.getId() != null) {
-			tag.putUuidNew("Id", profile.getId());
+			tag.putUuid("Id", profile.getId());
 		}
 
 		if (!profile.getProperties().isEmpty()) {
@@ -217,7 +217,7 @@ public final class NbtHelper {
 		}
 	}
 
-	private static <S extends State<S>, T extends Comparable<T>> S withProperty(
+	private static <S extends State<?, S>, T extends Comparable<T>> S withProperty(
 		S state, Property<T> property, String key, CompoundTag propertiesTag, CompoundTag mainTag
 	) {
 		Optional<T> optional = property.parse(propertiesTag.getString(key));

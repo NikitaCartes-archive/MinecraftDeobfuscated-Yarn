@@ -26,7 +26,6 @@ public final class EndBiome extends Biome {
 				.parent(null)
 		);
 		this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.END_SPIKE.configure(new EndSpikeFeatureConfig(false, ImmutableList.of(), null)));
-		DefaultBiomeFeatures.addEndCities(this);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

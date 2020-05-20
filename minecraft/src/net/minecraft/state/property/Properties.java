@@ -151,7 +151,7 @@ public class Properties {
 	 * A property that specifies if a block is waterlogged.
 	 */
 	public static final BooleanProperty WATERLOGGED = BooleanProperty.of("waterlogged");
-	public static final BooleanProperty field_23084 = BooleanProperty.of("vine_end");
+	public static final BooleanProperty VINE_END = BooleanProperty.of("vine_end");
 	/**
 	 *  A property that specifies the axis a block is oriented to.
 	 * 

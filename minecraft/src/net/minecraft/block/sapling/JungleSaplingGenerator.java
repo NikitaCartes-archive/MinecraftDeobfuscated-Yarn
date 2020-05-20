@@ -12,7 +12,7 @@ public class JungleSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
 	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
-		return new TreeFeature(TreeFeatureConfig::deserialize).configure(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
+		return new TreeFeature(TreeFeatureConfig.field_24921).configure(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
 	}
 
 	@Nullable

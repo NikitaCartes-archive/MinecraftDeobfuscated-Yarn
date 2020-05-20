@@ -108,35 +108,42 @@ public class Mouse {
 		}
 	}
 
-	private void onMouseScroll(long window, double d, double e) {
+	/**
+	 * Called when a mouse is used to scroll.
+	 * 
+	 * @param window the window handle
+	 * @param horizontal the horizontal scroll distance
+	 * @param vertical the vertical scroll distance
+	 */
+	private void onMouseScroll(long window, double horizontal, double vertical) {
 		if (window == MinecraftClient.getInstance().getWindow().getHandle()) {
-			double f = (this.client.options.discreteMouseScroll ? Math.signum(e) : e) * this.client.options.mouseWheelSensitivity;
+			double d = (this.client.options.discreteMouseScroll ? Math.signum(vertical) : vertical) * this.client.options.mouseWheelSensitivity;
 			if (this.client.overlay == null) {
 				if (this.client.currentScreen != null) {
-					double g = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
-					double h = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-					this.client.currentScreen.mouseScrolled(g, h, f);
+					double e = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
+					double f = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
+					this.client.currentScreen.mouseScrolled(e, f, d);
 				} else if (this.client.player != null) {
-					if (this.eventDeltaWheel != 0.0 && Math.signum(f) != Math.signum(this.eventDeltaWheel)) {
+					if (this.eventDeltaWheel != 0.0 && Math.signum(d) != Math.signum(this.eventDeltaWheel)) {
 						this.eventDeltaWheel = 0.0;
 					}
 
-					this.eventDeltaWheel += f;
-					float i = (float)((int)this.eventDeltaWheel);
-					if (i == 0.0F) {
+					this.eventDeltaWheel += d;
+					float g = (float)((int)this.eventDeltaWheel);
+					if (g == 0.0F) {
 						return;
 					}
 
-					this.eventDeltaWheel -= (double)i;
+					this.eventDeltaWheel -= (double)g;
 					if (this.client.player.isSpectator()) {
 						if (this.client.inGameHud.getSpectatorHud().isOpen()) {
-							this.client.inGameHud.getSpectatorHud().cycleSlot((double)(-i));
+							this.client.inGameHud.getSpectatorHud().cycleSlot((double)(-g));
 						} else {
-							float j = MathHelper.clamp(this.client.player.abilities.getFlySpeed() + i * 0.005F, 0.0F, 0.2F);
-							this.client.player.abilities.setFlySpeed(j);
+							float h = MathHelper.clamp(this.client.player.abilities.getFlySpeed() + g * 0.005F, 0.0F, 0.2F);
+							this.client.player.abilities.setFlySpeed(h);
 						}
 					} else {
-						this.client.player.inventory.scrollInHotbar((double)i);
+						this.client.player.inventory.scrollInHotbar((double)g);
 					}
 				}
 			}

@@ -2,7 +2,6 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -54,7 +53,7 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 			if (!list.isEmpty()) {
 				this.chosenPosition = (GlobalPos)list.get(serverWorld.getRandom().nextInt(list.size()));
 				return this.chosenPosition != null
-					&& Objects.equals(serverWorld.method_27983(), this.chosenPosition.getDimension())
+					&& serverWorld.method_27983() == this.chosenPosition.getDimension()
 					&& ((GlobalPos)optional2.get()).getPos().isWithinDistance(villagerEntity.getPos(), (double)this.primaryPositionActivationDistance);
 			}
 		}

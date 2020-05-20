@@ -1,18 +1,16 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.AbstractIterator;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Spliterator.OfInt;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.dynamic.DynamicSerializable;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,7 +24,13 @@ import org.apache.logging.log4j.Logger;
  * #toImmutable()} to obtain an immutable block position.
  */
 @Immutable
-public class BlockPos extends Vec3i implements DynamicSerializable {
+public class BlockPos extends Vec3i {
+	public static final Codec<BlockPos> field_25064 = Codec.INT_STREAM
+		.<BlockPos>comapFlatMap(
+			intStream -> Util.method_29190(intStream, 3).map(is -> new BlockPos(is[0], is[1], is[2])),
+			blockPos -> IntStream.of(new int[]{blockPos.getX(), blockPos.getY(), blockPos.getZ()})
+		)
+		.stable();
 	private static final Logger LOGGER = LogManager.getLogger();
 	/**
 	 * The block position which x, y, and z values are all zero.
@@ -59,21 +63,6 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 
 	public BlockPos(Vec3i pos) {
 		this(pos.getX(), pos.getY(), pos.getZ());
-	}
-
-	public static <T> BlockPos deserialize(Dynamic<T> dynamic) {
-		OfInt ofInt = dynamic.asIntStream().spliterator();
-		int[] is = new int[3];
-		if (ofInt.tryAdvance(i -> is[0] = i) && ofInt.tryAdvance(i -> is[1] = i)) {
-			ofInt.tryAdvance(i -> is[2] = i);
-		}
-
-		return new BlockPos(is[0], is[1], is[2]);
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createIntList(IntStream.of(new int[]{this.getX(), this.getY(), this.getZ()}));
 	}
 
 	public static long offset(long value, Direction direction) {

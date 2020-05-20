@@ -48,9 +48,9 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class ShulkerEntity extends GolemEntity implements Monster {
-	private static final UUID ATTR_COVERED_ARMOR_BONUS_UUID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
-	private static final EntityAttributeModifier ATTR_COVERED_ARMOR_BONUS = new EntityAttributeModifier(
-		ATTR_COVERED_ARMOR_BONUS_UUID, "Covered armor bonus", 20.0, EntityAttributeModifier.Operation.ADDITION
+	private static final UUID COVERED_ARMOR_BONUS_ID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
+	private static final EntityAttributeModifier COVERED_ARMOR_BONUS = new EntityAttributeModifier(
+		COVERED_ARMOR_BONUS_ID, "Covered armor bonus", 20.0, EntityAttributeModifier.Operation.ADDITION
 	);
 	protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
 	protected static final TrackedData<Optional<BlockPos>> ATTACHED_BLOCK = DataTracker.registerData(
@@ -401,9 +401,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	public void setPeekAmount(int peekAmount) {
 		if (!this.world.isClient) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(ATTR_COVERED_ARMOR_BONUS);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS);
 			if (peekAmount == 0) {
-				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(ATTR_COVERED_ARMOR_BONUS);
+				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
 			} else {
 				this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0F, 1.0F);

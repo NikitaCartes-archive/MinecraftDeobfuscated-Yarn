@@ -2,7 +2,6 @@ package net.minecraft.world.chunk;
 
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
 import it.unimi.dsi.fastutil.shorts.ShortList;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +15,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
@@ -24,7 +22,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.source.BiomeArray;
-import net.minecraft.world.gen.GenerationStep;
 import org.apache.logging.log4j.LogManager;
 
 public interface Chunk extends BlockView, StructureHolder {
@@ -70,9 +67,9 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	void setLastSaveTime(long lastSaveTime);
 
-	Map<String, StructureStart> getStructureStarts();
+	Map<String, StructureStart<?>> getStructureStarts();
 
-	void setStructureStarts(Map<String, StructureStart> map);
+	void setStructureStarts(Map<String, StructureStart<?>> map);
 
 	default boolean method_12228(int i, int j) {
 		if (i < 0) {
@@ -128,10 +125,6 @@ public interface Chunk extends BlockView, StructureHolder {
 	TickScheduler<Block> getBlockTickScheduler();
 
 	TickScheduler<Fluid> getFluidTickScheduler();
-
-	default BitSet getCarvingMask(GenerationStep.Carver carver) {
-		throw (RuntimeException)Util.throwOrPause(new RuntimeException("Meaningless in this context"));
-	}
 
 	UpgradeData getUpgradeData();
 

@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
-public class EnderChestInventory extends BasicInventory {
+public class EnderChestInventory extends SimpleInventory {
 	private EnderChestBlockEntity activeBlockEntity;
 
 	public EnderChestInventory() {

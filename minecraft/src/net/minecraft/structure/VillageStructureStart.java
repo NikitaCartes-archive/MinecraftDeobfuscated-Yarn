@@ -1,10 +1,11 @@
 package net.minecraft.structure;
 
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
-public abstract class VillageStructureStart extends StructureStart {
-	public VillageStructureStart(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+public abstract class VillageStructureStart<C extends FeatureConfig> extends StructureStart<C> {
+	public VillageStructureStart(StructureFeature<C> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
 		super(structureFeature, i, j, blockBox, k, l);
 	}
 

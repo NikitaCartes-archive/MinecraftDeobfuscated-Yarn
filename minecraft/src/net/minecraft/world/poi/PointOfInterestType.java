@@ -113,14 +113,18 @@ public class PointOfInterestType {
 	}
 
 	private static PointOfInterestType register(String id, Set<BlockState> workStationStates, int ticketCount, int searchDistance) {
-		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(id), new PointOfInterestType(id, workStationStates, ticketCount, searchDistance)));
+		return setup(
+			Registry.register(Registry.POINT_OF_INTEREST_TYPE, new Identifier(id), new PointOfInterestType(id, workStationStates, ticketCount, searchDistance))
+		);
 	}
 
 	private static PointOfInterestType register(
 		String id, Set<BlockState> workStationStates, int ticketCount, Predicate<PointOfInterestType> completionCondition, int searchDistance
 	) {
 		return setup(
-			Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(id), new PointOfInterestType(id, workStationStates, ticketCount, completionCondition, searchDistance))
+			Registry.register(
+				Registry.POINT_OF_INTEREST_TYPE, new Identifier(id), new PointOfInterestType(id, workStationStates, ticketCount, completionCondition, searchDistance)
+			)
 		);
 	}
 

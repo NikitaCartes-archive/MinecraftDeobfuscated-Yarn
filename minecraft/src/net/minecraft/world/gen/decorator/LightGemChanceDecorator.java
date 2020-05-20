@@ -1,15 +1,14 @@
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
 public class LightGemChanceDecorator extends SimpleDecorator<CountDecoratorConfig> {
-	public LightGemChanceDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function) {
-		super(function);
+	public LightGemChanceDecorator(Codec<CountDecoratorConfig> codec) {
+		super(codec);
 	}
 
 	public Stream<BlockPos> getPositions(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {

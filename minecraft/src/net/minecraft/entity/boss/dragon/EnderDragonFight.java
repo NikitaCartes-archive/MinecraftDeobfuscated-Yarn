@@ -83,8 +83,8 @@ public class EnderDragonFight {
 	public EnderDragonFight(ServerWorld world, CompoundTag compoundTag) {
 		this.world = world;
 		if (compoundTag.contains("DragonKilled", 99)) {
-			if (compoundTag.containsUuidNew("Dragon")) {
-				this.dragonUuid = compoundTag.getUuidNew("Dragon");
+			if (compoundTag.containsUuid("Dragon")) {
+				this.dragonUuid = compoundTag.getUuid("Dragon");
 			}
 
 			this.dragonKilled = compoundTag.getBoolean("DragonKilled");
@@ -124,7 +124,7 @@ public class EnderDragonFight {
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.dragonUuid != null) {
-			compoundTag.putUuidNew("Dragon", this.dragonUuid);
+			compoundTag.putUuid("Dragon", this.dragonUuid);
 		}
 
 		compoundTag.putBoolean("DragonKilled", this.dragonKilled);

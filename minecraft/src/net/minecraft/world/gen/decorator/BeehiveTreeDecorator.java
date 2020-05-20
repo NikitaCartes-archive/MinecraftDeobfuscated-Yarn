@@ -1,8 +1,6 @@
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -17,20 +15,23 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
+	public static final Codec<BeehiveTreeDecorator> field_24958 = Codec.FLOAT
+		.fieldOf("probability")
+		.<BeehiveTreeDecorator>xmap(BeehiveTreeDecorator::new, beehiveTreeDecorator -> beehiveTreeDecorator.chance)
+		.codec();
 	private final float chance;
 
-	public BeehiveTreeDecorator(float chance) {
-		super(TreeDecoratorType.BEEHIVE);
-		this.chance = chance;
+	public BeehiveTreeDecorator(float f) {
+		this.chance = f;
 	}
 
-	public <T> BeehiveTreeDecorator(Dynamic<T> dynamic) {
-		this(dynamic.get("probability").asFloat(0.0F));
+	@Override
+	protected TreeDecoratorType<?> method_28893() {
+		return TreeDecoratorType.BEEHIVE;
 	}
 
 	@Override
@@ -60,21 +61,5 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 				}
 			}
 		}
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-				ops,
-				ops.createMap(
-					ImmutableMap.of(
-						ops.createString("type"),
-						ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString()),
-						ops.createString("probability"),
-						ops.createFloat(this.chance)
-					)
-				)
-			)
-			.getValue();
 	}
 }

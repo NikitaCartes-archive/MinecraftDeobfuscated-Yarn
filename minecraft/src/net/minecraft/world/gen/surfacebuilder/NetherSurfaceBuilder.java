@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.surfacebuilder;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,8 +18,8 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	protected long seed;
 	protected OctavePerlinNoiseSampler noise;
 
-	public NetherSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public NetherSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+		super(codec);
 	}
 
 	public void generate(

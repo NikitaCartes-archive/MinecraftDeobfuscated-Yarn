@@ -1,12 +1,20 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
+import com.mojang.serialization.Codec;
+import java.util.stream.IntStream;
 import javax.annotation.concurrent.Immutable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Util;
 
 @Immutable
 public class Vec3i implements Comparable<Vec3i> {
+	public static final Codec<Vec3i> field_25123 = Codec.INT_STREAM
+		.comapFlatMap(
+			intStream -> Util.method_29190(intStream, 3).map(is -> new Vec3i(is[0], is[1], is[2])),
+			vec3i -> IntStream.of(new int[]{vec3i.getX(), vec3i.getY(), vec3i.getZ()})
+		);
 	public static final Vec3i ZERO = new Vec3i(0, 0, 0);
 	private int x;
 	private int y;

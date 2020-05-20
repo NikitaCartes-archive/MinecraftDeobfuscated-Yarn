@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.sound.SoundEvent;
@@ -18,9 +19,21 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 	}
 
 	@Override
+	protected SoundEvent getAngrySound() {
+		super.getAngrySound();
+		return SoundEvents.ENTITY_DONKEY_ANGRY;
+	}
+
+	@Override
 	protected SoundEvent getDeathSound() {
 		super.getDeathSound();
 		return SoundEvents.ENTITY_DONKEY_DEATH;
+	}
+
+	@Nullable
+	@Override
+	protected SoundEvent method_28368() {
+		return SoundEvents.ENTITY_DONKEY_EAT;
 	}
 
 	@Override

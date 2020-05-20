@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.carver;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
@@ -13,8 +13,8 @@ import net.minecraft.world.gen.ProbabilityConfig;
 public class RavineCarver extends Carver<ProbabilityConfig> {
 	private final float[] heightToHorizontalStretchFactor = new float[1024];
 
-	public RavineCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer) {
-		super(configDeserializer, 256);
+	public RavineCarver(Codec<ProbabilityConfig> codec) {
+		super(codec, 256);
 	}
 
 	public boolean shouldCarve(Random random, int i, int j, ProbabilityConfig probabilityConfig) {

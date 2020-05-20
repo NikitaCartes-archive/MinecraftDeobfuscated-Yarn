@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -27,7 +26,7 @@ public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.memoryModuleType);
 		return optional.isPresent()
-			&& Objects.equals(serverWorld.method_27983(), ((GlobalPos)optional.get()).getDimension())
+			&& serverWorld.method_27983() == ((GlobalPos)optional.get()).getDimension()
 			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
 	}
 

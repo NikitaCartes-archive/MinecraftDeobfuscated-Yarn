@@ -272,7 +272,6 @@ public class TeleportCommand {
 					target.setHeadYaw(f);
 				} else {
 					target.detach();
-					target.dimension = world.method_27983();
 					Entity entity = target;
 					target = target.getType().create(world);
 					if (target == null) {

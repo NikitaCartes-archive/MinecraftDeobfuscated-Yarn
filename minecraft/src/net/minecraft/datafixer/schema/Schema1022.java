@@ -15,7 +15,7 @@ public class Schema1022 extends Schema {
 	@Override
 	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
 		super.registerTypes(schema, entityTypes, blockEntityTypes);
-		schema.registerType(false, TypeReferences.RECIPE, () -> DSL.constType(DSL.namespacedString()));
+		schema.registerType(false, TypeReferences.RECIPE, () -> DSL.constType(IdentifierNormalizingSchema.method_28295()));
 		schema.registerType(
 			false,
 			TypeReferences.PLAYER,

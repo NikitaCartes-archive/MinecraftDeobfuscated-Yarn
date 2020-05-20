@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
@@ -10,8 +9,8 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SpringFeature extends Feature<SpringFeatureConfig> {
-	public SpringFeature(Function<Dynamic<?>, ? extends SpringFeatureConfig> function) {
-		super(function);
+	public SpringFeature(Codec<SpringFeatureConfig> codec) {
+		super(codec);
 	}
 
 	public boolean generate(

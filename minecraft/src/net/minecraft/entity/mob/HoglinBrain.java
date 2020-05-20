@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +37,7 @@ import net.minecraft.util.math.IntRange;
 public class HoglinBrain {
 	private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
 
-	protected static Brain<?> create(Dynamic<?> dynamic) {
-		Brain<HoglinEntity> brain = new Brain<>(HoglinEntity.MEMORY_MODULE_TYPES, HoglinEntity.SENSOR_TYPES, dynamic);
+	protected static Brain<?> create(Brain<HoglinEntity> brain) {
 		addCoreTasks(brain);
 		addIdleTasks(brain);
 		addFightTasks(brain);

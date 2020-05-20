@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-public class IntProperty extends AbstractProperty<Integer> {
+public class IntProperty extends Property<Integer> {
 	private final ImmutableSet<Integer> values;
 
 	protected IntProperty(String name, int min, int max) {

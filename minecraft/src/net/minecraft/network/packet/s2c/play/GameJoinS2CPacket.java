@@ -6,15 +6,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTracker;
 
 public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int playerEntityId;
 	private long seed;
 	private boolean hardcore;
 	private GameMode gameMode;
-	private DimensionType dimension;
+	private DimensionTracker.Modifiable dimensionTracker;
+	private Identifier dimensionId;
 	private int maxPlayers;
 	private int chunkLoadDistance;
 	private boolean reducedDebugInfo;
@@ -30,7 +32,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		GameMode gameMode,
 		long seed,
 		boolean hardcore,
-		DimensionType dimensionType,
+		DimensionTracker.Modifiable dimensionTracker,
+		Identifier dimensionId,
 		int maxPlayers,
 		int chunkLoadDistance,
 		boolean reducedDebugInfo,
@@ -39,7 +42,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		boolean flatWorld
 	) {
 		this.playerEntityId = playerEntityId;
-		this.dimension = dimensionType;
+		this.dimensionTracker = dimensionTracker;
+		this.dimensionId = dimensionId;
 		this.seed = seed;
 		this.gameMode = gameMode;
 		this.maxPlayers = maxPlayers;
@@ -58,7 +62,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.hardcore = (i & 8) == 8;
 		i &= -9;
 		this.gameMode = GameMode.byId(i);
-		this.dimension = DimensionType.byRawId(buf.readInt());
+		this.dimensionTracker = buf.decode(DimensionTracker.Modifiable.CODEC);
+		this.dimensionId = buf.readIdentifier();
 		this.seed = buf.readLong();
 		this.maxPlayers = buf.readUnsignedByte();
 		this.chunkLoadDistance = buf.readVarInt();
@@ -77,7 +82,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		buf.writeByte(i);
-		buf.writeInt(this.dimension.getRawId());
+		buf.encode(DimensionTracker.Modifiable.CODEC, this.dimensionTracker);
+		buf.writeIdentifier(this.dimensionId);
 		buf.writeLong(this.seed);
 		buf.writeByte(this.maxPlayers);
 		buf.writeVarInt(this.chunkLoadDistance);
@@ -112,8 +118,13 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public DimensionType getDimension() {
-		return this.dimension;
+	public DimensionTracker getDimension() {
+		return this.dimensionTracker;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Identifier getDimensionId() {
+		return this.dimensionId;
 	}
 
 	@Environment(EnvType.CLIENT)

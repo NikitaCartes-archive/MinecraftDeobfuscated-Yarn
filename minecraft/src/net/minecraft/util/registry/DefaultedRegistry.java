@@ -1,5 +1,6 @@
 package net.minecraft.util.registry;
 
+import com.mojang.serialization.Lifecycle;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,17 +10,18 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	private final Identifier defaultId;
 	private T defaultValue;
 
-	public DefaultedRegistry(String defaultId) {
+	public DefaultedRegistry(String defaultId, RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle) {
+		super(registryKey, lifecycle);
 		this.defaultId = new Identifier(defaultId);
 	}
 
 	@Override
-	public <V extends T> V set(int rawId, Identifier id, V entry) {
-		if (this.defaultId.equals(id)) {
+	public <V extends T> V set(int rawId, RegistryKey<T> registryKey, V entry) {
+		if (this.defaultId.equals(registryKey.getValue())) {
 			this.defaultValue = (T)entry;
 		}
 
-		return super.set(rawId, id, entry);
+		return super.set(rawId, registryKey, entry);
 	}
 
 	@Override

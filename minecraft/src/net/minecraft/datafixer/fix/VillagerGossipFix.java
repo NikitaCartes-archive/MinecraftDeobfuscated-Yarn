@@ -2,9 +2,9 @@ package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 
@@ -21,6 +21,7 @@ public class VillagerGossipFix extends ChoiceFix {
 					"Gossips",
 					dynamicx -> DataFixUtils.orElse(
 							dynamicx.asStreamOpt()
+								.result()
 								.map(stream -> stream.map(dynamicxx -> (Dynamic)AbstractUuidFix.updateRegularMostLeast(dynamicxx, "Target", "Target").orElse(dynamicxx)))
 								.map(dynamicx::createList),
 							dynamicx

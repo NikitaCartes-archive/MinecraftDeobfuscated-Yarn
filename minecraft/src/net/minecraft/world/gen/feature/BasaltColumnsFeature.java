@@ -1,9 +1,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -29,8 +28,8 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		Blocks.SPAWNER
 	);
 
-	public BasaltColumnsFeature(Function<Dynamic<?>, ? extends BasaltColumnsFeatureConfig> function) {
-		super(function);
+	public BasaltColumnsFeature(Codec<BasaltColumnsFeatureConfig> codec) {
+		super(codec);
 	}
 
 	public boolean generate(

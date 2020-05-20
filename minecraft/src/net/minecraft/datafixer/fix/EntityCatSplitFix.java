@@ -1,8 +1,8 @@
 package net.minecraft.datafixer.fix;
 
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 
 public class EntityCatSplitFix extends EntitySimpleTransformFix {
@@ -11,22 +11,22 @@ public class EntityCatSplitFix extends EntitySimpleTransformFix {
 	}
 
 	@Override
-	protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> tag) {
+	protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> dynamic) {
 		if (Objects.equals("minecraft:ocelot", choice)) {
-			int i = tag.get("CatType").asInt(0);
+			int i = dynamic.get("CatType").asInt(0);
 			if (i == 0) {
-				String string = tag.get("Owner").asString("");
-				String string2 = tag.get("OwnerUUID").asString("");
+				String string = dynamic.get("Owner").asString("");
+				String string2 = dynamic.get("OwnerUUID").asString("");
 				if (string.length() > 0 || string2.length() > 0) {
-					tag.set("Trusting", tag.createBoolean(true));
+					dynamic.set("Trusting", dynamic.createBoolean(true));
 				}
 			} else if (i > 0 && i < 4) {
-				tag = tag.set("CatType", tag.createInt(i));
-				tag = tag.set("OwnerUUID", tag.createString(tag.get("OwnerUUID").asString("")));
-				return Pair.of("minecraft:cat", tag);
+				dynamic = dynamic.set("CatType", dynamic.createInt(i));
+				dynamic = dynamic.set("OwnerUUID", dynamic.createString(dynamic.get("OwnerUUID").asString("")));
+				return Pair.of("minecraft:cat", dynamic);
 			}
 		}
 
-		return Pair.of(choice, tag);
+		return Pair.of(choice, dynamic);
 	}
 }

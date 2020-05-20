@@ -51,15 +51,15 @@ public class ForgingScreen<T extends ForgingScreenHandler> extends HandledScreen
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(this.texture);
-		int j = (this.width - this.backgroundWidth) / 2;
-		int k = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.drawTexture(matrixStack, j + 59, k + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+		int i = (this.width - this.backgroundWidth) / 2;
+		int j = (this.height - this.backgroundHeight) / 2;
+		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(matrices, i + 59, j + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
 		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(2).hasStack()) {
-			this.drawTexture(matrixStack, j + 99, k + 45, this.backgroundWidth, 0, 28, 21);
+			this.drawTexture(matrices, i + 99, j + 45, this.backgroundWidth, 0, 28, 21);
 		}
 	}
 

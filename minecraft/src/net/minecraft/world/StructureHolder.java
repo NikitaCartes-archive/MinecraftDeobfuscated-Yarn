@@ -7,9 +7,9 @@ import net.minecraft.structure.StructureStart;
 
 public interface StructureHolder {
 	@Nullable
-	StructureStart getStructureStart(String structure);
+	StructureStart<?> getStructureStart(String structure);
 
-	void setStructureStart(String structure, StructureStart start);
+	void setStructureStart(String structure, StructureStart<?> start);
 
 	LongSet getStructureReferences(String structure);
 

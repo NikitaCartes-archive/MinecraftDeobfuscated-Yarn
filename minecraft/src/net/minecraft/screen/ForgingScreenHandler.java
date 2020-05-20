@@ -5,9 +5,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 public abstract class ForgingScreenHandler extends ScreenHandler {
 	protected final Inventory output = new CraftingResultInventory();
-	protected final Inventory input = new BasicInventory(2) {
+	protected final Inventory input = new SimpleInventory(2) {
 		@Override
 		public void markDirty() {
 			super.markDirty();

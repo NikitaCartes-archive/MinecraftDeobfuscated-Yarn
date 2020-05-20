@@ -21,6 +21,7 @@ import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
 import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
@@ -523,7 +524,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							ItemEntry.builder(Items.MAP)
 								.apply(
 									ExplorationMapLootFunction.create()
-										.withDestination("buried_treasure")
+										.withDestination(StructureFeature.BURIED_TREASURE)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
@@ -751,7 +752,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 								.weight(10)
 								.apply(
 									ExplorationMapLootFunction.create()
-										.withDestination("buried_treasure")
+										.withDestination(StructureFeature.BURIED_TREASURE)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
@@ -782,7 +783,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 								.weight(5)
 								.apply(
 									ExplorationMapLootFunction.create()
-										.withDestination("buried_treasure")
+										.withDestination(StructureFeature.BURIED_TREASURE)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)

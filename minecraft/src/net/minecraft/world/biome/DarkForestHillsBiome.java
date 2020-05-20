@@ -10,12 +10,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.MineshaftFeature;
-import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
-import net.minecraft.world.gen.feature.RuinedPortalFeature;
-import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class DarkForestHillsBiome extends Biome {
@@ -32,12 +27,10 @@ public final class DarkForestHillsBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent("dark_forest")
 		);
-		this.addStructureFeature(Feature.WOODLAND_MANSION.configure(FeatureConfig.DEFAULT));
-		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-		this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
-		this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD)));
+		this.addStructureFeature(DefaultBiomeFeatures.field_24690);
+		DefaultBiomeFeatures.method_28440(this);
+		this.addStructureFeature(DefaultBiomeFeatures.field_24711);
 		DefaultBiomeFeatures.addLandCarvers(this);
-		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
 		this.addFeature(

@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
@@ -32,7 +32,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	final Slot outputSlot;
 	private Runnable contentsChangedListener = () -> {
 	};
-	public final Inventory input = new BasicInventory(1) {
+	public final Inventory input = new SimpleInventory(1) {
 		@Override
 		public void markDirty() {
 			super.markDirty();
@@ -187,7 +187,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 				if (!this.insertItem(itemStack2, 2, 38, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (this.world.getRecipeManager().getFirstMatch(RecipeType.STONECUTTING, new BasicInventory(itemStack2), this.world).isPresent()) {
+			} else if (this.world.getRecipeManager().getFirstMatch(RecipeType.STONECUTTING, new SimpleInventory(itemStack2), this.world).isPresent()) {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}

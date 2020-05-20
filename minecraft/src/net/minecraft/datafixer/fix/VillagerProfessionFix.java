@@ -3,9 +3,9 @@ package net.minecraft.datafixer.fix;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class VillagerProfessionFix extends ChoiceFix {
@@ -30,7 +30,7 @@ public class VillagerProfessionFix extends ChoiceFix {
 							dynamic.createString("profession"),
 							dynamic.createString(convertProfessionId(dynamic.get("Profession").asInt(0), dynamic.get("Career").asInt(0))),
 							dynamic.createString("level"),
-							DataFixUtils.orElse(dynamic.get("CareerLevel").get(), dynamic.createInt(1))
+							DataFixUtils.orElse(dynamic.get("CareerLevel").result(), dynamic.createInt(1))
 						)
 					)
 				)

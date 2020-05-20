@@ -1,15 +1,14 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 
 public class HugeRedMushroomFeature extends HugeMushroomFeature {
-	public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
-		super(function);
+	public HugeRedMushroomFeature(Codec<HugeMushroomFeatureConfig> codec) {
+		super(codec);
 	}
 
 	@Override

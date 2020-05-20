@@ -90,7 +90,7 @@ public class DebugStickItem extends Item {
 	}
 
 	private static void sendMessage(PlayerEntity player, Text message) {
-		((ServerPlayerEntity)player).sendMessage(message, MessageType.GAME_INFO);
+		((ServerPlayerEntity)player).sendMessage(message, MessageType.GAME_INFO, Util.field_25140);
 	}
 
 	private static <T extends Comparable<T>> String getValueString(BlockState state, Property<T> property) {

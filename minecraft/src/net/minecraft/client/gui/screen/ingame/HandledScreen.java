@@ -143,9 +143,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		RenderSystem.enableDepthTest();
 	}
 
-	protected void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j) {
+	protected void drawMouseoverTooltip(MatrixStack matrices, int x, int y) {
 		if (this.client.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
-			this.renderTooltip(matrixStack, this.focusedSlot.getStack(), i, j);
+			this.renderTooltip(matrices, this.focusedSlot.getStack(), x, y);
 		}
 	}
 
@@ -159,12 +159,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
-	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 	}
 
-	protected abstract void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i);
+	protected abstract void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY);
 
-	private void drawSlot(MatrixStack matrixStack, Slot slot) {
+	private void drawSlot(MatrixStack matrices, Slot slot) {
 		int i = slot.x;
 		int j = slot.y;
 		ItemStack itemStack = slot.getStack();
@@ -202,14 +202,14 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			if (pair != null) {
 				Sprite sprite = (Sprite)this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
 				this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-				drawSprite(matrixStack, i, j, this.getZOffset(), 16, 16, sprite);
+				drawSprite(matrices, i, j, this.getZOffset(), 16, 16, sprite);
 				bl2 = true;
 			}
 		}
 
 		if (!bl2) {
 			if (bl) {
-				fill(matrixStack, i, j, i + 16, j + 16, -2130706433);
+				fill(matrices, i, j, i + 16, j + 16, -2130706433);
 			}
 
 			RenderSystem.enableDepthTest();

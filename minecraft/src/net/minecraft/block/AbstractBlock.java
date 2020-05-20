@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +33,6 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.AbstractState;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.FluidTags;
@@ -345,7 +345,7 @@ public abstract class AbstractBlock {
 		return (MaterialColor)this.settings.materialColorFactory.apply(this.asBlock().getDefaultState());
 	}
 
-	public abstract static class AbstractBlockState extends AbstractState<Block, BlockState> implements State<BlockState> {
+	public abstract static class AbstractBlockState extends State<Block, BlockState> {
 		private final int luminance;
 		private final boolean hasSidedTransparency;
 		private final boolean isAir;
@@ -361,8 +361,8 @@ public abstract class AbstractBlock {
 		@Nullable
 		protected AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
 
-		protected AbstractBlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertyMap) {
-			super(block, propertyMap);
+		protected AbstractBlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertyMap, MapCodec<BlockState> mapCodec) {
+			super(block, propertyMap, mapCodec);
 			AbstractBlock.Settings settings = block.settings;
 			this.luminance = settings.luminance.applyAsInt(this.asBlockState());
 			this.hasSidedTransparency = block.hasSidedTransparency(this.asBlockState());

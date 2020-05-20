@@ -35,6 +35,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -46,7 +47,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -108,8 +108,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		this.setHealth(this.getMaximumHealth());
 		this.noClip = true;
 		this.ignoreCameraFrustum = true;
-		if (!world.isClient && world.getDimension() instanceof TheEndDimension) {
-			this.fight = ((TheEndDimension)world.getDimension()).getEnderDragonFight();
+		if (world instanceof ServerWorld) {
+			this.fight = ((ServerWorld)world).method_29198();
 		} else {
 			this.fight = null;
 		}

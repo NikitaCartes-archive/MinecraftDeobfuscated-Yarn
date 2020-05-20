@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -68,7 +69,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		tag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
+		VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tagx -> tag.put("VillagerData", tagx));
 		if (this.offerData != null) {
 			tag.put("Offers", this.offerData);
 		}
@@ -79,7 +80,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		tag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
 		if (this.converter != null) {
-			tag.putUuidNew("ConversionPlayer", this.converter);
+			tag.putUuid("ConversionPlayer", this.converter);
 		}
 
 		tag.putInt("Xp", this.xp);
@@ -89,7 +90,8 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		if (tag.contains("VillagerData", 10)) {
-			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, tag.get("VillagerData"))));
+			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, tag.get("VillagerData")));
+			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
 		}
 
 		if (tag.contains("Offers", 10)) {
@@ -101,7 +103,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		if (tag.contains("ConversionTime", 99) && tag.getInt("ConversionTime") > -1) {
-			this.setConverting(tag.containsUuidNew("ConversionPlayer") ? tag.getUuidNew("ConversionPlayer") : null, tag.getInt("ConversionTime"));
+			this.setConverting(tag.containsUuid("ConversionPlayer") ? tag.getUuid("ConversionPlayer") : null, tag.getInt("ConversionTime"));
 		}
 
 		if (tag.contains("Xp", 3)) {

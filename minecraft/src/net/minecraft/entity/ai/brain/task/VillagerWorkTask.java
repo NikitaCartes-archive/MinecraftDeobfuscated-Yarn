@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
@@ -27,7 +26,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 		} else {
 			this.lastCheckedTime = serverWorld.getTime();
 			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
-			return Objects.equals(globalPos.getDimension(), serverWorld.method_27983()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+			return globalPos.getDimension() == serverWorld.method_27983() && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 
@@ -52,7 +51,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 			return false;
 		} else {
 			GlobalPos globalPos = (GlobalPos)optional.get();
-			return Objects.equals(globalPos.getDimension(), serverWorld.method_27983()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+			return globalPos.getDimension() == serverWorld.method_27983() && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 }

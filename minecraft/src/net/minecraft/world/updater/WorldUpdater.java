@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenCustomHashMap;
@@ -13,20 +14,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5219;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentStateManager;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.RegionFile;
@@ -38,6 +41,7 @@ public class WorldUpdater {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private final String levelName;
+	private final ImmutableMap<RegistryKey<DimensionType>, DimensionType> field_24654;
 	private final boolean eraseCache;
 	private final LevelStorage.Session field_24083;
 	private final Thread updateThread;
@@ -55,13 +59,18 @@ public class WorldUpdater {
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
-	public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, class_5219 arg, boolean bl) {
-		this.levelName = arg.getLevelName();
+	public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, SaveProperties saveProperties, boolean bl) {
+		this.levelName = saveProperties.getLevelName();
+		this.field_24654 = (ImmutableMap)saveProperties.method_28057()
+			.method_28609()
+			.entrySet()
+			.stream()
+			.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> (DimensionType)((Pair)entry.getValue()).getFirst()));
 		this.eraseCache = bl;
 		this.field_24084 = dataFixer;
 		this.field_24083 = session;
-		session.method_27425(arg);
-		this.persistentStateManager = new PersistentStateManager(new File(this.field_24083.method_27424(DimensionType.OVERWORLD), "data"), dataFixer);
+		session.method_27425(saveProperties);
+		this.persistentStateManager = new PersistentStateManager(new File(this.field_24083.method_27424(DimensionType.OVERWORLD_REGISTRY_KEY), "data"), dataFixer);
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
@@ -84,9 +93,9 @@ public class WorldUpdater {
 		this.totalChunkCount = 0;
 		Builder<DimensionType, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
 
-		for(DimensionType dimensionType : DimensionType.getAll()) {
-			List<ChunkPos> list = this.getChunkPositions(dimensionType);
-			builder.put(dimensionType, list.listIterator());
+		for(Entry<RegistryKey<DimensionType>, DimensionType> entry : this.field_24654.entrySet()) {
+			List<ChunkPos> list = this.getChunkPositions((RegistryKey<DimensionType>)entry.getKey());
+			builder.put((DimensionType)entry.getValue(), list.listIterator());
 			this.totalChunkCount += list.size();
 		}
 
@@ -97,9 +106,9 @@ public class WorldUpdater {
 			ImmutableMap<DimensionType, ListIterator<ChunkPos>> immutableMap = builder.build();
 			Builder<DimensionType, VersionedChunkStorage> builder2 = ImmutableMap.builder();
 
-			for(DimensionType dimensionType2 : DimensionType.getAll()) {
-				File file = this.field_24083.method_27424(dimensionType2);
-				builder2.put(dimensionType2, new VersionedChunkStorage(new File(file, "region"), this.field_24084, true));
+			for(Entry<RegistryKey<DimensionType>, DimensionType> entry2 : this.field_24654.entrySet()) {
+				File file = this.field_24083.method_27424((RegistryKey<DimensionType>)entry2.getKey());
+				builder2.put((DimensionType)entry2.getValue(), new VersionedChunkStorage(new File(file, "region"), this.field_24084, true));
 			}
 
 			ImmutableMap<DimensionType, VersionedChunkStorage> immutableMap2 = builder2.build();
@@ -110,9 +119,9 @@ public class WorldUpdater {
 				boolean bl = false;
 				float g = 0.0F;
 
-				for(DimensionType dimensionType3 : DimensionType.getAll()) {
-					ListIterator<ChunkPos> listIterator = (ListIterator)immutableMap.get(dimensionType3);
-					VersionedChunkStorage versionedChunkStorage = immutableMap2.get(dimensionType3);
+				for(DimensionType dimensionType : this.field_24654.values()) {
+					ListIterator<ChunkPos> listIterator = (ListIterator)immutableMap.get(dimensionType);
+					VersionedChunkStorage versionedChunkStorage = immutableMap2.get(dimensionType);
 					if (listIterator.hasNext()) {
 						ChunkPos chunkPos = (ChunkPos)listIterator.next();
 						boolean bl2 = false;
@@ -121,7 +130,7 @@ public class WorldUpdater {
 							CompoundTag compoundTag = versionedChunkStorage.getNbt(chunkPos);
 							if (compoundTag != null) {
 								int i = VersionedChunkStorage.getDataVersion(compoundTag);
-								CompoundTag compoundTag2 = versionedChunkStorage.updateChunkTag(dimensionType3, () -> this.persistentStateManager, compoundTag);
+								CompoundTag compoundTag2 = versionedChunkStorage.updateChunkTag(dimensionType, () -> this.persistentStateManager, compoundTag);
 								CompoundTag compoundTag3 = compoundTag2.getCompound("Level");
 								ChunkPos chunkPos2 = new ChunkPos(compoundTag3.getInt("xPos"), compoundTag3.getInt("zPos"));
 								if (!chunkPos2.equals(chunkPos)) {
@@ -162,7 +171,7 @@ public class WorldUpdater {
 					}
 
 					float h = (float)listIterator.nextIndex() / f;
-					this.dimensionProgress.put(dimensionType3, h);
+					this.dimensionProgress.put(dimensionType, h);
 					g += h;
 				}
 
@@ -189,8 +198,8 @@ public class WorldUpdater {
 		}
 	}
 
-	private List<ChunkPos> getChunkPositions(DimensionType dimensionType) {
-		File file = this.field_24083.method_27424(dimensionType);
+	private List<ChunkPos> getChunkPositions(RegistryKey<DimensionType> registryKey) {
+		File file = this.field_24083.method_27424(registryKey);
 		File file2 = new File(file, "region");
 		File[] files = file2.listFiles((filex, string) -> string.endsWith(".mca"));
 		if (files == null) {
@@ -224,6 +233,11 @@ public class WorldUpdater {
 
 	public boolean isDone() {
 		return this.isDone;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public ImmutableMap<RegistryKey<DimensionType>, DimensionType> method_28304() {
+		return this.field_24654;
 	}
 
 	@Environment(EnvType.CLIENT)

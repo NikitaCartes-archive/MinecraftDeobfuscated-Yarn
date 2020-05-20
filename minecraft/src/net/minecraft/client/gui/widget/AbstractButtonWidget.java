@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
@@ -108,7 +107,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		int i = this.getYImage(this.isHovered());
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.enableDepthTest();
 		this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
 		this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderBg(matrices, minecraftClient, mouseX, mouseY);

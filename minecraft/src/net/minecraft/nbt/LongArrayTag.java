@@ -178,6 +178,11 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return LongTag.of(l);
 	}
 
+	@Override
+	public byte getElementType() {
+		return 4;
+	}
+
 	public void clear() {
 		this.value = new long[0];
 	}

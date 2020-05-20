@@ -20,10 +20,10 @@ import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5218;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -333,7 +333,7 @@ public class FileDownload {
 
 			try (LevelStorage.Session session2 = storage.createSession(string)) {
 				session2.save(string.trim());
-				Path path2 = session2.getDirectory(class_5218.field_24184);
+				Path path2 = session2.getDirectory(WorldSavePath.LEVEL_DAT);
 				readNbtFile(path2.toFile());
 			} catch (IOException var124) {
 				LOGGER.error("Failed to rename unpacked realms level {}", string, var124);

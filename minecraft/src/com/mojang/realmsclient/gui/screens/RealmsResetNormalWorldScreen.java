@@ -22,7 +22,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	private Text[] field_24205 = new Text[]{
 		new TranslatableText("generator.default"),
 		new TranslatableText("generator.flat"),
-		new TranslatableText("generator.largeBiomes"),
+		new TranslatableText("generator.large_biomes"),
 		new TranslatableText("generator.amplified")
 	};
 	private Text field_24206;

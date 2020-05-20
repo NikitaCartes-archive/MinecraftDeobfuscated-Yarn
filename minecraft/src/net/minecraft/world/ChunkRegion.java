@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5217;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -36,7 +35,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,9 +47,9 @@ public class ChunkRegion implements ServerWorldAccess {
 	private final int width;
 	private final ServerWorld world;
 	private final long seed;
-	private final class_5217 levelProperties;
+	private final WorldProperties levelProperties;
 	private final Random random;
-	private final Dimension dimension;
+	private final DimensionType dimension;
 	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getBlockTickScheduler());
 	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getFluidTickScheduler());
 	private final BiomeAccess biomeAccess;
@@ -73,7 +71,7 @@ public class ChunkRegion implements ServerWorldAccess {
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
 			this.dimension = world.getDimension();
-			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.method_27983().getBiomeAccessType());
+			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
 			this.field_23788 = ((Chunk)chunks.get(0)).getPos();
 			this.field_23789 = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
 		}
@@ -284,7 +282,7 @@ public class ChunkRegion implements ServerWorldAccess {
 	}
 
 	@Override
-	public class_5217 getLevelProperties() {
+	public WorldProperties getLevelProperties() {
 		return this.levelProperties;
 	}
 
@@ -345,13 +343,8 @@ public class ChunkRegion implements ServerWorldAccess {
 	}
 
 	@Override
-	public Dimension getDimension() {
+	public DimensionType getDimension() {
 		return this.dimension;
-	}
-
-	@Override
-	public DimensionType method_27983() {
-		return this.dimension.getType();
 	}
 
 	@Override

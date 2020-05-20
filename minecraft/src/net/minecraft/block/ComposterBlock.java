@@ -9,8 +9,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.SidedInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -314,7 +314,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 	}
 
-	static class ComposterInventory extends BasicInventory implements SidedInventory {
+	static class ComposterInventory extends SimpleInventory implements SidedInventory {
 		private final BlockState state;
 		private final WorldAccess world;
 		private final BlockPos pos;
@@ -359,7 +359,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 	}
 
-	static class DummyInventory extends BasicInventory implements SidedInventory {
+	static class DummyInventory extends SimpleInventory implements SidedInventory {
 		public DummyInventory() {
 			super(0);
 		}
@@ -380,7 +380,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 	}
 
-	static class FullComposterInventory extends BasicInventory implements SidedInventory {
+	static class FullComposterInventory extends SimpleInventory implements SidedInventory {
 		private final BlockState state;
 		private final WorldAccess world;
 		private final BlockPos pos;

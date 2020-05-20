@@ -2,8 +2,8 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
@@ -51,10 +51,10 @@ import net.minecraft.world.World;
 public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int movementCooldownTicks;
-	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> field_23731 = ImmutableList.of(
+	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> USED_SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS
 	);
-	protected static final ImmutableList<? extends MemoryModuleType<?>> field_23733 = ImmutableList.of(
+	protected static final ImmutableList<? extends MemoryModuleType<?>> USED_MEMORY_MODULES = ImmutableList.of(
 		MemoryModuleType.MOBS,
 		MemoryModuleType.VISIBLE_MOBS,
 		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
@@ -73,8 +73,13 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	protected Brain<?> deserializeBrain(Dynamic<?> data) {
-		Brain<ZoglinEntity> brain = new Brain<>(field_23733, field_23731, data);
+	protected Brain.Profile<ZoglinEntity> createBrainProfile() {
+		return Brain.createProfile(USED_MEMORY_MODULES, USED_SENSORS);
+	}
+
+	@Override
+	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+		Brain<ZoglinEntity> brain = this.createBrainProfile().deserialize(dynamic);
 		method_26928(brain);
 		method_26929(brain);
 		method_26930(brain);

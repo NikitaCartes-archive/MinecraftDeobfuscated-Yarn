@@ -32,19 +32,19 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-		this.textRenderer.draw(matrixStack, this.title, 8.0F, 4.0F, 4210752);
-		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
+	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+		this.textRenderer.draw(matrices, this.title, 8.0F, 4.0F, 4210752);
+		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
-		this.renderBackground(matrixStack);
+	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+		this.renderBackground(matrices);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int j = this.x;
-		int k = this.y;
-		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		int i = this.x;
+		int j = this.y;
+		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		Item item = this.handler.getSlot(1).getStack().getItem();
 		boolean bl = item == Items.MAP;
 		boolean bl2 = item == Items.PAPER;
@@ -58,20 +58,20 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 				if (mapState.locked) {
 					bl4 = true;
 					if (bl2 || bl3) {
-						this.drawTexture(matrixStack, j + 35, k + 31, this.backgroundWidth + 50, 132, 28, 21);
+						this.drawTexture(matrices, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
 					}
 				}
 
 				if (bl2 && mapState.scale >= 4) {
 					bl4 = true;
-					this.drawTexture(matrixStack, j + 35, k + 31, this.backgroundWidth + 50, 132, 28, 21);
+					this.drawTexture(matrices, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
 				}
 			}
 		} else {
 			mapState = null;
 		}
 
-		this.drawMap(matrixStack, mapState, bl, bl2, bl3, bl4);
+		this.drawMap(matrices, mapState, bl, bl2, bl3, bl4);
 	}
 
 	private void drawMap(MatrixStack matrixStack, @Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {

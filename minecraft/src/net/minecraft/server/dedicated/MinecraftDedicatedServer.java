@@ -20,7 +20,6 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5219;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -47,6 +46,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
@@ -65,7 +65,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	public MinecraftDedicatedServer(
 		LevelStorage.Session session,
-		class_5219 arg,
+		SaveProperties saveProperties,
 		ServerPropertiesLoader serverPropertiesLoader,
 		DataFixer dataFixer,
 		MinecraftSessionService minecraftSessionService,
@@ -75,7 +75,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	) {
 		super(
 			session,
-			arg,
+			saveProperties,
 			Proxy.NO_PROXY,
 			dataFixer,
 			new CommandManager(true),
@@ -185,7 +185,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (!ServerConfigHandler.checkSuccess(this)) {
 			return false;
 		} else {
-			this.setPlayerManager(new DedicatedPlayerManager(this, this.field_24371));
+			this.setPlayerManager(new DedicatedPlayerManager(this, this.field_25132, this.field_24371));
 			long l = Util.getMeasuringTimeNano();
 			this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
 			SkullBlockEntity.setUserCache(this.getUserCache());
@@ -405,7 +405,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
-		if (serverWorld.method_27983() != DimensionType.OVERWORLD) {
+		if (serverWorld.method_27983() != DimensionType.OVERWORLD_REGISTRY_KEY) {
 			return false;
 		} else if (this.getPlayerManager().getOpList().isEmpty()) {
 			return false;
@@ -414,7 +414,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		} else if (this.getSpawnProtectionRadius() <= 0) {
 			return false;
 		} else {
-			BlockPos blockPos = serverWorld.method_27911();
+			BlockPos blockPos = serverWorld.getSpawnPos();
 			int i = MathHelper.abs(pos.getX() - blockPos.getX());
 			int j = MathHelper.abs(pos.getZ() - blockPos.getZ());
 			int k = Math.max(i, j);

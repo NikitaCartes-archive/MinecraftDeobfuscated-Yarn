@@ -10,6 +10,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class VillagerTradeFix extends ChoiceFix {
 	public VillagerTradeFix(Schema outputSchema, boolean changesType) {
@@ -30,7 +31,9 @@ public class VillagerTradeFix extends ChoiceFix {
 			OpticFinder<?> opticFinder4 = type2.findField("buy");
 			OpticFinder<?> opticFinder5 = type2.findField("buyB");
 			OpticFinder<?> opticFinder6 = type2.findField("sell");
-			OpticFinder<Pair<String, String>> opticFinder7 = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString()));
+			OpticFinder<Pair<String, String>> opticFinder7 = DSL.fieldFinder(
+				"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295())
+			);
 			Function<Typed<?>, Typed<?>> function = typed -> this.fixPumpkinTrade(opticFinder7, typed);
 			return inputType.updateTyped(
 				opticFinder,

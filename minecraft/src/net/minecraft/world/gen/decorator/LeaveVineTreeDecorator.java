@@ -1,27 +1,25 @@
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Supplier;
 import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class LeaveVineTreeDecorator extends TreeDecorator {
-	public LeaveVineTreeDecorator() {
-		super(TreeDecoratorType.LEAVE_VINE);
-	}
+	public static final Codec<LeaveVineTreeDecorator> field_24960 = Codec.unit((Supplier<LeaveVineTreeDecorator>)(() -> LeaveVineTreeDecorator.field_24961));
+	public static final LeaveVineTreeDecorator field_24961 = new LeaveVineTreeDecorator();
 
-	public <T> LeaveVineTreeDecorator(Dynamic<T> dynamic) {
-		this();
+	@Override
+	protected TreeDecoratorType<?> method_28893() {
+		return TreeDecoratorType.LEAVE_VINE;
 	}
 
 	@Override
@@ -67,13 +65,5 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 			this.placeVine(modifiableTestableWorld, var7, booleanProperty, set, blockBox);
 			var7 = var7.down();
 		}
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-				ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString())))
-			)
-			.getValue();
 	}
 }

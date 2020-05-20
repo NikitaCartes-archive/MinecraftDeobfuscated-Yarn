@@ -1,9 +1,9 @@
 package net.minecraft.util.dynamic;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 
-public final class Timestamp implements DynamicSerializable {
+public final class Timestamp {
+	public static final Codec<Timestamp> field_25121 = Codec.LONG.xmap(Timestamp::new, timestamp -> timestamp.time);
 	private final long time;
 
 	private Timestamp(long time) {
@@ -12,15 +12,6 @@ public final class Timestamp implements DynamicSerializable {
 
 	public long getTime() {
 		return this.time;
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createLong(this.time);
-	}
-
-	public static Timestamp of(Dynamic<?> dynamic) {
-		return new Timestamp(dynamic.asNumber(Integer.valueOf(0)).longValue());
 	}
 
 	public static Timestamp of(long time) {

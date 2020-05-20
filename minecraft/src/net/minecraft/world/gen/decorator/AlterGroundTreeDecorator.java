@@ -1,34 +1,30 @@
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AlterGroundTreeDecorator extends TreeDecorator {
+	public static final Codec<AlterGroundTreeDecorator> field_24957 = BlockStateProvider.field_24937
+		.fieldOf("provider")
+		.<AlterGroundTreeDecorator>xmap(AlterGroundTreeDecorator::new, alterGroundTreeDecorator -> alterGroundTreeDecorator.field_21316)
+		.codec();
 	private final BlockStateProvider field_21316;
 
 	public AlterGroundTreeDecorator(BlockStateProvider blockStateProvider) {
-		super(TreeDecoratorType.ALTER_GROUND);
 		this.field_21316 = blockStateProvider;
 	}
 
-	public <T> AlterGroundTreeDecorator(Dynamic<T> dynamic) {
-		this(
-			Registry.BLOCK_STATE_PROVIDER_TYPE
-				.get(new Identifier((String)dynamic.get("provider").get("type").asString().orElseThrow(RuntimeException::new)))
-				.deserialize(dynamic.get("provider").orElseEmptyMap())
-		);
+	@Override
+	protected TreeDecoratorType<?> method_28893() {
+		return TreeDecoratorType.ALTER_GROUND;
 	}
 
 	@Override
@@ -73,21 +69,5 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 				break;
 			}
 		}
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-				ops,
-				ops.createMap(
-					ImmutableMap.of(
-						ops.createString("type"),
-						ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.type).toString()),
-						ops.createString("provider"),
-						this.field_21316.serialize(ops)
-					)
-				)
-			)
-			.getValue();
 	}
 }

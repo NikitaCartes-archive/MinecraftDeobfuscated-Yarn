@@ -20,6 +20,14 @@ public interface Toast {
 		return TYPE;
 	}
 
+	default int method_29049() {
+		return 160;
+	}
+
+	default int method_29050() {
+		return 32;
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static enum Visibility {
 		SHOW(SoundEvents.UI_TOAST_IN),

@@ -4,14 +4,15 @@ import com.mojang.authlib.GameProfile;
 import java.io.IOException;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.dimension.DimensionTracker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DedicatedPlayerManager extends PlayerManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public DedicatedPlayerManager(MinecraftDedicatedServer minecraftDedicatedServer, WorldSaveHandler worldSaveHandler) {
-		super(minecraftDedicatedServer, worldSaveHandler, minecraftDedicatedServer.getProperties().maxPlayers);
+	public DedicatedPlayerManager(MinecraftDedicatedServer minecraftDedicatedServer, DimensionTracker.Modifiable modifiable, WorldSaveHandler worldSaveHandler) {
+		super(minecraftDedicatedServer, modifiable, worldSaveHandler, minecraftDedicatedServer.getProperties().maxPlayers);
 		ServerPropertiesHandler serverPropertiesHandler = minecraftDedicatedServer.getProperties();
 		this.setViewDistance(serverPropertiesHandler.viewDistance);
 		super.setWhitelistEnabled(serverPropertiesHandler.whiteList.get());

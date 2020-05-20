@@ -20,7 +20,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
@@ -214,7 +214,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_NETHER))
+			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_NETHER_REGISTRY_KEY))
 			.build(consumer, "story/enter_the_nether");
 		Advancement.Task.create()
 			.parent(advancement10)
@@ -242,7 +242,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.STRONGHOLD)))
+			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
 		Advancement.Task.create()
 			.parent(advancement11)
@@ -256,7 +256,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_END))
+			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_END_REGISTRY_KEY))
 			.build(consumer, "story/enter_the_end");
 	}
 }

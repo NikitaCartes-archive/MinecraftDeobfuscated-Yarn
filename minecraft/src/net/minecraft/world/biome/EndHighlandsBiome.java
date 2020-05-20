@@ -4,8 +4,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BiomeMoodSound;
-import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
@@ -28,14 +28,13 @@ public class EndHighlandsBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.END_CITY.configure(FeatureConfig.DEFAULT));
+		this.addStructureFeature(DefaultBiomeFeatures.field_24703);
 		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
 			Feature.END_GATEWAY
-				.configure(EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true))
+				.configure(EndGatewayFeatureConfig.createConfig(ServerWorld.field_25144, true))
 				.createDecoratedFeature(Decorator.END_GATEWAY.configure(DecoratorConfig.DEFAULT))
 		);
-		DefaultBiomeFeatures.addEndCities(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.CHORUS_PLANT.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHORUS_PLANT.configure(DecoratorConfig.DEFAULT))

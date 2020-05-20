@@ -1,31 +1,23 @@
 package net.minecraft.world.gen.placer;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldAccess;
 
 public class SimpleBlockPlacer extends BlockPlacer {
-	public SimpleBlockPlacer() {
-		super(BlockPlacerType.SIMPLE_BLOCK_PLACER);
-	}
+	public static final Codec<SimpleBlockPlacer> field_24870 = Codec.unit((Supplier<SimpleBlockPlacer>)(() -> SimpleBlockPlacer.field_24871));
+	public static final SimpleBlockPlacer field_24871 = new SimpleBlockPlacer();
 
-	public <T> SimpleBlockPlacer(Dynamic<T> dynamic) {
-		this();
+	@Override
+	protected BlockPlacerType<?> method_28673() {
+		return BlockPlacerType.SIMPLE_BLOCK_PLACER;
 	}
 
 	@Override
 	public void method_23403(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Random random) {
 		worldAccess.setBlockState(blockPos, blockState, 2);
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString()))))
-			.getValue();
 	}
 }
