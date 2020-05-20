@@ -64,7 +64,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class CatEntity extends TameableEntity {
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
@@ -368,7 +368,8 @@ public class CatEntity extends TameableEntity {
 		}
 
 		World world2 = world.getWorld();
-		if (world2 instanceof ServerWorld && Feature.SWAMP_HUT.isInsideStructure(((ServerWorld)world2).getStructureAccessor(), this.getBlockPos())) {
+		if (world2 instanceof ServerWorld
+			&& ((ServerWorld)world2).getStructureAccessor().method_28388(this.getBlockPos(), true, StructureFeature.field_24851).hasChildren()) {
 			this.setCatType(10);
 			this.setPersistent();
 		}
@@ -513,7 +514,7 @@ public class CatEntity extends TameableEntity {
 					BlockPos blockPos = this.owner.getBlockPos();
 					BlockState blockState = this.cat.world.getBlockState(blockPos);
 					if (blockState.getBlock().isIn(BlockTags.BEDS)) {
-						this.bedPos = (BlockPos)blockState.method_27850(BedBlock.FACING)
+						this.bedPos = (BlockPos)blockState.method_28500(BedBlock.FACING)
 							.map(direction -> blockPos.offset(direction.getOpposite()))
 							.orElseGet(() -> new BlockPos(blockPos));
 						return !this.method_16098();

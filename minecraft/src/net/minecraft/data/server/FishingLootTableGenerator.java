@@ -83,6 +83,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
+						.with(ItemEntry.builder(Blocks.LILY_PAD).weight(17))
 						.with(ItemEntry.builder(Items.LEATHER_BOOTS).weight(10).apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
 						.with(ItemEntry.builder(Items.LEATHER).weight(10))
 						.with(ItemEntry.builder(Items.BONE).weight(10))
@@ -117,7 +118,6 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
-						.with(ItemEntry.builder(Blocks.LILY_PAD))
 						.with(ItemEntry.builder(Items.NAME_TAG))
 						.with(ItemEntry.builder(Items.SADDLE))
 						.with(

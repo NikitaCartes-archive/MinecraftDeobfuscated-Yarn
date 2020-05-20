@@ -154,7 +154,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		super(settings);
 		StateManager.Builder<Block, BlockState> builder = new StateManager.Builder<>(this);
 		this.appendProperties(builder);
-		this.stateManager = builder.build(BlockState::new);
+		this.stateManager = builder.build(Block::getDefaultState, BlockState::new);
 		this.setDefaultState(this.stateManager.getDefaultState());
 	}
 

@@ -1,10 +1,18 @@
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class RangeDecoratorConfig implements DecoratorConfig {
+	public static final Codec<RangeDecoratorConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.INT.fieldOf("count").forGetter(rangeDecoratorConfig -> rangeDecoratorConfig.count),
+					Codec.INT.fieldOf("bottom_offset").withDefault(0).forGetter(rangeDecoratorConfig -> rangeDecoratorConfig.bottomOffset),
+					Codec.INT.fieldOf("top_offset").withDefault(0).forGetter(rangeDecoratorConfig -> rangeDecoratorConfig.topOffset),
+					Codec.INT.fieldOf("maximum").withDefault(0).forGetter(rangeDecoratorConfig -> rangeDecoratorConfig.maximum)
+				)
+				.apply(instance, RangeDecoratorConfig::new)
+	);
 	public final int count;
 	public final int bottomOffset;
 	public final int topOffset;
@@ -15,32 +23,5 @@ public class RangeDecoratorConfig implements DecoratorConfig {
 		this.bottomOffset = bottomOffset;
 		this.topOffset = topOffset;
 		this.maximum = maximum;
-	}
-
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("count"),
-					ops.createInt(this.count),
-					ops.createString("bottom_offset"),
-					ops.createInt(this.bottomOffset),
-					ops.createString("top_offset"),
-					ops.createInt(this.topOffset),
-					ops.createString("maximum"),
-					ops.createInt(this.maximum)
-				)
-			)
-		);
-	}
-
-	public static RangeDecoratorConfig deserialize(Dynamic<?> dynamic) {
-		int i = dynamic.get("count").asInt(0);
-		int j = dynamic.get("bottom_offset").asInt(0);
-		int k = dynamic.get("top_offset").asInt(0);
-		int l = dynamic.get("maximum").asInt(0);
-		return new RangeDecoratorConfig(i, j, k, l);
 	}
 }

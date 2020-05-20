@@ -9,7 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -68,16 +68,16 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	}
 
 	private static void giveHalfOfStack(VillagerEntity villager, Set<Item> validItems, LivingEntity target) {
-		BasicInventory basicInventory = villager.getInventory();
+		SimpleInventory simpleInventory = villager.getInventory();
 		ItemStack itemStack = ItemStack.EMPTY;
 		int i = 0;
 
-		while (i < basicInventory.size()) {
+		while (i < simpleInventory.size()) {
 			ItemStack itemStack2;
 			Item item;
 			int j;
 			label28: {
-				itemStack2 = basicInventory.getStack(i);
+				itemStack2 = simpleInventory.getStack(i);
 				if (!itemStack2.isEmpty()) {
 					item = itemStack2.getItem();
 					if (validItems.contains(item)) {

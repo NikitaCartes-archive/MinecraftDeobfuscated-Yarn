@@ -70,7 +70,7 @@ public class WorldChunk implements Chunk {
 	private final UpgradeData upgradeData;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	private final TypeFilterableList<Entity>[] entitySections;
-	private final Map<String, StructureStart> structureStarts = Maps.<String, StructureStart>newHashMap();
+	private final Map<String, StructureStart<?>> structureStarts = Maps.<String, StructureStart<?>>newHashMap();
 	private final Map<String, LongSet> structureReferences = Maps.<String, LongSet>newHashMap();
 	private final ShortList[] postProcessingLists = new ShortList[16];
 	private TickScheduler<Block> blockTickScheduler;
@@ -195,7 +195,7 @@ public class WorldChunk implements Chunk {
 		int i = pos.getX();
 		int j = pos.getY();
 		int k = pos.getZ();
-		if (this.world.method_27982()) {
+		if (this.world.isDebugWorld()) {
 			BlockState blockState = null;
 			if (j == 60) {
 				blockState = Blocks.BARRIER.getDefaultState();
@@ -648,22 +648,22 @@ public class WorldChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(String structure) {
-		return (StructureStart)this.structureStarts.get(structure);
+	public StructureStart<?> getStructureStart(String structure) {
+		return (StructureStart<?>)this.structureStarts.get(structure);
 	}
 
 	@Override
-	public void setStructureStart(String structure, StructureStart start) {
+	public void setStructureStart(String structure, StructureStart<?> start) {
 		this.structureStarts.put(structure, start);
 	}
 
 	@Override
-	public Map<String, StructureStart> getStructureStarts() {
+	public Map<String, StructureStart<?>> getStructureStarts() {
 		return this.structureStarts;
 	}
 
 	@Override
-	public void setStructureStarts(Map<String, StructureStart> map) {
+	public void setStructureStarts(Map<String, StructureStart<?>> map) {
 		this.structureStarts.clear();
 		this.structureStarts.putAll(map);
 	}

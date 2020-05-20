@@ -1,9 +1,7 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
@@ -13,24 +11,28 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class MegaPineFoliagePlacer extends FoliagePlacer {
+	public static final Codec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.create(
+		instance -> method_28846(instance)
+				.<Integer, Integer>and(
+					instance.group(
+						Codec.INT.fieldOf("height_random").forGetter(megaPineFoliagePlacer -> megaPineFoliagePlacer.heightRange),
+						Codec.INT.fieldOf("crown_height").forGetter(megaPineFoliagePlacer -> megaPineFoliagePlacer.crownHeight)
+					)
+				)
+				.apply(instance, MegaPineFoliagePlacer::new)
+	);
 	private final int heightRange;
 	private final int crownHeight;
 
-	public MegaPineFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, int heightRange, int crownHeight) {
-		super(radius, randomRadius, offset, randomOffset, FoliagePlacerType.MEGA_PINE_FOLIAGE_PLACER);
-		this.heightRange = heightRange;
-		this.crownHeight = crownHeight;
+	public MegaPineFoliagePlacer(int i, int j, int k, int l, int m, int n) {
+		super(i, j, k, l);
+		this.heightRange = m;
+		this.crownHeight = n;
 	}
 
-	public <T> MegaPineFoliagePlacer(Dynamic<T> dynamic) {
-		this(
-			dynamic.get("radius").asInt(0),
-			dynamic.get("radius_random").asInt(0),
-			dynamic.get("offset").asInt(0),
-			dynamic.get("offset_random").asInt(0),
-			dynamic.get("height_rand").asInt(0),
-			dynamic.get("crown_height").asInt(0)
-		);
+	@Override
+	protected FoliagePlacerType<?> method_28843() {
+		return FoliagePlacerType.MEGA_PINE_FOLIAGE_PLACER;
 	}
 
 	@Override
@@ -71,13 +73,5 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 	@Override
 	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
 		return baseHeight + dy >= 7 ? true : baseHeight * baseHeight + dy * dy > dz * dz;
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(ops.createString("height_rand"), ops.createInt(this.heightRange));
-		builder.put(ops.createString("crown_height"), ops.createInt(this.crownHeight));
-		return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
 	}
 }

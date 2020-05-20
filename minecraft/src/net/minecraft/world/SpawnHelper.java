@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -176,9 +177,7 @@ public final class SpawnHelper {
 	private static boolean isAcceptableSpawnPosition(ServerWorld world, Chunk chunk, BlockPos.Mutable pos, double squaredDistance) {
 		if (squaredDistance <= 576.0) {
 			return false;
-		} else if (world.method_27911().isWithinDistance(new Vec3d((double)((float)pos.getX() + 0.5F), (double)pos.getY(), (double)((float)pos.getZ() + 0.5F)), 24.0)
-			)
-		 {
+		} else if (world.getSpawnPos().isWithinDistance(new Vec3d((double)((float)pos.getX() + 0.5F), (double)pos.getY(), (double)((float)pos.getZ() + 0.5F)), 24.0)) {
 			return false;
 		} else {
 			ChunkPos chunkPos = new ChunkPos(pos);
@@ -265,13 +264,15 @@ public final class SpawnHelper {
 		return new BlockPos(i, l, j);
 	}
 
-	public static boolean isClearForSpawn(BlockView blockView, BlockPos pos, BlockState state, FluidState fluidState) {
+	public static boolean isClearForSpawn(BlockView blockView, BlockPos pos, BlockState state, FluidState fluidState, EntityType entityType) {
 		if (state.isFullCube(blockView, pos)) {
 			return false;
 		} else if (state.emitsRedstonePower()) {
 			return false;
+		} else if (!fluidState.isEmpty()) {
+			return false;
 		} else {
-			return !fluidState.isEmpty() ? false : !state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE);
+			return state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE) ? false : !state.isOf(Blocks.WITHER_ROSE) || entityType == EntityType.WITHER_SKELETON;
 		}
 	}
 
@@ -297,7 +298,8 @@ public final class SpawnHelper {
 					BlockState blockState2 = world.getBlockState(blockPos2);
 					return !blockState2.allowsSpawning(world, blockPos2, entityType)
 						? false
-						: isClearForSpawn(world, pos, blockState, fluidState) && isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos));
+						: isClearForSpawn(world, pos, blockState, fluidState, entityType)
+							&& isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos), entityType);
 			}
 		} else {
 			return false;

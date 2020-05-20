@@ -22,7 +22,7 @@ public class AshParticle extends AscendingParticle {
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			return new AshParticle(clientWorld, d, e, f, g, h, i, 1.0F, this.spriteProvider);
+			return new AshParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, 1.0F, this.spriteProvider);
 		}
 	}
 }

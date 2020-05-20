@@ -242,7 +242,7 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 	@Override
 	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
 		schema.registerType(false, TypeReferences.LEVEL, DSL::remainder);
-		schema.registerType(false, TypeReferences.RECIPE, () -> DSL.constType(DSL.namespacedString()));
+		schema.registerType(false, TypeReferences.RECIPE, () -> DSL.constType(method_28295()));
 		schema.registerType(
 			false,
 			TypeReferences.PLAYER,
@@ -280,11 +280,11 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 					)
 				)
 		);
-		schema.registerType(true, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), blockEntityTypes));
+		schema.registerType(true, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", method_28295(), blockEntityTypes));
 		schema.registerType(
 			true, TypeReferences.ENTITY_TREE, () -> DSL.optionalFields("Passengers", DSL.list(TypeReferences.ENTITY_TREE.in(schema)), TypeReferences.ENTITY.in(schema))
 		);
-		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), entityTypes));
+		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", method_28295(), entityTypes));
 		schema.registerType(
 			true,
 			TypeReferences.ITEM_STACK,
@@ -322,8 +322,8 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 					DSL.list(TypeReferences.BLOCK_STATE.in(schema))
 				)
 		);
-		schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.constType(DSL.namespacedString()));
-		schema.registerType(false, TypeReferences.ITEM_NAME, () -> DSL.constType(DSL.namespacedString()));
+		schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.constType(method_28295()));
+		schema.registerType(false, TypeReferences.ITEM_NAME, () -> DSL.constType(method_28295()));
 		schema.registerType(false, TypeReferences.BLOCK_STATE, DSL::remainder);
 		Supplier<TypeTemplate> supplier = () -> DSL.compoundList(TypeReferences.ITEM_NAME.in(schema), DSL.constType(DSL.intType()));
 		schema.registerType(
@@ -350,7 +350,7 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 							"minecraft:killed_by",
 							DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.intType())),
 							"minecraft:custom",
-							DSL.compoundList(DSL.constType(DSL.namespacedString()), DSL.constType(DSL.intType()))
+							DSL.compoundList(DSL.constType(method_28295()), DSL.constType(DSL.intType()))
 						)
 					)
 				)
@@ -412,8 +412,9 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 					DSL.optionalFields("criteria", DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.string())))
 				)
 		);
-		schema.registerType(false, TypeReferences.BIOME, () -> DSL.constType(DSL.namespacedString()));
-		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(DSL.namespacedString()));
+		schema.registerType(false, TypeReferences.BIOME, () -> DSL.constType(method_28295()));
+		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(method_28295()));
 		schema.registerType(false, TypeReferences.POI_CHUNK, DSL::remainder);
+		schema.registerType(true, TypeReferences.CHUNK_GENERATOR_SETTINGS, DSL::remainder);
 	}
 }

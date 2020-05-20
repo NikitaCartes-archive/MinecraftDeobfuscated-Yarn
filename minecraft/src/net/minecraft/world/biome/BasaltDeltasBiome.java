@@ -19,8 +19,6 @@ import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.feature.RuinedPortalFeature;
-import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class BasaltDeltasBiome extends Biome {
@@ -39,15 +37,7 @@ public class BasaltDeltasBiome extends Biome {
 						.waterColor(4159204)
 						.waterFogColor(4341314)
 						.fogColor(6840176)
-						.particleConfig(
-							new BiomeParticleConfig(
-								ParticleTypes.WHITE_ASH,
-								0.118093334F,
-								random -> (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1,
-								random -> (double)random.nextFloat() * -0.5 * (double)random.nextFloat() * 0.1 * 5.0,
-								random -> (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1
-							)
-						)
+						.particleConfig(new BiomeParticleConfig(ParticleTypes.WHITE_ASH, 0.118093334F))
 						.loopSound(SoundEvents.AMBIENT_BASALT_DELTAS_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_BASALT_DELTAS_MOOD, 6000, 8, 2.0))
 						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_BASALT_DELTAS_ADDITIONS, 0.0111))
@@ -57,14 +47,9 @@ public class BasaltDeltasBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(-0.5F, 0.0F, 0.0F, 0.0F, 0.175F)))
 		);
-		this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER)));
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER))
-		);
+		this.addStructureFeature(DefaultBiomeFeatures.field_24686);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
-		this.addStructureFeature(Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT));
-		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT));
-		DefaultBiomeFeatures.addDefaultStructures(this);
+		this.addStructureFeature(DefaultBiomeFeatures.field_24701);
 		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
 			Feature.DELTA_FEATURE.configure(DefaultBiomeFeatures.field_23858).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(40)))
@@ -132,12 +117,6 @@ public class BasaltDeltasBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.ORE
-				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.NETHER_QUARTZ_ORE.getDefaultState(), 14))
-				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(16, 10, 20, 128)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.MAGMA_BLOCK.getDefaultState(), 33))
 				.createDecoratedFeature(Decorator.MAGMA.configure(new CountDecoratorConfig(4)))
 		);
@@ -147,6 +126,8 @@ public class BasaltDeltasBiome extends Biome {
 				.configure(DefaultBiomeFeatures.ENCLOSED_NETHER_SPRING_CONFIG)
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(32, 10, 20, 128)))
 		);
+		DefaultBiomeFeatures.method_28438(this, 20, 32);
+		DefaultBiomeFeatures.method_28439(this);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 40, 1, 1));
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 100, 2, 5));
 		this.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 2, 4));

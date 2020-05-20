@@ -1,10 +1,9 @@
 package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.StructureManager;
@@ -14,32 +13,16 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
-	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
-	}
-
-	@Override
-	protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-		return chunkGeneratorConfig.getOceanMonumentSpacing();
-	}
-
-	@Override
-	protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
-		return chunkGeneratorConfig.getOceanMonumentSeparation();
-	}
-
-	@Override
-	protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
-		return 10387313;
+	public OceanMonumentFeature(Codec<DefaultFeatureConfig> codec) {
+		super(codec);
 	}
 
 	@Override
@@ -47,17 +30,24 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		return false;
 	}
 
-	@Override
 	protected boolean shouldStartAt(
-		BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos
+		ChunkGenerator chunkGenerator,
+		BiomeSource biomeSource,
+		long l,
+		ChunkRandom chunkRandom,
+		int i,
+		int j,
+		Biome biome,
+		ChunkPos chunkPos,
+		DefaultFeatureConfig defaultFeatureConfig
 	) {
-		for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16)) {
-			if (!chunkGenerator.hasStructure(biome2, this)) {
+		for (Biome biome2 : biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16)) {
+			if (!biome2.hasStructureFeature(this)) {
 				return false;
 			}
 		}
 
-		for (Biome biome3 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29)) {
+		for (Biome biome3 : biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29)) {
 			if (biome3.getCategory() != Biome.Category.OCEAN && biome3.getCategory() != Biome.Category.RIVER) {
 				return false;
 			}
@@ -67,18 +57,8 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public StructureFeature.StructureStartFactory getStructureStartFactory() {
+	public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
 		return OceanMonumentFeature.Start::new;
-	}
-
-	@Override
-	public String getName() {
-		return "Monument";
-	}
-
-	@Override
-	public int getRadius() {
-		return 8;
 	}
 
 	@Override
@@ -86,16 +66,15 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		return MONSTER_SPAWNS;
 	}
 
-	public static class Start extends StructureStart {
+	public static class Start extends StructureStart<DefaultFeatureConfig> {
 		private boolean field_13717;
 
-		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		@Override
-		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-			this.method_16588(x, z);
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
+			this.method_16588(i, j);
 		}
 
 		private void method_16588(int chunkX, int chunkZ) {

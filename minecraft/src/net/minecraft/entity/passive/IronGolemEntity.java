@@ -291,12 +291,13 @@ public class IronGolemEntity extends GolemEntity {
 			for (int i = 1; i < 3; i++) {
 				BlockPos blockPos3 = blockPos.up(i);
 				BlockState blockState2 = world.getBlockState(blockPos3);
-				if (!SpawnHelper.isClearForSpawn(world, blockPos3, blockState2, blockState2.getFluidState())) {
+				if (!SpawnHelper.isClearForSpawn(world, blockPos3, blockState2, blockState2.getFluidState(), EntityType.IRON_GOLEM)) {
 					return false;
 				}
 			}
 
-			return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && world.intersectsEntities(this);
+			return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState(), EntityType.IRON_GOLEM)
+				&& world.intersectsEntities(this);
 		}
 	}
 

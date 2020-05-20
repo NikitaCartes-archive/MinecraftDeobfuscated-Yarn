@@ -2,8 +2,8 @@ package net.minecraft.screen;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
@@ -11,7 +11,7 @@ public class HopperScreenHandler extends ScreenHandler {
 	private final Inventory inventory;
 
 	public HopperScreenHandler(int syncId, PlayerInventory playerInventory) {
-		this(syncId, playerInventory, new BasicInventory(5));
+		this(syncId, playerInventory, new SimpleInventory(5));
 	}
 
 	public HopperScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {

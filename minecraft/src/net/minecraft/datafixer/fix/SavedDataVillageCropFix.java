@@ -1,9 +1,9 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 
@@ -22,12 +22,12 @@ public class SavedDataVillageCropFix extends DataFix {
 		);
 	}
 
-	private <T> Dynamic<T> method_5152(Dynamic<T> tag) {
-		return tag.update("Children", SavedDataVillageCropFix::method_5157);
+	private <T> Dynamic<T> method_5152(Dynamic<T> dynamic) {
+		return dynamic.update("Children", SavedDataVillageCropFix::method_5157);
 	}
 
-	private static <T> Dynamic<T> method_5157(Dynamic<T> tag) {
-		return (Dynamic<T>)tag.asStreamOpt().map(SavedDataVillageCropFix::fixVillageChildren).map(tag::createList).orElse(tag);
+	private static <T> Dynamic<T> method_5157(Dynamic<T> dynamic) {
+		return (Dynamic<T>)dynamic.asStreamOpt().map(SavedDataVillageCropFix::fixVillageChildren).map(dynamic::createList).result().orElse(dynamic);
 	}
 
 	private static Stream<? extends Dynamic<?>> fixVillageChildren(Stream<? extends Dynamic<?>> villageChildren) {
@@ -41,19 +41,21 @@ public class SavedDataVillageCropFix extends DataFix {
 		});
 	}
 
-	private static <T> Dynamic<T> fixSmallPlotCropIds(Dynamic<T> tag) {
-		tag = fixCropId(tag, "CA");
-		return fixCropId(tag, "CB");
+	private static <T> Dynamic<T> fixSmallPlotCropIds(Dynamic<T> dynamic) {
+		dynamic = fixCropId(dynamic, "CA");
+		return fixCropId(dynamic, "CB");
 	}
 
-	private static <T> Dynamic<T> fixLargePlotCropIds(Dynamic<T> tag) {
-		tag = fixCropId(tag, "CA");
-		tag = fixCropId(tag, "CB");
-		tag = fixCropId(tag, "CC");
-		return fixCropId(tag, "CD");
+	private static <T> Dynamic<T> fixLargePlotCropIds(Dynamic<T> dynamic) {
+		dynamic = fixCropId(dynamic, "CA");
+		dynamic = fixCropId(dynamic, "CB");
+		dynamic = fixCropId(dynamic, "CC");
+		return fixCropId(dynamic, "CD");
 	}
 
-	private static <T> Dynamic<T> fixCropId(Dynamic<T> tag, String cropId) {
-		return tag.get(cropId).asNumber().isPresent() ? tag.set(cropId, BlockStateFlattening.lookupState(tag.get(cropId).asInt(0) << 4)) : tag;
+	private static <T> Dynamic<T> fixCropId(Dynamic<T> dynamic, String cropId) {
+		return dynamic.get(cropId).asNumber().result().isPresent()
+			? dynamic.set(cropId, BlockStateFlattening.lookupState(dynamic.get(cropId).asInt(0) << 4))
+			: dynamic;
 	}
 }

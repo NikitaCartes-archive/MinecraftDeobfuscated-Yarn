@@ -1,11 +1,12 @@
 package net.minecraft.structure.rule;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.util.math.BlockPos;
 
 public class AlwaysTruePosRuleTest extends PosRuleTest {
+	public static final Codec<AlwaysTruePosRuleTest> field_25006 = Codec.unit((Supplier<AlwaysTruePosRuleTest>)(() -> AlwaysTruePosRuleTest.INSTANCE));
 	public static final AlwaysTruePosRuleTest INSTANCE = new AlwaysTruePosRuleTest();
 
 	private AlwaysTruePosRuleTest() {
@@ -17,12 +18,7 @@ public class AlwaysTruePosRuleTest extends PosRuleTest {
 	}
 
 	@Override
-	protected PosRuleTestType getType() {
+	protected PosRuleTestType<?> getType() {
 		return PosRuleTestType.ALWAYS_TRUE;
-	}
-
-	@Override
-	protected <T> Dynamic<T> serializeContents(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.emptyMap());
 	}
 }

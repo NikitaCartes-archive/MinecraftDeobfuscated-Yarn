@@ -2,6 +2,7 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
@@ -15,14 +16,19 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 			return (DefaultParticleType)particleType;
 		}
 	};
+	private final Codec<DefaultParticleType> field_25127 = Codec.unit(this::getType);
 
 	protected DefaultParticleType(boolean bl) {
 		super(bl, PARAMETER_FACTORY);
 	}
 
-	@Override
-	public ParticleType<DefaultParticleType> getType() {
+	public DefaultParticleType getType() {
 		return this;
+	}
+
+	@Override
+	public Codec<DefaultParticleType> method_29138() {
+		return this.field_25127;
 	}
 
 	@Override

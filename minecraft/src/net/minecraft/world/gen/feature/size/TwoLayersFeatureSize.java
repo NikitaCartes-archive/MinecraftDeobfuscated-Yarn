@@ -1,12 +1,19 @@
 package net.minecraft.world.gen.feature.size;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.OptionalInt;
 
 public class TwoLayersFeatureSize extends FeatureSize {
+	public static final Codec<TwoLayersFeatureSize> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.INT.fieldOf("limit").withDefault(1).forGetter(twoLayersFeatureSize -> twoLayersFeatureSize.field_24155),
+					Codec.INT.fieldOf("lower_size").withDefault(0).forGetter(twoLayersFeatureSize -> twoLayersFeatureSize.field_24156),
+					Codec.INT.fieldOf("upper_size").withDefault(1).forGetter(twoLayersFeatureSize -> twoLayersFeatureSize.field_24157),
+					method_28820()
+				)
+				.apply(instance, TwoLayersFeatureSize::new)
+	);
 	private final int field_24155;
 	private final int field_24156;
 	private final int field_24157;
@@ -16,32 +23,19 @@ public class TwoLayersFeatureSize extends FeatureSize {
 	}
 
 	public TwoLayersFeatureSize(int i, int j, int k, OptionalInt minClippedHeight) {
-		super(FeatureSizeType.TWO_LAYERS_FEATURE_SIZE, minClippedHeight);
+		super(minClippedHeight);
 		this.field_24155 = i;
 		this.field_24156 = j;
 		this.field_24157 = k;
 	}
 
-	public <T> TwoLayersFeatureSize(Dynamic<T> dynamic) {
-		this(
-			dynamic.get("limit").asInt(1),
-			dynamic.get("lower_size").asInt(0),
-			dynamic.get("upper_size").asInt(1),
-			(OptionalInt)dynamic.get("min_clipped_height").asNumber().map(number -> OptionalInt.of(number.intValue())).orElse(OptionalInt.empty())
-		);
+	@Override
+	protected FeatureSizeType<?> method_28824() {
+		return FeatureSizeType.TWO_LAYERS_FEATURE_SIZE;
 	}
 
 	@Override
 	public int method_27378(int i, int j) {
 		return j < this.field_24155 ? this.field_24156 : this.field_24157;
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(ops.createString("limit"), ops.createInt(this.field_24155))
-			.put(ops.createString("lower_size"), ops.createInt(this.field_24156))
-			.put(ops.createString("upper_size"), ops.createInt(this.field_24157));
-		return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
 	}
 }

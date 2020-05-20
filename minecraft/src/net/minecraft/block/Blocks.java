@@ -2611,7 +2611,7 @@ public class Blocks {
 	}
 
 	private static Block createNetherStemBlock(MaterialColor materialColor) {
-		return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, blockState -> materialColor).strength(1.0F).sounds(BlockSoundGroup.NETHER_STEM));
+		return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, blockState -> materialColor).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM));
 	}
 
 	/**

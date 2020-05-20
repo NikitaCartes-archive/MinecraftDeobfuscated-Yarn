@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
@@ -14,6 +13,7 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.types.templates.List.ListType;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -30,10 +30,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 import javax.annotation.Nullable;
+import net.minecraft.class_5298;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.util.collection.PackedIntegerArray;
 
 public class LeavesFix extends DataFix {
 	private static final int[][] field_5687 = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
@@ -160,7 +159,7 @@ public class LeavesFix extends DataFix {
 							);
 							if (is[0] != 0) {
 								typed2 = typed2.update(DSL.remainderFinder(), dynamic -> {
-									Dynamic<?> dynamic2 = DataFixUtils.orElse(dynamic.get("UpgradeData").get(), dynamic.emptyMap());
+									Dynamic<?> dynamic2 = DataFixUtils.orElse(dynamic.get("UpgradeData").result(), dynamic.emptyMap());
 									return dynamic.set("UpgradeData", dynamic2.set("Sides", dynamic.createByte((byte)(dynamic2.get("Sides").asByte((byte)0) | is[0]))));
 								});
 							}
@@ -285,17 +284,17 @@ public class LeavesFix extends DataFix {
 			}
 
 			int m = this.leafStates.get(l);
-			if (1 << this.blockStateMap.getElementBits() <= m) {
-				PackedIntegerArray packedIntegerArray = new PackedIntegerArray(this.blockStateMap.getElementBits() + 1, 4096);
+			if (1 << this.blockStateMap.method_28154() <= m) {
+				class_5298 lv = new class_5298(this.blockStateMap.method_28154() + 1, 4096);
 
 				for (int n = 0; n < 4096; n++) {
-					packedIntegerArray.set(n, this.blockStateMap.get(n));
+					lv.method_28153(n, this.blockStateMap.method_28152(n));
 				}
 
-				this.blockStateMap = packedIntegerArray;
+				this.blockStateMap = lv;
 			}
 
-			this.blockStateMap.set(i, m);
+			this.blockStateMap.method_28153(i, m);
 		}
 	}
 
@@ -305,7 +304,7 @@ public class LeavesFix extends DataFix {
 		protected final List<Dynamic<?>> properties;
 		protected final int field_5694;
 		@Nullable
-		protected PackedIntegerArray blockStateMap;
+		protected class_5298 blockStateMap;
 
 		public ListFixer(Typed<?> typed, Schema schema) {
 			if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.field_5695)) {
@@ -323,16 +322,16 @@ public class LeavesFix extends DataFix {
 			if (this.needsFix()) {
 				this.blockStateMap = null;
 			} else {
-				long[] ls = ((LongStream)dynamic.get("BlockStates").asLongStreamOpt().get()).toArray();
+				long[] ls = dynamic.get("BlockStates").asLongStream().toArray();
 				int i = Math.max(4, DataFixUtils.ceillog2(this.properties.size()));
-				this.blockStateMap = new PackedIntegerArray(i, 4096, ls);
+				this.blockStateMap = new class_5298(i, 4096, ls);
 			}
 		}
 
 		public Typed<?> method_5083(Typed<?> typed) {
 			return this.isFixed()
 				? typed
-				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.blockStateMap.getStorage()))))
+				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.blockStateMap.method_28151()))))
 					.set(
 						this.field_5693,
 						(List<Pair<String, Dynamic<?>>>)this.properties
@@ -347,7 +346,7 @@ public class LeavesFix extends DataFix {
 		}
 
 		public int needsFix(int i) {
-			return this.blockStateMap.get(i);
+			return this.blockStateMap.method_28152(i);
 		}
 
 		protected int computeFlags(String leafBlockName, boolean persistent, int i) {

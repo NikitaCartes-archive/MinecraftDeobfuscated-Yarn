@@ -11,12 +11,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
 public class InteractableDoorsSensor extends Sensor<LivingEntity> {
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
-		DimensionType dimensionType = world.method_27983();
+		RegistryKey<DimensionType> registryKey = world.method_27983();
 		BlockPos blockPos = entity.getBlockPos();
 		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
 
@@ -25,7 +26,7 @@ public class InteractableDoorsSensor extends Sensor<LivingEntity> {
 				for (int k = -1; k <= 1; k++) {
 					BlockPos blockPos2 = blockPos.add(i, j, k);
 					if (world.getBlockState(blockPos2).isIn(BlockTags.WOODEN_DOORS)) {
-						list.add(GlobalPos.create(dimensionType, blockPos2));
+						list.add(GlobalPos.create(registryKey, blockPos2));
 					}
 				}
 			}

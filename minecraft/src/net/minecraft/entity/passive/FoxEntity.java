@@ -691,8 +691,8 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		protected void attack(LivingEntity target, double squaredDistance) {
 			double d = this.getSquaredMaxAttackDistance(target);
-			if (squaredDistance <= d && this.ticksUntilAttack <= 0) {
-				this.ticksUntilAttack = 20;
+			if (squaredDistance <= d && this.method_28347()) {
+				this.method_28346();
 				this.mob.tryAttack(target);
 				FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_BITE, 1.0F, 1.0F);
 			}

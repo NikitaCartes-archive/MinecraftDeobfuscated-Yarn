@@ -6,47 +6,59 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.collection.MapUtil;
+import org.apache.commons.lang3.mutable.MutableObject;
 
-public class StateManager<O, S extends State<S>> {
+public class StateManager<O, S extends State<O, S>> {
 	private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-z0-9_]+$");
 	private final O owner;
 	private final ImmutableSortedMap<String, Property<?>> properties;
 	private final ImmutableList<S> states;
 
-	protected <A extends AbstractState<O, S>> StateManager(O owner, StateManager.Factory<O, S, A> factory, Map<String, Property<?>> namedProperties) {
-		this.owner = owner;
-		this.properties = ImmutableSortedMap.copyOf(namedProperties);
-		Map<Map<Property<?>, Comparable<?>>, A> map = Maps.<Map<Property<?>, Comparable<?>>, A>newLinkedHashMap();
-		List<A> list = Lists.<A>newArrayList();
-		Stream<List<Comparable<?>>> stream = Stream.of(Collections.emptyList());
+	protected StateManager(Function<O, S> function, O object, StateManager.Factory<O, S> factory, Map<String, Property<?>> map) {
+		this.owner = object;
+		this.properties = ImmutableSortedMap.copyOf(map);
+		MapCodec<S> mapCodec = new StateManager.class_5306<>(this.properties, () -> (State)function.apply(object));
+		Map<Map<Property<?>, Comparable<?>>, S> map2 = Maps.<Map<Property<?>, Comparable<?>>, S>newLinkedHashMap();
+		List<S> list = Lists.<S>newArrayList();
+		Stream<List<Pair<Property<?>, Comparable<?>>>> stream = Stream.of(Collections.emptyList());
 
 		for (Property<?> property : this.properties.values()) {
 			stream = stream.flatMap(listx -> property.getValues().stream().map(comparable -> {
-					List<Comparable<?>> list2 = Lists.<Comparable<?>>newArrayList(listx);
-					list2.add(comparable);
+					List<Pair<Property<?>, Comparable<?>>> list2 = Lists.<Pair<Property<?>, Comparable<?>>>newArrayList(listx);
+					list2.add(Pair.of(property, comparable));
 					return list2;
 				}));
 		}
 
-		stream.forEach(list2 -> {
-			Map<Property<?>, Comparable<?>> map2 = MapUtil.createMap(this.properties.values(), list2);
-			A abstractStatex = factory.create(owner, ImmutableMap.copyOf(map2));
-			map.put(map2, abstractStatex);
-			list.add(abstractStatex);
-		});
+		stream.forEach(
+			list2 -> {
+				ImmutableMap<Property<?>, Comparable<?>> immutableMap = (ImmutableMap<Property<?>, Comparable<?>>)list2.stream()
+					.collect(ImmutableMap.toImmutableMap(Pair::getFirst, Pair::getSecond));
+				S statex = factory.create(object, immutableMap, mapCodec);
+				map2.put(immutableMap, statex);
+				list.add(statex);
+			}
+		);
 
-		for (A abstractState : list) {
-			abstractState.createWithTable(map);
+		for (S state : list) {
+			state.createWithTable(map2);
 		}
 
 		this.states = ImmutableList.copyOf(list);
@@ -80,7 +92,7 @@ public class StateManager<O, S extends State<S>> {
 		return this.properties.get(name);
 	}
 
-	public static class Builder<O, S extends State<S>> {
+	public static class Builder<O, S extends State<O, S>> {
 		private final O owner;
 		private final Map<String, Property<?>> namedProperties = Maps.<String, Property<?>>newHashMap();
 
@@ -120,12 +132,51 @@ public class StateManager<O, S extends State<S>> {
 			}
 		}
 
-		public <A extends AbstractState<O, S>> StateManager<O, S> build(StateManager.Factory<O, S, A> factory) {
-			return new StateManager<>(this.owner, factory, this.namedProperties);
+		public StateManager<O, S> build(Function<O, S> function, StateManager.Factory<O, S> factory) {
+			return new StateManager<>(function, this.owner, factory, this.namedProperties);
 		}
 	}
 
-	public interface Factory<O, S extends State<S>, A extends AbstractState<O, S>> {
-		A create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries);
+	public interface Factory<O, S> {
+		S create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> mapCodec);
+	}
+
+	static class class_5306<S extends State<?, S>> extends MapCodec<S> {
+		private final Map<String, Property<?>> field_24735;
+		private final Supplier<S> field_24736;
+
+		public class_5306(Map<String, Property<?>> map, Supplier<S> supplier) {
+			this.field_24735 = map;
+			this.field_24736 = supplier;
+		}
+
+		public <T> RecordBuilder<T> encode(S state, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
+			state.getEntries().forEach((property, comparable) -> recordBuilder.add(property.getName(), dynamicOps.createString(method_28487(property, comparable))));
+			return recordBuilder;
+		}
+
+		@Override
+		public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
+			return this.field_24735.keySet().stream().map(dynamicOps::createString);
+		}
+
+		@Override
+		public <T> DataResult<S> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
+			MutableObject<DataResult<S>> mutableObject = new MutableObject<>(DataResult.success((S)this.field_24736.get()));
+			mapLike.entries().forEach(pair -> {
+				DataResult<Property<?>> dataResult = dynamicOps.getStringValue((T)pair.getFirst()).map(this.field_24735::get);
+				T object = (T)pair.getSecond();
+				mutableObject.setValue(mutableObject.getValue().flatMap(state -> dataResult.flatMap(property -> property.method_28503(dynamicOps, (S)state, object))));
+			});
+			return mutableObject.getValue();
+		}
+
+		private static <T extends Comparable<T>> String method_28487(Property<T> property, Comparable<?> comparable) {
+			return property.name((T)comparable);
+		}
+
+		public String toString() {
+			return "PropertiesCodec";
+		}
 	}
 }

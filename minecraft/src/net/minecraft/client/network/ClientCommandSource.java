@@ -21,6 +21,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.dimension.DimensionTracker;
 
 @Environment(EnvType.CLIENT)
 public class ClientCommandSource implements CommandSource {
@@ -113,6 +114,11 @@ public class ClientCommandSource implements CommandSource {
 		} else {
 			return CommandSource.super.getPositionSuggestions();
 		}
+	}
+
+	@Override
+	public DimensionTracker method_29038() {
+		return this.networkHandler.method_29091();
 	}
 
 	public void onCommandSuggestions(int completionId, Suggestions suggestions) {

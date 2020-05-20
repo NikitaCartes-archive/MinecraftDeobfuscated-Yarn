@@ -1,49 +1,60 @@
 package net.minecraft.world.poi;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class PointOfInterestSet implements DynamicSerializable {
+public class PointOfInterestSet {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Short2ObjectMap<PointOfInterest> pointsOfInterestByPos = new Short2ObjectOpenHashMap<>();
 	private final Map<PointOfInterestType, Set<PointOfInterest>> pointsOfInterestByType = Maps.<PointOfInterestType, Set<PointOfInterest>>newHashMap();
 	private final Runnable updateListener;
 	private boolean valid;
 
-	public PointOfInterestSet(Runnable updateListener) {
-		this.updateListener = updateListener;
-		this.valid = true;
+	public static Codec<PointOfInterestSet> method_28364(Runnable runnable) {
+		return RecordCodecBuilder.<PointOfInterestSet>create(
+				instance -> instance.group(
+							RecordCodecBuilder.point(runnable),
+							Codec.BOOL.fieldOf("Valid").forGetter(pointOfInterestSet -> pointOfInterestSet.valid),
+							PointOfInterest.method_28359(runnable)
+								.listOf()
+								.fieldOf("Records")
+								.forGetter(pointOfInterestSet -> ImmutableList.copyOf(pointOfInterestSet.pointsOfInterestByPos.values()))
+						)
+						.apply(instance, PointOfInterestSet::new)
+			)
+			.withDefault(
+				Util.method_29188("Failed to read POI section: ", LOGGER::error),
+				(Supplier<? extends PointOfInterestSet>)(() -> new PointOfInterestSet(runnable, false, ImmutableList.of()))
+			);
 	}
 
-	public <T> PointOfInterestSet(Runnable updateListener, Dynamic<T> dynamic) {
-		this.updateListener = updateListener;
+	public PointOfInterestSet(Runnable updateListener) {
+		this(updateListener, true, ImmutableList.of());
+	}
 
-		try {
-			this.valid = dynamic.get("Valid").asBoolean(false);
-			dynamic.get("Records").asStream().forEach(dynamicx -> this.add(new PointOfInterest(dynamicx, updateListener)));
-		} catch (Exception var4) {
-			LOGGER.error("Failed to load POI chunk", (Throwable)var4);
-			this.clear();
-			this.valid = false;
-		}
+	private PointOfInterestSet(Runnable runnable, boolean bl, List<PointOfInterest> list) {
+		this.updateListener = runnable;
+		this.valid = bl;
+		list.forEach(this::add);
 	}
 
 	public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, PointOfInterestStorage.OccupationStatus occupationStatus) {
@@ -112,12 +123,6 @@ public class PointOfInterestSet implements DynamicSerializable {
 		short s = ChunkSectionPos.getPackedLocalPos(pos);
 		PointOfInterest pointOfInterest = this.pointsOfInterestByPos.get(s);
 		return pointOfInterest != null ? Optional.of(pointOfInterest.getType()) : Optional.empty();
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		T object = ops.createList(this.pointsOfInterestByPos.values().stream().map(pointOfInterest -> pointOfInterest.serialize(ops)));
-		return ops.createMap(ImmutableMap.of(ops.createString("Records"), object, ops.createString("Valid"), ops.createBoolean(this.valid)));
 	}
 
 	public void updatePointsOfInterest(Consumer<BiConsumer<BlockPos, PointOfInterestType>> consumer) {

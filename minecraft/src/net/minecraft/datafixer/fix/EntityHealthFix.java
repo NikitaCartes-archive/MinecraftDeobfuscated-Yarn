@@ -3,9 +3,9 @@ package net.minecraft.datafixer.fix;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.datafixer.TypeReferences;
@@ -52,22 +52,22 @@ public class EntityHealthFix extends DataFix {
 		super(outputSchema, changesType);
 	}
 
-	public Dynamic<?> fixHealth(Dynamic<?> tag) {
-		Optional<Number> optional = tag.get("HealF").asNumber();
-		Optional<Number> optional2 = tag.get("Health").asNumber();
+	public Dynamic<?> fixHealth(Dynamic<?> dynamic) {
+		Optional<Number> optional = dynamic.get("HealF").asNumber().result();
+		Optional<Number> optional2 = dynamic.get("Health").asNumber().result();
 		float f;
 		if (optional.isPresent()) {
 			f = ((Number)optional.get()).floatValue();
-			tag = tag.remove("HealF");
+			dynamic = dynamic.remove("HealF");
 		} else {
 			if (!optional2.isPresent()) {
-				return tag;
+				return dynamic;
 			}
 
 			f = ((Number)optional2.get()).floatValue();
 		}
 
-		return tag.set("Health", tag.createFloat(f));
+		return dynamic.set("Health", dynamic.createFloat(f));
 	}
 
 	@Override

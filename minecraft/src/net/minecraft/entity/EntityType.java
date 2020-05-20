@@ -1,6 +1,5 @@
 package net.minecraft.entity;
 
-import com.mojang.datafixers.DataFixUtils;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -8,8 +7,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -899,15 +896,7 @@ public class EntityType<T extends Entity> {
 
 		public EntityType<T> build(String id) {
 			if (this.saveable) {
-				try {
-					Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(TypeReferences.ENTITY_TREE, id);
-				} catch (IllegalArgumentException var3) {
-					if (SharedConstants.isDevelopment) {
-						throw var3;
-					}
-
-					EntityType.LOGGER.warn("No data fixer registered for entity {}", id);
-				}
+				Util.method_29187(TypeReferences.ENTITY_TREE, id);
 			}
 
 			return new EntityType<>(

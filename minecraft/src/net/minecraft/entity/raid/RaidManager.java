@@ -31,7 +31,7 @@ public class RaidManager extends PersistentState {
 	private int currentTime;
 
 	public RaidManager(ServerWorld world) {
-		super(nameFor(world.method_27983()));
+		super(nameFor(world.getDimension()));
 		this.world = world;
 		this.nextAvailableId = 1;
 		this.markDirty();
@@ -68,7 +68,7 @@ public class RaidManager extends PersistentState {
 
 	public static boolean isValidRaiderFor(RaiderEntity raider, Raid raid) {
 		return raider != null && raid != null && raid.getWorld() != null
-			? raider.isAlive() && raider.canJoinRaid() && raider.getDespawnCounter() <= 2400 && raider.world.method_27983() == raid.getWorld().method_27983()
+			? raider.isAlive() && raider.canJoinRaid() && raider.getDespawnCounter() <= 2400 && raider.world.getDimension() == raid.getWorld().getDimension()
 			: false;
 	}
 
@@ -79,8 +79,8 @@ public class RaidManager extends PersistentState {
 		} else if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 			return null;
 		} else {
-			DimensionType dimensionType = player.world.method_27983();
-			if (dimensionType == DimensionType.THE_NETHER) {
+			DimensionType dimensionType = player.world.getDimension();
+			if (dimensionType.isNether()) {
 				return null;
 			} else {
 				BlockPos blockPos = player.getBlockPos();

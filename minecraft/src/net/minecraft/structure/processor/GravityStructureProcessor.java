@@ -1,8 +1,7 @@
 package net.minecraft.structure.processor;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import javax.annotation.Nullable;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
@@ -12,16 +11,22 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldView;
 
 public class GravityStructureProcessor extends StructureProcessor {
+	public static final Codec<GravityStructureProcessor> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Heightmap.Type.field_24772
+						.fieldOf("heightmap")
+						.withDefault(Heightmap.Type.WORLD_SURFACE_WG)
+						.forGetter(gravityStructureProcessor -> gravityStructureProcessor.heightmap),
+					Codec.INT.fieldOf("offset").withDefault(0).forGetter(gravityStructureProcessor -> gravityStructureProcessor.offset)
+				)
+				.apply(instance, GravityStructureProcessor::new)
+	);
 	private final Heightmap.Type heightmap;
 	private final int offset;
 
-	public GravityStructureProcessor(Heightmap.Type heightmap, int offset) {
-		this.heightmap = heightmap;
-		this.offset = offset;
-	}
-
-	public GravityStructureProcessor(Dynamic<?> dynamic) {
-		this(Heightmap.Type.byName(dynamic.get("heightmap").asString(Heightmap.Type.WORLD_SURFACE_WG.getName())), dynamic.get("offset").asInt(0));
+	public GravityStructureProcessor(Heightmap.Type type, int i) {
+		this.heightmap = type;
+		this.offset = i;
 	}
 
 	@Nullable
@@ -55,22 +60,7 @@ public class GravityStructureProcessor extends StructureProcessor {
 	}
 
 	@Override
-	protected StructureProcessorType getType() {
+	protected StructureProcessorType<?> getType() {
 		return StructureProcessorType.GRAVITY;
-	}
-
-	@Override
-	protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
-				ImmutableMap.of(
-					dynamicOps.createString("heightmap"),
-					dynamicOps.createString(this.heightmap.getName()),
-					dynamicOps.createString("offset"),
-					dynamicOps.createInt(this.offset)
-				)
-			)
-		);
 	}
 }

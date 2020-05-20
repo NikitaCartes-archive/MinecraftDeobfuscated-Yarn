@@ -1,31 +1,29 @@
 package net.minecraft.village;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class VillagerData {
 	private static final int[] LEVEL_BASE_EXPERIENCE = new int[]{0, 10, 70, 150, 250};
+	public static final Codec<VillagerData> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Registry.VILLAGER_TYPE.fieldOf("type").forGetter(villagerData -> villagerData.type),
+					Registry.VILLAGER_PROFESSION.fieldOf("profession").forGetter(villagerData -> villagerData.profession),
+					Codec.INT.fieldOf("level").withDefault(1).forGetter(villagerData -> villagerData.level)
+				)
+				.apply(instance, VillagerData::new)
+	);
 	private final VillagerType type;
 	private final VillagerProfession profession;
 	private final int level;
 
-	public VillagerData(VillagerType villagerType, VillagerProfession villagerProfession, int level) {
+	public VillagerData(VillagerType villagerType, VillagerProfession villagerProfession, int i) {
 		this.type = villagerType;
 		this.profession = villagerProfession;
-		this.level = Math.max(1, level);
-	}
-
-	public VillagerData(Dynamic<?> dynamic) {
-		this(
-			Registry.VILLAGER_TYPE.get(Identifier.tryParse(dynamic.get("type").asString(""))),
-			Registry.VILLAGER_PROFESSION.get(Identifier.tryParse(dynamic.get("profession").asString(""))),
-			dynamic.get("level").asInt(1)
-		);
+		this.level = Math.max(1, i);
 	}
 
 	public VillagerType getType() {
@@ -50,19 +48,6 @@ public class VillagerData {
 
 	public VillagerData withLevel(int level) {
 		return new VillagerData(this.type, this.profession, level);
-	}
-
-	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createMap(
-			ImmutableMap.of(
-				ops.createString("type"),
-				ops.createString(Registry.VILLAGER_TYPE.getId(this.type).toString()),
-				ops.createString("profession"),
-				ops.createString(Registry.VILLAGER_PROFESSION.getId(this.profession).toString()),
-				ops.createString("level"),
-				ops.createInt(this.level)
-			)
-		);
 	}
 
 	@Environment(EnvType.CLIENT)

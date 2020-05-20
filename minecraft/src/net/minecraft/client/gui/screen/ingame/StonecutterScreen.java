@@ -35,43 +35,43 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-		this.textRenderer.draw(matrixStack, this.title, 8.0F, 4.0F, 4210752);
-		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 94), 4210752);
+	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+		this.textRenderer.draw(matrices, this.title, 8.0F, 4.0F, 4210752);
+		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 94), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
-		this.renderBackground(matrixStack);
+	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+		this.renderBackground(matrices);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int j = this.x;
-		int k = this.y;
-		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		int l = (int)(41.0F * this.scrollAmount);
-		this.drawTexture(matrixStack, j + 119, k + 15 + l, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
-		int m = this.x + 52;
-		int n = this.y + 14;
-		int o = this.scrollOffset + 12;
-		this.renderRecipeBackground(matrixStack, mouseY, i, m, n, o);
-		this.renderRecipeIcons(m, n, o);
+		int i = this.x;
+		int j = this.y;
+		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		int k = (int)(41.0F * this.scrollAmount);
+		this.drawTexture(matrices, i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
+		int l = this.x + 52;
+		int m = this.y + 14;
+		int n = this.scrollOffset + 12;
+		this.renderRecipeBackground(matrices, mouseX, mouseY, l, m, n);
+		this.renderRecipeIcons(l, m, n);
 	}
 
 	@Override
-	protected void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j) {
-		super.drawMouseoverTooltip(matrixStack, i, j);
+	protected void drawMouseoverTooltip(MatrixStack matrices, int x, int y) {
+		super.drawMouseoverTooltip(matrices, x, y);
 		if (this.canCraft) {
-			int k = this.x + 52;
-			int l = this.y + 14;
-			int m = this.scrollOffset + 12;
+			int i = this.x + 52;
+			int j = this.y + 14;
+			int k = this.scrollOffset + 12;
 			List<StonecuttingRecipe> list = this.handler.getAvailableRecipes();
 
-			for (int n = this.scrollOffset; n < m && n < this.handler.getAvailableRecipeCount(); n++) {
-				int o = n - this.scrollOffset;
-				int p = k + o % 4 * 16;
-				int q = l + o / 4 * 18 + 2;
-				if (i >= p && i < p + 16 && j >= q && j < q + 18) {
-					this.renderTooltip(matrixStack, ((StonecuttingRecipe)list.get(n)).getOutput(), i, j);
+			for (int l = this.scrollOffset; l < k && l < this.handler.getAvailableRecipeCount(); l++) {
+				int m = l - this.scrollOffset;
+				int n = i + m % 4 * 16;
+				int o = j + m / 4 * 18 + 2;
+				if (x >= n && x < n + 16 && y >= o && y < o + 18) {
+					this.renderTooltip(matrices, ((StonecuttingRecipe)list.get(l)).getOutput(), x, y);
 				}
 			}
 		}

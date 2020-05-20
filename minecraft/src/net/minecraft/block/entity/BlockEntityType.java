@@ -1,17 +1,15 @@
 package net.minecraft.block.entity;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
@@ -212,23 +210,11 @@ public class BlockEntityType<T extends BlockEntity> {
 	}
 
 	private static <T extends BlockEntity> BlockEntityType<T> create(String string, BlockEntityType.Builder<T> builder) {
-		Type<?> type = null;
-
-		try {
-			type = Schemas.getFixer()
-				.getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion()))
-				.getChoiceType(TypeReferences.BLOCK_ENTITY, string);
-		} catch (IllegalArgumentException var4) {
-			LOGGER.error("No data fixer registered for block entity {}", string);
-			if (SharedConstants.isDevelopment) {
-				throw var4;
-			}
-		}
-
 		if (builder.blocks.isEmpty()) {
 			LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", string);
 		}
 
+		Type<?> type = Util.method_29187(TypeReferences.BLOCK_ENTITY, string);
 		return Registry.register(Registry.BLOCK_ENTITY_TYPE, string, builder.build(type));
 	}
 

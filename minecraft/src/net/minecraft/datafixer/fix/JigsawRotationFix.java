@@ -3,9 +3,9 @@ package net.minecraft.datafixer.fix;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
@@ -24,12 +24,12 @@ public class JigsawRotationFix extends DataFix {
 		super(outputSchema, changesType);
 	}
 
-	private static Dynamic<?> updateBlockState(Dynamic<?> blockStateData) {
-		Optional<String> optional = blockStateData.get("Name").asString();
-		return optional.equals(Optional.of("minecraft:jigsaw")) ? blockStateData.update("Properties", dynamic -> {
-			String string = dynamic.get("facing").asString("north");
-			return dynamic.remove("facing").set("orientation", dynamic.createString((String)ORIENTATION_UPDATES.getOrDefault(string, string)));
-		}) : blockStateData;
+	private static Dynamic<?> updateBlockState(Dynamic<?> dynamic) {
+		Optional<String> optional = dynamic.get("Name").asString().result();
+		return optional.equals(Optional.of("minecraft:jigsaw")) ? dynamic.update("Properties", dynamicx -> {
+			String string = dynamicx.get("facing").asString("north");
+			return dynamicx.remove("facing").set("orientation", dynamicx.createString((String)ORIENTATION_UPDATES.getOrDefault(string, string)));
+		}) : dynamic;
 	}
 
 	@Override

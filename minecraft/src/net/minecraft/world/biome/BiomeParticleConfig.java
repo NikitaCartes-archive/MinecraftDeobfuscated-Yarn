@@ -1,50 +1,36 @@
 package net.minecraft.world.biome;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
-import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 
 public class BiomeParticleConfig {
-	private final DefaultParticleType type;
+	public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					ParticleTypes.field_25125.fieldOf("options").forGetter(biomeParticleConfig -> biomeParticleConfig.field_24676),
+					Codec.FLOAT.fieldOf("probability").forGetter(biomeParticleConfig -> biomeParticleConfig.chance)
+				)
+				.apply(instance, BiomeParticleConfig::new)
+	);
+	private final ParticleEffect field_24676;
 	private final float chance;
-	private final Function<Random, Double> velocityXFactory;
-	private final Function<Random, Double> velocityYFactory;
-	private final Function<Random, Double> velocityZFactory;
 
-	public BiomeParticleConfig(
-		DefaultParticleType type, float chance, Function<Random, Double> xFactory, Function<Random, Double> yFactory, Function<Random, Double> zFactory
-	) {
-		this.type = type;
-		this.chance = chance;
-		this.velocityXFactory = xFactory;
-		this.velocityYFactory = yFactory;
-		this.velocityZFactory = zFactory;
+	public BiomeParticleConfig(ParticleEffect particleEffect, float f) {
+		this.field_24676 = particleEffect;
+		this.chance = f;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public DefaultParticleType getParticleType() {
-		return this.type;
+	public ParticleEffect getParticleType() {
+		return this.field_24676;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean shouldAddParticle(Random random) {
 		return random.nextFloat() <= this.chance;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public double generateVelocityX(Random random) {
-		return (Double)this.velocityXFactory.apply(random);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public double generateVelocityY(Random random) {
-		return (Double)this.velocityYFactory.apply(random);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public double generateVelocityZ(Random random) {
-		return (Double)this.velocityZFactory.apply(random);
 	}
 }

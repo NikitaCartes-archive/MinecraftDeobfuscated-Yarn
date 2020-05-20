@@ -1,16 +1,18 @@
 package net.minecraft.structure.pool;
 
-import net.minecraft.util.dynamic.DynamicDeserializer;
+import com.mojang.serialization.Codec;
 import net.minecraft.util.registry.Registry;
 
-public interface StructurePoolElementType extends DynamicDeserializer<StructurePoolElement> {
-	StructurePoolElementType SINGLE_POOL_ELEMENT = register("single_pool_element", SinglePoolElement::new);
-	StructurePoolElementType LIST_POOL_ELEMENT = register("list_pool_element", ListPoolElement::new);
-	StructurePoolElementType FEATURE_POOL_ELEMENT = register("feature_pool_element", FeaturePoolElement::new);
-	StructurePoolElementType EMPTY_POOL_ELEMENT = register("empty_pool_element", dynamic -> EmptyPoolElement.INSTANCE);
-	StructurePoolElementType LEGACY_SINGLE_POOL_ELEMENT = register("legacy_single_pool_element", LegacySinglePoolElement::new);
+public interface StructurePoolElementType<P extends StructurePoolElement> {
+	StructurePoolElementType<SinglePoolElement> SINGLE_POOL_ELEMENT = method_28885("single_pool_element", SinglePoolElement.field_24952);
+	StructurePoolElementType<ListPoolElement> LIST_POOL_ELEMENT = method_28885("list_pool_element", ListPoolElement.field_24950);
+	StructurePoolElementType<FeaturePoolElement> FEATURE_POOL_ELEMENT = method_28885("feature_pool_element", FeaturePoolElement.CODEC);
+	StructurePoolElementType<EmptyPoolElement> EMPTY_POOL_ELEMENT = method_28885("empty_pool_element", EmptyPoolElement.field_24947);
+	StructurePoolElementType<LegacySinglePoolElement> LEGACY_SINGLE_POOL_ELEMENT = method_28885("legacy_single_pool_element", LegacySinglePoolElement.CODEC);
 
-	static StructurePoolElementType register(String string, StructurePoolElementType structurePoolElementType) {
-		return Registry.register(Registry.STRUCTURE_POOL_ELEMENT, string, structurePoolElementType);
+	Codec<P> codec();
+
+	static <P extends StructurePoolElement> StructurePoolElementType<P> method_28885(String string, Codec<P> codec) {
+		return Registry.register(Registry.STRUCTURE_POOL_ELEMENT, string, () -> codec);
 	}
 }

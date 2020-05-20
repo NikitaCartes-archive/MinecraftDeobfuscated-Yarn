@@ -306,8 +306,7 @@ public class ParticleManager implements ResourceReloadListener {
 
 	@Nullable
 	private <T extends ParticleEffect> Particle createParticle(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		ParticleFactory<T> particleFactory = (ParticleFactory<T>)this.factories
-			.get(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleEffect>)parameters.getType()));
+		ParticleFactory<T> particleFactory = (ParticleFactory<T>)this.factories.get(Registry.PARTICLE_TYPE.getRawId(parameters.getType()));
 		return particleFactory == null ? null : particleFactory.createParticle(parameters, this.world, x, y, z, velocityX, velocityY, velocityZ);
 	}
 

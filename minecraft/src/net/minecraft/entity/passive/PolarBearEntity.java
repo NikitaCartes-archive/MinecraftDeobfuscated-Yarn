@@ -205,22 +205,22 @@ public class PolarBearEntity extends AnimalEntity {
 		@Override
 		protected void attack(LivingEntity target, double squaredDistance) {
 			double d = this.getSquaredMaxAttackDistance(target);
-			if (squaredDistance <= d && this.ticksUntilAttack <= 0) {
-				this.ticksUntilAttack = 20;
+			if (squaredDistance <= d && this.method_28347()) {
+				this.method_28346();
 				this.mob.tryAttack(target);
 				PolarBearEntity.this.setWarning(false);
 			} else if (squaredDistance <= d * 2.0) {
-				if (this.ticksUntilAttack <= 0) {
+				if (this.method_28347()) {
 					PolarBearEntity.this.setWarning(false);
-					this.ticksUntilAttack = 20;
+					this.method_28346();
 				}
 
-				if (this.ticksUntilAttack <= 10) {
+				if (this.method_28348() <= 10) {
 					PolarBearEntity.this.setWarning(true);
 					PolarBearEntity.this.playWarningSound();
 				}
 			} else {
-				this.ticksUntilAttack = 20;
+				this.method_28346();
 				PolarBearEntity.this.setWarning(false);
 			}
 		}

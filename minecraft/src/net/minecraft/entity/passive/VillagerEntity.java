@@ -3,8 +3,9 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.Raid;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -165,7 +166,6 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.getNavigation().setCanSwim(true);
 		this.setCanPickUpLoot(true);
 		this.setVillagerData(this.getVillagerData().withType(type).withProfession(VillagerProfession.NONE));
-		this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, new CompoundTag()));
 	}
 
 	@Override
@@ -174,8 +174,13 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Override
-	protected Brain<?> deserializeBrain(Dynamic<?> data) {
-		Brain<VillagerEntity> brain = new Brain<>(MEMORY_MODULES, SENSORS, data);
+	protected Brain.Profile<VillagerEntity> createBrainProfile() {
+		return Brain.createProfile(MEMORY_MODULES, SENSORS);
+	}
+
+	@Override
+	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+		Brain<VillagerEntity> brain = this.createBrainProfile().deserialize(dynamic);
 		this.initBrain(brain);
 		return brain;
 	}
@@ -216,7 +221,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		brain.setTaskList(Activity.HIDE, VillagerTaskListProvider.createHideTasks(villagerProfession, 0.5F));
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
-		brain.method_24526(Activity.IDLE);
+		brain.doExclusively(Activity.IDLE);
 		brain.refreshActivities(this.world.getTimeOfDay(), this.world.getTime());
 	}
 
@@ -441,7 +446,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		tag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
+		VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tagx -> tag.put("VillagerData", tagx));
 		tag.putByte("FoodLevel", this.foodLevel);
 		tag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
 		tag.putInt("Xp", this.experience);
@@ -454,7 +459,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		if (tag.contains("VillagerData", 10)) {
-			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, tag.get("VillagerData"))));
+			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, tag.get("VillagerData")));
+			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
 		}
 
 		if (tag.contains("Offers", 10)) {
@@ -728,15 +734,15 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
 		if (this.canGather(itemStack)) {
-			BasicInventory basicInventory = this.getInventory();
-			boolean bl = basicInventory.canInsert(itemStack);
+			SimpleInventory simpleInventory = this.getInventory();
+			boolean bl = simpleInventory.canInsert(itemStack);
 			if (!bl) {
 				return;
 			}
 
 			this.method_27964(item);
 			this.sendPickup(item, itemStack.getCount());
-			ItemStack itemStack2 = basicInventory.addStack(itemStack);
+			ItemStack itemStack2 = simpleInventory.addStack(itemStack);
 			if (itemStack2.isEmpty()) {
 				item.remove();
 			} else {
@@ -761,8 +767,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	private int getAvailableFood() {
-		BasicInventory basicInventory = this.getInventory();
-		return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.count((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
+		SimpleInventory simpleInventory = this.getInventory();
+		return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> simpleInventory.count((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
 	}
 
 	public boolean hasSeedToPlant() {

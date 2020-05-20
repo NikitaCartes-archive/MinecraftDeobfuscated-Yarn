@@ -1,27 +1,32 @@
 package net.minecraft.world.gen.placer;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldAccess;
 
 public class ColumnPlacer extends BlockPlacer {
+	public static final Codec<ColumnPlacer> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.INT.fieldOf("min_size").forGetter(columnPlacer -> columnPlacer.minSize),
+					Codec.INT.fieldOf("extra_size").forGetter(columnPlacer -> columnPlacer.extraSize)
+				)
+				.apply(instance, ColumnPlacer::new)
+	);
 	private final int minSize;
 	private final int extraSize;
 
-	public ColumnPlacer(int minSize, int extraSize) {
-		super(BlockPlacerType.COLUMN_PLACER);
-		this.minSize = minSize;
-		this.extraSize = extraSize;
+	public ColumnPlacer(int i, int j) {
+		this.minSize = i;
+		this.extraSize = j;
 	}
 
-	public <T> ColumnPlacer(Dynamic<T> dynamic) {
-		this(dynamic.get("min_size").asInt(1), dynamic.get("extra_size").asInt(2));
+	@Override
+	protected BlockPlacerType<?> method_28673() {
+		return BlockPlacerType.COLUMN_PLACER;
 	}
 
 	@Override
@@ -33,23 +38,5 @@ public class ColumnPlacer extends BlockPlacer {
 			worldAccess.setBlockState(mutable, blockState, 2);
 			mutable.move(Direction.UP);
 		}
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-				ops,
-				ops.createMap(
-					ImmutableMap.of(
-						ops.createString("type"),
-						ops.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString()),
-						ops.createString("min_size"),
-						ops.createInt(this.minSize),
-						ops.createString("extra_size"),
-						ops.createInt(this.extraSize)
-					)
-				)
-			)
-			.getValue();
 	}
 }

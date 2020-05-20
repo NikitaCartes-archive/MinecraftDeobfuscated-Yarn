@@ -150,7 +150,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.worldgenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
 		this.mainExecutor = this.chunkTaskPrioritySystem.createExecutor(messageListener, false);
 		this.serverLightingProvider = new ServerLightingProvider(
-			chunkProvider, this, this.world.method_27983().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false)
+			chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false)
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(workerExecutor, mainThreadExecutor);
 		this.persistentStateManagerFactory = supplier;
@@ -809,7 +809,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	@Nullable
 	private CompoundTag getUpdatedChunkTag(ChunkPos pos) throws IOException {
 		CompoundTag compoundTag = this.getNbt(pos);
-		return compoundTag == null ? null : this.updateChunkTag(this.world.method_27983(), this.persistentStateManagerFactory, compoundTag);
+		return compoundTag == null ? null : this.updateChunkTag(this.world.getDimension(), this.persistentStateManagerFactory, compoundTag);
 	}
 
 	boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {

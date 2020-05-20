@@ -67,8 +67,8 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-		this.textRenderer.draw(matrixStack, this.title, 97.0F, 8.0F, 4210752);
+	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+		this.textRenderer.draw(matrices, this.title, 97.0F, 8.0F, 4210752);
 	}
 
 	@Override
@@ -91,13 +91,13 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-		int j = this.x;
-		int k = this.y;
-		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		drawEntity(j + 51, k + 75, 30, (float)(j + 51) - this.mouseX, (float)(k + 75 - 50) - this.mouseY, this.client.player);
+		int i = this.x;
+		int j = this.y;
+		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.client.player);
 	}
 
 	public static void drawEntity(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity) {

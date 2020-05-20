@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5219;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -44,6 +43,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -217,10 +217,16 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					}
 				} else if (this.level.isDifferentVersion()) {
 					DrawableHelper.drawTexture(matrices, x, y, 32.0F, (float)j, 32, 32, 256, 256);
-					if (this.level.isLegacyCustomizedWorld()) {
+					if (this.level.method_29020()) {
 						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 						if (bl) {
 							Text text2 = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
+							this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
+						}
+					} else if (this.level.isLegacyCustomizedWorld()) {
+						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+						if (bl) {
+							Text text2 = new TranslatableText("selectWorld.tooltip.experimental").formatted(Formatting.RED);
 							this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
 						}
 					} else if (this.level.isFutureLevel()) {
@@ -274,12 +280,49 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 		public void play() {
 			if (!this.level.isLocked()) {
-				if (this.level.isOutdatedLevel() || this.level.isLegacyCustomizedWorld()) {
-					Text text = new TranslatableText("selectWorld.backupQuestion");
-					Text text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion(), SharedConstants.getGameVersion().getName());
-					if (this.level.isLegacyCustomizedWorld()) {
+				if (!this.level.isOutdatedLevel() && !this.level.method_29020() && !this.level.isLegacyCustomizedWorld()) {
+					if (this.level.isFutureLevel()) {
+						this.client
+							.openScreen(
+								new ConfirmScreen(
+									bl -> {
+										if (bl) {
+											try {
+												this.start();
+											} catch (Exception var3) {
+												WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3);
+												this.client
+													.openScreen(
+														new NoticeScreen(
+															() -> this.client.openScreen(this.screen),
+															new TranslatableText("selectWorld.futureworld.error.title"),
+															new TranslatableText("selectWorld.futureworld.error.text")
+														)
+													);
+											}
+										} else {
+											this.client.openScreen(this.screen);
+										}
+									},
+									new TranslatableText("selectWorld.versionQuestion"),
+									new TranslatableText("selectWorld.versionWarning", this.level.getVersion(), new TranslatableText("selectWorld.versionJoinButton"), ScreenTexts.CANCEL)
+								)
+							);
+					} else {
+						this.start();
+					}
+				} else {
+					Text text;
+					Text text2;
+					if (this.level.method_29020()) {
 						text = new TranslatableText("selectWorld.backupQuestion.customized");
 						text2 = new TranslatableText("selectWorld.backupWarning.customized");
+					} else if (this.level.isLegacyCustomizedWorld()) {
+						text = new TranslatableText("selectWorld.backupQuestion.experimental");
+						text2 = new TranslatableText("selectWorld.backupWarning.experimental");
+					} else {
+						text = new TranslatableText("selectWorld.backupQuestion");
+						text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion(), SharedConstants.getGameVersion().getName());
 					}
 
 					this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
@@ -296,35 +339,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 						this.start();
 					}, text, text2, false));
-				} else if (this.level.isFutureLevel()) {
-					this.client
-						.openScreen(
-							new ConfirmScreen(
-								bl -> {
-									if (bl) {
-										try {
-											this.start();
-										} catch (Exception var3) {
-											WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3);
-											this.client
-												.openScreen(
-													new NoticeScreen(
-														() -> this.client.openScreen(this.screen),
-														new TranslatableText("selectWorld.futureworld.error.title"),
-														new TranslatableText("selectWorld.futureworld.error.text")
-													)
-												);
-										}
-									} else {
-										this.client.openScreen(this.screen);
-									}
-								},
-								new TranslatableText("selectWorld.versionQuestion"),
-								new TranslatableText("selectWorld.versionWarning", this.level.getVersion(), new TranslatableText("selectWorld.versionJoinButton"), ScreenTexts.CANCEL)
-							)
-						);
-				} else {
-					this.start();
 				}
 			}
 		}
@@ -389,10 +403,10 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				this.client.openScreen(new ProgressScreen());
 
 				try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName())) {
-					class_5219 lv = session.readLevelProperties();
-					if (lv != null) {
-						CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen, lv);
-						if (this.level.isLegacyCustomizedWorld()) {
+					SaveProperties saveProperties = session.readLevelProperties();
+					if (saveProperties != null) {
+						CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen, saveProperties);
+						if (this.level.method_29020()) {
 							this.client
 								.openScreen(
 									new ConfirmScreen(

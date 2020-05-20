@@ -27,8 +27,8 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -51,7 +51,7 @@ import net.minecraft.util.registry.Registry;
 @Environment(EnvType.CLIENT)
 public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
-	private static final BasicInventory inventory = new BasicInventory(45);
+	private static final SimpleInventory inventory = new SimpleInventory(45);
 	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
 	private float scrollPosition;
 	private boolean scrolling;
@@ -373,11 +373,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
 		if (itemGroup.hasTooltip()) {
 			RenderSystem.disableBlend();
-			this.textRenderer.draw(matrixStack, I18n.translate(itemGroup.getTranslationKey()), 8.0F, 6.0F, 4210752);
+			this.textRenderer.draw(matrices, I18n.translate(itemGroup.getTranslationKey()), 8.0F, 6.0F, 4210752);
 		}
 	}
 
@@ -631,32 +631,32 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
 
 		for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
 			this.client.getTextureManager().bindTexture(TEXTURE);
 			if (itemGroup2.getIndex() != selectedTab) {
-				this.renderTabIcon(matrixStack, itemGroup2);
+				this.renderTabIcon(matrices, itemGroup2);
 			}
 		}
 
 		this.client.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
-		this.drawTexture(matrixStack, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.searchBox.render(matrixStack, mouseY, i, f);
+		this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.searchBox.render(matrices, mouseX, mouseY, delta);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		int j = this.x + 175;
-		int k = this.y + 18;
-		int l = k + 112;
+		int i = this.x + 175;
+		int j = this.y + 18;
+		int k = j + 112;
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		if (itemGroup.hasScrollbar()) {
-			this.drawTexture(matrixStack, j, k + (int)((float)(l - k - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
+			this.drawTexture(matrices, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
 		}
 
-		this.renderTabIcon(matrixStack, itemGroup);
+		this.renderTabIcon(matrices, itemGroup);
 		if (itemGroup == ItemGroup.INVENTORY) {
-			InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseY), (float)(this.y + 45 - 30 - i), this.client.player);
+			InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.client.player);
 		}
 	}
 

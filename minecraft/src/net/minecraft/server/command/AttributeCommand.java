@@ -9,9 +9,9 @@ import com.mojang.brigadier.exceptions.Dynamic3CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.UUID;
-import net.minecraft.class_5242;
 import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.IdentifierArgumentType;
+import net.minecraft.command.arguments.UuidArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -113,7 +113,7 @@ public class AttributeCommand {
 										.then(
 											CommandManager.literal("add")
 												.then(
-													CommandManager.argument("uuid", class_5242.method_27643())
+													CommandManager.argument("uuid", UuidArgumentType.uuid())
 														.then(
 															CommandManager.argument("name", StringArgumentType.string())
 																.then(
@@ -125,7 +125,7 @@ public class AttributeCommand {
 																							commandContext.getSource(),
 																							EntityArgumentType.getEntity(commandContext, "target"),
 																							IdentifierArgumentType.method_27575(commandContext, "attribute"),
-																							class_5242.method_27645(commandContext, "uuid"),
+																							UuidArgumentType.getUuid(commandContext, "uuid"),
 																							StringArgumentType.getString(commandContext, "name"),
 																							DoubleArgumentType.getDouble(commandContext, "value"),
 																							EntityAttributeModifier.Operation.ADDITION
@@ -139,7 +139,7 @@ public class AttributeCommand {
 																							commandContext.getSource(),
 																							EntityArgumentType.getEntity(commandContext, "target"),
 																							IdentifierArgumentType.method_27575(commandContext, "attribute"),
-																							class_5242.method_27645(commandContext, "uuid"),
+																							UuidArgumentType.getUuid(commandContext, "uuid"),
 																							StringArgumentType.getString(commandContext, "name"),
 																							DoubleArgumentType.getDouble(commandContext, "value"),
 																							EntityAttributeModifier.Operation.MULTIPLY_TOTAL
@@ -153,7 +153,7 @@ public class AttributeCommand {
 																							commandContext.getSource(),
 																							EntityArgumentType.getEntity(commandContext, "target"),
 																							IdentifierArgumentType.method_27575(commandContext, "attribute"),
-																							class_5242.method_27645(commandContext, "uuid"),
+																							UuidArgumentType.getUuid(commandContext, "uuid"),
 																							StringArgumentType.getString(commandContext, "name"),
 																							DoubleArgumentType.getDouble(commandContext, "value"),
 																							EntityAttributeModifier.Operation.MULTIPLY_BASE
@@ -167,13 +167,13 @@ public class AttributeCommand {
 										.then(
 											CommandManager.literal("remove")
 												.then(
-													CommandManager.argument("uuid", class_5242.method_27643())
+													CommandManager.argument("uuid", UuidArgumentType.uuid())
 														.executes(
 															commandContext -> executeModifierRemove(
 																	commandContext.getSource(),
 																	EntityArgumentType.getEntity(commandContext, "target"),
 																	IdentifierArgumentType.method_27575(commandContext, "attribute"),
-																	class_5242.method_27645(commandContext, "uuid")
+																	UuidArgumentType.getUuid(commandContext, "uuid")
 																)
 														)
 												)
@@ -183,13 +183,13 @@ public class AttributeCommand {
 												.then(
 													CommandManager.literal("get")
 														.then(
-															CommandManager.argument("uuid", class_5242.method_27643())
+															CommandManager.argument("uuid", UuidArgumentType.uuid())
 																.executes(
 																	commandContext -> executeModifierValueGet(
 																			commandContext.getSource(),
 																			EntityArgumentType.getEntity(commandContext, "target"),
 																			IdentifierArgumentType.method_27575(commandContext, "attribute"),
-																			class_5242.method_27645(commandContext, "uuid"),
+																			UuidArgumentType.getUuid(commandContext, "uuid"),
 																			1.0
 																		)
 																)
@@ -200,7 +200,7 @@ public class AttributeCommand {
 																					commandContext.getSource(),
 																					EntityArgumentType.getEntity(commandContext, "target"),
 																					IdentifierArgumentType.method_27575(commandContext, "attribute"),
-																					class_5242.method_27645(commandContext, "uuid"),
+																					UuidArgumentType.getUuid(commandContext, "uuid"),
 																					DoubleArgumentType.getDouble(commandContext, "scale")
 																				)
 																		)

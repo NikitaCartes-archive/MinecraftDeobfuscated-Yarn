@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.BambooBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,8 +24,8 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 	private static final BlockState BAMBOO_TOP_2 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.LARGE);
 	private static final BlockState BAMBOO_TOP_3 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.SMALL);
 
-	public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-		super(function);
+	public BambooFeature(Codec<ProbabilityConfig> codec) {
+		super(codec);
 	}
 
 	public boolean generate(

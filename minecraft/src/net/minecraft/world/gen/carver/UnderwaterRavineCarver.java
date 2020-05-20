@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.carver;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,8 +13,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public class UnderwaterRavineCarver extends RavineCarver {
-	public UnderwaterRavineCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-		super(function);
+	public UnderwaterRavineCarver(Codec<ProbabilityConfig> codec) {
+		super(codec);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.STONE,
 			Blocks.GRANITE,

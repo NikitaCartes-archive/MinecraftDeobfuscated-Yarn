@@ -24,7 +24,6 @@ import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.SimpleTickScheduler;
-import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
@@ -45,6 +44,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -73,7 +73,7 @@ public class ChunkSerializer {
 		ListTag listTag = compoundTag.getList("Sections", 10);
 		int i = 16;
 		ChunkSection[] chunkSections = new ChunkSection[16];
-		boolean bl2 = world.method_27983().hasSkyLight();
+		boolean bl2 = world.getDimension().hasSkyLight();
 		ChunkManager chunkManager = world.getChunkManager();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
 		if (bl) {
@@ -303,7 +303,10 @@ public class ChunkSerializer {
 			CompoundTag compoundTag4 = new CompoundTag();
 
 			for (GenerationStep.Carver carver : GenerationStep.Carver.values()) {
-				compoundTag4.putByteArray(carver.toString(), chunk.getCarvingMask(carver).toByteArray());
+				BitSet bitSet = protoChunk.getCarvingMask(carver);
+				if (bitSet != null) {
+					compoundTag4.putByteArray(carver.toString(), bitSet.toByteArray());
+				}
 			}
 
 			compoundTag2.put("CarvingMasks", compoundTag4);
@@ -383,11 +386,11 @@ public class ChunkSerializer {
 		}
 	}
 
-	private static CompoundTag writeStructures(ChunkPos pos, Map<String, StructureStart> structureStarts, Map<String, LongSet> structureReferences) {
+	private static CompoundTag writeStructures(ChunkPos pos, Map<String, StructureStart<?>> structureStarts, Map<String, LongSet> structureReferences) {
 		CompoundTag compoundTag = new CompoundTag();
 		CompoundTag compoundTag2 = new CompoundTag();
 
-		for (Entry<String, StructureStart> entry : structureStarts.entrySet()) {
+		for (Entry<String, StructureStart<?>> entry : structureStarts.entrySet()) {
 			compoundTag2.put((String)entry.getKey(), ((StructureStart)entry.getValue()).toTag(pos.x, pos.z));
 		}
 
@@ -402,12 +405,12 @@ public class ChunkSerializer {
 		return compoundTag;
 	}
 
-	private static Map<String, StructureStart> readStructureStarts(StructureManager structureManager, CompoundTag compoundTag, long l) {
-		Map<String, StructureStart> map = Maps.<String, StructureStart>newHashMap();
+	private static Map<String, StructureStart<?>> readStructureStarts(StructureManager structureManager, CompoundTag compoundTag, long l) {
+		Map<String, StructureStart<?>> map = Maps.<String, StructureStart<?>>newHashMap();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Starts");
 
 		for (String string : compoundTag2.getKeys()) {
-			map.put(string, StructureFeatures.readStructureStart(structureManager, compoundTag2.getCompound(string), l));
+			map.put(string, StructureFeature.method_28660(structureManager, compoundTag2.getCompound(string), l));
 		}
 
 		return map;

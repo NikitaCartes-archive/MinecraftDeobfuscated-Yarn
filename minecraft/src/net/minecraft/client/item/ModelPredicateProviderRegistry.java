@@ -27,6 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -114,7 +115,7 @@ public class ModelPredicateProviderRegistry {
 						return 0.0F;
 					} else {
 						double d;
-						if (clientWorld.getDimension().hasVisibleSky()) {
+						if (clientWorld.getDimension().isNatural()) {
 							d = (double)clientWorld.getSkyAngle(1.0F);
 						} else {
 							d = Math.random();
@@ -199,7 +200,7 @@ public class ModelPredicateProviderRegistry {
 
 				@Nullable
 				private BlockPos getSpawnPos(ClientWorld world) {
-					return world.getDimension().hasVisibleSky() ? world.getSpawnPos() : null;
+					return world.getDimension().isNatural() ? world.getSpawnPos() : null;
 				}
 
 				@Nullable
@@ -207,9 +208,9 @@ public class ModelPredicateProviderRegistry {
 					boolean bl = tag.contains("LodestonePos");
 					boolean bl2 = tag.contains("LodestoneDimension");
 					if (bl && bl2) {
-						Optional<DimensionType> optional = CompassItem.getLodestoneDimension(tag);
-						if (optional.isPresent() && world.method_27983().equals(optional.get())) {
-							return NbtHelper.toBlockPos((CompoundTag)tag.get("LodestonePos"));
+						Optional<RegistryKey<DimensionType>> optional = CompassItem.getLodestoneDimension(tag);
+						if (optional.isPresent() && world.method_27983() == optional.get()) {
+							return NbtHelper.toBlockPos(tag.getCompound("LodestonePos"));
 						}
 					}
 

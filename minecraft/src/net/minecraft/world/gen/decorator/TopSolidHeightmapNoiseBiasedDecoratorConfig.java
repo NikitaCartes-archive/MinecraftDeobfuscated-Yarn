@@ -1,11 +1,29 @@
 package net.minecraft.world.gen.decorator;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.Heightmap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TopSolidHeightmapNoiseBiasedDecoratorConfig implements DecoratorConfig {
+	public static final Codec<TopSolidHeightmapNoiseBiasedDecoratorConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.INT
+						.fieldOf("noise_to_count_ratio")
+						.forGetter(topSolidHeightmapNoiseBiasedDecoratorConfig -> topSolidHeightmapNoiseBiasedDecoratorConfig.noiseToCountRatio),
+					Codec.DOUBLE.fieldOf("noise_factor").forGetter(topSolidHeightmapNoiseBiasedDecoratorConfig -> topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor),
+					Codec.DOUBLE
+						.fieldOf("noise_offset")
+						.withDefault(0.0)
+						.forGetter(topSolidHeightmapNoiseBiasedDecoratorConfig -> topSolidHeightmapNoiseBiasedDecoratorConfig.noiseOffset),
+					Heightmap.Type.field_24772
+						.fieldOf("heightmap")
+						.forGetter(topSolidHeightmapNoiseBiasedDecoratorConfig -> topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap)
+				)
+				.apply(instance, TopSolidHeightmapNoiseBiasedDecoratorConfig::new)
+	);
+	private static final Logger LOGGER = LogManager.getLogger();
 	public final int noiseToCountRatio;
 	public final double noiseFactor;
 	public final double noiseOffset;
@@ -16,32 +34,5 @@ public class TopSolidHeightmapNoiseBiasedDecoratorConfig implements DecoratorCon
 		this.noiseFactor = noiseFactor;
 		this.noiseOffset = noiseOffset;
 		this.heightmap = heightmap;
-	}
-
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("noise_to_count_ratio"),
-					ops.createInt(this.noiseToCountRatio),
-					ops.createString("noise_factor"),
-					ops.createDouble(this.noiseFactor),
-					ops.createString("noise_offset"),
-					ops.createDouble(this.noiseOffset),
-					ops.createString("heightmap"),
-					ops.createString(this.heightmap.getName())
-				)
-			)
-		);
-	}
-
-	public static TopSolidHeightmapNoiseBiasedDecoratorConfig deserialize(Dynamic<?> dynamic) {
-		int i = dynamic.get("noise_to_count_ratio").asInt(10);
-		double d = dynamic.get("noise_factor").asDouble(80.0);
-		double e = dynamic.get("noise_offset").asDouble(0.0);
-		Heightmap.Type type = Heightmap.Type.byName(dynamic.get("heightmap").asString("OCEAN_FLOOR_WG"));
-		return new TopSolidHeightmapNoiseBiasedDecoratorConfig(i, d, e, type);
 	}
 }

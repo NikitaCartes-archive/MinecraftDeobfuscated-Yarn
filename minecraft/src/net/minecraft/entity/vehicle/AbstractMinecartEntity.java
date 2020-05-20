@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5275;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -17,6 +16,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -155,35 +155,35 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public Vec3d method_24829(LivingEntity livingEntity) {
+	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		Direction direction = this.getMovementDirection();
 		if (direction.getAxis() == Direction.Axis.Y) {
-			return super.method_24829(livingEntity);
+			return super.updatePassengerForDismount(passenger);
 		} else {
-			int[][] is = class_5275.method_27934(direction);
+			int[][] is = Dismounting.getDismountOffsets(direction);
 			BlockPos blockPos = this.getBlockPos();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			ImmutableList<EntityPose> immutableList = livingEntity.getPoses();
+			ImmutableList<EntityPose> immutableList = passenger.getPoses();
 
 			for (EntityPose entityPose : immutableList) {
-				EntityDimensions entityDimensions = livingEntity.getDimensions(entityPose);
+				EntityDimensions entityDimensions = passenger.getDimensions(entityPose);
 				float f = Math.min(entityDimensions.width, 1.0F) / 2.0F;
 
 				for (int i : field_24464.get(entityPose)) {
 					for (int[] js : is) {
 						mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
 						double d = this.world
-							.method_26097(
+							.getCollisionHeightAt(
 								mutable,
 								blockState -> blockState.isIn(BlockTags.CLIMBABLE)
 										? true
 										: blockState.getBlock() instanceof TrapdoorBlock && (Boolean)blockState.get(TrapdoorBlock.OPEN)
 							);
-						if (class_5275.method_27932(d)) {
+						if (Dismounting.canDismountInBlock(d)) {
 							Box box = new Box((double)(-f), d, (double)(-f), (double)f, d + (double)entityDimensions.height, (double)f);
 							Vec3d vec3d = Vec3d.ofCenter(mutable, d);
-							if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d))) {
-								livingEntity.setPose(entityPose);
+							if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d))) {
+								passenger.setPose(entityPose);
 								return vec3d;
 							}
 						}
@@ -195,15 +195,15 @@ public abstract class AbstractMinecartEntity extends Entity {
 			mutable.set((double)blockPos.getX(), e, (double)blockPos.getZ());
 
 			for (EntityPose entityPose2 : immutableList) {
-				double g = (double)livingEntity.getDimensions(entityPose2).height;
+				double g = (double)passenger.getDimensions(entityPose2).height;
 				double h = (double)mutable.getY() + this.world.method_26096(mutable, e - (double)mutable.getY() + g);
 				if (e + g <= h) {
-					livingEntity.setPose(entityPose2);
+					passenger.setPose(entityPose2);
 					break;
 				}
 			}
 
-			return super.method_24829(livingEntity);
+			return super.updatePassengerForDismount(passenger);
 		}
 	}
 

@@ -1,8 +1,10 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import java.util.Map.Entry;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
@@ -11,42 +13,31 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class LocateCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.locate.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(
-			CommandManager.literal("locate")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.then(CommandManager.literal("Pillager_Outpost").executes(commandContext -> execute(commandContext.getSource(), "Pillager_Outpost")))
-				.then(CommandManager.literal("Mineshaft").executes(commandContext -> execute(commandContext.getSource(), "Mineshaft")))
-				.then(CommandManager.literal("Mansion").executes(commandContext -> execute(commandContext.getSource(), "Mansion")))
-				.then(CommandManager.literal("Igloo").executes(commandContext -> execute(commandContext.getSource(), "Igloo")))
-				.then(CommandManager.literal("Ruined_Portal").executes(commandContext -> execute(commandContext.getSource(), "Ruined_Portal")))
-				.then(CommandManager.literal("Desert_Pyramid").executes(commandContext -> execute(commandContext.getSource(), "Desert_Pyramid")))
-				.then(CommandManager.literal("Jungle_Pyramid").executes(commandContext -> execute(commandContext.getSource(), "Jungle_Pyramid")))
-				.then(CommandManager.literal("Swamp_Hut").executes(commandContext -> execute(commandContext.getSource(), "Swamp_Hut")))
-				.then(CommandManager.literal("Stronghold").executes(commandContext -> execute(commandContext.getSource(), "Stronghold")))
-				.then(CommandManager.literal("Monument").executes(commandContext -> execute(commandContext.getSource(), "Monument")))
-				.then(CommandManager.literal("Fortress").executes(commandContext -> execute(commandContext.getSource(), "Fortress")))
-				.then(CommandManager.literal("EndCity").executes(commandContext -> execute(commandContext.getSource(), "EndCity")))
-				.then(CommandManager.literal("Ocean_Ruin").executes(commandContext -> execute(commandContext.getSource(), "Ocean_Ruin")))
-				.then(CommandManager.literal("Buried_Treasure").executes(commandContext -> execute(commandContext.getSource(), "Buried_Treasure")))
-				.then(CommandManager.literal("Shipwreck").executes(commandContext -> execute(commandContext.getSource(), "Shipwreck")))
-				.then(CommandManager.literal("Village").executes(commandContext -> execute(commandContext.getSource(), "Village")))
-				.then(CommandManager.literal("Nether_Fossil").executes(commandContext -> execute(commandContext.getSource(), "Nether_Fossil")))
-				.then(CommandManager.literal("Bastion_Remnant").executes(commandContext -> execute(commandContext.getSource(), "Bastion_Remnant")))
-		);
+		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("locate")
+			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
+
+		for (Entry<String, StructureFeature<?>> entry : StructureFeature.STRUCTURES.entrySet()) {
+			literalArgumentBuilder = literalArgumentBuilder.then(
+				CommandManager.literal((String)entry.getKey()).executes(commandContext -> execute(commandContext.getSource(), (StructureFeature<?>)entry.getValue()))
+			);
+		}
+
+		dispatcher.register(literalArgumentBuilder);
 	}
 
-	private static int execute(ServerCommandSource source, String structure) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource source, StructureFeature<?> structureFeature) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		BlockPos blockPos2 = source.getWorld().locateStructure(structure, blockPos, 100, false);
+		BlockPos blockPos2 = source.getWorld().locateStructure(structureFeature, blockPos, 100, false);
 		if (blockPos2 == null) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			return sendCoordinates(source, structure, blockPos, blockPos2, "commands.locate.success");
+			return sendCoordinates(source, structureFeature.getName(), blockPos, blockPos2, "commands.locate.success");
 		}
 	}
 

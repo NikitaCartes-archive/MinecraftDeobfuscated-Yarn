@@ -1,114 +1,45 @@
 package net.minecraft.world.gen.chunk;
 
-import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeEffects;
-import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.CatSpawner;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.PhantomSpawner;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.FillLayerFeatureConfig;
-import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 
 public class FlatChunkGenerator extends ChunkGenerator {
-	private final Biome biome;
-	private final PhantomSpawner phantomSpawner = new PhantomSpawner();
-	private final CatSpawner catSpawner = new CatSpawner();
+	public static final Codec<FlatChunkGenerator> field_24769 = FlatChunkGeneratorConfig.CODEC
+		.fieldOf("settings")
+		.<FlatChunkGenerator>xmap(FlatChunkGenerator::new, FlatChunkGenerator::method_28545)
+		.codec();
 	private final FlatChunkGeneratorConfig generatorConfig;
 
 	public FlatChunkGenerator(FlatChunkGeneratorConfig config) {
-		super(new FixedBiomeSource(config.getBiome()), config.getConfig());
+		super(new FixedBiomeSource(config.method_28917()), new FixedBiomeSource(config.getBiome()), config.getConfig(), 0L);
 		this.generatorConfig = config;
-		this.biome = this.getBiome();
+	}
+
+	@Override
+	protected Codec<? extends ChunkGenerator> method_28506() {
+		return field_24769;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ChunkGenerator create(long seed) {
+	public ChunkGenerator withSeed(long seed) {
 		return this;
 	}
 
-	private Biome getBiome() {
-		Biome biome = this.generatorConfig.getBiome();
-		FlatChunkGenerator.FlatChunkGeneratorBiome flatChunkGeneratorBiome = new FlatChunkGenerator.FlatChunkGeneratorBiome(
-			biome.getSurfaceBuilder(),
-			biome.getPrecipitation(),
-			biome.getCategory(),
-			biome.getDepth(),
-			biome.getScale(),
-			biome.getTemperature(),
-			biome.getRainfall(),
-			biome.getEffects(),
-			biome.getParent()
-		);
-		Map<String, Map<String, String>> map = this.generatorConfig.getStructures();
-
-		for (String string : map.keySet()) {
-			ConfiguredFeature<?, ?>[] configuredFeatures = (ConfiguredFeature<?, ?>[])FlatChunkGeneratorConfig.STRUCTURE_TO_FEATURES.get(string);
-			if (configuredFeatures != null) {
-				for (ConfiguredFeature<?, ?> configuredFeature : configuredFeatures) {
-					flatChunkGeneratorBiome.addFeature((GenerationStep.Feature)FlatChunkGeneratorConfig.FEATURE_TO_GENERATION_STEP.get(configuredFeature), configuredFeature);
-					if (configuredFeature.feature instanceof StructureFeature) {
-						StructureFeature<FeatureConfig> structureFeature = (StructureFeature<FeatureConfig>)configuredFeature.feature;
-						FeatureConfig featureConfig = biome.getStructureFeatureConfig(structureFeature);
-						FeatureConfig featureConfig2 = featureConfig != null
-							? featureConfig
-							: (FeatureConfig)FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature);
-						flatChunkGeneratorBiome.addStructureFeature(structureFeature.configure(featureConfig2));
-					}
-				}
-			}
-		}
-
-		boolean bl = (!this.generatorConfig.hasNoTerrain() || biome == Biomes.THE_VOID) && map.containsKey("decoration");
-		if (bl) {
-			List<GenerationStep.Feature> list = Lists.<GenerationStep.Feature>newArrayList();
-			list.add(GenerationStep.Feature.UNDERGROUND_STRUCTURES);
-			list.add(GenerationStep.Feature.SURFACE_STRUCTURES);
-
-			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
-				if (!list.contains(feature)) {
-					for (ConfiguredFeature<?, ?> configuredFeature2 : biome.getFeaturesForStep(feature)) {
-						flatChunkGeneratorBiome.addFeature(feature, configuredFeature2);
-					}
-				}
-			}
-		}
-
-		BlockState[] blockStates = this.generatorConfig.getLayerBlocks();
-
-		for (int i = 0; i < blockStates.length; i++) {
-			BlockState blockState = blockStates[i];
-			if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
-				this.generatorConfig.removeLayerBlock(i);
-				flatChunkGeneratorBiome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(i, blockState)));
-			}
-		}
-
-		return flatChunkGeneratorBiome;
+	public FlatChunkGeneratorConfig method_28545() {
+		return this.generatorConfig;
 	}
 
 	@Override
@@ -127,16 +58,6 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		}
 
 		return blockStates.length;
-	}
-
-	@Override
-	protected Biome getDecorationBiome(BiomeAccess biomeAccess, BlockPos pos) {
-		return this.biome;
-	}
-
-	@Override
-	public boolean hasStructure(StructureFeature<?> feature) {
-		return this.biome.hasStructureFeature(feature);
 	}
 
 	@Override
@@ -181,57 +102,5 @@ public class FlatChunkGenerator extends ChunkGenerator {
 				.map(state -> state == null ? Blocks.AIR.getDefaultState() : state)
 				.toArray(BlockState[]::new)
 		);
-	}
-
-	@Override
-	public void spawnEntities(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
-		this.phantomSpawner.spawn(world, spawnMonsters, spawnAnimals);
-		this.catSpawner.spawn(world, spawnMonsters, spawnAnimals);
-	}
-
-	@Override
-	public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> feature) {
-		return this.biome.hasStructureFeature(feature);
-	}
-
-	@Nullable
-	@Override
-	public <C extends FeatureConfig> C getStructureConfig(Biome biome, StructureFeature<C> feature) {
-		return this.biome.getStructureFeatureConfig(feature);
-	}
-
-	@Nullable
-	@Override
-	public BlockPos locateStructure(ServerWorld world, String id, BlockPos center, int radius, boolean skipExistingChunks) {
-		return !this.generatorConfig.getStructures().keySet().contains(id.toLowerCase(Locale.ROOT))
-			? null
-			: super.locateStructure(world, id, center, radius, skipExistingChunks);
-	}
-
-	class FlatChunkGeneratorBiome extends Biome {
-		protected FlatChunkGeneratorBiome(
-			ConfiguredSurfaceBuilder<?> surfaceBuilder,
-			Biome.Precipitation precipitation,
-			Biome.Category category,
-			float depth,
-			float scale,
-			float temperature,
-			float downfall,
-			BiomeEffects effects,
-			@Nullable String parent
-		) {
-			super(
-				new Biome.Settings()
-					.surfaceBuilder(surfaceBuilder)
-					.precipitation(precipitation)
-					.category(category)
-					.depth(depth)
-					.scale(scale)
-					.temperature(temperature)
-					.downfall(downfall)
-					.effects(effects)
-					.parent(parent)
-			);
-		}
 	}
 }

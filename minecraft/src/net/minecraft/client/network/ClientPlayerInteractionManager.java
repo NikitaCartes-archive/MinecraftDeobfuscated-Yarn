@@ -304,7 +304,7 @@ public class ClientPlayerInteractionManager {
 				int i = itemStack.getCount();
 				TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, player, hand);
 				ItemStack itemStack2 = typedActionResult.getValue();
-				if (itemStack2 != itemStack || itemStack2.getCount() != i) {
+				if (itemStack2 != itemStack) {
 					player.setStackInHand(hand, itemStack2);
 				}
 

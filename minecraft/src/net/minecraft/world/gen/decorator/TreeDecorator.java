@@ -1,26 +1,25 @@
 package net.minecraft.world.gen.decorator;
 
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.WorldAccess;
 
 /**
  * Tree decorators can add additional blocks to trees, such as vines or beehives.
  */
-public abstract class TreeDecorator implements DynamicSerializable {
-	protected final TreeDecoratorType<?> type;
+public abstract class TreeDecorator {
+	public static final Codec<TreeDecorator> field_24962 = Registry.TREE_DECORATOR_TYPE.dispatch(TreeDecorator::method_28893, TreeDecoratorType::method_28894);
 
-	protected TreeDecorator(TreeDecoratorType<?> type) {
-		this.type = type;
-	}
+	protected abstract TreeDecoratorType<?> method_28893();
 
 	public abstract void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box);
 

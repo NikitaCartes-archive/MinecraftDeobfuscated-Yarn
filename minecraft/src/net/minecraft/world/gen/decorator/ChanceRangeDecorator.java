@@ -1,14 +1,13 @@
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
 public class ChanceRangeDecorator extends SimpleDecorator<ChanceRangeDecoratorConfig> {
-	public ChanceRangeDecorator(Function<Dynamic<?>, ? extends ChanceRangeDecoratorConfig> function) {
-		super(function);
+	public ChanceRangeDecorator(Codec<ChanceRangeDecoratorConfig> codec) {
+		super(codec);
 	}
 
 	public Stream<BlockPos> getPositions(Random random, ChanceRangeDecoratorConfig chanceRangeDecoratorConfig, BlockPos blockPos) {

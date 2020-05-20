@@ -1,31 +1,34 @@
 package net.minecraft.world.gen.feature.size;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
 import java.util.OptionalInt;
 import net.minecraft.util.registry.Registry;
 
 public abstract class FeatureSize {
-	protected final FeatureSizeType<?> type;
-	private final OptionalInt minClippedHeight;
+	public static final Codec<FeatureSize> field_24922 = Registry.FEATURE_SIZE_TYPE.dispatch(FeatureSize::method_28824, FeatureSizeType::method_28825);
+	protected final OptionalInt minClippedHeight;
 
-	public FeatureSize(FeatureSizeType<?> type, OptionalInt minClippedHeight) {
-		this.type = type;
-		this.minClippedHeight = minClippedHeight;
+	protected static <S extends FeatureSize> RecordCodecBuilder<S, OptionalInt> method_28820() {
+		return Codec.INT
+			.optionalFieldOf("min_clipped_height")
+			.<OptionalInt>xmap(
+				optional -> (OptionalInt)optional.map(OptionalInt::of).orElse(OptionalInt.empty()),
+				optionalInt -> optionalInt.isPresent() ? Optional.of(optionalInt.getAsInt()) : Optional.empty()
+			)
+			.forGetter(featureSize -> featureSize.minClippedHeight);
 	}
+
+	public FeatureSize(OptionalInt optionalInt) {
+		this.minClippedHeight = optionalInt;
+	}
+
+	protected abstract FeatureSizeType<?> method_28824();
 
 	public abstract int method_27378(int i, int j);
 
 	public OptionalInt getMinClippedHeight() {
 		return this.minClippedHeight;
-	}
-
-	public <T> T serialize(DynamicOps<T> ops) {
-		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(ops.createString("type"), ops.createString(Registry.FEATURE_SIZE_TYPE.getId(this.type).toString()));
-		this.minClippedHeight.ifPresent(i -> builder.put(ops.createString("min_clipped_height"), ops.createInt(i)));
-		return new Dynamic<>(ops, ops.createMap(builder.build())).getValue();
 	}
 }

@@ -1,9 +1,9 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class VillagerFollowRangeFix extends ChoiceFix {
@@ -22,8 +22,7 @@ public class VillagerFollowRangeFix extends ChoiceFix {
 			dynamic2 -> dynamic.createList(
 					dynamic2.asStream()
 						.map(
-							dynamicxx -> ((String)dynamicxx.get("Name").asString().orElse("")).equals("generic.follow_range")
-										&& ((Number)dynamicxx.get("Base").asNumber().orElse(0)).doubleValue() == 16.0
+							dynamicxx -> dynamicxx.get("Name").asString("").equals("generic.follow_range") && dynamicxx.get("Base").asDouble(0.0) == 16.0
 									? dynamicxx.set("Base", dynamicxx.createDouble(48.0))
 									: dynamicxx
 						)

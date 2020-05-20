@@ -37,7 +37,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5219;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -204,8 +203,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -254,6 +253,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public final MetricsData metricsData = new MetricsData();
 	private final boolean is64Bit;
 	private final boolean isDemo;
+	private final boolean multiplayerEnabled;
+	private final boolean onlineChatEnabled;
 	private final ReloadableResourceManager resourceManager;
 	private final ClientBuiltinResourcePackProvider builtinPackProvider;
 	private final ResourcePackManager<ClientResourcePackProfile> resourcePackManager;
@@ -346,11 +347,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		LOGGER.info("Setting user: {}", this.session.getUsername());
 		LOGGER.debug("(Session ID is {})", this.session.getSessionId());
 		this.isDemo = args.game.demo;
+		this.multiplayerEnabled = !args.game.multiplayerDisabled;
+		this.onlineChatEnabled = !args.game.onlineChatDisabled;
 		this.is64Bit = checkIs64Bit();
 		this.server = null;
 		String string;
 		int i;
-		if (args.autoConnect.serverAddress != null) {
+		if (this.multiplayerEnabled && args.autoConnect.serverAddress != null) {
 			string = args.autoConnect.serverAddress;
 			i = args.autoConnect.serverPort;
 		} else {
@@ -787,6 +790,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public LevelStorage getLevelStorage() {
 		return this.levelStorage;
+	}
+
+	private void method_29041(String string) {
+		if (this.isInSingleplayer() || this.isOnlineChatEnabled()) {
+			this.openScreen(new ChatScreen(string));
+		} else if (this.player != null) {
+			this.player.sendSystemMessage(new TranslatableText("chat.cannotSend").formatted(Formatting.RED), Util.field_25140);
+		}
 	}
 
 	public void openScreen(@Nullable Screen screen) {
@@ -1522,11 +1533,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		boolean bl3 = this.options.chatVisibility != ChatVisibility.HIDDEN;
 		if (bl3) {
 			while (this.options.keyChat.wasPressed()) {
-				this.openScreen(new ChatScreen(""));
+				this.method_29041("");
 			}
 
 			if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
-				this.openScreen(new ChatScreen("/"));
+				this.method_29041("/");
 			}
 		}
 
@@ -1577,18 +1588,19 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			return;
 		}
 
-		class_5219 lv = session.readLevelProperties();
+		MinecraftServer.method_27725(session);
+		SaveProperties saveProperties = session.readLevelProperties();
 		String string;
-		if (lv == null) {
+		if (saveProperties == null) {
 			if (levelInfo == null) {
 				throw new IllegalStateException("Requested world creation without any settings");
 			}
 
-			lv = new LevelProperties(levelInfo);
+			saveProperties = new LevelProperties(levelInfo);
 			string = levelInfo.getLevelName();
-			session.method_27425(lv);
+			session.method_27425(saveProperties);
 		} else {
-			string = lv.getLevelName();
+			string = saveProperties.getLevelName();
 		}
 
 		this.worldGenProgressTracker.set(null);
@@ -1601,7 +1613,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			SkullBlockEntity.setUserCache(userCache);
 			SkullBlockEntity.setSessionService(minecraftSessionService);
 			UserCache.setUseRemote(false);
-			this.server = new IntegratedServer(this, session, lv, minecraftSessionService, gameProfileRepository, userCache, i -> {
+			this.server = new IntegratedServer(this, session, saveProperties, minecraftSessionService, gameProfileRepository, userCache, i -> {
 				WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
 				worldGenerationProgressTracker.start();
 				this.worldGenProgressTracker.set(worldGenerationProgressTracker);
@@ -1723,6 +1735,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.particleManager.setWorld(clientWorld);
 		BlockEntityRenderDispatcher.INSTANCE.setWorld(clientWorld);
 		this.updateWindowTitle();
+	}
+
+	public boolean isMultiplayerEnabled() {
+		return this.multiplayerEnabled;
+	}
+
+	public boolean method_29042(UUID uUID) {
+		return this.isOnlineChatEnabled() ? false : (this.player == null || !uUID.equals(this.player.getUuid())) && !uUID.equals(Util.field_25140);
+	}
+
+	public boolean isOnlineChatEnabled() {
+		return this.onlineChatEnabled;
 	}
 
 	public final boolean isDemo() {
@@ -2066,7 +2090,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (this.currentScreen instanceof CreditsScreen) {
 			return MusicType.CREDITS;
 		} else if (this.player != null) {
-			if (this.player.world.getDimension() instanceof TheEndDimension) {
+			if (this.player.world.getDimension().isEnd()) {
 				return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicType.DRAGON : MusicType.END;
 			} else {
 				Biome.Category category = this.player.world.getBiome(this.player.getBlockPos()).getCategory();

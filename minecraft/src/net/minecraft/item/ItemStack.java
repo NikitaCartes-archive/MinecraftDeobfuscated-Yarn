@@ -6,6 +6,8 @@ import com.google.common.collect.Multimap;
 import com.google.gson.JsonParseException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Collection;
@@ -71,6 +73,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class ItemStack {
+	public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Registry.ITEM.fieldOf("id").forGetter(itemStack -> itemStack.item),
+					Codec.INT.fieldOf("Count").forGetter(itemStack -> itemStack.count),
+					CompoundTag.field_25128.optionalFieldOf("tag").forGetter(itemStack -> Optional.ofNullable(itemStack.tag))
+				)
+				.apply(instance, ItemStack::new)
+	);
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final ItemStack EMPTY = new ItemStack((Item)null);
 	public static final DecimalFormat MODIFIER_FORMAT = Util.make(
@@ -91,6 +101,11 @@ public final class ItemStack {
 
 	public ItemStack(ItemConvertible item) {
 		this(item, 1);
+	}
+
+	private ItemStack(ItemConvertible itemConvertible, int i, Optional<CompoundTag> optional) {
+		this(itemConvertible, i);
+		optional.ifPresent(this::setTag);
 	}
 
 	public ItemStack(ItemConvertible item, int count) {
@@ -566,11 +581,11 @@ public final class ItemStack {
 					double d = entityAttributeModifier.getValue();
 					boolean bl = false;
 					if (player != null) {
-						if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_UUID) {
+						if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
 							d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 							d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
 							bl = true;
-						} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_UUID) {
+						} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_ID) {
 							d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
 							bl = true;
 						}

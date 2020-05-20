@@ -1,5 +1,6 @@
 package net.minecraft.client.particle;
 
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
@@ -51,7 +52,11 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f, g, h, i);
+			Random random = clientWorld.random;
+			double j = random.nextGaussian() * 1.0E-6F;
+			double k = random.nextGaussian() * 1.0E-4F;
+			double l = random.nextGaussian() * 1.0E-6F;
+			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f, j, k, l);
 			waterSuspendParticle.setSprite(this.spriteProvider);
 			waterSuspendParticle.setColor(0.9F, 0.4F, 0.5F);
 			return waterSuspendParticle;
@@ -82,7 +87,8 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f, g, h, i);
+			double j = (double)clientWorld.random.nextFloat() * -1.9 * (double)clientWorld.random.nextFloat() * 0.1;
+			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f, 0.0, j, 0.0);
 			waterSuspendParticle.setSprite(this.spriteProvider);
 			waterSuspendParticle.setColor(0.1F, 0.1F, 0.3F);
 			waterSuspendParticle.setBoundingBoxSpacing(0.001F, 0.001F);

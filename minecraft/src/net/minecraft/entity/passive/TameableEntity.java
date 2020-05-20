@@ -20,6 +20,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
@@ -44,7 +45,7 @@ public abstract class TameableEntity extends AnimalEntity {
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		if (this.getOwnerUuid() != null) {
-			tag.putUuidNew("Owner", this.getOwnerUuid());
+			tag.putUuid("Owner", this.getOwnerUuid());
 		}
 
 		tag.putBoolean("Sitting", this.sitting);
@@ -54,8 +55,8 @@ public abstract class TameableEntity extends AnimalEntity {
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		UUID uUID;
-		if (tag.containsUuidNew("Owner")) {
-			uUID = tag.getUuidNew("Owner");
+		if (tag.containsUuid("Owner")) {
+			uUID = tag.getUuid("Owner");
 		} else {
 			String string = tag.getString("Owner");
 			uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
@@ -208,7 +209,7 @@ public abstract class TameableEntity extends AnimalEntity {
 	@Override
 	public void onDeath(DamageSource source) {
 		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
-			this.getOwner().sendSystemMessage(this.getDamageTracker().getDeathMessage());
+			this.getOwner().sendSystemMessage(this.getDamageTracker().getDeathMessage(), Util.field_25140);
 		}
 
 		super.onDeath(source);

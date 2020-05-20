@@ -8,7 +8,7 @@ public class BiomesFix extends BiomeRenameFix {
 	public static final Map<String, String> RENAMED_BIOMES = ImmutableMap.<String, String>builder()
 		.put("minecraft:extreme_hills", "minecraft:mountains")
 		.put("minecraft:swampland", "minecraft:swamp")
-		.put("minecraft:hell", "minecraft:nether")
+		.put("minecraft:hell", "minecraft:nether_wastes")
 		.put("minecraft:sky", "minecraft:the_end")
 		.put("minecraft:ice_flats", "minecraft:snowy_tundra")
 		.put("minecraft:ice_mountains", "minecraft:snowy_mountains")

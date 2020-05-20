@@ -14,7 +14,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.class_5218;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
@@ -26,6 +25,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +40,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 	public StructureManager(MinecraftServer server, LevelStorage.Session session, DataFixer dataFixer) {
 		this.server = server;
 		this.dataFixer = dataFixer;
-		this.generatedPath = session.getDirectory(class_5218.field_24185).normalize();
+		this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
 		server.getDataManager().registerListener(this);
 	}
 

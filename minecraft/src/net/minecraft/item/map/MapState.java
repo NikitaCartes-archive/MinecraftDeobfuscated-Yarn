@@ -2,10 +2,12 @@ package net.minecraft.item.map;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Dynamic;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FilledMapItem;
@@ -15,17 +17,22 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.dimension.DimensionType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MapState extends PersistentState {
+	private static final Logger field_25019 = LogManager.getLogger();
 	public int xCenter;
 	public int zCenter;
-	public DimensionType dimension;
+	public RegistryKey<DimensionType> dimension;
 	public boolean showIcons;
 	public boolean unlimitedTracking;
 	public byte scale;
@@ -41,7 +48,7 @@ public class MapState extends PersistentState {
 		super(string);
 	}
 
-	public void init(int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, DimensionType dimension) {
+	public void init(int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<DimensionType> dimension) {
 		this.scale = (byte)scale;
 		this.calculateCenter((double)x, (double)z, this.scale);
 		this.dimension = dimension;
@@ -60,60 +67,59 @@ public class MapState extends PersistentState {
 
 	@Override
 	public void fromTag(CompoundTag tag) {
-		int i = tag.getInt("dimension");
-		DimensionType dimensionType = DimensionType.byRawId(i);
-		if (dimensionType == null) {
-			throw new IllegalArgumentException("Invalid map dimension: " + i);
-		} else {
-			this.dimension = dimensionType;
-			this.xCenter = tag.getInt("xCenter");
-			this.zCenter = tag.getInt("zCenter");
-			this.scale = (byte)MathHelper.clamp(tag.getByte("scale"), 0, 4);
-			this.showIcons = !tag.contains("trackingPosition", 1) || tag.getBoolean("trackingPosition");
-			this.unlimitedTracking = tag.getBoolean("unlimitedTracking");
-			this.locked = tag.getBoolean("locked");
-			this.colors = tag.getByteArray("colors");
-			if (this.colors.length != 16384) {
-				this.colors = new byte[16384];
-			}
+		this.dimension = (RegistryKey<DimensionType>)DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, tag.get("dimension")))
+			.resultOrPartial(field_25019::error)
+			.orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + tag.get("dimension")));
+		this.xCenter = tag.getInt("xCenter");
+		this.zCenter = tag.getInt("zCenter");
+		this.scale = (byte)MathHelper.clamp(tag.getByte("scale"), 0, 4);
+		this.showIcons = !tag.contains("trackingPosition", 1) || tag.getBoolean("trackingPosition");
+		this.unlimitedTracking = tag.getBoolean("unlimitedTracking");
+		this.locked = tag.getBoolean("locked");
+		this.colors = tag.getByteArray("colors");
+		if (this.colors.length != 16384) {
+			this.colors = new byte[16384];
+		}
 
-			ListTag listTag = tag.getList("banners", 10);
+		ListTag listTag = tag.getList("banners", 10);
 
-			for (int j = 0; j < listTag.size(); j++) {
-				MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompound(j));
-				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-				this.addIcon(
-					mapBannerMarker.getIconType(),
-					null,
-					mapBannerMarker.getKey(),
-					(double)mapBannerMarker.getPos().getX(),
-					(double)mapBannerMarker.getPos().getZ(),
-					180.0,
-					mapBannerMarker.getName()
-				);
-			}
+		for (int i = 0; i < listTag.size(); i++) {
+			MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompound(i));
+			this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
+			this.addIcon(
+				mapBannerMarker.getIconType(),
+				null,
+				mapBannerMarker.getKey(),
+				(double)mapBannerMarker.getPos().getX(),
+				(double)mapBannerMarker.getPos().getZ(),
+				180.0,
+				mapBannerMarker.getName()
+			);
+		}
 
-			ListTag listTag2 = tag.getList("frames", 10);
+		ListTag listTag2 = tag.getList("frames", 10);
 
-			for (int k = 0; k < listTag2.size(); k++) {
-				MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompound(k));
-				this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
-				this.addIcon(
-					MapIcon.Type.FRAME,
-					null,
-					"frame-" + mapFrameMarker.getEntityId(),
-					(double)mapFrameMarker.getPos().getX(),
-					(double)mapFrameMarker.getPos().getZ(),
-					(double)mapFrameMarker.getRotation(),
-					null
-				);
-			}
+		for (int j = 0; j < listTag2.size(); j++) {
+			MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompound(j));
+			this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
+			this.addIcon(
+				MapIcon.Type.FRAME,
+				null,
+				"frame-" + mapFrameMarker.getEntityId(),
+				(double)mapFrameMarker.getPos().getX(),
+				(double)mapFrameMarker.getPos().getZ(),
+				(double)mapFrameMarker.getRotation(),
+				null
+			);
 		}
 	}
 
 	@Override
 	public CompoundTag toTag(CompoundTag tag) {
-		tag.putInt("dimension", this.dimension.getRawId());
+		Identifier.field_25139
+			.encodeStart(NbtOps.INSTANCE, this.dimension.getValue())
+			.resultOrPartial(field_25019::error)
+			.ifPresent(tagx -> tag.put("dimension", tagx));
 		tag.putInt("xCenter", this.xCenter);
 		tag.putInt("zCenter", this.zCenter);
 		tag.putByte("scale", this.scale);
@@ -163,7 +169,7 @@ public class MapState extends PersistentState {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
 			String string = playerUpdateTracker2.player.getName().getString();
 			if (!playerUpdateTracker2.player.removed && (playerUpdateTracker2.player.inventory.contains(stack) || stack.isInFrame())) {
-				if (!stack.isInFrame() && playerUpdateTracker2.player.dimension == this.dimension && this.showIcons) {
+				if (!stack.isInFrame() && playerUpdateTracker2.player.world.method_27983() == this.dimension && this.showIcons) {
 					this.addIcon(
 						MapIcon.Type.PLAYER,
 						playerUpdateTracker2.player.world,
@@ -256,7 +262,7 @@ public class MapState extends PersistentState {
 		if (f >= -63.0F && g >= -63.0F && f <= 63.0F && g <= 63.0F) {
 			rotation += rotation < 0.0 ? -8.0 : 8.0;
 			d = (byte)((int)(rotation * 16.0 / 360.0));
-			if (this.dimension == DimensionType.THE_NETHER && world != null) {
+			if (this.dimension == DimensionType.THE_NETHER_REGISTRY_KEY && world != null) {
 				int k = (int)(world.getLevelProperties().getTimeOfDay() / 10L);
 				d = (byte)(k * k * 34187121 + k * 121 >> 15 & 15);
 			}

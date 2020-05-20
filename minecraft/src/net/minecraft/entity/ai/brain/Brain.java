@@ -1,14 +1,18 @@
 package net.minecraft.entity.ai.brain;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,20 +20,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.DynamicSerializable;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
+import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class Brain<E extends LivingEntity> implements DynamicSerializable {
+public class Brain<E extends LivingEntity> {
+	private static final Logger LOGGER = LogManager.getLogger();
+	private final Supplier<Codec<Brain<E>>> codecSupplier;
 	private final Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> memories = Maps.<MemoryModuleType<?>, Optional<? extends Memory<?>>>newHashMap();
 	private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.<SensorType<? extends Sensor<? super E>>, Sensor<? super E>>newLinkedHashMap();
 	private final Map<Integer, Map<Activity, Set<Task<? super E>>>> tasks = Maps.newTreeMap();
@@ -45,12 +52,75 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	private Activity defaultActivity = Activity.IDLE;
 	private long activityStartTime = -9999L;
 
-	public <T> Brain(Collection<MemoryModuleType<?>> memoryTypes, Collection<SensorType<? extends Sensor<? super E>>> collection, Dynamic<T> dynamic) {
-		for (MemoryModuleType<?> memoryModuleType : memoryTypes) {
+	public static <E extends LivingEntity> Brain.Profile<E> createProfile(
+		Collection<? extends MemoryModuleType<?>> memoryModules, Collection<? extends SensorType<? extends Sensor<? super E>>> sensors
+	) {
+		return new Brain.Profile<>(memoryModules, sensors);
+	}
+
+	public static <E extends LivingEntity> Codec<Brain<E>> createBrainCodec(
+		Collection<? extends MemoryModuleType<?>> memoryModules, Collection<? extends SensorType<? extends Sensor<? super E>>> sensors
+	) {
+		final MutableObject<Codec<Brain<E>>> mutableObject = new MutableObject<>();
+		mutableObject.setValue(
+			(new MapCodec<Brain<E>>() {
+					@Override
+					public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
+						return memoryModules.stream()
+							.flatMap(memoryModuleType -> Util.stream(memoryModuleType.getFactory().map(codec -> Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType))))
+							.map(identifier -> dynamicOps.createString(identifier.toString()));
+					}
+
+					@Override
+					public <T> DataResult<Brain<E>> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
+						MutableObject<DataResult<Builder<Brain.MemoryEntry<?>>>> mutableObject = new MutableObject<>(DataResult.success(ImmutableList.builder()));
+						mapLike.entries()
+							.forEach(
+								pair -> {
+									DataResult<MemoryModuleType<?>> dataResult = Registry.MEMORY_MODULE_TYPE.parse(dynamicOps, (T)pair.getFirst());
+									DataResult<? extends Brain.MemoryEntry<?>> dataResult2 = dataResult.flatMap(
+										memoryModuleType -> this.method_28320(memoryModuleType, dynamicOps, (T)pair.getSecond())
+									);
+									mutableObject.setValue(mutableObject.getValue().apply2(Builder::add, dataResult2));
+								}
+							);
+						ImmutableList<Brain.MemoryEntry<?>> immutableList = (ImmutableList<Brain.MemoryEntry<?>>)mutableObject.getValue()
+							.resultOrPartial(Brain.LOGGER::error)
+							.map(Builder::build)
+							.orElseGet(ImmutableList::of);
+						return DataResult.success(new Brain<>(memoryModules, sensors, immutableList, mutableObject::getValue));
+					}
+
+					private <T, U> DataResult<Brain.MemoryEntry<U>> method_28320(MemoryModuleType<U> memoryModuleType, DynamicOps<T> dynamicOps, T object) {
+						return ((DataResult)memoryModuleType.getFactory().map(DataResult::success).orElseGet(() -> DataResult.error("No codec for memory: " + memoryModuleType)))
+							.flatMap(codec -> codec.parse(dynamicOps, object))
+							.map(memory -> new Brain.MemoryEntry(memoryModuleType, Optional.of(memory)));
+					}
+
+					public <T> RecordBuilder<T> encode(Brain<E> brain, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
+						brain.streamMemories().forEach(memoryEntry -> memoryEntry.serialize(dynamicOps, recordBuilder));
+						return recordBuilder;
+					}
+				})
+				.fieldOf("memories")
+				.codec()
+		);
+		return mutableObject.getValue();
+	}
+
+	public Brain(
+		Collection<? extends MemoryModuleType<?>> memories,
+		Collection<? extends SensorType<? extends Sensor<? super E>>> sensors,
+		ImmutableList<Brain.MemoryEntry<?>> memoryEntries,
+		Supplier<Codec<Brain<E>>> codecSupplier
+	) {
+		this.codecSupplier = codecSupplier;
+
+		for (MemoryModuleType<?> memoryModuleType : memories) {
 			this.memories.put(memoryModuleType, Optional.empty());
 		}
 
-		for (SensorType<? extends Sensor<? super E>> sensorType : collection) {
+		for (SensorType<? extends Sensor<? super E>> sensorType : sensors) {
 			this.sensors.put(sensorType, sensorType.create());
 		}
 
@@ -60,18 +130,24 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 			}
 		}
 
-		for (Entry<Dynamic<T>, Dynamic<T>> entry : dynamic.get("memories").asMap(Function.identity(), Function.identity()).entrySet()) {
-			this.readMemory(Registry.MEMORY_MODULE_TYPE.get(new Identifier(((Dynamic)entry.getKey()).asString(""))), (Dynamic<T>)entry.getValue());
+		for (Brain.MemoryEntry<?> memoryEntry : memoryEntries) {
+			memoryEntry.apply(this);
 		}
+	}
+
+	public <T> DataResult<T> encode(DynamicOps<T> ops) {
+		return ((Codec)this.codecSupplier.get()).encodeStart(ops, this);
+	}
+
+	private Stream<Brain.MemoryEntry<?>> streamMemories() {
+		return this.memories
+			.entrySet()
+			.stream()
+			.map(entry -> Brain.MemoryEntry.of((MemoryModuleType)entry.getKey(), (Optional<? extends Memory<?>>)entry.getValue()));
 	}
 
 	public boolean hasMemoryModule(MemoryModuleType<?> type) {
 		return this.isMemoryInState(type, MemoryModuleState.VALUE_PRESENT);
-	}
-
-	private <T, U> void readMemory(MemoryModuleType<U> type, Dynamic<T> data) {
-		Memory<U> memory = new Memory((Function<Dynamic<?>, T>)type.getFactory().orElseThrow(RuntimeException::new), data);
-		this.setMemory(type, Optional.of(memory));
 	}
 
 	public <U> void forget(MemoryModuleType<U> type) {
@@ -87,7 +163,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	public <U> void remember(MemoryModuleType<U> type, Optional<? extends U> value) {
-		this.setMemory(type, value.map(Memory::permanent));
+		this.setMemory(type, value.map(Memory::method_28355));
 	}
 
 	private <U> void setMemory(MemoryModuleType<U> type, Optional<? extends Memory<?>> memory) {
@@ -126,7 +202,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	@Deprecated
-	public List<Task<? super E>> method_27074() {
+	public List<Task<? super E>> getRunningTasks() {
 		List<Task<? super E>> list = new ObjectArrayList<>();
 
 		for (Map<Activity, Set<Task<? super E>>> map : this.tasks.values()) {
@@ -156,7 +232,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		return Optional.empty();
 	}
 
-	public void method_24526(Activity activity) {
+	public void doExclusively(Activity activity) {
 		if (this.canDoActivity(activity)) {
 			this.resetPossibleActivities(activity);
 		} else {
@@ -164,19 +240,19 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		}
 	}
 
-	private void resetPossibleActivities(Activity activity) {
-		if (!this.hasActivity(activity)) {
-			this.method_24537(activity);
+	private void resetPossibleActivities(Activity except) {
+		if (!this.hasActivity(except)) {
+			this.forgetIrrelevantMemories(except);
 			this.possibleActivities.clear();
 			this.possibleActivities.addAll(this.coreActivities);
-			this.possibleActivities.add(activity);
+			this.possibleActivities.add(except);
 		}
 	}
 
-	private void method_24537(Activity activity) {
-		for (Activity activity2 : this.possibleActivities) {
-			if (activity2 != activity) {
-				Set<MemoryModuleType<?>> set = (Set<MemoryModuleType<?>>)this.forgettingActivityMemories.get(activity2);
+	private void forgetIrrelevantMemories(Activity except) {
+		for (Activity activity : this.possibleActivities) {
+			if (activity != except) {
+				Set<MemoryModuleType<?>> set = (Set<MemoryModuleType<?>>)this.forgettingActivityMemories.get(activity);
 				if (set != null) {
 					for (MemoryModuleType<?> memoryModuleType : set) {
 						this.forget(memoryModuleType);
@@ -191,7 +267,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 			this.activityStartTime = time;
 			Activity activity = this.getSchedule().getActivityForTime((int)(timeOfDay % 24000L));
 			if (!this.possibleActivities.contains(activity)) {
-				this.method_24526(activity);
+				this.doExclusively(activity);
 			}
 		}
 	}
@@ -209,14 +285,14 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.defaultActivity = activity;
 	}
 
-	public void setTaskList(Activity activity, int i, ImmutableList<? extends Task<? super E>> immutableList) {
-		this.setTaskList(activity, this.indexTaskList(i, immutableList));
+	public void setTaskList(Activity activity, int begin, ImmutableList<? extends Task<? super E>> list) {
+		this.setTaskList(activity, this.indexTaskList(begin, list));
 	}
 
-	public void setTaskList(Activity activity, int i, ImmutableList<? extends Task<? super E>> tasks, MemoryModuleType<?> memoryModuleType) {
-		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set = ImmutableSet.of(Pair.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT));
-		Set<MemoryModuleType<?>> set2 = ImmutableSet.of(memoryModuleType);
-		this.setTaskList(activity, this.indexTaskList(i, tasks), set, set2);
+	public void setTaskList(Activity activity, int begin, ImmutableList<? extends Task<? super E>> tasks, MemoryModuleType<?> memoryType) {
+		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set = ImmutableSet.of(Pair.of(memoryType, MemoryModuleState.VALUE_PRESENT));
+		Set<MemoryModuleType<?>> set2 = ImmutableSet.of(memoryType);
+		this.setTaskList(activity, this.indexTaskList(begin, tasks), set, set2);
 	}
 
 	public void setTaskList(Activity activity, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks) {
@@ -253,7 +329,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	public Brain<E> copy() {
-		Brain<E> brain = new Brain<>(this.memories.keySet(), this.sensors.keySet(), new Dynamic<>(NbtOps.INSTANCE, new CompoundTag()));
+		Brain<E> brain = new Brain<>(this.memories.keySet(), this.sensors.keySet(), ImmutableList.of(), this.codecSupplier);
 
 		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : this.memories.entrySet()) {
 			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)entry.getKey();
@@ -265,24 +341,24 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		return brain;
 	}
 
-	public void tick(ServerWorld serverWorld, E entity) {
-		this.method_27075();
-		this.method_27073(serverWorld, entity);
-		this.startTasks(serverWorld, entity);
-		this.updateTasks(serverWorld, entity);
+	public void tick(ServerWorld world, E entity) {
+		this.tickMemories();
+		this.tickSensors(world, entity);
+		this.startTasks(world, entity);
+		this.updateTasks(world, entity);
 	}
 
-	private void method_27073(ServerWorld serverWorld, E livingEntity) {
+	private void tickSensors(ServerWorld world, E entity) {
 		for (Sensor<? super E> sensor : this.sensors.values()) {
-			sensor.canSense(serverWorld, livingEntity);
+			sensor.tick(world, entity);
 		}
 	}
 
-	private void method_27075() {
+	private void tickMemories() {
 		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : this.memories.entrySet()) {
 			if (((Optional)entry.getValue()).isPresent()) {
 				Memory<?> memory = (Memory<?>)((Optional)entry.getValue()).get();
-				memory.method_24913();
+				memory.tick();
 				if (memory.isExpired()) {
 					this.forget((MemoryModuleType)entry.getKey());
 				}
@@ -290,33 +366,16 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		}
 	}
 
-	public void stopAllTasks(ServerWorld serverWorld, E livingEntity) {
-		long l = livingEntity.world.getTime();
+	public void stopAllTasks(ServerWorld world, E entity) {
+		long l = entity.world.getTime();
 
-		for (Task<? super E> task : this.method_27074()) {
-			task.stop(serverWorld, livingEntity, l);
+		for (Task<? super E> task : this.getRunningTasks()) {
+			task.stop(world, entity, l);
 		}
 	}
 
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		Builder<T, T> builder = ImmutableMap.builder();
-
-		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : this.memories.entrySet()) {
-			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)entry.getKey();
-			if (((Optional)entry.getValue()).isPresent() && memoryModuleType.getFactory().isPresent()) {
-				Memory<?> memory = (Memory<?>)((Optional)entry.getValue()).get();
-				T object = ops.createString(Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType).toString());
-				T object2 = memory.serialize(ops);
-				builder.put(object, object2);
-			}
-		}
-
-		return ops.createMap(ImmutableMap.of(ops.createString("memories"), ops.createMap(builder.build())));
-	}
-
-	private void startTasks(ServerWorld serverWorld, E livingEntity) {
-		long l = serverWorld.getTime();
+	private void startTasks(ServerWorld world, E entity) {
+		long l = world.getTime();
 
 		for (Map<Activity, Set<Task<? super E>>> map : this.tasks.values()) {
 			for (Entry<Activity, Set<Task<? super E>>> entry : map.entrySet()) {
@@ -324,7 +383,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 				if (this.possibleActivities.contains(activity)) {
 					for (Task<? super E> task : (Set)entry.getValue()) {
 						if (task.getStatus() == Task.Status.STOPPED) {
-							task.tryStarting(serverWorld, livingEntity, l);
+							task.tryStarting(world, entity, l);
 						}
 					}
 				}
@@ -332,11 +391,11 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		}
 	}
 
-	private void updateTasks(ServerWorld serverWorld, E livingEntity) {
-		long l = serverWorld.getTime();
+	private void updateTasks(ServerWorld world, E entity) {
+		long l = world.getTime();
 
-		for (Task<? super E> task : this.method_27074()) {
-			task.tick(serverWorld, livingEntity, l);
+		for (Task<? super E> task : this.getRunningTasks()) {
+			task.tick(world, entity, l);
 		}
 	}
 
@@ -363,14 +422,61 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	/**
 	 * @param begin The beginning of the index of tasks, exclusive
 	 */
-	ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexTaskList(int begin, ImmutableList<? extends Task<? super E>> immutableList) {
+	ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexTaskList(int begin, ImmutableList<? extends Task<? super E>> tasks) {
 		int i = begin;
-		com.google.common.collect.ImmutableList.Builder<Pair<Integer, ? extends Task<? super E>>> builder = ImmutableList.builder();
+		Builder<Pair<Integer, ? extends Task<? super E>>> builder = ImmutableList.builder();
 
-		for (Task<? super E> task : immutableList) {
+		for (Task<? super E> task : tasks) {
 			builder.add(Pair.of(i++, task));
 		}
 
 		return builder.build();
+	}
+
+	static final class MemoryEntry<U> {
+		private final MemoryModuleType<U> type;
+		private final Optional<? extends Memory<U>> data;
+
+		private static <U> Brain.MemoryEntry<U> of(MemoryModuleType<U> type, Optional<? extends Memory<?>> data) {
+			return new Brain.MemoryEntry<>(type, (Optional<? extends Memory<U>>)data);
+		}
+
+		private MemoryEntry(MemoryModuleType<U> type, Optional<? extends Memory<U>> data) {
+			this.type = type;
+			this.data = data;
+		}
+
+		private void apply(Brain<?> brain) {
+			brain.setMemory(this.type, this.data);
+		}
+
+		public <T> void serialize(DynamicOps<T> ops, RecordBuilder<T> builder) {
+			this.type
+				.getFactory()
+				.ifPresent(codec -> this.data.ifPresent(memory -> builder.add(Registry.MEMORY_MODULE_TYPE.encodeStart(ops, (T)this.type), codec.encodeStart(ops, memory))));
+		}
+	}
+
+	/**
+	 * A simple profile of a brain. Indicates what types of memory modules and
+	 * sensors a brain can have.
+	 */
+	public static final class Profile<E extends LivingEntity> {
+		private final Collection<? extends MemoryModuleType<?>> memoryModules;
+		private final Collection<? extends SensorType<? extends Sensor<? super E>>> sensors;
+		private final Codec<Brain<E>> codec;
+
+		private Profile(Collection<? extends MemoryModuleType<?>> memoryModules, Collection<? extends SensorType<? extends Sensor<? super E>>> sensors) {
+			this.memoryModules = memoryModules;
+			this.sensors = sensors;
+			this.codec = Brain.createBrainCodec(memoryModules, sensors);
+		}
+
+		public Brain<E> deserialize(Dynamic<?> data) {
+			return (Brain<E>)this.codec
+				.parse(data)
+				.resultOrPartial(Brain.LOGGER::error)
+				.orElseGet(() -> new Brain(this.memoryModules, this.sensors, ImmutableList.of(), () -> this.codec));
+		}
 	}
 }

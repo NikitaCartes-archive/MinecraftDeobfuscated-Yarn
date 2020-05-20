@@ -1,15 +1,21 @@
 package net.minecraft.world.gen.chunk;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
-import net.minecraft.class_5284;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.class_5309;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructurePiece;
@@ -24,26 +30,45 @@ import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
+import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
-public abstract class SurfaceChunkGenerator<T extends class_5284> extends ChunkGenerator {
+public final class SurfaceChunkGenerator extends ChunkGenerator {
+	public static final Codec<SurfaceChunkGenerator> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					BiomeSource.field_24713.fieldOf("biome_source").forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.biomeSource),
+					Codec.LONG.fieldOf("seed").stable().forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.field_24778),
+					ChunkGeneratorType.field_24781.fieldOf("settings").forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.field_24774)
+				)
+				.apply(instance, instance.stable(SurfaceChunkGenerator::new))
+	);
 	private static final float[] field_16649 = Util.make(new float[13824], array -> {
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 24; j++) {
 				for (int k = 0; k < 24; k++) {
 					array[i * 24 * 24 + j * 24 + k] = (float)method_16571(j - 12, k - 12, i - 12);
 				}
+			}
+		}
+	});
+	private static final float[] field_24775 = Util.make(new float[25], fs -> {
+		for (int i = -2; i <= 2; i++) {
+			for (int j = -2; j <= 2; j++) {
+				float f = 10.0F / MathHelper.sqrt((float)(i * i + j * j) + 0.2F);
+				fs[i + 2 + (j + 2) * 5] = f;
 			}
 		}
 	});
@@ -58,37 +83,70 @@ public abstract class SurfaceChunkGenerator<T extends class_5284> extends ChunkG
 	private final OctavePerlinNoiseSampler upperInterpolatedNoise;
 	private final OctavePerlinNoiseSampler interpolationNoise;
 	private final NoiseSampler surfaceDepthNoise;
+	private final OctavePerlinNoiseSampler field_24776;
+	@Nullable
+	private final SimplexNoiseSampler field_24777;
 	protected final BlockState defaultBlock;
 	protected final BlockState defaultFluid;
-	private final int bedrockFloorHeight;
-	private final int bedrockCeilingHeight;
+	private final long field_24778;
+	protected final ChunkGeneratorType field_24774;
+	private final int field_24779;
 
-	public SurfaceChunkGenerator(
-		BiomeSource biomeSource, long seed, T config, int horizontalNoiseResolution, int verticalNoiseResolution, int worldHeight, boolean useSimplexNoise
-	) {
-		super(biomeSource, config.getConfig());
-		this.verticalNoiseResolution = verticalNoiseResolution;
-		this.horizontalNoiseResolution = horizontalNoiseResolution;
-		this.defaultBlock = config.getDefaultBlock();
-		this.defaultFluid = config.getDefaultFluid();
+	public SurfaceChunkGenerator(BiomeSource biomeSource, long l, ChunkGeneratorType chunkGeneratorType) {
+		this(biomeSource, biomeSource, l, chunkGeneratorType);
+	}
+
+	private SurfaceChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long l, ChunkGeneratorType chunkGeneratorType) {
+		super(biomeSource, biomeSource2, chunkGeneratorType.getConfig(), l);
+		this.field_24778 = l;
+		this.field_24774 = chunkGeneratorType;
+		class_5309 lv = chunkGeneratorType.method_28559();
+		this.field_24779 = lv.method_28581();
+		this.verticalNoiseResolution = lv.method_28587() * 4;
+		this.horizontalNoiseResolution = lv.method_28586() * 4;
+		this.defaultBlock = chunkGeneratorType.getDefaultBlock();
+		this.defaultFluid = chunkGeneratorType.getDefaultFluid();
 		this.noiseSizeX = 16 / this.horizontalNoiseResolution;
-		this.noiseSizeY = worldHeight / this.verticalNoiseResolution;
+		this.noiseSizeY = lv.method_28581() / this.verticalNoiseResolution;
 		this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
-		this.random = new ChunkRandom(seed);
+		this.random = new ChunkRandom(l);
 		this.lowerInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.upperInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.interpolationNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-7, 0));
-		this.surfaceDepthNoise = (NoiseSampler)(useSimplexNoise
+		this.surfaceDepthNoise = (NoiseSampler)(lv.method_28590()
 			? new OctaveSimplexNoiseSampler(this.random, IntStream.rangeClosed(-3, 0))
 			: new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-3, 0)));
-		this.bedrockFloorHeight = config.getBedrockFloorY();
-		this.bedrockCeilingHeight = config.getBedrockCeilingY();
+		this.random.consume(2620);
+		this.field_24776 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
+		if (lv.method_28592()) {
+			ChunkRandom chunkRandom = new ChunkRandom(l);
+			chunkRandom.consume(17292);
+			this.field_24777 = new SimplexNoiseSampler(chunkRandom);
+		} else {
+			this.field_24777 = null;
+		}
+	}
+
+	@Override
+	protected Codec<? extends ChunkGenerator> method_28506() {
+		return CODEC;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ChunkGenerator withSeed(long seed) {
+		return new SurfaceChunkGenerator(this.biomeSource.withSeed(seed), seed, this.field_24774);
+	}
+
+	public boolean method_28548(long l, ChunkGeneratorType.Preset preset) {
+		return this.field_24778 == l && this.field_24774.method_28555(preset);
 	}
 
 	private double sampleNoise(int x, int y, int z, double horizontalScale, double verticalScale, double horizontalStretch, double verticalStretch) {
 		double d = 0.0;
 		double e = 0.0;
 		double f = 0.0;
+		boolean bl = true;
 		double g = 1.0;
 
 		for (int i = 0; i < 16; i++) {
@@ -126,52 +184,112 @@ public abstract class SurfaceChunkGenerator<T extends class_5284> extends ChunkG
 		return MathHelper.clampedLerp(d / 512.0, e / 512.0, (f / 10.0 + 1.0) / 2.0);
 	}
 
-	protected double[] sampleNoiseColumn(int x, int z) {
+	private double[] sampleNoiseColumn(int x, int z) {
 		double[] ds = new double[this.noiseSizeY + 1];
 		this.sampleNoiseColumn(ds, x, z);
 		return ds;
 	}
 
-	protected void sampleNoiseColumn(
-		double[] buffer,
-		int x,
-		int z,
-		double horizontalScale,
-		double verticalScale,
-		double horizontalStretch,
-		double verticalStretch,
-		int topInterpolationFactor,
-		int topEndValue
-	) {
-		double[] ds = this.computeNoiseRange(x, z);
-		double d = ds[0];
-		double e = ds[1];
-		double f = this.topInterpolationStart();
-		double g = this.bottomInterpolationStart();
+	private void sampleNoiseColumn(double[] buffer, int x, int z) {
+		class_5309 lv = this.field_24774.method_28559();
+		double d;
+		double e;
+		if (this.field_24777 != null) {
+			d = (double)(TheEndBiomeSource.getNoiseAt(this.field_24777, x, z) - 8.0F);
+			if (d > 0.0) {
+				e = 0.25;
+			} else {
+				e = 1.0;
+			}
+		} else {
+			float f = 0.0F;
+			float g = 0.0F;
+			float h = 0.0F;
+			int i = 2;
+			int j = this.getSeaLevel();
+			float k = this.biomeSource.getBiomeForNoiseGen(x, j, z).getDepth();
 
-		for (int i = 0; i < this.getNoiseSizeY(); i++) {
-			double h = this.sampleNoise(x, i, z, horizontalScale, verticalScale, horizontalStretch, verticalStretch);
-			h -= this.computeNoiseFalloff(d, e, i);
-			if ((double)i > f) {
-				h = MathHelper.clampedLerp(h, (double)topEndValue, ((double)i - f) / (double)topInterpolationFactor);
-			} else if ((double)i < g) {
-				h = MathHelper.clampedLerp(h, -30.0, (g - (double)i) / (g - 1.0));
+			for (int l = -2; l <= 2; l++) {
+				for (int m = -2; m <= 2; m++) {
+					Biome biome = this.biomeSource.getBiomeForNoiseGen(x + l, j, z + m);
+					float n = biome.getDepth();
+					float o = biome.getScale();
+					float p;
+					float q;
+					if (lv.method_28593() && n > 0.0F) {
+						p = 1.0F + n * 2.0F;
+						q = 1.0F + o * 4.0F;
+					} else {
+						p = n;
+						q = o;
+					}
+
+					float r = n > k ? 0.5F : 1.0F;
+					float s = r * field_24775[l + 2 + (m + 2) * 5] / (p + 2.0F);
+					f += q * s;
+					g += p * s;
+					h += s;
+				}
 			}
 
-			buffer[i] = h;
+			float t = g / h;
+			float u = f / h;
+			double v = (double)(t * 0.5F - 0.125F);
+			double w = (double)(u * 0.9F + 0.1F);
+			d = v * 0.265625;
+			e = 96.0 / w;
+		}
+
+		double y = 684.412 * lv.method_28583().method_28576();
+		double aa = 684.412 * lv.method_28583().method_28578();
+		double ab = y / lv.method_28583().method_28579();
+		double ac = aa / lv.method_28583().method_28580();
+		double v = (double)lv.method_28584().method_28594();
+		double w = (double)lv.method_28584().method_28596();
+		double ad = (double)lv.method_28584().method_28597();
+		double ae = (double)lv.method_28585().method_28594();
+		double af = (double)lv.method_28585().method_28596();
+		double ag = (double)lv.method_28585().method_28597();
+		double ah = lv.method_28591() ? this.method_28553(x, z) : 0.0;
+		double ai = lv.method_28588();
+		double aj = lv.method_28589();
+
+		for (int ak = 0; ak <= this.noiseSizeY; ak++) {
+			double al = this.sampleNoise(x, ak, z, y, aa, ab, ac);
+			double am = 1.0 - (double)ak * 2.0 / (double)this.noiseSizeY + ah;
+			double an = am * ai + aj;
+			double ao = (an + d) * e;
+			if (ao > 0.0) {
+				al += ao * 4.0;
+			} else {
+				al += ao;
+			}
+
+			if (w > 0.0) {
+				double ap = ((double)(this.noiseSizeY - ak) - ad) / w;
+				al = MathHelper.clampedLerp(v, al, ap);
+			}
+
+			if (af > 0.0) {
+				double ap = ((double)ak - ag) / af;
+				al = MathHelper.clampedLerp(ae, al, ap);
+			}
+
+			buffer[ak] = al;
 		}
 	}
 
-	protected abstract double[] computeNoiseRange(int x, int z);
+	private double method_28553(int i, int j) {
+		double d = this.field_24776.sample((double)(i * 200), 10.0, (double)(j * 200), 1.0, 0.0, true);
+		double e;
+		if (d < 0.0) {
+			e = -d * 0.3;
+		} else {
+			e = d;
+		}
 
-	protected abstract double computeNoiseFalloff(double depth, double scale, int y);
-
-	protected double topInterpolationStart() {
-		return (double)(this.getNoiseSizeY() - 4);
-	}
-
-	protected double bottomInterpolationStart() {
-		return 0.0;
+		double f = e * 24.575625 - 2.0;
+		return f < 0.0 ? f * 0.009486607142857142 : Math.min(f, 1.0) * 0.006640625;
 	}
 
 	@Override
@@ -238,12 +356,6 @@ public abstract class SurfaceChunkGenerator<T extends class_5284> extends ChunkG
 		return blockState;
 	}
 
-	protected abstract void sampleNoiseColumn(double[] buffer, int x, int z);
-
-	public int getNoiseSizeY() {
-		return this.noiseSizeY + 1;
-	}
-
 	@Override
 	public void buildSurface(ChunkRegion region, Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
@@ -271,26 +383,30 @@ public abstract class SurfaceChunkGenerator<T extends class_5284> extends ChunkG
 		this.buildBedrock(chunk, chunkRandom);
 	}
 
-	protected void buildBedrock(Chunk chunk, Random random) {
+	private void buildBedrock(Chunk chunk, Random random) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = chunk.getPos().getStartX();
 		int j = chunk.getPos().getStartZ();
-		int k = this.bedrockFloorHeight;
-		int l = this.bedrockCeilingHeight;
-
-		for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
-			if (l > 0) {
-				for (int m = l; m >= l - 4; m--) {
-					if (m >= l - random.nextInt(5)) {
-						chunk.setBlockState(mutable.set(blockPos.getX(), m, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
+		int k = this.field_24774.getBedrockFloorY();
+		int l = this.field_24779 - 1 - this.field_24774.getBedrockCeilingY();
+		int m = 5;
+		boolean bl = l + 4 >= 0 && l < this.field_24779;
+		boolean bl2 = k + 4 >= 0 && k < this.field_24779;
+		if (bl || bl2) {
+			for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
+				if (bl) {
+					for (int n = 0; n < 5; n++) {
+						if (n <= random.nextInt(5)) {
+							chunk.setBlockState(mutable.set(blockPos.getX(), l - n, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
+						}
 					}
 				}
-			}
 
-			if (k < 256) {
-				for (int mx = k + 4; mx >= k; mx--) {
-					if (mx <= k + random.nextInt(5)) {
-						chunk.setBlockState(mutable.set(blockPos.getX(), mx, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
+				if (bl2) {
+					for (int nx = 4; nx >= 0; nx--) {
+						if (nx <= random.nextInt(5)) {
+							chunk.setBlockState(mutable.set(blockPos.getX(), k + nx, blockPos.getZ()), Blocks.BEDROCK.getDefaultState(), false);
+						}
 					}
 				}
 			}
@@ -307,7 +423,7 @@ public abstract class SurfaceChunkGenerator<T extends class_5284> extends ChunkG
 		int k = i << 4;
 		int l = j << 4;
 
-		for (StructureFeature<?> structureFeature : Feature.JIGSAW_STRUCTURES) {
+		for (StructureFeature<?> structureFeature : StructureFeature.field_24861) {
 			accessor.getStructuresWithChildren(ChunkSectionPos.from(chunkPos, 0), structureFeature).forEach(start -> {
 				for (StructurePiece structurePiece : start.getChildren()) {
 					if (structurePiece.intersectsChunk(chunkPos, 12)) {
@@ -463,5 +579,56 @@ public abstract class SurfaceChunkGenerator<T extends class_5284> extends ChunkG
 		double g = Math.pow(Math.E, -(f / 16.0 + d / 16.0));
 		double h = -e * MathHelper.fastInverseSqrt(f / 2.0 + d / 2.0) / 2.0;
 		return h * g;
+	}
+
+	@Override
+	public int getMaxY() {
+		return this.field_24779;
+	}
+
+	@Override
+	public int getSeaLevel() {
+		return this.field_24774.method_28561();
+	}
+
+	@Override
+	public List<Biome.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+		if (accessor.method_28388(pos, true, StructureFeature.field_24851).hasChildren()) {
+			if (group == SpawnGroup.MONSTER) {
+				return StructureFeature.field_24851.getMonsterSpawns();
+			}
+
+			if (group == SpawnGroup.CREATURE) {
+				return StructureFeature.field_24851.getCreatureSpawns();
+			}
+		}
+
+		if (group == SpawnGroup.MONSTER) {
+			if (accessor.method_28388(pos, false, StructureFeature.PILLAGER_OUTPOST).hasChildren()) {
+				return StructureFeature.PILLAGER_OUTPOST.getMonsterSpawns();
+			}
+
+			if (accessor.method_28388(pos, false, StructureFeature.MONUMENT).hasChildren()) {
+				return StructureFeature.MONUMENT.getMonsterSpawns();
+			}
+
+			if (accessor.method_28388(pos, true, StructureFeature.FORTRESS).hasChildren()) {
+				return StructureFeature.FORTRESS.getMonsterSpawns();
+			}
+		}
+
+		return super.getEntitySpawnList(biome, accessor, group, pos);
+	}
+
+	@Override
+	public void populateEntities(ChunkRegion region) {
+		if (!this.field_24774.method_28562()) {
+			int i = region.getCenterChunkX();
+			int j = region.getCenterChunkZ();
+			Biome biome = region.getBiome(new ChunkPos(i, j).getCenterBlockPos());
+			ChunkRandom chunkRandom = new ChunkRandom();
+			chunkRandom.setPopulationSeed(region.getSeed(), i << 4, j << 4);
+			SpawnHelper.populateEntities(region, biome, i, j, chunkRandom);
+		}
 	}
 }

@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.FurnaceInputSlotFiller;
@@ -29,7 +29,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	protected AbstractFurnaceScreenHandler(
 		ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory
 	) {
-		this(type, recipeType, syncId, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
+		this(type, recipeType, syncId, playerInventory, new SimpleInventory(3), new ArrayPropertyDelegate(4));
 	}
 
 	protected AbstractFurnaceScreenHandler(
@@ -162,7 +162,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	}
 
 	protected boolean isSmeltable(ItemStack itemStack) {
-		return this.world.getRecipeManager().getFirstMatch(this.recipeType, new BasicInventory(itemStack), this.world).isPresent();
+		return this.world.getRecipeManager().getFirstMatch(this.recipeType, new SimpleInventory(itemStack), this.world).isPresent();
 	}
 
 	public boolean isFuel(ItemStack itemStack) {

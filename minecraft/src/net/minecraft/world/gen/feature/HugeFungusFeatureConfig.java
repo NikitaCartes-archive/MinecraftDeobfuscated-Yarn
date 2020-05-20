@@ -1,12 +1,21 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
 public class HugeFungusFeatureConfig implements FeatureConfig {
+	public static final Codec<HugeFungusFeatureConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					BlockState.field_24734.fieldOf("valid_base_block").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.validBaseBlock),
+					BlockState.field_24734.fieldOf("stem_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.stemState),
+					BlockState.field_24734.fieldOf("hat_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.hatState),
+					BlockState.field_24734.fieldOf("decor_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.decorationState),
+					Codec.BOOL.fieldOf("planted").withDefault(false).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.planted)
+				)
+				.apply(instance, HugeFungusFeatureConfig::new)
+	);
 	public static final HugeFungusFeatureConfig CRIMSON_FUNGUS_CONFIG = new HugeFungusFeatureConfig(
 		Blocks.CRIMSON_NYLIUM.getDefaultState(),
 		Blocks.CRIMSON_STEM.getDefaultState(),
@@ -35,36 +44,6 @@ public class HugeFungusFeatureConfig implements FeatureConfig {
 		this.hatState = hatState;
 		this.decorationState = decorationState;
 		this.planted = planted;
-	}
-
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("valid_base_block"),
-					BlockState.serialize(ops, this.validBaseBlock).getValue(),
-					ops.createString("stem_state"),
-					BlockState.serialize(ops, this.stemState).getValue(),
-					ops.createString("hat_state"),
-					BlockState.serialize(ops, this.hatState).getValue(),
-					ops.createString("decor_state"),
-					BlockState.serialize(ops, this.decorationState).getValue(),
-					ops.createString("planted"),
-					ops.createBoolean(this.planted)
-				)
-			)
-		);
-	}
-
-	public static <T> HugeFungusFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("valid_base_state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
-		BlockState blockState2 = (BlockState)dynamic.get("stem_state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
-		BlockState blockState3 = (BlockState)dynamic.get("hat_state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
-		BlockState blockState4 = (BlockState)dynamic.get("decor_state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
-		boolean bl = dynamic.get("planted").asBoolean(false);
-		return new HugeFungusFeatureConfig(blockState, blockState2, blockState3, blockState4, bl);
 	}
 
 	static {

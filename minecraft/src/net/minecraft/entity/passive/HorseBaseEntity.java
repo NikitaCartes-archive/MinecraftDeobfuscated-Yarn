@@ -6,11 +6,11 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5275;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -39,9 +39,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -81,7 +81,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	public int tailWagTicks;
 	public int field_6958;
 	protected boolean inAir;
-	protected BasicInventory items;
+	protected SimpleInventory items;
 	protected int temper;
 	protected float jumpStrength;
 	private boolean jumping;
@@ -224,17 +224,13 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	private void playEatingAnimation() {
 		this.setEating();
 		if (!this.isSilent()) {
-			this.world
-				.playSound(
-					null,
-					this.getX(),
-					this.getY(),
-					this.getZ(),
-					SoundEvents.ENTITY_HORSE_EAT,
-					this.getSoundCategory(),
-					1.0F,
-					1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
-				);
+			SoundEvent soundEvent = this.method_28368();
+			if (soundEvent != null) {
+				this.world
+					.playSound(
+						null, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+					);
+			}
 		}
 	}
 
@@ -270,14 +266,14 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	protected void onChestedStatusChanged() {
-		BasicInventory basicInventory = this.items;
-		this.items = new BasicInventory(this.getInventorySize());
-		if (basicInventory != null) {
-			basicInventory.removeListener(this);
-			int i = Math.min(basicInventory.size(), this.items.size());
+		SimpleInventory simpleInventory = this.items;
+		this.items = new SimpleInventory(this.getInventorySize());
+		if (simpleInventory != null) {
+			simpleInventory.removeListener(this);
+			int i = Math.min(simpleInventory.size(), this.items.size());
 
 			for (int j = 0; j < i; j++) {
-				ItemStack itemStack = basicInventory.getStack(j);
+				ItemStack itemStack = simpleInventory.getStack(j);
 				if (!itemStack.isEmpty()) {
 					this.items.setStack(j, itemStack.copy());
 				}
@@ -305,6 +301,11 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	public double getJumpStrength() {
 		return this.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH);
+	}
+
+	@Nullable
+	protected SoundEvent method_28368() {
+		return null;
 	}
 
 	@Nullable
@@ -748,7 +749,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		tag.putInt("Temper", this.getTemper());
 		tag.putBoolean("Tame", this.isTame());
 		if (this.getOwnerUuid() != null) {
-			tag.putUuidNew("Owner", this.getOwnerUuid());
+			tag.putUuid("Owner", this.getOwnerUuid());
 		}
 
 		if (!this.items.getStack(0).isEmpty()) {
@@ -764,8 +765,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		this.setTemper(tag.getInt("Temper"));
 		this.setTame(tag.getBoolean("Tame"));
 		UUID uUID;
-		if (tag.containsUuidNew("Owner")) {
-			uUID = tag.getUuidNew("Owner");
+		if (tag.containsUuid("Owner")) {
+			uUID = tag.getUuid("Owner");
 		} else {
 			String string = tag.getString("Owner");
 			uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
@@ -991,15 +992,15 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			double g = this.getBoundingBox().maxY + 0.75;
 
 			do {
-				double h = this.world.method_26372(mutable);
+				double h = this.world.getCollisionHeightAt(mutable);
 				if ((double)mutable.getY() + h > g) {
 					break;
 				}
 
-				if (class_5275.method_27932(h)) {
-					Box box = livingEntity.method_24833(entityPose);
+				if (Dismounting.canDismountInBlock(h)) {
+					Box box = livingEntity.getBoundingBox(entityPose);
 					Vec3d vec3d2 = new Vec3d(d, (double)mutable.getY() + h, f);
-					if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d2))) {
+					if (Dismounting.canPlaceEntityAt(this.world, livingEntity, box.offset(vec3d2))) {
 						livingEntity.setPose(entityPose);
 						return vec3d2;
 					}
@@ -1013,14 +1014,18 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	public Vec3d method_24829(LivingEntity livingEntity) {
-		Vec3d vec3d = method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.RIGHT ? 90.0F : -90.0F));
-		Vec3d vec3d2 = this.method_27930(vec3d, livingEntity);
+	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
+		Vec3d vec3d = getPassengerDismountOffset(
+			(double)this.getWidth(), (double)passenger.getWidth(), this.yaw + (passenger.getMainArm() == Arm.RIGHT ? 90.0F : -90.0F)
+		);
+		Vec3d vec3d2 = this.method_27930(vec3d, passenger);
 		if (vec3d2 != null) {
 			return vec3d2;
 		} else {
-			Vec3d vec3d3 = method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.LEFT ? 90.0F : -90.0F));
-			Vec3d vec3d4 = this.method_27930(vec3d3, livingEntity);
+			Vec3d vec3d3 = getPassengerDismountOffset(
+				(double)this.getWidth(), (double)passenger.getWidth(), this.yaw + (passenger.getMainArm() == Arm.LEFT ? 90.0F : -90.0F)
+			);
+			Vec3d vec3d4 = this.method_27930(vec3d3, passenger);
 			return vec3d4 != null ? vec3d4 : this.getPos();
 		}
 	}

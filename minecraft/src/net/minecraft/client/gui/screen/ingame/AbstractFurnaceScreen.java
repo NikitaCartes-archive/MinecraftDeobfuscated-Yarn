@@ -65,25 +65,25 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-		this.textRenderer.draw(matrixStack, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
-		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
+	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+		this.textRenderer.draw(matrices, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
+		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(this.background);
-		int j = this.x;
-		int k = this.y;
-		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		int i = this.x;
+		int j = this.y;
+		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		if (this.handler.isBurning()) {
-			int l = this.handler.getFuelProgress();
-			this.drawTexture(matrixStack, j + 56, k + 36 + 12 - l, 176, 12 - l, 14, l + 1);
+			int k = this.handler.getFuelProgress();
+			this.drawTexture(matrices, i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
 		}
 
-		int l = this.handler.getCookProgress();
-		this.drawTexture(matrixStack, j + 79, k + 34, 176, 14, l + 1, 16);
+		int k = this.handler.getCookProgress();
+		this.drawTexture(matrices, i + 79, j + 34, 176, 14, k + 1, 16);
 	}
 
 	@Override

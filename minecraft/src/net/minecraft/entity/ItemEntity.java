@@ -24,6 +24,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -241,11 +242,11 @@ public class ItemEntity extends Entity {
 		tag.putShort("Age", (short)this.age);
 		tag.putShort("PickupDelay", (short)this.pickupDelay);
 		if (this.getThrower() != null) {
-			tag.putUuidNew("Thrower", this.getThrower());
+			tag.putUuid("Thrower", this.getThrower());
 		}
 
 		if (this.getOwner() != null) {
-			tag.putUuidNew("Owner", this.getOwner());
+			tag.putUuid("Owner", this.getOwner());
 		}
 
 		if (!this.getStack().isEmpty()) {
@@ -261,12 +262,12 @@ public class ItemEntity extends Entity {
 			this.pickupDelay = tag.getShort("PickupDelay");
 		}
 
-		if (tag.containsUuidNew("Owner")) {
-			this.owner = tag.getUuidNew("Owner");
+		if (tag.containsUuid("Owner")) {
+			this.owner = tag.getUuid("Owner");
 		}
 
-		if (tag.containsUuidNew("Thrower")) {
-			this.thrower = tag.getUuidNew("Thrower");
+		if (tag.containsUuid("Thrower")) {
+			this.thrower = tag.getUuid("Thrower");
 		}
 
 		CompoundTag compoundTag = tag.getCompound("Item");
@@ -307,7 +308,7 @@ public class ItemEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
+	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
 		Entity entity = super.changeDimension(newDimension);
 		if (!this.world.isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();

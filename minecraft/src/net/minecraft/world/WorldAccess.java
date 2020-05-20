@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5217;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,20 +17,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.chunk.ChunkManager;
-import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
 
 public interface WorldAccess extends EntityView, WorldView, ModifiableTestableWorld {
 	default float getMoonSize() {
-		return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
+		return DimensionType.field_24752[this.getDimension().method_28531(this.getLevelProperties().getTimeOfDay())];
 	}
 
 	default float getSkyAngle(float tickDelta) {
-		return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), tickDelta);
+		return this.getDimension().method_28528(this.getLevelProperties().getTimeOfDay());
 	}
 
 	@Environment(EnvType.CLIENT)
 	default int getMoonPhase() {
-		return this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay());
+		return this.getDimension().method_28531(this.getLevelProperties().getTimeOfDay());
 	}
 
 	TickScheduler<Block> getBlockTickScheduler();
@@ -40,7 +39,7 @@ public interface WorldAccess extends EntityView, WorldView, ModifiableTestableWo
 
 	World getWorld();
 
-	class_5217 getLevelProperties();
+	WorldProperties getLevelProperties();
 
 	LocalDifficulty getLocalDifficulty(BlockPos pos);
 
@@ -67,7 +66,7 @@ public interface WorldAccess extends EntityView, WorldView, ModifiableTestableWo
 	void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data);
 
 	default int getDimensionHeight() {
-		return this.method_27983().method_27998() ? 128 : 256;
+		return this.getDimension().hasCeiling() ? 128 : 256;
 	}
 
 	default void syncWorldEvent(int eventId, BlockPos pos, int data) {

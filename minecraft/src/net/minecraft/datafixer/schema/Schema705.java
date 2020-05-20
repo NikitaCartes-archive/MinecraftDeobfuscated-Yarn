@@ -2,11 +2,11 @@ package net.minecraft.datafixer.schema;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.datafixers.types.DynamicOps;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import com.mojang.datafixers.types.templates.Hook.HookFunction;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -223,7 +223,7 @@ public class Schema705 extends IdentifierNormalizingSchema {
 	@Override
 	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
 		super.registerTypes(schema, entityTypes, blockEntityTypes);
-		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), entityTypes));
+		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", method_28295(), entityTypes));
 		schema.registerType(
 			true,
 			TypeReferences.ITEM_STACK,

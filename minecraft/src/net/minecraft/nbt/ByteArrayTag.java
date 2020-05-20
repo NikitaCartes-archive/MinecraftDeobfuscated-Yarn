@@ -163,6 +163,11 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		return ByteTag.of(b);
 	}
 
+	@Override
+	public byte getElementType() {
+		return 1;
+	}
+
 	public void clear() {
 		this.value = new byte[0];
 	}

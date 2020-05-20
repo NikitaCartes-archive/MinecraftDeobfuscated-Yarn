@@ -47,15 +47,8 @@ public class ChunkStatus {
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
-				if (serverWorld.getServer().method_27728().method_28057().method_28029()) {
-					chunkGenerator.setStructureStarts(
-						serverWorld.getStructureAccessor(),
-						serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()),
-						chunk,
-						chunkGenerator,
-						structureManager,
-						serverWorld.getSeed()
-					);
+				if (serverWorld.getServer().method_27728().method_28057().shouldGenerateStructures()) {
+					chunkGenerator.setStructureStarts(serverWorld.getStructureAccessor(), chunk, structureManager, serverWorld.getSeed());
 				}
 
 				if (chunk instanceof ProtoChunk) {
@@ -106,9 +99,7 @@ public class ChunkStatus {
 		0,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(
-				serverWorld.getSeed(), serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.AIR
-			)
+		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(serverWorld.getSeed(), serverWorld.getBiomeAccess(), chunk, GenerationStep.Carver.AIR)
 	);
 	public static final ChunkStatus LIQUID_CARVERS = register(
 		"liquid_carvers",
@@ -116,9 +107,7 @@ public class ChunkStatus {
 		0,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(
-				serverWorld.getSeed(), serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.LIQUID
-			)
+		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(serverWorld.getSeed(), serverWorld.getBiomeAccess(), chunk, GenerationStep.Carver.LIQUID)
 	);
 	public static final ChunkStatus FEATURES = register(
 		"features",

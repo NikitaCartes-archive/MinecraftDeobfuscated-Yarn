@@ -4,11 +4,11 @@ import com.google.common.collect.Sets;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.class_5275;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
@@ -199,13 +199,13 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public Vec3d method_24829(LivingEntity livingEntity) {
+	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		Vec3d[] vec3ds = new Vec3d[]{
-			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw),
-			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw - 22.5F),
-			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw + 22.5F),
-			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw - 45.0F),
-			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw + 45.0F)
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw),
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw - 22.5F),
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw + 22.5F),
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw - 45.0F),
+			getPassengerDismountOffset((double)this.getWidth(), (double)passenger.getWidth(), passenger.yaw + 45.0F)
 		};
 		Set<BlockPos> set = Sets.<BlockPos>newLinkedHashSet();
 		double d = this.getBoundingBox().maxY;
@@ -223,13 +223,13 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		for (BlockPos blockPos : set) {
 			if (!this.world.getFluidState(blockPos).matches(FluidTags.LAVA)) {
-				for (EntityPose entityPose : livingEntity.getPoses()) {
-					double f = this.world.method_26372(blockPos);
-					if (class_5275.method_27932(f)) {
-						Box box = livingEntity.method_24833(entityPose);
+				for (EntityPose entityPose : passenger.getPoses()) {
+					double f = this.world.getCollisionHeightAt(blockPos);
+					if (Dismounting.canDismountInBlock(f)) {
+						Box box = passenger.getBoundingBox(entityPose);
 						Vec3d vec3d2 = Vec3d.ofCenter(blockPos, f);
-						if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d2))) {
-							livingEntity.setPose(entityPose);
+						if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d2))) {
+							passenger.setPose(entityPose);
 							return vec3d2;
 						}
 					}

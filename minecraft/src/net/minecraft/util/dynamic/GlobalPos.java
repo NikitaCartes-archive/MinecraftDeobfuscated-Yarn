@@ -1,33 +1,32 @@
 package net.minecraft.util.dynamic;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
-public final class GlobalPos implements DynamicSerializable {
-	private final DimensionType dimension;
+public final class GlobalPos {
+	public static final Codec<GlobalPos> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					DimensionType.field_24751.fieldOf("dimension").forGetter(GlobalPos::getDimension), BlockPos.field_25064.fieldOf("pos").forGetter(GlobalPos::getPos)
+				)
+				.apply(instance, GlobalPos::create)
+	);
+	private final RegistryKey<DimensionType> dimension;
 	private final BlockPos pos;
 
-	private GlobalPos(DimensionType dimension, BlockPos pos) {
-		this.dimension = dimension;
+	private GlobalPos(RegistryKey<DimensionType> registryKey, BlockPos pos) {
+		this.dimension = registryKey;
 		this.pos = pos;
 	}
 
-	public static GlobalPos create(DimensionType dimension, BlockPos pos) {
-		return new GlobalPos(dimension, pos);
+	public static GlobalPos create(RegistryKey<DimensionType> registryKey, BlockPos pos) {
+		return new GlobalPos(registryKey, pos);
 	}
 
-	public static GlobalPos deserialize(Dynamic<?> dynamic) {
-		return (GlobalPos)dynamic.get("dimension")
-			.map(DimensionType::deserialize)
-			.flatMap(dimensionType -> dynamic.get("pos").map(BlockPos::deserialize).map(blockPos -> new GlobalPos(dimensionType, blockPos)))
-			.orElseThrow(() -> new IllegalArgumentException("Could not parse GlobalPos"));
-	}
-
-	public DimensionType getDimension() {
+	public RegistryKey<DimensionType> getDimension() {
 		return this.dimension;
 	}
 
@@ -48,11 +47,6 @@ public final class GlobalPos implements DynamicSerializable {
 
 	public int hashCode() {
 		return Objects.hash(new Object[]{this.dimension, this.pos});
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		return ops.createMap(ImmutableMap.of(ops.createString("dimension"), this.dimension.serialize(ops), ops.createString("pos"), this.pos.serialize(ops)));
 	}
 
 	public String toString() {

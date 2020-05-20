@@ -45,6 +45,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -375,7 +376,7 @@ public abstract class MobEntity extends LivingEntity {
 			CompoundTag compoundTag2 = new CompoundTag();
 			if (this.holdingEntity instanceof LivingEntity) {
 				UUID uUID = this.holdingEntity.getUuid();
-				compoundTag2.putUuidNew("UUID", uUID);
+				compoundTag2.putUuid("UUID", uUID);
 			} else if (this.holdingEntity instanceof AbstractDecorationEntity) {
 				BlockPos blockPos = ((AbstractDecorationEntity)this.holdingEntity).getDecorationBlockPos();
 				compoundTag2.putInt("X", blockPos.getX());
@@ -519,7 +520,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected void method_27964(ItemEntity itemEntity) {
 		PlayerEntity playerEntity = itemEntity.getThrower() != null ? this.world.getPlayerByUuid(itemEntity.getThrower()) : null;
 		if (playerEntity instanceof ServerPlayerEntity) {
-			Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.test((ServerPlayerEntity)playerEntity, itemEntity.getStack(), this);
+			Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.trigger((ServerPlayerEntity)playerEntity, itemEntity.getStack(), this);
 		}
 	}
 
@@ -571,6 +572,8 @@ public abstract class MobEntity extends LivingEntity {
 					: this.prefersNewDamageableItem(newStack, oldStack);
 			}
 		} else if (newStack.getItem() instanceof BowItem && oldStack.getItem() instanceof BowItem) {
+			return this.prefersNewDamageableItem(newStack, oldStack);
+		} else if (newStack.getItem() instanceof CrossbowItem && oldStack.getItem() instanceof CrossbowItem) {
 			return this.prefersNewDamageableItem(newStack, oldStack);
 		} else if (newStack.getItem() instanceof ArmorItem) {
 			if (EnchantmentHelper.hasBindingCurse(oldStack)) {
@@ -1175,8 +1178,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	private void deserializeLeashTag() {
 		if (this.leashTag != null && this.world instanceof ServerWorld) {
-			if (this.leashTag.containsUuidNew("UUID")) {
-				UUID uUID = this.leashTag.getUuidNew("UUID");
+			if (this.leashTag.containsUuid("UUID")) {
+				UUID uUID = this.leashTag.getUuid("UUID");
 				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
 				if (entity != null) {
 					this.attachLeash(entity, true);

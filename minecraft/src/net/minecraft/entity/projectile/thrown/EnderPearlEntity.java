@@ -20,6 +20,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -128,9 +129,9 @@ public class EnderPearlEntity extends ThrownItemEntity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
+	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
 		Entity entity = this.getOwner();
-		if (entity.dimension != newDimension) {
+		if (entity != null && entity.world.method_27983() != newDimension) {
 			this.setOwner(null);
 		}
 

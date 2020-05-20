@@ -10,6 +10,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
 public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
@@ -18,7 +19,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 	}
 
 	protected void sense(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		DimensionType dimensionType = serverWorld.method_27983();
+		RegistryKey<DimensionType> registryKey = serverWorld.method_27983();
 		BlockPos blockPos = villagerEntity.getBlockPos();
 		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
 		int i = 4;
@@ -28,7 +29,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 				for (int l = -4; l <= 4; l++) {
 					BlockPos blockPos2 = blockPos.add(j, k, l);
 					if (villagerEntity.getVillagerData().getProfession().getSecondaryJobSites().contains(serverWorld.getBlockState(blockPos2).getBlock())) {
-						list.add(GlobalPos.create(dimensionType, blockPos2));
+						list.add(GlobalPos.create(registryKey, blockPos2));
 					}
 				}
 			}

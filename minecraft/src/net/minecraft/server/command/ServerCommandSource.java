@@ -22,11 +22,13 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.dimension.DimensionTracker;
 
 public class ServerCommandSource implements CommandSource {
 	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.player"));
@@ -329,7 +331,7 @@ public class ServerCommandSource implements CommandSource {
 
 	public void sendFeedback(Text message, boolean broadcastToOps) {
 		if (this.output.shouldReceiveFeedback() && !this.silent) {
-			this.output.sendSystemMessage(message);
+			this.output.sendSystemMessage(message, Util.field_25140);
 		}
 
 		if (broadcastToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
@@ -342,19 +344,19 @@ public class ServerCommandSource implements CommandSource {
 		if (this.server.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 			for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
-					serverPlayerEntity.sendSystemMessage(text);
+					serverPlayerEntity.sendSystemMessage(text, Util.field_25140);
 				}
 			}
 		}
 
 		if (this.output != this.server && this.server.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
-			this.server.sendSystemMessage(text);
+			this.server.sendSystemMessage(text, Util.field_25140);
 		}
 	}
 
 	public void sendError(Text message) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.sendSystemMessage(new LiteralText("").append(message).formatted(Formatting.RED));
+			this.output.sendSystemMessage(new LiteralText("").append(message).formatted(Formatting.RED), Util.field_25140);
 		}
 	}
 
@@ -387,5 +389,10 @@ public class ServerCommandSource implements CommandSource {
 	@Override
 	public CompletableFuture<Suggestions> getCompletions(CommandContext<CommandSource> context, SuggestionsBuilder builder) {
 		return null;
+	}
+
+	@Override
+	public DimensionTracker method_29038() {
+		return this.server.method_29174();
 	}
 }

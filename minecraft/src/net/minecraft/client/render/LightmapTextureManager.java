@@ -11,7 +11,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class LightmapTextureManager implements AutoCloseable {
@@ -109,7 +108,7 @@ public class LightmapTextureManager implements AutoCloseable {
 						float p = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
 						float q = n * (n * n * 0.6F + 0.4F);
 						vector3f2.set(n, p, q);
-						if (clientWorld.method_27983() == DimensionType.THE_END) {
+						if (clientWorld.getDimension().isEnd()) {
 							vector3f2.lerp(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
 						} else {
 							Vector3f vector3f3 = vector3f.copy();
@@ -162,7 +161,7 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	private float getBrightness(World world, int i) {
-		return world.getDimension().getBrightness(i);
+		return world.getDimension().method_28516(i);
 	}
 
 	public static int pack(int block, int sky) {

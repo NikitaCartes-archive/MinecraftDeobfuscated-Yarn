@@ -1,8 +1,8 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_5275;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -181,32 +181,32 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public Vec3d method_24829(LivingEntity livingEntity) {
+	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		Direction direction = this.getMovementDirection();
 		if (direction.getAxis() == Direction.Axis.Y) {
-			return super.method_24829(livingEntity);
+			return super.updatePassengerForDismount(passenger);
 		} else {
-			int[][] is = class_5275.method_27934(direction);
+			int[][] is = Dismounting.getDismountOffsets(direction);
 			BlockPos blockPos = this.getBlockPos();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (EntityPose entityPose : livingEntity.getPoses()) {
-				Box box = livingEntity.method_24833(entityPose);
+			for (EntityPose entityPose : passenger.getPoses()) {
+				Box box = passenger.getBoundingBox(entityPose);
 
 				for (int[] js : is) {
 					mutable.set(blockPos.getX() + js[0], blockPos.getY(), blockPos.getZ() + js[1]);
-					double d = this.world.method_26372(mutable);
-					if (class_5275.method_27932(d)) {
+					double d = this.world.getCollisionHeightAt(mutable);
+					if (Dismounting.canDismountInBlock(d)) {
 						Vec3d vec3d = Vec3d.ofCenter(mutable, d);
-						if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d))) {
-							livingEntity.setPose(entityPose);
+						if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d))) {
+							passenger.setPose(entityPose);
 							return vec3d;
 						}
 					}
 				}
 			}
 
-			return super.method_24829(livingEntity);
+			return super.updatePassengerForDismount(passenger);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.Iterators;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.Arrays;
@@ -316,6 +317,7 @@ public enum Direction implements StringIdentifiable {
 		};
 
 		private static final Direction.Axis[] field_23780 = values();
+		public static final Codec<Direction.Axis> field_25065 = StringIdentifiable.method_28140(Direction.Axis::values, Direction.Axis::fromName);
 		private static final Map<String, Direction.Axis> BY_NAME = (Map<String, Direction.Axis>)Arrays.stream(field_23780)
 			.collect(Collectors.toMap(Direction.Axis::getName, axis -> axis));
 		private final String name;

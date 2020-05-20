@@ -3,11 +3,11 @@ package net.minecraft.datafixer.fix;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
@@ -38,15 +38,16 @@ public abstract class PointOfInterestRenameFix extends DataFix {
 
 	private <T> Optional<Dynamic<T>> method_23304(Dynamic<T> dynamic) {
 		return dynamic.asStreamOpt()
-			.map(
+			.<Dynamic<T>>map(
 				stream -> dynamic.createList(
 						stream.map(
 							dynamicxx -> dynamicxx.update(
-									"type", dynamicxxx -> DataFixUtils.orElse(dynamicxxx.asString().map(this::rename).map(dynamicxxx::createString), dynamicxxx)
+									"type", dynamicxxx -> DataFixUtils.orElse(dynamicxxx.asString().map(this::rename).map(dynamicxxx::createString).result(), dynamicxxx)
 								)
 						)
 					)
-			);
+			)
+			.result();
 	}
 
 	protected abstract String rename(String input);

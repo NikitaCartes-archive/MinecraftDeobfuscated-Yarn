@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 
-public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends AbstractProperty<T> {
+public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Property<T> {
 	private final ImmutableSet<T> values;
 	private final Map<String, T> byName = Maps.<String, T>newHashMap();
 

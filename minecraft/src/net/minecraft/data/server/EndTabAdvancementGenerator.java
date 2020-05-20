@@ -21,7 +21,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
@@ -36,7 +36,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				false,
 				false
 			)
-			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_END))
+			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_END_REGISTRY_KEY))
 			.build(consumer, "end/root");
 		Advancement advancement2 = Advancement.Task.create()
 			.parent(advancement)
@@ -92,7 +92,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.END_CITY)))
+			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.END_CITY)))
 			.build(consumer, "end/find_end_city");
 		Advancement.Task.create()
 			.parent(advancement2)

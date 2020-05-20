@@ -9,6 +9,8 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5299;
+import net.minecraft.class_5301;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
@@ -446,31 +448,29 @@ public class Schemas {
 		builder.addFixer(new RecipeFix(schema67, false));
 		Schema schema68 = builder.addSchema(1506, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new LevelDataGeneratorOptionsFix(schema68, false));
-		Schema schema69 = builder.addSchema(1508, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BiomesFix(schema69, false));
-		Schema schema70 = builder.addSchema(1510, Schema1510::new);
-		builder.addFixer(BlockNameFix.create(schema70, "Block renamening fix", string -> (String)EntityTheRenameningBlock.BLOCKS.getOrDefault(string, string)));
-		builder.addFixer(ItemNameFix.create(schema70, "Item renamening fix", string -> (String)EntityTheRenameningBlock.ITEMS.getOrDefault(string, string)));
-		builder.addFixer(new RecipeRenamingFix(schema70, false));
-		builder.addFixer(new EntityTheRenameningBlock(schema70, true));
-		builder.addFixer(new SwimStatsRenameFix(schema70, false));
-		Schema schema71 = builder.addSchema(1514, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new ObjectiveDisplayNameFix(schema71, false));
-		builder.addFixer(new TeamDisplayNameFix(schema71, false));
-		builder.addFixer(new ObjectiveRenderTypeFix(schema71, false));
-		Schema schema72 = builder.addSchema(1515, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(BlockNameFix.create(schema72, "Rename coral fan blocks", string -> (String)LegacyCoralFanBlockMapping.MAP.getOrDefault(string, string)));
-		Schema schema73 = builder.addSchema(1624, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new AddTrappedChestFix(schema73, false));
-		Schema schema74 = builder.addSchema(1800, Schema1800::new);
-		builder.addFixer(new ChoiceTypesFix(schema74, "Added 1.14 mobs fix", TypeReferences.ENTITY));
-		builder.addFixer(ItemNameFix.create(schema74, "Rename dye items", string -> (String)LegacyDyeItemMapping.MAP.getOrDefault(string, string)));
-		Schema schema75 = builder.addSchema(1801, Schema1801::new);
-		builder.addFixer(new ChoiceTypesFix(schema75, "Added Illager Beast", TypeReferences.ENTITY));
-		Schema schema76 = builder.addSchema(1802, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema69 = builder.addSchema(1510, Schema1510::new);
+		builder.addFixer(BlockNameFix.create(schema69, "Block renamening fix", string -> (String)EntityTheRenameningBlock.BLOCKS.getOrDefault(string, string)));
+		builder.addFixer(ItemNameFix.create(schema69, "Item renamening fix", string -> (String)EntityTheRenameningBlock.ITEMS.getOrDefault(string, string)));
+		builder.addFixer(new RecipeRenamingFix(schema69, false));
+		builder.addFixer(new EntityTheRenameningBlock(schema69, true));
+		builder.addFixer(new SwimStatsRenameFix(schema69, false));
+		Schema schema70 = builder.addSchema(1514, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ObjectiveDisplayNameFix(schema70, false));
+		builder.addFixer(new TeamDisplayNameFix(schema70, false));
+		builder.addFixer(new ObjectiveRenderTypeFix(schema70, false));
+		Schema schema71 = builder.addSchema(1515, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(BlockNameFix.create(schema71, "Rename coral fan blocks", string -> (String)LegacyCoralFanBlockMapping.MAP.getOrDefault(string, string)));
+		Schema schema72 = builder.addSchema(1624, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new AddTrappedChestFix(schema72, false));
+		Schema schema73 = builder.addSchema(1800, Schema1800::new);
+		builder.addFixer(new ChoiceTypesFix(schema73, "Added 1.14 mobs fix", TypeReferences.ENTITY));
+		builder.addFixer(ItemNameFix.create(schema73, "Rename dye items", string -> (String)LegacyDyeItemMapping.MAP.getOrDefault(string, string)));
+		Schema schema74 = builder.addSchema(1801, Schema1801::new);
+		builder.addFixer(new ChoiceTypesFix(schema74, "Added Illager Beast", TypeReferences.ENTITY));
+		Schema schema75 = builder.addSchema(1802, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			BlockNameFix.create(
-				schema76,
+				schema75,
 				"Rename sign blocks & stone slabs",
 				string -> ImmutableMap.of(
 							"minecraft:stone_slab", "minecraft:smooth_stone_slab", "minecraft:sign", "minecraft:oak_sign", "minecraft:wall_sign", "minecraft:oak_wall_sign"
@@ -480,96 +480,95 @@ public class Schemas {
 		);
 		builder.addFixer(
 			ItemNameFix.create(
-				schema76,
+				schema75,
 				"Rename sign item & stone slabs",
 				string -> ImmutableMap.of("minecraft:stone_slab", "minecraft:smooth_stone_slab", "minecraft:sign", "minecraft:oak_sign").getOrDefault(string, string)
 			)
 		);
-		Schema schema77 = builder.addSchema(1803, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new ItemLoreToTextFix(schema77, false));
-		Schema schema78 = builder.addSchema(1904, Schema1904::new);
-		builder.addFixer(new ChoiceTypesFix(schema78, "Added Cats", TypeReferences.ENTITY));
-		builder.addFixer(new EntityCatSplitFix(schema78, false));
-		Schema schema79 = builder.addSchema(1905, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new ChunkStatusFix(schema79, false));
-		Schema schema80 = builder.addSchema(1906, Schema1906::new);
-		builder.addFixer(new ChoiceTypesFix(schema80, "Add POI Blocks", TypeReferences.BLOCK_ENTITY));
-		Schema schema81 = builder.addSchema(1909, Schema1909::new);
-		builder.addFixer(new ChoiceTypesFix(schema81, "Add jigsaw", TypeReferences.BLOCK_ENTITY));
-		Schema schema82 = builder.addSchema(1911, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new ChunkStatusFix2(schema82, false));
-		Schema schema83 = builder.addSchema(1917, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new CatTypeFix(schema83, false));
-		Schema schema84 = builder.addSchema(1918, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new VillagerProfessionFix(schema84, "minecraft:villager"));
-		builder.addFixer(new VillagerProfessionFix(schema84, "minecraft:zombie_villager"));
-		Schema schema85 = builder.addSchema(1920, Schema1920::new);
-		builder.addFixer(new NewVillageFix(schema85, false));
-		builder.addFixer(new ChoiceTypesFix(schema85, "Add campfire", TypeReferences.BLOCK_ENTITY));
-		Schema schema86 = builder.addSchema(1925, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new MapIdFix(schema86, false));
-		Schema schema87 = builder.addSchema(1928, Schema1928::new);
-		builder.addFixer(new EntityRavagerRenameFix(schema87, true));
-		builder.addFixer(ItemNameFix.create(schema87, "Rename ravager egg item", string -> (String)EntityRavagerRenameFix.ITEMS.getOrDefault(string, string)));
-		Schema schema88 = builder.addSchema(1929, Schema1929::new);
-		builder.addFixer(new ChoiceTypesFix(schema88, "Add Wandering Trader and Trader Llama", TypeReferences.ENTITY));
-		Schema schema89 = builder.addSchema(1931, Schema1931::new);
-		builder.addFixer(new ChoiceTypesFix(schema89, "Added Fox", TypeReferences.ENTITY));
-		Schema schema90 = builder.addSchema(1936, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new OptionsAddTextBackgroundFix(schema90, false));
-		Schema schema91 = builder.addSchema(1946, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new PointOfInterestReorganizationFix(schema91, false));
-		Schema schema92 = builder.addSchema(1948, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new OminousBannerItemRenameFix(schema92, false));
-		Schema schema93 = builder.addSchema(1953, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new OminousBannerBlockEntityRenameFix(schema93, false));
-		Schema schema94 = builder.addSchema(1955, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new VillagerXpRebuildFix(schema94, false));
-		builder.addFixer(new ZombieVillagerXpRebuildFix(schema94, false));
-		Schema schema95 = builder.addSchema(1961, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new ChunkLightRemoveFix(schema95, false));
-		Schema schema96 = builder.addSchema(2100, Schema2100::new);
-		builder.addFixer(new ChoiceTypesFix(schema96, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
-		builder.addFixer(new ChoiceTypesFix(schema96, "Add beehive", TypeReferences.BLOCK_ENTITY));
-		builder.addFixer(new RecipeRenameFix(schema96, false, "Rename sugar recipe", string -> "minecraft:sugar".equals(string) ? "sugar_from_sugar_cane" : string));
+		Schema schema76 = builder.addSchema(1803, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ItemLoreToTextFix(schema76, false));
+		Schema schema77 = builder.addSchema(1904, Schema1904::new);
+		builder.addFixer(new ChoiceTypesFix(schema77, "Added Cats", TypeReferences.ENTITY));
+		builder.addFixer(new EntityCatSplitFix(schema77, false));
+		Schema schema78 = builder.addSchema(1905, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ChunkStatusFix(schema78, false));
+		Schema schema79 = builder.addSchema(1906, Schema1906::new);
+		builder.addFixer(new ChoiceTypesFix(schema79, "Add POI Blocks", TypeReferences.BLOCK_ENTITY));
+		Schema schema80 = builder.addSchema(1909, Schema1909::new);
+		builder.addFixer(new ChoiceTypesFix(schema80, "Add jigsaw", TypeReferences.BLOCK_ENTITY));
+		Schema schema81 = builder.addSchema(1911, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ChunkStatusFix2(schema81, false));
+		Schema schema82 = builder.addSchema(1917, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new CatTypeFix(schema82, false));
+		Schema schema83 = builder.addSchema(1918, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new VillagerProfessionFix(schema83, "minecraft:villager"));
+		builder.addFixer(new VillagerProfessionFix(schema83, "minecraft:zombie_villager"));
+		Schema schema84 = builder.addSchema(1920, Schema1920::new);
+		builder.addFixer(new NewVillageFix(schema84, false));
+		builder.addFixer(new ChoiceTypesFix(schema84, "Add campfire", TypeReferences.BLOCK_ENTITY));
+		Schema schema85 = builder.addSchema(1925, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new MapIdFix(schema85, false));
+		Schema schema86 = builder.addSchema(1928, Schema1928::new);
+		builder.addFixer(new EntityRavagerRenameFix(schema86, true));
+		builder.addFixer(ItemNameFix.create(schema86, "Rename ravager egg item", string -> (String)EntityRavagerRenameFix.ITEMS.getOrDefault(string, string)));
+		Schema schema87 = builder.addSchema(1929, Schema1929::new);
+		builder.addFixer(new ChoiceTypesFix(schema87, "Add Wandering Trader and Trader Llama", TypeReferences.ENTITY));
+		Schema schema88 = builder.addSchema(1931, Schema1931::new);
+		builder.addFixer(new ChoiceTypesFix(schema88, "Added Fox", TypeReferences.ENTITY));
+		Schema schema89 = builder.addSchema(1936, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OptionsAddTextBackgroundFix(schema89, false));
+		Schema schema90 = builder.addSchema(1946, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new PointOfInterestReorganizationFix(schema90, false));
+		Schema schema91 = builder.addSchema(1948, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OminousBannerItemRenameFix(schema91, false));
+		Schema schema92 = builder.addSchema(1953, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OminousBannerBlockEntityRenameFix(schema92, false));
+		Schema schema93 = builder.addSchema(1955, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new VillagerXpRebuildFix(schema93, false));
+		builder.addFixer(new ZombieVillagerXpRebuildFix(schema93, false));
+		Schema schema94 = builder.addSchema(1961, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ChunkLightRemoveFix(schema94, false));
+		Schema schema95 = builder.addSchema(2100, Schema2100::new);
+		builder.addFixer(new ChoiceTypesFix(schema95, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
+		builder.addFixer(new ChoiceTypesFix(schema95, "Add beehive", TypeReferences.BLOCK_ENTITY));
+		builder.addFixer(new RecipeRenameFix(schema95, false, "Rename sugar recipe", string -> "minecraft:sugar".equals(string) ? "sugar_from_sugar_cane" : string));
 		builder.addFixer(
 			new AdvancementRenameFix(
-				schema96,
+				schema95,
 				false,
 				"Rename sugar recipe advancement",
 				string -> "minecraft:recipes/misc/sugar".equals(string) ? "minecraft:recipes/misc/sugar_from_sugar_cane" : string
 			)
 		);
-		Schema schema97 = builder.addSchema(2202, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BiomeFormatFix(schema97, false));
-		Schema schema98 = builder.addSchema(2209, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema96 = builder.addSchema(2202, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BiomeFormatFix(schema96, false));
+		Schema schema97 = builder.addSchema(2209, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
-			ItemNameFix.create(schema98, "Rename bee_hive item to beehive", string -> Objects.equals(string, "minecraft:bee_hive") ? "minecraft:beehive" : string)
+			ItemNameFix.create(schema97, "Rename bee_hive item to beehive", string -> Objects.equals(string, "minecraft:bee_hive") ? "minecraft:beehive" : string)
 		);
-		builder.addFixer(new BeehiveRenameFix(schema98));
+		builder.addFixer(new BeehiveRenameFix(schema97));
 		builder.addFixer(
 			BlockNameFix.create(
-				schema98, "Rename bee_hive block to beehive", string -> ImmutableMap.of("minecraft:bee_hive", "minecraft:beehive").getOrDefault(string, string)
+				schema97, "Rename bee_hive block to beehive", string -> ImmutableMap.of("minecraft:bee_hive", "minecraft:beehive").getOrDefault(string, string)
 			)
 		);
-		Schema schema99 = builder.addSchema(2211, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new StructureReferenceFix(schema99, false));
-		Schema schema100 = builder.addSchema(2218, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new RemovePoiValidTagFix(schema100, false));
-		Schema schema101 = builder.addSchema(2501, Schema2501::new);
-		builder.addFixer(new FurnaceRecipesFix(schema101, true));
-		Schema schema102 = builder.addSchema(2502, Schema2502::new);
-		builder.addFixer(new ChoiceTypesFix(schema102, "Added Hoglin", TypeReferences.ENTITY));
-		builder.addFixer(new BiomeRenameFix(schema102, false, "Nether biome rename", ImmutableMap.of("minecraft:nether", "minecraft:nether_wastes")));
-		Schema schema103 = builder.addSchema(2503, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new WallPropertyFix(schema103, false));
-		Schema schema104 = builder.addSchema(2505, Schema2505::new);
-		builder.addFixer(new ChoiceTypesFix(schema104, "Added Piglin", TypeReferences.ENTITY));
-		builder.addFixer(new MemoryExpiryDataFix(schema104, "minecraft:villager"));
-		Schema schema105 = builder.addSchema(2508, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema98 = builder.addSchema(2211, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StructureReferenceFix(schema98, false));
+		Schema schema99 = builder.addSchema(2218, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RemovePoiValidTagFix(schema99, false));
+		Schema schema100 = builder.addSchema(2501, Schema2501::new);
+		builder.addFixer(new FurnaceRecipesFix(schema100, true));
+		Schema schema101 = builder.addSchema(2502, Schema2502::new);
+		builder.addFixer(new ChoiceTypesFix(schema101, "Added Hoglin", TypeReferences.ENTITY));
+		Schema schema102 = builder.addSchema(2503, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new WallPropertyFix(schema102, false));
+		Schema schema103 = builder.addSchema(2505, Schema2505::new);
+		builder.addFixer(new ChoiceTypesFix(schema103, "Added Piglin", TypeReferences.ENTITY));
+		builder.addFixer(new MemoryExpiryDataFix(schema103, "minecraft:villager"));
+		Schema schema104 = builder.addSchema(2508, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			ItemNameFix.create(
-				schema105,
+				schema104,
 				"Renamed fungi items to fungus",
 				string -> ImmutableMap.of("minecraft:warped_fungi", "minecraft:warped_fungus", "minecraft:crimson_fungi", "minecraft:crimson_fungus")
 						.getOrDefault(string, string)
@@ -577,44 +576,44 @@ public class Schemas {
 		);
 		builder.addFixer(
 			BlockNameFix.create(
-				schema105,
+				schema104,
 				"Renamed fungi blocks to fungus",
 				string -> ImmutableMap.of("minecraft:warped_fungi", "minecraft:warped_fungus", "minecraft:crimson_fungi", "minecraft:crimson_fungus")
 						.getOrDefault(string, string)
 			)
 		);
-		Schema schema106 = builder.addSchema(2509, Schema2509::new);
-		builder.addFixer(new EntityZombifiedPiglinRenameFix(schema106));
+		Schema schema105 = builder.addSchema(2509, Schema2509::new);
+		builder.addFixer(new EntityZombifiedPiglinRenameFix(schema105));
 		builder.addFixer(
-			ItemNameFix.create(schema106, "Rename zombie pigman egg item", string -> (String)EntityZombifiedPiglinRenameFix.RENAMES.getOrDefault(string, string))
+			ItemNameFix.create(schema105, "Rename zombie pigman egg item", string -> (String)EntityZombifiedPiglinRenameFix.RENAMES.getOrDefault(string, string))
 		);
-		Schema schema107 = builder.addSchema(2511, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new EntityProjectileOwnerFix(schema107));
-		Schema schema108 = builder.addSchema(2514, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new EntityUuidFix(schema108));
-		builder.addFixer(new BlockEntityUuidFix(schema108));
-		builder.addFixer(new PlayerUuidFix(schema108));
-		builder.addFixer(new WorldUuidFix(schema108));
-		builder.addFixer(new PersistentStateUuidFix(schema108));
-		builder.addFixer(new ItemStackUuidFix(schema108));
-		Schema schema109 = builder.addSchema(2516, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new VillagerGossipFix(schema109, "minecraft:villager"));
-		builder.addFixer(new VillagerGossipFix(schema109, "minecraft:zombie_villager"));
-		Schema schema110 = builder.addSchema(2518, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new JigsawPropertiesFix(schema110, false));
-		builder.addFixer(new JigsawRotationFix(schema110, false));
-		Schema schema111 = builder.addSchema(2519, Schema2519::new);
-		builder.addFixer(new ChoiceTypesFix(schema111, "Added Strider", TypeReferences.ENTITY));
-		Schema schema112 = builder.addSchema(2522, Schema2522::new);
-		builder.addFixer(new ChoiceTypesFix(schema112, "Added Zoglin", TypeReferences.ENTITY));
-		Schema schema113 = builder.addSchema(2523, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new RenameItemStackAttributesFix(schema113));
-		Schema schema114 = builder.addSchema(2527, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BitStorageAlignFix(schema114));
-		Schema schema115 = builder.addSchema(2528, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema106 = builder.addSchema(2511, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new EntityProjectileOwnerFix(schema106));
+		Schema schema107 = builder.addSchema(2514, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new EntityUuidFix(schema107));
+		builder.addFixer(new BlockEntityUuidFix(schema107));
+		builder.addFixer(new PlayerUuidFix(schema107));
+		builder.addFixer(new WorldUuidFix(schema107));
+		builder.addFixer(new PersistentStateUuidFix(schema107));
+		builder.addFixer(new ItemStackUuidFix(schema107));
+		Schema schema108 = builder.addSchema(2516, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new VillagerGossipFix(schema108, "minecraft:villager"));
+		builder.addFixer(new VillagerGossipFix(schema108, "minecraft:zombie_villager"));
+		Schema schema109 = builder.addSchema(2518, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new JigsawPropertiesFix(schema109, false));
+		builder.addFixer(new JigsawRotationFix(schema109, false));
+		Schema schema110 = builder.addSchema(2519, Schema2519::new);
+		builder.addFixer(new ChoiceTypesFix(schema110, "Added Strider", TypeReferences.ENTITY));
+		Schema schema111 = builder.addSchema(2522, Schema2522::new);
+		builder.addFixer(new ChoiceTypesFix(schema111, "Added Zoglin", TypeReferences.ENTITY));
+		Schema schema112 = builder.addSchema(2523, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RenameItemStackAttributesFix(schema112));
+		Schema schema113 = builder.addSchema(2527, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BitStorageAlignFix(schema113));
+		Schema schema114 = builder.addSchema(2528, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			ItemNameFix.create(
-				schema115,
+				schema114,
 				"Rename soul fire torch and soul fire lantern",
 				string -> ImmutableMap.of("minecraft:soul_fire_torch", "minecraft:soul_torch", "minecraft:soul_fire_lantern", "minecraft:soul_lantern")
 						.getOrDefault(string, string)
@@ -622,7 +621,7 @@ public class Schemas {
 		);
 		builder.addFixer(
 			BlockNameFix.create(
-				schema115,
+				schema114,
 				"Rename soul fire torch and soul fire lantern",
 				string -> ImmutableMap.of(
 							"minecraft:soul_fire_torch",
@@ -635,13 +634,21 @@ public class Schemas {
 						.getOrDefault(string, string)
 			)
 		);
-		Schema schema116 = builder.addSchema(2529, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new StriderGravityFix(schema116, false));
-		Schema schema117 = builder.addSchema(2531, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new RedstoneConnectionsFix(schema117));
-		Schema schema118 = builder.addSchema(2533, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new VillagerFollowRangeFix(schema118));
-		Schema schema119 = builder.addSchema(2535, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new EntityShulkerRotationFix(schema119));
+		Schema schema115 = builder.addSchema(2529, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StriderGravityFix(schema115, false));
+		Schema schema116 = builder.addSchema(2531, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RedstoneConnectionsFix(schema116));
+		Schema schema117 = builder.addSchema(2533, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new VillagerFollowRangeFix(schema117));
+		Schema schema118 = builder.addSchema(2535, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new EntityShulkerRotationFix(schema118));
+		Schema schema119 = builder.addSchema(2550, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new class_5299(schema119));
+		Schema schema120 = builder.addSchema(2551, class_5301::new);
+		builder.addFixer(new WriteAndReadFix(schema120, "add types to WorldGenData", TypeReferences.CHUNK_GENERATOR_SETTINGS));
+		Schema schema121 = builder.addSchema(2552, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BiomeRenameFix(schema121, false, "Nether biome rename", ImmutableMap.of("minecraft:nether", "minecraft:nether_wastes")));
+		Schema schema122 = builder.addSchema(2553, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BiomesFix(schema122, false));
 	}
 }

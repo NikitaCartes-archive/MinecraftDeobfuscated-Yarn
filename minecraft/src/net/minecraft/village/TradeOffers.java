@@ -41,6 +41,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class TradeOffers {
 	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(
@@ -309,11 +310,13 @@ public class TradeOffers {
 						new TradeOffers.Factory[]{new TradeOffers.BuyForOneEmeraldFactory(Items.PAPER, 24, 16, 2), new TradeOffers.SellItemFactory(Items.MAP, 7, 1, 1)},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_PANE, 11, 16, 10), new TradeOffers.SellMapFactory(13, "Monument", MapIcon.Type.MONUMENT, 12, 5)
+							new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_PANE, 11, 16, 10),
+							new TradeOffers.SellMapFactory(13, StructureFeature.MONUMENT, MapIcon.Type.MONUMENT, 12, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.COMPASS, 1, 12, 20), new TradeOffers.SellMapFactory(14, "Mansion", MapIcon.Type.MANSION, 12, 10)
+							new TradeOffers.BuyForOneEmeraldFactory(Items.COMPASS, 1, 12, 20),
+							new TradeOffers.SellMapFactory(14, StructureFeature.MANSION, MapIcon.Type.MANSION, 12, 10)
 						},
 						4,
 						new TradeOffers.Factory[]{
@@ -880,14 +883,14 @@ public class TradeOffers {
 
 	static class SellMapFactory implements TradeOffers.Factory {
 		private final int price;
-		private final String structure;
+		private final StructureFeature<?> structure;
 		private final MapIcon.Type iconType;
 		private final int maxUses;
 		private final int experience;
 
-		public SellMapFactory(int price, String structure, MapIcon.Type iconType, int maxUses, int experience) {
+		public SellMapFactory(int price, StructureFeature<?> structureFeature, MapIcon.Type iconType, int maxUses, int experience) {
 			this.price = price;
-			this.structure = structure;
+			this.structure = structureFeature;
 			this.iconType = iconType;
 			this.maxUses = maxUses;
 			this.experience = experience;
@@ -905,7 +908,7 @@ public class TradeOffers {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
 					MapState.addDecorationsTag(itemStack, blockPos, "+", this.iconType);
-					itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
+					itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.getName().toLowerCase(Locale.ROOT)));
 					return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2F);
 				} else {
 					return null;

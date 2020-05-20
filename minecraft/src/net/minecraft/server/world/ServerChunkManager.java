@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5217;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -31,7 +30,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
@@ -39,6 +37,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -356,13 +355,13 @@ public class ServerChunkManager extends ChunkManager {
 		long l = this.world.getTime();
 		long m = l - this.lastMobSpawningTime;
 		this.lastMobSpawningTime = l;
-		class_5217 lv = this.world.getLevelProperties();
-		boolean bl = this.world.method_27982();
+		WorldProperties worldProperties = this.world.getLevelProperties();
+		boolean bl = this.world.isDebugWorld();
 		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
 		if (!bl) {
 			this.world.getProfiler().push("pollingChunks");
 			int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
-			boolean bl3 = lv.getTime() % 400L == 0L;
+			boolean bl3 = worldProperties.getTime() % 400L == 0L;
 			this.world.getProfiler().push("naturalSpawnCount");
 			int j = this.ticketManager.getSpawningChunkCount();
 			SpawnHelper.Info info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded);
@@ -390,7 +389,7 @@ public class ServerChunkManager extends ChunkManager {
 			});
 			this.world.getProfiler().push("customSpawners");
 			if (bl2) {
-				this.chunkGenerator.spawnEntities(this.world, this.spawnMonsters, this.spawnAnimals);
+				this.world.method_29202(this.spawnMonsters, this.spawnAnimals);
 			}
 
 			this.world.getProfiler().pop();
@@ -507,7 +506,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		private MainThreadExecutor(World world) {
-			super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getId(world.method_27983()));
+			super("Chunk source main thread executor for " + world.method_27983().getValue());
 		}
 
 		@Override

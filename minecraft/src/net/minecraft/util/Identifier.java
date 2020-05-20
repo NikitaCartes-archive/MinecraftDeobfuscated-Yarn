@@ -10,6 +10,8 @@ import com.google.gson.JsonSerializer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -21,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
  * The namespace and path must contain only lowercase letters ([a-z]), digits ([0-9]), or the characters '_', '.', and '-'. The path can also contain the standard path separator '/'.
  */
 public class Identifier implements Comparable<Identifier> {
+	public static final Codec<Identifier> field_25139 = Codec.STRING.<Identifier>comapFlatMap(Identifier::method_29186, Identifier::toString).stable();
 	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
 	protected final String namespace;
 	protected final String path;
@@ -72,6 +75,14 @@ public class Identifier implements Comparable<Identifier> {
 		}
 
 		return strings;
+	}
+
+	private static DataResult<Identifier> method_29186(String string) {
+		try {
+			return DataResult.success(new Identifier(string));
+		} catch (InvalidIdentifierException var2) {
+			return DataResult.error("Not a valid resource location: " + string + " " + var2.getMessage());
+		}
 	}
 
 	public String getPath() {
@@ -132,11 +143,31 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	private static boolean isPathValid(String path) {
-		return path.chars().allMatch(c -> c == 95 || c == 45 || c >= 97 && c <= 122 || c >= 48 && c <= 57 || c == 47 || c == 46);
+		for (int i = 0; i < path.length(); i++) {
+			if (!method_29184(path.charAt(i))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private static boolean isNamespaceValid(String namespace) {
-		return namespace.chars().allMatch(c -> c == 95 || c == 45 || c >= 97 && c <= 122 || c >= 48 && c <= 57 || c == 46);
+		for (int i = 0; i < namespace.length(); i++) {
+			if (!method_29185(namespace.charAt(i))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private static boolean method_29184(char c) {
+		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '.';
+	}
+
+	private static boolean method_29185(char c) {
+		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
 	}
 
 	@Environment(EnvType.CLIENT)

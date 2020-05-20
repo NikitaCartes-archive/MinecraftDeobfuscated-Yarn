@@ -322,7 +322,8 @@ public class ListTag extends AbstractListTag<Tag> {
 		}
 	}
 
-	public int getElementType() {
+	@Override
+	public byte getElementType() {
 		return this.type;
 	}
 

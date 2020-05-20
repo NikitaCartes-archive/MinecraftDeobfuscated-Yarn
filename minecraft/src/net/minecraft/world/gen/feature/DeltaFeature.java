@@ -1,9 +1,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -29,8 +28,8 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		return random.nextInt(deltaFeatureConfig.maxRim + 1);
 	}
 
-	public DeltaFeature(Function<Dynamic<?>, ? extends DeltaFeatureConfig> function) {
-		super(function);
+	public DeltaFeature(Codec<DeltaFeatureConfig> codec) {
+		super(codec);
 	}
 
 	public boolean generate(

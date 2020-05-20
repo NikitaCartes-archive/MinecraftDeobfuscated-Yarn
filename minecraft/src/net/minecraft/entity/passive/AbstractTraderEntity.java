@@ -18,13 +18,14 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.Trader;
@@ -40,7 +41,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	private PlayerEntity customer;
 	@Nullable
 	protected TraderOfferList offers;
-	private final BasicInventory inventory = new BasicInventory(8);
+	private final SimpleInventory inventory = new SimpleInventory(8);
 
 	public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
 		super(entityType, world);
@@ -177,7 +178,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType newDimension) {
+	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
 		this.resetCustomer();
 		return super.changeDimension(newDimension);
 	}
@@ -207,7 +208,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		return false;
 	}
 
-	public BasicInventory getInventory() {
+	public SimpleInventory getInventory() {
 		return this.inventory;
 	}
 

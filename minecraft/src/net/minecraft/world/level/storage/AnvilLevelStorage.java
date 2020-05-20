@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.class_5218;
-import net.minecraft.class_5219;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.ProgressListener;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
@@ -31,9 +31,9 @@ public class AnvilLevelStorage {
 		List<File> list = Lists.<File>newArrayList();
 		List<File> list2 = Lists.<File>newArrayList();
 		List<File> list3 = Lists.<File>newArrayList();
-		File file = session.method_27424(DimensionType.OVERWORLD);
-		File file2 = session.method_27424(DimensionType.THE_NETHER);
-		File file3 = session.method_27424(DimensionType.THE_END);
+		File file = session.method_27424(DimensionType.OVERWORLD_REGISTRY_KEY);
+		File file2 = session.method_27424(DimensionType.THE_NETHER_REGISTRY_KEY);
+		File file3 = session.method_27424(DimensionType.THE_END_REGISTRY_KEY);
 		LOGGER.info("Scanning folders...");
 		addRegionFiles(file, list);
 		if (file2.exists()) {
@@ -46,25 +46,25 @@ public class AnvilLevelStorage {
 
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
-		class_5219 lv = session.readLevelProperties();
-		long l = lv != null ? lv.method_28057().method_28028() : 0L;
+		SaveProperties saveProperties = session.readLevelProperties();
+		long l = saveProperties != null ? saveProperties.method_28057().getSeed() : 0L;
 		BiomeSource biomeSource;
-		if (lv != null && lv.method_28057().method_28034()) {
+		if (saveProperties != null && saveProperties.method_28057().isFlatWorld()) {
 			biomeSource = new FixedBiomeSource(Biomes.PLAINS);
 		} else {
-			biomeSource = new VanillaLayeredBiomeSource(l, false, 4);
+			biomeSource = new VanillaLayeredBiomeSource(l, false, false);
 		}
 
 		convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
 		convertRegions(new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
 		convertRegions(new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);
 		makeMcrLevelDatBackup(session);
-		session.method_27425(lv);
+		session.method_27425(saveProperties);
 		return true;
 	}
 
 	private static void makeMcrLevelDatBackup(LevelStorage.Session session) {
-		File file = session.getDirectory(class_5218.field_24184).toFile();
+		File file = session.getDirectory(WorldSavePath.LEVEL_DAT).toFile();
 		if (!file.exists()) {
 			LOGGER.warn("Unable to create level.dat_mcr backup");
 		} else {

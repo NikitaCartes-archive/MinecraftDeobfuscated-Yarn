@@ -36,6 +36,10 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 		return index == -1 ? -1 : this.ids[index];
 	}
 
+	public boolean containsId(int id) {
+		return this.get(id) != null;
+	}
+
 	public int add(K value) {
 		int i = this.nextId();
 		this.put(value, i);

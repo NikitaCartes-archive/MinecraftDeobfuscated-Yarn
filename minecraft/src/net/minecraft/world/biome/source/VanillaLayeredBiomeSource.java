@@ -1,7 +1,10 @@
 package net.minecraft.world.biome.source;
 
-import com.google.common.collect.ImmutableSet;
-import java.util.Set;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.biome.Biome;
@@ -9,8 +12,18 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayers;
 
 public class VanillaLayeredBiomeSource extends BiomeSource {
+	public static final Codec<VanillaLayeredBiomeSource> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.LONG.fieldOf("seed").stable().forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24728),
+					Codec.BOOL
+						.optionalFieldOf("legacy_biome_init_layer", Boolean.valueOf(false), Lifecycle.stable())
+						.forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24498),
+					Codec.BOOL.fieldOf("large_biomes").withDefault(false).stable().forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24729)
+				)
+				.apply(instance, instance.stable(VanillaLayeredBiomeSource::new))
+	);
 	private final BiomeLayerSampler biomeSampler;
-	private static final Set<Biome> BIOMES = ImmutableSet.of(
+	private static final List<Biome> BIOMES = ImmutableList.of(
 		Biomes.OCEAN,
 		Biomes.PLAINS,
 		Biomes.DESERT,
@@ -78,20 +91,27 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 		Biomes.MODIFIED_WOODED_BADLANDS_PLATEAU,
 		Biomes.MODIFIED_BADLANDS_PLATEAU
 	);
+	private final long field_24728;
 	private final boolean field_24498;
-	private final int field_24499;
+	private final boolean field_24729;
 
-	public VanillaLayeredBiomeSource(long l, boolean bl, int i) {
+	public VanillaLayeredBiomeSource(long l, boolean bl, boolean bl2) {
 		super(BIOMES);
+		this.field_24728 = l;
 		this.field_24498 = bl;
-		this.field_24499 = i;
-		this.biomeSampler = BiomeLayers.build(l, bl, i, 4);
+		this.field_24729 = bl2;
+		this.biomeSampler = BiomeLayers.build(l, bl, bl2 ? 6 : 4, 4);
+	}
+
+	@Override
+	protected Codec<? extends BiomeSource> method_28442() {
+		return CODEC;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public BiomeSource create(long seed) {
-		return new VanillaLayeredBiomeSource(seed, this.field_24498, this.field_24499);
+	public BiomeSource withSeed(long seed) {
+		return new VanillaLayeredBiomeSource(seed, this.field_24498, this.field_24729);
 	}
 
 	@Override

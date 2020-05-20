@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Objects;
 import java.util.function.Predicate;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
@@ -29,7 +28,7 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
 		GlobalPos globalPos = (GlobalPos)entity.getBrain().getOptionalMemory(this.memoryModule).get();
-		return Objects.equals(world.method_27983(), globalPos.getDimension()) && globalPos.getPos().isWithinDistance(entity.getPos(), 5.0);
+		return world.method_27983() == globalPos.getDimension() && globalPos.getPos().isWithinDistance(entity.getPos(), 5.0);
 	}
 
 	@Override

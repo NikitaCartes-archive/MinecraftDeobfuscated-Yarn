@@ -1,28 +1,26 @@
 package net.minecraft.world.level;
 
 import java.util.UUID;
-import net.minecraft.class_5219;
-import net.minecraft.class_5268;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.timer.Timer;
 
-public class UnmodifiableLevelProperties implements class_5268 {
-	private final DimensionType field_24178;
-	private final class_5219 field_24179;
-	private final class_5268 properties;
+public class UnmodifiableLevelProperties implements ServerWorldProperties {
+	private final DimensionType dimensionType;
+	private final SaveProperties field_24179;
+	private final ServerWorldProperties properties;
 
-	public UnmodifiableLevelProperties(DimensionType dimensionType, class_5219 arg, class_5268 arg2) {
-		this.field_24178 = dimensionType;
-		this.field_24179 = arg;
-		this.properties = arg2;
+	public UnmodifiableLevelProperties(DimensionType dimensionType, SaveProperties saveProperties, ServerWorldProperties serverWorldProperties) {
+		this.dimensionType = dimensionType;
+		this.field_24179 = saveProperties;
+		this.properties = serverWorldProperties;
 	}
 
 	@Override
@@ -102,11 +100,11 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public void setTime(long time) {
+	public void method_29034(long l) {
 	}
 
 	@Override
-	public void setTimeOfDay(long timeOfDay) {
+	public void method_29035(long l) {
 	}
 
 	@Override
@@ -158,12 +156,12 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public WorldBorder.class_5200 method_27422() {
-		return this.properties.method_27422();
+	public WorldBorder.Properties getWorldBorder() {
+		return this.properties.getWorldBorder();
 	}
 
 	@Override
-	public void method_27415(WorldBorder.class_5200 arg) {
+	public void setWorldBorder(WorldBorder.Properties properties) {
 	}
 
 	@Override
@@ -179,16 +177,6 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	@Override
 	public Timer<MinecraftServer> getScheduledEvents() {
 		return this.properties.getScheduledEvents();
-	}
-
-	@Override
-	public void setWorldData(CompoundTag tag) {
-		this.field_24179.setWorldData(this.field_24178, tag);
-	}
-
-	@Override
-	public CompoundTag getWorldData() {
-		return this.field_24179.getWorldData(this.field_24178);
 	}
 
 	@Override

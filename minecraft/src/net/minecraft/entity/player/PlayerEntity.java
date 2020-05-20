@@ -937,8 +937,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected boolean method_27303() {
-		return !this.abilities.flying && super.method_27303();
+	protected boolean isOnSoulSpeedBlock() {
+		return !this.abilities.flying && super.isOnSoulSpeedBlock();
 	}
 
 	public void openEditSignScreen(SignBlockEntity sign) {

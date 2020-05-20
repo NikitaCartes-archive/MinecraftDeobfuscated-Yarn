@@ -2,13 +2,12 @@ package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Comparator;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -33,8 +32,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class TreeFeature extends Feature<TreeFeatureConfig> {
-	public TreeFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> function) {
-		super(function);
+	public TreeFeature(Codec<TreeFeatureConfig> codec) {
+		super(codec);
 	}
 
 	public static boolean canTreeReplace(TestableWorld world, BlockPos pos) {

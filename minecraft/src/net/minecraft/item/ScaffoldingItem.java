@@ -10,6 +10,7 @@ import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -45,7 +46,7 @@ public class ScaffoldingItem extends BlockItem {
 					int j = world.getHeight();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						GameMessageS2CPacket gameMessageS2CPacket = new GameMessageS2CPacket(
-							new TranslatableText("build.tooHigh", j).formatted(Formatting.RED), MessageType.GAME_INFO
+							new TranslatableText("build.tooHigh", j).formatted(Formatting.RED), MessageType.GAME_INFO, Util.field_25140
 						);
 						((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(gameMessageS2CPacket);
 					}

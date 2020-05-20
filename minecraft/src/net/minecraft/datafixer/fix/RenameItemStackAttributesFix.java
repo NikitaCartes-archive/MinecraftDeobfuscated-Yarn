@@ -4,12 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.Dynamic;
 import java.util.Map;
 import net.minecraft.datafixer.TypeReferences;
 
@@ -56,8 +56,8 @@ public class RenameItemStackAttributesFix extends DataFix {
 		);
 	}
 
-	private static Dynamic<?> updateAttributeName(Dynamic<?> data) {
-		return DataFixUtils.orElse(data.asString().map(string -> (String)RENAMES.getOrDefault(string, string)).map(data::createString), data);
+	private static Dynamic<?> updateAttributeName(Dynamic<?> dynamic) {
+		return DataFixUtils.orElse(dynamic.asString().result().map(string -> (String)RENAMES.getOrDefault(string, string)).map(dynamic::createString), dynamic);
 	}
 
 	private static Typed<?> updateAttributeModifiers(Typed<?> typed) {
@@ -67,6 +67,7 @@ public class RenameItemStackAttributesFix extends DataFix {
 					"AttributeModifiers",
 					dynamicx -> DataFixUtils.orElse(
 							dynamicx.asStreamOpt()
+								.result()
 								.map(stream -> stream.map(dynamicxx -> dynamicxx.update("AttributeName", RenameItemStackAttributesFix::updateAttributeName)))
 								.map(dynamicx::createList),
 							dynamicx
@@ -82,6 +83,7 @@ public class RenameItemStackAttributesFix extends DataFix {
 					"Attributes",
 					dynamicx -> DataFixUtils.orElse(
 							dynamicx.asStreamOpt()
+								.result()
 								.map(stream -> stream.map(dynamicxx -> dynamicxx.update("Name", RenameItemStackAttributesFix::updateAttributeName)))
 								.map(dynamicx::createList),
 							dynamicx

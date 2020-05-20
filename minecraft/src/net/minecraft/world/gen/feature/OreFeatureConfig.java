@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -10,8 +9,17 @@ import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.predicate.block.BlockPredicate;
+import net.minecraft.util.StringIdentifiable;
 
 public class OreFeatureConfig implements FeatureConfig {
+	public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					OreFeatureConfig.Target.field_24898.fieldOf("target").forGetter(oreFeatureConfig -> oreFeatureConfig.target),
+					BlockState.field_24734.fieldOf("state").forGetter(oreFeatureConfig -> oreFeatureConfig.state),
+					Codec.INT.fieldOf("size").withDefault(0).forGetter(oreFeatureConfig -> oreFeatureConfig.size)
+				)
+				.apply(instance, OreFeatureConfig::new)
+	);
 	public final OreFeatureConfig.Target target;
 	public final int size;
 	public final BlockState state;
@@ -22,39 +30,22 @@ public class OreFeatureConfig implements FeatureConfig {
 		this.target = target;
 	}
 
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("size"),
-					ops.createInt(this.size),
-					ops.createString("target"),
-					ops.createString(this.target.getName()),
-					ops.createString("state"),
-					BlockState.serialize(ops, this.state).getValue()
-				)
-			)
-		);
-	}
-
-	public static OreFeatureConfig deserialize(Dynamic<?> dynamic) {
-		int i = dynamic.get("size").asInt(0);
-		OreFeatureConfig.Target target = OreFeatureConfig.Target.byName(dynamic.get("target").asString(""));
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
-		return new OreFeatureConfig(target, blockState, i);
-	}
-
-	public static enum Target {
+	public static enum Target implements StringIdentifiable {
 		NATURAL_STONE(
 			"natural_stone",
 			blockState -> blockState == null
 					? false
 					: blockState.isOf(Blocks.STONE) || blockState.isOf(Blocks.GRANITE) || blockState.isOf(Blocks.DIORITE) || blockState.isOf(Blocks.ANDESITE)
 		),
-		NETHERRACK("netherrack", new BlockPredicate(Blocks.NETHERRACK));
+		NETHERRACK("netherrack", new BlockPredicate(Blocks.NETHERRACK)),
+		NETHER_ORE_REPLACEABLES(
+			"nether_ore_replaceables",
+			blockState -> blockState == null ? false : blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.BASALT) || blockState.isOf(Blocks.BLACKSTONE)
+		);
 
+		public static final Codec<OreFeatureConfig.Target> field_24898 = StringIdentifiable.method_28140(
+			OreFeatureConfig.Target::values, OreFeatureConfig.Target::byName
+		);
 		private static final Map<String, OreFeatureConfig.Target> nameMap = (Map<String, OreFeatureConfig.Target>)Arrays.stream(values())
 			.collect(Collectors.toMap(OreFeatureConfig.Target::getName, target -> target));
 		private final String name;
@@ -75,6 +66,11 @@ public class OreFeatureConfig implements FeatureConfig {
 
 		public Predicate<BlockState> getCondition() {
 			return this.predicate;
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
 		}
 	}
 }

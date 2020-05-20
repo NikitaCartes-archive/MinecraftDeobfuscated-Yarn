@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public abstract class BlockNameFix extends DataFix {
 	private final String name;
@@ -22,14 +23,14 @@ public abstract class BlockNameFix extends DataFix {
 	@Override
 	public TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.BLOCK_NAME);
-		Type<Pair<String, String>> type2 = DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.namespacedString());
+		Type<Pair<String, String>> type2 = DSL.named(TypeReferences.BLOCK_NAME.typeName(), IdentifierNormalizingSchema.method_28295());
 		if (!Objects.equals(type, type2)) {
 			throw new IllegalStateException("block type is not what was expected.");
 		} else {
 			TypeRewriteRule typeRewriteRule = this.fixTypeEverywhere(this.name + " for block", type2, dynamicOps -> pair -> pair.mapSecond(this::rename));
 			TypeRewriteRule typeRewriteRule2 = this.fixTypeEverywhereTyped(
 				this.name + " for block_state", this.getInputSchema().getType(TypeReferences.BLOCK_STATE), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
-						Optional<String> optional = dynamic.get("Name").asString();
+						Optional<String> optional = dynamic.get("Name").asString().result();
 						return optional.isPresent() ? dynamic.set("Name", dynamic.createString(this.rename((String)optional.get()))) : dynamic;
 					})
 			);

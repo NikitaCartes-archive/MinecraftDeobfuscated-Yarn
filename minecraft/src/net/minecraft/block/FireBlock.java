@@ -20,7 +20,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.dimension.TheEndDimension;
 
 public class FireBlock extends AbstractFireBlock {
 	public static final IntProperty AGE = Properties.AGE_15;
@@ -120,9 +119,7 @@ public class FireBlock extends AbstractFireBlock {
 			}
 
 			BlockState blockState = world.getBlockState(pos.down());
-			boolean bl = world.getDimension() instanceof TheEndDimension && blockState.isOf(Blocks.BEDROCK)
-				|| blockState.isOf(Blocks.NETHERRACK)
-				|| blockState.isOf(Blocks.MAGMA_BLOCK);
+			boolean bl = world.getDimension().isEnd() && blockState.isOf(Blocks.BEDROCK) || blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.MAGMA_BLOCK);
 			int i = (Integer)state.get(AGE);
 			if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
 				world.removeBlock(pos, false);

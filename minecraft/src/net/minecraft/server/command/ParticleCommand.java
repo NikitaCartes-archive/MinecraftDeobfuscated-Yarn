@@ -10,7 +10,6 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.ParticleArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
@@ -151,10 +150,7 @@ public class ParticleCommand {
 		if (i == 0) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(
-				new TranslatableText("commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleEffect>)parameters.getType()).toString()),
-				true
-			);
+			source.sendFeedback(new TranslatableText("commands.particle.success", Registry.PARTICLE_TYPE.getId(parameters.getType()).toString()), true);
 			return i;
 		}
 	}

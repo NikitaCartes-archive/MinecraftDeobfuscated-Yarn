@@ -28,7 +28,7 @@ public class PanicTask extends Task<VillagerEntity> {
 				brain.forget(MemoryModuleType.INTERACTION_TARGET);
 			}
 
-			brain.method_24526(Activity.PANIC);
+			brain.doExclusively(Activity.PANIC);
 		}
 	}
 

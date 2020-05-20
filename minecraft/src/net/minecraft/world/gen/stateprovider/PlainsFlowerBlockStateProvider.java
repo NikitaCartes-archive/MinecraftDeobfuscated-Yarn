@@ -1,18 +1,19 @@
 package net.minecraft.world.gen.stateprovider;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 public class PlainsFlowerBlockStateProvider extends BlockStateProvider {
+	public static final Codec<PlainsFlowerBlockStateProvider> field_24942 = Codec.unit(
+		(Supplier<PlainsFlowerBlockStateProvider>)(() -> PlainsFlowerBlockStateProvider.field_24943)
+	);
+	public static final PlainsFlowerBlockStateProvider field_24943 = new PlainsFlowerBlockStateProvider();
 	private static final BlockState[] tulips = new BlockState[]{
 		Blocks.ORANGE_TULIP.getDefaultState(), Blocks.RED_TULIP.getDefaultState(), Blocks.PINK_TULIP.getDefaultState(), Blocks.WHITE_TULIP.getDefaultState()
 	};
@@ -20,12 +21,9 @@ public class PlainsFlowerBlockStateProvider extends BlockStateProvider {
 		Blocks.POPPY.getDefaultState(), Blocks.AZURE_BLUET.getDefaultState(), Blocks.OXEYE_DAISY.getDefaultState(), Blocks.CORNFLOWER.getDefaultState()
 	};
 
-	public PlainsFlowerBlockStateProvider() {
-		super(BlockStateProviderType.PLAIN_FLOWER_PROVIDER);
-	}
-
-	public <T> PlainsFlowerBlockStateProvider(Dynamic<T> configDeserializer) {
-		this();
+	@Override
+	protected BlockStateProviderType<?> method_28862() {
+		return BlockStateProviderType.PLAIN_FLOWER_PROVIDER;
 	}
 
 	@Override
@@ -36,12 +34,5 @@ public class PlainsFlowerBlockStateProvider extends BlockStateProvider {
 		} else {
 			return random.nextInt(3) > 0 ? Util.getRandom(flowers, random) : Blocks.DANDELION.getDefaultState();
 		}
-	}
-
-	@Override
-	public <T> T serialize(DynamicOps<T> ops) {
-		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(ops.createString("type"), ops.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()));
-		return new Dynamic<>(ops, ops.createMap(builder.build())).getValue();
 	}
 }

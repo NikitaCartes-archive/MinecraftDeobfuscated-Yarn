@@ -1,6 +1,7 @@
 package net.minecraft.client.util;
 
 import com.mojang.text2speech.Narrator;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -24,20 +25,22 @@ public class NarratorManager implements ClientChatListener {
 	private final Narrator narrator = Narrator.getNarrator();
 
 	@Override
-	public void onChatMessage(MessageType messageType, Text message) {
-		NarratorOption narratorOption = getNarratorOption();
-		if (narratorOption != NarratorOption.OFF && this.narrator.active()) {
-			if (narratorOption == NarratorOption.ALL
-				|| narratorOption == NarratorOption.CHAT && messageType == MessageType.CHAT
-				|| narratorOption == NarratorOption.SYSTEM && messageType == MessageType.SYSTEM) {
-				Text text;
-				if (message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey())) {
-					text = new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs());
-				} else {
-					text = message;
-				}
+	public void onChatMessage(MessageType messageType, Text message, UUID uUID) {
+		if (!MinecraftClient.getInstance().method_29042(uUID)) {
+			NarratorOption narratorOption = getNarratorOption();
+			if (narratorOption != NarratorOption.OFF && this.narrator.active()) {
+				if (narratorOption == NarratorOption.ALL
+					|| narratorOption == NarratorOption.CHAT && messageType == MessageType.CHAT
+					|| narratorOption == NarratorOption.SYSTEM && messageType == MessageType.SYSTEM) {
+					Text text;
+					if (message instanceof TranslatableText && "chat.type.text".equals(((TranslatableText)message).getKey())) {
+						text = new TranslatableText("chat.type.text.narrate", ((TranslatableText)message).getArgs());
+					} else {
+						text = message;
+					}
 
-				this.narrate(messageType.interruptsNarration(), text.getString());
+					this.narrate(messageType.interruptsNarration(), text.getString());
+				}
 			}
 		}
 	}

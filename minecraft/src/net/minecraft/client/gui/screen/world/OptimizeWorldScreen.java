@@ -4,9 +4,9 @@ import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5219;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -15,17 +15,19 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
 
 @Environment(EnvType.CLIENT)
 public class OptimizeWorldScreen extends Screen {
-	private static final Object2IntMap<DimensionType> DIMENSION_COLORS = Util.make(
+	private static final Object2IntMap<RegistryKey<DimensionType>> DIMENSION_COLORS = Util.make(
 		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
-			object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD, -13408734);
-			object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER, -10075085);
-			object2IntOpenCustomHashMap.put(DimensionType.THE_END, -8943531);
+			object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD_REGISTRY_KEY, -13408734);
+			object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER_REGISTRY_KEY, -10075085);
+			object2IntOpenCustomHashMap.put(DimensionType.THE_END_REGISTRY_KEY, -8943531);
 			object2IntOpenCustomHashMap.defaultReturnValue(-2236963);
 		}
 	);
@@ -33,14 +35,14 @@ public class OptimizeWorldScreen extends Screen {
 	private final WorldUpdater updater;
 
 	public static OptimizeWorldScreen method_27031(BooleanConsumer booleanConsumer, DataFixer dataFixer, LevelStorage.Session session, boolean bl) {
-		class_5219 lv = session.readLevelProperties();
-		return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, lv, bl);
+		SaveProperties saveProperties = session.readLevelProperties();
+		return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties, bl);
 	}
 
-	private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session session, class_5219 arg, boolean bl) {
-		super(new TranslatableText("optimizeWorld.title", arg.getLevelName()));
+	private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session session, SaveProperties saveProperties, boolean bl) {
+		super(new TranslatableText("optimizeWorld.title", saveProperties.getLevelName()));
 		this.callback = callback;
-		this.updater = new WorldUpdater(session, dataFixer, arg, bl);
+		this.updater = new WorldUpdater(session, dataFixer, saveProperties, bl);
 	}
 
 	@Override
@@ -89,9 +91,9 @@ public class OptimizeWorldScreen extends Screen {
 			);
 			int m = 0;
 
-			for (DimensionType dimensionType : DimensionType.getAll()) {
-				int n = MathHelper.floor(this.updater.getProgress(dimensionType) * (float)(j - i));
-				fill(matrices, i + m, k, i + m + n, l, DIMENSION_COLORS.getInt(dimensionType));
+			for (Entry<RegistryKey<DimensionType>, DimensionType> entry : this.updater.method_28304().entrySet()) {
+				int n = MathHelper.floor(this.updater.getProgress((DimensionType)entry.getValue()) * (float)(j - i));
+				fill(matrices, i + m, k, i + m + n, l, DIMENSION_COLORS.getInt(entry.getKey()));
 				m += n;
 			}
 

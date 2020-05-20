@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.decorator;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
@@ -11,8 +10,8 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class CountExtraHeightmapDecorator extends Decorator<CountExtraChanceDecoratorConfig> {
-	public CountExtraHeightmapDecorator(Function<Dynamic<?>, ? extends CountExtraChanceDecoratorConfig> function) {
-		super(function);
+	public CountExtraHeightmapDecorator(Codec<CountExtraChanceDecoratorConfig> codec) {
+		super(codec);
 	}
 
 	public Stream<BlockPos> getPositions(

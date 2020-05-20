@@ -2,23 +2,26 @@ package net.minecraft.datafixer;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.PeekingIterator;
-import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.types.DynamicOps;
-import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
+import com.mojang.serialization.RecordBuilder.AbstractStringBuilder;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.ByteArrayTag;
@@ -49,41 +52,41 @@ public class NbtOps implements DynamicOps<Tag> {
 		return EndTag.INSTANCE;
 	}
 
-	public Type<?> getType(Tag tag) {
+	public <U> U convertTo(DynamicOps<U> dynamicOps, Tag tag) {
 		switch (tag.getType()) {
 			case 0:
-				return DSL.nilType();
+				return dynamicOps.empty();
 			case 1:
-				return DSL.byteType();
+				return dynamicOps.createByte(((AbstractNumberTag)tag).getByte());
 			case 2:
-				return DSL.shortType();
+				return dynamicOps.createShort(((AbstractNumberTag)tag).getShort());
 			case 3:
-				return DSL.intType();
+				return dynamicOps.createInt(((AbstractNumberTag)tag).getInt());
 			case 4:
-				return DSL.longType();
+				return dynamicOps.createLong(((AbstractNumberTag)tag).getLong());
 			case 5:
-				return DSL.floatType();
+				return dynamicOps.createFloat(((AbstractNumberTag)tag).getFloat());
 			case 6:
-				return DSL.doubleType();
+				return dynamicOps.createDouble(((AbstractNumberTag)tag).getDouble());
 			case 7:
-				return DSL.list(DSL.byteType());
+				return dynamicOps.createByteList(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray()));
 			case 8:
-				return DSL.string();
+				return dynamicOps.createString(tag.asString());
 			case 9:
-				return DSL.list(DSL.remainderType());
+				return this.convertList(dynamicOps, tag);
 			case 10:
-				return DSL.compoundList(DSL.remainderType(), DSL.remainderType());
+				return this.convertMap(dynamicOps, tag);
 			case 11:
-				return DSL.list(DSL.intType());
+				return dynamicOps.createIntList(Arrays.stream(((IntArrayTag)tag).getIntArray()));
 			case 12:
-				return DSL.list(DSL.longType());
+				return dynamicOps.createLongList(Arrays.stream(((LongArrayTag)tag).getLongArray()));
 			default:
-				return DSL.remainderType();
+				throw new IllegalStateException("Unknown tag type: " + tag);
 		}
 	}
 
-	public Optional<Number> getNumberValue(Tag tag) {
-		return tag instanceof AbstractNumberTag ? Optional.of(((AbstractNumberTag)tag).getNumber()) : Optional.empty();
+	public DataResult<Number> getNumberValue(Tag tag) {
+		return tag instanceof AbstractNumberTag ? DataResult.success(((AbstractNumberTag)tag).getNumber()) : DataResult.error("Not a number");
 	}
 
 	public Tag createNumeric(Number number) {
@@ -118,135 +121,191 @@ public class NbtOps implements DynamicOps<Tag> {
 		return ByteTag.of(bl);
 	}
 
-	public Optional<String> getStringValue(Tag tag) {
-		return tag instanceof StringTag ? Optional.of(tag.asString()) : Optional.empty();
+	public DataResult<String> getStringValue(Tag tag) {
+		return tag instanceof StringTag ? DataResult.success(tag.asString()) : DataResult.error("Not a string");
 	}
 
 	public Tag createString(String string) {
 		return StringTag.of(string);
 	}
 
-	public Tag mergeInto(Tag tag, Tag tag2) {
-		if (tag2 instanceof EndTag) {
-			return tag;
-		} else if (!(tag instanceof CompoundTag)) {
-			if (tag instanceof EndTag) {
-				throw new IllegalArgumentException("mergeInto called with a null input.");
-			} else if (tag instanceof AbstractListTag) {
-				AbstractListTag<Tag> abstractListTag = new ListTag();
-				AbstractListTag<?> abstractListTag2 = (AbstractListTag<?>)tag;
-				abstractListTag.addAll(abstractListTag2);
-				abstractListTag.add(tag2);
-				return abstractListTag;
-			} else {
-				return tag;
-			}
-		} else if (!(tag2 instanceof CompoundTag)) {
-			return tag;
+	private static AbstractListTag<?> method_29144(byte b, byte c) {
+		if (method_29145(b, c, (byte)4)) {
+			return new LongArrayTag(new long[0]);
+		} else if (method_29145(b, c, (byte)1)) {
+			return new ByteArrayTag(new byte[0]);
+		} else {
+			return (AbstractListTag<?>)(method_29145(b, c, (byte)3) ? new IntArrayTag(new int[0]) : new ListTag());
+		}
+	}
+
+	private static boolean method_29145(byte b, byte c, byte d) {
+		return (b == d || b == 0) && (c == d || c == 0);
+	}
+
+	private static <T extends Tag> void method_29151(AbstractListTag<T> abstractListTag, Tag tag, Tag tag2) {
+		if (tag instanceof AbstractListTag) {
+			AbstractListTag<?> abstractListTag2 = (AbstractListTag<?>)tag;
+			abstractListTag2.forEach(tagx -> abstractListTag.add(tagx));
+		}
+
+		abstractListTag.add(tag2);
+	}
+
+	private static <T extends Tag> void method_29150(AbstractListTag<T> abstractListTag, Tag tag, List<Tag> list) {
+		if (tag instanceof AbstractListTag) {
+			AbstractListTag<?> abstractListTag2 = (AbstractListTag<?>)tag;
+			abstractListTag2.forEach(tagx -> abstractListTag.add(tagx));
+		}
+
+		list.forEach(tagx -> abstractListTag.add(tagx));
+	}
+
+	public DataResult<Tag> mergeToList(Tag tag, Tag tag2) {
+		if (!(tag instanceof AbstractListTag) && !(tag instanceof EndTag)) {
+			return DataResult.error("mergeToList called with not a list: " + tag, tag);
+		} else {
+			AbstractListTag<?> abstractListTag = method_29144(tag instanceof AbstractListTag ? ((AbstractListTag)tag).getElementType() : 0, tag2.getType());
+			method_29151(abstractListTag, tag, tag2);
+			return DataResult.success(abstractListTag);
+		}
+	}
+
+	public DataResult<Tag> mergeToList(Tag tag, List<Tag> list) {
+		if (!(tag instanceof AbstractListTag) && !(tag instanceof EndTag)) {
+			return DataResult.error("mergeToList called with not a list: " + tag, tag);
+		} else {
+			AbstractListTag<?> abstractListTag = method_29144(
+				tag instanceof AbstractListTag ? ((AbstractListTag)tag).getElementType() : 0, (Byte)list.stream().findFirst().map(Tag::getType).orElse((byte)0)
+			);
+			method_29150(abstractListTag, tag, list);
+			return DataResult.success(abstractListTag);
+		}
+	}
+
+	public DataResult<Tag> mergeToMap(Tag tag, Tag tag2, Tag tag3) {
+		if (!(tag instanceof CompoundTag) && !(tag instanceof EndTag)) {
+			return DataResult.error("mergeToMap called with not a map: " + tag, tag);
+		} else if (!(tag2 instanceof StringTag)) {
+			return DataResult.error("key is not a string: " + tag2, tag);
 		} else {
 			CompoundTag compoundTag = new CompoundTag();
-			CompoundTag compoundTag2 = (CompoundTag)tag;
-
-			for (String string : compoundTag2.getKeys()) {
-				compoundTag.put(string, compoundTag2.get(string));
+			if (tag instanceof CompoundTag) {
+				CompoundTag compoundTag2 = (CompoundTag)tag;
+				compoundTag2.getKeys().forEach(string -> compoundTag.put(string, compoundTag2.get(string)));
 			}
 
-			CompoundTag compoundTag3 = (CompoundTag)tag2;
-
-			for (String string2 : compoundTag3.getKeys()) {
-				compoundTag.put(string2, compoundTag3.get(string2));
-			}
-
-			return compoundTag;
+			compoundTag.put(tag2.asString(), tag3);
+			return DataResult.success(compoundTag);
 		}
 	}
 
-	public Tag mergeInto(Tag tag, Tag tag2, Tag tag3) {
-		CompoundTag compoundTag;
-		if (tag instanceof EndTag) {
-			compoundTag = new CompoundTag();
+	public DataResult<Tag> mergeToMap(Tag tag, MapLike<Tag> mapLike) {
+		if (!(tag instanceof CompoundTag) && !(tag instanceof EndTag)) {
+			return DataResult.error("mergeToMap called with not a map: " + tag, tag);
 		} else {
-			if (!(tag instanceof CompoundTag)) {
-				return tag;
+			CompoundTag compoundTag = new CompoundTag();
+			if (tag instanceof CompoundTag) {
+				CompoundTag compoundTag2 = (CompoundTag)tag;
+				compoundTag2.getKeys().forEach(string -> compoundTag.put(string, compoundTag2.get(string)));
 			}
 
-			CompoundTag compoundTag2 = (CompoundTag)tag;
-			compoundTag = new CompoundTag();
-			compoundTag2.getKeys().forEach(string -> compoundTag.put(string, compoundTag2.get(string)));
+			List<Tag> list = Lists.<Tag>newArrayList();
+			mapLike.entries().forEach(pair -> {
+				Tag tagx = (Tag)pair.getFirst();
+				if (!(tagx instanceof StringTag)) {
+					list.add(tagx);
+				} else {
+					compoundTag.put(tagx.asString(), (Tag)pair.getSecond());
+				}
+			});
+			return !list.isEmpty() ? DataResult.error("some keys are not strings: " + list, compoundTag) : DataResult.success(compoundTag);
 		}
-
-		compoundTag.put(tag2.asString(), tag3);
-		return compoundTag;
 	}
 
-	public Tag merge(Tag tag, Tag tag2) {
-		if (tag instanceof EndTag) {
-			return tag2;
-		} else if (tag2 instanceof EndTag) {
-			return tag;
-		} else if (tag instanceof CompoundTag && tag2 instanceof CompoundTag) {
+	public DataResult<Stream<Pair<Tag, Tag>>> getMapValues(Tag tag) {
+		if (!(tag instanceof CompoundTag)) {
+			return DataResult.error("Not a map: " + tag);
+		} else {
 			CompoundTag compoundTag = (CompoundTag)tag;
-			CompoundTag compoundTag2 = (CompoundTag)tag2;
-			CompoundTag compoundTag3 = new CompoundTag();
-			compoundTag.getKeys().forEach(string -> compoundTag3.put(string, compoundTag.get(string)));
-			compoundTag2.getKeys().forEach(string -> compoundTag3.put(string, compoundTag2.get(string)));
-			return compoundTag3;
-		} else if (tag instanceof AbstractListTag && tag2 instanceof AbstractListTag) {
-			ListTag listTag = new ListTag();
-			listTag.addAll((AbstractListTag)tag);
-			listTag.addAll((AbstractListTag)tag2);
-			return listTag;
-		} else {
-			throw new IllegalArgumentException("Could not merge " + tag + " and " + tag2);
+			return DataResult.success(compoundTag.getKeys().stream().map(string -> Pair.of(this.createString(string), compoundTag.get(string))));
 		}
 	}
 
-	public Optional<Map<Tag, Tag>> getMapValues(Tag tag) {
-		if (tag instanceof CompoundTag) {
+	public DataResult<Consumer<BiConsumer<Tag, Tag>>> getMapEntries(Tag tag) {
+		if (!(tag instanceof CompoundTag)) {
+			return DataResult.error("Not a map: " + tag);
+		} else {
 			CompoundTag compoundTag = (CompoundTag)tag;
-			return Optional.of(
-				compoundTag.getKeys()
-					.stream()
-					.map(string -> Pair.of(this.createString(string), compoundTag.get(string)))
-					.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
-			);
-		} else {
-			return Optional.empty();
+			return DataResult.success(biConsumer -> compoundTag.getKeys().forEach(string -> biConsumer.accept(this.createString(string), compoundTag.get(string))));
 		}
 	}
 
-	public Tag createMap(Map<Tag, Tag> map) {
+	public DataResult<MapLike<Tag>> getMap(Tag tag) {
+		if (!(tag instanceof CompoundTag)) {
+			return DataResult.error("Not a map: " + tag);
+		} else {
+			final CompoundTag compoundTag = (CompoundTag)tag;
+			return DataResult.success(new MapLike<Tag>() {
+				@Nullable
+				public Tag get(Tag tag) {
+					return compoundTag.get(tag.asString());
+				}
+
+				@Nullable
+				public Tag get(String string) {
+					return compoundTag.get(string);
+				}
+
+				@Override
+				public Stream<Pair<Tag, Tag>> entries() {
+					return compoundTag.getKeys().stream().map(string -> Pair.of(NbtOps.this.createString(string), compoundTag.get(string)));
+				}
+
+				public String toString() {
+					return "MapLike[" + compoundTag + "]";
+				}
+			});
+		}
+	}
+
+	public Tag createMap(Stream<Pair<Tag, Tag>> stream) {
 		CompoundTag compoundTag = new CompoundTag();
-
-		for (Entry<Tag, Tag> entry : map.entrySet()) {
-			compoundTag.put(((Tag)entry.getKey()).asString(), (Tag)entry.getValue());
-		}
-
+		stream.forEach(pair -> compoundTag.put(((Tag)pair.getFirst()).asString(), (Tag)pair.getSecond()));
 		return compoundTag;
 	}
 
-	public Optional<Stream<Tag>> getStream(Tag tag) {
-		return tag instanceof AbstractListTag ? Optional.of(((AbstractListTag)tag).stream().map(tagx -> tagx)) : Optional.empty();
+	public DataResult<Stream<Tag>> getStream(Tag tag) {
+		return tag instanceof AbstractListTag ? DataResult.success(((AbstractListTag)tag).stream().map(tagx -> tagx)) : DataResult.error("Not a list");
 	}
 
-	public Optional<ByteBuffer> getByteBuffer(Tag tag) {
-		return tag instanceof ByteArrayTag ? Optional.of(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray())) : DynamicOps.super.getByteBuffer(tag);
+	public DataResult<Consumer<Consumer<Tag>>> getList(Tag tag) {
+		if (tag instanceof AbstractListTag) {
+			AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
+			return DataResult.success(abstractListTag::forEach);
+		} else {
+			return DataResult.error("Not a list: " + tag);
+		}
+	}
+
+	public DataResult<ByteBuffer> getByteBuffer(Tag tag) {
+		return tag instanceof ByteArrayTag ? DataResult.success(ByteBuffer.wrap(((ByteArrayTag)tag).getByteArray())) : DynamicOps.super.getByteBuffer(tag);
 	}
 
 	public Tag createByteList(ByteBuffer byteBuffer) {
 		return new ByteArrayTag(DataFixUtils.toArray(byteBuffer));
 	}
 
-	public Optional<IntStream> getIntStream(Tag tag) {
-		return tag instanceof IntArrayTag ? Optional.of(Arrays.stream(((IntArrayTag)tag).getIntArray())) : DynamicOps.super.getIntStream(tag);
+	public DataResult<IntStream> getIntStream(Tag tag) {
+		return tag instanceof IntArrayTag ? DataResult.success(Arrays.stream(((IntArrayTag)tag).getIntArray())) : DynamicOps.super.getIntStream(tag);
 	}
 
 	public Tag createIntList(IntStream intStream) {
 		return new IntArrayTag(intStream.toArray());
 	}
 
-	public Optional<LongStream> getLongStream(Tag tag) {
-		return tag instanceof LongArrayTag ? Optional.of(Arrays.stream(((LongArrayTag)tag).getLongArray())) : DynamicOps.super.getLongStream(tag);
+	public DataResult<LongStream> getLongStream(Tag tag) {
+		return tag instanceof LongArrayTag ? DataResult.success(Arrays.stream(((LongArrayTag)tag).getLongArray())) : DynamicOps.super.getLongStream(tag);
 	}
 
 	public Tag createLongList(LongStream longStream) {
@@ -296,5 +355,41 @@ public class NbtOps implements DynamicOps<Tag> {
 
 	public String toString() {
 		return "NBT";
+	}
+
+	@Override
+	public RecordBuilder<Tag> mapBuilder() {
+		return new NbtOps.class_5320();
+	}
+
+	class class_5320 extends AbstractStringBuilder<Tag, CompoundTag> {
+		protected class_5320() {
+			super(NbtOps.this);
+		}
+
+		protected CompoundTag initBuilder() {
+			return new CompoundTag();
+		}
+
+		protected CompoundTag append(String string, Tag tag, CompoundTag compoundTag) {
+			compoundTag.put(string, tag);
+			return compoundTag;
+		}
+
+		protected DataResult<Tag> build(CompoundTag compoundTag, Tag tag) {
+			if (tag == null || tag == EndTag.INSTANCE) {
+				return DataResult.success(compoundTag);
+			} else if (!(tag instanceof CompoundTag)) {
+				return DataResult.error("mergeToMap called with not a map: " + tag, tag);
+			} else {
+				CompoundTag compoundTag2 = new CompoundTag(Maps.<String, Tag>newHashMap(((CompoundTag)tag).method_29143()));
+
+				for (Entry<String, Tag> entry : compoundTag.method_29143().entrySet()) {
+					compoundTag2.put((String)entry.getKey(), (Tag)entry.getValue());
+				}
+
+				return DataResult.success(compoundTag2);
+			}
+		}
 	}
 }

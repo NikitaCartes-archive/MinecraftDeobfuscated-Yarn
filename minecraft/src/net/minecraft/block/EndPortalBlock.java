@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -45,7 +46,8 @@ public class EndPortalBlock extends BlockWithEntity {
 				state.getOutlineShape(world, pos),
 				BooleanBiFunction.AND
 			)) {
-			entity.changeDimension(world.method_27983() == DimensionType.THE_END ? DimensionType.OVERWORLD : DimensionType.THE_END);
+			RegistryKey<DimensionType> registryKey = world.getDimension().isEnd() ? DimensionType.OVERWORLD_REGISTRY_KEY : DimensionType.THE_END_REGISTRY_KEY;
+			entity.changeDimension(registryKey);
 		}
 	}
 

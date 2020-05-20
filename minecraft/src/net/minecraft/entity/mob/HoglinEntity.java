@@ -1,7 +1,7 @@
 package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -43,7 +43,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.dimension.DimensionType;
 
 public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(HoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -130,8 +129,13 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	protected Brain<?> deserializeBrain(Dynamic<?> data) {
-		return HoglinBrain.create(data);
+	protected Brain.Profile<HoglinEntity> createBrainProfile() {
+		return Brain.createProfile(MEMORY_MODULE_TYPES, SENSOR_TYPES);
+	}
+
+	@Override
+	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+		return HoglinBrain.create(this.createBrainProfile().deserialize(dynamic));
 	}
 
 	@Override
@@ -311,7 +315,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	public boolean canConvert() {
-		return this.world.method_27983() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
+		return !this.world.getDimension().isNether() && !this.isImmuneToZombification() && !this.isAiDisabled();
 	}
 
 	private void setCannotBeHunted(boolean cannotBeHunted) {

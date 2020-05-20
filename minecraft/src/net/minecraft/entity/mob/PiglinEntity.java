@@ -1,7 +1,7 @@
 package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -36,7 +36,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
@@ -51,18 +51,17 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.dimension.DimensionType;
 
 public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final UUID BABY_SPEED_BOOST_MODIFIER_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
-	private static final EntityAttributeModifier BABY_SPEED_BOOST_MODIFIER = new EntityAttributeModifier(
-		BABY_SPEED_BOOST_MODIFIER_ID, "Baby speed boost", 0.2F, EntityAttributeModifier.Operation.MULTIPLY_BASE
+	private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
+	private static final EntityAttributeModifier BABY_SPEED_BOOST = new EntityAttributeModifier(
+		BABY_SPEED_BOOST_ID, "Baby speed boost", 0.2F, EntityAttributeModifier.Operation.MULTIPLY_BASE
 	);
 	private int conversionTicks = 0;
-	private final BasicInventory inventory = new BasicInventory(8);
+	private final SimpleInventory inventory = new SimpleInventory(8);
 	private boolean cannotHunt = false;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES,
@@ -234,8 +233,13 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	@Override
-	protected Brain<?> deserializeBrain(Dynamic<?> data) {
-		return PiglinBrain.create(this, data);
+	protected Brain.Profile<PiglinEntity> createBrainProfile() {
+		return Brain.createProfile(MEMORY_MODULE_TYPES, SENSOR_TYPES);
+	}
+
+	@Override
+	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+		return PiglinBrain.create(this, this.createBrainProfile().deserialize(dynamic));
 	}
 
 	@Override
@@ -264,9 +268,9 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		this.getDataTracker().set(BABY, baby);
 		if (!this.world.isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST_MODIFIER);
+			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST);
 			if (baby) {
-				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST_MODIFIER);
+				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST);
 			}
 		}
 	}
@@ -297,7 +301,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	public boolean canConvert() {
-		return this.world.method_27983() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
+		return !this.world.getDimension().isNether() && !this.isImmuneToZombification() && !this.isAiDisabled();
 	}
 
 	@Override
@@ -452,8 +456,8 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 
 	@Override
 	protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack) {
-		boolean bl = PiglinBrain.isGoldenItem(newStack.getItem());
-		boolean bl2 = PiglinBrain.isGoldenItem(oldStack.getItem());
+		boolean bl = PiglinBrain.isGoldenItem(newStack.getItem()) || newStack.getItem() == Items.CROSSBOW;
+		boolean bl2 = PiglinBrain.isGoldenItem(oldStack.getItem()) || oldStack.getItem() == Items.CROSSBOW;
 		if (bl && !bl2) {
 			return true;
 		} else if (!bl && bl2) {

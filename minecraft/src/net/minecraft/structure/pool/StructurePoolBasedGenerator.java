@@ -12,7 +12,6 @@ import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.VillageGenerator;
 import net.minecraft.util.BlockRotation;
@@ -26,6 +25,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +51,7 @@ public class StructurePoolBasedGenerator {
 		boolean bl,
 		boolean bl2
 	) {
-		StructureFeatures.initialize();
+		StructureFeature.method_28664();
 		BlockRotation blockRotation = BlockRotation.random(random);
 		StructurePool structurePool = REGISTRY.get(startPoolId);
 		StructurePoolElement structurePoolElement = structurePool.getRandomElement(random);

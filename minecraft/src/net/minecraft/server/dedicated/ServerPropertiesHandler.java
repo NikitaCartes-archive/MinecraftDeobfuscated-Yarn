@@ -3,10 +3,10 @@ package net.minecraft.server.dedicated;
 import java.nio.file.Path;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import net.minecraft.class_5285;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.gen.GeneratorOptions;
 
 public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPropertiesHandler> {
 	public final boolean onlineMode = this.parseBoolean("online-mode", true);
@@ -55,7 +55,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final int entityBroadcastRangePercentage;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList;
-	public final class_5285 field_24623;
+	public final GeneratorOptions field_24623;
 
 	public ServerPropertiesHandler(Properties properties) {
 		super(properties);
@@ -81,7 +81,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", integer -> MathHelper.clamp(integer, 10, 1000), 100);
 		this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 		this.whiteList = this.booleanAccessor("white-list", false);
-		this.field_24623 = class_5285.method_28021(properties);
+		this.field_24623 = GeneratorOptions.fromProperties(properties);
 	}
 
 	public static ServerPropertiesHandler load(Path path) {

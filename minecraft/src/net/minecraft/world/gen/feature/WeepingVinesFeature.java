@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,8 +16,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 	private static final Direction[] DIRECTIONS = Direction.values();
 
-	public WeepingVinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public WeepingVinesFeature(Codec<DefaultFeatureConfig> codec) {
+		super(codec);
 	}
 
 	public boolean generate(

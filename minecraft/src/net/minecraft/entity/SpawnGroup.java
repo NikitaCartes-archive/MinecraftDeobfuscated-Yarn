@@ -1,10 +1,12 @@
 package net.minecraft.entity;
 
+import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.minecraft.util.StringIdentifiable;
 
-public enum SpawnGroup {
+public enum SpawnGroup implements StringIdentifiable {
 	MONSTER("monster", 70, false, 128),
 	CREATURE("creature", 10, true),
 	AMBIENT("ambient", 15, true, 128),
@@ -12,6 +14,7 @@ public enum SpawnGroup {
 	WATER_AMBIENT("water_ambient", 20, true, 64),
 	MISC("misc", -1, true);
 
+	public static final Codec<SpawnGroup> field_24655 = StringIdentifiable.method_28140(SpawnGroup::values, SpawnGroup::method_28307);
 	private static final Map<String, SpawnGroup> BY_NAME = (Map<String, SpawnGroup>)Arrays.stream(values())
 		.collect(Collectors.toMap(SpawnGroup::getName, spawnGroup -> spawnGroup));
 	private final int capacity;
@@ -39,6 +42,15 @@ public enum SpawnGroup {
 
 	public String getName() {
 		return this.name;
+	}
+
+	@Override
+	public String asString() {
+		return this.name;
+	}
+
+	public static SpawnGroup method_28307(String string) {
+		return (SpawnGroup)BY_NAME.get(string);
 	}
 
 	public int getCapacity() {

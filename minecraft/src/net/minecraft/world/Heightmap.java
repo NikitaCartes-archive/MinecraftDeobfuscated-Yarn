@@ -1,17 +1,20 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.math.BlockPos;
@@ -124,7 +127,7 @@ public class Heightmap {
 		CLIENT;
 	}
 
-	public static enum Type {
+	public static enum Type implements StringIdentifiable {
 		WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.Purpose.WORLDGEN, Heightmap.ALWAYS_TRUE),
 		WORLD_SURFACE("WORLD_SURFACE", Heightmap.Purpose.CLIENT, Heightmap.ALWAYS_TRUE),
 		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Purpose.WORLDGEN, Heightmap.SUFFOCATES),
@@ -136,6 +139,7 @@ public class Heightmap {
 			blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
 		);
 
+		public static final Codec<Heightmap.Type> field_24772 = StringIdentifiable.method_28140(Heightmap.Type::values, Heightmap.Type::byName);
 		private final String name;
 		private final Heightmap.Purpose purpose;
 		private final Predicate<BlockState> blockPredicate;
@@ -164,12 +168,18 @@ public class Heightmap {
 			return this.purpose != Heightmap.Purpose.WORLDGEN;
 		}
 
+		@Nullable
 		public static Heightmap.Type byName(String name) {
 			return (Heightmap.Type)BY_NAME.get(name);
 		}
 
 		public Predicate<BlockState> getBlockPredicate() {
 			return this.blockPredicate;
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
 		}
 	}
 }

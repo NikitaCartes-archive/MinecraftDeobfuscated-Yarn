@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Dynamic;
-import java.util.function.Function;
+import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.NetherFossilGenerator;
@@ -14,58 +13,31 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
-	public NetherFossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> {
+	public NetherFossilFeature(Codec<DefaultFeatureConfig> codec) {
+		super(codec);
 	}
 
 	@Override
-	protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
-		return 14357921;
-	}
-
-	@Override
-	public StructureFeature.StructureStartFactory getStructureStartFactory() {
+	public StructureFeature.StructureStartFactory<DefaultFeatureConfig> getStructureStartFactory() {
 		return NetherFossilFeature.Start::new;
 	}
 
-	@Override
-	public String getName() {
-		return "Nether_Fossil";
-	}
-
-	@Override
-	protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
-		return 2;
-	}
-
-	@Override
-	protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
-		return 1;
-	}
-
-	@Override
-	public int getRadius() {
-		return 3;
-	}
-
-	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+	public static class Start extends StructureStart<DefaultFeatureConfig> {
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		@Override
-		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-			ChunkPos chunkPos = new ChunkPos(x, z);
-			int i = chunkPos.getStartX() + this.random.nextInt(16);
-			int j = chunkPos.getStartZ() + this.random.nextInt(16);
-			int k = chunkGenerator.getSeaLevel();
-			int l = k + this.random.nextInt(chunkGenerator.getMaxY() - 2 - k);
-			BlockView blockView = chunkGenerator.getColumnSample(i, j);
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
+			ChunkPos chunkPos = new ChunkPos(i, j);
+			int k = chunkPos.getStartX() + this.random.nextInt(16);
+			int l = chunkPos.getStartZ() + this.random.nextInt(16);
+			int m = chunkGenerator.getSeaLevel();
+			int n = m + this.random.nextInt(chunkGenerator.getMaxY() - 2 - m);
+			BlockView blockView = chunkGenerator.getColumnSample(k, l);
 
-			for (BlockPos.Mutable mutable = new BlockPos.Mutable(i, l, j); l > k; l--) {
+			for (BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l); n > m; n--) {
 				BlockState blockState = blockView.getBlockState(mutable);
 				mutable.move(Direction.DOWN);
 				BlockState blockState2 = blockView.getBlockState(mutable);
@@ -74,8 +46,8 @@ public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureCon
 				}
 			}
 
-			if (l > k) {
-				NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(i, l, j));
+			if (n > m) {
+				NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(k, n, l));
 				this.setBoundingBoxFromChildren();
 			}
 		}

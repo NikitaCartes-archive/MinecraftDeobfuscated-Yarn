@@ -12,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ColumnPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
 public class ForceLoadCommand {
@@ -96,40 +97,40 @@ public class ForceLoadCommand {
 
 	private static int executeQuery(ServerCommandSource source, ColumnPos pos) throws CommandSyntaxException {
 		ChunkPos chunkPos = new ChunkPos(pos.x >> 4, pos.z >> 4);
-		DimensionType dimensionType = source.getWorld().method_27983();
-		boolean bl = source.getMinecraftServer().getWorld(dimensionType).getForcedChunks().contains(chunkPos.toLong());
+		RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+		boolean bl = source.getMinecraftServer().getWorld(registryKey).getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
-			source.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, dimensionType), false);
+			source.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, registryKey.getValue()), false);
 			return 1;
 		} else {
-			throw QUERY_FAILURE_EXCEPTION.create(chunkPos, dimensionType);
+			throw QUERY_FAILURE_EXCEPTION.create(chunkPos, registryKey.getValue());
 		}
 	}
 
 	private static int executeQuery(ServerCommandSource source) {
-		DimensionType dimensionType = source.getWorld().method_27983();
-		LongSet longSet = source.getMinecraftServer().getWorld(dimensionType).getForcedChunks();
+		RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+		LongSet longSet = source.getMinecraftServer().getWorld(registryKey).getForcedChunks();
 		int i = longSet.size();
 		if (i > 0) {
 			String string = Joiner.on(", ").join(longSet.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
 			if (i == 1) {
-				source.sendFeedback(new TranslatableText("commands.forceload.list.single", dimensionType, string), false);
+				source.sendFeedback(new TranslatableText("commands.forceload.list.single", registryKey.getValue(), string), false);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.forceload.list.multiple", i, dimensionType, string), false);
+				source.sendFeedback(new TranslatableText("commands.forceload.list.multiple", i, registryKey.getValue(), string), false);
 			}
 		} else {
-			source.sendError(new TranslatableText("commands.forceload.added.none", dimensionType));
+			source.sendError(new TranslatableText("commands.forceload.added.none", registryKey.getValue()));
 		}
 
 		return i;
 	}
 
 	private static int executeRemoveAll(ServerCommandSource source) {
-		DimensionType dimensionType = source.getWorld().method_27983();
-		ServerWorld serverWorld = source.getMinecraftServer().getWorld(dimensionType);
+		RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+		ServerWorld serverWorld = source.getMinecraftServer().getWorld(registryKey);
 		LongSet longSet = serverWorld.getForcedChunks();
 		longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
-		source.sendFeedback(new TranslatableText("commands.forceload.removed.all", dimensionType), true);
+		source.sendFeedback(new TranslatableText("commands.forceload.removed.all", registryKey.getValue()), true);
 		return 0;
 	}
 
@@ -147,8 +148,8 @@ public class ForceLoadCommand {
 			if (q > 256L) {
 				throw TOO_BIG_EXCEPTION.create(256, q);
 			} else {
-				DimensionType dimensionType = source.getWorld().method_27983();
-				ServerWorld serverWorld = source.getMinecraftServer().getWorld(dimensionType);
+				RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+				ServerWorld serverWorld = source.getMinecraftServer().getWorld(registryKey);
 				ChunkPos chunkPos = null;
 				int r = 0;
 
@@ -168,12 +169,12 @@ public class ForceLoadCommand {
 					throw (forceLoaded ? ADDED_FAILURE_EXCEPTION : REMOVED_FAILURE_EXCEPTION).create();
 				} else {
 					if (r == 1) {
-						source.sendFeedback(new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos, dimensionType), true);
+						source.sendFeedback(new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos, registryKey.getValue()), true);
 					} else {
 						ChunkPos chunkPos2 = new ChunkPos(m, n);
 						ChunkPos chunkPos3 = new ChunkPos(o, p);
 						source.sendFeedback(
-							new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", r, dimensionType, chunkPos2, chunkPos3), true
+							new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", r, registryKey.getValue(), chunkPos2, chunkPos3), true
 						);
 					}
 

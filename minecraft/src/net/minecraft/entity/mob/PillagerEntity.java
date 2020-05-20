@@ -37,7 +37,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -56,7 +56,7 @@ import net.minecraft.world.WorldView;
 
 public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private final BasicInventory inventory = new BasicInventory(5);
+	private final SimpleInventory inventory = new SimpleInventory(5);
 
 	public PillagerEntity(EntityType<? extends PillagerEntity> entityType, World world) {
 		super(entityType, world);

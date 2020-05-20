@@ -2,7 +2,6 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
@@ -31,7 +30,7 @@ public class SleepTask extends Task<LivingEntity> {
 		} else {
 			Brain<?> brain = entity.getBrain();
 			GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(MemoryModuleType.HOME).get();
-			if (!Objects.equals(world.method_27983(), globalPos.getDimension())) {
+			if (world.method_27983() != globalPos.getDimension()) {
 				return false;
 			} else {
 				Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);

@@ -41,6 +41,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -349,7 +350,8 @@ public class TestCommand {
 	}
 
 	private static void sendMessage(ServerWorld world, String message, Formatting formatting) {
-		world.getPlayers(serverPlayerEntity -> true).forEach(serverPlayerEntity -> serverPlayerEntity.sendSystemMessage(new LiteralText(formatting + message)));
+		world.getPlayers(serverPlayerEntity -> true)
+			.forEach(serverPlayerEntity -> serverPlayerEntity.sendSystemMessage(new LiteralText(formatting + message), Util.field_25140));
 	}
 
 	static class Listener implements TestListener {

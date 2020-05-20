@@ -19,6 +19,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -85,14 +86,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 		private ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
-			DimensionType dimensionType = ChunkLoadingDebugRenderer.this.client.world.method_27983();
-			ServerWorld serverWorld;
-			if (integratedServer.getWorld(dimensionType) != null) {
-				serverWorld = integratedServer.getWorld(dimensionType);
-			} else {
-				serverWorld = null;
-			}
-
+			RegistryKey<DimensionType> registryKey = clientWorld.method_27983();
 			int i = (int)d >> 4;
 			int j = (int)e >> 4;
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
@@ -117,6 +111,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 			this.clientStates = builder.build();
 			this.serverStates = integratedServer.submit(() -> {
+				ServerWorld serverWorld = integratedServer.getWorld(registryKey);
 				Builder<ChunkPos, String> builderx = ImmutableMap.builder();
 				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 

@@ -3,11 +3,11 @@ package net.minecraft.datafixer.schema;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.schemas.Schema;
-import com.mojang.datafixers.types.DynamicOps;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import com.mojang.datafixers.types.templates.Hook.HookFunction;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -282,7 +282,7 @@ public class Schema99 extends Schema {
 		schema.registerType(
 			true, TypeReferences.ENTITY_TREE, () -> DSL.optionalFields("Riding", TypeReferences.ENTITY_TREE.in(schema), TypeReferences.ENTITY.in(schema))
 		);
-		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(DSL.namespacedString()));
+		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(IdentifierNormalizingSchema.method_28295()));
 		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), entityTypes));
 		schema.registerType(
 			true,
@@ -308,8 +308,8 @@ public class Schema99 extends Schema {
 				)
 		);
 		schema.registerType(false, TypeReferences.OPTIONS, DSL::remainder);
-		schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.or(DSL.constType(DSL.intType()), DSL.constType(DSL.namespacedString())));
-		schema.registerType(false, TypeReferences.ITEM_NAME, () -> DSL.constType(DSL.namespacedString()));
+		schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.or(DSL.constType(DSL.intType()), DSL.constType(IdentifierNormalizingSchema.method_28295())));
+		schema.registerType(false, TypeReferences.ITEM_NAME, () -> DSL.constType(IdentifierNormalizingSchema.method_28295()));
 		schema.registerType(false, TypeReferences.STATS, DSL::remainder);
 		schema.registerType(
 			false,
@@ -331,6 +331,7 @@ public class Schema99 extends Schema {
 		schema.registerType(false, TypeReferences.TEAM, DSL::remainder);
 		schema.registerType(true, TypeReferences.UNTAGGED_SPAWNER, DSL::remainder);
 		schema.registerType(false, TypeReferences.POI_CHUNK, DSL::remainder);
+		schema.registerType(true, TypeReferences.CHUNK_GENERATOR_SETTINGS, DSL::remainder);
 	}
 
 	protected static <T> T method_5359(Dynamic<T> dynamic, Map<String, String> map, String string) {

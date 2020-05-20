@@ -1,15 +1,11 @@
 package net.minecraft.client.gui.screen;
 
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Pair;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5285;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -21,60 +17,42 @@ import net.minecraft.world.biome.Biome;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen extends Screen {
-	private static final class_5285.class_5286[] field_24561 = class_5285.class_5286.values();
 	private final Screen field_24562;
-	private final Consumer<Pair<class_5285.class_5286, Set<Biome>>> field_24563;
+	private final Consumer<Biome> field_24563;
 	private CustomizeBuffetLevelScreen.BuffetBiomesListWidget biomeSelectionList;
-	private int biomeListLength;
+	private Biome field_25040;
 	private ButtonWidget confirmButton;
 
-	public CustomizeBuffetLevelScreen(Screen screen, Consumer<Pair<class_5285.class_5286, Set<Biome>>> consumer, Pair<class_5285.class_5286, Set<Biome>> pair) {
+	public CustomizeBuffetLevelScreen(Screen screen, Consumer<Biome> consumer, Biome biome) {
 		super(new TranslatableText("createWorld.customize.buffet.title"));
 		this.field_24562 = screen;
 		this.field_24563 = consumer;
-
-		for (int i = 0; i < field_24561.length; i++) {
-			if (field_24561[i].equals(pair.getFirst())) {
-				this.biomeListLength = i;
-				break;
-			}
-		}
-
-		for (Biome biome : pair.getSecond()) {
-			this.biomeSelectionList
-				.setSelected(
-					(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList
-						.children()
-						.stream()
-						.filter(buffetBiomeItem -> Objects.equals(buffetBiomeItem.field_24564, biome))
-						.findFirst()
-						.orElse(null)
-				);
-		}
+		this.field_25040 = biome;
 	}
 
 	@Override
 	protected void init() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(new ButtonWidget((this.width - 200) / 2, 40, 200, 20, field_24561[this.biomeListLength].method_28043(), buttonWidget -> {
-			this.biomeListLength++;
-			if (this.biomeListLength >= field_24561.length) {
-				this.biomeListLength = 0;
-			}
-
-			buttonWidget.setMessage(field_24561[this.biomeListLength].method_28043());
-		}));
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
 		this.children.add(this.biomeSelectionList);
+		this.biomeSelectionList
+			.setSelected(
+				(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList
+					.children()
+					.stream()
+					.filter(buffetBiomeItem -> Objects.equals(buffetBiomeItem.field_24564, this.field_25040))
+					.findFirst()
+					.orElse(null)
+			);
 		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
-			this.field_24563.accept(Pair.of(field_24561[this.biomeListLength], ImmutableSet.of(this.biomeSelectionList.getSelected().field_24564)));
+			this.field_24563.accept(this.field_25040);
 			this.client.openScreen(this.field_24562);
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.field_24562)));
 		this.refreshConfirmButton();
 	}
 
-	public void refreshConfirmButton() {
+	private void refreshConfirmButton() {
 		this.confirmButton.active = this.biomeSelectionList.getSelected() != null;
 	}
 
@@ -83,8 +61,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.renderBackgroundTexture(0);
 		this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
 		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
-		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
-		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
+		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 28, 10526880);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -95,7 +72,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				CustomizeBuffetLevelScreen.this.client,
 				CustomizeBuffetLevelScreen.this.width,
 				CustomizeBuffetLevelScreen.this.height,
-				80,
+				40,
 				CustomizeBuffetLevelScreen.this.height - 37,
 				16
 			);
@@ -113,6 +90,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		public void setSelected(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {
 			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
+				CustomizeBuffetLevelScreen.this.field_25040 = buffetBiomeItem.field_24564;
 				NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", buffetBiomeItem.field_24564.getName().getString()).getString());
 			}
 		}

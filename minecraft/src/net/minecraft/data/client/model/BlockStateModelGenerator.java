@@ -3904,7 +3904,8 @@ public class BlockStateModelGenerator {
 		this.registerLog(Blocks.STRIPPED_WARPED_STEM).stem(Blocks.STRIPPED_WARPED_STEM).wood(Blocks.STRIPPED_WARPED_HYPHAE);
 		this.registerFlowerPotPlant(Blocks.WARPED_FUNGUS, Blocks.POTTED_WARPED_FUNGUS, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerRoots(Blocks.WARPED_ROOTS, Blocks.POTTED_WARPED_ROOTS);
-		this.registerTintableCross(Blocks.NETHER_SPROUTS, BlockStateModelGenerator.TintType.NOT_TINTED);
+		this.registerTintableCrossBlockState(Blocks.NETHER_SPROUTS, BlockStateModelGenerator.TintType.NOT_TINTED);
+		this.registerItemModel(Items.NETHER_SPROUTS);
 		this.registerTexturePool(Texture.all(Blocks.STONE)).base(texture -> {
 			Identifier identifier = Models.CUBE_ALL.upload(Blocks.STONE, texture, this.modelCollector);
 			Identifier identifier2 = Models.CUBE_MIRRORED_ALL.upload(Blocks.STONE, texture, this.modelCollector);

@@ -1,10 +1,18 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class BasaltColumnsFeatureConfig implements FeatureConfig {
+	public static final Codec<BasaltColumnsFeatureConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.INT.fieldOf("minimum_reach").forGetter(basaltColumnsFeatureConfig -> basaltColumnsFeatureConfig.minReach),
+					Codec.INT.fieldOf("maximum_reach").forGetter(basaltColumnsFeatureConfig -> basaltColumnsFeatureConfig.maxReach),
+					Codec.INT.fieldOf("minimum_height").forGetter(basaltColumnsFeatureConfig -> basaltColumnsFeatureConfig.minHeight),
+					Codec.INT.fieldOf("maximum_height").forGetter(basaltColumnsFeatureConfig -> basaltColumnsFeatureConfig.maxHeight)
+				)
+				.apply(instance, BasaltColumnsFeatureConfig::new)
+	);
 	public final int minReach;
 	public final int maxReach;
 	public final int minHeight;
@@ -15,33 +23,6 @@ public class BasaltColumnsFeatureConfig implements FeatureConfig {
 		this.maxReach = maxReach;
 		this.minHeight = minHeight;
 		this.maxHeight = maxHeight;
-	}
-
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("minimum_reach"),
-					ops.createInt(this.minReach),
-					ops.createString("maximum_reach"),
-					ops.createInt(this.maxReach),
-					ops.createString("minimum_height"),
-					ops.createInt(this.minHeight),
-					ops.createString("maximum_height"),
-					ops.createInt(this.maxHeight)
-				)
-			)
-		);
-	}
-
-	public static <T> BasaltColumnsFeatureConfig deserialize(Dynamic<T> dynamic) {
-		int i = dynamic.get("minimum_reach").asInt(0);
-		int j = dynamic.get("maximum_reach").asInt(0);
-		int k = dynamic.get("minimum_height").asInt(1);
-		int l = dynamic.get("maximum_height").asInt(1);
-		return new BasaltColumnsFeatureConfig(i, j, k, l);
 	}
 
 	public static class Builder {

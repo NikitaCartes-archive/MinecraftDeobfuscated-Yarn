@@ -1,27 +1,35 @@
 package net.minecraft.structure.pool;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 
 public class LegacySinglePoolElement extends SinglePoolElement {
+	public static final Codec<LegacySinglePoolElement> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(method_28882(), method_28880(), method_28883()).apply(instance, LegacySinglePoolElement::new)
+	);
+
 	@Deprecated
 	public LegacySinglePoolElement(String string, List<StructureProcessor> list) {
-		super(string, list, StructurePool.Projection.RIGID);
+		super(string, list);
+	}
+
+	private LegacySinglePoolElement(Either<Identifier, Structure> either, List<StructureProcessor> list, StructurePool.Projection projection) {
+		super(either, list, projection);
 	}
 
 	@Deprecated
 	public LegacySinglePoolElement(String string) {
 		super(string, ImmutableList.of());
-	}
-
-	public LegacySinglePoolElement(Dynamic<?> dynamic) {
-		super(dynamic);
 	}
 
 	@Override
@@ -33,7 +41,7 @@ public class LegacySinglePoolElement extends SinglePoolElement {
 	}
 
 	@Override
-	public StructurePoolElementType getType() {
+	public StructurePoolElementType<?> getType() {
 		return StructurePoolElementType.LEGACY_SINGLE_POOL_ELEMENT;
 	}
 

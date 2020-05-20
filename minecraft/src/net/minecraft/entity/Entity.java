@@ -90,6 +90,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -176,7 +178,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public int netherPortalCooldown;
 	protected boolean inNetherPortal;
 	protected int netherPortalTime;
-	public DimensionType dimension;
 	protected BlockPos lastNetherPortalPosition;
 	protected Vec3d lastNetherPortalDirectionVector;
 	protected Direction lastNetherPortalDirection;
@@ -198,10 +199,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.pos = Vec3d.ZERO;
 		this.blockPos = BlockPos.ORIGIN;
 		this.updatePosition(0.0, 0.0, 0.0);
-		if (world != null) {
-			this.dimension = world.method_27983();
-		}
-
 		this.dataTracker = new DataTracker(this);
 		this.dataTracker.startTracking(FLAGS, (byte)0);
 		this.dataTracker.startTracking(AIR, this.getMaxAir());
@@ -963,7 +960,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.isTouchingWater()) {
 			return true;
 		} else {
-			double d = this.world.method_27983().method_27998() ? 0.007 : 0.0023333333333333335;
+			double d = this.world.getDimension().hasCeiling() ? 0.007 : 0.0023333333333333335;
 			return this.updateMovementInFluid(FluidTags.LAVA, d);
 		}
 	}
@@ -1339,10 +1336,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 			tag.putShort("Fire", (short)this.fireTicks);
 			tag.putShort("Air", (short)this.getAir());
 			tag.putBoolean("OnGround", this.onGround);
-			tag.putInt("Dimension", this.dimension.getRawId());
 			tag.putBoolean("Invulnerable", this.invulnerable);
 			tag.putInt("PortalCooldown", this.netherPortalCooldown);
-			tag.putUuidNew("UUID", this.getUuid());
+			tag.putUuid("UUID", this.getUuid());
 			Text text = this.getCustomName();
 			if (text != null) {
 				tag.putString("CustomName", Text.Serializer.toJson(text));
@@ -1419,14 +1415,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.fireTicks = tag.getShort("Fire");
 			this.setAir(tag.getShort("Air"));
 			this.onGround = tag.getBoolean("OnGround");
-			if (tag.contains("Dimension")) {
-				this.dimension = DimensionType.byRawId(tag.getInt("Dimension"));
-			}
-
 			this.invulnerable = tag.getBoolean("Invulnerable");
 			this.netherPortalCooldown = tag.getInt("PortalCooldown");
-			if (tag.containsUuidNew("UUID")) {
-				this.uuid = tag.getUuidNew("UUID");
+			if (tag.containsUuid("UUID")) {
+				this.uuid = tag.getUuid("UUID");
 				this.uuidString = this.uuid.toString();
 			}
 
@@ -1749,7 +1741,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 					this.world.getProfiler().push("portal");
 					this.netherPortalTime = i;
 					this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
-					this.changeDimension(this.world.method_27983() == DimensionType.THE_NETHER ? DimensionType.OVERWORLD : DimensionType.THE_NETHER);
+					RegistryKey<DimensionType> registryKey = this.world.getDimension().isNether()
+						? DimensionType.OVERWORLD_REGISTRY_KEY
+						: DimensionType.THE_NETHER_REGISTRY_KEY;
+					this.changeDimension(registryKey);
 					this.world.getProfiler().pop();
 				}
 
@@ -2099,31 +2094,33 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Nullable
-	public Entity changeDimension(DimensionType newDimension) {
+	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
 		if (!this.world.isClient && !this.removed) {
 			this.world.getProfiler().push("changeDimension");
 			MinecraftServer minecraftServer = this.getServer();
-			DimensionType dimensionType = this.dimension;
-			ServerWorld serverWorld = minecraftServer.getWorld(dimensionType);
+			RegistryKey<DimensionType> registryKey = this.world.method_27983();
+			ServerWorld serverWorld = minecraftServer.getWorld(registryKey);
 			ServerWorld serverWorld2 = minecraftServer.getWorld(newDimension);
-			this.dimension = newDimension;
 			this.detach();
 			this.world.getProfiler().push("reposition");
 			Vec3d vec3d = this.getVelocity();
 			float f = 0.0F;
 			BlockPos blockPos;
-			if (dimensionType == DimensionType.THE_END && newDimension == DimensionType.OVERWORLD) {
-				blockPos = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.method_27911());
-			} else if (newDimension == DimensionType.THE_END) {
-				blockPos = serverWorld2.getForcedSpawnPoint();
+			if (registryKey == DimensionType.THE_END_REGISTRY_KEY && newDimension == DimensionType.OVERWORLD_REGISTRY_KEY) {
+				blockPos = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.getSpawnPos());
+			} else if (newDimension == DimensionType.THE_END_REGISTRY_KEY) {
+				blockPos = ServerWorld.field_25144;
 			} else {
 				double d = this.getX();
 				double e = this.getZ();
+				Registry<DimensionType> registry = minecraftServer.method_29174().getRegistry();
+				DimensionType dimensionType = registry.get(registryKey);
+				DimensionType dimensionType2 = registry.get(newDimension);
 				double g = 8.0;
-				if (dimensionType == DimensionType.OVERWORLD && newDimension == DimensionType.THE_NETHER) {
+				if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
 					d /= 8.0;
 					e /= 8.0;
-				} else if (dimensionType == DimensionType.THE_NETHER && newDimension == DimensionType.OVERWORLD) {
+				} else if (dimensionType.isShrunk() && !dimensionType2.isShrunk()) {
 					d *= 8.0;
 					e *= 8.0;
 				}
@@ -2154,6 +2151,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 				entity.refreshPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
 				entity.setVelocity(vec3d);
 				serverWorld2.onDimensionChanged(entity);
+				if (newDimension == DimensionType.THE_END_REGISTRY_KEY) {
+					ServerWorld.method_29200(serverWorld2);
+				}
 			}
 
 			this.removed = true;
@@ -2390,7 +2390,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message) {
+	public void sendSystemMessage(Text message, UUID uUID) {
 	}
 
 	public World getEntityWorld() {
@@ -2568,15 +2568,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return entity instanceof PlayerEntity ? ((PlayerEntity)entity).isMainPlayer() : !this.world.isClient;
 	}
 
-	protected static Vec3d method_24826(double d, double e, float f) {
-		double g = (d + e + 1.0E-5F) / 2.0;
-		float h = -MathHelper.sin(f * (float) (Math.PI / 180.0));
-		float i = MathHelper.cos(f * (float) (Math.PI / 180.0));
-		float j = Math.max(Math.abs(h), Math.abs(i));
-		return new Vec3d((double)h * g / (double)j, 0.0, (double)i * g / (double)j);
+	protected static Vec3d getPassengerDismountOffset(double vehicleWidth, double passengerWidth, float passengerYaw) {
+		double d = (vehicleWidth + passengerWidth + 1.0E-5F) / 2.0;
+		float f = -MathHelper.sin(passengerYaw * (float) (Math.PI / 180.0));
+		float g = MathHelper.cos(passengerYaw * (float) (Math.PI / 180.0));
+		float h = Math.max(Math.abs(f), Math.abs(g));
+		return new Vec3d((double)f * d / (double)h, 0.0, (double)g * d / (double)h);
 	}
 
-	public Vec3d method_24829(LivingEntity livingEntity) {
+	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		return new Vec3d(this.getX(), this.getBoundingBox().maxY, this.getZ());
 	}
 

@@ -5,9 +5,9 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
-import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -59,7 +59,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 			if (!itemStack.isEmpty()) {
 				this.cookingTimes[i]++;
 				if (this.cookingTimes[i] >= this.cookingTotalTimes[i]) {
-					Inventory inventory = new BasicInventory(itemStack);
+					Inventory inventory = new SimpleInventory(itemStack);
 					ItemStack itemStack2 = (ItemStack)this.world
 						.getRecipeManager()
 						.getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, this.world)
@@ -157,7 +157,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {
 		return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
 			? Optional.empty()
-			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(item), this.world);
+			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new SimpleInventory(item), this.world);
 	}
 
 	public boolean addItem(ItemStack item, int integer) {

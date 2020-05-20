@@ -151,12 +151,12 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<ParticleEffect> PARTICLE = new TrackedDataHandler<ParticleEffect>() {
 		public void write(PacketByteBuf packetByteBuf, ParticleEffect particleEffect) {
-			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleEffect>)particleEffect.getType()));
+			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId(particleEffect.getType()));
 			particleEffect.write(packetByteBuf);
 		}
 
 		public ParticleEffect read(PacketByteBuf packetByteBuf) {
-			return this.method_12744(packetByteBuf, Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
+			return this.method_12744(packetByteBuf, (ParticleType<ParticleEffect>)Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
 		}
 
 		private <T extends ParticleEffect> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {

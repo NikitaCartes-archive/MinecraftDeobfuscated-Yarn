@@ -3,11 +3,10 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -22,8 +21,8 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 	private ImmutableMap<BlockState, OctavePerlinNoiseSampler> field_23922 = ImmutableMap.of();
 	private OctavePerlinNoiseSampler field_23923;
 
-	public AbstractNetherSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public AbstractNetherSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
+		super(codec);
 	}
 
 	public void generate(

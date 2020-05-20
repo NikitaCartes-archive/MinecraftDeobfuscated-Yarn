@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -108,10 +108,10 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				}
 
 				if (blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant) {
-					BasicInventory basicInventory = villagerEntity.getInventory();
+					SimpleInventory simpleInventory = villagerEntity.getInventory();
 
-					for (int i = 0; i < basicInventory.size(); i++) {
-						ItemStack itemStack = basicInventory.getStack(i);
+					for (int i = 0; i < simpleInventory.size(); i++) {
+						ItemStack itemStack = simpleInventory.getStack(i);
 						boolean bl = false;
 						if (!itemStack.isEmpty()) {
 							if (itemStack.getItem() == Items.WHEAT_SEEDS) {
@@ -142,7 +142,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 							);
 							itemStack.decrement(1);
 							if (itemStack.isEmpty()) {
-								basicInventory.setStack(i, ItemStack.EMPTY);
+								simpleInventory.setStack(i, ItemStack.EMPTY);
 							}
 							break;
 						}

@@ -76,7 +76,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	protected void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		if (this.target != null) {
-			tag.putUuidNew("Target", this.target.getUuid());
+			tag.putUuid("Target", this.target.getUuid());
 		}
 
 		if (this.direction != null) {
@@ -100,8 +100,8 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 			this.direction = Direction.byId(tag.getInt("Dir"));
 		}
 
-		if (tag.containsUuidNew("Target")) {
-			this.targetUuid = tag.getUuidNew("Target");
+		if (tag.containsUuid("Target")) {
+			this.targetUuid = tag.getUuid("Target");
 		}
 	}
 

@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
 import com.mojang.datafixers.DataFixUtils;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.util.Set;
 import net.minecraft.datafixer.TypeReferences;
 
@@ -47,12 +47,12 @@ public class WallPropertyFix extends DataFix {
 
 	private static <T> Dynamic<T> updateWallValueReference(Dynamic<T> dynamic, String string) {
 		return dynamic.update(
-			string, dynamicx -> DataFixUtils.orElse(dynamicx.asString().map(WallPropertyFix::booleanToWallType).map(dynamicx::createString), dynamicx)
+			string, dynamicx -> DataFixUtils.orElse(dynamicx.asString().result().map(WallPropertyFix::booleanToWallType).map(dynamicx::createString), dynamicx)
 		);
 	}
 
 	private static <T> Dynamic<T> updateWallProperties(Dynamic<T> dynamic) {
-		boolean bl = dynamic.get("Name").asString().filter(TARGET_BLOCK_IDS::contains).isPresent();
+		boolean bl = dynamic.get("Name").asString().result().filter(TARGET_BLOCK_IDS::contains).isPresent();
 		return !bl ? dynamic : dynamic.update("Properties", dynamicx -> {
 			Dynamic<?> dynamic2 = updateWallValueReference(dynamicx, "east");
 			dynamic2 = updateWallValueReference(dynamic2, "west");

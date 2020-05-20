@@ -1,36 +1,21 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class RandomBooleanFeatureConfig implements FeatureConfig {
+	public static final Codec<RandomBooleanFeatureConfig> field_24900 = RecordCodecBuilder.create(
+		instance -> instance.group(
+					ConfiguredFeature.field_24833.fieldOf("feature_true").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureTrue),
+					ConfiguredFeature.field_24833.fieldOf("feature_false").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureFalse)
+				)
+				.apply(instance, RandomBooleanFeatureConfig::new)
+	);
 	public final ConfiguredFeature<?, ?> featureTrue;
 	public final ConfiguredFeature<?, ?> featureFalse;
 
 	public RandomBooleanFeatureConfig(ConfiguredFeature<?, ?> featureTrue, ConfiguredFeature<?, ?> featureFalse) {
 		this.featureTrue = featureTrue;
 		this.featureFalse = featureFalse;
-	}
-
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("feature_true"),
-					this.featureTrue.serialize(ops).getValue(),
-					ops.createString("feature_false"),
-					this.featureFalse.serialize(ops).getValue()
-				)
-			)
-		);
-	}
-
-	public static <T> RandomBooleanFeatureConfig deserialize(Dynamic<T> dynamic) {
-		ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(dynamic.get("feature_true").orElseEmptyMap());
-		ConfiguredFeature<?, ?> configuredFeature2 = ConfiguredFeature.deserialize(dynamic.get("feature_false").orElseEmptyMap());
-		return new RandomBooleanFeatureConfig(configuredFeature, configuredFeature2);
 	}
 }

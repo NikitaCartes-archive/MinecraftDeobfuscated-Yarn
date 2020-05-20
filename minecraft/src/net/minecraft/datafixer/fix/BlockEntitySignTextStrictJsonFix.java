@@ -8,9 +8,9 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.DSL;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
 import java.lang.reflect.Type;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.text.LiteralText;
@@ -48,8 +48,8 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 		super(outputSchema, changesType, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
 	}
 
-	private Dynamic<?> fix(Dynamic<?> tag, String lineName) {
-		String string = tag.get(lineName).asString("");
+	private Dynamic<?> fix(Dynamic<?> dynamic, String lineName) {
+		String string = dynamic.get(lineName).asString("");
 		Text text = null;
 		if (!"null".equals(string) && !StringUtils.isEmpty(string)) {
 			if (string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
@@ -85,7 +85,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 			text = LiteralText.EMPTY;
 		}
 
-		return tag.set(lineName, tag.createString(Text.Serializer.toJson(text)));
+		return dynamic.set(lineName, dynamic.createString(Text.Serializer.toJson(text)));
 	}
 
 	@Override

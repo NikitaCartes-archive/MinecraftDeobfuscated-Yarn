@@ -168,6 +168,11 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		return IntTag.of(j);
 	}
 
+	@Override
+	public byte getElementType() {
+		return 3;
+	}
+
 	public void clear() {
 		this.value = new int[0];
 	}

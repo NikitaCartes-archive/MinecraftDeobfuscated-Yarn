@@ -12,7 +12,6 @@ import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5219;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.NetworkEncryptionUtils;
@@ -27,6 +26,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +43,7 @@ public class IntegratedServer extends MinecraftServer {
 	public IntegratedServer(
 		MinecraftClient client,
 		LevelStorage.Session session,
-		class_5219 arg,
+		SaveProperties saveProperties,
 		MinecraftSessionService minecraftSessionService,
 		GameProfileRepository gameProfileRepository,
 		UserCache userCache,
@@ -51,7 +51,7 @@ public class IntegratedServer extends MinecraftServer {
 	) {
 		super(
 			session,
-			arg,
+			saveProperties,
 			client.getNetworkProxy(),
 			client.getDataFixer(),
 			new CommandManager(false),
@@ -63,7 +63,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setServerName(client.getSession().getUsername());
 		this.setDemo(client.isDemo());
 		this.setWorldHeight(256);
-		this.setPlayerManager(new IntegratedPlayerManager(this, this.field_24371));
+		this.setPlayerManager(new IntegratedPlayerManager(this, this.field_25132, this.field_24371));
 		this.client = client;
 	}
 

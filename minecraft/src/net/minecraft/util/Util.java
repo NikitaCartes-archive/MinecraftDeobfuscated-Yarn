@@ -4,6 +4,9 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.mojang.datafixers.DataFixUtils;
+import com.mojang.datafixers.DSL.TypeReference;
+import com.mojang.datafixers.types.Type;
+import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Hash.Strategy;
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +19,14 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -37,12 +42,14 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.MathHelper;
@@ -56,6 +63,7 @@ public class Util {
 	private static final ExecutorService SERVER_WORKER_EXECUTOR = method_28122("Main");
 	private static final ExecutorService field_24477 = method_27959();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
+	public static final UUID field_25140 = new UUID(0L, 0L);
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static <K, V> Collector<Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
@@ -173,6 +181,27 @@ public class Util {
 		}
 
 		LOGGER.error(String.format("Caught exception in thread %s", thread), throwable);
+	}
+
+	@Nullable
+	public static Type<?> method_29187(TypeReference typeReference, String string) {
+		return !SharedConstants.field_25135 ? null : method_29191(typeReference, string);
+	}
+
+	@Nullable
+	private static Type<?> method_29191(TypeReference typeReference, String string) {
+		Type<?> type = null;
+
+		try {
+			type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(typeReference, string);
+		} catch (IllegalArgumentException var4) {
+			LOGGER.error("No data fixer registered for {}", string);
+			if (SharedConstants.isDevelopment) {
+				throw var4;
+			}
+		}
+
+		return type;
 	}
 
 	public static Util.OperatingSystem getOperatingSystem() {
@@ -361,6 +390,20 @@ public class Util {
 		}
 
 		return cursor;
+	}
+
+	public static Consumer<String> method_29188(String string, Consumer<String> consumer) {
+		return string2 -> consumer.accept(string + string2);
+	}
+
+	public static DataResult<int[]> method_29190(IntStream intStream, int i) {
+		int[] is = intStream.limit((long)(i + 1)).toArray();
+		if (is.length != i) {
+			String string = "Input is not a list of " + i + " ints";
+			return is.length >= i ? DataResult.error(string, Arrays.copyOf(is, i)) : DataResult.error(string);
+		} else {
+			return DataResult.success(is);
+		}
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

@@ -9,6 +9,7 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 
@@ -39,7 +40,7 @@ public class GameModeCommand {
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
 		} else {
 			if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-				player.sendSystemMessage(new TranslatableText("gameMode.changed", text));
+				player.sendSystemMessage(new TranslatableText("gameMode.changed", text), Util.field_25140);
 			}
 
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.other", player.getDisplayName(), text), true);

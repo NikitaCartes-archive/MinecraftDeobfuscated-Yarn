@@ -18,10 +18,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_5218;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.ChatUtil;
+import net.minecraft.util.WorldSavePath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -426,7 +426,7 @@ public class ServerConfigHandler {
 	}
 
 	private static File getLevelPlayersFolder(MinecraftServer server) {
-		return server.method_27050(class_5218.field_24183).toFile();
+		return server.method_27050(WorldSavePath.PLAYERS).toFile();
 	}
 
 	private static void markFileConverted(File file) {

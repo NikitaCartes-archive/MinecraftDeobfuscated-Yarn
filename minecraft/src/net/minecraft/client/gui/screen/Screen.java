@@ -21,6 +21,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
@@ -124,8 +125,6 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 
 	public void renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y) {
 		if (!lines.isEmpty()) {
-			RenderSystem.disableRescaleNormal();
-			RenderSystem.disableDepthTest();
 			int i = 0;
 
 			for (Text text : lines) {
@@ -150,31 +149,45 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 				l = this.height - m - 6;
 			}
 
-			this.setZOffset(300);
+			matrices.push();
 			this.itemRenderer.zOffset = 300.0F;
 			int n = -267386864;
-			this.fillGradient(matrices, k - 3, l - 4, k + i + 3, l - 3, -267386864, -267386864);
-			this.fillGradient(matrices, k - 3, l + m + 3, k + i + 3, l + m + 4, -267386864, -267386864);
-			this.fillGradient(matrices, k - 3, l - 3, k + i + 3, l + m + 3, -267386864, -267386864);
-			this.fillGradient(matrices, k - 4, l - 3, k - 3, l + m + 3, -267386864, -267386864);
-			this.fillGradient(matrices, k + i + 3, l - 3, k + i + 4, l + m + 3, -267386864, -267386864);
 			int o = 1347420415;
 			int p = 1344798847;
-			this.fillGradient(matrices, k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 1347420415, 1344798847);
-			this.fillGradient(matrices, k + i + 2, l - 3 + 1, k + i + 3, l + m + 3 - 1, 1347420415, 1344798847);
-			this.fillGradient(matrices, k - 3, l - 3, k + i + 3, l - 3 + 1, 1347420415, 1347420415);
-			this.fillGradient(matrices, k - 3, l + m + 2, k + i + 3, l + m + 3, 1344798847, 1344798847);
+			int q = 300;
+			Tessellator tessellator = Tessellator.getInstance();
+			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+			Matrix4f matrix4f = matrices.peek().getModel();
+			fillGradient(matrix4f, bufferBuilder, k - 3, l - 4, k + i + 3, l - 3, 300, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 3, k + i + 3, l + m + 4, 300, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + i + 3, l + m + 3, 300, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k - 4, l - 3, k - 3, l + m + 3, 300, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k + i + 3, l - 3, k + i + 4, l + m + 3, 300, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 300, 1347420415, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, k + i + 2, l - 3 + 1, k + i + 3, l + m + 3 - 1, 300, 1347420415, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + i + 3, l - 3 + 1, 300, 1347420415, 1347420415);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 2, k + i + 3, l + m + 3, 300, 1344798847, 1344798847);
+			RenderSystem.enableDepthTest();
+			RenderSystem.disableTexture();
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+			RenderSystem.shadeModel(7425);
+			bufferBuilder.end();
+			BufferRenderer.draw(bufferBuilder);
+			RenderSystem.shadeModel(7424);
+			RenderSystem.disableBlend();
+			RenderSystem.enableTexture();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 			matrices.translate(0.0, 0.0, (double)this.itemRenderer.zOffset);
-			Matrix4f matrix4f = matrices.peek().getModel();
 
-			for (int q = 0; q < lines.size(); q++) {
-				Text text2 = (Text)lines.get(q);
+			for (int r = 0; r < lines.size(); r++) {
+				Text text2 = (Text)lines.get(r);
 				if (text2 != null) {
 					this.textRenderer.draw(text2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
 				}
 
-				if (q == 0) {
+				if (r == 0) {
 					l += 2;
 				}
 
@@ -182,10 +195,8 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 			}
 
 			immediate.draw();
-			this.setZOffset(0);
+			matrices.pop();
 			this.itemRenderer.zOffset = 0.0F;
-			RenderSystem.enableDepthTest();
-			RenderSystem.enableRescaleNormal();
 		}
 	}
 

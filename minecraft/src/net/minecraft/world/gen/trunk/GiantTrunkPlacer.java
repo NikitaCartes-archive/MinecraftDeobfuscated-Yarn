@@ -1,7 +1,8 @@
 package net.minecraft.world.gen.trunk;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.Dynamic;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -12,16 +13,15 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class GiantTrunkPlacer extends TrunkPlacer {
+	public static final Codec<GiantTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> method_28904(instance).apply(instance, GiantTrunkPlacer::new));
+
 	public GiantTrunkPlacer(int i, int j, int k) {
-		this(i, j, k, TrunkPlacerType.GIANT_TRUNK_PLACER);
+		super(i, j, k);
 	}
 
-	public GiantTrunkPlacer(int i, int j, int k, TrunkPlacerType<? extends GiantTrunkPlacer> trunkPlacerType) {
-		super(i, j, k, trunkPlacerType);
-	}
-
-	public <T> GiantTrunkPlacer(Dynamic<T> dynamic) {
-		this(dynamic.get("base_height").asInt(0), dynamic.get("height_rand_a").asInt(0), dynamic.get("height_rand_b").asInt(0));
+	@Override
+	protected TrunkPlacerType<?> method_28903() {
+		return TrunkPlacerType.GIANT_TRUNK_PLACER;
 	}
 
 	@Override

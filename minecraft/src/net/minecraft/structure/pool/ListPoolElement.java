@@ -1,23 +1,26 @@
 package net.minecraft.structure.pool;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ListPoolElement extends StructurePoolElement {
+	public static final Codec<ListPoolElement> field_24950 = RecordCodecBuilder.create(
+		instance -> instance.group(
+					StructurePoolElement.field_24953.listOf().fieldOf("elements").forGetter(listPoolElement -> listPoolElement.elements), method_28883()
+				)
+				.apply(instance, ListPoolElement::new)
+	);
 	private final List<StructurePoolElement> elements;
 
 	@Deprecated
@@ -32,17 +35,6 @@ public class ListPoolElement extends StructurePoolElement {
 		} else {
 			this.elements = list;
 			this.setAllElementsProjection(projection);
-		}
-	}
-
-	public ListPoolElement(Dynamic<?> dynamic) {
-		super(dynamic);
-		List<StructurePoolElement> list = dynamic.get("elements")
-			.asList(dynamicx -> DynamicDeserializer.deserialize(dynamicx, Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE));
-		if (list.isEmpty()) {
-			throw new IllegalArgumentException("Elements are empty");
-		} else {
-			this.elements = list;
 		}
 	}
 
@@ -88,7 +80,7 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public StructurePoolElementType getType() {
+	public StructurePoolElementType<?> getType() {
 		return StructurePoolElementType.LIST_POOL_ELEMENT;
 	}
 
@@ -97,12 +89,6 @@ public class ListPoolElement extends StructurePoolElement {
 		super.setProjection(projection);
 		this.setAllElementsProjection(projection);
 		return this;
-	}
-
-	@Override
-	public <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
-		T object = dynamicOps.createList(this.elements.stream().map(structurePoolElement -> structurePoolElement.toDynamic(dynamicOps).getValue()));
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("elements"), object)));
 	}
 
 	public String toString() {

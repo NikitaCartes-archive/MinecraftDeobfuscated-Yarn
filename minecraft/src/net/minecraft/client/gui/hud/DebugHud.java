@@ -61,7 +61,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
@@ -232,7 +231,7 @@ public class DebugHud extends DrawableHelper {
 				list.add(string3);
 			}
 
-			list.add(DimensionType.getId(this.client.world.method_27983()).toString() + " FC: " + Integer.toString(longSet.size()));
+			list.add(this.client.world.method_27983().getValue() + " FC: " + longSet.size());
 			list.add("");
 			list.add(
 				String.format(

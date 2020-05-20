@@ -78,29 +78,29 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
-		this.textRenderer.draw(matrixStack, this.title, 60.0F, 6.0F, 4210752);
-		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
-		int k = this.handler.getLevelCost();
-		if (k > 0) {
-			int l = 8453920;
+		this.textRenderer.draw(matrices, this.title, 60.0F, 6.0F, 4210752);
+		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
+		int i = this.handler.getLevelCost();
+		if (i > 0) {
+			int j = 8453920;
 			boolean bl = true;
-			String string = I18n.translate("container.repair.cost", k);
-			if (k >= 40 && !this.client.player.abilities.creativeMode) {
+			String string = I18n.translate("container.repair.cost", i);
+			if (i >= 40 && !this.client.player.abilities.creativeMode) {
 				string = I18n.translate("container.repair.expensive");
-				l = 16736352;
+				j = 16736352;
 			} else if (!this.handler.getSlot(2).hasStack()) {
 				bl = false;
 			} else if (!this.handler.getSlot(2).canTakeItems(this.playerInventory.player)) {
-				l = 16736352;
+				j = 16736352;
 			}
 
 			if (bl) {
-				int m = this.backgroundWidth - 8 - this.textRenderer.getWidth(string) - 2;
-				int n = 69;
-				fill(matrixStack, m - 2, 67, this.backgroundWidth - 8, 79, 1325400064);
-				this.textRenderer.drawWithShadow(matrixStack, string, (float)m, 69.0F, l);
+				int k = this.backgroundWidth - 8 - this.textRenderer.getWidth(string) - 2;
+				int l = 69;
+				fill(matrices, k - 2, 67, this.backgroundWidth - 8, 79, 1325400064);
+				this.textRenderer.drawWithShadow(matrices, string, (float)k, 69.0F, j);
 			}
 		}
 	}

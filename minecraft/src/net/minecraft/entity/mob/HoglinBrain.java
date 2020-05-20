@@ -2,9 +2,7 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.util.Pair;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.entity.EntityType;
@@ -13,8 +11,6 @@ import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
 import net.minecraft.entity.ai.brain.task.ConditionalTask;
 import net.minecraft.entity.ai.brain.task.FollowMobTask;
@@ -42,12 +38,7 @@ import net.minecraft.util.math.IntRange;
 public class HoglinBrain {
 	private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
 
-	protected static Brain<?> create(Dynamic<?> dynamic) {
-		Brain<HoglinEntity> brain = new Brain<>(
-			(Collection<MemoryModuleType<?>>)HoglinEntity.MEMORY_MODULE_TYPES,
-			(Collection<SensorType<? extends Sensor<? super HoglinEntity>>>)HoglinEntity.SENSOR_TYPES,
-			dynamic
-		);
+	protected static Brain<?> create(Brain<HoglinEntity> brain) {
 		addCoreTasks(brain);
 		addIdleTasks(brain);
 		addFightTasks(brain);

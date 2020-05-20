@@ -1,10 +1,17 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class OceanRuinFeatureConfig implements FeatureConfig {
+	public static final Codec<OceanRuinFeatureConfig> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					OceanRuinFeature.BiomeType.field_24990.fieldOf("biome_temp").forGetter(oceanRuinFeatureConfig -> oceanRuinFeatureConfig.biomeType),
+					Codec.FLOAT.fieldOf("large_probability").forGetter(oceanRuinFeatureConfig -> oceanRuinFeatureConfig.largeProbability),
+					Codec.FLOAT.fieldOf("cluster_probability").forGetter(oceanRuinFeatureConfig -> oceanRuinFeatureConfig.clusterProbability)
+				)
+				.apply(instance, OceanRuinFeatureConfig::new)
+	);
 	public final OceanRuinFeature.BiomeType biomeType;
 	public final float largeProbability;
 	public final float clusterProbability;
@@ -13,29 +20,5 @@ public class OceanRuinFeatureConfig implements FeatureConfig {
 		this.biomeType = biomeType;
 		this.largeProbability = largeProbability;
 		this.clusterProbability = clusterProbability;
-	}
-
-	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(
-			ops,
-			ops.createMap(
-				ImmutableMap.of(
-					ops.createString("biome_temp"),
-					ops.createString(this.biomeType.getName()),
-					ops.createString("large_probability"),
-					ops.createFloat(this.largeProbability),
-					ops.createString("cluster_probability"),
-					ops.createFloat(this.clusterProbability)
-				)
-			)
-		);
-	}
-
-	public static <T> OceanRuinFeatureConfig deserialize(Dynamic<T> dynamic) {
-		OceanRuinFeature.BiomeType biomeType = OceanRuinFeature.BiomeType.byName(dynamic.get("biome_temp").asString(""));
-		float f = dynamic.get("large_probability").asFloat(0.0F);
-		float g = dynamic.get("cluster_probability").asFloat(0.0F);
-		return new OceanRuinFeatureConfig(biomeType, f, g);
 	}
 }

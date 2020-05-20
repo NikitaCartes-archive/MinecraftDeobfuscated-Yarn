@@ -9,12 +9,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.GameModeSwitcherScreen;
 import net.minecraft.client.gui.screen.options.AccessibilityScreen;
 import net.minecraft.client.gui.screen.options.ChatOptionsScreen;
 import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.util.Clipboard;
@@ -38,7 +39,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class Keyboard {
@@ -95,22 +95,27 @@ public class Keyboard {
 				case 67:
 					if (this.client.player.getReducedDebugInfo()) {
 						return false;
-					}
+					} else {
+						ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
+						if (clientPlayNetworkHandler == null) {
+							return false;
+						}
 
-					this.debugWarn("debug.copy_location.message");
-					this.setClipboard(
-						String.format(
-							Locale.ROOT,
-							"/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f",
-							DimensionType.getId(this.client.player.world.method_27983()),
-							this.client.player.getX(),
-							this.client.player.getY(),
-							this.client.player.getZ(),
-							this.client.player.yaw,
-							this.client.player.pitch
-						)
-					);
-					return true;
+						this.debugWarn("debug.copy_location.message");
+						this.setClipboard(
+							String.format(
+								Locale.ROOT,
+								"/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f",
+								this.client.player.world.method_27983().getValue(),
+								this.client.player.getX(),
+								this.client.player.getY(),
+								this.client.player.getZ(),
+								this.client.player.yaw,
+								this.client.player.pitch
+							)
+						);
+						return true;
+					}
 				case 68:
 					if (this.client.inGameHud != null) {
 						this.client.inGameHud.getChatHud().clear(false);
@@ -183,7 +188,7 @@ public class Keyboard {
 					if (!this.client.player.hasPermissionLevel(2)) {
 						this.debugWarn("debug.gamemodes.error");
 					} else {
-						this.client.openScreen(new GameModeSwitcherScreen());
+						this.client.openScreen(new GameModeSelectionScreen());
 					}
 
 					return true;

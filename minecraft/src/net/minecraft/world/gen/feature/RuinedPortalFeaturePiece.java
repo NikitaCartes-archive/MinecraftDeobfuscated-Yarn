@@ -1,9 +1,9 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +43,11 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
+	private static final Logger field_24992 = LogManager.getLogger();
 	private final Identifier template;
 	private final BlockRotation rotation;
 	private final BlockMirror mirror;
@@ -77,7 +80,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		this.rotation = BlockRotation.valueOf(tag.getString("Rotation"));
 		this.mirror = BlockMirror.valueOf(tag.getString("Mirror"));
 		this.verticalPlacement = RuinedPortalFeaturePiece.VerticalPlacement.getFromId(tag.getString("VerticalPlacement"));
-		this.properties = new RuinedPortalFeaturePiece.Properties(new Dynamic<>(NbtOps.INSTANCE, tag.get("Properties")));
+		this.properties = RuinedPortalFeaturePiece.Properties.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, tag.get("Properties"))).getOrThrow(true, field_24992::error);
 		Structure structure = manager.getStructureOrBlank(this.template);
 		this.processProperties(structure, new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2));
 	}
@@ -89,7 +92,10 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		tag.putString("Rotation", this.rotation.name());
 		tag.putString("Mirror", this.mirror.name());
 		tag.putString("VerticalPlacement", this.verticalPlacement.getId());
-		tag.put("Properties", this.properties.serialize(NbtOps.INSTANCE));
+		RuinedPortalFeaturePiece.Properties.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.properties)
+			.resultOrPartial(field_24992::error)
+			.ifPresent(tagx -> tag.put("Properties", tagx));
 	}
 
 	private void processProperties(Structure structure, BlockPos center) {
@@ -111,7 +117,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 			.addProcessor(new RuleStructureProcessor(list))
 			.addProcessor(new BlockAgeStructureProcessor(this.properties.mossiness));
 		if (this.properties.replaceWithBlackstone) {
-			structurePlacementData.addProcessor(new BlackstoneReplacementStructureProcessor());
+			structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);
 		}
 
 		this.setStructureData(structure, this.pos, structurePlacementData);
@@ -275,6 +281,17 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 	}
 
 	public static class Properties {
+		public static final Codec<RuinedPortalFeaturePiece.Properties> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codec.BOOL.fieldOf("cold").forGetter(properties -> properties.cold),
+						Codec.FLOAT.fieldOf("mossiness").forGetter(properties -> properties.mossiness),
+						Codec.BOOL.fieldOf("air_pocket").forGetter(properties -> properties.airPocket),
+						Codec.BOOL.fieldOf("overgrown").forGetter(properties -> properties.overgrown),
+						Codec.BOOL.fieldOf("vines").forGetter(properties -> properties.vines),
+						Codec.BOOL.fieldOf("replace_with_blackstone").forGetter(properties -> properties.replaceWithBlackstone)
+					)
+					.apply(instance, RuinedPortalFeaturePiece.Properties::new)
+		);
 		public boolean cold;
 		public float mossiness = 0.2F;
 		public boolean airPocket;
@@ -285,26 +302,13 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		public Properties() {
 		}
 
-		public <T> Properties(Dynamic<T> dynamic) {
-			this.cold = dynamic.get("Cold").asBoolean(false);
-			this.mossiness = dynamic.get("Mossiness").asFloat(0.2F);
-			this.airPocket = dynamic.get("AirPocket").asBoolean(false);
-			this.overgrown = dynamic.get("Overgrown").asBoolean(false);
-			this.vines = dynamic.get("Vines").asBoolean(false);
-			this.replaceWithBlackstone = dynamic.get("ReplaceWithBlackstone").asBoolean(false);
-		}
-
-		public <T> T serialize(DynamicOps<T> ops) {
-			return ops.createMap(
-				ImmutableMap.<T, T>builder()
-					.put(ops.createString("Cold"), ops.createBoolean(this.cold))
-					.put(ops.createString("Mossiness"), ops.createFloat(this.mossiness))
-					.put(ops.createString("AirPocket"), ops.createBoolean(this.airPocket))
-					.put(ops.createString("Overgrown"), ops.createBoolean(this.overgrown))
-					.put(ops.createString("Vines"), ops.createBoolean(this.vines))
-					.put(ops.createString("ReplaceWithBlackstone"), ops.createBoolean(this.replaceWithBlackstone))
-					.build()
-			);
+		public <T> Properties(boolean bl, float f, boolean bl2, boolean bl3, boolean bl4, boolean bl5) {
+			this.cold = bl;
+			this.mossiness = f;
+			this.airPocket = bl2;
+			this.overgrown = bl3;
+			this.vines = bl4;
+			this.replaceWithBlackstone = bl5;
 		}
 	}
 

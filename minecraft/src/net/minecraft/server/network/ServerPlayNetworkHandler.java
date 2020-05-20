@@ -436,9 +436,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
-			this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled"));
+			this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled"), Util.field_25140);
 		} else if (!this.player.isCreativeLevelTwoOp()) {
-			this.player.sendSystemMessage(new TranslatableText("advMode.notAllowed"));
+			this.player.sendSystemMessage(new TranslatableText("advMode.notAllowed"), Util.field_25140);
 		} else {
 			CommandBlockExecutor commandBlockExecutor = null;
 			CommandBlockBlockEntity commandBlockBlockEntity = null;
@@ -493,7 +493,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 				commandBlockExecutor.markDirty();
 				if (!ChatUtil.isEmpty(string)) {
-					this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", string));
+					this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", string), Util.field_25140);
 				}
 			}
 		}
@@ -503,9 +503,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
-			this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled"));
+			this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled"), Util.field_25140);
 		} else if (!this.player.isCreativeLevelTwoOp()) {
-			this.player.sendSystemMessage(new TranslatableText("advMode.notAllowed"));
+			this.player.sendSystemMessage(new TranslatableText("advMode.notAllowed"), Util.field_25140);
 		} else {
 			CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
 			if (commandBlockExecutor != null) {
@@ -516,7 +516,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 
 				commandBlockExecutor.markDirty();
-				this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", packet.getCommand()));
+				this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", packet.getCommand()), Util.field_25140);
 			}
 		}
 	}
@@ -634,7 +634,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof JigsawBlockEntity) {
 				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
-				jigsawBlockEntity.generate(this.server.getWorld(this.player.dimension), packet.getMaxDepth());
+				jigsawBlockEntity.generate(this.server.getWorld(this.player.world.method_27983()), packet.getMaxDepth());
 			}
 		}
 	}
@@ -715,7 +715,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		if (validatePlayerMove(packet)) {
 			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_player_movement"));
 		} else {
-			ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
+			ServerWorld serverWorld = this.player.getServerWorld();
 			if (!this.player.notInAnyWorld) {
 				if (this.ticks == 0) {
 					this.syncWithPlayerPosition();
@@ -907,7 +907,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
+		ServerWorld serverWorld = this.player.getServerWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		BlockHitResult blockHitResult = packet.getHitY();
@@ -924,14 +924,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					&& blockPos.getY() >= this.server.getWorldHeight() - 1
 					&& method_27913(this.player, itemStack)) {
 					Text text = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
-					this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO));
+					this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO, Util.field_25140));
 				} else if (actionResult.shouldSwingHand()) {
 					this.player.swingHand(hand, true);
 				}
 			}
 		} else {
 			Text text2 = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
-			this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text2, MessageType.GAME_INFO));
+			this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text2, MessageType.GAME_INFO, Util.field_25140));
 		}
 
 		this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
@@ -941,7 +941,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onPlayerInteractItem(PlayerInteractItemC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
+		ServerWorld serverWorld = this.player.getServerWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		this.player.updateLastActionTime();
@@ -981,7 +981,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onDisconnected(Text reason) {
 		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), reason.getString());
 		this.server.forcePlayerSampleUpdate();
-		this.server.getPlayerManager().sendToAll(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW));
+		this.server
+			.getPlayerManager()
+			.broadcastChatMessage(
+				new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.field_25140
+			);
 		this.player.onDisconnect();
 		this.server.getPlayerManager().remove(this.player);
 		if (this.isHost()) {
@@ -1036,11 +1040,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onGameMessage(ChatMessageC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.cannotSend").formatted(Formatting.RED)));
+			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.cannotSend").formatted(Formatting.RED), MessageType.SYSTEM, Util.field_25140));
 		} else {
 			this.player.updateLastActionTime();
-			String string = packet.getChatMessage();
-			string = StringUtils.normalizeSpace(string);
+			String string = StringUtils.normalizeSpace(packet.getChatMessage());
 
 			for (int i = 0; i < string.length(); i++) {
 				if (!SharedConstants.isValidChar(string.charAt(i))) {
@@ -1053,7 +1056,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				this.executeCommand(string);
 			} else {
 				Text text = new TranslatableText("chat.type.text", this.player.getDisplayName(), string);
-				this.server.getPlayerManager().broadcastChatMessage(text, false);
+				this.server.getPlayerManager().broadcastChatMessage(text, MessageType.CHAT, this.player.getUuid());
 			}
 
 			this.messageCooldown += 20;
@@ -1130,17 +1133,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket rpacket) {
 		NetworkThreadUtils.forceMainThread(rpacket, this, this.player.getServerWorld());
-		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
+		ServerWorld serverWorld = this.player.getServerWorld();
 		Entity entity = rpacket.getEntity(serverWorld);
 		this.player.updateLastActionTime();
 		if (entity != null) {
-			boolean bl = this.player.canSee(entity);
 			double d = 36.0;
-			if (!bl) {
-				d = 9.0;
-			}
-
-			if (this.player.squaredDistanceTo(entity) < d) {
+			if (this.player.squaredDistanceTo(entity) < 36.0) {
 				if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT) {
 					Hand hand = rpacket.getHand();
 					this.player.interact(entity, hand);
@@ -1173,7 +1171,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				if (this.player.notInAnyWorld) {
 					this.player.notInAnyWorld = false;
 					this.player = this.server.getPlayerManager().respawnPlayer(this.player, true);
-					Criteria.CHANGED_DIMENSION.trigger(this.player, DimensionType.THE_END, DimensionType.OVERWORLD);
+					Criteria.CHANGED_DIMENSION.trigger(this.player, DimensionType.THE_END_REGISTRY_KEY, DimensionType.OVERWORLD_REGISTRY_KEY);
 				} else {
 					if (this.player.getHealth() > 0.0F) {
 						return;
@@ -1315,7 +1313,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onSignUpdate(UpdateSignC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		ServerWorld serverWorld = this.server.getWorld(this.player.dimension);
+		ServerWorld serverWorld = this.player.getServerWorld();
 		BlockPos blockPos = packet.getPos();
 		if (serverWorld.isChunkLoaded(blockPos)) {
 			BlockState blockState = serverWorld.getBlockState(blockPos);

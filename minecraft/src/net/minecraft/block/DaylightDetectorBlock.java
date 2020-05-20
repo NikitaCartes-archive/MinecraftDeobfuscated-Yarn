@@ -44,7 +44,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	public static void updateState(BlockState state, World world, BlockPos pos) {
-		if (world.method_27983().hasSkyLight()) {
+		if (world.getDimension().hasSkyLight()) {
 			int i = world.getLightLevel(LightType.SKY, pos) - world.getAmbientDarkness();
 			float f = world.getSkyAngleRadians(1.0F);
 			boolean bl = (Boolean)state.get(INVERTED);

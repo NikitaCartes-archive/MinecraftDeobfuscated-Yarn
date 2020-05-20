@@ -5,13 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import javax.annotation.Nullable;
-import net.minecraft.class_5218;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Util;
+import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ public class WorldSaveHandler {
 
 	public WorldSaveHandler(LevelStorage.Session session, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
-		this.playerDataDir = session.getDirectory(class_5218.field_24182).toFile();
+		this.playerDataDir = session.getDirectory(WorldSavePath.PLAYERDATA).toFile();
 		this.playerDataDir.mkdirs();
 	}
 

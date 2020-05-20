@@ -1,6 +1,7 @@
 package net.minecraft.client.network;
 
 import com.mojang.authlib.GameProfile;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -95,7 +96,10 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message) {
-		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message);
+	public void sendSystemMessage(Text message, UUID uUID) {
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		if (!minecraftClient.method_29042(uUID)) {
+			minecraftClient.inGameHud.getChatHud().addMessage(message);
+		}
 	}
 }

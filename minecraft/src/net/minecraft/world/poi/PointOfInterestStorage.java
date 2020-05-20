@@ -35,7 +35,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	private final LongSet preloadedChunks = new LongOpenHashSet();
 
 	public PointOfInterestStorage(File file, DataFixer dataFixer, boolean bl) {
-		super(file, PointOfInterestSet::serialize, PointOfInterestSet::new, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl);
+		super(file, PointOfInterestSet::method_28364, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK, bl);
 		this.pointOfInterestDistanceTracker = new PointOfInterestStorage.PointOfInterestDistanceTracker();
 	}
 

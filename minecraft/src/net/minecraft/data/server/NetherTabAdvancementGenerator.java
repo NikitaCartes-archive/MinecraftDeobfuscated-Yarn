@@ -41,7 +41,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final Biome[] NETHER_BIOMES = new Biome[]{
@@ -60,7 +60,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				false,
 				false
 			)
-			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_NETHER))
+			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_NETHER_REGISTRY_KEY))
 			.build(consumer, "nether/root");
 		Advancement advancement2 = Advancement.Task.create()
 			.parent(advancement)
@@ -95,7 +95,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.NETHER_BRIDGE)))
+			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.FORTRESS)))
 			.build(consumer, "nether/find_fortress");
 		Advancement.Task.create()
 			.parent(advancement)
@@ -128,7 +128,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.dimension(DimensionType.OVERWORLD))
+					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.dimension(DimensionType.OVERWORLD_REGISTRY_KEY))
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");
@@ -432,7 +432,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.BASTION_REMNANT)))
+			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.BASTION_REMNANT)))
 			.build(consumer, "nether/find_bastion");
 		Advancement.Task.create()
 			.parent(advancement13)

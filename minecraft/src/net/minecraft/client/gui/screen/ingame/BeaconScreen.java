@@ -124,31 +124,31 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-		this.drawCenteredString(matrixStack, this.textRenderer, I18n.translate("block.minecraft.beacon.primary"), 62, 10, 14737632);
-		this.drawCenteredString(matrixStack, this.textRenderer, I18n.translate("block.minecraft.beacon.secondary"), 169, 10, 14737632);
+	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("block.minecraft.beacon.primary"), 62, 10, 14737632);
+		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("block.minecraft.beacon.secondary"), 169, 10, 14737632);
 
 		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
 			if (abstractButtonWidget.isHovered()) {
-				abstractButtonWidget.renderToolTip(matrixStack, i - this.x, j - this.y);
+				abstractButtonWidget.renderToolTip(matrices, mouseX - this.x, mouseY - this.y);
 				break;
 			}
 		}
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int j = (this.width - this.backgroundWidth) / 2;
-		int k = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		int i = (this.width - this.backgroundWidth) / 2;
+		int j = (this.height - this.backgroundHeight) / 2;
+		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		this.itemRenderer.zOffset = 100.0F;
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.NETHERITE_INGOT), j + 20, k + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), j + 41, k + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.DIAMOND), j + 41 + 22, k + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.GOLD_INGOT), j + 42 + 44, k + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.IRON_INGOT), j + 42 + 66, k + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), i + 41, j + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
@@ -268,7 +268,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		public void renderToolTip(MatrixStack matrixStack, int i, int j) {
 			MutableText mutableText = new TranslatableText(this.effect.getTranslationKey());
 			if (!this.primary && this.effect != StatusEffects.REGENERATION) {
-				mutableText.append("II");
+				mutableText.append(" II");
 			}
 
 			BeaconScreen.this.renderTooltip(matrixStack, mutableText, i, j);
