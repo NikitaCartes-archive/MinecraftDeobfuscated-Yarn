@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.function.Predicate;
@@ -24,11 +25,29 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 	private final Long2LongMap foundPositionsToExpiry = new Long2LongOpenHashMap();
 	private int tries;
 
-	public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> targetMemoryModule, boolean onlyRunIfChild) {
-		super(ImmutableMap.of(targetMemoryModule, MemoryModuleState.VALUE_ABSENT));
+	public FindPointOfInterestTask(
+		PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl
+	) {
+		super(method_29245(memoryModuleType, memoryModuleType2));
 		this.poiType = poiType;
-		this.targetMemoryModuleType = targetMemoryModule;
-		this.onlyRunIfChild = onlyRunIfChild;
+		this.targetMemoryModuleType = memoryModuleType2;
+		this.onlyRunIfChild = bl;
+	}
+
+	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
+		this(pointOfInterestType, memoryModuleType, memoryModuleType, bl);
+	}
+
+	private static ImmutableMap<MemoryModuleType<?>, MemoryModuleState> method_29245(
+		MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2
+	) {
+		Builder<MemoryModuleType<?>, MemoryModuleState> builder = ImmutableMap.builder();
+		builder.put(memoryModuleType, MemoryModuleState.VALUE_ABSENT);
+		if (memoryModuleType2 != memoryModuleType) {
+			builder.put(memoryModuleType2, MemoryModuleState.VALUE_ABSENT);
+		}
+
+		return builder.build();
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
@@ -58,7 +77,7 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 			BlockPos blockPos = path.getTarget();
 			pointOfInterestStorage.getType(blockPos).ifPresent(pointOfInterestType -> {
 				pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos), blockPos, 1);
-				mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.method_27983(), blockPos));
+				mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getRegistryKey(), blockPos));
 				DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
 			});
 		} else if (this.tries < 5) {

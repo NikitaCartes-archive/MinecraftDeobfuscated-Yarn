@@ -33,7 +33,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -246,7 +246,7 @@ public class Item implements ItemConvertible {
 		return this.getMaxCount() == 1 && this.isDamageable();
 	}
 
-	protected static HitResult rayTrace(World world, PlayerEntity player, RayTraceContext.FluidHandling fluidHandling) {
+	protected static BlockHitResult rayTrace(World world, PlayerEntity player, RayTraceContext.FluidHandling fluidHandling) {
 		float f = player.pitch;
 		float g = player.yaw;
 		Vec3d vec3d = player.getCameraPosVec(1.0F);

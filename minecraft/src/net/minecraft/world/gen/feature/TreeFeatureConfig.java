@@ -12,15 +12,15 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.trunk.TrunkPlacer;
 
 public class TreeFeatureConfig implements FeatureConfig {
-	public static final Codec<TreeFeatureConfig> field_24921 = RecordCodecBuilder.create(
+	public static final Codec<TreeFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockStateProvider.field_24937.fieldOf("trunk_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkProvider),
-					BlockStateProvider.field_24937.fieldOf("leaves_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.leavesProvider),
+					BlockStateProvider.CODEC.fieldOf("trunk_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkProvider),
+					BlockStateProvider.CODEC.fieldOf("leaves_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.leavesProvider),
 					FoliagePlacer.field_24931.fieldOf("foliage_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.foliagePlacer),
 					TrunkPlacer.field_24972.fieldOf("trunk_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkPlacer),
-					FeatureSize.field_24922.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.featureSize),
+					FeatureSize.field_24922.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.minimumSize),
 					TreeDecorator.field_24962.listOf().fieldOf("decorators").forGetter(treeFeatureConfig -> treeFeatureConfig.decorators),
-					Codec.INT.fieldOf("max_water_depth").withDefault(0).forGetter(treeFeatureConfig -> treeFeatureConfig.baseHeight),
+					Codec.INT.fieldOf("max_water_depth").withDefault(0).forGetter(treeFeatureConfig -> treeFeatureConfig.maxWaterDepth),
 					Codec.BOOL.fieldOf("ignore_vines").withDefault(false).forGetter(treeFeatureConfig -> treeFeatureConfig.ignoreVines),
 					Heightmap.Type.field_24772.fieldOf("heightmap").forGetter(treeFeatureConfig -> treeFeatureConfig.heightmap)
 				)
@@ -32,8 +32,8 @@ public class TreeFeatureConfig implements FeatureConfig {
 	public transient boolean skipFluidCheck;
 	public final FoliagePlacer foliagePlacer;
 	public final TrunkPlacer trunkPlacer;
-	public final FeatureSize featureSize;
-	public final int baseHeight;
+	public final FeatureSize minimumSize;
+	public final int maxWaterDepth;
 	public final boolean ignoreVines;
 	public final Heightmap.Type heightmap;
 
@@ -42,71 +42,79 @@ public class TreeFeatureConfig implements FeatureConfig {
 		BlockStateProvider leavesProvider,
 		FoliagePlacer foliagePlacer,
 		TrunkPlacer trunkPlacer,
-		FeatureSize featureSize,
-		List<TreeDecorator> list,
-		int i,
-		boolean bl,
-		Heightmap.Type heightmapType
+		FeatureSize minimumSize,
+		List<TreeDecorator> decorators,
+		int maxWaterDepth,
+		boolean ignoreVines,
+		Heightmap.Type heightmap
 	) {
 		this.trunkProvider = trunkProvider;
 		this.leavesProvider = leavesProvider;
-		this.decorators = list;
+		this.decorators = decorators;
 		this.foliagePlacer = foliagePlacer;
-		this.featureSize = featureSize;
+		this.minimumSize = minimumSize;
 		this.trunkPlacer = trunkPlacer;
-		this.baseHeight = i;
-		this.ignoreVines = bl;
-		this.heightmap = heightmapType;
+		this.maxWaterDepth = maxWaterDepth;
+		this.ignoreVines = ignoreVines;
+		this.heightmap = heightmap;
 	}
 
 	public void ignoreFluidCheck() {
 		this.skipFluidCheck = true;
 	}
 
-	public TreeFeatureConfig setTreeDecorators(List<TreeDecorator> list) {
+	public TreeFeatureConfig setTreeDecorators(List<TreeDecorator> decorators) {
 		return new TreeFeatureConfig(
-			this.trunkProvider, this.leavesProvider, this.foliagePlacer, this.trunkPlacer, this.featureSize, list, this.baseHeight, this.ignoreVines, this.heightmap
+			this.trunkProvider,
+			this.leavesProvider,
+			this.foliagePlacer,
+			this.trunkPlacer,
+			this.minimumSize,
+			decorators,
+			this.maxWaterDepth,
+			this.ignoreVines,
+			this.heightmap
 		);
 	}
 
 	public static class Builder {
 		public final BlockStateProvider trunkProvider;
 		public final BlockStateProvider leavesProvider;
-		private final FoliagePlacer field_24140;
-		private final TrunkPlacer field_24141;
-		private final FeatureSize field_24142;
+		private final FoliagePlacer foliagePlacer;
+		private final TrunkPlacer trunkPlacer;
+		private final FeatureSize minimumSize;
 		private List<TreeDecorator> decorators = ImmutableList.of();
-		private int baseHeight;
-		private boolean field_24143;
+		private int maxWaterDepth;
+		private boolean ignoreVines;
 		private Heightmap.Type heightmap = Heightmap.Type.OCEAN_FLOOR;
 
 		public Builder(
-			BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, FoliagePlacer foliagePlacer, TrunkPlacer trunkPlacer, FeatureSize featureSize
+			BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, FoliagePlacer foliagePlacer, TrunkPlacer trunkPlacer, FeatureSize minimumSize
 		) {
 			this.trunkProvider = trunkProvider;
 			this.leavesProvider = leavesProvider;
-			this.field_24140 = foliagePlacer;
-			this.field_24141 = trunkPlacer;
-			this.field_24142 = featureSize;
+			this.foliagePlacer = foliagePlacer;
+			this.trunkPlacer = trunkPlacer;
+			this.minimumSize = minimumSize;
 		}
 
-		public TreeFeatureConfig.Builder method_27376(List<TreeDecorator> list) {
-			this.decorators = list;
+		public TreeFeatureConfig.Builder decorators(List<TreeDecorator> decorators) {
+			this.decorators = decorators;
 			return this;
 		}
 
-		public TreeFeatureConfig.Builder baseHeight(int baseHeight) {
-			this.baseHeight = baseHeight;
+		public TreeFeatureConfig.Builder maxWaterDepth(int maxWaterDepth) {
+			this.maxWaterDepth = maxWaterDepth;
 			return this;
 		}
 
-		public TreeFeatureConfig.Builder method_27374() {
-			this.field_24143 = true;
+		public TreeFeatureConfig.Builder ignoreVines() {
+			this.ignoreVines = true;
 			return this;
 		}
 
-		public TreeFeatureConfig.Builder method_27375(Heightmap.Type type) {
-			this.heightmap = type;
+		public TreeFeatureConfig.Builder heightmap(Heightmap.Type heightmap) {
+			this.heightmap = heightmap;
 			return this;
 		}
 
@@ -114,12 +122,12 @@ public class TreeFeatureConfig implements FeatureConfig {
 			return new TreeFeatureConfig(
 				this.trunkProvider,
 				this.leavesProvider,
-				this.field_24140,
-				this.field_24141,
-				this.field_24142,
+				this.foliagePlacer,
+				this.trunkPlacer,
+				this.minimumSize,
 				this.decorators,
-				this.baseHeight,
-				this.field_24143,
+				this.maxWaterDepth,
+				this.ignoreVines,
 				this.heightmap
 			);
 		}

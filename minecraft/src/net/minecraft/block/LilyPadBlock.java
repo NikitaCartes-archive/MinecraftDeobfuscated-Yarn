@@ -33,6 +33,7 @@ public class LilyPadBlock extends PlantBlock {
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
 		FluidState fluidState = world.getFluidState(pos);
-		return fluidState.getFluid() == Fluids.WATER || floor.getMaterial() == Material.ICE;
+		FluidState fluidState2 = world.getFluidState(pos.up());
+		return (fluidState.getFluid() == Fluids.WATER || floor.getMaterial() == Material.ICE) && fluidState2.getFluid() == Fluids.EMPTY;
 	}
 }

@@ -15,7 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class FeatureUpdater {
@@ -194,21 +194,21 @@ public class FeatureUpdater {
 		}
 	}
 
-	public static FeatureUpdater create(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
-		if (dimensionType.isOverworld()) {
+	public static FeatureUpdater create(RegistryKey<World> registryKey, @Nullable PersistentStateManager persistentStateManager) {
+		if (registryKey == World.OVERWORLD) {
 			return new FeatureUpdater(
 				persistentStateManager,
 				ImmutableList.of("Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"),
 				ImmutableList.of("Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument")
 			);
-		} else if (dimensionType.isNether()) {
+		} else if (registryKey == World.NETHER) {
 			List<String> list = ImmutableList.of("Fortress");
 			return new FeatureUpdater(persistentStateManager, list, list);
-		} else if (dimensionType.isEnd()) {
+		} else if (registryKey == World.END) {
 			List<String> list = ImmutableList.of("EndCity");
 			return new FeatureUpdater(persistentStateManager, list, list);
 		} else {
-			throw new RuntimeException(String.format("Unknown dimension type : %s", dimensionType));
+			throw new RuntimeException(String.format("Unknown dimension type : %s", registryKey));
 		}
 	}
 }

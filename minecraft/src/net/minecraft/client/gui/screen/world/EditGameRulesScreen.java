@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -36,7 +37,7 @@ public class EditGameRulesScreen extends Screen {
 	private final Set<EditGameRulesScreen.AbstractRuleWidget> invalidRuleWidgets = Sets.<EditGameRulesScreen.AbstractRuleWidget>newHashSet();
 	private ButtonWidget doneButton;
 	@Nullable
-	private List<Text> tooltip;
+	private List<class_5348> tooltip;
 	private final GameRules gameRules;
 
 	public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
@@ -80,7 +81,7 @@ public class EditGameRulesScreen extends Screen {
 		}
 	}
 
-	private void setTooltipDescription(@Nullable List<Text> description) {
+	private void setTooltipDescription(@Nullable List<class_5348> description) {
 		this.tooltip = description;
 	}
 
@@ -101,9 +102,9 @@ public class EditGameRulesScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	public abstract class AbstractRuleWidget extends ElementListWidget.Entry<EditGameRulesScreen.AbstractRuleWidget> {
 		@Nullable
-		private final List<Text> description;
+		private final List<class_5348> description;
 
-		public AbstractRuleWidget(@Nullable List<Text> description) {
+		public AbstractRuleWidget(@Nullable List<class_5348> description) {
 			this.description = description;
 		}
 	}
@@ -113,7 +114,7 @@ public class EditGameRulesScreen extends Screen {
 		private final ButtonWidget toggleButton;
 		private final List<? extends Element> children;
 
-		public BooleanRuleWidget(Text name, List<Text> description, String ruleName, GameRules.BooleanRule rule) {
+		public BooleanRuleWidget(Text name, List<class_5348> description, String ruleName, GameRules.BooleanRule rule) {
 			super(description);
 			this.toggleButton = new ButtonWidget(10, 5, 220, 20, this.createBooleanRuleText(name, rule.get()), buttonWidget -> {
 				boolean bl = !rule.get();
@@ -151,7 +152,7 @@ public class EditGameRulesScreen extends Screen {
 		private final TextFieldWidget valueWidget;
 		private final List<? extends Element> children;
 
-		public IntRuleWidget(Text name, List<Text> description, String ruleName, GameRules.IntRule rule) {
+		public IntRuleWidget(Text name, List<class_5348> description, String ruleName, GameRules.IntRule rule) {
 			super(description);
 			this.name = name;
 			this.valueWidget = new TextFieldWidget(
@@ -208,29 +209,29 @@ public class EditGameRulesScreen extends Screen {
 	public class RuleListWidget extends ElementListWidget<EditGameRulesScreen.AbstractRuleWidget> {
 		public RuleListWidget(GameRules gameRules) {
 			super(EditGameRulesScreen.this.client, EditGameRulesScreen.this.width, EditGameRulesScreen.this.height, 43, EditGameRulesScreen.this.height - 32, 24);
-			final Map<GameRules.RuleCategory, Map<GameRules.RuleKey<?>, EditGameRulesScreen.AbstractRuleWidget>> map = Maps.<GameRules.RuleCategory, Map<GameRules.RuleKey<?>, EditGameRulesScreen.AbstractRuleWidget>>newHashMap();
-			GameRules.forEachType(new GameRules.RuleTypeConsumer() {
+			final Map<GameRules.Category, Map<GameRules.Key<?>, EditGameRulesScreen.AbstractRuleWidget>> map = Maps.<GameRules.Category, Map<GameRules.Key<?>, EditGameRulesScreen.AbstractRuleWidget>>newHashMap();
+			GameRules.forEachType(new GameRules.TypeConsumer() {
 				@Override
-				public void acceptBoolean(GameRules.RuleKey<GameRules.BooleanRule> key, GameRules.RuleType<GameRules.BooleanRule> type) {
+				public void acceptBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
 					this.createRuleWidget(key, (text, list, string, booleanRule) -> EditGameRulesScreen.this.new BooleanRuleWidget(text, list, string, booleanRule));
 				}
 
 				@Override
-				public void acceptInt(GameRules.RuleKey<GameRules.IntRule> key, GameRules.RuleType<GameRules.IntRule> type) {
+				public void acceptInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
 					this.createRuleWidget(key, (text, list, string, intRule) -> EditGameRulesScreen.this.new IntRuleWidget(text, list, string, intRule));
 				}
 
-				private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.RuleKey<T> key, EditGameRulesScreen.RuleWidgetFactory<T> widgetFactory) {
+				private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, EditGameRulesScreen.RuleWidgetFactory<T> widgetFactory) {
 					Text text = new TranslatableText(key.getTranslationKey());
 					Text text2 = new LiteralText(key.getName()).formatted(Formatting.YELLOW);
 					T rule = gameRules.get(key);
 					String string = rule.serialize();
 					Text text3 = new TranslatableText("editGamerule.default", new LiteralText(string)).formatted(Formatting.GRAY);
 					String string2 = key.getTranslationKey() + ".description";
-					List<Text> list;
+					List<class_5348> list;
 					String string3;
 					if (I18n.hasTranslation(string2)) {
-						Builder<Text> builder = ImmutableList.<Text>builder().add(text2);
+						Builder<class_5348> builder = ImmutableList.<class_5348>builder().add(text2);
 						Text text4 = new TranslatableText(string2);
 						EditGameRulesScreen.this.textRenderer.wrapLines(text4, 150).forEach(builder::add);
 						list = builder.add(text3).build();
@@ -240,7 +241,7 @@ public class EditGameRulesScreen extends Screen {
 						string3 = text3.getString();
 					}
 
-					((Map)map.computeIfAbsent(key.getCategory(), ruleCategory -> Maps.newHashMap())).put(key, widgetFactory.create(text, list, string3, rule));
+					((Map)map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap())).put(key, widgetFactory.create(text, list, string3, rule));
 				}
 			});
 			map.entrySet()
@@ -250,13 +251,13 @@ public class EditGameRulesScreen extends Screen {
 					entry -> {
 						this.addEntry(
 							EditGameRulesScreen.this.new RuleCategoryWidget(
-								new TranslatableText(((GameRules.RuleCategory)entry.getKey()).getCategory()).formatted(new Formatting[]{Formatting.BOLD, Formatting.YELLOW})
+								new TranslatableText(((GameRules.Category)entry.getKey()).getCategory()).formatted(new Formatting[]{Formatting.BOLD, Formatting.YELLOW})
 							)
 						);
 						((Map)entry.getValue())
 							.entrySet()
 							.stream()
-							.sorted(java.util.Map.Entry.comparingByKey(Comparator.comparing(GameRules.RuleKey::getName)))
+							.sorted(java.util.Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName)))
 							.forEach(entryx -> this.addEntry((EntryListWidget.Entry)entryx.getValue()));
 					}
 				);
@@ -277,6 +278,6 @@ public class EditGameRulesScreen extends Screen {
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
 	interface RuleWidgetFactory<T extends GameRules.Rule<T>> {
-		EditGameRulesScreen.AbstractRuleWidget create(Text name, List<Text> description, String ruleName, T rule);
+		EditGameRulesScreen.AbstractRuleWidget create(Text name, List<class_5348> description, String ruleName, T rule);
 	}
 }

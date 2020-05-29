@@ -313,8 +313,12 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public ClientPlayerEntity createPlayer(ClientWorld world, StatHandler stateHandler, ClientRecipeBook recipeBook) {
-		return new ClientPlayerEntity(this.client, world, this.networkHandler, stateHandler, recipeBook);
+	public ClientPlayerEntity method_29357(ClientWorld clientWorld, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
+		return this.createPlayer(clientWorld, statHandler, clientRecipeBook, false, false);
+	}
+
+	public ClientPlayerEntity createPlayer(ClientWorld world, StatHandler stateHandler, ClientRecipeBook recipeBook, boolean bl, boolean bl2) {
+		return new ClientPlayerEntity(this.client, world, this.networkHandler, stateHandler, recipeBook, bl, bl2);
 	}
 
 	public void attackEntity(PlayerEntity player, Entity target) {
@@ -423,7 +427,8 @@ public class ClientPlayerInteractionManager {
 
 	public void processPlayerActionResponse(ClientWorld world, BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved) {
 		PosAndRot posAndRot = this.unacknowledgedPlayerActions.remove(Pair.of(pos, action));
-		if (posAndRot == null || !approved || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && world.getBlockState(pos) != state) {
+		BlockState blockState = world.getBlockState(pos);
+		if ((posAndRot == null || !approved || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && blockState != state) && blockState != state) {
 			world.setBlockStateWithoutNeighborUpdates(pos, state);
 			if (posAndRot != null) {
 				Vec3d vec3d = posAndRot.getPos();

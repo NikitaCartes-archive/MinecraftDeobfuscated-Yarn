@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
@@ -32,20 +33,21 @@ public class DarkOakFoliagePlacer extends FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i
+		int i,
+		BlockBox blockBox
 	) {
 		BlockPos blockPos = treeNode.getCenter().up(i);
 		boolean bl = treeNode.isGiantTrunk();
 		if (bl) {
-			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl);
-			this.generate(world, random, config, blockPos, radius + 3, leaves, 0, bl);
-			this.generate(world, random, config, blockPos, radius + 2, leaves, 1, bl);
+			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, blockBox);
+			this.generate(world, random, config, blockPos, radius + 3, leaves, 0, bl, blockBox);
+			this.generate(world, random, config, blockPos, radius + 2, leaves, 1, bl, blockBox);
 			if (random.nextBoolean()) {
-				this.generate(world, random, config, blockPos, radius, leaves, 2, bl);
+				this.generate(world, random, config, blockPos, radius, leaves, 2, bl, blockBox);
 			}
 		} else {
-			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl);
-			this.generate(world, random, config, blockPos, radius + 1, leaves, 0, bl);
+			this.generate(world, random, config, blockPos, radius + 2, leaves, -1, bl, blockBox);
+			this.generate(world, random, config, blockPos, radius + 1, leaves, 0, bl, blockBox);
 		}
 	}
 

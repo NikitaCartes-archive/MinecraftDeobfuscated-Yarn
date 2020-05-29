@@ -126,7 +126,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	) {
 		Structure structure = this.method_27233(structureManager);
 		StructurePlacementData structurePlacementData = this.createPlacementData(blockRotation, blockBox, bl);
-		if (!structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData, 18)) {
+		if (!structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData, random, 18)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(

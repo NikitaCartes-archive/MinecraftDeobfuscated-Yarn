@@ -16,7 +16,7 @@ public class FunctionTagTimerCallback implements TimerCallback<MinecraftServer> 
 
 	public void call(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
 		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
-		Tag<CommandFunction> tag = commandFunctionManager.getTags().getOrCreate(this.name);
+		Tag<CommandFunction> tag = commandFunctionManager.method_29462(this.name);
 
 		for (CommandFunction commandFunction : tag.values()) {
 			commandFunctionManager.execute(commandFunction, commandFunctionManager.getTaggedFunctionSource());

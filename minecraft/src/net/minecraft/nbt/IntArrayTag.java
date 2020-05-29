@@ -162,7 +162,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		}
 	}
 
-	public IntTag method_10536(int i) {
+	public IntTag remove(int i) {
 		int j = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
 		return IntTag.of(j);

@@ -27,7 +27,7 @@ public class DragonEggBlock extends FallingBlock {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		this.teleport(state, world, pos);
-		return ActionResult.SUCCESS;
+		return ActionResult.method_29236(world.isClient);
 	}
 
 	@Override

@@ -136,9 +136,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		int i,
 		boolean bl
 	) {
-		super(new File(session.method_27424(serverWorld.method_27983()), "region"), dataFixer, bl);
+		super(new File(session.method_27424(serverWorld.getRegistryKey()), "region"), dataFixer, bl);
 		this.structureManager = structureManager;
-		this.saveDir = session.method_27424(serverWorld.method_27983());
+		this.saveDir = session.method_27424(serverWorld.getRegistryKey());
 		this.world = serverWorld;
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
@@ -809,7 +809,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	@Nullable
 	private CompoundTag getUpdatedChunkTag(ChunkPos pos) throws IOException {
 		CompoundTag compoundTag = this.getNbt(pos);
-		return compoundTag == null ? null : this.updateChunkTag(this.world.getDimension(), this.persistentStateManagerFactory, compoundTag);
+		return compoundTag == null ? null : this.updateChunkTag(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
 	}
 
 	boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {

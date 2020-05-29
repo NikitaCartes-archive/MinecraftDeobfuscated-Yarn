@@ -6,7 +6,6 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -29,7 +28,6 @@ import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -40,6 +38,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 /**
@@ -263,8 +262,7 @@ public abstract class ChunkGenerator {
 			for (int o = k - 8; o <= k + 8; o++) {
 				long p = ChunkPos.toLong(n, o);
 
-				for (Entry<String, StructureStart<?>> entry : world.getChunk(n, o).getStructureStarts().entrySet()) {
-					StructureStart<?> structureStart = (StructureStart<?>)entry.getValue();
+				for (StructureStart<?> structureStart : world.getChunk(n, o).getStructureStarts().values()) {
 					if (structureStart != StructureStart.DEFAULT && structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) {
 						accessor.addStructureReference(chunkSectionPos, structureStart.getFeature(), p, chunk);
 						DebugInfoSender.sendStructureStart(world, structureStart);

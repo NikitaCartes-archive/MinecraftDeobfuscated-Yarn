@@ -187,7 +187,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 			}
 		}
 
-		if (this.getHealth() < this.getMaximumHealth() && f > 0.0F) {
+		if (this.getHealth() < this.getMaxHealth() && f > 0.0F) {
 			this.heal(f);
 			bl = true;
 		}

@@ -25,7 +25,7 @@ public class GoToIfNearbyTask extends Task<MobEntityWithAi> {
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
 		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.target);
 		return optional.isPresent()
-			&& serverWorld.method_27983() == ((GlobalPos)optional.get()).getDimension()
+			&& serverWorld.getRegistryKey() == ((GlobalPos)optional.get()).getDimension()
 			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
 	}
 

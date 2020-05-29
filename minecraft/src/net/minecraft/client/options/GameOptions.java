@@ -756,8 +756,7 @@ public class GameOptions {
 	}
 
 	public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> manager) {
-		manager.scanPacks();
-		Set<ClientResourcePackProfile> set = Sets.<ClientResourcePackProfile>newLinkedHashSet();
+		Set<String> set = Sets.<String>newLinkedHashSet();
 		Iterator<String> iterator = this.resourcePacks.iterator();
 
 		while (iterator.hasNext()) {
@@ -777,7 +776,7 @@ public class GameOptions {
 				LOGGER.info("Removed resource pack {} from incompatibility list because it's now compatible", string);
 				this.incompatibleResourcePacks.remove(string);
 			} else {
-				set.add(clientResourcePackProfile);
+				set.add(clientResourcePackProfile.getName());
 			}
 		}
 

@@ -88,7 +88,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 			dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
 			world.playSound(null, pos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
 			world.setBlockState(pos, state.with(AGE, Integer.valueOf(1)), 2);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
 		}

@@ -10,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -31,6 +32,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	protected AnimalEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 		super(entityType, world);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 	}
 
 	@Override
@@ -161,6 +164,10 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	public void setLoveTicks(int loveTicks) {
 		this.loveTicks = loveTicks;
+	}
+
+	public int method_29270() {
+		return this.loveTicks;
 	}
 
 	@Nullable

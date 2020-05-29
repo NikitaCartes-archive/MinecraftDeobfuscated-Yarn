@@ -105,7 +105,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		int i = ChunkSectionPos.getY(l);
 		if (this.lightArrays.topArraySectionY.get(m) == i + 1) {
 			long n;
-			for (n = l; !this.hasLight(n) && this.isAboveMinimumHeight(i); n = ChunkSectionPos.offset(n, Direction.DOWN)) {
+			for (n = l; !this.hasLight(n) && this.isAboveMinHeight(i); n = ChunkSectionPos.offset(n, Direction.DOWN)) {
 				i--;
 			}
 
@@ -275,7 +275,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		}
 	}
 
-	protected boolean isAboveMinimumHeight(int blockY) {
+	protected boolean isAboveMinHeight(int blockY) {
 		return blockY >= this.lightArrays.defaultTopArraySectionY;
 	}
 

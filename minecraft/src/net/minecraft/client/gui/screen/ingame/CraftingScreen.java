@@ -39,6 +39,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 			this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.backgroundWidth);
 			((TexturedButtonWidget)buttonWidget).setPos(this.x + 5, this.height / 2 - 49);
 		}));
+		this.field_25267 = 29;
 	}
 
 	@Override
@@ -61,12 +62,6 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 		this.recipeBook.drawTooltip(matrices, this.x, this.y, mouseX, mouseY);
-	}
-
-	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.draw(matrices, this.title, 28.0F, 6.0F, 4210752);
-		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override

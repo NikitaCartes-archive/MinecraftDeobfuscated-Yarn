@@ -84,7 +84,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 
 	private List<Entity> tryReleaseBee(BlockState state, BeehiveBlockEntity.BeeState beeState) {
 		List<Entity> list = Lists.<Entity>newArrayList();
-		this.bees.removeIf(bee -> this.releaseBee(state, bee.entityData, list, beeState));
+		this.bees.removeIf(bee -> this.releaseBee(state, bee, list, beeState));
 		return list;
 	}
 
@@ -134,11 +134,12 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	private boolean releaseBee(BlockState state, CompoundTag compoundTag, @Nullable List<Entity> list, BeehiveBlockEntity.BeeState beeState) {
-		BlockPos blockPos = this.getPos();
+	private boolean releaseBee(BlockState state, BeehiveBlockEntity.Bee bee, @Nullable List<Entity> list, BeehiveBlockEntity.BeeState beeState) {
 		if ((this.world.isNight() || this.world.isRaining()) && beeState != BeehiveBlockEntity.BeeState.EMERGENCY) {
 			return false;
 		} else {
+			BlockPos blockPos = this.getPos();
+			CompoundTag compoundTag = bee.entityData;
 			compoundTag.remove("Passengers");
 			compoundTag.remove("Leash");
 			compoundTag.remove("UUID");
@@ -150,12 +151,6 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 			} else {
 				Entity entity = EntityType.loadEntityWithPassengers(compoundTag, this.world, entityx -> entityx);
 				if (entity != null) {
-					float f = entity.getWidth();
-					double d = bl ? 0.0 : 0.55 + (double)(f / 2.0F);
-					double e = (double)blockPos.getX() + 0.5 + d * (double)direction.getOffsetX();
-					double g = (double)blockPos.getY() + 0.5 - (double)(entity.getHeight() / 2.0F);
-					double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
-					entity.refreshPositionAndAngles(e, g, h, entity.yaw, entity.pitch);
 					if (!entity.getType().isIn(EntityTypeTags.BEEHIVE_INHABITORS)) {
 						return false;
 					} else {
@@ -180,17 +175,23 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 								}
 							}
 
+							int i = bee.ticksInHive;
+							beeEntity.growUp(i);
+							beeEntity.setLoveTicks(Math.max(0, beeEntity.method_29270() - i));
 							beeEntity.resetPollinationTicks();
 							if (list != null) {
 								list.add(beeEntity);
 							}
+
+							float f = entity.getWidth();
+							double d = bl ? 0.0 : 0.55 + (double)(f / 2.0F);
+							double e = (double)blockPos.getX() + 0.5 + d * (double)direction.getOffsetX();
+							double g = (double)blockPos.getY() + 0.5 - (double)(entity.getHeight() / 2.0F);
+							double h = (double)blockPos.getZ() + 0.5 + d * (double)direction.getOffsetZ();
+							entity.refreshPositionAndAngles(e, g, h, entity.yaw, entity.pitch);
 						}
 
-						BlockPos blockPos3 = this.getPos();
-						this.world
-							.playSound(
-								null, (double)blockPos3.getX(), (double)blockPos3.getY(), (double)blockPos3.getZ(), SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F
-							);
+						this.world.playSound(null, blockPos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						return this.world.spawnEntity(entity);
 					}
 				} else {
@@ -211,11 +212,10 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 		while (iterator.hasNext()) {
 			BeehiveBlockEntity.Bee bee = (BeehiveBlockEntity.Bee)iterator.next();
 			if (bee.ticksInHive > bee.minOccupationTIcks) {
-				CompoundTag compoundTag = bee.entityData;
-				BeehiveBlockEntity.BeeState beeState = compoundTag.getBoolean("HasNectar")
+				BeehiveBlockEntity.BeeState beeState = bee.entityData.getBoolean("HasNectar")
 					? BeehiveBlockEntity.BeeState.HONEY_DELIVERED
 					: BeehiveBlockEntity.BeeState.BEE_RELEASED;
-				if (this.releaseBee(blockState, compoundTag, null, beeState)) {
+				if (this.releaseBee(blockState, bee, null, beeState)) {
 					iterator.remove();
 				}
 			} else {

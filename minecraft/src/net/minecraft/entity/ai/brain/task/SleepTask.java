@@ -30,7 +30,7 @@ public class SleepTask extends Task<LivingEntity> {
 		} else {
 			Brain<?> brain = entity.getBrain();
 			GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(MemoryModuleType.HOME).get();
-			if (world.method_27983() != globalPos.getDimension()) {
+			if (world.getRegistryKey() != globalPos.getDimension()) {
 				return false;
 			} else {
 				Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);

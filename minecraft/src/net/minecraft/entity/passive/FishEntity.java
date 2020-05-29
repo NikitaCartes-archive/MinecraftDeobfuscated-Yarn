@@ -57,7 +57,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	@Override
 	public boolean cannotDespawn() {
-		return this.isFromBucket();
+		return super.cannotDespawn() || this.isFromBucket();
 	}
 
 	public static boolean canSpawn(EntityType<? extends FishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

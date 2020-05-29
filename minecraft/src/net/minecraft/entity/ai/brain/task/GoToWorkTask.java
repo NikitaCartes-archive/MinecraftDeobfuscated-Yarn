@@ -7,33 +7,39 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 
 public class GoToWorkTask extends Task<VillagerEntity> {
 	public GoToWorkTask() {
-		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT));
+		super(ImmutableMap.of(MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleState.VALUE_PRESENT));
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		return villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE;
+		BlockPos blockPos = ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos();
+		return blockPos.isWithinDistance(villagerEntity.getPos(), 2.0) || villagerEntity.method_29279();
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
-		MinecraftServer minecraftServer = serverWorld.getServer();
-		minecraftServer.getWorld(globalPos.getDimension())
-			.getPointOfInterestStorage()
-			.getType(globalPos.getPos())
-			.ifPresent(
-				pointOfInterestType -> Registry.VILLAGER_PROFESSION
-						.stream()
-						.filter(villagerProfession -> villagerProfession.getWorkStation() == pointOfInterestType)
-						.findFirst()
-						.ifPresent(villagerProfession -> {
-							villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(villagerProfession));
-							villagerEntity.reinitializeBrain(serverWorld);
-						})
-			);
+		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
+		villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
+		villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
+		if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE) {
+			MinecraftServer minecraftServer = serverWorld.getServer();
+			minecraftServer.getWorld(globalPos.getDimension())
+				.getPointOfInterestStorage()
+				.getType(globalPos.getPos())
+				.ifPresent(
+					pointOfInterestType -> Registry.VILLAGER_PROFESSION
+							.stream()
+							.filter(villagerProfession -> villagerProfession.getWorkStation() == pointOfInterestType)
+							.findFirst()
+							.ifPresent(villagerProfession -> {
+								villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(villagerProfession));
+								villagerEntity.reinitializeBrain(serverWorld);
+							})
+				);
+		}
 	}
 }

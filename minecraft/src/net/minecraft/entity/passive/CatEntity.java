@@ -369,7 +369,7 @@ public class CatEntity extends TameableEntity {
 
 		World world2 = world.getWorld();
 		if (world2 instanceof ServerWorld
-			&& ((ServerWorld)world2).getStructureAccessor().method_28388(this.getBlockPos(), true, StructureFeature.field_24851).hasChildren()) {
+			&& ((ServerWorld)world2).getStructureAccessor().method_28388(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
 			this.setCatType(10);
 			this.setPersistent();
 		}
@@ -389,7 +389,7 @@ public class CatEntity extends TameableEntity {
 			if (this.isTamed()) {
 				if (this.isOwner(player)) {
 					if (!(item instanceof DyeItem)) {
-						if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
+						if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 							this.eat(player, itemStack);
 							this.heal((float)item.getFoodComponent().getHunger());
 							return true;

@@ -29,7 +29,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class ModelPredicateProviderRegistry {
@@ -208,8 +207,8 @@ public class ModelPredicateProviderRegistry {
 					boolean bl = tag.contains("LodestonePos");
 					boolean bl2 = tag.contains("LodestoneDimension");
 					if (bl && bl2) {
-						Optional<RegistryKey<DimensionType>> optional = CompassItem.getLodestoneDimension(tag);
-						if (optional.isPresent() && world.method_27983() == optional.get()) {
+						Optional<RegistryKey<World>> optional = CompassItem.getLodestoneDimension(tag);
+						if (optional.isPresent() && world.getRegistryKey() == optional.get()) {
 							return NbtHelper.toBlockPos(tag.getCompound("LodestonePos"));
 						}
 					}

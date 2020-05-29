@@ -81,7 +81,7 @@ public class EnchantedBookItem extends Item {
 		if (group == ItemGroup.SEARCH) {
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
 				if (enchantment.type != null) {
-					for (int i = enchantment.getMinimumLevel(); i <= enchantment.getMaximumLevel(); i++) {
+					for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
 						stacks.add(forEnchantment(new EnchantmentLevelEntry(enchantment, i)));
 					}
 				}
@@ -89,7 +89,7 @@ public class EnchantedBookItem extends Item {
 		} else if (group.getEnchantments().length != 0) {
 			for (Enchantment enchantmentx : Registry.ENCHANTMENT) {
 				if (group.containsEnchantments(enchantmentx.type)) {
-					stacks.add(forEnchantment(new EnchantmentLevelEntry(enchantmentx, enchantmentx.getMaximumLevel())));
+					stacks.add(forEnchantment(new EnchantmentLevelEntry(enchantmentx, enchantmentx.getMaxLevel())));
 				}
 			}
 		}

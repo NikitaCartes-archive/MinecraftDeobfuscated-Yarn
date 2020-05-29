@@ -248,7 +248,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 				PiglinBrain.onGoldBlockBroken(player);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

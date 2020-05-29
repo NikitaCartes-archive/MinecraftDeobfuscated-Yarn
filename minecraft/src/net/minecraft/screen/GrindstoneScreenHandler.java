@@ -94,7 +94,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 					Enchantment enchantment = (Enchantment)entry.getKey();
 					Integer integer = (Integer)entry.getValue();
 					if (!enchantment.isCursed()) {
-						i += enchantment.getMinimumPower(integer);
+						i += enchantment.getMinPower(integer);
 					}
 				}
 

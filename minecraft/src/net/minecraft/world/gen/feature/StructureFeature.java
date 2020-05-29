@@ -43,7 +43,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		"Pillager_Outpost", new PillagerOutpostFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
 	public static final StructureFeature<MineshaftFeatureConfig> MINESHAFT = register(
-		"Mineshaft", new MineshaftFeature(MineshaftFeatureConfig.field_24888), GenerationStep.Feature.UNDERGROUND_STRUCTURES
+		"Mineshaft", new MineshaftFeature(MineshaftFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_STRUCTURES
 	);
 	public static final StructureFeature<DefaultFeatureConfig> MANSION = register(
 		"Mansion", new WoodlandMansionFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
@@ -58,16 +58,16 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		"Igloo", new IglooFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
 	public static final StructureFeature<RuinedPortalFeatureConfig> RUINED_PORTAL = register(
-		"Ruined_Portal", new RuinedPortalFeature(RuinedPortalFeatureConfig.field_24906), GenerationStep.Feature.SURFACE_STRUCTURES
+		"Ruined_Portal", new RuinedPortalFeature(RuinedPortalFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
 	public static final StructureFeature<ShipwreckFeatureConfig> SHIPWRECK = register(
-		"Shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig.field_24908), GenerationStep.Feature.SURFACE_STRUCTURES
+		"Shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final SwampHutFeature field_24851 = register(
+	public static final SwampHutFeature SWAMP_HUT = register(
 		"Swamp_Hut", new SwampHutFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
 	public static final StructureFeature<DefaultFeatureConfig> STRONGHOLD = register(
-		"Stronghold", new StrongholdFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_STRUCTURES
+		"Stronghold", new StrongholdFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.STRONGHOLDS
 	);
 	public static final StructureFeature<DefaultFeatureConfig> MONUMENT = register(
 		"Monument", new OceanMonumentFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
@@ -82,7 +82,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		"EndCity", new EndCityFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
 	public static final StructureFeature<BuriedTreasureFeatureConfig> BURIED_TREASURE = register(
-		"Buried_Treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig.field_24875), GenerationStep.Feature.UNDERGROUND_STRUCTURES
+		"Buried_Treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_STRUCTURES
 	);
 	public static final StructureFeature<StructurePoolFeatureConfig> VILLAGE = register(
 		"Village", new VillageFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
@@ -91,7 +91,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		"Nether_Fossil", new NetherFossilFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION
 	);
 	public static final StructureFeature<BastionRemnantFeatureConfig> BASTION_REMNANT = register(
-		"Bastion_Remnant", new BastionRemnantFeature(BastionRemnantFeatureConfig.field_24889), GenerationStep.Feature.SURFACE_STRUCTURES
+		"Bastion_Remnant", new BastionRemnantFeature(BastionRemnantFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
 	public static final List<StructureFeature<?>> field_24861 = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
 	private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> field_24863;

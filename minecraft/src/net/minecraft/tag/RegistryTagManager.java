@@ -1,9 +1,13 @@
 package net.minecraft.tag;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
@@ -67,15 +71,34 @@ public class RegistryTagManager implements ResourceReloadListener {
 		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture4 = this.entityTypes.prepareReload(manager, prepareExecutor);
 		return CompletableFuture.allOf(completableFuture, completableFuture2, completableFuture3, completableFuture4)
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(void_ -> {
-				this.blocks.applyReload((Map<Identifier, Tag.Builder>)completableFuture.join());
-				this.items.applyReload((Map<Identifier, Tag.Builder>)completableFuture2.join());
-				this.fluids.applyReload((Map<Identifier, Tag.Builder>)completableFuture3.join());
-				this.entityTypes.applyReload((Map<Identifier, Tag.Builder>)completableFuture4.join());
-				BlockTags.setContainer(this.blocks);
-				ItemTags.setContainer(this.items);
-				FluidTags.setContainer(this.fluids);
-				EntityTypeTags.setContainer(this.entityTypes);
-			}, applyExecutor);
+			.thenAcceptAsync(
+				void_ -> {
+					this.blocks.applyReload((Map<Identifier, Tag.Builder>)completableFuture.join());
+					this.items.applyReload((Map<Identifier, Tag.Builder>)completableFuture2.join());
+					this.fluids.applyReload((Map<Identifier, Tag.Builder>)completableFuture3.join());
+					this.entityTypes.applyReload((Map<Identifier, Tag.Builder>)completableFuture4.join());
+					TagContainers.method_29219(this.blocks, this.items, this.fluids, this.entityTypes);
+					Multimap<String, Identifier> multimap = HashMultimap.create();
+					multimap.putAll("blocks", BlockTags.method_29214(this.blocks));
+					multimap.putAll("items", ItemTags.method_29217(this.items));
+					multimap.putAll("fluids", FluidTags.method_29216(this.fluids));
+					multimap.putAll("entity_types", EntityTypeTags.method_29215(this.entityTypes));
+					if (!multimap.isEmpty()) {
+						throw new IllegalStateException(
+							"Missing required tags: "
+								+ (String)multimap.entries().stream().map(entry -> (String)entry.getKey() + ":" + entry.getValue()).sorted().collect(Collectors.joining(","))
+						);
+					}
+				},
+				applyExecutor
+			);
+	}
+
+	public void method_29226() {
+		BlockTags.setContainer(this.blocks);
+		ItemTags.setContainer(this.items);
+		FluidTags.setContainer(this.fluids);
+		EntityTypeTags.setContainer(this.entityTypes);
+		Blocks.refreshShapeCache();
 	}
 }

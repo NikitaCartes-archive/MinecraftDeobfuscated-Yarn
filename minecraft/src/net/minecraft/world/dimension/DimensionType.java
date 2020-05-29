@@ -17,7 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Map.Entry;
@@ -27,6 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeAccessType;
 import net.minecraft.world.biome.source.HorizontalVoronoiBiomeAccessType;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
@@ -61,20 +61,9 @@ public class DimensionType {
 	public static final RegistryKey<DimensionType> OVERWORLD_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld"));
 	public static final RegistryKey<DimensionType> THE_NETHER_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_nether"));
 	public static final RegistryKey<DimensionType> THE_END_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_end"));
-	private static final LinkedHashSet<RegistryKey<DimensionType>> DIMENSION_TYPES = Sets.newLinkedHashSet(
-		ImmutableList.of(OVERWORLD_REGISTRY_KEY, THE_NETHER_REGISTRY_KEY, THE_END_REGISTRY_KEY)
-	);
-	private static final DimensionType OVERWORLD = new DimensionType(
-		"", OptionalLong.empty(), true, false, false, true, false, false, HorizontalVoronoiBiomeAccessType.INSTANCE, Optional.of(OVERWORLD_REGISTRY_KEY), 0.0F
-	);
-	private static final DimensionType THE_NETHER = new DimensionType(
-		"_nether", OptionalLong.of(18000L), false, true, true, false, true, false, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_NETHER_REGISTRY_KEY), 0.1F
-	);
-	private static final DimensionType THE_END = new DimensionType(
-		"_end", OptionalLong.of(6000L), false, false, false, false, false, true, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_END_REGISTRY_KEY), 0.0F
-	);
+	private static final LinkedHashSet<RegistryKey<World>> DIMENSION_TYPES = Sets.newLinkedHashSet(ImmutableList.of(World.OVERWORLD, World.NETHER, World.END));
 	private static final Map<RegistryKey<DimensionType>, DimensionType> field_24759 = ImmutableMap.of(
-		OVERWORLD_REGISTRY_KEY, OVERWORLD, THE_NETHER_REGISTRY_KEY, THE_NETHER, THE_END_REGISTRY_KEY, THE_END
+		OVERWORLD_REGISTRY_KEY, method_29294(), THE_NETHER_REGISTRY_KEY, method_29295(), THE_END_REGISTRY_KEY, method_29296()
 	);
 	private static final Codec<DimensionType> field_24760 = field_24751.<DimensionType>flatXmap(
 			registryKey -> (DataResult)Optional.ofNullable(field_24759.get(registryKey))
@@ -104,6 +93,24 @@ public class DimensionType {
 	private final Optional<RegistryKey<DimensionType>> field_24765;
 	private final float ambientLight;
 	private final transient float[] field_24767;
+
+	public static DimensionType method_29294() {
+		return new DimensionType(
+			"", OptionalLong.empty(), true, false, false, true, false, false, HorizontalVoronoiBiomeAccessType.INSTANCE, Optional.of(OVERWORLD_REGISTRY_KEY), 0.0F
+		);
+	}
+
+	private static DimensionType method_29295() {
+		return new DimensionType(
+			"_nether", OptionalLong.of(18000L), false, true, true, false, true, false, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_NETHER_REGISTRY_KEY), 0.1F
+		);
+	}
+
+	private static DimensionType method_29296() {
+		return new DimensionType(
+			"_end", OptionalLong.of(6000L), false, false, false, false, false, true, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_END_REGISTRY_KEY), 0.0F
+		);
+	}
 
 	protected DimensionType(
 		OptionalLong fixedTime, boolean hasSkylight, boolean hasCeiling, boolean ultrawarm, boolean natural, boolean shrunk, float ambientLight
@@ -151,24 +158,22 @@ public class DimensionType {
 	}
 
 	@Deprecated
-	public static DataResult<RegistryKey<DimensionType>> method_28521(Dynamic<?> dynamic) {
+	public static DataResult<RegistryKey<World>> method_28521(Dynamic<?> dynamic) {
 		DataResult<Number> dataResult = dynamic.asNumber();
 		if (dataResult.result().equals(Optional.of(-1))) {
-			return DataResult.success(THE_NETHER_REGISTRY_KEY);
+			return DataResult.success(World.NETHER);
 		} else if (dataResult.result().equals(Optional.of(0))) {
-			return DataResult.success(OVERWORLD_REGISTRY_KEY);
+			return DataResult.success(World.OVERWORLD);
 		} else {
-			return dataResult.result().equals(Optional.of(1))
-				? DataResult.success(THE_END_REGISTRY_KEY)
-				: Identifier.field_25139.<RegistryKey<DimensionType>>xmap(RegistryKey.createKeyFactory(Registry.DIMENSION_TYPE_KEY), RegistryKey::getValue).parse(dynamic);
+			return dataResult.result().equals(Optional.of(1)) ? DataResult.success(World.END) : World.CODEC.parse(dynamic);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static DimensionTracker.Modifiable addDefaults(DimensionTracker.Modifiable tracker) {
-		tracker.add(OVERWORLD_REGISTRY_KEY, OVERWORLD);
-		tracker.add(THE_NETHER_REGISTRY_KEY, THE_NETHER);
-		tracker.add(THE_END_REGISTRY_KEY, THE_END);
+		tracker.add(OVERWORLD_REGISTRY_KEY, method_29294());
+		tracker.add(THE_NETHER_REGISTRY_KEY, method_29295());
+		tracker.add(THE_END_REGISTRY_KEY, method_29296());
 		return tracker;
 	}
 
@@ -180,38 +185,28 @@ public class DimensionType {
 		return new SurfaceChunkGenerator(MultiNoiseBiomeSource.class_5305.field_24723.method_28469(l), l, ChunkGeneratorType.Preset.NETHER.getChunkGeneratorType());
 	}
 
-	public static LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> method_28517(long l) {
-		LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = Maps.newLinkedHashMap();
-		linkedHashMap.put(THE_NETHER_REGISTRY_KEY, Pair.of(THE_NETHER, method_28535(l)));
-		linkedHashMap.put(THE_END_REGISTRY_KEY, Pair.of(THE_END, method_28533(l)));
+	public static LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> method_28517(long l) {
+		LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = Maps.newLinkedHashMap();
+		linkedHashMap.put(World.NETHER, Pair.of(method_29295(), method_28535(l)));
+		linkedHashMap.put(World.END, Pair.of(method_29296(), method_28533(l)));
 		return linkedHashMap;
 	}
 
-	public static DimensionType getDefaultDimensionType() {
-		return OVERWORLD;
-	}
-
-	public static boolean method_28518(long l, LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap) {
-		List<Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>>> list = Lists.<Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>>>newArrayList(
+	public static boolean method_28518(long l, LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap) {
+		List<Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>>> list = Lists.<Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>>>newArrayList(
 			linkedHashMap.entrySet()
 		);
 		if (list.size() != 3) {
 			return false;
 		} else {
-			Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> entry = (Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>>)list.get(
-				0
-			);
-			Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> entry2 = (Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>>)list.get(
-				1
-			);
-			Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> entry3 = (Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>>)list.get(
-				2
-			);
-			if (entry.getKey() != OVERWORLD_REGISTRY_KEY || entry2.getKey() != THE_NETHER_REGISTRY_KEY || entry3.getKey() != THE_END_REGISTRY_KEY) {
+			Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> entry = (Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>>)list.get(0);
+			Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> entry2 = (Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>>)list.get(1);
+			Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> entry3 = (Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>>)list.get(2);
+			if (entry.getKey() != World.OVERWORLD || entry2.getKey() != World.NETHER || entry3.getKey() != World.END) {
 				return false;
-			} else if (((Pair)entry.getValue()).getFirst() != OVERWORLD
-				|| ((Pair)entry2.getValue()).getFirst() != THE_NETHER
-				|| ((Pair)entry3.getValue()).getFirst() != THE_END) {
+			} else if (!((DimensionType)((Pair)entry.getValue()).getFirst()).isOverworld()
+				|| !((DimensionType)((Pair)entry2.getValue()).getFirst()).isNether()
+				|| !((DimensionType)((Pair)entry3.getValue()).getFirst()).isEnd()) {
 				return false;
 			} else if (((Pair)entry2.getValue()).getSecond() instanceof SurfaceChunkGenerator && ((Pair)entry3.getValue()).getSecond() instanceof SurfaceChunkGenerator) {
 				SurfaceChunkGenerator surfaceChunkGenerator = (SurfaceChunkGenerator)((Pair)entry2.getValue()).getSecond();
@@ -243,13 +238,13 @@ public class DimensionType {
 		return this.suffix;
 	}
 
-	public static File getSaveDirectory(RegistryKey<?> registryKey, File root) {
-		if (Objects.equals(registryKey, OVERWORLD_REGISTRY_KEY)) {
+	public static File getSaveDirectory(RegistryKey<World> registryKey, File root) {
+		if (registryKey == World.OVERWORLD) {
 			return root;
-		} else if (Objects.equals(registryKey, THE_END_REGISTRY_KEY)) {
+		} else if (registryKey == World.END) {
 			return new File(root, "DIM1");
 		} else {
-			return Objects.equals(registryKey, THE_NETHER_REGISTRY_KEY)
+			return registryKey == World.NETHER
 				? new File(root, "DIM-1")
 				: new File(root, "dimensions/" + registryKey.getValue().getNamespace() + "/" + registryKey.getValue().getPath());
 		}
@@ -298,30 +293,30 @@ public class DimensionType {
 	}
 
 	public boolean isOverworld() {
-		return this == OVERWORLD;
+		return this.field_24765.equals(Optional.of(OVERWORLD_REGISTRY_KEY));
 	}
 
 	public boolean isNether() {
-		return this == THE_NETHER;
+		return this.field_24765.equals(Optional.of(THE_NETHER_REGISTRY_KEY));
 	}
 
 	public boolean isEnd() {
-		return this == THE_END;
+		return this.field_24765.equals(Optional.of(THE_END_REGISTRY_KEY));
 	}
 
-	public static LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> method_28524(
-		Map<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> map
+	public static LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> method_28524(
+		Map<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> map
 	) {
-		LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = Maps.newLinkedHashMap();
+		LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = Maps.newLinkedHashMap();
 
-		for (RegistryKey<DimensionType> registryKey : DIMENSION_TYPES) {
+		for (RegistryKey<World> registryKey : DIMENSION_TYPES) {
 			Pair<DimensionType, ChunkGenerator> pair = (Pair<DimensionType, ChunkGenerator>)map.get(registryKey);
 			if (pair != null) {
 				linkedHashMap.put(registryKey, pair);
 			}
 		}
 
-		for (Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> entry : map.entrySet()) {
+		for (Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> entry : map.entrySet()) {
 			if (!DIMENSION_TYPES.contains(entry.getKey())) {
 				linkedHashMap.put(entry.getKey(), entry.getValue());
 			}

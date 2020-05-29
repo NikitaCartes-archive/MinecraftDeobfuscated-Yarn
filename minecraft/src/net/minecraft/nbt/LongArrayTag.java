@@ -138,7 +138,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return LongTag.of(this.value[i]);
 	}
 
-	public LongTag set(int i, LongTag longTag) {
+	public LongTag method_10606(int i, LongTag longTag) {
 		long l = this.value[i];
 		this.value[i] = longTag.getLong();
 		return LongTag.of(l);
@@ -168,7 +168,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		}
 	}
 
-	public LongTag method_10536(int i) {
+	public LongTag remove(int i) {
 		long l = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
 		return LongTag.of(l);

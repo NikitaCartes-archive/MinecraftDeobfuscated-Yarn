@@ -2,6 +2,7 @@ package net.minecraft.client.network;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import io.netty.buffer.Unpooled;
@@ -11,11 +12,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
@@ -24,7 +28,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
@@ -291,6 +294,7 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -320,6 +324,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID sessionId = UUID.randomUUID();
+	private Set<RegistryKey<World>> field_25273;
 	private DimensionTracker dimensionTracker = DimensionTracker.create();
 
 	public ClientPlayNetworkHandler(MinecraftClient minecraftClient, Screen screen, ClientConnection connection, GameProfile profile) {
@@ -354,19 +359,33 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			EntityTypeTags.markReady();
 		}
 
+		ArrayList<RegistryKey<World>> arrayList = Lists.newArrayList(packet.method_29443());
+		Collections.shuffle(arrayList);
+		this.field_25273 = Sets.<RegistryKey<World>>newLinkedHashSet(arrayList);
 		this.dimensionTracker = packet.getDimension();
-		DimensionType dimensionType = this.dimensionTracker.getRegistry().get(packet.getDimensionId());
+		RegistryKey<DimensionType> registryKey = packet.method_29444();
+		RegistryKey<World> registryKey2 = packet.getDimensionId();
+		DimensionType dimensionType = this.dimensionTracker.getRegistry().get(registryKey);
 		this.chunkLoadDistance = packet.getChunkLoadDistance();
 		boolean bl = packet.isDebugWorld();
 		boolean bl2 = packet.isFlatWorld();
 		ClientWorld.Properties properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.isHardcore(), bl2);
 		this.worldProperties = properties;
 		this.world = new ClientWorld(
-			this, properties, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSeed()
+			this,
+			properties,
+			registryKey2,
+			registryKey,
+			dimensionType,
+			this.chunkLoadDistance,
+			this.client::getProfiler,
+			this.client.worldRenderer,
+			bl,
+			packet.getSha256Seed()
 		);
 		this.client.joinWorld(this.world);
 		if (this.client.player == null) {
-			this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
+			this.client.player = this.client.interactionManager.method_29357(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
 			this.client.player.yaw = -180.0F;
 			if (this.client.getServer() != null) {
 				this.client.getServer().setLocalPlayerUuid(this.client.player.getUuid());
@@ -694,6 +713,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			h = 0.0;
 			i = packet.getZ();
 			playerEntity.lastRenderZ = i;
+		}
+
+		if (playerEntity.age > 0 && playerEntity.getVehicle() != null) {
+			playerEntity.method_29239();
 		}
 
 		playerEntity.setPos(e, g, i);
@@ -1024,19 +1047,29 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onPlayerRespawn(PlayerRespawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		RegistryKey<DimensionType> registryKey = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, packet.getDimension());
+		RegistryKey<DimensionType> registryKey = packet.method_29445();
+		RegistryKey<World> registryKey2 = packet.getDimension();
 		DimensionType dimensionType = this.dimensionTracker.getRegistry().get(registryKey);
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getEntityId();
 		this.positionLookSetup = false;
-		if (registryKey != clientPlayerEntity.world.method_27983()) {
+		if (registryKey2 != clientPlayerEntity.world.getRegistryKey()) {
 			Scoreboard scoreboard = this.world.getScoreboard();
 			boolean bl = packet.isDebugWorld();
 			boolean bl2 = packet.isFlatWorld();
 			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
 			this.worldProperties = properties;
 			this.world = new ClientWorld(
-				this, properties, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed()
+				this,
+				properties,
+				registryKey2,
+				registryKey,
+				dimensionType,
+				this.chunkLoadDistance,
+				this.client::getProfiler,
+				this.client.worldRenderer,
+				bl,
+				packet.getSha256Seed()
 			);
 			this.world.setScoreboard(scoreboard);
 			this.client.joinWorld(this.world);
@@ -1048,7 +1081,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.cameraEntity = null;
 		ClientPlayerEntity clientPlayerEntity2 = this.client
 			.interactionManager
-			.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook());
+			.createPlayer(
+				this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook(), clientPlayerEntity.isSneaking(), clientPlayerEntity.isSprinting()
+			);
 		clientPlayerEntity2.setEntityId(i);
 		this.client.player = clientPlayerEntity2;
 		this.client.cameraEntity = clientPlayerEntity2;
@@ -1495,11 +1530,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.tagManager = packet.getTagManager();
 		if (!this.connection.isLocal()) {
-			BlockTags.setContainer(this.tagManager.blocks());
-			ItemTags.setContainer(this.tagManager.items());
-			FluidTags.setContainer(this.tagManager.fluids());
-			EntityTypeTags.setContainer(this.tagManager.entityTypes());
-			Blocks.refreshShapeCache();
+			this.tagManager.method_29226();
 		}
 
 		this.client.getSearchableContainer(SearchManager.ITEM_TAG).reload();
@@ -1632,7 +1663,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		playerEntity.abilities.invulnerable = packet.isInvulnerable();
 		playerEntity.abilities.allowFlying = packet.allowFlying();
 		playerEntity.abilities.setFlySpeed(packet.getFlySpeed());
-		playerEntity.abilities.setWalkSpeed(packet.getFovModifier());
+		playerEntity.abilities.setWalkSpeed(packet.getWalkSpeed());
 	}
 
 	@Override
@@ -1954,6 +1985,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				int v = packetByteBuf.readInt();
 
 				for (int w = 0; w < v; w++) {
+					BlockPos blockPos4 = packetByteBuf.readBlockPos();
+					brain.field_25287.add(blockPos4);
+				}
+
+				int w = packetByteBuf.readInt();
+
+				for (int x = 0; x < w; x++) {
 					String string9 = packetByteBuf.readString();
 					brain.field_19375.add(string9);
 				}
@@ -1967,37 +2005,37 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				UUID uUID = packetByteBuf.readUuid();
 				int o = packetByteBuf.readInt();
 				boolean bl4 = packetByteBuf.readBoolean();
-				BlockPos blockPos4 = null;
-				if (bl4) {
-					blockPos4 = packetByteBuf.readBlockPos();
-				}
-
-				boolean bl5 = packetByteBuf.readBoolean();
 				BlockPos blockPos5 = null;
-				if (bl5) {
+				if (bl4) {
 					blockPos5 = packetByteBuf.readBlockPos();
 				}
 
-				int x = packetByteBuf.readInt();
+				boolean bl5 = packetByteBuf.readBoolean();
+				BlockPos blockPos6 = null;
+				if (bl5) {
+					blockPos6 = packetByteBuf.readBlockPos();
+				}
+
+				int y = packetByteBuf.readInt();
 				boolean bl6 = packetByteBuf.readBoolean();
 				Path path3 = null;
 				if (bl6) {
 					path3 = Path.fromBuffer(packetByteBuf);
 				}
 
-				BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos4, blockPos5, x);
-				int y = packetByteBuf.readInt();
+				BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos5, blockPos6, y);
+				int z = packetByteBuf.readInt();
 
-				for (int z = 0; z < y; z++) {
+				for (int aa = 0; aa < z; aa++) {
 					String string10 = packetByteBuf.readString();
 					bee.labels.add(string10);
 				}
 
-				int z = packetByteBuf.readInt();
+				int aa = packetByteBuf.readInt();
 
-				for (int r = 0; r < z; r++) {
-					BlockPos blockPos6 = packetByteBuf.readBlockPos();
-					bee.blacklist.add(blockPos6);
+				for (int r = 0; r < aa; r++) {
+					BlockPos blockPos7 = packetByteBuf.readBlockPos();
+					bee.blacklist.add(blockPos7);
 				}
 
 				this.client.debugRenderer.beeDebugRenderer.addBee(bee);
@@ -2005,9 +2043,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				String string = packetByteBuf.readString();
 				int m = packetByteBuf.readInt();
-				int aa = packetByteBuf.readInt();
+				int ab = packetByteBuf.readInt();
 				boolean bl7 = packetByteBuf.readBoolean();
-				BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string, m, aa, bl7, this.world.getTime());
+				BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string, m, ab, bl7, this.world.getTime());
 				this.client.debugRenderer.beeDebugRenderer.addHive(hive);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
 				this.client.debugRenderer.gameTestDebugRenderer.clear();
@@ -2015,8 +2053,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				int j = packetByteBuf.readInt();
 				String string11 = packetByteBuf.readString();
-				int aa = packetByteBuf.readInt();
-				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, aa);
+				int ab = packetByteBuf.readInt();
+				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, ab);
 			} else {
 				LOGGER.warn("Unknown custom packed identifier: {}", identifier);
 			}
@@ -2302,6 +2340,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	public UUID getSessionId() {
 		return this.sessionId;
+	}
+
+	public Set<RegistryKey<World>> method_29356() {
+		return this.field_25273;
 	}
 
 	public DimensionTracker method_29091() {

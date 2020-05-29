@@ -37,7 +37,7 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 		Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.MEETING_POINT);
 		return world.getRandom().nextInt(100) == 0
 			&& optional.isPresent()
-			&& world.method_27983() == ((GlobalPos)optional.get()).getDimension()
+			&& world.getRegistryKey() == ((GlobalPos)optional.get()).getDimension()
 			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(entity.getPos(), 4.0)
 			&& ((List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
 				.stream()

@@ -21,11 +21,6 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerRecipeBook extends RecipeBook {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final RecipeManager manager;
-
-	public ServerRecipeBook(RecipeManager manager) {
-		this.manager = manager;
-	}
 
 	public int unlockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
@@ -99,7 +94,7 @@ public class ServerRecipeBook extends RecipeBook {
 		return compoundTag;
 	}
 
-	public void fromTag(CompoundTag tag) {
+	public void fromTag(CompoundTag tag, RecipeManager recipeManager) {
 		this.guiOpen = tag.getBoolean("isGuiOpen");
 		this.filteringCraftable = tag.getBoolean("isFilteringCraftable");
 		this.furnaceGuiOpen = tag.getBoolean("isFurnaceGuiOpen");
@@ -109,24 +104,24 @@ public class ServerRecipeBook extends RecipeBook {
 		this.smokerGuiOpen = tag.getBoolean("isSmokerGuiOpen");
 		this.smokerFilteringCraftable = tag.getBoolean("isSmokerFilteringCraftable");
 		ListTag listTag = tag.getList("recipes", 8);
-		this.handleList(listTag, this::add);
+		this.handleList(listTag, this::add, recipeManager);
 		ListTag listTag2 = tag.getList("toBeDisplayed", 8);
-		this.handleList(listTag2, this::display);
+		this.handleList(listTag2, this::display, recipeManager);
 	}
 
-	private void handleList(ListTag list, Consumer<Recipe<?>> handler) {
+	private void handleList(ListTag list, Consumer<Recipe<?>> handler, RecipeManager recipeManager) {
 		for (int i = 0; i < list.size(); i++) {
 			String string = list.getString(i);
 
 			try {
 				Identifier identifier = new Identifier(string);
-				Optional<? extends Recipe<?>> optional = this.manager.get(identifier);
+				Optional<? extends Recipe<?>> optional = recipeManager.get(identifier);
 				if (!optional.isPresent()) {
 					LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier);
 				} else {
 					handler.accept(optional.get());
 				}
-			} catch (InvalidIdentifierException var7) {
+			} catch (InvalidIdentifierException var8) {
 				LOGGER.error("Tried to load improperly formatted recipe: {} removed now.", string);
 			}
 		}

@@ -154,7 +154,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_GRINDSTONE);
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

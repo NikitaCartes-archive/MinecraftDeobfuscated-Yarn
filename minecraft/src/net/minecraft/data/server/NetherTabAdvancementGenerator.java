@@ -38,9 +38,9 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
@@ -60,7 +60,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				false,
 				false
 			)
-			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_NETHER_REGISTRY_KEY))
+			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(World.NETHER))
 			.build(consumer, "nether/root");
 		Advancement advancement2 = Advancement.Task.create()
 			.parent(advancement)
@@ -128,7 +128,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.dimension(DimensionType.OVERWORLD_REGISTRY_KEY))
+					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.dimension(World.OVERWORLD))
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");

@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -45,9 +46,10 @@ public abstract class FoliagePlacer {
 		FoliagePlacer.TreeNode treeNode,
 		int foliageHeight,
 		int radius,
-		Set<BlockPos> leaves
+		Set<BlockPos> leaves,
+		BlockBox blockBox
 	) {
-		this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.method_27386(random));
+		this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.method_27386(random), blockBox);
 	}
 
 	/**
@@ -62,7 +64,8 @@ public abstract class FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i
+		int i,
+		BlockBox blockBox
 	);
 
 	public abstract int getHeight(Random random, int trunkHeight, TreeFeatureConfig config);
@@ -92,7 +95,15 @@ public abstract class FoliagePlacer {
 	}
 
 	protected void generate(
-		ModifiableTestableWorld world, Random random, TreeFeatureConfig config, BlockPos blockPos, int baseHeight, Set<BlockPos> leaves, int i, boolean giantTrunk
+		ModifiableTestableWorld world,
+		Random random,
+		TreeFeatureConfig config,
+		BlockPos blockPos,
+		int baseHeight,
+		Set<BlockPos> set,
+		int i,
+		boolean giantTrunk,
+		BlockBox blockBox
 	) {
 		int j = giantTrunk ? 1 : 0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -103,7 +114,8 @@ public abstract class FoliagePlacer {
 					mutable.set(blockPos, k, i, l);
 					if (TreeFeature.canReplace(world, mutable)) {
 						world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
-						leaves.add(mutable.toImmutable());
+						blockBox.encompass(new BlockBox(mutable, mutable));
+						set.add(mutable.toImmutable());
 					}
 				}
 			}

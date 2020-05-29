@@ -78,7 +78,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
 		super(entityType, world);
-		this.setHealth(this.getMaximumHealth());
+		this.setHealth(this.getMaxHealth());
 		this.getNavigation().setCanSwim(true);
 		this.experiencePoints = 50;
 	}
@@ -343,7 +343,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				this.heal(1.0F);
 			}
 
-			this.bossBar.setPercent(this.getHealth() / this.getMaximumHealth());
+			this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 		}
 	}
 
@@ -353,7 +353,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	public void method_6885() {
 		this.setInvulTimer(220);
-		this.setHealth(this.getMaximumHealth() / 3.0F);
+		this.setHealth(this.getMaxHealth() / 3.0F);
 	}
 
 	@Override
@@ -431,6 +431,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		double k = e - h;
 		double l = f - i;
 		WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, j, k, l);
+		witherSkullEntity.setOwner(this);
 		if (bl) {
 			witherSkullEntity.setCharged(true);
 		}
@@ -541,7 +542,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	@Override
 	public boolean shouldRenderOverlay() {
-		return this.getHealth() <= this.getMaximumHealth() / 2.0F;
+		return this.getHealth() <= this.getMaxHealth() / 2.0F;
 	}
 
 	@Override

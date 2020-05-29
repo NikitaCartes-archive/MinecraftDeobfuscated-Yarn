@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -55,6 +56,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -64,7 +66,10 @@ public class ZombieEntity extends HostileEntity {
 		BABY_SPEED_ID, "Baby speed boost", 0.5, EntityAttributeModifier.Operation.MULTIPLY_BASE
 	);
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Integer> field_7427 = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	/**
+	 * Unused tracked data, left over from 1.10 when zombies, zombie villagers and husks were all the same type of entity.
+	 */
+	private static final TrackedData<Integer> ZOMBIE_TYPE = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CONVERTING_IN_WATER = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final Predicate<Difficulty> DOOR_BREAK_DIFFICULTY_CHECKER = difficulty -> difficulty == Difficulty.HARD;
 	private final BreakDoorGoal breakDoorsGoal = new BreakDoorGoal(this, DOOR_BREAK_DIFFICULTY_CHECKER);
@@ -112,7 +117,7 @@ public class ZombieEntity extends HostileEntity {
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.getDataTracker().startTracking(BABY, false);
-		this.getDataTracker().startTracking(field_7427, 0);
+		this.getDataTracker().startTracking(ZOMBIE_TYPE, 0);
 		this.getDataTracker().startTracking(CONVERTING_IN_WATER, false);
 	}
 
@@ -247,36 +252,10 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	protected void convertTo(EntityType<? extends ZombieEntity> entityType) {
-		if (!this.removed) {
-			ZombieEntity zombieEntity = entityType.create(this.world);
-			zombieEntity.copyPositionAndRotation(this);
-			zombieEntity.setCanPickUpLoot(this.canPickUpLoot());
-			zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
+		ZombieEntity zombieEntity = this.method_29243(entityType);
+		if (zombieEntity != null) {
 			zombieEntity.applyAttributeModifiers(zombieEntity.world.getLocalDifficulty(zombieEntity.getBlockPos()).getClampedLocalDifficulty());
-			zombieEntity.setBaby(this.isBaby());
-			zombieEntity.setAiDisabled(this.isAiDisabled());
-
-			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-				if (!itemStack.isEmpty()) {
-					zombieEntity.equipStack(equipmentSlot, itemStack.copy());
-					zombieEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
-					itemStack.setCount(0);
-				}
-			}
-
-			if (this.hasCustomName()) {
-				zombieEntity.setCustomName(this.getCustomName());
-				zombieEntity.setCustomNameVisible(this.isCustomNameVisible());
-			}
-
-			if (this.isPersistent()) {
-				zombieEntity.setPersistent();
-			}
-
-			zombieEntity.setInvulnerable(this.isInvulnerable());
-			this.world.spawnEntity(zombieEntity);
-			this.remove();
+			zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
 		}
 	}
 
@@ -305,8 +284,11 @@ public class ZombieEntity extends HostileEntity {
 					int m = i + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					int n = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					int o = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
-					BlockPos blockPos = new BlockPos(m, n - 1, o);
-					if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, zombieEntity) && this.world.getLightLevel(new BlockPos(m, n, o)) < 10) {
+					BlockPos blockPos = new BlockPos(m, n, o);
+					EntityType<?> entityType = zombieEntity.getType();
+					SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
+					if (SpawnHelper.canSpawn(location, this.world, blockPos, entityType)
+						&& SpawnRestriction.canSpawn(entityType, this.world, SpawnReason.REINFORCEMENT, blockPos, this.world.random)) {
 						zombieEntity.updatePosition((double)m, (double)n, (double)o);
 						if (!this.world.isPlayerInRange((double)m, (double)n, (double)o, 7.0)
 							&& this.world.intersectsEntities(zombieEntity)
@@ -438,7 +420,7 @@ public class ZombieEntity extends HostileEntity {
 				zombieVillagerEntity.setCustomNameVisible(villagerEntity.isCustomNameVisible());
 			}
 
-			if (this.isPersistent()) {
+			if (villagerEntity.isPersistent()) {
 				zombieVillagerEntity.setPersistent();
 			}
 

@@ -26,7 +26,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 public class ItemEntity extends Entity {
 	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
@@ -35,10 +34,11 @@ public class ItemEntity extends Entity {
 	private int health = 5;
 	private UUID thrower;
 	private UUID owner;
-	public final float hoverHeight = (float)(Math.random() * Math.PI * 2.0);
+	public final float hoverHeight;
 
 	public ItemEntity(EntityType<? extends ItemEntity> entityType, World world) {
 		super(entityType, world);
+		this.hoverHeight = (float)(Math.random() * Math.PI * 2.0);
 	}
 
 	public ItemEntity(World world, double x, double y, double z) {
@@ -51,6 +51,15 @@ public class ItemEntity extends Entity {
 	public ItemEntity(World world, double x, double y, double z, ItemStack stack) {
 		this(world, x, y, z);
 		this.setStack(stack);
+	}
+
+	@Environment(EnvType.CLIENT)
+	private ItemEntity(ItemEntity itemEntity) {
+		super(itemEntity.getType(), itemEntity.world);
+		this.setStack(itemEntity.getStack().copy());
+		this.copyPositionAndRotation(itemEntity);
+		this.age = itemEntity.age;
+		this.hoverHeight = itemEntity.hoverHeight;
 	}
 
 	@Override
@@ -308,7 +317,7 @@ public class ItemEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
+	public Entity changeDimension(RegistryKey<World> newDimension) {
 		Entity entity = super.changeDimension(newDimension);
 		if (!this.world.isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
@@ -393,5 +402,10 @@ public class ItemEntity extends Entity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public ItemEntity method_29271() {
+		return new ItemEntity(this);
 	}
 }

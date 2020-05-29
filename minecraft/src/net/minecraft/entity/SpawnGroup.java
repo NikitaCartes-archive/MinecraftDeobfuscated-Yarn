@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 
 public enum SpawnGroup implements StringIdentifiable {
-	MONSTER("monster", 70, false, 128),
-	CREATURE("creature", 10, true),
-	AMBIENT("ambient", 15, true, 128),
-	WATER_CREATURE("water_creature", 5, true, 128),
-	WATER_AMBIENT("water_ambient", 20, true, 64),
-	MISC("misc", -1, true);
+	MONSTER("monster", 70, false, false, 128),
+	CREATURE("creature", 10, true, true, 128),
+	AMBIENT("ambient", 15, true, false, 128),
+	WATER_CREATURE("water_creature", 5, true, false, 128),
+	WATER_AMBIENT("water_ambient", 20, true, false, 64),
+	MISC("misc", -1, true, true, 128);
 
 	public static final Codec<SpawnGroup> field_24655 = StringIdentifiable.method_28140(SpawnGroup::values, SpawnGroup::method_28307);
 	private static final Map<String, SpawnGroup> BY_NAME = (Map<String, SpawnGroup>)Arrays.stream(values())
@@ -24,20 +24,12 @@ public enum SpawnGroup implements StringIdentifiable {
 	private final int despawnStartRange = 32;
 	private final int immediateDespawnRange;
 
-	private SpawnGroup(String name, int capacity, boolean peaceful) {
-		this.name = name;
-		this.capacity = capacity;
-		this.peaceful = peaceful;
-		this.animal = true;
-		this.immediateDespawnRange = Integer.MAX_VALUE;
-	}
-
-	private SpawnGroup(String name, int spawnCap, boolean peaceful, int immediateDespawnRange) {
+	private SpawnGroup(String name, int spawnCap, boolean peaceful, boolean bl, int j) {
 		this.name = name;
 		this.capacity = spawnCap;
 		this.peaceful = peaceful;
-		this.animal = false;
-		this.immediateDespawnRange = immediateDespawnRange;
+		this.animal = bl;
+		this.immediateDespawnRange = j;
 	}
 
 	public String getName() {

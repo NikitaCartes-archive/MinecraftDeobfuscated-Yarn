@@ -22,7 +22,7 @@ public class TellRawCommand {
 
 										for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(commandContext, "targets")) {
 											serverPlayerEntity.sendSystemMessage(
-												Texts.parse(commandContext.getSource(), TextArgumentType.getTextArgument(commandContext, "message"), serverPlayerEntity, 0), Util.field_25140
+												Texts.parse(commandContext.getSource(), TextArgumentType.getTextArgument(commandContext, "message"), serverPlayerEntity, 0), Util.NIL_UUID
 											);
 											i++;
 										}

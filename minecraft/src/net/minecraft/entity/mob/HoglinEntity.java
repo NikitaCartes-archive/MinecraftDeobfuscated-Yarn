@@ -17,7 +17,6 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -76,8 +75,6 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	public HoglinEntity(EntityType<? extends HoglinEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 5;
-		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
-		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 	}
 
 	@Override
@@ -212,6 +209,11 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
+	public double getMountedHeightOffset() {
+		return (double)this.getHeight() - (this.isBaby() ? 0.2 : 0.15);
+	}
+
+	@Override
 	public boolean interactMob(PlayerEntity player, Hand hand) {
 		boolean bl = super.interactMob(player, hand);
 		if (bl) {
@@ -249,25 +251,8 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	private void zombify(ServerWorld word) {
-		ZoglinEntity zoglinEntity = EntityType.ZOGLIN.create(word);
-		if (zoglinEntity != null) {
-			zoglinEntity.copyPositionAndRotation(this);
-			zoglinEntity.initialize(word, word.getLocalDifficulty(zoglinEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null);
-			zoglinEntity.setBaby(this.isBaby());
-			zoglinEntity.setAiDisabled(this.isAiDisabled());
-			if (this.hasCustomName()) {
-				zoglinEntity.setCustomName(this.getCustomName());
-				zoglinEntity.setCustomNameVisible(this.isCustomNameVisible());
-			}
-
-			if (this.isPersistent()) {
-				zoglinEntity.setPersistent();
-			}
-
-			this.remove();
-			word.spawnEntity(zoglinEntity);
-			zoglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-		}
+		ZoglinEntity zoglinEntity = this.method_29243(EntityType.ZOGLIN);
+		zoglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
 	}
 
 	@Override
@@ -306,7 +291,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		this.setCannotBeHunted(tag.getBoolean("CannotBeHunted"));
 	}
 
-	private void setImmuneToZombification(boolean immuneToZombification) {
+	public void setImmuneToZombification(boolean immuneToZombification) {
 		this.getDataTracker().set(BABY, immuneToZombification);
 	}
 

@@ -687,7 +687,7 @@ public class InGameHud extends DrawableHelper {
 
 	private int getHeartCount(LivingEntity entity) {
 		if (entity != null && entity.isLiving()) {
-			float f = entity.getMaximumHealth();
+			float f = entity.getMaxHealth();
 			int i = (int)(f + 0.5F) / 2;
 			if (i > 30) {
 				i = 30;

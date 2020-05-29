@@ -45,7 +45,7 @@ public class StonecutterBlock extends Block {
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

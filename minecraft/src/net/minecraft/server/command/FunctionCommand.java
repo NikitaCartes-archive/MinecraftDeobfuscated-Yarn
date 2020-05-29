@@ -11,8 +11,8 @@ import net.minecraft.text.TranslatableText;
 public class FunctionCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
 		CommandFunctionManager commandFunctionManager = commandContext.getSource().getMinecraftServer().getCommandFunctionManager();
-		CommandSource.suggestIdentifiers(commandFunctionManager.getTags().getKeys(), suggestionsBuilder, "#");
-		return CommandSource.suggestIdentifiers(commandFunctionManager.getFunctions().keySet(), suggestionsBuilder);
+		CommandSource.suggestIdentifiers(commandFunctionManager.method_29464(), suggestionsBuilder, "#");
+		return CommandSource.suggestIdentifiers(commandFunctionManager.method_29463(), suggestionsBuilder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

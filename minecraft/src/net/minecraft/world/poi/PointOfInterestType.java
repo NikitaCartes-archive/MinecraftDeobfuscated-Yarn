@@ -1,14 +1,16 @@
 package net.minecraft.world.poi;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,11 +22,10 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 
 public class PointOfInterestType {
-	private static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> ((Set)Registry.VILLAGER_PROFESSION
-				.stream()
-				.map(VillagerProfession::getWorkStation)
-				.collect(Collectors.toSet()))
-			.contains(pointOfInterestType);
+	private static final Supplier<Set<PointOfInterestType>> field_25163 = Suppliers.memoize(
+		() -> (Set<PointOfInterestType>)Registry.VILLAGER_PROFESSION.stream().map(VillagerProfession::getWorkStation).collect(Collectors.toSet())
+	);
+	public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> ((Set)field_25163.get()).contains(pointOfInterestType);
 	public static final Predicate<PointOfInterestType> ALWAYS_TRUE = pointOfInterestType -> true;
 	private static final Set<BlockState> BED_STATES = (Set<BlockState>)ImmutableList.of(
 			Blocks.RED_BED,
@@ -70,6 +71,7 @@ public class PointOfInterestType {
 	public static final PointOfInterestType BEE_NEST = register("bee_nest", getAllStatesOf(Blocks.BEE_NEST), 0, 1);
 	public static final PointOfInterestType NETHER_PORTAL = register("nether_portal", getAllStatesOf(Blocks.NETHER_PORTAL), 0, 1);
 	public static final PointOfInterestType LODESTONE = register("lodestone", getAllStatesOf(Blocks.LODESTONE), 0, 1);
+	protected static final Set<BlockState> field_25162 = new ObjectOpenHashSet<>(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet());
 	private final String id;
 	private final Set<BlockState> blockStates;
 	private final int ticketCount;
@@ -140,9 +142,5 @@ public class PointOfInterestType {
 
 	public static Optional<PointOfInterestType> from(BlockState state) {
 		return Optional.ofNullable(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.get(state));
-	}
-
-	public static Stream<BlockState> getAllAssociatedStates() {
-		return BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet().stream();
 	}
 }

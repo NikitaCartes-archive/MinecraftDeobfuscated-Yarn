@@ -92,7 +92,7 @@ public abstract class class_5317 {
 								generatorOptions.getSeed(),
 								generatorOptions.shouldGenerateStructures(),
 								generatorOptions.hasBonusChest(),
-								GeneratorOptions.method_28608(generatorOptions.method_28609(), new FlatChunkGenerator(flatChunkGeneratorConfig))
+								GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new FlatChunkGenerator(flatChunkGeneratorConfig))
 							)
 						),
 				chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).method_28545() : FlatChunkGeneratorConfig.getDefaultConfig()
@@ -138,7 +138,7 @@ public abstract class class_5317 {
 			generatorOptions.getSeed(),
 			generatorOptions.shouldGenerateStructures(),
 			generatorOptions.hasBonusChest(),
-			GeneratorOptions.method_28608(generatorOptions.method_28609(), new SurfaceChunkGenerator(biomeSource, generatorOptions.getSeed(), chunkGeneratorType))
+			GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new SurfaceChunkGenerator(biomeSource, generatorOptions.getSeed(), chunkGeneratorType))
 		);
 	}
 

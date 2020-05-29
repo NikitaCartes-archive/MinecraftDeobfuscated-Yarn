@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
@@ -30,13 +31,14 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i
+		int i,
+		BlockBox blockBox
 	) {
 		boolean bl = treeNode.isGiantTrunk();
 		BlockPos blockPos = treeNode.getCenter().up(i);
-		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius(), leaves, -1 - foliageHeight, bl);
-		this.generate(world, random, config, blockPos, radius - 1, leaves, -foliageHeight, bl);
-		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, leaves, 0, bl);
+		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius(), leaves, -1 - foliageHeight, bl, blockBox);
+		this.generate(world, random, config, blockPos, radius - 1, leaves, -foliageHeight, bl, blockBox);
+		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, leaves, 0, bl, blockBox);
 	}
 
 	@Override

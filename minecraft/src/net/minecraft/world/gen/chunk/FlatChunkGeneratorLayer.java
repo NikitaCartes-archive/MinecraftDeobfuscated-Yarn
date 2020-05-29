@@ -2,6 +2,7 @@ package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.class_5324;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,7 +11,7 @@ import net.minecraft.util.registry.Registry;
 public class FlatChunkGeneratorLayer {
 	public static final Codec<FlatChunkGeneratorLayer> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.INT.fieldOf("height").forGetter(FlatChunkGeneratorLayer::getThickness),
+					class_5324.method_29229(0, 256).fieldOf("height").forGetter(FlatChunkGeneratorLayer::getThickness),
 					Registry.BLOCK.fieldOf("block").withDefault(Blocks.AIR).forGetter(flatChunkGeneratorLayer -> flatChunkGeneratorLayer.getBlockState().getBlock())
 				)
 				.apply(instance, FlatChunkGeneratorLayer::new)

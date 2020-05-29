@@ -1,91 +1,142 @@
 package net.minecraft.client.resource.language;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.ibm.icu.text.ArabicShaping;
+import com.ibm.icu.text.ArabicShapingException;
+import com.ibm.icu.text.Bidi;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import org.apache.commons.io.IOUtils;
+import net.minecraft.util.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class TranslationStorage {
-	private static final Gson GSON = new Gson();
+public class TranslationStorage extends Language {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
-	protected final Map<String, String> translations = Maps.<String, String>newHashMap();
+	private static final Pattern field_25288 = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z])");
+	private final Map<String, String> translations;
+	private final boolean field_25289;
 
-	public synchronized void load(ResourceManager container, List<String> list) {
-		this.translations.clear();
+	private TranslationStorage(Map<String, String> map, boolean bl) {
+		this.translations = map;
+		this.field_25289 = bl;
+	}
 
-		for (String string : list) {
-			String string2 = String.format("lang/%s.json", string);
+	public static TranslationStorage load(ResourceManager resourceManager, List<LanguageDefinition> list) {
+		Map<String, String> map = Maps.<String, String>newHashMap();
+		boolean bl = false;
 
-			for (String string3 : container.getAllNamespaces()) {
+		for (LanguageDefinition languageDefinition : list) {
+			bl |= languageDefinition.isRightToLeft();
+			String string = String.format("lang/%s.json", languageDefinition.getCode());
+
+			for (String string2 : resourceManager.getAllNamespaces()) {
 				try {
-					Identifier identifier = new Identifier(string3, string2);
-					this.load(container.getAllResources(identifier));
-				} catch (FileNotFoundException var9) {
-				} catch (Exception var10) {
-					LOGGER.warn("Skipped language file: {}:{} ({})", string3, string2, var10.toString());
+					Identifier identifier = new Identifier(string2, string);
+					load(resourceManager.getAllResources(identifier), map);
+				} catch (FileNotFoundException var10) {
+				} catch (Exception var11) {
+					LOGGER.warn("Skipped language file: {}:{} ({})", string2, string, var11.toString());
 				}
 			}
 		}
+
+		return new TranslationStorage(ImmutableMap.copyOf(map), bl);
 	}
 
-	private void load(List<Resource> list) {
+	private static void load(List<Resource> list, Map<String, String> map) {
 		for (Resource resource : list) {
-			InputStream inputStream = resource.getInputStream();
-
 			try {
-				this.load(inputStream);
-			} finally {
-				IOUtils.closeQuietly(inputStream);
+				InputStream inputStream = resource.getInputStream();
+				Throwable var5 = null;
+
+				try {
+					Language.method_29425(inputStream, map::put);
+				} catch (Throwable var15) {
+					var5 = var15;
+					throw var15;
+				} finally {
+					if (inputStream != null) {
+						if (var5 != null) {
+							try {
+								inputStream.close();
+							} catch (Throwable var14) {
+								var5.addSuppressed(var14);
+							}
+						} else {
+							inputStream.close();
+						}
+					}
+				}
+			} catch (IOException var17) {
+				LOGGER.warn("Failed to load translations from {}", resource, var17);
 			}
 		}
 	}
 
-	private void load(InputStream inputStream) {
-		JsonElement jsonElement = GSON.fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonElement.class);
-		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "strings");
+	@Override
+	public String get(String string) {
+		return (String)this.translations.getOrDefault(string, string);
+	}
 
-		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-			String string = PARAM_PATTERN.matcher(JsonHelper.asString((JsonElement)entry.getValue(), (String)entry.getKey())).replaceAll("%$1s");
-			this.translations.put(entry.getKey(), string);
+	@Override
+	public boolean hasTranslation(String key) {
+		return this.translations.containsKey(key);
+	}
+
+	@Override
+	public boolean method_29428() {
+		return this.field_25289;
+	}
+
+	@Override
+	public String method_29426(String string, boolean bl) {
+		if (!this.field_25289) {
+			return string;
+		} else {
+			if (bl && string.indexOf(37) != -1) {
+				string = method_29389(string);
+			}
+
+			return this.method_29390(string);
 		}
 	}
 
-	private String get(String string) {
-		String string2 = (String)this.translations.get(string);
-		return string2 == null ? string : string2;
+	public static String method_29389(String string) {
+		Matcher matcher = field_25288.matcher(string);
+		StringBuffer stringBuffer = new StringBuffer();
+		int i = 1;
+
+		while (matcher.find()) {
+			String string2 = matcher.group(1);
+			String string3 = string2 != null ? string2 : Integer.toString(i++);
+			String string4 = matcher.group(2);
+			String string5 = Matcher.quoteReplacement("\u2066%" + string3 + "$" + string4 + "\u2069");
+			matcher.appendReplacement(stringBuffer, string5);
+		}
+
+		matcher.appendTail(stringBuffer);
+		return stringBuffer.toString();
 	}
 
-	public String translate(String key, Object[] objects) {
-		String string = this.get(key);
-
+	private String method_29390(String string) {
 		try {
-			return String.format(string, objects);
-		} catch (IllegalFormatException var5) {
-			return "Format error: " + string;
+			Bidi bidi = new Bidi(new ArabicShaping(8).shape(string), 127);
+			bidi.setReorderingMode(0);
+			return bidi.writeReordered(10);
+		} catch (ArabicShapingException var3) {
+			return string;
 		}
-	}
-
-	public boolean containsKey(String string) {
-		return this.translations.containsKey(string);
 	}
 }

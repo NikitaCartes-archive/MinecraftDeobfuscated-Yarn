@@ -33,7 +33,7 @@ public class BoneMealItem extends Item {
 				world.syncWorldEvent(2005, blockPos, 0);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
 			boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
@@ -42,7 +42,7 @@ public class BoneMealItem extends Item {
 					world.syncWorldEvent(2005, blockPos2, 0);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.method_29236(world.isClient);
 			} else {
 				return ActionResult.PASS;
 			}
@@ -140,7 +140,7 @@ public class BoneMealItem extends Item {
 				d = 3.0;
 				e = 1.0;
 			} else {
-				e = blockState.getOutlineShape(world, pos).getMaximum(Direction.Axis.Y);
+				e = blockState.getOutlineShape(world, pos).getMax(Direction.Axis.Y);
 			}
 
 			world.addParticle(ParticleTypes.HAPPY_VILLAGER, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);

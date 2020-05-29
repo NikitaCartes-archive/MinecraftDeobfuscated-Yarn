@@ -110,7 +110,7 @@ public class CommandBlock extends BlockWithEntity {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof CommandBlockBlockEntity && player.isCreativeLevelTwoOp()) {
 			player.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}

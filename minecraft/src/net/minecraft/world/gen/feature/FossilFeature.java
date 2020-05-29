@@ -53,9 +53,8 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		BlockPos blockPos,
 		DefaultFeatureConfig defaultFeatureConfig
 	) {
-		Random random2 = serverWorldAccess.getRandom();
-		BlockRotation blockRotation = BlockRotation.random(random2);
-		int i = random2.nextInt(FOSSILS.length);
+		BlockRotation blockRotation = BlockRotation.random(random);
+		int i = random.nextInt(FOSSILS.length);
 		StructureManager structureManager = ((ServerWorld)serverWorldAccess.getWorld()).getServer().getStructureManager();
 		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
 		Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
@@ -64,11 +63,11 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		StructurePlacementData structurePlacementData = new StructurePlacementData()
 			.setRotation(blockRotation)
 			.setBoundingBox(blockBox)
-			.setRandom(random2)
+			.setRandom(random)
 			.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 		BlockPos blockPos2 = structure.getRotatedSize(blockRotation);
-		int j = random2.nextInt(16 - blockPos2.getX());
-		int k = random2.nextInt(16 - blockPos2.getZ());
+		int j = random.nextInt(16 - blockPos2.getX());
+		int k = random.nextInt(16 - blockPos2.getZ());
 		int l = 256;
 
 		for (int m = 0; m < blockPos2.getX(); m++) {
@@ -77,15 +76,15 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 			}
 		}
 
-		int m = Math.max(l - 15 - random2.nextInt(10), 10);
+		int m = Math.max(l - 15 - random.nextInt(10), 10);
 		BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
-		structure.place(serverWorldAccess, blockPos3, blockPos3, structurePlacementData, 4);
+		structure.place(serverWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);
 		structurePlacementData.removeProcessor(blockRotStructureProcessor);
 		BlockRotStructureProcessor blockRotStructureProcessor2 = new BlockRotStructureProcessor(0.1F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor2);
-		structure2.place(serverWorldAccess, blockPos3, blockPos3, structurePlacementData, 4);
+		structure2.place(serverWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);
 		return true;
 	}
 }

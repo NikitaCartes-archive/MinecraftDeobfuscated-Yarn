@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -101,30 +102,30 @@ public class PlayerListHud extends DrawableHelper {
 		int q = i / 2 - (p * l + (l - 1) * 5) / 2;
 		int r = 10;
 		int s = p * l + (l - 1) * 5;
-		List<Text> list2 = null;
+		List<class_5348> list2 = null;
 		if (this.header != null) {
 			list2 = this.client.textRenderer.wrapLines(this.header, i - 50);
 
-			for (Text text : list2) {
-				s = Math.max(s, this.client.textRenderer.getWidth(text));
+			for (class_5348 lv : list2) {
+				s = Math.max(s, this.client.textRenderer.getWidth(lv));
 			}
 		}
 
-		List<Text> list3 = null;
+		List<class_5348> list3 = null;
 		if (this.footer != null) {
 			list3 = this.client.textRenderer.wrapLines(this.footer, i - 50);
 
-			for (Text text2 : list3) {
-				s = Math.max(s, this.client.textRenderer.getWidth(text2));
+			for (class_5348 lv2 : list3) {
+				s = Math.max(s, this.client.textRenderer.getWidth(lv2));
 			}
 		}
 
 		if (list2 != null) {
 			fill(matrixStack, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list2.size() * 9, Integer.MIN_VALUE);
 
-			for (Text text2 : list2) {
-				int t = this.client.textRenderer.getWidth(text2);
-				this.client.textRenderer.drawWithShadow(matrixStack, text2, (float)(i / 2 - t / 2), (float)r, -1);
+			for (class_5348 lv2 : list2) {
+				int t = this.client.textRenderer.getWidth(lv2);
+				this.client.textRenderer.drawWithShadow(matrixStack, lv2, (float)(i / 2 - t / 2), (float)r, -1);
 				r += 9;
 			}
 
@@ -186,9 +187,9 @@ public class PlayerListHud extends DrawableHelper {
 			r += n * 9 + 1;
 			fill(matrixStack, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list3.size() * 9, Integer.MIN_VALUE);
 
-			for (Text text3 : list3) {
-				int w = this.client.textRenderer.getWidth(text3);
-				this.client.textRenderer.drawWithShadow(matrixStack, text3, (float)(i / 2 - w / 2), (float)r, -1);
+			for (class_5348 lv3 : list3) {
+				int w = this.client.textRenderer.getWidth(lv3);
+				this.client.textRenderer.drawWithShadow(matrixStack, lv3, (float)(i / 2 - w / 2), (float)r, -1);
 				r += 9;
 			}
 		}

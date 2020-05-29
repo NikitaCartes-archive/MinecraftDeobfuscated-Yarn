@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +15,8 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 
 public class NearestPlayersSensor extends Sensor<LivingEntity> {
+	private static final TargetPredicate field_25161 = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules();
+
 	@Override
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of(MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER);
@@ -29,7 +32,7 @@ public class NearestPlayersSensor extends Sensor<LivingEntity> {
 			.collect(Collectors.toList());
 		Brain<?> brain = entity.getBrain();
 		brain.remember(MemoryModuleType.NEAREST_PLAYERS, list);
-		List<PlayerEntity> list2 = (List<PlayerEntity>)list.stream().filter(entity::canSee).collect(Collectors.toList());
+		List<PlayerEntity> list2 = (List<PlayerEntity>)list.stream().filter(playerEntity -> field_25161.test(entity, playerEntity)).collect(Collectors.toList());
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_PLAYER, list2.isEmpty() ? null : (PlayerEntity)list2.get(0));
 		Optional<PlayerEntity> optional = list2.stream().filter(EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL).findFirst();
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, optional);

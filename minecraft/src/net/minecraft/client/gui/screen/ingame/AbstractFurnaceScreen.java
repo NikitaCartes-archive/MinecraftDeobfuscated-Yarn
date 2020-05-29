@@ -40,6 +40,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 			this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
 			((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
 		}));
+		this.field_25267 = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
 	}
 
 	@Override
@@ -62,12 +63,6 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 		this.recipeBook.drawTooltip(matrices, this.x, this.y, mouseX, mouseY);
-	}
-
-	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.draw(matrices, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
-		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override

@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -34,6 +36,12 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
+import net.minecraft.loot.entry.LootPoolEntryType;
+import net.minecraft.loot.entry.LootPoolEntryTypes;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -54,6 +62,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -126,7 +135,11 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<SensorType<?>>> SENSOR_TYPE_KEY = createRegistryKey("sensor_type");
 	public static final RegistryKey<Registry<Schedule>> SCHEDULE_KEY = createRegistryKey("schedule");
 	public static final RegistryKey<Registry<Activity>> ACTIVITY_KEY = createRegistryKey("activity");
+	public static final RegistryKey<Registry<LootPoolEntryType>> LOOT_POOL_ENTRY_TYPE_KEY = createRegistryKey("loot_pool_entry_type");
+	public static final RegistryKey<Registry<LootFunctionType>> LOOT_FUNCTION_TYPE_KEY = createRegistryKey("loot_function_type");
+	public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE_KEY = createRegistryKey("loot_condition_type");
 	public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = createRegistryKey("dimension_type");
+	public static final RegistryKey<Registry<World>> DIMENSION = createRegistryKey("dimension");
 	public static final Registry<SoundEvent> SOUND_EVENT = create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
 	public static final Registry<StatusEffect> STATUS_EFFECT = create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
@@ -179,6 +192,9 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final DefaultedRegistry<SensorType<?>> SENSOR_TYPE = create(SENSOR_TYPE_KEY, "dummy", () -> SensorType.DUMMY);
 	public static final Registry<Schedule> SCHEDULE = create(SCHEDULE_KEY, () -> Schedule.EMPTY);
 	public static final Registry<Activity> ACTIVITY = create(ACTIVITY_KEY, () -> Activity.IDLE);
+	public static final Registry<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = create(LOOT_POOL_ENTRY_TYPE_KEY, () -> LootPoolEntryTypes.EMPTY);
+	public static final Registry<LootFunctionType> LOOT_FUNCTION_TYPE = create(LOOT_FUNCTION_TYPE_KEY, () -> LootFunctionTypes.SET_COUNT);
+	public static final Registry<LootConditionType> LOOT_CONDITION_TYPE = create(LOOT_CONDITION_TYPE_KEY, () -> LootConditionTypes.INVERTED);
 	/**
 	 * The {@linkplain RegistryKey} representing the ID of the actual registry.
 	 */
@@ -275,11 +291,13 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	@Nullable
 	public abstract Identifier getId(T entry);
 
-	public abstract RegistryKey<T> getKey(T value);
+	@Environment(EnvType.CLIENT)
+	public abstract Optional<RegistryKey<T>> getKey(T value);
 
 	public abstract int getRawId(@Nullable T entry);
 
 	@Nullable
+	@Environment(EnvType.CLIENT)
 	public abstract T get(@Nullable RegistryKey<T> registryKey);
 
 	@Nullable
@@ -294,8 +312,6 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	}
 
 	public abstract boolean containsId(Identifier id);
-
-	public abstract boolean containsKey(RegistryKey<T> registryKey);
 
 	public abstract boolean containsId(int id);
 

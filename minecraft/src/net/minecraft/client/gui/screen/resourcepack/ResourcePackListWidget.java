@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -151,17 +152,19 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 
 			int ix = this.client.textRenderer.getWidth(text);
 			if (ix > 157) {
-				Text text3 = this.client.textRenderer.trimToWidth(text, 157 - this.client.textRenderer.getWidth("...")).append("...");
-				this.client.textRenderer.drawWithShadow(matrices, text3, (float)(x + 32 + 2), (float)(y + 1), 16777215);
+				class_5348 lv = class_5348.method_29433(
+					this.client.textRenderer.trimToWidth(text, 157 - this.client.textRenderer.getWidth("...")), class_5348.method_29430("...")
+				);
+				this.client.textRenderer.drawWithShadow(matrices, lv, (float)(x + 32 + 2), (float)(y + 1), 16777215);
 			} else {
 				this.client.textRenderer.drawWithShadow(matrices, text, (float)(x + 32 + 2), (float)(y + 1), 16777215);
 			}
 
 			this.client.textRenderer.drawWithShadow(matrices, text, (float)(x + 32 + 2), (float)(y + 1), 16777215);
-			List<Text> list = this.client.textRenderer.wrapLines(text2, 157);
+			List<class_5348> list = this.client.textRenderer.wrapLines(text2, 157);
 
 			for (int k = 0; k < 2 && k < list.size(); k++) {
-				this.client.textRenderer.drawWithShadow(matrices, (Text)list.get(k), (float)(x + 32 + 2), (float)(y + 12 + 10 * k), 8421504);
+				this.client.textRenderer.drawWithShadow(matrices, (class_5348)list.get(k), (float)(x + 32 + 2), (float)(y + 12 + 10 * k), 8421504);
 			}
 		}
 

@@ -39,16 +39,18 @@ public class RespawnAnchorBlock extends Block {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.GLOWSTONE && (Integer)state.get(CHARGES) < 4) {
+		if (hand == Hand.MAIN_HAND && !isChargeItem(itemStack) && isChargeItem(player.getStackInHand(Hand.OFF_HAND))) {
+			return ActionResult.PASS;
+		} else if (isChargeItem(itemStack) && canCharge(state)) {
 			charge(world, pos, state);
 			if (!player.abilities.creativeMode) {
 				itemStack.decrement(1);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else if ((Integer)state.get(CHARGES) == 0) {
 			return ActionResult.PASS;
-		} else if (!method_27353(world)) {
+		} else if (!isNether(world)) {
 			if (!world.isClient) {
 				world.removeBlock(pos, false);
 				world.createExplosion(
@@ -63,12 +65,12 @@ public class RespawnAnchorBlock extends Block {
 				);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			if (!world.isClient) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
-				if (serverPlayerEntity.getSpawnPointDimension() != world.method_27983() || !serverPlayerEntity.getSpawnPointPosition().equals(pos)) {
-					serverPlayerEntity.setSpawnPoint(world.method_27983(), pos, false, true);
+				if (serverPlayerEntity.getSpawnPointDimension() != world.getRegistryKey() || !serverPlayerEntity.getSpawnPointPosition().equals(pos)) {
+					serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), pos, false, true);
 					world.playSound(
 						null,
 						(double)pos.getX() + 0.5,
@@ -83,11 +85,19 @@ public class RespawnAnchorBlock extends Block {
 				}
 			}
 
-			return state.get(CHARGES) < 4 ? ActionResult.PASS : ActionResult.CONSUME;
+			return canCharge(state) ? ActionResult.PASS : ActionResult.CONSUME;
 		}
 	}
 
-	public static boolean method_27353(World world) {
+	private static boolean isChargeItem(ItemStack itemStack) {
+		return itemStack.getItem() == Items.GLOWSTONE;
+	}
+
+	private static boolean canCharge(BlockState blockState) {
+		return (Integer)blockState.get(CHARGES) < 4;
+	}
+
+	public static boolean isNether(World world) {
 		return world.getDimension().isNether();
 	}
 

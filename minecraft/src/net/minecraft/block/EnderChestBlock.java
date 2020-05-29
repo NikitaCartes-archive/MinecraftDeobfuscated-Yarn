@@ -77,7 +77,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
 			BlockPos blockPos = pos.up();
 			if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
-				return ActionResult.SUCCESS;
+				return ActionResult.method_29236(world.isClient);
 			} else if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {
@@ -90,10 +90,10 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 				);
 				player.incrementStat(Stats.OPEN_ENDERCHEST);
 				PiglinBrain.onGoldBlockBroken(player);
-				return ActionResult.SUCCESS;
+				return ActionResult.CONSUME;
 			}
 		} else {
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		}
 	}
 

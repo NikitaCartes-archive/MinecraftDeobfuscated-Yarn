@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagContainers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
@@ -57,7 +57,7 @@ public class FluidPredicate {
 			Tag<Fluid> tag = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tag = FluidTags.getContainer().get(identifier2);
+				tag = TagContainers.instance().fluids().get(identifier2);
 				if (tag == null) {
 					throw new JsonSyntaxException("Unknown fluid tag '" + identifier2 + "'");
 				}
@@ -80,7 +80,7 @@ public class FluidPredicate {
 			}
 
 			if (this.tag != null) {
-				jsonObject.addProperty("tag", FluidTags.getContainer().checkId(this.tag).toString());
+				jsonObject.addProperty("tag", TagContainers.instance().fluids().checkId(this.tag).toString());
 			}
 
 			jsonObject.add("state", this.state.toJson());

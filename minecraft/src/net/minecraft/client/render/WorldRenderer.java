@@ -141,8 +141,22 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	private final Int2ObjectMap<BlockBreakingInfo> blockBreakingInfos = new Int2ObjectOpenHashMap<>();
 	private final Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions = new Long2ObjectOpenHashMap<>();
 	private final Map<BlockPos, SoundInstance> playingSongs = Maps.<BlockPos, SoundInstance>newHashMap();
+	@Nullable
 	private Framebuffer entityOutlinesFramebuffer;
+	@Nullable
 	private ShaderEffect entityOutlineShader;
+	@Nullable
+	private Framebuffer translucentFramebuffer;
+	@Nullable
+	private Framebuffer entityFramebuffer;
+	@Nullable
+	private Framebuffer particlesFramebuffer;
+	@Nullable
+	private Framebuffer weatherFramebuffer;
+	@Nullable
+	private Framebuffer cloudsFramebuffer;
+	@Nullable
+	private ShaderEffect transparencyShader;
 	private double lastCameraChunkUpdateX = Double.MIN_VALUE;
 	private double lastCameraChunkUpdateY = Double.MIN_VALUE;
 	private double lastCameraChunkUpdateZ = Double.MIN_VALUE;
@@ -209,6 +223,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			int k = MathHelper.floor(g);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
+			RenderSystem.enableAlphaTest();
 			RenderSystem.disableCull();
 			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
 			RenderSystem.enableBlend();
@@ -348,6 +363,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.enableCull();
 			RenderSystem.disableBlend();
 			RenderSystem.defaultAlphaFunc();
+			RenderSystem.disableAlphaTest();
 			manager.disable();
 		}
 	}
@@ -411,6 +427,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		if (this.entityOutlineShader != null) {
 			this.entityOutlineShader.close();
 		}
+
+		if (this.transparencyShader != null) {
+			this.transparencyShader.close();
+		}
 	}
 
 	@Override
@@ -420,6 +440,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		RenderSystem.texParameter(3553, 10243, 10497);
 		RenderSystem.bindTexture(0);
 		this.loadEntityOutlineShader();
+		this.loadTransparencyShader();
 	}
 
 	public void loadEntityOutlineShader() {
@@ -438,9 +459,31 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			this.entityOutlineShader = null;
 			this.entityOutlinesFramebuffer = null;
 		} catch (JsonSyntaxException var4) {
-			LOGGER.warn("Failed to load shader: {}", identifier, var4);
+			LOGGER.warn("Failed to parse shader: {}", identifier, var4);
 			this.entityOutlineShader = null;
 			this.entityOutlinesFramebuffer = null;
+		}
+	}
+
+	private void loadTransparencyShader() {
+		if (this.transparencyShader != null) {
+			this.transparencyShader.close();
+		}
+
+		Identifier identifier = new Identifier("shaders/post/transparency.json");
+
+		try {
+			this.transparencyShader = new ShaderEffect(this.client.getTextureManager(), this.client.getResourceManager(), this.client.getFramebuffer(), identifier);
+			this.transparencyShader.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
+			this.translucentFramebuffer = this.transparencyShader.getSecondaryTarget("translucent");
+			this.entityFramebuffer = this.transparencyShader.getSecondaryTarget("itemEntity");
+			this.particlesFramebuffer = this.transparencyShader.getSecondaryTarget("particles");
+			this.weatherFramebuffer = this.transparencyShader.getSecondaryTarget("weather");
+			this.cloudsFramebuffer = this.transparencyShader.getSecondaryTarget("clouds");
+		} catch (IOException var3) {
+			throw new WorldRenderer.class_5347("Failed to load shader: " + identifier, var3);
+		} catch (JsonSyntaxException var4) {
+			throw new WorldRenderer.class_5347("Failed to parse shader: " + identifier, var4);
 		}
 	}
 
@@ -634,6 +677,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		this.scheduleTerrainUpdate();
 		if (this.entityOutlineShader != null) {
 			this.entityOutlineShader.setupDimensions(i, j);
+		}
+
+		if (this.transparencyShader != null) {
+			this.transparencyShader.setupDimensions(i, j);
 		}
 	}
 
@@ -916,6 +963,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		this.regularEntityCount = 0;
 		this.blockEntityCount = 0;
 		profiler.swap("entities");
+		if (this.entityFramebuffer != null) {
+			this.entityFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+			this.entityFramebuffer.copyDepthFrom(this.client.getFramebuffer());
+			this.client.getFramebuffer().beginWrite(false);
+		}
+
 		if (this.canDrawEntityOutlines()) {
 			this.entityOutlinesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
 			this.client.getFramebuffer().beginWrite(false);
@@ -1055,11 +1108,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		RenderSystem.pushMatrix();
 		RenderSystem.multMatrix(matrices.peek().getModel());
 		this.client.debugRenderer.render(matrices, immediate, d, e, f);
-		this.renderWorldBorder(camera);
 		RenderSystem.popMatrix();
 		immediate.draw(TexturedRenderLayers.getEntityTranslucentCull());
 		immediate.draw(TexturedRenderLayers.getBannerPatterns());
 		immediate.draw(TexturedRenderLayers.getShieldPatterns());
+		immediate.draw(RenderLayer.method_27948());
+		immediate.draw(RenderLayer.method_27949());
 		immediate.draw(RenderLayer.getGlint());
 		immediate.draw(RenderLayer.getEntityGlint());
 		immediate.draw(RenderLayer.getWaterMask());
@@ -1067,21 +1121,61 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		immediate.draw(RenderLayer.getLines());
 		immediate.draw();
 		profiler.swap("translucent");
+		if (this.translucentFramebuffer != null) {
+			this.translucentFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+			this.translucentFramebuffer.copyDepthFrom(this.client.getFramebuffer());
+		}
+
 		this.renderLayer(RenderLayer.getTranslucent(), matrices, d, e, f);
 		profiler.swap("particles");
+		if (this.particlesFramebuffer != null) {
+			this.particlesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+			this.particlesFramebuffer.copyDepthFrom(this.client.getFramebuffer());
+			RenderPhase.PARTICLES_TARGET.startDrawing();
+		}
+
 		this.client.particleManager.renderParticles(matrices, immediate, lightmapTextureManager, camera, tickDelta);
+		if (this.particlesFramebuffer != null) {
+			RenderPhase.PARTICLES_TARGET.endDrawing();
+		}
+
 		RenderSystem.pushMatrix();
 		RenderSystem.multMatrix(matrices.peek().getModel());
 		profiler.swap("cloudsLayers");
 		if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
 			profiler.swap("clouds");
+			if (this.cloudsFramebuffer != null) {
+				this.cloudsFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+				RenderPhase.CLOUDS_TARGET.startDrawing();
+			}
+
 			this.renderClouds(matrices, tickDelta, d, e, f);
+			if (this.cloudsFramebuffer != null) {
+				RenderPhase.CLOUDS_TARGET.endDrawing();
+			}
 		}
 
-		RenderSystem.depthMask(false);
 		profiler.swap("weather");
+		if (this.weatherFramebuffer != null) {
+			this.weatherFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+			RenderPhase.WEATHER_TARGET.startDrawing();
+		} else {
+			RenderSystem.depthMask(false);
+		}
+
 		this.renderWeather(lightmapTextureManager, tickDelta, d, e, f);
-		RenderSystem.depthMask(true);
+		this.renderWorldBorder(camera);
+		if (this.weatherFramebuffer != null) {
+			RenderPhase.WEATHER_TARGET.endDrawing();
+		} else {
+			RenderSystem.depthMask(true);
+		}
+
+		if (this.transparencyShader != null) {
+			this.transparencyShader.render(tickDelta);
+			this.client.getFramebuffer().beginWrite(false);
+		}
+
 		this.renderChunkDebugInfo(camera);
 		RenderSystem.shadeModel(7424);
 		RenderSystem.depthMask(true);
@@ -1554,7 +1648,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.enableAlphaTest();
 			RenderSystem.enableDepthTest();
 			RenderSystem.defaultAlphaFunc();
-			RenderSystem.defaultBlendFunc();
+			RenderSystem.blendFuncSeparate(
+				GlStateManager.SrcFactor.SRC_ALPHA,
+				GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
+				GlStateManager.SrcFactor.ONE,
+				GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
+			);
 			RenderSystem.enableFog();
 			float g = 12.0F;
 			float h = 4.0F;
@@ -1881,7 +1980,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.enableDepthTest();
 			RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
 			this.textureManager.bindTexture(FORCEFIELD);
-			RenderSystem.depthMask(false);
+			RenderSystem.depthMask(true);
 			RenderSystem.pushMatrix();
 			int i = worldBorder.getStage().getColor();
 			float j = (float)(i >> 16 & 0xFF) / 255.0F;
@@ -2138,7 +2237,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		}
 	}
 
-	public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
+	public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
 		if (this.client.getBakedModelManager().shouldRerender(old, updated)) {
 			this.scheduleBlockRenders(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
 		}
@@ -2691,8 +2790,34 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		}
 	}
 
+	@Nullable
 	public Framebuffer getEntityOutlinesFramebuffer() {
 		return this.entityOutlinesFramebuffer;
+	}
+
+	@Nullable
+	public Framebuffer method_29360() {
+		return this.translucentFramebuffer;
+	}
+
+	@Nullable
+	public Framebuffer method_29361() {
+		return this.entityFramebuffer;
+	}
+
+	@Nullable
+	public Framebuffer getParticlesFramebuffer() {
+		return this.particlesFramebuffer;
+	}
+
+	@Nullable
+	public Framebuffer method_29363() {
+		return this.weatherFramebuffer;
+	}
+
+	@Nullable
+	public Framebuffer method_29364() {
+		return this.cloudsFramebuffer;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -2714,6 +2839,13 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 
 		public boolean canCull(Direction from) {
 			return (this.cullingState & 1 << from.ordinal()) > 0;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_5347 extends RuntimeException {
+		public class_5347(String string, Throwable throwable) {
+			super(string, throwable);
 		}
 	}
 }

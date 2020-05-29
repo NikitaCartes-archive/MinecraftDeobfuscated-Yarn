@@ -216,10 +216,10 @@ public class ComposterBlock extends Block implements InventoryProvider {
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else if (i == 8) {
 			emptyFullComposter(state, world, pos);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}

@@ -11,7 +11,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class RandomFeatureEntry<FC extends FeatureConfig> {
 	public static final Codec<RandomFeatureEntry<?>> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ConfiguredFeature.field_24833.fieldOf("feature").forGetter(randomFeatureEntry -> randomFeatureEntry.feature),
+					ConfiguredFeature.CODEC.fieldOf("feature").forGetter(randomFeatureEntry -> randomFeatureEntry.feature),
 					Codec.FLOAT.fieldOf("chance").forGetter(randomFeatureEntry -> randomFeatureEntry.chance)
 				)
 				.apply(instance, RandomFeatureEntry::new)

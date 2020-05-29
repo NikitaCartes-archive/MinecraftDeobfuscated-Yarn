@@ -1,7 +1,7 @@
 package net.minecraft.block.entity;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -16,6 +16,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public class BellBlockEntity extends BlockEntity implements Tickable {
 	private long lastRingTime;
@@ -128,7 +129,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	private void applyParticlesToRaiders(World world) {
 		if (world.isClient) {
 			BlockPos blockPos = this.getPos();
-			AtomicInteger atomicInteger = new AtomicInteger(16700985);
+			MutableInt mutableInt = new MutableInt(16700985);
 			int i = (int)this.hearingEntities.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
 			this.hearingEntities
 				.stream()
@@ -145,11 +146,11 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 						int j = MathHelper.clamp((i - 21) / -2, 3, 15);
 
 						for (int k = 0; k < j; k++) {
-							atomicInteger.addAndGet(5);
-							double h = (double)(atomicInteger.get() >> 16 & 0xFF) / 255.0;
-							double l = (double)(atomicInteger.get() >> 8 & 0xFF) / 255.0;
-							double m = (double)(atomicInteger.get() & 0xFF) / 255.0;
-							world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)blockPos.getY() + 0.5F), e, h, l, m);
+							int l = mutableInt.addAndGet(5);
+							double h = (double)BackgroundHelper.ColorMixer.getRed(l) / 255.0;
+							double m = (double)BackgroundHelper.ColorMixer.getGreen(l) / 255.0;
+							double n = (double)BackgroundHelper.ColorMixer.getBlue(l) / 255.0;
+							world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)blockPos.getY() + 0.5F), e, h, m, n);
 						}
 					}
 				);

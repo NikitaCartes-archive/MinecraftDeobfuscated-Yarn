@@ -5,6 +5,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 
 public class KeybindText extends BaseText {
 	private static Function<String, Supplier<Text>> translator = key -> () -> new LiteralText(key);
@@ -29,13 +30,13 @@ public class KeybindText extends BaseText {
 	}
 
 	@Override
-	public <T> Optional<T> visitSelf(Text.Visitor<T> visitor) {
+	public <T> Optional<T> visitSelf(class_5348.Visitor<T> visitor) {
 		return this.getTranslated().visit(visitor);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public <T> Optional<T> visitSelf(Text.StyledVisitor<T> visitor, Style style) {
+	public <T> Optional<T> visitSelf(class_5348.StyledVisitor<T> visitor, Style style) {
 		return this.getTranslated().visit(visitor, style);
 	}
 

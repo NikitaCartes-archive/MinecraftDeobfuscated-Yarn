@@ -5,14 +5,14 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class class_5309 {
-	public static final Codec<class_5309> field_24804 = RecordCodecBuilder.create(
+	public static final Codec<class_5309> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.INT.fieldOf("height").forGetter(class_5309::method_28581),
+					class_5324.method_29229(0, 256).fieldOf("height").forGetter(class_5309::method_28581),
 					class_5308.field_24799.fieldOf("sampling").forGetter(class_5309::method_28583),
-					class_5310.field_24817.fieldOf("top_slide").forGetter(class_5309::method_28584),
-					class_5310.field_24817.fieldOf("bottom_slide").forGetter(class_5309::method_28585),
-					Codec.INT.fieldOf("size_horizontal").forGetter(class_5309::method_28586),
-					Codec.INT.fieldOf("size_vertical").forGetter(class_5309::method_28587),
+					class_5310.CODEC.fieldOf("top_slide").forGetter(class_5309::method_28584),
+					class_5310.CODEC.fieldOf("bottom_slide").forGetter(class_5309::method_28585),
+					class_5324.method_29229(1, 4).fieldOf("size_horizontal").forGetter(class_5309::method_28586),
+					class_5324.method_29229(1, 4).fieldOf("size_vertical").forGetter(class_5309::method_28587),
 					Codec.DOUBLE.fieldOf("density_factor").forGetter(class_5309::method_28588),
 					Codec.DOUBLE.fieldOf("density_offset").forGetter(class_5309::method_28589),
 					Codec.BOOL.fieldOf("simplex_surface_noise").forGetter(class_5309::method_28590),

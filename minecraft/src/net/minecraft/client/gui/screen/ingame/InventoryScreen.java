@@ -33,6 +33,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	public InventoryScreen(PlayerEntity player) {
 		super(player.playerScreenHandler, player.inventory, new TranslatableText("container.crafting"));
 		this.passEvents = true;
+		this.field_25267 = 97;
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.draw(matrices, this.title, 97.0F, 8.0F, 4210752);
+		this.textRenderer.draw(matrices, this.title, (float)this.field_25267, (float)this.field_25268, 4210752);
 	}
 
 	@Override

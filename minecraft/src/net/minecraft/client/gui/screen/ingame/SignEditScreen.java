@@ -67,7 +67,7 @@ public class SignEditScreen extends Screen {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(
-				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
+				new UpdateSignC2SPacket(this.sign.getPos(), this.field_24285[0], this.field_24285[1], this.field_24285[2], this.field_24285[3])
 			);
 		}
 

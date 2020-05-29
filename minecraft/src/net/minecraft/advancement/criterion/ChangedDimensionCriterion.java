@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensionCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("changed_dimension");
@@ -23,36 +23,32 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 	public ChangedDimensionCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		RegistryKey<DimensionType> registryKey = jsonObject.has("from")
-			? RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier(JsonHelper.getString(jsonObject, "from")))
-			: null;
-		RegistryKey<DimensionType> registryKey2 = jsonObject.has("to")
-			? RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier(JsonHelper.getString(jsonObject, "to")))
-			: null;
+		RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(Registry.DIMENSION, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
+		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.DIMENSION, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
 		return new ChangedDimensionCriterion.Conditions(extended, registryKey, registryKey2);
 	}
 
-	public void trigger(ServerPlayerEntity player, RegistryKey<DimensionType> from, RegistryKey<DimensionType> to) {
+	public void trigger(ServerPlayerEntity player, RegistryKey<World> from, RegistryKey<World> to) {
 		this.test(player, conditions -> conditions.matches(from, to));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		@Nullable
-		private final RegistryKey<DimensionType> from;
+		private final RegistryKey<World> from;
 		@Nullable
-		private final RegistryKey<DimensionType> to;
+		private final RegistryKey<World> to;
 
-		public Conditions(EntityPredicate.Extended player, @Nullable RegistryKey<DimensionType> from, @Nullable RegistryKey<DimensionType> to) {
+		public Conditions(EntityPredicate.Extended player, @Nullable RegistryKey<World> from, @Nullable RegistryKey<World> to) {
 			super(ChangedDimensionCriterion.ID, player);
 			this.from = from;
 			this.to = to;
 		}
 
-		public static ChangedDimensionCriterion.Conditions to(RegistryKey<DimensionType> to) {
+		public static ChangedDimensionCriterion.Conditions to(RegistryKey<World> to) {
 			return new ChangedDimensionCriterion.Conditions(EntityPredicate.Extended.EMPTY, null, to);
 		}
 
-		public boolean matches(RegistryKey<DimensionType> from, RegistryKey<DimensionType> to) {
+		public boolean matches(RegistryKey<World> from, RegistryKey<World> to) {
 			return this.from != null && this.from != from ? false : this.to == null || this.to == to;
 		}
 

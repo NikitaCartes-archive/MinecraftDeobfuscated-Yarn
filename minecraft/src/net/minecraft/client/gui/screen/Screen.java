@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -31,6 +32,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
@@ -119,16 +121,16 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
 	}
 
-	public void renderTooltip(MatrixStack matrices, Text line, int x, int y) {
-		this.renderTooltip(matrices, Arrays.asList(line), x, y);
+	public void renderTooltip(MatrixStack matrices, class_5348 arg, int x, int y) {
+		this.renderTooltip(matrices, Arrays.asList(arg), x, y);
 	}
 
-	public void renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y) {
+	public void renderTooltip(MatrixStack matrices, List<? extends class_5348> lines, int x, int y) {
 		if (!lines.isEmpty()) {
 			int i = 0;
 
-			for (Text text : lines) {
-				int j = this.textRenderer.getWidth(text);
+			for (class_5348 lv : lines) {
+				int j = this.textRenderer.getWidth(lv);
 				if (j > i) {
 					i = j;
 				}
@@ -150,24 +152,23 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 			}
 
 			matrices.push();
-			this.itemRenderer.zOffset = 300.0F;
 			int n = -267386864;
 			int o = 1347420415;
 			int p = 1344798847;
-			int q = 300;
+			int q = 400;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 			Matrix4f matrix4f = matrices.peek().getModel();
-			fillGradient(matrix4f, bufferBuilder, k - 3, l - 4, k + i + 3, l - 3, 300, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 3, k + i + 3, l + m + 4, 300, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + i + 3, l + m + 3, 300, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k - 4, l - 3, k - 3, l + m + 3, 300, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k + i + 3, l - 3, k + i + 4, l + m + 3, 300, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 300, 1347420415, 1344798847);
-			fillGradient(matrix4f, bufferBuilder, k + i + 2, l - 3 + 1, k + i + 3, l + m + 3 - 1, 300, 1347420415, 1344798847);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + i + 3, l - 3 + 1, 300, 1347420415, 1347420415);
-			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 2, k + i + 3, l + m + 3, 300, 1344798847, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l - 4, k + i + 3, l - 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 3, k + i + 3, l + m + 4, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + i + 3, l + m + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k - 4, l - 3, k - 3, l + m + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k + i + 3, l - 3, k + i + 4, l + m + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 400, 1347420415, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, k + i + 2, l - 3 + 1, k + i + 3, l + m + 3 - 1, 400, 1347420415, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + i + 3, l - 3 + 1, 400, 1347420415, 1347420415);
+			fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 2, k + i + 3, l + m + 3, 400, 1344798847, 1344798847);
 			RenderSystem.enableDepthTest();
 			RenderSystem.disableTexture();
 			RenderSystem.enableBlend();
@@ -179,12 +180,12 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 			RenderSystem.disableBlend();
 			RenderSystem.enableTexture();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			matrices.translate(0.0, 0.0, (double)this.itemRenderer.zOffset);
+			matrices.translate(0.0, 0.0, 400.0);
 
 			for (int r = 0; r < lines.size(); r++) {
-				Text text2 = (Text)lines.get(r);
-				if (text2 != null) {
-					this.textRenderer.draw(text2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
+				class_5348 lv2 = (class_5348)lines.get(r);
+				if (lv2 != null) {
+					this.textRenderer.draw(lv2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
 				}
 
 				if (r == 0) {
@@ -196,13 +197,12 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 
 			immediate.draw();
 			matrices.pop();
-			this.itemRenderer.zOffset = 0.0F;
 		}
 	}
 
-	protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Text text, int i, int j) {
-		if (text != null && text.getStyle().getHoverEvent() != null) {
-			HoverEvent hoverEvent = text.getStyle().getHoverEvent();
+	protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int i, int j) {
+		if (style != null && style.getHoverEvent() != null) {
+			HoverEvent hoverEvent = style.getHoverEvent();
 			HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
 			if (itemStackContent != null) {
 				this.renderTooltip(matrices, itemStackContent.asStack(), i, j);
@@ -213,9 +213,9 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 						this.renderTooltip(matrices, entityContent.asTooltip(), i, j);
 					}
 				} else {
-					Text text2 = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
-					if (text2 != null) {
-						this.renderTooltip(matrices, this.client.textRenderer.wrapLines(text2, Math.max(this.width / 2, 200)), i, j);
+					Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
+					if (text != null) {
+						this.renderTooltip(matrices, this.client.textRenderer.wrapLines(text, Math.max(this.width / 2, 200)), i, j);
 					}
 				}
 			}
@@ -225,14 +225,14 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	protected void insertText(String text, boolean override) {
 	}
 
-	public boolean handleTextClick(Text text) {
-		if (text == null) {
+	public boolean handleTextClick(@Nullable Style style) {
+		if (style == null) {
 			return false;
 		} else {
-			ClickEvent clickEvent = text.getStyle().getClickEvent();
+			ClickEvent clickEvent = style.getClickEvent();
 			if (hasShiftDown()) {
-				if (text.getStyle().getInsertion() != null) {
-					this.insertText(text.getStyle().getInsertion(), false);
+				if (style.getInsertion() != null) {
+					this.insertText(style.getInsertion(), false);
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {

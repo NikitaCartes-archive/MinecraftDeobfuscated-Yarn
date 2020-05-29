@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -20,9 +21,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.Resource;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
@@ -39,7 +38,7 @@ public class CreditsScreen extends Screen {
 	private final boolean endCredits;
 	private final Runnable finishAction;
 	private float time;
-	private List<Text> credits;
+	private List<class_5348> credits;
 	private IntSet field_24261;
 	private int creditsHeight;
 	private float speed = 0.5F;
@@ -76,7 +75,7 @@ public class CreditsScreen extends Screen {
 	@Override
 	protected void init() {
 		if (this.credits == null) {
-			this.credits = Lists.<Text>newArrayList();
+			this.credits = Lists.<class_5348>newArrayList();
 			this.field_24261 = new IntOpenHashSet();
 			Resource resource = null;
 
@@ -100,13 +99,13 @@ public class CreditsScreen extends Screen {
 						}
 
 						this.credits.addAll(this.client.textRenderer.getTextHandler().wrapLines(string, 274, Style.EMPTY));
-						this.credits.add(LiteralText.EMPTY);
+						this.credits.add(class_5348.field_25310);
 					}
 
 					inputStream.close();
 
 					for (int j = 0; j < 8; j++) {
-						this.credits.add(LiteralText.EMPTY);
+						this.credits.add(class_5348.field_25310);
 					}
 				}
 
@@ -125,15 +124,15 @@ public class CreditsScreen extends Screen {
 						bl = false;
 					}
 
-					for (Text text : this.client.textRenderer.getTextHandler().wrapLines(string4, 274, Style.EMPTY)) {
+					for (class_5348 lv : this.client.textRenderer.getTextHandler().wrapLines(string4, 274, Style.EMPTY)) {
 						if (bl) {
 							this.field_24261.add(this.credits.size());
 						}
 
-						this.credits.add(text);
+						this.credits.add(lv);
 					}
 
-					this.credits.add(LiteralText.EMPTY);
+					this.credits.add(class_5348.field_25310);
 				}
 
 				inputStream.close();
@@ -188,8 +187,12 @@ public class CreditsScreen extends Screen {
 		this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableAlphaTest();
-		this.drawTexture(matrices, j, k, 0, 0, 155, 44);
-		this.drawTexture(matrices, j + 155, k, 0, 45, 155, 44);
+		RenderSystem.enableBlend();
+		this.method_29343(j, k, (integer, integer2) -> {
+			this.drawTexture(matrices, integer + 0, integer2, 0, 0, 155, 44);
+			this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
+		});
+		RenderSystem.disableBlend();
 		this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
 		drawTexture(matrices, j + 88, k + 37, 0.0F, 0.0F, 98, 14, 128, 16);
 		RenderSystem.disableAlphaTest();
@@ -204,12 +207,12 @@ public class CreditsScreen extends Screen {
 			}
 
 			if ((float)l + f + 12.0F + 8.0F > 0.0F && (float)l + f < (float)this.height) {
-				Text text = (Text)this.credits.get(m);
+				class_5348 lv = (class_5348)this.credits.get(m);
 				if (this.field_24261.contains(m)) {
-					this.textRenderer.drawWithShadow(matrices, text, (float)(j + (274 - this.textRenderer.getWidth(text)) / 2), (float)l, 16777215);
+					this.textRenderer.drawWithShadow(matrices, lv, (float)(j + (274 - this.textRenderer.getWidth(lv)) / 2), (float)l, 16777215);
 				} else {
 					this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0F));
-					this.textRenderer.drawWithShadow(matrices, text, (float)j, (float)l, 16777215);
+					this.textRenderer.drawWithShadow(matrices, lv, (float)j, (float)l, 16777215);
 				}
 			}
 

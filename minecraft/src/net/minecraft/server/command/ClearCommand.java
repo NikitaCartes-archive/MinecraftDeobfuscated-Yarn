@@ -59,8 +59,7 @@ public class ClearCommand {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			i += serverPlayerEntity.inventory.clearItem(item, maxCount);
-			serverPlayerEntity.playerScreenHandler.clearCraftingSlots();
+			i += serverPlayerEntity.inventory.method_29280(item, maxCount, serverPlayerEntity.playerScreenHandler.method_29281());
 			serverPlayerEntity.currentScreenHandler.sendContentUpdates();
 			serverPlayerEntity.playerScreenHandler.onContentChanged(serverPlayerEntity.inventory);
 			serverPlayerEntity.updateCursorStack();

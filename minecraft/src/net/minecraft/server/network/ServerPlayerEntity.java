@@ -111,11 +111,11 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.dimension.DimensionType;
@@ -148,14 +148,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private Entity cameraEntity;
 	private boolean inTeleportationState;
 	private boolean seenCredits;
-	private final ServerRecipeBook recipeBook;
+	private final ServerRecipeBook recipeBook = new ServerRecipeBook();
 	private Vec3d levitationStartPos;
 	private int levitationStartTick;
 	private boolean disconnected;
 	@Nullable
 	private Vec3d enteredNetherPos;
 	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
-	private RegistryKey<DimensionType> spawnPointDimension = DimensionType.OVERWORLD_REGISTRY_KEY;
+	private RegistryKey<World> spawnPointDimension = World.OVERWORLD;
 	private BlockPos spawnPointPosition;
 	private boolean spawnPointSet;
 	private int screenHandlerSyncId;
@@ -168,7 +168,6 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		interactionManager.player = this;
 		this.interactionManager = interactionManager;
 		this.server = server;
-		this.recipeBook = new ServerRecipeBook(server.getRecipeManager());
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.stepHeight = 1.0F;
@@ -177,7 +176,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	private void moveToSpawn(ServerWorld world) {
 		BlockPos blockPos = world.getSpawnPos();
-		if (world.getDimension().hasSkyLight() && world.getServer().method_27728().getGameMode() != GameMode.ADVENTURE) {
+		if (world.getDimension().hasSkyLight() && world.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
 			int i = Math.max(0, this.server.getSpawnRadius(world));
 			int j = MathHelper.floor(world.getWorldBorder().getDistanceInsideBorder((double)blockPos.getX(), (double)blockPos.getZ()));
 			if (j < i) {
@@ -237,7 +236,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 		this.seenCredits = tag.getBoolean("seenCredits");
 		if (tag.contains("recipeBook", 10)) {
-			this.recipeBook.fromTag(tag.getCompound("recipeBook"));
+			this.recipeBook.fromTag(tag.getCompound("recipeBook"), this.server.getRecipeManager());
 		}
 
 		if (this.isSleeping()) {
@@ -248,10 +247,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.spawnPointPosition = new BlockPos(tag.getInt("SpawnX"), tag.getInt("SpawnY"), tag.getInt("SpawnZ"));
 			this.spawnPointSet = tag.getBoolean("SpawnForced");
 			if (tag.contains("SpawnDimension")) {
-				this.spawnPointDimension = (RegistryKey<DimensionType>)DimensionType.field_24751
+				this.spawnPointDimension = (RegistryKey<World>)World.CODEC
 					.parse(NbtOps.INSTANCE, tag.get("SpawnDimension"))
 					.resultOrPartial(LOGGER::error)
-					.orElse(DimensionType.OVERWORLD_REGISTRY_KEY);
+					.orElse(World.OVERWORLD);
 			}
 		}
 	}
@@ -281,7 +280,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 
 		tag.put("recipeBook", this.recipeBook.toTag());
-		tag.putString("Dimension", this.world.method_27983().getValue().toString());
+		tag.putString("Dimension", this.world.getRegistryKey().getValue().toString());
 		if (this.spawnPointPosition != null) {
 			tag.putInt("SpawnX", this.spawnPointPosition.getX());
 			tag.putInt("SpawnY", this.spawnPointPosition.getY());
@@ -489,7 +488,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
-				this.server.getPlayerManager().broadcastChatMessage(text, MessageType.SYSTEM, Util.field_25140);
+				this.server.getPlayerManager().broadcastChatMessage(text, MessageType.SYSTEM, Util.NIL_UUID);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS) {
 				this.server.getPlayerManager().sendToTeam(this, text);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM) {
@@ -592,10 +591,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Nullable
 	@Override
-	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
+	public Entity changeDimension(RegistryKey<World> newDimension) {
 		this.inTeleportationState = true;
-		RegistryKey<DimensionType> registryKey = this.world.method_27983();
-		if (registryKey == DimensionType.THE_END_REGISTRY_KEY && newDimension == DimensionType.OVERWORLD_REGISTRY_KEY) {
+		RegistryKey<World> registryKey = this.world.getRegistryKey();
+		if (registryKey == World.END && newDimension == World.OVERWORLD) {
 			this.detach();
 			this.getServerWorld().removePlayer(this);
 			if (!this.notInAnyWorld) {
@@ -612,7 +611,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						newDimension.getValue(),
+						serverWorld2.getDimensionRegistryKey(),
+						newDimension,
 						BiomeAccess.hashSeed(serverWorld2.getSeed()),
 						this.interactionManager.getGameMode(),
 						serverWorld2.isDebugWorld(),
@@ -632,7 +632,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			float h = this.yaw;
 			float i = h;
 			serverWorld.getProfiler().push("moving");
-			if (registryKey == DimensionType.OVERWORLD_REGISTRY_KEY && newDimension == DimensionType.THE_END_REGISTRY_KEY) {
+			if (registryKey == World.OVERWORLD && newDimension == World.END) {
 				BlockPos blockPos = ServerWorld.field_25144;
 				d = (double)blockPos.getX();
 				e = (double)blockPos.getY();
@@ -640,13 +640,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				h = 90.0F;
 				g = 0.0F;
 			} else {
-				if (registryKey == DimensionType.OVERWORLD_REGISTRY_KEY && newDimension == DimensionType.THE_NETHER_REGISTRY_KEY) {
+				if (registryKey == World.OVERWORLD && newDimension == World.NETHER) {
 					this.enteredNetherPos = this.getPos();
 				}
 
-				Registry<DimensionType> registry = this.server.method_29174().getRegistry();
-				DimensionType dimensionType = registry.get(registryKey);
-				DimensionType dimensionType2 = registry.get(newDimension);
+				DimensionType dimensionType = serverWorld.getDimension();
+				DimensionType dimensionType2 = serverWorld2.getDimension();
 				double j = 8.0;
 				if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
 					d /= 8.0;
@@ -661,18 +660,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			serverWorld.getProfiler().pop();
 			serverWorld.getProfiler().push("placing");
 			double k = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundWest() + 16.0);
-			double l = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundNorth() + 16.0);
-			double m = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
-			double n = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
-			d = MathHelper.clamp(d, k, m);
-			f = MathHelper.clamp(f, l, n);
+			double j = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundNorth() + 16.0);
+			double l = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
+			double m = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
+			d = MathHelper.clamp(d, k, l);
+			f = MathHelper.clamp(f, j, m);
 			this.refreshPositionAndAngles(d, e, f, h, g);
-			if (newDimension == DimensionType.THE_END_REGISTRY_KEY) {
-				int o = MathHelper.floor(this.getX());
-				int p = MathHelper.floor(this.getY()) - 1;
-				int q = MathHelper.floor(this.getZ());
+			if (newDimension == World.END) {
+				int n = MathHelper.floor(this.getX());
+				int o = MathHelper.floor(this.getY()) - 1;
+				int p = MathHelper.floor(this.getZ());
 				ServerWorld.method_29200(serverWorld2);
-				this.refreshPositionAndAngles((double)o, (double)p, (double)q, h, 0.0F);
+				this.refreshPositionAndAngles((double)n, (double)o, (double)p, h, 0.0F);
 				this.setVelocity(Vec3d.ZERO);
 			} else if (!serverWorld2.getPortalForcer().usePortal(this, i)) {
 				serverWorld2.getPortalForcer().createPortal(this);
@@ -704,14 +703,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private void dimensionChanged(ServerWorld targetWorld) {
 		DimensionType dimensionType = targetWorld.getDimension();
 		DimensionType dimensionType2 = this.world.getDimension();
-		RegistryKey<DimensionType> registryKey = targetWorld.method_27983();
-		RegistryKey<DimensionType> registryKey2 = this.world.method_27983();
+		RegistryKey<World> registryKey = targetWorld.getRegistryKey();
+		RegistryKey<World> registryKey2 = this.world.getRegistryKey();
 		Criteria.CHANGED_DIMENSION.trigger(this, registryKey, registryKey2);
 		if (dimensionType.isNether() && dimensionType2.isOverworld() && this.enteredNetherPos != null) {
 			Criteria.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
 		}
 
-		if (registryKey2 != DimensionType.THE_NETHER_REGISTRY_KEY) {
+		if (registryKey2 != World.NETHER) {
 			this.enteredNetherPos = null;
 		}
 	}
@@ -752,7 +751,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		} else if (this.isBedObstructed(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
 		} else {
-			this.setSpawnPoint(this.world.method_27983(), pos, false, true);
+			this.setSpawnPoint(this.world.getRegistryKey(), pos, false, true);
 			if (this.world.isDay()) {
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			} else {
@@ -1049,7 +1048,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public void sendMessage(Text message, boolean actionBar) {
-		this.networkHandler.sendPacket(new GameMessageS2CPacket(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT, Util.field_25140));
+		this.networkHandler.sendPacket(new GameMessageS2CPacket(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT, Util.NIL_UUID));
 	}
 
 	@Override
@@ -1345,7 +1344,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						targetWorld.method_27983().getValue(),
+						targetWorld.getDimensionRegistryKey(),
+						targetWorld.getRegistryKey(),
 						BiomeAccess.hashSeed(targetWorld.getSeed()),
 						this.interactionManager.getGameMode(),
 						targetWorld.isDebugWorld(),
@@ -1373,7 +1373,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		return this.spawnPointPosition;
 	}
 
-	public RegistryKey<DimensionType> getSpawnPointDimension() {
+	public RegistryKey<World> getSpawnPointDimension() {
 		return this.spawnPointDimension;
 	}
 
@@ -1381,11 +1381,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		return this.spawnPointSet;
 	}
 
-	public void setSpawnPoint(RegistryKey<DimensionType> dimension, BlockPos pos, boolean spawnPointSet, boolean bl) {
+	public void setSpawnPoint(RegistryKey<World> dimension, BlockPos pos, boolean spawnPointSet, boolean bl) {
 		if (pos != null) {
 			boolean bl2 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
 			if (bl && !bl2) {
-				this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn"), Util.field_25140);
+				this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn"), Util.NIL_UUID);
 			}
 
 			this.spawnPointPosition = pos;
@@ -1393,7 +1393,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.spawnPointSet = spawnPointSet;
 		} else {
 			this.spawnPointPosition = null;
-			this.spawnPointDimension = DimensionType.OVERWORLD_REGISTRY_KEY;
+			this.spawnPointDimension = World.OVERWORLD;
 			this.spawnPointSet = false;
 		}
 	}

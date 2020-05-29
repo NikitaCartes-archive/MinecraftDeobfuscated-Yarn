@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
@@ -21,7 +22,8 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ClientCommandSource implements CommandSource {
@@ -117,8 +119,8 @@ public class ClientCommandSource implements CommandSource {
 	}
 
 	@Override
-	public DimensionTracker method_29038() {
-		return this.networkHandler.method_29091();
+	public Set<RegistryKey<World>> method_29310() {
+		return this.networkHandler.method_29356();
 	}
 
 	public void onCommandSuggestions(int completionId, Suggestions suggestions) {

@@ -276,18 +276,36 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getEntityBlockLayer(BlockState state) {
-		RenderLayer renderLayer = getBlockLayer(state);
-		return renderLayer == RenderLayer.getTranslucent() ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.getEntityCutout();
+	public static RenderLayer method_29359(BlockState blockState) {
+		Block block = blockState.getBlock();
+		if (block instanceof LeavesBlock) {
+			return fancyGraphics ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
+		} else {
+			RenderLayer renderLayer = (RenderLayer)BLOCKS.get(block);
+			if (renderLayer != null) {
+				return renderLayer == RenderLayer.getTranslucent() ? RenderLayer.method_29380() : renderLayer;
+			} else {
+				return RenderLayer.getSolid();
+			}
+		}
 	}
 
-	public static RenderLayer getItemLayer(ItemStack stack) {
+	public static RenderLayer getEntityBlockLayer(BlockState state, boolean bl) {
+		RenderLayer renderLayer = getBlockLayer(state);
+		if (renderLayer == RenderLayer.getTranslucent()) {
+			return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
+		} else {
+			return TexturedRenderLayers.getEntityCutout();
+		}
+	}
+
+	public static RenderLayer getItemLayer(ItemStack stack, boolean bl) {
 		Item item = stack.getItem();
 		if (item instanceof BlockItem) {
 			Block block = ((BlockItem)item).getBlock();
-			return getEntityBlockLayer(block.getDefaultState());
+			return getEntityBlockLayer(block.getDefaultState(), bl);
 		} else {
-			return TexturedRenderLayers.getEntityTranslucentCull();
+			return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
 		}
 	}
 

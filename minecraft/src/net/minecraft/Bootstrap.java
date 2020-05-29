@@ -64,9 +64,9 @@ public class Bootstrap {
 
 	private static void method_27732(Set<String> set) {
 		final Language language = Language.getInstance();
-		GameRules.forEachType(new GameRules.RuleTypeConsumer() {
+		GameRules.forEachType(new GameRules.TypeConsumer() {
 			@Override
-			public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> key, GameRules.RuleType<T> type) {
+			public <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
 				if (!language.hasTranslation(key.getTranslationKey())) {
 					set.add(key.getName());
 				}

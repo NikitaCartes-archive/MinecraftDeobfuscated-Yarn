@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 public class MinecraftVersion implements GameVersion {
 	private static final Logger LOGGER = LogManager.getLogger();
+	public static final GameVersion field_25319 = new MinecraftVersion();
 	private final String id;
 	private final String name;
 	private final boolean stable;
@@ -24,18 +25,18 @@ public class MinecraftVersion implements GameVersion {
 	private final Date buildTime;
 	private final String releaseTarget;
 
-	public MinecraftVersion() {
+	private MinecraftVersion() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-		this.name = "20w21a";
+		this.name = "20w22a";
 		this.stable = false;
-		this.worldVersion = 2554;
-		this.protocolVersion = 718;
+		this.worldVersion = 2555;
+		this.protocolVersion = 719;
 		this.packVersion = 5;
 		this.buildTime = new Date();
 		this.releaseTarget = "1.16";
 	}
 
-	protected MinecraftVersion(JsonObject jsonObject) {
+	private MinecraftVersion(JsonObject jsonObject) {
 		this.id = JsonHelper.getString(jsonObject, "id");
 		this.name = JsonHelper.getString(jsonObject, "name");
 		this.releaseTarget = JsonHelper.getString(jsonObject, "release_target");
@@ -55,7 +56,7 @@ public class MinecraftVersion implements GameVersion {
 			try {
 				if (inputStream == null) {
 					LOGGER.warn("Missing version information!");
-					return new MinecraftVersion();
+					return field_25319;
 				}
 
 				InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

@@ -1,6 +1,7 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
-import org.apache.commons.lang3.ArrayUtils;
 
 public class ArrayPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
@@ -45,8 +45,14 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public boolean accepts(T object) {
-		return ArrayUtils.contains(this.array, object);
+	public boolean accepts(Predicate<T> predicate) {
+		for (int i = 0; i < this.size; i++) {
+			if (predicate.test(this.array[i])) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Nullable

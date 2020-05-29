@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
@@ -44,15 +45,15 @@ public class RecipeManager extends JsonDataLoader {
 		super(GSON, "recipes");
 	}
 
-	protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		this.errored = false;
 		Map<RecipeType<?>, Builder<Identifier, Recipe<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, Recipe<?>>>newHashMap();
 
-		for (Entry<Identifier, JsonObject> entry : map.entrySet()) {
+		for (Entry<Identifier, JsonElement> entry : map.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
 
 			try {
-				Recipe<?> recipe = deserialize(identifier, (JsonObject)entry.getValue());
+				Recipe<?> recipe = deserialize(identifier, JsonHelper.asObject((JsonElement)entry.getValue(), "top element"));
 				((Builder)map2.computeIfAbsent(recipe.getType(), recipeType -> ImmutableMap.builder())).put(identifier, recipe);
 			} catch (IllegalArgumentException | JsonParseException var9) {
 				LOGGER.error("Parsing error loading recipe {}", identifier, var9);

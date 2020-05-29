@@ -67,10 +67,7 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 			this.leftArm.pitch = (float) (-Math.PI / 2);
 			this.rightArm.pitch -= k * 1.2F - l * 0.4F;
 			this.leftArm.pitch -= k * 1.2F - l * 0.4F;
-			this.rightArm.roll = this.rightArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
-			this.leftArm.roll = this.leftArm.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
-			this.rightArm.pitch = this.rightArm.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
-			this.leftArm.pitch = this.leftArm.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
+			CrossbowPosing.method_29350(this.rightArm, this.leftArm, h);
 		}
 	}
 

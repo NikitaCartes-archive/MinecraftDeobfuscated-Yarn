@@ -11,17 +11,17 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
@@ -31,7 +31,6 @@ public class TextRenderer {
 	public final int fontHeight = 9;
 	public final Random random = new Random();
 	private final Function<Identifier, FontStorage> fontStorageAccessor;
-	private boolean rightToLeft;
 	private final TextHandler handler;
 
 	public TextRenderer(Function<Identifier, FontStorage> fontStorageAccessor) {
@@ -44,22 +43,27 @@ public class TextRenderer {
 	}
 
 	public int drawWithShadow(MatrixStack matrices, String text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getModel(), true, this.rightToLeft);
+		return this.draw(text, x, y, color, matrices.peek().getModel(), true, this.isRightToLeft());
+	}
+
+	public int method_29342(MatrixStack matrixStack, String string, float f, float g, int i, boolean bl) {
+		RenderSystem.enableAlphaTest();
+		return this.draw(string, f, g, i, matrixStack.peek().getModel(), true, bl);
 	}
 
 	public int draw(MatrixStack matrices, String text, float x, float y, int color) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(text, x, y, color, matrices.peek().getModel(), false, this.rightToLeft);
+		return this.draw(text, x, y, color, matrices.peek().getModel(), false, this.isRightToLeft());
 	}
 
-	public int drawWithShadow(MatrixStack matrices, Text text, float x, float y, int color) {
+	public int drawWithShadow(MatrixStack matrices, class_5348 arg, float x, float y, int color) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(text, x, y, color, matrices.peek().getModel(), true);
+		return this.draw(arg, x, y, color, matrices.peek().getModel(), true);
 	}
 
-	public int draw(MatrixStack matrices, Text text, float x, float y, int color) {
+	public int draw(MatrixStack matrices, class_5348 arg, float x, float y, int color) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(text, x, y, color, matrices.peek().getModel(), false);
+		return this.draw(arg, x, y, color, matrices.peek().getModel(), false);
 	}
 
 	public String mirror(String text) {
@@ -83,9 +87,9 @@ public class TextRenderer {
 		}
 	}
 
-	private int draw(Text text, float x, float y, int color, Matrix4f matrix, boolean shadow) {
+	private int draw(class_5348 arg, float x, float y, int color, Matrix4f matrix, boolean shadow) {
 		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-		int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 15728880);
+		int i = this.draw(arg, x, y, color, shadow, matrix, immediate, false, 0, 15728880);
 		immediate.draw();
 		return i;
 	}
@@ -102,7 +106,7 @@ public class TextRenderer {
 		int backgroundColor,
 		int light
 	) {
-		return this.draw(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light, this.rightToLeft);
+		return this.draw(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light, this.isRightToLeft());
 	}
 
 	public int draw(
@@ -122,7 +126,7 @@ public class TextRenderer {
 	}
 
 	public int draw(
-		Text text,
+		class_5348 arg,
 		float x,
 		float y,
 		int color,
@@ -133,7 +137,7 @@ public class TextRenderer {
 		int backgroundColor,
 		int light
 	) {
-		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
+		return this.drawInternal(arg, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
 	}
 
 	private static int tweakTransparency(int argb) {
@@ -158,18 +162,18 @@ public class TextRenderer {
 		}
 
 		color = tweakTransparency(color);
+		Matrix4f matrix4f = matrix.copy();
 		if (shadow) {
 			this.drawLayer(text, x, y, color, true, matrix, vertexConsumers, seeThrough, backgroundColor, light);
+			matrix4f.addToLastColumn(FORWARD_SHIFT);
 		}
 
-		Matrix4f matrix4f = matrix.copy();
-		matrix4f.addToLastColumn(FORWARD_SHIFT);
 		x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumers, seeThrough, backgroundColor, light);
 		return (int)x + (shadow ? 1 : 0);
 	}
 
 	private int drawInternal(
-		Text text,
+		class_5348 arg,
 		float x,
 		float y,
 		int color,
@@ -181,13 +185,13 @@ public class TextRenderer {
 		int light
 	) {
 		color = tweakTransparency(color);
+		Matrix4f matrix4f = matrix.copy();
 		if (shadow) {
-			this.drawLayer(text, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
+			this.drawLayer(arg, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
+			matrix4f.addToLastColumn(FORWARD_SHIFT);
 		}
 
-		Matrix4f matrix4f = matrix.copy();
-		matrix4f.addToLastColumn(FORWARD_SHIFT);
-		x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
+		x = this.drawLayer(arg, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
 		return (int)x + (shadow ? 1 : 0);
 	}
 
@@ -209,7 +213,7 @@ public class TextRenderer {
 	}
 
 	private float drawLayer(
-		Text text,
+		class_5348 arg,
 		float x,
 		float y,
 		int color,
@@ -221,7 +225,7 @@ public class TextRenderer {
 		int light
 	) {
 		TextRenderer.ShadowDrawer shadowDrawer = new TextRenderer.ShadowDrawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
-		TextVisitFactory.visitFormatted(text, Style.EMPTY, shadowDrawer);
+		TextVisitFactory.visitFormatted(arg, Style.EMPTY, shadowDrawer);
 		return shadowDrawer.drawLayer(underlineColor, x);
 	}
 
@@ -250,8 +254,8 @@ public class TextRenderer {
 		return MathHelper.ceil(this.handler.getWidth(text));
 	}
 
-	public int getWidth(Text text) {
-		return MathHelper.ceil(this.handler.getWidth(text));
+	public int getWidth(class_5348 arg) {
+		return MathHelper.ceil(this.handler.getWidth(arg));
 	}
 
 	public String trimToWidth(String text, int maxWidth, boolean backwards) {
@@ -262,15 +266,15 @@ public class TextRenderer {
 		return this.handler.trimToWidth(text, maxWidth, Style.EMPTY);
 	}
 
-	public MutableText trimToWidth(Text text, int width) {
-		return this.handler.trimToWidth(text, width, Style.EMPTY);
+	public class_5348 trimToWidth(class_5348 arg, int width) {
+		return this.handler.trimToWidth(arg, width, Style.EMPTY);
 	}
 
-	public void drawTrimmed(Text text, int x, int y, int maxWidth, int color) {
+	public void drawTrimmed(class_5348 arg, int x, int y, int maxWidth, int color) {
 		Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
 
-		for (Text text2 : this.wrapLines(text, maxWidth)) {
-			this.draw(text2, (float)x, (float)y, color, matrix4f, false);
+		for (class_5348 lv : this.wrapLines(arg, maxWidth)) {
+			this.draw(lv, (float)x, (float)y, color, matrix4f, false);
 			y += 9;
 		}
 	}
@@ -279,16 +283,12 @@ public class TextRenderer {
 		return 9 * this.handler.wrapLines(text, maxWidth, Style.EMPTY).size();
 	}
 
-	public void setRightToLeft(boolean rightToLeft) {
-		this.rightToLeft = rightToLeft;
-	}
-
-	public List<Text> wrapLines(Text text, int width) {
-		return this.handler.wrapLines(text, width, Style.EMPTY);
+	public List<class_5348> wrapLines(class_5348 arg, int width) {
+		return this.handler.wrapLines(arg, width, Style.EMPTY);
 	}
 
 	public boolean isRightToLeft() {
-		return this.rightToLeft;
+		return Language.getInstance().method_29428();
 	}
 
 	public TextHandler getTextHandler() {

@@ -723,6 +723,10 @@ public class EntityType<T extends Entity> {
 		return this.name;
 	}
 
+	public String toString() {
+		return this.getTranslationKey();
+	}
+
 	public Identifier getLootTableId() {
 		if (this.lootTableId == null) {
 			Identifier identifier = Registry.ENTITY_TYPE.getId(this);

@@ -13,7 +13,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ColumnPos;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class ForceLoadCommand {
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
@@ -97,7 +97,7 @@ public class ForceLoadCommand {
 
 	private static int executeQuery(ServerCommandSource source, ColumnPos pos) throws CommandSyntaxException {
 		ChunkPos chunkPos = new ChunkPos(pos.x >> 4, pos.z >> 4);
-		RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+		RegistryKey<World> registryKey = source.getWorld().getRegistryKey();
 		boolean bl = source.getMinecraftServer().getWorld(registryKey).getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
 			source.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, registryKey.getValue()), false);
@@ -108,7 +108,7 @@ public class ForceLoadCommand {
 	}
 
 	private static int executeQuery(ServerCommandSource source) {
-		RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+		RegistryKey<World> registryKey = source.getWorld().getRegistryKey();
 		LongSet longSet = source.getMinecraftServer().getWorld(registryKey).getForcedChunks();
 		int i = longSet.size();
 		if (i > 0) {
@@ -126,7 +126,7 @@ public class ForceLoadCommand {
 	}
 
 	private static int executeRemoveAll(ServerCommandSource source) {
-		RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+		RegistryKey<World> registryKey = source.getWorld().getRegistryKey();
 		ServerWorld serverWorld = source.getMinecraftServer().getWorld(registryKey);
 		LongSet longSet = serverWorld.getForcedChunks();
 		longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
@@ -148,7 +148,7 @@ public class ForceLoadCommand {
 			if (q > 256L) {
 				throw TOO_BIG_EXCEPTION.create(256, q);
 			} else {
-				RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+				RegistryKey<World> registryKey = source.getWorld().getRegistryKey();
 				ServerWorld serverWorld = source.getMinecraftServer().getWorld(registryKey);
 				ChunkPos chunkPos = null;
 				int r = 0;

@@ -49,7 +49,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 
 	private Set<BlockPos> getDoorsOnPath(ServerWorld world, List<GlobalPos> doors, List<BlockPos> path) {
 		return (Set<BlockPos>)doors.stream()
-			.filter(globalPos -> globalPos.getDimension() == world.method_27983())
+			.filter(globalPos -> globalPos.getDimension() == world.getRegistryKey())
 			.map(GlobalPos::getPos)
 			.filter(path::contains)
 			.collect(Collectors.toSet());
@@ -63,7 +63,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 			if (BlockTags.WOODEN_DOORS.contains(block) && block instanceof DoorBlock) {
 				boolean bl = j >= lastNodeIndex;
 				((DoorBlock)block).setOpen(world, blockPos, bl);
-				GlobalPos globalPos = GlobalPos.create(world.method_27983(), blockPos);
+				GlobalPos globalPos = GlobalPos.create(world.getRegistryKey(), blockPos);
 				if (!brain.getOptionalMemory(MemoryModuleType.OPENED_DOORS).isPresent() && bl) {
 					brain.remember(MemoryModuleType.OPENED_DOORS, Sets.<GlobalPos>newHashSet(globalPos));
 				} else {
@@ -88,7 +88,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 				GlobalPos globalPos = (GlobalPos)iterator.next();
 				BlockPos blockPos = globalPos.getPos();
 				int j = path.indexOf(blockPos);
-				if (world.method_27983() != globalPos.getDimension()) {
+				if (world.getRegistryKey() != globalPos.getDimension()) {
 					iterator.remove();
 				} else {
 					BlockState blockState = world.getBlockState(blockPos);

@@ -68,7 +68,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 	private void method_3575(
 		BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i
 	) {
-		RenderLayer renderLayer = RenderLayers.getBlockLayer(blockState);
+		RenderLayer renderLayer = RenderLayers.method_29359(blockState);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
 		this.manager
 			.getModelRenderer()

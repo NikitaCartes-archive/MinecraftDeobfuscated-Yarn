@@ -50,7 +50,6 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 				this.languageManager.setLanguage(languageEntry.languageDefinition);
 				this.gameOptions.language = languageEntry.languageDefinition.getCode();
 				this.client.reloadResources();
-				this.textRenderer.setRightToLeft(this.languageManager.isRightToLeft());
 				this.doneButton.setMessage(ScreenTexts.DONE);
 				this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
 				this.gameOptions.write();
@@ -126,11 +125,16 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				LanguageOptionsScreen.this.textRenderer.setRightToLeft(true);
-				LanguageSelectionListWidget.this.drawCenteredString(
-					matrices, LanguageOptionsScreen.this.textRenderer, this.languageDefinition.toString(), LanguageSelectionListWidget.this.width / 2, y + 1, 16777215
-				);
-				LanguageOptionsScreen.this.textRenderer.setRightToLeft(LanguageOptionsScreen.this.languageManager.getLanguage().isRightToLeft());
+				String string = this.languageDefinition.toString();
+				LanguageOptionsScreen.this.textRenderer
+					.method_29342(
+						matrices,
+						string,
+						(float)(LanguageSelectionListWidget.this.width / 2 - LanguageOptionsScreen.this.textRenderer.getWidth(string) / 2),
+						(float)(y + 1),
+						16777215,
+						true
+					);
 			}
 
 			@Override

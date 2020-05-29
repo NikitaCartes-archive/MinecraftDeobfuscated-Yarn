@@ -29,51 +29,41 @@ import org.apache.logging.log4j.Logger;
 
 public class GameRules {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Map<GameRules.RuleKey<?>, GameRules.RuleType<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> key.name));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_FIRE_TICK = register(
-		"doFireTick", GameRules.RuleCategory.UPDATES, GameRules.BooleanRule.create(true)
+	private static final Map<GameRules.Key<?>, GameRules.Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> key.name));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_FIRE_TICK = register("doFireTick", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> MOB_GRIEFING = register("mobGriefing", GameRules.Category.MOBS, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> KEEP_INVENTORY = register(
+		"keepInventory", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> MOB_GRIEFING = register(
-		"mobGriefing", GameRules.RuleCategory.MOBS, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_SPAWNING = register(
+		"doMobSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> KEEP_INVENTORY = register(
-		"keepInventory", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(false)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_LOOT = register("doMobLoot", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_TILE_DROPS = register("doTileDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_ENTITY_DROPS = register(
+		"doEntityDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_MOB_SPAWNING = register(
-		"doMobSpawning", GameRules.RuleCategory.SPAWNING, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> COMMAND_BLOCK_OUTPUT = register(
+		"commandBlockOutput", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_MOB_LOOT = register(
-		"doMobLoot", GameRules.RuleCategory.DROPS, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> NATURAL_REGENERATION = register(
+		"naturalRegeneration", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_TILE_DROPS = register(
-		"doTileDrops", GameRules.RuleCategory.DROPS, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_DAYLIGHT_CYCLE = register(
+		"doDaylightCycle", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_ENTITY_DROPS = register(
-		"doEntityDrops", GameRules.RuleCategory.DROPS, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> LOG_ADMIN_COMMANDS = register(
+		"logAdminCommands", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> COMMAND_BLOCK_OUTPUT = register(
-		"commandBlockOutput", GameRules.RuleCategory.CHAT, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> SHOW_DEATH_MESSAGES = register(
+		"showDeathMessages", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> NATURAL_REGENERATION = register(
-		"naturalRegeneration", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.IntRule> RANDOM_TICK_SPEED = register("randomTickSpeed", GameRules.Category.UPDATES, GameRules.IntRule.create(3));
+	public static final GameRules.Key<GameRules.BooleanRule> SEND_COMMAND_FEEDBACK = register(
+		"sendCommandFeedback", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_DAYLIGHT_CYCLE = register(
-		"doDaylightCycle", GameRules.RuleCategory.UPDATES, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> LOG_ADMIN_COMMANDS = register(
-		"logAdminCommands", GameRules.RuleCategory.CHAT, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> SHOW_DEATH_MESSAGES = register(
-		"showDeathMessages", GameRules.RuleCategory.CHAT, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.RuleKey<GameRules.IntRule> RANDOM_TICK_SPEED = register(
-		"randomTickSpeed", GameRules.RuleCategory.UPDATES, GameRules.IntRule.create(3)
-	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> SEND_COMMAND_FEEDBACK = register(
-		"sendCommandFeedback", GameRules.RuleCategory.CHAT, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> REDUCED_DEBUG_INFO = register(
-		"reducedDebugInfo", GameRules.RuleCategory.MISC, GameRules.BooleanRule.create(false, (server, rule) -> {
+	public static final GameRules.Key<GameRules.BooleanRule> REDUCED_DEBUG_INFO = register(
+		"reducedDebugInfo", GameRules.Category.MISC, GameRules.BooleanRule.create(false, (server, rule) -> {
 			byte b = (byte)(rule.get() ? 22 : 23);
 
 			for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
@@ -81,65 +71,55 @@ public class GameRules {
 			}
 		})
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> SPECTATORS_GENERATE_CHUNKS = register(
-		"spectatorsGenerateChunks", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> SPECTATORS_GENERATE_CHUNKS = register(
+		"spectatorsGenerateChunks", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.IntRule> SPAWN_RADIUS = register("spawnRadius", GameRules.RuleCategory.PLAYER, GameRules.IntRule.create(10));
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DISABLE_ELYTRA_MOVEMENT_CHECK = register(
-		"disableElytraMovementCheck", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(false)
+	public static final GameRules.Key<GameRules.IntRule> SPAWN_RADIUS = register("spawnRadius", GameRules.Category.PLAYER, GameRules.IntRule.create(10));
+	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_ELYTRA_MOVEMENT_CHECK = register(
+		"disableElytraMovementCheck", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
-	public static final GameRules.RuleKey<GameRules.IntRule> MAX_ENTITY_CRAMMING = register(
-		"maxEntityCramming", GameRules.RuleCategory.MOBS, GameRules.IntRule.create(24)
+	public static final GameRules.Key<GameRules.IntRule> MAX_ENTITY_CRAMMING = register("maxEntityCramming", GameRules.Category.MOBS, GameRules.IntRule.create(24));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_WEATHER_CYCLE = register(
+		"doWeatherCycle", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_WEATHER_CYCLE = register(
-		"doWeatherCycle", GameRules.RuleCategory.UPDATES, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_LIMITED_CRAFTING = register(
+		"doLimitedCrafting", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_LIMITED_CRAFTING = register(
-		"doLimitedCrafting", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(false)
+	public static final GameRules.Key<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register(
+		"maxCommandChainLength", GameRules.Category.MISC, GameRules.IntRule.create(65536)
 	);
-	public static final GameRules.RuleKey<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register(
-		"maxCommandChainLength", GameRules.RuleCategory.MISC, GameRules.IntRule.create(65536)
+	public static final GameRules.Key<GameRules.BooleanRule> ANNOUNCE_ADVANCEMENTS = register(
+		"announceAdvancements", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> ANNOUNCE_ADVANCEMENTS = register(
-		"announceAdvancements", GameRules.RuleCategory.CHAT, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DISABLE_RAIDS = register(
-		"disableRaids", GameRules.RuleCategory.MOBS, GameRules.BooleanRule.create(false)
-	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_INSOMNIA = register(
-		"doInsomnia", GameRules.RuleCategory.SPAWNING, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_IMMEDIATE_RESPAWN = register(
-		"doImmediateRespawn", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(false, (server, rule) -> {
+	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_RAIDS = register("disableRaids", GameRules.Category.MOBS, GameRules.BooleanRule.create(false));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_INSOMNIA = register("doInsomnia", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_IMMEDIATE_RESPAWN = register(
+		"doImmediateRespawn", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false, (server, rule) -> {
 			for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
 				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(11, rule.get() ? 1.0F : 0.0F));
 			}
 		})
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DROWNING_DAMAGE = register(
-		"drowningDamage", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DROWNING_DAMAGE = register(
+		"drowningDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> FALL_DAMAGE = register(
-		"fallDamage", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> FALL_DAMAGE = register("fallDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> FIRE_DAMAGE = register("fireDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_PATROL_SPAWNING = register(
+		"doPatrolSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> FIRE_DAMAGE = register(
-		"fireDamage", GameRules.RuleCategory.PLAYER, GameRules.BooleanRule.create(true)
+	public static final GameRules.Key<GameRules.BooleanRule> DO_TRADER_SPAWNING = register(
+		"doTraderSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_PATROL_SPAWNING = register(
-		"doPatrolSpawning", GameRules.RuleCategory.SPAWNING, GameRules.BooleanRule.create(true)
-	);
-	public static final GameRules.RuleKey<GameRules.BooleanRule> DO_TRADER_SPAWNING = register(
-		"doTraderSpawning", GameRules.RuleCategory.SPAWNING, GameRules.BooleanRule.create(true)
-	);
-	private final Map<GameRules.RuleKey<?>, GameRules.Rule<?>> rules;
+	private final Map<GameRules.Key<?>, GameRules.Rule<?>> rules;
 
-	private static <T extends GameRules.Rule<T>> GameRules.RuleKey<T> register(String name, GameRules.RuleCategory category, GameRules.RuleType<T> type) {
-		GameRules.RuleKey<T> ruleKey = new GameRules.RuleKey<>(name, category);
-		GameRules.RuleType<?> ruleType = (GameRules.RuleType<?>)RULE_TYPES.put(ruleKey, type);
-		if (ruleType != null) {
+	private static <T extends GameRules.Rule<T>> GameRules.Key<T> register(String name, GameRules.Category category, GameRules.Type<T> type) {
+		GameRules.Key<T> key = new GameRules.Key<>(name, category);
+		GameRules.Type<?> type2 = (GameRules.Type<?>)RULE_TYPES.put(key, type);
+		if (type2 != null) {
 			throw new IllegalStateException("Duplicate game rule registration for " + name);
 		} else {
-			return ruleKey;
+			return key;
 		}
 	}
 
@@ -149,16 +129,16 @@ public class GameRules {
 	}
 
 	public GameRules() {
-		this.rules = (Map<GameRules.RuleKey<?>, GameRules.Rule<?>>)RULE_TYPES.entrySet()
+		this.rules = (Map<GameRules.Key<?>, GameRules.Rule<?>>)RULE_TYPES.entrySet()
 			.stream()
-			.collect(ImmutableMap.toImmutableMap(Entry::getKey, e -> ((GameRules.RuleType)e.getValue()).createRule()));
+			.collect(ImmutableMap.toImmutableMap(Entry::getKey, e -> ((GameRules.Type)e.getValue()).createRule()));
 	}
 
-	private GameRules(Map<GameRules.RuleKey<?>, GameRules.Rule<?>> rules) {
+	private GameRules(Map<GameRules.Key<?>, GameRules.Rule<?>> rules) {
 		this.rules = rules;
 	}
 
-	public <T extends GameRules.Rule<T>> T get(GameRules.RuleKey<T> key) {
+	public <T extends GameRules.Rule<T>> T get(GameRules.Key<T> key) {
 		return (T)this.rules.get(key);
 	}
 
@@ -174,56 +154,60 @@ public class GameRules {
 
 	public GameRules copy() {
 		return new GameRules(
-			(Map<GameRules.RuleKey<?>, GameRules.Rule<?>>)this.rules
+			(Map<GameRules.Key<?>, GameRules.Rule<?>>)this.rules
 				.entrySet()
 				.stream()
 				.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ((GameRules.Rule)entry.getValue()).copy()))
 		);
 	}
 
-	public static void forEachType(GameRules.RuleTypeConsumer action) {
+	public static void forEachType(GameRules.TypeConsumer action) {
 		RULE_TYPES.forEach((key, type) -> accept(action, key, type));
 	}
 
-	private static <T extends GameRules.Rule<T>> void accept(GameRules.RuleTypeConsumer consumer, GameRules.RuleKey<?> key, GameRules.RuleType<?> type) {
+	private static <T extends GameRules.Rule<T>> void accept(GameRules.TypeConsumer consumer, GameRules.Key<?> key, GameRules.Type<?> type) {
 		consumer.accept(key, type);
 		type.method_27336(consumer, key);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void setAllValues(GameRules gameRules, @Nullable MinecraftServer server) {
-		gameRules.rules.keySet().forEach(ruleKey -> this.setValue(ruleKey, gameRules, server));
+		gameRules.rules.keySet().forEach(key -> this.setValue(key, gameRules, server));
 	}
 
 	@Environment(EnvType.CLIENT)
-	private <T extends GameRules.Rule<T>> void setValue(GameRules.RuleKey<T> key, GameRules gameRules, @Nullable MinecraftServer server) {
+	private <T extends GameRules.Rule<T>> void setValue(GameRules.Key<T> key, GameRules gameRules, @Nullable MinecraftServer server) {
 		T rule = gameRules.get(key);
 		this.<T>get(key).setValue(rule, server);
 	}
 
-	public boolean getBoolean(GameRules.RuleKey<GameRules.BooleanRule> rule) {
+	public boolean getBoolean(GameRules.Key<GameRules.BooleanRule> rule) {
 		return this.get(rule).get();
 	}
 
-	public int getInt(GameRules.RuleKey<GameRules.IntRule> rule) {
+	public int getInt(GameRules.Key<GameRules.IntRule> rule) {
 		return this.get(rule).get();
+	}
+
+	interface Acceptor<T extends GameRules.Rule<T>> {
+		void call(GameRules.TypeConsumer consumer, GameRules.Key<T> key, GameRules.Type<T> type);
 	}
 
 	public static class BooleanRule extends GameRules.Rule<GameRules.BooleanRule> {
 		private boolean value;
 
-		private static GameRules.RuleType<GameRules.BooleanRule> create(boolean initialValue, BiConsumer<MinecraftServer, GameRules.BooleanRule> changeCallback) {
-			return new GameRules.RuleType<>(
-				BoolArgumentType::bool, type -> new GameRules.BooleanRule(type, initialValue), changeCallback, GameRules.RuleTypeConsumer::acceptBoolean
+		private static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue, BiConsumer<MinecraftServer, GameRules.BooleanRule> changeCallback) {
+			return new GameRules.Type<>(
+				BoolArgumentType::bool, type -> new GameRules.BooleanRule(type, initialValue), changeCallback, GameRules.TypeConsumer::acceptBoolean
 			);
 		}
 
-		private static GameRules.RuleType<GameRules.BooleanRule> create(boolean initialValue) {
+		private static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue) {
 			return create(initialValue, (server, rule) -> {
 			});
 		}
 
-		public BooleanRule(GameRules.RuleType<GameRules.BooleanRule> type, boolean initialValue) {
+		public BooleanRule(GameRules.Type<GameRules.BooleanRule> type, boolean initialValue) {
 			super(type);
 			this.value = initialValue;
 		}
@@ -272,21 +256,42 @@ public class GameRules {
 		}
 	}
 
+	public static enum Category {
+		PLAYER("gamerule.category.player"),
+		MOBS("gamerule.category.mobs"),
+		SPAWNING("gamerule.category.spawning"),
+		DROPS("gamerule.category.drops"),
+		UPDATES("gamerule.category.updates"),
+		CHAT("gamerule.category.chat"),
+		MISC("gamerule.category.misc");
+
+		private final String category;
+
+		private Category(String category) {
+			this.category = category;
+		}
+
+		@Environment(EnvType.CLIENT)
+		public String getCategory() {
+			return this.category;
+		}
+	}
+
 	public static class IntRule extends GameRules.Rule<GameRules.IntRule> {
 		private int value;
 
-		private static GameRules.RuleType<GameRules.IntRule> create(int initialValue, BiConsumer<MinecraftServer, GameRules.IntRule> changeCallback) {
-			return new GameRules.RuleType<>(
-				IntegerArgumentType::integer, type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.RuleTypeConsumer::acceptInt
+		private static GameRules.Type<GameRules.IntRule> create(int initialValue, BiConsumer<MinecraftServer, GameRules.IntRule> changeCallback) {
+			return new GameRules.Type<>(
+				IntegerArgumentType::integer, type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.TypeConsumer::acceptInt
 			);
 		}
 
-		private static GameRules.RuleType<GameRules.IntRule> create(int initialValue) {
+		private static GameRules.Type<GameRules.IntRule> create(int initialValue) {
 			return create(initialValue, (server, rule) -> {
 			});
 		}
 
-		public IntRule(GameRules.RuleType<GameRules.IntRule> rule, int initialValue) {
+		public IntRule(GameRules.Type<GameRules.IntRule> rule, int initialValue) {
 			super(rule);
 			this.value = initialValue;
 		}
@@ -355,10 +360,45 @@ public class GameRules {
 		}
 	}
 
-	public abstract static class Rule<T extends GameRules.Rule<T>> {
-		protected final GameRules.RuleType<T> type;
+	public static final class Key<T extends GameRules.Rule<T>> {
+		private final String name;
+		private final GameRules.Category category;
 
-		public Rule(GameRules.RuleType<T> type) {
+		public Key(String name, GameRules.Category category) {
+			this.name = name;
+			this.category = category;
+		}
+
+		public String toString() {
+			return this.name;
+		}
+
+		public boolean equals(Object obj) {
+			return this == obj ? true : obj instanceof GameRules.Key && ((GameRules.Key)obj).name.equals(this.name);
+		}
+
+		public int hashCode() {
+			return this.name.hashCode();
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public String getTranslationKey() {
+			return "gamerule." + this.name;
+		}
+
+		@Environment(EnvType.CLIENT)
+		public GameRules.Category getCategory() {
+			return this.category;
+		}
+	}
+
+	public abstract static class Rule<T extends GameRules.Rule<T>> {
+		protected final GameRules.Type<T> type;
+
+		public Rule(GameRules.Type<T> type) {
 			this.type = type;
 		}
 
@@ -393,82 +433,22 @@ public class GameRules {
 		public abstract void setValue(T rule, @Nullable MinecraftServer server);
 	}
 
-	interface RuleAcceptor<T extends GameRules.Rule<T>> {
-		void call(GameRules.RuleTypeConsumer consumer, GameRules.RuleKey<T> key, GameRules.RuleType<T> type);
-	}
-
-	public static enum RuleCategory {
-		PLAYER("gamerule.category.player"),
-		MOBS("gamerule.category.mobs"),
-		SPAWNING("gamerule.category.spawning"),
-		DROPS("gamerule.category.drops"),
-		UPDATES("gamerule.category.updates"),
-		CHAT("gamerule.category.chat"),
-		MISC("gamerule.category.misc");
-
-		private final String category;
-
-		private RuleCategory(String category) {
-			this.category = category;
-		}
-
-		@Environment(EnvType.CLIENT)
-		public String getCategory() {
-			return this.category;
-		}
-	}
-
-	public static final class RuleKey<T extends GameRules.Rule<T>> {
-		private final String name;
-		private final GameRules.RuleCategory category;
-
-		public RuleKey(String name, GameRules.RuleCategory category) {
-			this.name = name;
-			this.category = category;
-		}
-
-		public String toString() {
-			return this.name;
-		}
-
-		public boolean equals(Object obj) {
-			return this == obj ? true : obj instanceof GameRules.RuleKey && ((GameRules.RuleKey)obj).name.equals(this.name);
-		}
-
-		public int hashCode() {
-			return this.name.hashCode();
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public String getTranslationKey() {
-			return "gamerule." + this.name;
-		}
-
-		@Environment(EnvType.CLIENT)
-		public GameRules.RuleCategory getCategory() {
-			return this.category;
-		}
-	}
-
-	public static class RuleType<T extends GameRules.Rule<T>> {
+	public static class Type<T extends GameRules.Rule<T>> {
 		private final Supplier<ArgumentType<?>> argumentType;
-		private final Function<GameRules.RuleType<T>, T> ruleFactory;
+		private final Function<GameRules.Type<T>, T> ruleFactory;
 		private final BiConsumer<MinecraftServer, T> changeCallback;
-		private final GameRules.RuleAcceptor<T> field_24104;
+		private final GameRules.Acceptor<T> field_24104;
 
-		private RuleType(
+		private Type(
 			Supplier<ArgumentType<?>> argumentType,
-			Function<GameRules.RuleType<T>, T> ruleFactory,
+			Function<GameRules.Type<T>, T> ruleFactory,
 			BiConsumer<MinecraftServer, T> changeCallback,
-			GameRules.RuleAcceptor<T> ruleAcceptor
+			GameRules.Acceptor<T> acceptor
 		) {
 			this.argumentType = argumentType;
 			this.ruleFactory = ruleFactory;
 			this.changeCallback = changeCallback;
-			this.field_24104 = ruleAcceptor;
+			this.field_24104 = acceptor;
 		}
 
 		public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String name) {
@@ -479,19 +459,19 @@ public class GameRules {
 			return (T)this.ruleFactory.apply(this);
 		}
 
-		public void method_27336(GameRules.RuleTypeConsumer consumer, GameRules.RuleKey<T> key) {
+		public void method_27336(GameRules.TypeConsumer consumer, GameRules.Key<T> key) {
 			this.field_24104.call(consumer, key, this);
 		}
 	}
 
-	public interface RuleTypeConsumer {
-		default <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> key, GameRules.RuleType<T> type) {
+	public interface TypeConsumer {
+		default <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
 		}
 
-		default void acceptBoolean(GameRules.RuleKey<GameRules.BooleanRule> key, GameRules.RuleType<GameRules.BooleanRule> type) {
+		default void acceptBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
 		}
 
-		default void acceptInt(GameRules.RuleKey<GameRules.IntRule> key, GameRules.RuleType<GameRules.IntRule> type) {
+		default void acceptInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
 		}
 	}
 }

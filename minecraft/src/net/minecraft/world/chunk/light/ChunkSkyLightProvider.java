@@ -103,7 +103,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 		} else {
 			int n = 0;
 
-			while (!this.lightStorage.hasLight(ChunkSectionPos.offset(l, 0, -n - 1, 0)) && this.lightStorage.isAboveMinimumHeight(k - n - 1)) {
+			while (!this.lightStorage.hasLight(ChunkSectionPos.offset(l, 0, -n - 1, 0)) && this.lightStorage.isAboveMinHeight(k - n - 1)) {
 				n++;
 			}
 

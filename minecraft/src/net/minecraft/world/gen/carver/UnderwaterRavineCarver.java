@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class UnderwaterRavineCarver extends RavineCarver {
 	public UnderwaterRavineCarver(Codec<ProbabilityConfig> codec) {
@@ -77,7 +77,7 @@ public class UnderwaterRavineCarver extends RavineCarver {
 		int relativeX,
 		int y,
 		int relativeZ,
-		AtomicBoolean foundSurface
+		MutableBoolean mutableBoolean
 	) {
 		return UnderwaterCaveCarver.carveAtPoint(this, chunk, carvingMask, random, mutable, seaLevel, mainChunkX, mainChunkZ, x, z, relativeX, y, relativeZ);
 	}

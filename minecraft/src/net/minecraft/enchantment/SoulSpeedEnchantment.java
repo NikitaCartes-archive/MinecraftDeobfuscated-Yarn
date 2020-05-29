@@ -8,13 +8,13 @@ public class SoulSpeedEnchantment extends Enchantment {
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return level * 10;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return this.getMinimumPower(level) + 15;
+	public int getMaxPower(int level) {
+		return this.getMinPower(level) + 15;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class SoulSpeedEnchantment extends Enchantment {
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 3;
 	}
 }

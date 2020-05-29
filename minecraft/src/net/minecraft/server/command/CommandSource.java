@@ -10,13 +10,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 public interface CommandSource {
 	Collection<String> getPlayerNames();
@@ -41,7 +43,7 @@ public interface CommandSource {
 		return Collections.singleton(CommandSource.RelativePosition.ZERO_WORLD);
 	}
 
-	DimensionTracker method_29038();
+	Set<RegistryKey<World>> method_29310();
 
 	boolean hasPermissionLevel(int level);
 

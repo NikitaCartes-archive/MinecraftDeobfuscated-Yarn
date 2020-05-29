@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 
 public class AlternativeLootCondition implements LootCondition {
 	private final LootCondition[] terms;
@@ -17,7 +17,12 @@ public class AlternativeLootCondition implements LootCondition {
 
 	private AlternativeLootCondition(LootCondition[] terms) {
 		this.terms = terms;
-		this.predicate = LootConditions.joinOr(terms);
+		this.predicate = LootConditionTypes.joinOr(terms);
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.ALTERNATIVE;
 	}
 
 	public final boolean test(LootContext lootContext) {
@@ -58,11 +63,7 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 	}
 
-	public static class Factory extends LootCondition.Factory<AlternativeLootCondition> {
-		public Factory() {
-			super(new Identifier("alternative"), AlternativeLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<AlternativeLootCondition> {
 		public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
 		}

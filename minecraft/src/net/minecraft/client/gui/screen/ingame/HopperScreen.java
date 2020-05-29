@@ -17,6 +17,7 @@ public class HopperScreen extends HandledScreen<HopperScreenHandler> {
 		super(handler, inventory, title);
 		this.passEvents = false;
 		this.backgroundHeight = 133;
+		this.field_25270 = this.backgroundHeight - 94;
 	}
 
 	@Override
@@ -24,12 +25,6 @@ public class HopperScreen extends HandledScreen<HopperScreenHandler> {
 		this.renderBackground(matrices);
 		super.render(matrices, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-	}
-
-	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.draw(matrices, this.title, 8.0F, 6.0F, 4210752);
-		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override

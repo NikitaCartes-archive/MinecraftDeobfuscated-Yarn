@@ -132,7 +132,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		}
 
 		world.syncWorldEvent(player, state.get(OPEN) ? 1008 : 1014, pos, 0);
-		return ActionResult.SUCCESS;
+		return ActionResult.method_29236(world.isClient);
 	}
 
 	@Override

@@ -51,12 +51,17 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
-	private static final VoxelShape field_21580 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
-	private final boolean field_23881;
+	/**
+	 * The shape used to test whether a given block is considered 'smokey'.
+	 */
+	private static final VoxelShape SMOKEY_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
+	private final boolean emitsParticles;
+	private final int fireDamage;
 
-	public CampfireBlock(boolean bl, AbstractBlock.Settings settings) {
+	public CampfireBlock(boolean emitsParticles, int fireDamage, AbstractBlock.Settings settings) {
 		super(settings);
-		this.field_23881 = bl;
+		this.emitsParticles = emitsParticles;
+		this.fireDamage = fireDamage;
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
@@ -93,7 +98,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!entity.isFireImmune() && (Boolean)state.get(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
-			entity.damage(DamageSource.IN_FIRE, 1.0F);
+			entity.damage(DamageSource.IN_FIRE, (float)this.fireDamage);
 		}
 
 		super.onEntityCollision(state, world, pos, entity);
@@ -166,7 +171,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				);
 			}
 
-			if (this.field_23881 && random.nextInt(5) == 0) {
+			if (this.emitsParticles && random.nextInt(5) == 0) {
 				for (int i = 0; i < random.nextInt(1) + 1; i++) {
 					world.addParticle(
 						ParticleTypes.LAVA,
@@ -182,23 +187,29 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		}
 	}
 
+	public static void extinguish(WorldAccess world, BlockPos pos, BlockState state) {
+		if (world.isClient()) {
+			for (int i = 0; i < 20; i++) {
+				spawnSmokeParticle(world.getWorld(), pos, (Boolean)state.get(SIGNAL_FIRE), true);
+			}
+		}
+
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if (blockEntity instanceof CampfireBlockEntity) {
+			((CampfireBlockEntity)blockEntity).spawnItemsBeingCooked();
+		}
+	}
+
 	@Override
 	public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
 		if (!(Boolean)state.get(Properties.WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
 			boolean bl = (Boolean)state.get(LIT);
 			if (bl) {
-				if (world.isClient()) {
-					for (int i = 0; i < 20; i++) {
-						spawnSmokeParticle(world.getWorld(), pos, (Boolean)state.get(SIGNAL_FIRE), true);
-					}
-				} else {
+				if (!world.isClient()) {
 					world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
-				BlockEntity blockEntity = world.getBlockEntity(pos);
-				if (blockEntity instanceof CampfireBlockEntity) {
-					((CampfireBlockEntity)blockEntity).spawnItemsBeingCooked();
-				}
+				extinguish(world, pos, state);
 			}
 
 			world.setBlockState(pos, state.with(WATERLOGGED, Boolean.valueOf(true)).with(LIT, Boolean.valueOf(false)), 3);
@@ -255,7 +266,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				return true;
 			}
 
-			boolean bl = VoxelShapes.matchesAnywhere(field_21580, blockState.getCollisionShape(world, pos, ShapeContext.absent()), BooleanBiFunction.AND);
+			boolean bl = VoxelShapes.matchesAnywhere(SMOKEY_SHAPE, blockState.getCollisionShape(world, pos, ShapeContext.absent()), BooleanBiFunction.AND);
 			if (bl) {
 				BlockState blockState2 = world.getBlockState(blockPos.down());
 				return isLitCampfire(blockState2);
@@ -266,7 +277,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	public static boolean isLitCampfire(BlockState state) {
-		return state.getBlock().isIn(BlockTags.CAMPFIRES) && state.contains(LIT) && (Boolean)state.get(LIT);
+		return state.contains(LIT) && state.isIn(BlockTags.CAMPFIRES) && (Boolean)state.get(LIT);
 	}
 
 	@Override

@@ -11,10 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
-import net.minecraft.loot.condition.LootConditions;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class ConditionalLootFunction implements LootFunction {
@@ -23,7 +23,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 
 	protected ConditionalLootFunction(LootCondition[] conditions) {
 		this.conditions = conditions;
-		this.predicate = LootConditions.joinAnd(conditions);
+		this.predicate = LootConditionTypes.joinAnd(conditions);
 	}
 
 	public final ItemStack apply(ItemStack itemStack, LootContext lootContext) {
@@ -64,11 +64,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		}
 	}
 
-	public abstract static class Factory<T extends ConditionalLootFunction> extends LootFunction.Factory<T> {
-		public Factory(Identifier identifier, Class<T> class_) {
-			super(identifier, class_);
-		}
-
+	public abstract static class Factory<T extends ConditionalLootFunction> implements JsonSerializable<T> {
 		public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
 			if (!ArrayUtils.isEmpty((Object[])conditionalLootFunction.conditions)) {
 				jsonObject.add("conditions", jsonSerializationContext.serialize(conditionalLootFunction.conditions));

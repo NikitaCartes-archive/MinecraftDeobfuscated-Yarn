@@ -47,7 +47,7 @@ public class ChunkStatus {
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
-				if (serverWorld.getServer().method_27728().method_28057().shouldGenerateStructures()) {
+				if (serverWorld.getServer().getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 					chunkGenerator.setStructureStarts(serverWorld.getStructureAccessor(), chunk, structureManager, serverWorld.getSeed());
 				}
 

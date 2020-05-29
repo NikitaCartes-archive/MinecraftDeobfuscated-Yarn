@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
@@ -11,7 +12,6 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -30,11 +30,11 @@ public class AdvancementToast implements Toast {
 		AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
 		manager.drawTexture(matrices, 0, 0, 0, 0, this.method_29049(), this.method_29050());
 		if (advancementDisplay != null) {
-			List<Text> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
+			List<class_5348> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
 			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
 			if (list.size() == 1) {
 				manager.getGame().textRenderer.draw(matrices, I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId()), 30.0F, 7.0F, i | 0xFF000000);
-				manager.getGame().textRenderer.draw(matrices, (Text)list.get(0), 30.0F, 18.0F, -1);
+				manager.getGame().textRenderer.draw(matrices, (class_5348)list.get(0), 30.0F, 18.0F, -1);
 			} else {
 				int j = 1500;
 				float f = 300.0F;
@@ -45,8 +45,8 @@ public class AdvancementToast implements Toast {
 					int k = MathHelper.floor(MathHelper.clamp((float)(startTime - 1500L) / 300.0F, 0.0F, 1.0F) * 252.0F) << 24 | 67108864;
 					int l = this.method_29050() / 2 - list.size() * 9 / 2;
 
-					for (Text text : list) {
-						manager.getGame().textRenderer.draw(matrices, text, 30.0F, (float)l, 16777215 | k);
+					for (class_5348 lv : list) {
+						manager.getGame().textRenderer.draw(matrices, lv, 30.0F, (float)l, 16777215 | k);
 						l += 9;
 					}
 				}

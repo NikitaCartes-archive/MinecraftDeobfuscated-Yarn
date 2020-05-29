@@ -27,7 +27,6 @@ import net.minecraft.world.GameRules;
 public class FarmerVillagerTask extends Task<VillagerEntity> {
 	@Nullable
 	private BlockPos currentTarget;
-	private boolean ableToPlant;
 	private long nextResponseTime;
 	private int ticksRan;
 	private final List<BlockPos> targetPositions = Lists.<BlockPos>newArrayList();
@@ -51,7 +50,6 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {
 			return false;
 		} else {
-			this.ableToPlant = villagerEntity.hasSeedToPlant();
 			BlockPos.Mutable mutable = villagerEntity.getBlockPos().mutableCopy();
 			this.targetPositions.clear();
 
@@ -67,7 +65,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 			}
 
 			this.currentTarget = this.chooseRandomTarget(serverWorld);
-			return this.ableToPlant && this.currentTarget != null;
+			return this.currentTarget != null;
 		}
 	}
 
@@ -80,7 +78,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
 		Block block2 = world.getBlockState(pos.down()).getBlock();
-		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) || blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant;
+		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) || blockState.isAir() && block2 instanceof FarmlandBlock;
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -107,7 +105,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					serverWorld.breakBlock(this.currentTarget, true, villagerEntity);
 				}
 
-				if (blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant) {
+				if (blockState.isAir() && block2 instanceof FarmlandBlock && villagerEntity.hasSeedToPlant()) {
 					SimpleInventory simpleInventory = villagerEntity.getInventory();
 
 					for (int i = 0; i < simpleInventory.size(); i++) {

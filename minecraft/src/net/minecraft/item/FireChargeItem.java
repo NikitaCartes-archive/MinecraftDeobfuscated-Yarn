@@ -40,7 +40,7 @@ public class FireChargeItem extends Item {
 
 		if (bl) {
 			context.getStack().decrement(1);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			return ActionResult.FAIL;
 		}

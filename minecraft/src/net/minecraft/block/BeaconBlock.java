@@ -40,7 +40,7 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 				player.incrementStat(Stats.INTERACT_WITH_BEACON);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

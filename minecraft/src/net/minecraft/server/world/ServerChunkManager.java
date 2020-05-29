@@ -81,7 +81,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(serverWorld);
 		this.chunkGenerator = chunkGenerator;
 		this.serverThread = Thread.currentThread();
-		File file = session.method_27424(serverWorld.method_27983());
+		File file = session.method_27424(serverWorld.getRegistryKey());
 		File file2 = new File(file, "data");
 		file2.mkdirs();
 		this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
@@ -339,14 +339,14 @@ public class ServerChunkManager extends ChunkManager {
 		this.threadedAnvilChunkStorage.close();
 	}
 
-	public void tick(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier shouldKeepTicking) {
 		this.world.getProfiler().push("purge");
 		this.ticketManager.purge();
 		this.tick();
 		this.world.getProfiler().swap("chunks");
 		this.tickChunks();
 		this.world.getProfiler().swap("unload");
-		this.threadedAnvilChunkStorage.tick(booleanSupplier);
+		this.threadedAnvilChunkStorage.tick(shouldKeepTicking);
 		this.world.getProfiler().pop();
 		this.initChunkCaches();
 	}
@@ -429,7 +429,20 @@ public class ServerChunkManager extends ChunkManager {
 		int j = pos.getZ() >> 4;
 		ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j));
 		if (chunkHolder != null) {
-			chunkHolder.markForBlockUpdate(pos.getX() & 15, pos.getY(), pos.getZ() & 15);
+			chunkHolder.markForBlockUpdate(this, pos.getX() & 15, pos.getY(), pos.getZ() & 15);
+		}
+	}
+
+	protected void method_29482(int i, int j) {
+		for (int k = -1; k <= 1; k++) {
+			for (int l = -1; l <= 1; l++) {
+				if (k != 0 || l != 0) {
+					ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i + k, j + l));
+					if (chunkHolder != null) {
+						chunkHolder.method_29481();
+					}
+				}
+			}
 		}
 	}
 
@@ -506,7 +519,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		private MainThreadExecutor(World world) {
-			super("Chunk source main thread executor for " + world.method_27983().getValue());
+			super("Chunk source main thread executor for " + world.getRegistryKey().getValue());
 		}
 
 		@Override

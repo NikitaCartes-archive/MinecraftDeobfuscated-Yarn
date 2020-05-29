@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -22,7 +23,7 @@ public class MultiplayerWarningScreen extends Screen {
 	private static final Text checkMessage = new TranslatableText("multiplayerWarning.check");
 	private static final Text proceedText = header.shallowCopy().append("\n").append(message);
 	private CheckboxWidget checkbox;
-	private final List<Text> lines = Lists.<Text>newArrayList();
+	private final List<class_5348> lines = Lists.<class_5348>newArrayList();
 
 	public MultiplayerWarningScreen(Screen parent) {
 		super(NarratorManager.EMPTY);
@@ -59,8 +60,8 @@ public class MultiplayerWarningScreen extends Screen {
 		this.drawCenteredText(matrices, this.textRenderer, header, this.width / 2, 30, 16777215);
 		int i = 70;
 
-		for (Text text : this.lines) {
-			this.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, i, 16777215);
+		for (class_5348 lv : this.lines) {
+			this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 16777215);
 			i += 9;
 		}
 

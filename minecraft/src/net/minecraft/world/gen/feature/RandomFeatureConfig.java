@@ -9,7 +9,7 @@ public class RandomFeatureConfig implements FeatureConfig {
 		instance -> instance.apply2(
 				RandomFeatureConfig::new,
 				RandomFeatureEntry.CODEC.listOf().fieldOf("features").forGetter(randomFeatureConfig -> randomFeatureConfig.features),
-				ConfiguredFeature.field_24833.fieldOf("default").forGetter(randomFeatureConfig -> randomFeatureConfig.defaultFeature)
+				ConfiguredFeature.CODEC.fieldOf("default").forGetter(randomFeatureConfig -> randomFeatureConfig.defaultFeature)
 			)
 	);
 	public final List<RandomFeatureEntry<?>> features;

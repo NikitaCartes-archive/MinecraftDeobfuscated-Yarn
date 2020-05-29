@@ -52,6 +52,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -63,7 +64,7 @@ public class Util {
 	private static final ExecutorService SERVER_WORKER_EXECUTOR = method_28122("Main");
 	private static final ExecutorService field_24477 = method_27959();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
-	public static final UUID field_25140 = new UUID(0L, 0L);
+	public static final UUID NIL_UUID = new UUID(0L, 0L);
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static <K, V> Collector<Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
@@ -404,6 +405,24 @@ public class Util {
 		} else {
 			return DataResult.success(is);
 		}
+	}
+
+	public static void method_29476() {
+		Thread thread = new Thread("Timer hack thread") {
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(2147483647L);
+					} catch (InterruptedException var2) {
+						Util.LOGGER.warn("Timer hack thread interrupted, that really should not happen");
+						return;
+					}
+				}
+			}
+		};
+		thread.setDaemon(true);
+		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
+		thread.start();
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

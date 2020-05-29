@@ -274,9 +274,9 @@ public class PistonBlock extends FacingBlock {
 			}
 
 			List<BlockPos> list3 = pistonHandler.getBrokenBlocks();
-			int j = list.size() + list3.size();
-			BlockState[] blockStates = new BlockState[j];
+			BlockState[] blockStates = new BlockState[list.size() + list3.size()];
 			Direction direction = retract ? dir : dir.getOpposite();
+			int j = 0;
 
 			for (int k = list3.size() - 1; k >= 0; k--) {
 				BlockPos blockPos3 = (BlockPos)list3.get(k);
@@ -284,8 +284,7 @@ public class PistonBlock extends FacingBlock {
 				BlockEntity blockEntity = blockState2.getBlock().hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
 				dropStacks(blockState2, world, blockPos3, blockEntity);
 				world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), 18);
-				j--;
-				blockStates[j] = blockState2;
+				blockStates[j++] = blockState2;
 			}
 
 			for (int k = list.size() - 1; k >= 0; k--) {
@@ -295,8 +294,7 @@ public class PistonBlock extends FacingBlock {
 				map.remove(blockPos3);
 				world.setBlockState(blockPos3, Blocks.MOVING_PISTON.getDefaultState().with(FACING, dir), 68);
 				world.setBlockEntity(blockPos3, PistonExtensionBlock.createBlockEntityPiston((BlockState)list2.get(k), dir, retract, false));
-				j--;
-				blockStates[j] = blockState2;
+				blockStates[j++] = blockState2;
 			}
 
 			if (retract) {
@@ -324,6 +322,8 @@ public class PistonBlock extends FacingBlock {
 				blockState4.updateNeighbors(world, blockPos5, 2);
 				blockState4.prepare(world, blockPos5, 2);
 			}
+
+			j = 0;
 
 			for (int l = list3.size() - 1; l >= 0; l--) {
 				BlockState blockState2 = blockStates[j++];

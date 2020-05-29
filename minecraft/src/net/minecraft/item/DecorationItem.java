@@ -35,7 +35,7 @@ public class DecorationItem extends Item {
 				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
 			} else {
 				if (this.entityType != EntityType.ITEM_FRAME) {
-					return ActionResult.SUCCESS;
+					return ActionResult.method_29236(world.isClient);
 				}
 
 				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
@@ -53,7 +53,7 @@ public class DecorationItem extends Item {
 				}
 
 				itemStack.decrement(1);
-				return ActionResult.SUCCESS;
+				return ActionResult.method_29236(world.isClient);
 			} else {
 				return ActionResult.CONSUME;
 			}

@@ -6,17 +6,22 @@ import com.google.gson.JsonSerializationContext;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 import net.minecraft.util.math.BlockPos;
 
 public class LocationCheckLootCondition implements LootCondition {
 	private final LocationPredicate predicate;
 	private final BlockPos offset;
 
-	public LocationCheckLootCondition(LocationPredicate predicate, BlockPos offset) {
+	private LocationCheckLootCondition(LocationPredicate predicate, BlockPos offset) {
 		this.predicate = predicate;
 		this.offset = offset;
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.LOCATION_CHECK;
 	}
 
 	public boolean test(LootContext lootContext) {
@@ -35,11 +40,7 @@ public class LocationCheckLootCondition implements LootCondition {
 		return () -> new LocationCheckLootCondition(predicateBuilder.build(), BlockPos.ORIGIN);
 	}
 
-	public static class Factory extends LootCondition.Factory<LocationCheckLootCondition> {
-		public Factory() {
-			super(new Identifier("location_check"), LocationCheckLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<LocationCheckLootCondition> {
 		public void toJson(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("predicate", locationCheckLootCondition.predicate.toJson());
 			if (locationCheckLootCondition.offset.getX() != 0) {

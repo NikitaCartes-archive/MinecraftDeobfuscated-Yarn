@@ -50,11 +50,11 @@ public class ChunkRegion implements ServerWorldAccess {
 	private final WorldProperties levelProperties;
 	private final Random random;
 	private final DimensionType dimension;
-	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getBlockTickScheduler());
-	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getFluidTickScheduler());
+	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getBlockTickScheduler());
+	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getFluidTickScheduler());
 	private final BiomeAccess biomeAccess;
-	private final ChunkPos field_23788;
-	private final ChunkPos field_23789;
+	private final ChunkPos lowerCorner;
+	private final ChunkPos upperCorner;
 
 	public ChunkRegion(ServerWorld world, List<Chunk> chunks) {
 		int i = MathHelper.floor(Math.sqrt((double)chunks.size()));
@@ -72,8 +72,8 @@ public class ChunkRegion implements ServerWorldAccess {
 			this.random = world.getRandom();
 			this.dimension = world.getDimension();
 			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
-			this.field_23788 = ((Chunk)chunks.get(0)).getPos();
-			this.field_23789 = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
+			this.lowerCorner = ((Chunk)chunks.get(0)).getPos();
+			this.upperCorner = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
 		}
 	}
 
@@ -95,8 +95,8 @@ public class ChunkRegion implements ServerWorldAccess {
 	public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
 		Chunk chunk;
 		if (this.isChunkLoaded(chunkX, chunkZ)) {
-			int i = chunkX - this.field_23788.x;
-			int j = chunkZ - this.field_23788.z;
+			int i = chunkX - this.lowerCorner.x;
+			int j = chunkZ - this.lowerCorner.z;
 			chunk = (Chunk)this.chunks.get(i + j * this.width);
 			if (chunk.getStatus().isAtLeast(leastStatus)) {
 				return chunk;
@@ -109,7 +109,7 @@ public class ChunkRegion implements ServerWorldAccess {
 			return null;
 		} else {
 			LOGGER.error("Requested chunk : {} {}", chunkX, chunkZ);
-			LOGGER.error("Region bounds : {} {} | {} {}", this.field_23788.x, this.field_23788.z, this.field_23789.x, this.field_23789.z);
+			LOGGER.error("Region bounds : {} {} | {} {}", this.lowerCorner.x, this.lowerCorner.z, this.upperCorner.x, this.upperCorner.z);
 			if (chunk != null) {
 				throw (RuntimeException)Util.throwOrPause(
 					new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, chunk.getStatus(), chunkX, chunkZ))
@@ -122,7 +122,7 @@ public class ChunkRegion implements ServerWorldAccess {
 
 	@Override
 	public boolean isChunkLoaded(int chunkX, int chunkZ) {
-		return chunkX >= this.field_23788.x && chunkX <= this.field_23789.x && chunkZ >= this.field_23788.z && chunkZ <= this.field_23789.z;
+		return chunkX >= this.lowerCorner.x && chunkX <= this.upperCorner.x && chunkZ >= this.lowerCorner.z && chunkZ <= this.upperCorner.z;
 	}
 
 	@Override
@@ -249,8 +249,8 @@ public class ChunkRegion implements ServerWorldAccess {
 		return true;
 	}
 
-	private void markBlockForPostProcessing(BlockPos blockPos) {
-		this.getChunk(blockPos).markBlockForPostProcessing(blockPos);
+	private void markBlockForPostProcessing(BlockPos pos) {
+		this.getChunk(pos).markBlockForPostProcessing(pos);
 	}
 
 	@Override

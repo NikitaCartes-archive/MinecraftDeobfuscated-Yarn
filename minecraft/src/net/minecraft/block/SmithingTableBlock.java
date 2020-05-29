@@ -34,7 +34,7 @@ public class SmithingTableBlock extends CraftingTableBlock {
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_SMITHING_TABLE);
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 }

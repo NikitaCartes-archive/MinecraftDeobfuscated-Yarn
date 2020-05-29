@@ -11,10 +11,10 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class class_5311 {
-	public static final Codec<class_5311> field_24821 = RecordCodecBuilder.create(
+	public static final Codec<class_5311> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					class_5313.field_24913.optionalFieldOf("stronghold").forGetter(arg -> Optional.ofNullable(arg.field_24825)),
-					Codec.simpleMap(Registry.STRUCTURE_FEATURE, class_5314.field_24917, Registry.STRUCTURE_FEATURE).fieldOf("structures").forGetter(arg -> arg.field_24824)
+					class_5313.CODEC.optionalFieldOf("stronghold").forGetter(arg -> Optional.ofNullable(arg.field_24825)),
+					Codec.simpleMap(Registry.STRUCTURE_FEATURE, class_5314.CODEC, Registry.STRUCTURE_FEATURE).fieldOf("structures").forGetter(arg -> arg.field_24824)
 				)
 				.apply(instance, class_5311::new)
 	);
@@ -23,12 +23,14 @@ public class class_5311 {
 		.put(StructureFeature.DESERT_PYRAMID, new class_5314(32, 8, 14357617))
 		.put(StructureFeature.IGLOO, new class_5314(32, 8, 14357618))
 		.put(StructureFeature.JUNGLE_PYRAMID, new class_5314(32, 8, 14357619))
-		.put(StructureFeature.field_24851, new class_5314(32, 8, 14357620))
+		.put(StructureFeature.SWAMP_HUT, new class_5314(32, 8, 14357620))
 		.put(StructureFeature.PILLAGER_OUTPOST, new class_5314(32, 8, 165745296))
 		.put(StructureFeature.STRONGHOLD, new class_5314(1, 0, 0))
 		.put(StructureFeature.MONUMENT, new class_5314(32, 5, 10387313))
 		.put(StructureFeature.END_CITY, new class_5314(20, 11, 10387313))
 		.put(StructureFeature.MANSION, new class_5314(80, 20, 10387319))
+		.put(StructureFeature.BURIED_TREASURE, new class_5314(1, 0, 0))
+		.put(StructureFeature.MINESHAFT, new class_5314(1, 0, 0))
 		.put(StructureFeature.RUINED_PORTAL, new class_5314(40, 15, 34222645))
 		.put(StructureFeature.SHIPWRECK, new class_5314(24, 4, 165745295))
 		.put(StructureFeature.OCEAN_RUIN, new class_5314(20, 8, 14357621))
@@ -36,7 +38,7 @@ public class class_5311 {
 		.put(StructureFeature.FORTRESS, new class_5314(30, 4, 30084232))
 		.put(StructureFeature.NETHER_FOSSIL, new class_5314(2, 1, 14357921))
 		.build();
-	public static final class_5313 field_24823 = new class_5313(32, 3, 128);
+	public static final class_5313 field_24823;
 	private final Map<StructureFeature<?>, class_5314> field_24824;
 	@Nullable
 	private final class_5313 field_24825;
@@ -62,5 +64,15 @@ public class class_5311 {
 	@Nullable
 	public class_5313 method_28602() {
 		return this.field_24825;
+	}
+
+	static {
+		for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE) {
+			if (!field_24822.containsKey(structureFeature)) {
+				throw new IllegalStateException("Structure feature without default settings: " + Registry.STRUCTURE_FEATURE.getId(structureFeature));
+			}
+		}
+
+		field_24823 = new class_5313(32, 3, 128);
 	}
 }

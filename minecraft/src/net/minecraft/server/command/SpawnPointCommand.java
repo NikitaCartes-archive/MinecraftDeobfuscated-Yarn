@@ -9,7 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class SpawnPointCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -41,7 +41,7 @@ public class SpawnPointCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, BlockPos pos) {
-		RegistryKey<DimensionType> registryKey = source.getWorld().method_27983();
+		RegistryKey<World> registryKey = source.getWorld().getRegistryKey();
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.setSpawnPoint(registryKey, pos, true, false);

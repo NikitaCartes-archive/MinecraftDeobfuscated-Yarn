@@ -6,9 +6,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 
 public class DecoratedFeatureConfig implements FeatureConfig {
-	public static final Codec<DecoratedFeatureConfig> field_24880 = RecordCodecBuilder.create(
+	public static final Codec<DecoratedFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ConfiguredFeature.field_24833.fieldOf("feature").forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.feature),
+					ConfiguredFeature.CODEC.fieldOf("feature").forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.feature),
 					ConfiguredDecorator.field_24981.fieldOf("decorator").forGetter(decoratedFeatureConfig -> decoratedFeatureConfig.decorator)
 				)
 				.apply(instance, DecoratedFeatureConfig::new)

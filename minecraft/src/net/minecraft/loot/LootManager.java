@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.loot.condition.LootConditionManager;
@@ -31,16 +30,16 @@ public class LootManager extends JsonDataLoader {
 		return (LootTable)this.tables.getOrDefault(id, LootTable.EMPTY);
 	}
 
-	protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		Builder<Identifier, LootTable> builder = ImmutableMap.builder();
-		JsonObject jsonObject = (JsonObject)map.remove(LootTables.EMPTY);
-		if (jsonObject != null) {
+		JsonElement jsonElement = (JsonElement)map.remove(LootTables.EMPTY);
+		if (jsonElement != null) {
 			LOGGER.warn("Datapack tried to redefine {} loot table, ignoring", LootTables.EMPTY);
 		}
 
-		map.forEach((identifier, jsonObjectx) -> {
+		map.forEach((identifier, jsonElementx) -> {
 			try {
-				LootTable lootTable = GSON.fromJson(jsonObjectx, LootTable.class);
+				LootTable lootTable = GSON.fromJson(jsonElementx, LootTable.class);
 				builder.put(identifier, lootTable);
 			} catch (Exception var4x) {
 				LOGGER.error("Couldn't parse loot table {}", identifier, var4x);

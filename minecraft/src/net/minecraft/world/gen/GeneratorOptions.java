@@ -26,6 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -44,12 +45,12 @@ public class GeneratorOptions {
 						Codec.BOOL.fieldOf("generate_features").withDefault(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures),
 						Codec.BOOL.fieldOf("bonus_chest").withDefault(false).stable().forGetter(GeneratorOptions::hasBonusChest),
 						Codec.unboundedMap(
-								Identifier.field_25139.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION_TYPE_KEY), RegistryKey::getValue),
+								Identifier.field_25139.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue),
 								Codec.mapPair(DimensionType.field_24756.fieldOf("type"), ChunkGenerator.field_24746.fieldOf("generator")).codec()
 							)
 							.xmap(DimensionType::method_28524, Function.identity())
 							.fieldOf("dimensions")
-							.forGetter(GeneratorOptions::method_28609),
+							.forGetter(GeneratorOptions::getDimensionMap),
 						Codec.STRING.optionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)
 					)
 					.apply(instance, instance.stable(GeneratorOptions::new))
@@ -66,7 +67,7 @@ public class GeneratorOptions {
 	private final long seed;
 	private final boolean generateStructures;
 	private final boolean bonusChest;
-	private final LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> field_24827;
+	private final LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> field_24827;
 	private final Optional<String> legacyCustomOptions;
 
 	private DataResult<GeneratorOptions> method_28610() {
@@ -78,7 +79,7 @@ public class GeneratorOptions {
 	}
 
 	public GeneratorOptions(
-		long seed, boolean generateStructures, boolean bonusChest, LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap
+		long seed, boolean generateStructures, boolean bonusChest, LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap
 	) {
 		this(seed, generateStructures, bonusChest, linkedHashMap, Optional.empty());
 	}
@@ -87,7 +88,7 @@ public class GeneratorOptions {
 		long seed,
 		boolean generateStructures,
 		boolean bonusChest,
-		LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap,
+		LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap,
 		Optional<String> legacyCustomOptions
 	) {
 		this.seed = seed;
@@ -118,16 +119,16 @@ public class GeneratorOptions {
 		return this.bonusChest;
 	}
 
-	public static LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> method_28608(
-		LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap, ChunkGenerator chunkGenerator
+	public static LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> method_28608(
+		LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap, ChunkGenerator chunkGenerator
 	) {
-		LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap2 = Maps.newLinkedHashMap();
+		LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap2 = Maps.newLinkedHashMap();
 		Pair<DimensionType, ChunkGenerator> pair = (Pair<DimensionType, ChunkGenerator>)linkedHashMap.get(DimensionType.OVERWORLD_REGISTRY_KEY);
-		DimensionType dimensionType = pair == null ? DimensionType.getDefaultDimensionType() : pair.getFirst();
-		linkedHashMap2.put(DimensionType.OVERWORLD_REGISTRY_KEY, Pair.of(dimensionType, chunkGenerator));
+		DimensionType dimensionType = pair == null ? DimensionType.method_29294() : pair.getFirst();
+		linkedHashMap2.put(World.OVERWORLD, Pair.of(dimensionType, chunkGenerator));
 
-		for (Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> entry : linkedHashMap.entrySet()) {
-			if (!Objects.equals(entry.getKey(), DimensionType.OVERWORLD_REGISTRY_KEY)) {
+		for (Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> entry : linkedHashMap.entrySet()) {
+			if (entry.getKey() != World.OVERWORLD) {
 				linkedHashMap2.put(entry.getKey(), entry.getValue());
 			}
 		}
@@ -135,7 +136,7 @@ public class GeneratorOptions {
 		return linkedHashMap2;
 	}
 
-	public LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> method_28609() {
+	public LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> getDimensionMap() {
 		return this.field_24827;
 	}
 
@@ -194,7 +195,7 @@ public class GeneratorOptions {
 			}
 		}
 
-		LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = DimensionType.method_28517(l);
+		LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = DimensionType.method_28517(l);
 		switch (string5) {
 			case "flat":
 				JsonObject jsonObject = !string.isEmpty() ? JsonHelper.deserialize(string) : new JsonObject();
@@ -223,12 +224,12 @@ public class GeneratorOptions {
 	@Environment(EnvType.CLIENT)
 	public GeneratorOptions withHardcore(boolean hardcore, OptionalLong seed) {
 		long l = seed.orElse(this.seed);
-		LinkedHashMap<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> linkedHashMap;
+		LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap;
 		if (seed.isPresent()) {
 			linkedHashMap = Maps.newLinkedHashMap();
 			long m = seed.getAsLong();
 
-			for (Entry<RegistryKey<DimensionType>, Pair<DimensionType, ChunkGenerator>> entry : this.field_24827.entrySet()) {
+			for (Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> entry : this.field_24827.entrySet()) {
 				linkedHashMap.put(entry.getKey(), Pair.of(((Pair)entry.getValue()).getFirst(), ((ChunkGenerator)((Pair)entry.getValue()).getSecond()).withSeed(m)));
 			}
 		} else {

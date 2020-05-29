@@ -1,6 +1,7 @@
 package net.minecraft.server.function;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -29,12 +30,14 @@ public class CommandFunction {
 		return this.elements;
 	}
 
-	public static CommandFunction create(Identifier id, CommandFunctionManager commandFunctionManager, List<String> fileLines) {
-		List<CommandFunction.Element> list = Lists.<CommandFunction.Element>newArrayListWithCapacity(fileLines.size());
+	public static CommandFunction create(
+		Identifier id, CommandDispatcher<ServerCommandSource> commandDispatcher, ServerCommandSource serverCommandSource, List<String> list
+	) {
+		List<CommandFunction.Element> list2 = Lists.<CommandFunction.Element>newArrayListWithCapacity(list.size());
 
-		for (int i = 0; i < fileLines.size(); i++) {
+		for (int i = 0; i < list.size(); i++) {
 			int j = i + 1;
-			String string = ((String)fileLines.get(i)).trim();
+			String string = ((String)list.get(i)).trim();
 			StringReader stringReader = new StringReader(string);
 			if (stringReader.canRead() && stringReader.peek() != '#') {
 				if (stringReader.peek() == '/') {
@@ -50,22 +53,19 @@ public class CommandFunction {
 				}
 
 				try {
-					ParseResults<ServerCommandSource> parseResults = commandFunctionManager.getServer()
-						.getCommandManager()
-						.getDispatcher()
-						.parse(stringReader, commandFunctionManager.getCommandFunctionSource());
+					ParseResults<ServerCommandSource> parseResults = commandDispatcher.parse(stringReader, serverCommandSource);
 					if (parseResults.getReader().canRead()) {
 						throw CommandManager.getException(parseResults);
 					}
 
-					list.add(new CommandFunction.CommandElement(parseResults));
-				} catch (CommandSyntaxException var9) {
-					throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + var9.getMessage());
+					list2.add(new CommandFunction.CommandElement(parseResults));
+				} catch (CommandSyntaxException var10) {
+					throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + var10.getMessage());
 				}
 			}
 		}
 
-		return new CommandFunction(id, (CommandFunction.Element[])list.toArray(new CommandFunction.Element[0]));
+		return new CommandFunction(id, (CommandFunction.Element[])list2.toArray(new CommandFunction.Element[0]));
 	}
 
 	public static class CommandElement implements CommandFunction.Element {

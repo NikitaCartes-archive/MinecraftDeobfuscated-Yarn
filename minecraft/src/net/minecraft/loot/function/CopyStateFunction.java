@@ -32,6 +32,11 @@ public class CopyStateFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.COPY_STATE;
+	}
+
+	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return ImmutableSet.of(LootContextParameters.BLOCK_STATE);
 	}
@@ -92,10 +97,6 @@ public class CopyStateFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<CopyStateFunction> {
-		public Factory() {
-			super(new Identifier("copy_state"), CopyStateFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, CopyStateFunction copyStateFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, copyStateFunction, jsonSerializationContext);
 			jsonObject.addProperty("block", Registry.BLOCK.getId(copyStateFunction.block).toString());

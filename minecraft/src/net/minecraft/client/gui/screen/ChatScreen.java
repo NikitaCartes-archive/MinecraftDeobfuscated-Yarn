@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
@@ -137,8 +137,8 @@ public class ChatScreen extends Screen {
 					return true;
 				}
 
-				Text text = chatHud.getText(mouseX, mouseY);
-				if (text != null && this.handleTextClick(text)) {
+				Style style = chatHud.getText(mouseX, mouseY);
+				if (style != null && this.handleTextClick(style)) {
 					return true;
 				}
 			}
@@ -183,9 +183,9 @@ public class ChatScreen extends Screen {
 		fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
 		this.chatField.render(matrices, mouseX, mouseY, delta);
 		this.commandSuggestor.render(matrices, mouseX, mouseY);
-		Text text = this.client.inGameHud.getChatHud().getText((double)mouseX, (double)mouseY);
-		if (text != null && text.getStyle().getHoverEvent() != null) {
-			this.renderTextHoverEffect(matrices, text, mouseX, mouseY);
+		Style style = this.client.inGameHud.getChatHud().getText((double)mouseX, (double)mouseY);
+		if (style != null && style.getHoverEvent() != null) {
+			this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

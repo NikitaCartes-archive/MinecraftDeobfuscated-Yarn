@@ -1,9 +1,13 @@
 package net.minecraft.tag;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -38,6 +42,12 @@ public class GlobalTagAccessor<T> {
 
 	public TagContainer<T> getContainer() {
 		return this.currentContainer;
+	}
+
+	public Set<Identifier> method_29224(TagContainer<T> tagContainer) {
+		Set<Identifier> set = (Set<Identifier>)this.tags.stream().map(GlobalTagAccessor.CachedTag::getId).collect(Collectors.toSet());
+		ImmutableSet<Identifier> immutableSet = ImmutableSet.copyOf(tagContainer.getKeys());
+		return Sets.<Identifier>difference(set, immutableSet);
 	}
 
 	static class CachedTag<T> implements Tag.Identified<T> {

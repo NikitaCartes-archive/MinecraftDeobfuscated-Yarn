@@ -436,8 +436,8 @@ public class EnchantmentHelper {
 
 		for (Enchantment enchantment : Registry.ENCHANTMENT) {
 			if ((!enchantment.isTreasure() || treasureAllowed) && enchantment.isAvailableForRandomSelection() && (enchantment.type.isAcceptableItem(item) || bl)) {
-				for (int i = enchantment.getMaximumLevel(); i > enchantment.getMinimumLevel() - 1; i--) {
-					if (power >= enchantment.getMinimumPower(i) && power <= enchantment.getMaximumPower(i)) {
+				for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; i--) {
+					if (power >= enchantment.getMinPower(i) && power <= enchantment.getMaxPower(i)) {
 						list.add(new EnchantmentLevelEntry(enchantment, i));
 						break;
 					}

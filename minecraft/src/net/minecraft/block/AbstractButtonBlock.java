@@ -95,7 +95,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		} else {
 			this.powerOn(state, world, pos);
 			this.playClickSound(player, world, pos, true);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		}
 	}
 

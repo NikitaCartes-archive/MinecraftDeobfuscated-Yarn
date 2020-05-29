@@ -136,7 +136,7 @@ public class BeehiveBlock extends BlockWithEntity {
 				this.takeHoney(world, state, pos);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
 		}
@@ -179,16 +179,16 @@ public class BeehiveBlock extends BlockWithEntity {
 	private void spawnHoneyParticles(World world, BlockPos pos, BlockState state) {
 		if (state.getFluidState().isEmpty() && !(world.random.nextFloat() < 0.3F)) {
 			VoxelShape voxelShape = state.getCollisionShape(world, pos);
-			double d = voxelShape.getMaximum(Direction.Axis.Y);
+			double d = voxelShape.getMax(Direction.Axis.Y);
 			if (d >= 1.0 && !state.isIn(BlockTags.IMPERMEABLE)) {
-				double e = voxelShape.getMinimum(Direction.Axis.Y);
+				double e = voxelShape.getMin(Direction.Axis.Y);
 				if (e > 0.0) {
 					this.addHoneyParticle(world, pos, voxelShape, (double)pos.getY() + e - 0.05);
 				} else {
 					BlockPos blockPos = pos.down();
 					BlockState blockState = world.getBlockState(blockPos);
 					VoxelShape voxelShape2 = blockState.getCollisionShape(world, blockPos);
-					double f = voxelShape2.getMaximum(Direction.Axis.Y);
+					double f = voxelShape2.getMax(Direction.Axis.Y);
 					if ((f < 1.0 || !blockState.isFullCube(world, blockPos)) && blockState.getFluidState().isEmpty()) {
 						this.addHoneyParticle(world, pos, voxelShape, (double)pos.getY() - 0.05);
 					}
@@ -201,10 +201,10 @@ public class BeehiveBlock extends BlockWithEntity {
 	private void addHoneyParticle(World world, BlockPos pos, VoxelShape shape, double height) {
 		this.addHoneyParticle(
 			world,
-			(double)pos.getX() + shape.getMinimum(Direction.Axis.X),
-			(double)pos.getX() + shape.getMaximum(Direction.Axis.X),
-			(double)pos.getZ() + shape.getMinimum(Direction.Axis.Z),
-			(double)pos.getZ() + shape.getMaximum(Direction.Axis.Z),
+			(double)pos.getX() + shape.getMin(Direction.Axis.X),
+			(double)pos.getX() + shape.getMax(Direction.Axis.X),
+			(double)pos.getZ() + shape.getMin(Direction.Axis.Z),
+			(double)pos.getZ() + shape.getMax(Direction.Axis.Z),
 			height
 		);
 	}

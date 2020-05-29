@@ -72,7 +72,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else if (player.isSpectator()) {
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof ShulkerBoxBlockEntity) {
@@ -91,7 +91,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 					PiglinBrain.onGoldBlockBroken(player);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.CONSUME;
 			} else {
 				return ActionResult.PASS;
 			}

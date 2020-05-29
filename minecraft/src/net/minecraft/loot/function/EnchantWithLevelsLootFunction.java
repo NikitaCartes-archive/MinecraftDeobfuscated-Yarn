@@ -10,7 +10,6 @@ import net.minecraft.loot.LootTableRange;
 import net.minecraft.loot.LootTableRanges;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
@@ -21,6 +20,11 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 		super(conditions);
 		this.range = range;
 		this.treasureEnchantmentsAllowed = treasureEnchantmentsAllowed;
+	}
+
+	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.ENCHANT_WITH_LEVELS;
 	}
 
 	@Override
@@ -57,10 +61,6 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<EnchantWithLevelsLootFunction> {
-		public Factory() {
-			super(new Identifier("enchant_with_levels"), EnchantWithLevelsLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
 			jsonObject.add("levels", LootTableRanges.toJson(enchantWithLevelsLootFunction.range, jsonSerializationContext));

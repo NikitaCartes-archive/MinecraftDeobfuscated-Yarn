@@ -56,21 +56,24 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 
 			boolean bl = !hugeFungusFeatureConfig.planted && random.nextFloat() < 0.06F;
 			serverWorldAccess.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
-			this.generateHat(serverWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
 			this.generateStem(serverWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
+			this.generateHat(serverWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
 			return true;
 		}
 	}
 
-	public static boolean method_24866(WorldAccess worldAccess, BlockPos blockPos) {
-		return worldAccess.testBlockState(blockPos, blockState -> {
-			Material material = blockState.getMaterial();
-			return material == Material.REPLACEABLE_PLANT;
-		});
-	}
-
-	private static boolean method_24868(WorldAccess worldAccess, BlockPos blockPos) {
-		return worldAccess.getBlockState(blockPos).isAir() || !worldAccess.getFluidState(blockPos).isEmpty() || method_24866(worldAccess, blockPos);
+	private static boolean method_24866(WorldAccess worldAccess, BlockPos blockPos, boolean bl) {
+		return worldAccess.testBlockState(
+			blockPos,
+			blockState -> {
+				Material material = blockState.getMaterial();
+				return blockState.isAir()
+					|| blockState.isOf(Blocks.WATER)
+					|| blockState.isOf(Blocks.LAVA)
+					|| material == Material.REPLACEABLE_PLANT
+					|| bl && material == Material.PLANT;
+			}
+		);
 	}
 
 	private void generateStem(WorldAccess world, Random random, HugeFungusFeatureConfig config, BlockPos blockPos, int stemHeight, boolean thickStem) {
@@ -84,7 +87,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 
 				for (int l = 0; l < stemHeight; l++) {
 					mutable.set(blockPos, j, l, k);
-					if (method_24868(world, mutable)) {
+					if (method_24866(world, mutable, true)) {
 						if (config.planted) {
 							if (!world.getBlockState(mutable.down()).isAir()) {
 								world.breakBlock(mutable, true);
@@ -128,7 +131,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 					boolean bl5 = bl2 && bl3;
 					boolean bl6 = k < j + 3;
 					mutable.set(blockPos, m, k, n);
-					if (method_24868(world, mutable)) {
+					if (method_24866(world, mutable, false)) {
 						if (config.planted && !world.getBlockState(mutable.down()).isAir()) {
 							world.breakBlock(mutable, true);
 						}

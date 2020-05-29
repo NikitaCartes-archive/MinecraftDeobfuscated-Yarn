@@ -142,7 +142,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					&& (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isFire())
 					&& !this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 					potion = Potions.FIRE_RESISTANCE;
-				} else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getMaximumHealth()) {
+				} else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth()) {
 					potion = Potions.HEALING;
 				} else if (this.random.nextFloat() < 0.5F
 					&& this.getTarget() != null

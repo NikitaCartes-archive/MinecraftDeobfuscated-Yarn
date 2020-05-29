@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class BeachBiome extends Biome {
@@ -24,7 +25,7 @@ public final class BeachBiome extends Biome {
 		this.addStructureFeature(DefaultBiomeFeatures.field_24688);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24704);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24695);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24711);
+		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_CONFIGURED_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

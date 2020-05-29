@@ -13,8 +13,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionTracker;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,8 +34,8 @@ public class CompassItem extends Item implements Vanishable {
 		return hasLodestone(stack) || super.hasEnchantmentGlint(stack);
 	}
 
-	public static Optional<RegistryKey<DimensionType>> getLodestoneDimension(CompoundTag tag) {
-		return DimensionType.field_24751.parse(NbtOps.INSTANCE, tag.get("LodestoneDimension")).result();
+	public static Optional<RegistryKey<World>> getLodestoneDimension(CompoundTag tag) {
+		return World.CODEC.parse(NbtOps.INSTANCE, tag.get("LodestoneDimension")).result();
 	}
 
 	@Override
@@ -49,9 +47,9 @@ public class CompassItem extends Item implements Vanishable {
 					return;
 				}
 
-				Optional<RegistryKey<DimensionType>> optional = getLodestoneDimension(compoundTag);
+				Optional<RegistryKey<World>> optional = getLodestoneDimension(compoundTag);
 				if (optional.isPresent()
-					&& optional.get() == world.method_27983()
+					&& optional.get() == world.getRegistryKey()
 					&& compoundTag.contains("LodestonePos")
 					&& !((ServerWorld)world)
 						.getPointOfInterestStorage()
@@ -71,7 +69,7 @@ public class CompassItem extends Item implements Vanishable {
 			context.world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0F, 1.0F);
 			boolean bl = !context.player.abilities.creativeMode && context.stack.getCount() == 1;
 			if (bl) {
-				this.method_27315(context.world.method_28380(), context.world.getDimension(), blockPos, context.stack.getOrCreateTag());
+				this.method_27315(context.world.getRegistryKey(), blockPos, context.stack.getOrCreateTag());
 			} else {
 				ItemStack itemStack = new ItemStack(Items.COMPASS, 1);
 				CompoundTag compoundTag = context.stack.hasTag() ? context.stack.getTag().copy() : new CompoundTag();
@@ -80,22 +78,19 @@ public class CompassItem extends Item implements Vanishable {
 					context.stack.decrement(1);
 				}
 
-				this.method_27315(context.world.method_28380(), context.world.getDimension(), blockPos, compoundTag);
+				this.method_27315(context.world.getRegistryKey(), blockPos, compoundTag);
 				if (!context.player.inventory.insertStack(itemStack)) {
 					context.player.dropItem(itemStack, false);
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(context.world.isClient);
 		}
 	}
 
-	private void method_27315(DimensionTracker dimensionTracker, DimensionType dimensionType, BlockPos blockPos, CompoundTag compoundTag) {
+	private void method_27315(RegistryKey<World> registryKey, BlockPos blockPos, CompoundTag compoundTag) {
 		compoundTag.put("LodestonePos", NbtHelper.fromBlockPos(blockPos));
-		dimensionTracker.getRegistry()
-			.encodeStart(NbtOps.INSTANCE, dimensionType)
-			.resultOrPartial(field_24670::error)
-			.ifPresent(tag -> compoundTag.put("LodestoneDimension", tag));
+		World.CODEC.encodeStart(NbtOps.INSTANCE, registryKey).resultOrPartial(field_24670::error).ifPresent(tag -> compoundTag.put("LodestoneDimension", tag));
 		compoundTag.putBoolean("LodestoneTracked", true);
 	}
 

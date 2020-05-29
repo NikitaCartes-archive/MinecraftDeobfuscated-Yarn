@@ -41,7 +41,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 			return ActionResult.PASS;
 		} else {
 			world.setBlockState(pos, state.cycle(DELAY), 3);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		}
 	}
 

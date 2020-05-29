@@ -10,20 +10,20 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Language;
 
 public class TranslatableText extends BaseText implements ParsableText {
-	private static final Language EMPTY_LANGUAGE = new Language();
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
-	private static final Language LANGUAGE = Language.getInstance();
-	private static final LiteralText LITERAL_PERCENT_SIGN = new LiteralText("%");
-	private static final LiteralText NULL_ARGUMENT = new LiteralText("null");
+	private static final class_5348 LITERAL_PERCENT_SIGN = class_5348.method_29430("%");
+	private static final class_5348 NULL_ARGUMENT = class_5348.method_29430("null");
 	private final String key;
 	private final Object[] args;
-	private long languageReloadTimestamp = -1L;
-	private final List<Text> translations = Lists.<Text>newArrayList();
+	@Nullable
+	private Language field_25317;
+	private final List<class_5348> translations = Lists.<class_5348>newArrayList();
 	private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
 	public TranslatableText(String key) {
@@ -36,23 +36,23 @@ public class TranslatableText extends BaseText implements ParsableText {
 		this.args = args;
 	}
 
-	private synchronized void updateTranslations() {
-		long l = LANGUAGE.getTimeLoaded();
-		if (l != this.languageReloadTimestamp) {
-			this.languageReloadTimestamp = l;
+	private void updateTranslations() {
+		Language language = Language.getInstance();
+		if (language != this.field_25317) {
+			this.field_25317 = language;
 			this.translations.clear();
-			String string = LANGUAGE.translate(this.key);
+			String string = language.get(this.key);
 
 			try {
-				this.setTranslation(string);
-			} catch (TranslationException var5) {
+				this.setTranslation(language.method_29426(string, true), language);
+			} catch (TranslationException var4) {
 				this.translations.clear();
-				this.translations.add(new LiteralText(string));
+				this.translations.add(class_5348.method_29430(string));
 			}
 		}
 	}
 
-	private void setTranslation(String translation) {
+	private void setTranslation(String translation, Language language) {
 		Matcher matcher = ARG_FORMAT.matcher(translation);
 
 		try {
@@ -68,7 +68,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 						throw new IllegalArgumentException();
 					}
 
-					this.translations.add(new LiteralText(string));
+					this.translations.add(class_5348.method_29430(string));
 				}
 
 				String string = matcher.group(2);
@@ -83,7 +83,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 					String string3 = matcher.group(1);
 					int m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
 					if (m < this.args.length) {
-						this.translations.add(this.getArg(m));
+						this.translations.add(this.method_29434(m, language));
 					}
 				}
 
@@ -96,26 +96,23 @@ public class TranslatableText extends BaseText implements ParsableText {
 					throw new IllegalArgumentException();
 				}
 
-				this.translations.add(new LiteralText(string4));
+				this.translations.add(class_5348.method_29430(string4));
 			}
-		} catch (IllegalArgumentException var11) {
-			throw new TranslationException(this, var11);
+		} catch (IllegalArgumentException var12) {
+			throw new TranslationException(this, var12);
 		}
 	}
 
-	private Text getArg(int index) {
-		if (index >= this.args.length) {
-			throw new TranslationException(this, index);
+	private class_5348 method_29434(int i, Language language) {
+		if (i >= this.args.length) {
+			throw new TranslationException(this, i);
 		} else {
-			Object object = this.args[index];
-			Text text;
+			Object object = this.args[i];
 			if (object instanceof Text) {
-				text = (Text)object;
+				return (Text)object;
 			} else {
-				text = object == null ? NULL_ARGUMENT : new LiteralText(object.toString());
+				return object == null ? NULL_ARGUMENT : class_5348.method_29430(language.method_29426(object.toString(), false));
 			}
-
-			return text;
 		}
 	}
 
@@ -125,11 +122,11 @@ public class TranslatableText extends BaseText implements ParsableText {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public <T> Optional<T> visitSelf(Text.StyledVisitor<T> visitor, Style style) {
+	public <T> Optional<T> visitSelf(class_5348.StyledVisitor<T> visitor, Style style) {
 		this.updateTranslations();
 
-		for (Text text : this.translations) {
-			Optional<T> optional = text.visit(visitor, style);
+		for (class_5348 lv : this.translations) {
+			Optional<T> optional = lv.visit(visitor, style);
 			if (optional.isPresent()) {
 				return optional;
 			}
@@ -139,11 +136,11 @@ public class TranslatableText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public <T> Optional<T> visitSelf(Text.Visitor<T> visitor) {
+	public <T> Optional<T> visitSelf(class_5348.Visitor<T> visitor) {
 		this.updateTranslations();
 
-		for (Text text : this.translations) {
-			Optional<T> optional = text.visit(visitor);
+		for (class_5348 lv : this.translations) {
+			Optional<T> optional = lv.visit(visitor);
 			if (optional.isPresent()) {
 				return optional;
 			}

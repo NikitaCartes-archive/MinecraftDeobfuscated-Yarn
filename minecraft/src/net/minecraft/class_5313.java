@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class class_5313 {
-	public static final Codec<class_5313> field_24913 = RecordCodecBuilder.create(
+	public static final Codec<class_5313> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.INT.fieldOf("distance").forGetter(class_5313::method_28799),
-					Codec.INT.fieldOf("spread").forGetter(class_5313::method_28801),
-					Codec.INT.fieldOf("count").forGetter(class_5313::method_28802)
+					class_5324.method_29229(0, 1023).fieldOf("distance").forGetter(class_5313::method_28799),
+					class_5324.method_29229(0, 1023).fieldOf("spread").forGetter(class_5313::method_28801),
+					class_5324.method_29229(1, 4095).fieldOf("count").forGetter(class_5313::method_28802)
 				)
 				.apply(instance, class_5313::new)
 	);

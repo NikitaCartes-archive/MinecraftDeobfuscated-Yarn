@@ -79,7 +79,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));
 		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue((double)size);
 		if (heal) {
-			this.setHealth(this.getMaximumHealth());
+			this.setHealth(this.getMaxHealth());
 		}
 
 		this.experiencePoints = size;

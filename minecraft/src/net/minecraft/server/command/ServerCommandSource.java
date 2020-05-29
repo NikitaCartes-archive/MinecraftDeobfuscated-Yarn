@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
@@ -27,8 +28,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.World;
 
 public class ServerCommandSource implements CommandSource {
 	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.player"));
@@ -331,7 +333,7 @@ public class ServerCommandSource implements CommandSource {
 
 	public void sendFeedback(Text message, boolean broadcastToOps) {
 		if (this.output.shouldReceiveFeedback() && !this.silent) {
-			this.output.sendSystemMessage(message, Util.field_25140);
+			this.output.sendSystemMessage(message, Util.NIL_UUID);
 		}
 
 		if (broadcastToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
@@ -344,19 +346,19 @@ public class ServerCommandSource implements CommandSource {
 		if (this.server.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 			for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
-					serverPlayerEntity.sendSystemMessage(text, Util.field_25140);
+					serverPlayerEntity.sendSystemMessage(text, Util.NIL_UUID);
 				}
 			}
 		}
 
 		if (this.output != this.server && this.server.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
-			this.server.sendSystemMessage(text, Util.field_25140);
+			this.server.sendSystemMessage(text, Util.NIL_UUID);
 		}
 	}
 
 	public void sendError(Text message) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.sendSystemMessage(new LiteralText("").append(message).formatted(Formatting.RED), Util.field_25140);
+			this.output.sendSystemMessage(new LiteralText("").append(message).formatted(Formatting.RED), Util.NIL_UUID);
 		}
 	}
 
@@ -392,7 +394,7 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	@Override
-	public DimensionTracker method_29038() {
-		return this.server.method_29174();
+	public Set<RegistryKey<World>> method_29310() {
+		return this.server.getWorldRegistryKeys();
 	}
 }

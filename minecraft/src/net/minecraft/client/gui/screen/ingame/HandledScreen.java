@@ -27,6 +27,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
 	protected int backgroundWidth = 176;
 	protected int backgroundHeight = 166;
+	protected int field_25267;
+	protected int field_25268;
+	protected int field_25269;
+	protected int field_25270;
 	protected final T handler;
 	protected final PlayerInventory playerInventory;
 	protected int x;
@@ -59,6 +63,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		this.handler = handler;
 		this.playerInventory = inventory;
 		this.cancelNextRelease = true;
+		this.field_25267 = 8;
+		this.field_25268 = 6;
+		this.field_25269 = 8;
+		this.field_25270 = this.backgroundHeight - 94;
 	}
 
 	@Override
@@ -160,6 +168,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+		this.textRenderer.draw(matrices, this.title, (float)this.field_25267, (float)this.field_25268, 4210752);
+		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.field_25269, (float)this.field_25270, 4210752);
 	}
 
 	protected abstract void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY);

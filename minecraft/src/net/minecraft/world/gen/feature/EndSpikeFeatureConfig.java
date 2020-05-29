@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 
 public class EndSpikeFeatureConfig implements FeatureConfig {
-	public static final Codec<EndSpikeFeatureConfig> field_24911 = RecordCodecBuilder.create(
+	public static final Codec<EndSpikeFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.BOOL.fieldOf("crystal_invulnerable").withDefault(false).forGetter(endSpikeFeatureConfig -> endSpikeFeatureConfig.crystalInvulnerable),
 					EndSpikeFeature.Spike.CODEC.listOf().fieldOf("spikes").forGetter(endSpikeFeatureConfig -> endSpikeFeatureConfig.spikes),

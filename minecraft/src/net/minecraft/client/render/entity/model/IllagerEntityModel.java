@@ -101,28 +101,7 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 
 		IllagerEntity.State state = illagerEntity.getState();
 		if (state == IllagerEntity.State.ATTACKING) {
-			float k = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
-			float l = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
-			this.rightAttackingArm.roll = 0.0F;
-			this.leftAttackingArm.roll = 0.0F;
-			this.rightAttackingArm.yaw = (float) (Math.PI / 20);
-			this.leftAttackingArm.yaw = (float) (-Math.PI / 20);
-			if (illagerEntity.getMainArm() == Arm.RIGHT) {
-				this.rightAttackingArm.pitch = -1.8849558F + MathHelper.cos(h * 0.09F) * 0.15F;
-				this.leftAttackingArm.pitch = -0.0F + MathHelper.cos(h * 0.19F) * 0.5F;
-				this.rightAttackingArm.pitch += k * 2.2F - l * 0.4F;
-				this.leftAttackingArm.pitch += k * 1.2F - l * 0.4F;
-			} else {
-				this.rightAttackingArm.pitch = -0.0F + MathHelper.cos(h * 0.19F) * 0.5F;
-				this.leftAttackingArm.pitch = -1.8849558F + MathHelper.cos(h * 0.09F) * 0.15F;
-				this.rightAttackingArm.pitch += k * 1.2F - l * 0.4F;
-				this.leftAttackingArm.pitch += k * 2.2F - l * 0.4F;
-			}
-
-			this.rightAttackingArm.roll = this.rightAttackingArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
-			this.leftAttackingArm.roll = this.leftAttackingArm.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
-			this.rightAttackingArm.pitch = this.rightAttackingArm.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
-			this.leftAttackingArm.pitch = this.leftAttackingArm.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
+			CrossbowPosing.method_29351(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, this.handSwingProgress, h);
 		} else if (state == IllagerEntity.State.SPELLCASTING) {
 			this.rightAttackingArm.pivotZ = 0.0F;
 			this.rightAttackingArm.pivotX = -5.0F;

@@ -146,7 +146,7 @@ public abstract class LivingEntity extends Entity {
 	public float lastLimbDistance;
 	public float limbDistance;
 	public float limbAngle;
-	public final int defaultMaximumHealth = 20;
+	public final int defaultMaxHealth = 20;
 	public final float randomLargeSeed;
 	public final float randomSmallSeed;
 	public float bodyYaw;
@@ -201,7 +201,7 @@ public abstract class LivingEntity extends Entity {
 	protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
 		super(entityType, world);
 		this.attributes = new AttributeContainer(DefaultAttributeRegistry.get(entityType));
-		this.setHealth(this.getMaximumHealth());
+		this.setHealth(this.getMaxHealth());
 		this.inanimate = true;
 		this.randomSmallSeed = (float)((Math.random() + 1.0) * 0.01F);
 		this.refreshPosition();
@@ -905,7 +905,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void setHealth(float health) {
-		this.dataTracker.set(HEALTH, MathHelper.clamp(health, 0.0F, this.getMaximumHealth()));
+		this.dataTracker.set(HEALTH, MathHelper.clamp(health, 0.0F, this.getMaxHealth()));
 	}
 
 	@Override
@@ -1489,7 +1489,7 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	public final float getMaximumHealth() {
+	public final float getMaxHealth() {
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH);
 	}
 
@@ -1999,17 +1999,21 @@ public abstract class LivingEntity extends Entity {
 			}
 		}
 
-		this.lastLimbDistance = this.limbDistance;
-		double dx = this.getX() - this.prevX;
-		double r = this.getZ() - this.prevZ;
-		double exx = this instanceof Flutterer ? this.getY() - this.prevY : 0.0;
-		float fxx = MathHelper.sqrt(dx * dx + exx * exx + r * r) * 4.0F;
-		if (fxx > 1.0F) {
-			fxx = 1.0F;
+		this.method_29242(this, this instanceof Flutterer);
+	}
+
+	public void method_29242(LivingEntity livingEntity, boolean bl) {
+		livingEntity.lastLimbDistance = livingEntity.limbDistance;
+		double d = livingEntity.getX() - livingEntity.prevX;
+		double e = bl ? livingEntity.getY() - livingEntity.prevY : 0.0;
+		double f = livingEntity.getZ() - livingEntity.prevZ;
+		float g = MathHelper.sqrt(d * d + e * e + f * f) * 4.0F;
+		if (g > 1.0F) {
+			g = 1.0F;
 		}
 
-		this.limbDistance = this.limbDistance + (fxx - this.limbDistance) * 0.4F;
-		this.limbAngle = this.limbAngle + this.limbDistance;
+		livingEntity.limbDistance = livingEntity.limbDistance + (g - livingEntity.limbDistance) * 0.4F;
+		livingEntity.limbAngle = livingEntity.limbAngle + livingEntity.limbDistance;
 	}
 
 	public Vec3d method_26318(Vec3d vec3d, float f) {
@@ -2321,10 +2325,11 @@ public abstract class LivingEntity extends Entity {
 		if (this.jumping) {
 			double k = this.getFluidHeight(FluidTags.WATER);
 			boolean bl = this.isTouchingWater() && k > 0.0;
-			if (!bl || this.onGround && !(k > 0.4)) {
+			double l = this.method_29241();
+			if (!bl || this.onGround && !(k > l)) {
 				if (this.isInLava()) {
 					this.swimUpward(FluidTags.LAVA);
-				} else if ((this.onGround || bl && k <= 0.4) && this.jumpingCooldown == 0) {
+				} else if ((this.onGround || bl && k <= l) && this.jumpingCooldown == 0) {
 					this.jump();
 					this.jumpingCooldown = 10;
 				}

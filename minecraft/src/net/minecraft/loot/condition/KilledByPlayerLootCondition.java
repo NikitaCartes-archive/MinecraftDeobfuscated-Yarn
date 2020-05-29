@@ -8,12 +8,17 @@ import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonSerializable;
 
 public class KilledByPlayerLootCondition implements LootCondition {
 	private static final KilledByPlayerLootCondition INSTANCE = new KilledByPlayerLootCondition();
 
 	private KilledByPlayerLootCondition() {
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.KILLED_BY_PLAYER;
 	}
 
 	@Override
@@ -29,11 +34,7 @@ public class KilledByPlayerLootCondition implements LootCondition {
 		return () -> INSTANCE;
 	}
 
-	public static class Factory extends LootCondition.Factory<KilledByPlayerLootCondition> {
-		protected Factory() {
-			super(new Identifier("killed_by_player"), KilledByPlayerLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<KilledByPlayerLootCondition> {
 		public void toJson(JsonObject jsonObject, KilledByPlayerLootCondition killedByPlayerLootCondition, JsonSerializationContext jsonSerializationContext) {
 		}
 

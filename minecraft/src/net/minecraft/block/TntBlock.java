@@ -96,7 +96,7 @@ public class TntBlock extends Block {
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		}
 	}
 

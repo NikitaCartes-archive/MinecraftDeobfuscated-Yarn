@@ -102,7 +102,7 @@ public class SpreadPlayersCommand {
 		double g = (double)(center.y + maxRange);
 		SpreadPlayersCommand.Pile[] piles = makePiles(random, bl ? getPileCountRespectingTeams(collection) : collection.size(), d, e, f, g);
 		spread(center, (double)spreadDistance, source.getWorld(), random, d, e, f, g, i, piles, bl);
-		double h = getMinimumDistance(collection, source.getWorld(), piles, i, bl);
+		double h = getMinDistance(collection, source.getWorld(), piles, i, bl);
 		source.sendFeedback(
 			new TranslatableText(
 				"commands.spreadplayers.success." + (bl ? "teams" : "entities"), piles.length, center.x, center.y, String.format(Locale.ROOT, "%.2f", h)
@@ -207,7 +207,7 @@ public class SpreadPlayersCommand {
 		}
 	}
 
-	private static double getMinimumDistance(Collection<? extends Entity> entities, ServerWorld world, SpreadPlayersCommand.Pile[] piles, int i, boolean bl) {
+	private static double getMinDistance(Collection<? extends Entity> entities, ServerWorld world, SpreadPlayersCommand.Pile[] piles, int i, boolean bl) {
 		double d = 0.0;
 		int j = 0;
 		Map<AbstractTeam, SpreadPlayersCommand.Pile> map = Maps.<AbstractTeam, SpreadPlayersCommand.Pile>newHashMap();

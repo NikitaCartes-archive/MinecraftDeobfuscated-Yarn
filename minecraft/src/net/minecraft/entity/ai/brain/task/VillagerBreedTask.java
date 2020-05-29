@@ -113,7 +113,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	private void setChildHome(ServerWorld world, VillagerEntity child, BlockPos pos) {
-		GlobalPos globalPos = GlobalPos.create(world.method_27983(), pos);
+		GlobalPos globalPos = GlobalPos.create(world.getRegistryKey(), pos);
 		child.getBrain().remember(MemoryModuleType.HOME, globalPos);
 	}
 }

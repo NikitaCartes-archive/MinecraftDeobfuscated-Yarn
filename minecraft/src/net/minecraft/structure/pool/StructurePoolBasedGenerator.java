@@ -5,7 +5,6 @@ import com.google.common.collect.Queues;
 import java.util.Deque;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.JigsawJunction;
@@ -26,6 +25,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.StructureFeature;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,7 +86,7 @@ public class StructurePoolBasedGenerator {
 				.addLast(
 					new StructurePoolBasedGenerator.ShapedPoolStructurePiece(
 						poolStructurePiece,
-						new AtomicReference(VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST)),
+						new MutableObject<>(VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST)),
 						k + 80,
 						0
 					)
@@ -116,7 +116,7 @@ public class StructurePoolBasedGenerator {
 			i, pieceFactory, chunkGenerator, structureManager, list, random
 		);
 		structurePoolGenerator.structurePieces
-			.addLast(new StructurePoolBasedGenerator.ShapedPoolStructurePiece(poolStructurePiece, new AtomicReference(VoxelShapes.UNBOUNDED), 0, 0));
+			.addLast(new StructurePoolBasedGenerator.ShapedPoolStructurePiece(poolStructurePiece, new MutableObject<>(VoxelShapes.UNBOUNDED), 0, 0));
 
 		while (!structurePoolGenerator.structurePieces.isEmpty()) {
 			StructurePoolBasedGenerator.ShapedPoolStructurePiece shapedPoolStructurePiece = (StructurePoolBasedGenerator.ShapedPoolStructurePiece)structurePoolGenerator.structurePieces
@@ -139,13 +139,13 @@ public class StructurePoolBasedGenerator {
 
 	static final class ShapedPoolStructurePiece {
 		private final PoolStructurePiece piece;
-		private final AtomicReference<VoxelShape> pieceShape;
+		private final MutableObject<VoxelShape> pieceShape;
 		private final int minY;
 		private final int currentSize;
 
-		private ShapedPoolStructurePiece(PoolStructurePiece piece, AtomicReference<VoxelShape> pieceShape, int minY, int currentSize) {
+		private ShapedPoolStructurePiece(PoolStructurePiece piece, MutableObject<VoxelShape> mutableObject, int minY, int currentSize) {
 			this.piece = piece;
-			this.pieceShape = pieceShape;
+			this.pieceShape = mutableObject;
 			this.minY = minY;
 			this.currentSize = currentSize;
 		}
@@ -176,13 +176,13 @@ public class StructurePoolBasedGenerator {
 			this.random = random;
 		}
 
-		private void generatePiece(PoolStructurePiece piece, AtomicReference<VoxelShape> pieceShape, int minY, int currentSize, boolean bl) {
+		private void generatePiece(PoolStructurePiece piece, MutableObject<VoxelShape> mutableObject, int minY, int currentSize, boolean bl) {
 			StructurePoolElement structurePoolElement = piece.getPoolElement();
 			BlockPos blockPos = piece.getPos();
 			BlockRotation blockRotation = piece.getRotation();
 			StructurePool.Projection projection = structurePoolElement.getProjection();
 			boolean bl2 = projection == StructurePool.Projection.RIGID;
-			AtomicReference<VoxelShape> atomicReference = new AtomicReference();
+			MutableObject<VoxelShape> mutableObject2 = new MutableObject<>();
 			BlockBox blockBox = piece.getBoundingBox();
 			int i = blockBox.minY;
 
@@ -199,16 +199,16 @@ public class StructurePoolBasedGenerator {
 				StructurePool structurePool2 = StructurePoolBasedGenerator.REGISTRY.get(structurePool.getTerminatorsId());
 				if (structurePool != StructurePool.INVALID && (structurePool.getElementCount() != 0 || structurePool == StructurePool.EMPTY)) {
 					boolean bl3 = blockBox.contains(blockPos3);
-					AtomicReference<VoxelShape> atomicReference2;
+					MutableObject<VoxelShape> mutableObject3;
 					int l;
 					if (bl3) {
-						atomicReference2 = atomicReference;
+						mutableObject3 = mutableObject2;
 						l = i;
-						if (atomicReference.get() == null) {
-							atomicReference.set(VoxelShapes.cuboid(Box.from(blockBox)));
+						if (mutableObject2.getValue() == null) {
+							mutableObject2.setValue(VoxelShapes.cuboid(Box.from(blockBox)));
 						}
 					} else {
-						atomicReference2 = pieceShape;
+						mutableObject3 = mutableObject;
 						l = minY;
 					}
 
@@ -274,10 +274,8 @@ public class StructurePoolBasedGenerator {
 										blockBox4.maxY = blockBox4.minY + s;
 									}
 
-									if (!VoxelShapes.matchesAnywhere(
-										(VoxelShape)atomicReference2.get(), VoxelShapes.cuboid(Box.from(blockBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND
-									)) {
-										atomicReference2.set(VoxelShapes.combine((VoxelShape)atomicReference2.get(), VoxelShapes.cuboid(Box.from(blockBox4)), BooleanBiFunction.ONLY_FIRST));
+									if (!VoxelShapes.matchesAnywhere(mutableObject3.getValue(), VoxelShapes.cuboid(Box.from(blockBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND)) {
+										mutableObject3.setValue(VoxelShapes.combine(mutableObject3.getValue(), VoxelShapes.cuboid(Box.from(blockBox4)), BooleanBiFunction.ONLY_FIRST));
 										int s = piece.getGroundLevelDelta();
 										int t;
 										if (bl4) {
@@ -305,7 +303,7 @@ public class StructurePoolBasedGenerator {
 										poolStructurePiece.addJunction(new JigsawJunction(blockPos2.getX(), u - o + t, blockPos2.getZ(), -p, projection));
 										this.children.add(poolStructurePiece);
 										if (currentSize + 1 <= this.maxSize) {
-											this.structurePieces.addLast(new StructurePoolBasedGenerator.ShapedPoolStructurePiece(poolStructurePiece, atomicReference2, l, currentSize + 1));
+											this.structurePieces.addLast(new StructurePoolBasedGenerator.ShapedPoolStructurePiece(poolStructurePiece, mutableObject3, l, currentSize + 1));
 										}
 										continue label125;
 									}

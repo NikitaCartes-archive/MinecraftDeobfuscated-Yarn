@@ -1,16 +1,17 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.function.BiPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 
 public class DefeatTargetTask extends Task<LivingEntity> {
 	private final int duration;
+	private final BiPredicate<LivingEntity, LivingEntity> field_25157;
 
-	public DefeatTargetTask(int duration) {
+	public DefeatTargetTask(int duration, BiPredicate<LivingEntity, LivingEntity> biPredicate) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.ATTACK_TARGET,
@@ -18,10 +19,13 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 				MemoryModuleType.ANGRY_AT,
 				MemoryModuleState.REGISTERED,
 				MemoryModuleType.CELEBRATE_LOCATION,
-				MemoryModuleState.VALUE_ABSENT
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.DANCING,
+				MemoryModuleState.REGISTERED
 			)
 		);
 		this.duration = duration;
+		this.field_25157 = biPredicate;
 	}
 
 	@Override
@@ -31,10 +35,14 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		BlockPos blockPos = this.getAttackTarget(entity).getBlockPos();
+		LivingEntity livingEntity = this.getAttackTarget(entity);
+		if (this.field_25157.test(entity, livingEntity)) {
+			entity.getBrain().remember(MemoryModuleType.DANCING, true, (long)this.duration);
+		}
+
+		entity.getBrain().remember(MemoryModuleType.CELEBRATE_LOCATION, livingEntity.getBlockPos(), (long)this.duration);
 		entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
 		entity.getBrain().forget(MemoryModuleType.ANGRY_AT);
-		entity.getBrain().remember(MemoryModuleType.CELEBRATE_LOCATION, blockPos, (long)this.duration);
 	}
 
 	private LivingEntity getAttackTarget(LivingEntity entity) {

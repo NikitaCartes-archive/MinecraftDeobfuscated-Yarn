@@ -7,7 +7,7 @@ import java.util.List;
 public class RandomRandomFeatureConfig implements FeatureConfig {
 	public static final Codec<RandomRandomFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ConfiguredFeature.field_24833.listOf().fieldOf("features").forGetter(randomRandomFeatureConfig -> randomRandomFeatureConfig.features),
+					ConfiguredFeature.CODEC.listOf().fieldOf("features").forGetter(randomRandomFeatureConfig -> randomRandomFeatureConfig.features),
 					Codec.INT.fieldOf("count").withDefault(0).forGetter(randomRandomFeatureConfig -> randomRandomFeatureConfig.count)
 				)
 				.apply(instance, RandomRandomFeatureConfig::new)

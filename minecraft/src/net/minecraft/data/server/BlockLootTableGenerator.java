@@ -57,7 +57,7 @@ import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.DynamicEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
-import net.minecraft.loot.entry.LootEntry;
+import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.CopyNameLootFunction;
 import net.minecraft.loot.function.CopyNbtLootFunction;
@@ -132,25 +132,25 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			.pool(addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop))));
 	}
 
-	private static LootTable.Builder drops(Block drop, LootCondition.Builder conditionBuilder, LootEntry.Builder<?> child) {
+	private static LootTable.Builder drops(Block drop, LootCondition.Builder conditionBuilder, LootPoolEntry.Builder<?> child) {
 		return LootTable.builder()
 			.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop).conditionally(conditionBuilder).alternatively(child)));
 	}
 
-	private static LootTable.Builder dropsWithSilkTouch(Block drop, LootEntry.Builder<?> child) {
+	private static LootTable.Builder dropsWithSilkTouch(Block drop, LootPoolEntry.Builder<?> child) {
 		return drops(drop, WITH_SILK_TOUCH, child);
 	}
 
-	private static LootTable.Builder dropsWithShears(Block drop, LootEntry.Builder<?> child) {
+	private static LootTable.Builder dropsWithShears(Block drop, LootPoolEntry.Builder<?> child) {
 		return drops(drop, WITH_SHEARS, child);
 	}
 
-	private static LootTable.Builder dropsWithSilkTouchOrShears(Block drop, LootEntry.Builder<?> child) {
+	private static LootTable.Builder dropsWithSilkTouchOrShears(Block drop, LootPoolEntry.Builder<?> child) {
 		return drops(drop, WITH_SILK_TOUCH_OR_SHEARS, child);
 	}
 
 	private static LootTable.Builder drops(Block dropWithSilkTouch, ItemConvertible drop) {
-		return dropsWithSilkTouch(dropWithSilkTouch, (LootEntry.Builder<?>)addSurvivesExplosionCondition(dropWithSilkTouch, ItemEntry.builder(drop)));
+		return dropsWithSilkTouch(dropWithSilkTouch, (LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(dropWithSilkTouch, ItemEntry.builder(drop)));
 	}
 
 	private static LootTable.Builder drops(ItemConvertible drop, LootTableRange count) {
@@ -158,13 +158,13 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			.pool(
 				LootPool.builder()
 					.rolls(ConstantLootTableRange.create(1))
-					.with((LootEntry.Builder<?>)applyExplosionDecay(drop, ItemEntry.builder(drop).apply(SetCountLootFunction.builder(count))))
+					.with((LootPoolEntry.Builder<?>)applyExplosionDecay(drop, ItemEntry.builder(drop).apply(SetCountLootFunction.builder(count))))
 			);
 	}
 
 	private static LootTable.Builder drops(Block dropWithSilkTouch, ItemConvertible drop, LootTableRange count) {
 		return dropsWithSilkTouch(
-			dropWithSilkTouch, (LootEntry.Builder<?>)applyExplosionDecay(dropWithSilkTouch, ItemEntry.builder(drop).apply(SetCountLootFunction.builder(count)))
+			dropWithSilkTouch, (LootPoolEntry.Builder<?>)applyExplosionDecay(dropWithSilkTouch, ItemEntry.builder(drop).apply(SetCountLootFunction.builder(count)))
 		);
 	}
 
@@ -186,7 +186,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				LootPool.builder()
 					.rolls(ConstantLootTableRange.create(1))
 					.with(
-						(LootEntry.Builder<?>)applyExplosionDecay(
+						(LootPoolEntry.Builder<?>)applyExplosionDecay(
 							drop,
 							ItemEntry.builder(drop)
 								.apply(
@@ -295,14 +295,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	private static LootTable.Builder oreDrops(Block dropWithSilkTouch, Item drop) {
 		return dropsWithSilkTouch(
 			dropWithSilkTouch,
-			(LootEntry.Builder<?>)applyExplosionDecay(dropWithSilkTouch, ItemEntry.builder(drop).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))
+			(LootPoolEntry.Builder<?>)applyExplosionDecay(dropWithSilkTouch, ItemEntry.builder(drop).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))
 		);
 	}
 
 	private static LootTable.Builder mushroomBlockDrops(Block dropWithSilkTouch, ItemConvertible drop) {
 		return dropsWithSilkTouch(
 			dropWithSilkTouch,
-			(LootEntry.Builder<?>)applyExplosionDecay(
+			(LootPoolEntry.Builder<?>)applyExplosionDecay(
 				dropWithSilkTouch,
 				ItemEntry.builder(drop)
 					.apply(SetCountLootFunction.builder(UniformLootTableRange.between(-6.0F, 2.0F)))
@@ -314,7 +314,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	private static LootTable.Builder grassDrops(Block dropWithShears) {
 		return dropsWithShears(
 			dropWithShears,
-			(LootEntry.Builder<?>)applyExplosionDecay(
+			(LootPoolEntry.Builder<?>)applyExplosionDecay(
 				dropWithShears,
 				ItemEntry.builder(Items.WHEAT_SEEDS)
 					.conditionally(RandomChanceLootCondition.builder(0.125F))
@@ -794,13 +794,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.LODESTONE);
 		this.addDrop(Blocks.WARPED_STEM);
 		this.addDrop(Blocks.WARPED_HYPHAE);
-		this.addDrop(Blocks.WARPED_NYLIUM);
 		this.addDrop(Blocks.WARPED_FUNGUS);
 		this.addDrop(Blocks.WARPED_WART_BLOCK);
 		this.addDrop(Blocks.WARPED_ROOTS);
 		this.addDrop(Blocks.CRIMSON_STEM);
 		this.addDrop(Blocks.CRIMSON_HYPHAE);
-		this.addDrop(Blocks.CRIMSON_NYLIUM);
 		this.addDrop(Blocks.CRIMSON_FUNGUS);
 		this.addDrop(Blocks.SHROOMLIGHT);
 		this.addDrop(Blocks.CRIMSON_ROOTS);
@@ -853,6 +851,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.BUBBLE_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_BUBBLE_CORAL_BLOCK));
 		this.addDrop(Blocks.FIRE_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_FIRE_CORAL_BLOCK));
 		this.addDrop(Blocks.HORN_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_HORN_CORAL_BLOCK));
+		this.addDrop(Blocks.CRIMSON_NYLIUM, blockx -> drops(blockx, Blocks.NETHERRACK));
+		this.addDrop(Blocks.WARPED_NYLIUM, blockx -> drops(blockx, Blocks.NETHERRACK));
 		this.addDrop(Blocks.BOOKSHELF, blockx -> drops(blockx, Items.BOOK, ConstantLootTableRange.create(3)));
 		this.addDrop(Blocks.CLAY, blockx -> drops(blockx, Items.CLAY_BALL, ConstantLootTableRange.create(4)));
 		this.addDrop(Blocks.ENDER_CHEST, blockx -> drops(blockx, Blocks.OBSIDIAN, ConstantLootTableRange.create(8)));
@@ -978,7 +978,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						LootPool.builder()
 							.rolls(ConstantLootTableRange.create(1))
 							.with(
-								(LootEntry.Builder<?>)applyExplosionDecay(
+								(LootPoolEntry.Builder<?>)applyExplosionDecay(
 									blockx,
 									ItemEntry.builder(Items.COCOA_BEANS)
 										.apply(
@@ -996,7 +996,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						LootPool.builder()
 							.rolls(ConstantLootTableRange.create(1))
 							.with(
-								(LootEntry.Builder<?>)applyExplosionDecay(
+								(LootPoolEntry.Builder<?>)applyExplosionDecay(
 									Blocks.SEA_PICKLE,
 									ItemEntry.builder(blockx)
 										.apply(
@@ -1018,7 +1018,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(
 			Blocks.COMPOSTER,
 			blockx -> LootTable.builder()
-					.pool(LootPool.builder().with((LootEntry.Builder<?>)applyExplosionDecay(blockx, ItemEntry.builder(Items.COMPOSTER))))
+					.pool(LootPool.builder().with((LootPoolEntry.Builder<?>)applyExplosionDecay(blockx, ItemEntry.builder(Items.COMPOSTER))))
 					.pool(
 						LootPool.builder()
 							.with(ItemEntry.builder(Items.BONE_MEAL))
@@ -1171,7 +1171,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.NETHER_GOLD_ORE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootEntry.Builder<?>)applyExplosionDecay(
+					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.GOLD_NUGGET)
 							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 6.0F)))
@@ -1183,7 +1183,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.LAPIS_ORE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootEntry.Builder<?>)applyExplosionDecay(
+					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.LAPIS_LAZULI)
 							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 9.0F)))
@@ -1192,13 +1192,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				)
 		);
 		this.addDrop(
-			Blocks.COBWEB, blockx -> dropsWithSilkTouchOrShears(blockx, (LootEntry.Builder<?>)addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.STRING)))
+			Blocks.COBWEB,
+			blockx -> dropsWithSilkTouchOrShears(blockx, (LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.STRING)))
 		);
 		this.addDrop(
 			Blocks.DEAD_BUSH,
 			blockx -> dropsWithShears(
 					blockx,
-					(LootEntry.Builder<?>)applyExplosionDecay(
+					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
 					)
 				)
@@ -1252,7 +1253,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.GLOWSTONE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootEntry.Builder<?>)applyExplosionDecay(
+					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.GLOWSTONE_DUST)
 							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F)))
@@ -1265,7 +1266,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.MELON,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootEntry.Builder<?>)applyExplosionDecay(
+					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.MELON_SLICE)
 							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 7.0F)))
@@ -1278,7 +1279,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.REDSTONE_ORE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootEntry.Builder<?>)applyExplosionDecay(
+					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.REDSTONE)
 							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 5.0F)))
@@ -1290,7 +1291,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.SEA_LANTERN,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootEntry.Builder<?>)applyExplosionDecay(
+					(LootPoolEntry.Builder<?>)applyExplosionDecay(
 						blockx,
 						ItemEntry.builder(Items.PRISMARINE_CRYSTALS)
 							.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
@@ -1396,7 +1397,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.CAMPFIRE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootEntry.Builder<?>)addSurvivesExplosionCondition(
+					(LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(
 						blockx, ItemEntry.builder(Items.CHARCOAL).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
 					)
 				)
@@ -1418,7 +1419,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			Blocks.SOUL_CAMPFIRE,
 			blockx -> dropsWithSilkTouch(
 					blockx,
-					(LootEntry.Builder<?>)addSurvivesExplosionCondition(
+					(LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(
 						blockx, ItemEntry.builder(Items.SOUL_SOIL).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(1)))
 					)
 				)

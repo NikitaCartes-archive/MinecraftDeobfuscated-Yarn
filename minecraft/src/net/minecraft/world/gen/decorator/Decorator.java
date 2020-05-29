@@ -2,7 +2,6 @@ package net.minecraft.world.gen.decorator;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -13,6 +12,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NopeDecoratorConfig> NOPE = register("nope", new NopeDecorator(NopeDecoratorConfig.field_24891));
@@ -122,12 +122,13 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 		DC decoratorConfig,
 		ConfiguredFeature<FC, F> configuredFeature
 	) {
-		AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+		MutableBoolean mutableBoolean = new MutableBoolean();
 		this.getPositions(serverWorldAccess, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
-			boolean bl = configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPosx);
-			atomicBoolean.set(atomicBoolean.get() || bl);
+			if (configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPosx)) {
+				mutableBoolean.setTrue();
+			}
 		});
-		return atomicBoolean.get();
+		return mutableBoolean.isTrue();
 	}
 
 	public abstract Stream<BlockPos> getPositions(WorldAccess world, ChunkGenerator generator, Random random, DC config, BlockPos pos);

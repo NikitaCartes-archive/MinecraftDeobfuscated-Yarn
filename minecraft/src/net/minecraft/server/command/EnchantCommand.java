@@ -64,8 +64,8 @@ public class EnchantCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Enchantment enchantment, int level) throws CommandSyntaxException {
-		if (level > enchantment.getMaximumLevel()) {
-			throw FAILED_LEVEL_EXCEPTION.create(level, enchantment.getMaximumLevel());
+		if (level > enchantment.getMaxLevel()) {
+			throw FAILED_LEVEL_EXCEPTION.create(level, enchantment.getMaxLevel());
 		} else {
 			int i = 0;
 

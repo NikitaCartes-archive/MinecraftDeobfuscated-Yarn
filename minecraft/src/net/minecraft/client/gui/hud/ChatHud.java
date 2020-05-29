@@ -9,12 +9,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
@@ -148,22 +150,22 @@ public class ChatHud extends DrawableHelper {
 		LOGGER.info("[CHAT] {}", message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
 	}
 
-	private void addMessage(Text message, int messageId, int timestamp, boolean bl) {
+	private void addMessage(class_5348 arg, int messageId, int timestamp, boolean bl) {
 		if (messageId != 0) {
 			this.removeMessage(messageId);
 		}
 
 		int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
-		List<Text> list = ChatMessages.breakRenderedChatMessageLines(message, i, this.client.textRenderer);
+		List<class_5348> list = ChatMessages.breakRenderedChatMessageLines(arg, i, this.client.textRenderer);
 		boolean bl2 = this.isChatFocused();
 
-		for (Text text : list) {
+		for (class_5348 lv : list) {
 			if (bl2 && this.scrolledLines > 0) {
 				this.hasUnreadNewMessages = true;
 				this.scroll(1.0);
 			}
 
-			this.visibleMessages.add(0, new ChatHudLine(timestamp, text, messageId));
+			this.visibleMessages.add(0, new ChatHudLine(timestamp, lv, messageId));
 		}
 
 		while (this.visibleMessages.size() > 100) {
@@ -171,7 +173,7 @@ public class ChatHud extends DrawableHelper {
 		}
 
 		if (!bl) {
-			this.messages.add(0, new ChatHudLine(timestamp, message, messageId));
+			this.messages.add(0, new ChatHudLine(timestamp, arg, messageId));
 
 			while (this.messages.size() > 100) {
 				this.messages.remove(this.messages.size() - 1);
@@ -234,7 +236,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	@Nullable
-	public Text getText(double x, double y) {
+	public Style getText(double x, double y) {
 		if (this.isChatFocused() && !this.client.options.hudHidden && !this.method_23677()) {
 			double d = x - 2.0;
 			double e = (double)this.client.getWindow().getScaledHeight() - y - 40.0;

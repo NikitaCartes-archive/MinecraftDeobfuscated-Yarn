@@ -1,44 +1,29 @@
 package com.mojang.realmsclient.gui.screens;
 
-import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.realmsclient.dto.Backup;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ListWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupInfoScreen extends RealmsScreen {
 	private final Screen lastScreen;
 	private final Backup backup;
-	private final List<String> keys = Lists.<String>newArrayList();
 	private RealmsBackupInfoScreen.BackupInfoList backupInfoList;
 
 	public RealmsBackupInfoScreen(Screen screen, Backup backup) {
 		this.lastScreen = screen;
 		this.backup = backup;
-		if (backup.changeList != null) {
-			for (Entry<String, String> entry : backup.changeList.entrySet()) {
-				this.keys.add(entry.getKey());
-			}
-		}
 	}
 
 	@Override
@@ -105,98 +90,33 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class BackupInfoList extends ListWidget {
+	class BackupInfoList extends AlwaysSelectedEntryListWidget<RealmsBackupInfoScreen.class_5344> {
 		public BackupInfoList(MinecraftClient minecraftClient) {
 			super(minecraftClient, RealmsBackupInfoScreen.this.width, RealmsBackupInfoScreen.this.height, 32, RealmsBackupInfoScreen.this.height - 64, 36);
-		}
-
-		@Override
-		public int getItemCount() {
-			return RealmsBackupInfoScreen.this.backup.changeList.size();
-		}
-
-		@Override
-		protected void renderItem(MatrixStack matrixStack, int x, int y, int itemHeight, int mouseX, int mouseY, int i, float f) {
-			String string = (String)RealmsBackupInfoScreen.this.keys.get(x);
-			TextRenderer textRenderer = this.client.textRenderer;
-			this.drawStringWithShadow(matrixStack, textRenderer, string, this.width / 2 - 40, itemHeight, 10526880);
-			String string2 = (String)RealmsBackupInfoScreen.this.backup.changeList.get(string);
-			this.drawTextWithShadow(
-				matrixStack, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(string, string2), this.width / 2 - 40, itemHeight + 12, 16777215
-			);
-		}
-
-		@Override
-		public boolean isSelectedItem(int index) {
-			return false;
-		}
-
-		@Override
-		public void renderBackground() {
-		}
-
-		@Override
-		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			if (this.visible) {
-				this.renderBackground();
-				int i = this.getScrollbarPosition();
-				int j = i + 6;
-				this.capYPosition();
-				RenderSystem.disableFog();
-				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferBuilder = tessellator.getBuffer();
-				int k = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
-				int l = this.top + 4 - (int)this.scrollAmount;
-				if (this.renderHeader) {
-					this.renderHeader(k, l, tessellator);
-				}
-
-				this.renderList(matrices, k, l, mouseX, mouseY, delta);
-				RenderSystem.disableDepthTest();
-				this.renderHoleBackground(0, this.top, 255, 255);
-				this.renderHoleBackground(this.bottom, this.height, 255, 255);
-				RenderSystem.enableBlend();
-				RenderSystem.blendFuncSeparate(
-					GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE
-				);
-				RenderSystem.disableAlphaTest();
-				RenderSystem.shadeModel(7425);
-				RenderSystem.disableTexture();
-				int m = this.getMaxScroll();
-				if (m > 0) {
-					int n = (this.bottom - this.top) * (this.bottom - this.top) / this.getMaxPosition();
-					n = MathHelper.clamp(n, 32, this.bottom - this.top - 8);
-					int o = (int)this.scrollAmount * (this.bottom - this.top - n) / m + this.top;
-					if (o < this.top) {
-						o = this.top;
-					}
-
-					bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-					bufferBuilder.vertex((double)i, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
-					bufferBuilder.vertex((double)j, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
-					bufferBuilder.vertex((double)j, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
-					bufferBuilder.vertex((double)i, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
-					tessellator.draw();
-					bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-					bufferBuilder.vertex((double)i, (double)(o + n), 0.0).texture(0.0F, 1.0F).color(128, 128, 128, 255).next();
-					bufferBuilder.vertex((double)j, (double)(o + n), 0.0).texture(1.0F, 1.0F).color(128, 128, 128, 255).next();
-					bufferBuilder.vertex((double)j, (double)o, 0.0).texture(1.0F, 0.0F).color(128, 128, 128, 255).next();
-					bufferBuilder.vertex((double)i, (double)o, 0.0).texture(0.0F, 0.0F).color(128, 128, 128, 255).next();
-					tessellator.draw();
-					bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-					bufferBuilder.vertex((double)i, (double)(o + n - 1), 0.0).texture(0.0F, 1.0F).color(192, 192, 192, 255).next();
-					bufferBuilder.vertex((double)(j - 1), (double)(o + n - 1), 0.0).texture(1.0F, 1.0F).color(192, 192, 192, 255).next();
-					bufferBuilder.vertex((double)(j - 1), (double)o, 0.0).texture(1.0F, 0.0F).color(192, 192, 192, 255).next();
-					bufferBuilder.vertex((double)i, (double)o, 0.0).texture(0.0F, 0.0F).color(192, 192, 192, 255).next();
-					tessellator.draw();
-				}
-
-				this.renderDecorations(mouseX, mouseY);
-				RenderSystem.enableTexture();
-				RenderSystem.shadeModel(7424);
-				RenderSystem.enableAlphaTest();
-				RenderSystem.disableBlend();
+			this.method_29344(false);
+			if (RealmsBackupInfoScreen.this.backup.changeList != null) {
+				RealmsBackupInfoScreen.this.backup.changeList.forEach((string, string2) -> this.addEntry(RealmsBackupInfoScreen.this.new class_5344(string, string2)));
 			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	class class_5344 extends AlwaysSelectedEntryListWidget.Entry<RealmsBackupInfoScreen.class_5344> {
+		private final String field_25258;
+		private final String field_25259;
+
+		public class_5344(String string, String string2) {
+			this.field_25258 = string;
+			this.field_25259 = string2;
+		}
+
+		@Override
+		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			TextRenderer textRenderer = RealmsBackupInfoScreen.this.client.textRenderer;
+			RealmsBackupInfoScreen.this.drawStringWithShadow(matrices, textRenderer, this.field_25258, x, y, 10526880);
+			RealmsBackupInfoScreen.this.drawTextWithShadow(
+				matrices, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.field_25258, this.field_25259), x, y + 12, 16777215
+			);
 		}
 	}
 }

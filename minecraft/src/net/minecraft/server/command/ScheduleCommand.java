@@ -26,7 +26,7 @@ public class ScheduleCommand {
 		object -> new TranslatableText("commands.schedule.cleared.failure", object)
 	);
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-			commandContext.getSource().getMinecraftServer().method_27728().getMainWorldProperties().getScheduledEvents().method_22592(), suggestionsBuilder
+			commandContext.getSource().getMinecraftServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22592(), suggestionsBuilder
 		);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -90,7 +90,7 @@ public class ScheduleCommand {
 		} else {
 			long l = source.getWorld().getTime() + (long)i;
 			Identifier identifier = pair.getFirst();
-			Timer<MinecraftServer> timer = source.getMinecraftServer().method_27728().getMainWorldProperties().getScheduledEvents();
+			Timer<MinecraftServer> timer = source.getMinecraftServer().getSaveProperties().getMainWorldProperties().getScheduledEvents();
 			pair.getSecond().ifLeft(commandFunction -> {
 				String string = identifier.toString();
 				if (bl) {
@@ -113,7 +113,7 @@ public class ScheduleCommand {
 	}
 
 	private static int method_22833(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
-		int i = serverCommandSource.getMinecraftServer().method_27728().getMainWorldProperties().getScheduledEvents().method_22593(string);
+		int i = serverCommandSource.getMinecraftServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22593(string);
 		if (i == 0) {
 			throw CLEARED_FAILURE_EXCEPTION.create(string);
 		} else {

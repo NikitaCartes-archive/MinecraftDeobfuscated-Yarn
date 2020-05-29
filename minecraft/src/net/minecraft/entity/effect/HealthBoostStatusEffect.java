@@ -11,8 +11,8 @@ public class HealthBoostStatusEffect extends StatusEffect {
 	@Override
 	public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
 		super.onRemoved(entity, attributes, amplifier);
-		if (entity.getHealth() > entity.getMaximumHealth()) {
-			entity.setHealth(entity.getMaximumHealth());
+		if (entity.getHealth() > entity.getMaxHealth()) {
+			entity.setHealth(entity.getMaxHealth());
 		}
 	}
 }

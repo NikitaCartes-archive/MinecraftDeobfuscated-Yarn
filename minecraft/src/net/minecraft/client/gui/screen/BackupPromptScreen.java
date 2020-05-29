@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,7 +17,7 @@ public class BackupPromptScreen extends Screen {
 	protected final BackupPromptScreen.Callback callback;
 	private final Text subtitle;
 	private final boolean showEraseCacheCheckbox;
-	private final List<Text> wrappedText = Lists.<Text>newArrayList();
+	private final List<class_5348> wrappedText = Lists.<class_5348>newArrayList();
 	private CheckboxWidget eraseCacheCheckbox;
 
 	public BackupPromptScreen(Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
@@ -66,8 +67,8 @@ public class BackupPromptScreen extends Screen {
 		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
 		int i = 70;
 
-		for (Text text : this.wrappedText) {
-			this.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, i, 16777215);
+		for (class_5348 lv : this.wrappedText) {
+			this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 16777215);
 			i += 9;
 		}
 

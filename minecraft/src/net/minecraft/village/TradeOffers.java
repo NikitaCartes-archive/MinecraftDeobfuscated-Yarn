@@ -709,7 +709,7 @@ public class TradeOffers {
 		public TradeOffer create(Entity entity, Random random) {
 			List<Enchantment> list = (List<Enchantment>)Registry.ENCHANTMENT.stream().filter(Enchantment::isAvailableForEnchantedBookOffer).collect(Collectors.toList());
 			Enchantment enchantment = (Enchantment)list.get(random.nextInt(list.size()));
-			int i = MathHelper.nextInt(random, enchantment.getMinimumLevel(), enchantment.getMaximumLevel());
+			int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
 			ItemStack itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i));
 			int j = 2 + random.nextInt(5 + i * 10) + 3 * i;
 			if (enchantment.isTreasure()) {

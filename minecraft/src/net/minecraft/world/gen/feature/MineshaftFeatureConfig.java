@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class MineshaftFeatureConfig implements FeatureConfig {
-	public static final Codec<MineshaftFeatureConfig> field_24888 = RecordCodecBuilder.create(
+	public static final Codec<MineshaftFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.DOUBLE.fieldOf("probability").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.probability),
 					MineshaftFeature.Type.field_24839.fieldOf("type").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.type)

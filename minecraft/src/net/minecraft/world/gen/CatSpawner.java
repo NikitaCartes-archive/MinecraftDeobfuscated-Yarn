@@ -2,7 +2,6 @@ package net.minecraft.world.gen;
 
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_5304;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
@@ -18,7 +17,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
-public class CatSpawner implements class_5304 {
+public class CatSpawner implements Spawner {
 	private int ticksUntilNextSpawn;
 
 	@Override
@@ -47,7 +46,7 @@ public class CatSpawner implements class_5304 {
 								return this.spawnInHouse(serverWorld, blockPos);
 							}
 
-							if (serverWorld.getStructureAccessor().method_28388(blockPos, true, StructureFeature.field_24851).hasChildren()) {
+							if (serverWorld.getStructureAccessor().method_28388(blockPos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
 								return this.spawnInSwampHut(serverWorld, blockPos);
 							}
 						}

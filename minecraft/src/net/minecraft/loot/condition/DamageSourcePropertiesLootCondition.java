@@ -10,7 +10,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -19,6 +19,11 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 
 	private DamageSourcePropertiesLootCondition(DamageSourcePredicate predicate) {
 		this.predicate = predicate;
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.DAMAGE_SOURCE_PROPERTIES;
 	}
 
 	@Override
@@ -36,11 +41,7 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 		return () -> new DamageSourcePropertiesLootCondition(builder.build());
 	}
 
-	public static class Factory extends LootCondition.Factory<DamageSourcePropertiesLootCondition> {
-		protected Factory() {
-			super(new Identifier("damage_source_properties"), DamageSourcePropertiesLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<DamageSourcePropertiesLootCondition> {
 		public void toJson(
 			JsonObject jsonObject, DamageSourcePropertiesLootCondition damageSourcePropertiesLootCondition, JsonSerializationContext jsonSerializationContext
 		) {

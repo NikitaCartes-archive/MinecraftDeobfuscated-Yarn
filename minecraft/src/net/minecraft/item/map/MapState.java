@@ -23,6 +23,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +33,7 @@ public class MapState extends PersistentState {
 	private static final Logger field_25019 = LogManager.getLogger();
 	public int xCenter;
 	public int zCenter;
-	public RegistryKey<DimensionType> dimension;
+	public RegistryKey<World> dimension;
 	public boolean showIcons;
 	public boolean unlimitedTracking;
 	public byte scale;
@@ -48,7 +49,7 @@ public class MapState extends PersistentState {
 		super(string);
 	}
 
-	public void init(int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<DimensionType> dimension) {
+	public void init(int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
 		this.scale = (byte)scale;
 		this.calculateCenter((double)x, (double)z, this.scale);
 		this.dimension = dimension;
@@ -67,7 +68,7 @@ public class MapState extends PersistentState {
 
 	@Override
 	public void fromTag(CompoundTag tag) {
-		this.dimension = (RegistryKey<DimensionType>)DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, tag.get("dimension")))
+		this.dimension = (RegistryKey<World>)DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, tag.get("dimension")))
 			.resultOrPartial(field_25019::error)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + tag.get("dimension")));
 		this.xCenter = tag.getInt("xCenter");
@@ -169,7 +170,7 @@ public class MapState extends PersistentState {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
 			String string = playerUpdateTracker2.player.getName().getString();
 			if (!playerUpdateTracker2.player.removed && (playerUpdateTracker2.player.inventory.contains(stack) || stack.isInFrame())) {
-				if (!stack.isInFrame() && playerUpdateTracker2.player.world.method_27983() == this.dimension && this.showIcons) {
+				if (!stack.isInFrame() && playerUpdateTracker2.player.world.getRegistryKey() == this.dimension && this.showIcons) {
 					this.addIcon(
 						MapIcon.Type.PLAYER,
 						playerUpdateTracker2.player.world,
@@ -262,7 +263,7 @@ public class MapState extends PersistentState {
 		if (f >= -63.0F && g >= -63.0F && f <= 63.0F && g <= 63.0F) {
 			rotation += rotation < 0.0 ? -8.0 : 8.0;
 			d = (byte)((int)(rotation * 16.0 / 360.0));
-			if (this.dimension == DimensionType.THE_NETHER_REGISTRY_KEY && world != null) {
+			if (this.dimension == World.NETHER && world != null) {
 				int k = (int)(world.getLevelProperties().getTimeOfDay() / 10L);
 				d = (byte)(k * k * 34187121 + k * 121 >> 15 & 15);
 			}

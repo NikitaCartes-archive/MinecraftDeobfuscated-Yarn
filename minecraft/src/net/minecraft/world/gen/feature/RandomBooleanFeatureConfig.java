@@ -4,10 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class RandomBooleanFeatureConfig implements FeatureConfig {
-	public static final Codec<RandomBooleanFeatureConfig> field_24900 = RecordCodecBuilder.create(
+	public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ConfiguredFeature.field_24833.fieldOf("feature_true").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureTrue),
-					ConfiguredFeature.field_24833.fieldOf("feature_false").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureFalse)
+					ConfiguredFeature.CODEC.fieldOf("feature_true").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureTrue),
+					ConfiguredFeature.CODEC.fieldOf("feature_false").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureFalse)
 				)
 				.apply(instance, RandomBooleanFeatureConfig::new)
 	);

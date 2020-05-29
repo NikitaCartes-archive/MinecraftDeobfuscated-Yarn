@@ -50,7 +50,7 @@ public class MusicDiscItem extends Item {
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}

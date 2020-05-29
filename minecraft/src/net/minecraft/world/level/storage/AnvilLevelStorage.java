@@ -14,11 +14,11 @@ import net.minecraft.util.ProgressListener;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.storage.RegionFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,9 +31,9 @@ public class AnvilLevelStorage {
 		List<File> list = Lists.<File>newArrayList();
 		List<File> list2 = Lists.<File>newArrayList();
 		List<File> list3 = Lists.<File>newArrayList();
-		File file = session.method_27424(DimensionType.OVERWORLD_REGISTRY_KEY);
-		File file2 = session.method_27424(DimensionType.THE_NETHER_REGISTRY_KEY);
-		File file3 = session.method_27424(DimensionType.THE_END_REGISTRY_KEY);
+		File file = session.method_27424(World.OVERWORLD);
+		File file2 = session.method_27424(World.NETHER);
+		File file3 = session.method_27424(World.END);
 		LOGGER.info("Scanning folders...");
 		addRegionFiles(file, list);
 		if (file2.exists()) {
@@ -47,9 +47,9 @@ public class AnvilLevelStorage {
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
 		SaveProperties saveProperties = session.readLevelProperties();
-		long l = saveProperties != null ? saveProperties.method_28057().getSeed() : 0L;
+		long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
 		BiomeSource biomeSource;
-		if (saveProperties != null && saveProperties.method_28057().isFlatWorld()) {
+		if (saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld()) {
 			biomeSource = new FixedBiomeSource(Biomes.PLAINS);
 		} else {
 			biomeSource = new VanillaLayeredBiomeSource(l, false, false);

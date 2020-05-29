@@ -23,6 +23,11 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.SET_LOOT_TABLE;
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isEmpty()) {
 			return stack;
@@ -54,10 +59,6 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetLootTableLootFunction> {
-		protected Factory() {
-			super(new Identifier("set_loot_table"), SetLootTableLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("name", setLootTableLootFunction.id.toString());

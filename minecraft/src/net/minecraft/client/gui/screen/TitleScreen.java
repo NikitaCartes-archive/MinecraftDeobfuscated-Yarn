@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,8 +15,9 @@ import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
-import net.minecraft.client.gui.screen.options.AccessibilityScreen;
+import net.minecraft.client.gui.screen.options.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.options.LanguageOptionsScreen;
+import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -136,7 +136,7 @@ public class TitleScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("menu.options"),
-				buttonWidget -> this.client.openScreen(new SettingsScreen(this, this.client.options))
+				buttonWidget -> this.client.openScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, new TranslatableText("menu.quit"), buttonWidget -> this.client.scheduleStop()));
@@ -152,7 +152,7 @@ public class TitleScreen extends Screen {
 				ACCESSIBILITY_ICON_TEXTURE,
 				32,
 				64,
-				buttonWidget -> this.client.openScreen(new AccessibilityScreen(this, this.client.options)),
+				buttonWidget -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.client.options)),
 				new TranslatableText("narrator.button.accessibility")
 			)
 		);
@@ -276,7 +276,7 @@ public class TitleScreen extends Screen {
 			this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, g);
 			if (this.isMinceraft) {
-				this.method_29063(j, 30, (integer, integer2) -> {
+				this.method_29343(j, 30, (integer, integer2) -> {
 					this.drawTexture(matrices, integer + 0, integer2, 0, 0, 99, 44);
 					this.drawTexture(matrices, integer + 99, integer2, 129, 0, 27, 44);
 					this.drawTexture(matrices, integer + 99 + 26, integer2, 126, 0, 3, 44);
@@ -284,7 +284,7 @@ public class TitleScreen extends Screen {
 					this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
 				});
 			} else {
-				this.method_29063(j, 30, (integer, integer2) -> {
+				this.method_29343(j, 30, (integer, integer2) -> {
 					this.drawTexture(matrices, integer + 0, integer2, 0, 0, 155, 44);
 					this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
 				});
@@ -329,14 +329,6 @@ public class TitleScreen extends Screen {
 				this.realmsNotificationGui.render(matrices, mouseX, mouseY, delta);
 			}
 		}
-	}
-
-	private void method_29063(int i, int j, BiConsumer<Integer, Integer> biConsumer) {
-		biConsumer.accept(i + 1, j);
-		biConsumer.accept(i - 1, j);
-		biConsumer.accept(i, j + 1);
-		biConsumer.accept(i, j - 1);
-		biConsumer.accept(i, j);
 	}
 
 	@Override

@@ -23,10 +23,10 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
-import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 
 /**
@@ -41,15 +41,7 @@ import net.minecraft.util.Util;
  * 
  * @see MutableText
  */
-public interface Text extends Message {
-	/**
-	 * An {@link Optional} that indicates a text visitor should be terminated.
-	 * 
-	 * @see Visitor#accept(String)
-	 * @see StyledVisitor#accept(Style, String)
-	 */
-	Optional<Unit> TERMINATE_VISIT = Optional.of(Unit.INSTANCE);
-
+public interface Text extends Message, class_5348 {
 	/**
 	 * Returns the style of this text.
 	 */
@@ -86,7 +78,7 @@ public interface Text extends Message {
 		this.visit(string -> {
 			int j = length - stringBuilder.length();
 			if (j <= 0) {
-				return TERMINATE_VISIT;
+				return field_25309;
 			} else {
 				stringBuilder.append(string.length() <= j ? string : string.substring(0, j));
 				return Optional.empty();
@@ -112,29 +104,16 @@ public interface Text extends Message {
 	 */
 	MutableText shallowCopy();
 
-	/**
-	 * Visits the code points of in each {@link Text#asString() partial string}
-	 * representation of {@code text} and its siblings, applying the formatting
-	 * codes within.
-	 * 
-	 * <p>The visit is in forward direction.</p>
-	 * 
-	 * @return {@code true} if the full string was visited, or {@code false} indicating
-	 * the {@code visitor} terminated half-way
-	 * @see Text#visit(Text.StyledVisitor, Style)
-	 * 
-	 * @param visitor the styled text visitor
-	 * @param style the starting style
-	 */
 	@Environment(EnvType.CLIENT)
-	default <T> Optional<T> visit(Text.StyledVisitor<T> visitor, Style style) {
+	@Override
+	default <T> Optional<T> visit(class_5348.StyledVisitor<T> styledVisitor, Style style) {
 		Style style2 = this.getStyle().withParent(style);
-		Optional<T> optional = this.visitSelf(visitor, style2);
+		Optional<T> optional = this.visitSelf(styledVisitor, style2);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
 			for (Text text : this.getSiblings()) {
-				Optional<T> optional2 = text.visit(visitor, style2);
+				Optional<T> optional2 = text.visit(styledVisitor, style2);
 				if (optional2.isPresent()) {
 					return optional2;
 				}
@@ -144,19 +123,8 @@ public interface Text extends Message {
 		}
 	}
 
-	/**
-	 * Visits this text and its siblings.
-	 * 
-	 * <p>When the visitor returns a {@link Optional#isPresent() non-empty
-	 * optional} during visit, the visit is immediately terminated and the
-	 * result is returned.</p>
-	 * 
-	 * @return what the visitor returns, or {@link Optional#empty()} if the
-	 * visitor always returned {@code Optional.empty()}.
-	 * 
-	 * @param visitor the text visitor
-	 */
-	default <T> Optional<T> visit(Text.Visitor<T> visitor) {
+	@Override
+	default <T> Optional<T> visit(class_5348.Visitor<T> visitor) {
 		Optional<T> optional = this.visitSelf(visitor);
 		if (optional.isPresent()) {
 			return optional;
@@ -182,7 +150,7 @@ public interface Text extends Message {
 	 * @param style the current style
 	 */
 	@Environment(EnvType.CLIENT)
-	default <T> Optional<T> visitSelf(Text.StyledVisitor<T> visitor, Style style) {
+	default <T> Optional<T> visitSelf(class_5348.StyledVisitor<T> visitor, Style style) {
 		return visitor.accept(style, this.asString());
 	}
 
@@ -194,7 +162,7 @@ public interface Text extends Message {
 	 * 
 	 * @param visitor the visitor
 	 */
-	default <T> Optional<T> visitSelf(Text.Visitor<T> visitor) {
+	default <T> Optional<T> visitSelf(class_5348.Visitor<T> visitor) {
 		return visitor.accept(this.asString());
 	}
 
@@ -450,39 +418,5 @@ public interface Text extends Message {
 				throw new IllegalStateException("Couldn't read position of JsonReader", var2);
 			}
 		}
-	}
-
-	/**
-	 * A visitor for text content and a contextual {@link Style}.
-	 */
-	@Environment(EnvType.CLIENT)
-	public interface StyledVisitor<T> {
-		/**
-		 * Visits a text's contextual style and {@link Text#asString() asString
-		 * result}.
-		 * 
-		 * <p>A contextual style is obtained by calling {@link Style#withParent(Style)}
-		 * on the current's text style, passing the previous contextual style or
-		 * the starting style if it is the beginning of a visit.</p>
-		 * 
-		 * <p>When a {@link Optional#isPresent() present optional} is returned,
-		 * the visit is terminated before visiting all text. Can return {@link
-		 * Text#TERMINATE_VISIT} for convenience.</p>
-		 */
-		Optional<T> accept(Style style, String asString);
-	}
-
-	/**
-	 * A visitor for text content.
-	 */
-	public interface Visitor<T> {
-		/**
-		 * Visits a text's {@link Text#asString() asString result}.
-		 * 
-		 * <p>When a {@link Optional#isPresent() present optional} is returned,
-		 * the visit is terminated before visiting all text. Can return {@link
-		 * Text#TERMINATE_VISIT} for convenience.</p>
-		 */
-		Optional<T> accept(String asString);
 	}
 }

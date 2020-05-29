@@ -28,7 +28,7 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
 		GlobalPos globalPos = (GlobalPos)entity.getBrain().getOptionalMemory(this.memoryModule).get();
-		return world.method_27983() == globalPos.getDimension() && globalPos.getPos().isWithinDistance(entity.getPos(), 5.0);
+		return world.getRegistryKey() == globalPos.getDimension() && globalPos.getPos().isWithinDistance(entity.getPos(), 16.0);
 	}
 
 	@Override

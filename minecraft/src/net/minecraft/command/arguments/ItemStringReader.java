@@ -9,14 +9,14 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.TagContainer;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -26,7 +26,7 @@ public class ItemStringReader {
 	public static final DynamicCommandExceptionType ID_INVALID_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("argument.item.id.invalid", object)
 	);
-	private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = SuggestionsBuilder::buildFuture;
+	private static final BiFunction<SuggestionsBuilder, TagContainer<Item>, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = (suggestionsBuilder, tagContainer) -> suggestionsBuilder.buildFuture();
 	private final StringReader reader;
 	private final boolean allowTag;
 	private final Map<Property<?>, Comparable<?>> field_10801 = Maps.<Property<?>, Comparable<?>>newHashMap();
@@ -35,7 +35,7 @@ public class ItemStringReader {
 	private CompoundTag tag;
 	private Identifier id = new Identifier("");
 	private int cursor;
-	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
+	private BiFunction<SuggestionsBuilder, TagContainer<Item>, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
 
 	public ItemStringReader(StringReader reader, boolean allowTag) {
 		this.reader = reader;
@@ -96,7 +96,7 @@ public class ItemStringReader {
 		return this;
 	}
 
-	private CompletableFuture<Suggestions> suggestItem(SuggestionsBuilder suggestionsBuilder) {
+	private CompletableFuture<Suggestions> suggestItem(SuggestionsBuilder suggestionsBuilder, TagContainer<Item> tagContainer) {
 		if (suggestionsBuilder.getRemaining().isEmpty()) {
 			suggestionsBuilder.suggest(String.valueOf('{'));
 		}
@@ -104,19 +104,19 @@ public class ItemStringReader {
 		return suggestionsBuilder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestTag(SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder.createOffset(this.cursor));
+	private CompletableFuture<Suggestions> suggestTag(SuggestionsBuilder suggestionsBuilder, TagContainer<Item> tagContainer) {
+		return CommandSource.suggestIdentifiers(tagContainer.getKeys(), suggestionsBuilder.createOffset(this.cursor));
 	}
 
-	private CompletableFuture<Suggestions> suggestAny(SuggestionsBuilder suggestionsBuilder) {
+	private CompletableFuture<Suggestions> suggestAny(SuggestionsBuilder suggestionsBuilder, TagContainer<Item> tagContainer) {
 		if (this.allowTag) {
-			CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
+			CommandSource.suggestIdentifiers(tagContainer.getKeys(), suggestionsBuilder, String.valueOf('#'));
 		}
 
 		return CommandSource.suggestIdentifiers(Registry.ITEM.getIds(), suggestionsBuilder);
 	}
 
-	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder) {
-		return (CompletableFuture<Suggestions>)this.suggestions.apply(builder.createOffset(this.reader.getCursor()));
+	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder, TagContainer<Item> tagContainer) {
+		return (CompletableFuture<Suggestions>)this.suggestions.apply(builder.createOffset(this.reader.getCursor()), tagContainer);
 	}
 }

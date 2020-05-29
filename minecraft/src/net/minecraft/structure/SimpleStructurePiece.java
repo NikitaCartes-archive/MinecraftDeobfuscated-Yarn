@@ -62,7 +62,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	) {
 		this.placementData.setBoundingBox(boundingBox);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (this.structure.place(serverWorldAccess, this.pos, blockPos, this.placementData, 2)) {
+		if (this.structure.place(serverWorldAccess, this.pos, blockPos, this.placementData, random, 2)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.tag != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));

@@ -13,7 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class AccessibilityScreen extends GameOptionsScreen {
+public class AccessibilityOptionsScreen extends GameOptionsScreen {
 	private static final Option[] OPTIONS = new Option[]{
 		Option.NARRATOR,
 		Option.SUBTITLES,
@@ -28,7 +28,7 @@ public class AccessibilityScreen extends GameOptionsScreen {
 	};
 	private AbstractButtonWidget narratorButton;
 
-	public AccessibilityScreen(Screen parent, GameOptions gameOptions) {
+	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
 		super(parent, gameOptions, new TranslatableText("options.accessibility.title"));
 	}
 

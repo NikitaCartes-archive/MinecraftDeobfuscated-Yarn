@@ -49,7 +49,7 @@ public class BarrelBlock extends BlockWithEntity {
 				PiglinBrain.onGoldBlockBroken(player);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

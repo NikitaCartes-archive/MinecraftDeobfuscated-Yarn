@@ -123,7 +123,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		return this.toTag(new CompoundTag());
 	}
 
-	public void generate(ServerWorld world, int maxDepth) {
+	public void generate(ServerWorld world, int maxDepth, boolean bl) {
 		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 		StructureManager structureManager = world.getStructureManager();
 		StructureAccessor structureAccessor = world.getStructureAccessor();
@@ -141,7 +141,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		);
 
 		for (PoolStructurePiece poolStructurePiece : list) {
-			poolStructurePiece.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, true);
+			poolStructurePiece.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, bl);
 		}
 	}
 

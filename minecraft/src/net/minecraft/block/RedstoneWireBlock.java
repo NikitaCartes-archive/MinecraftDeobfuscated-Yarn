@@ -319,6 +319,7 @@ public class RedstoneWireBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock()) && !world.isClient) {
+			world.setBlockState(pos, this.method_27840(world, this.getDefaultState(), pos), 2);
 			this.update(world, pos, state);
 
 			for (Direction direction : Direction.Type.VERTICAL) {
@@ -504,18 +505,22 @@ public class RedstoneWireBlock extends Block {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (isFullyConnected(state) || isNotConnected(state)) {
-			BlockState blockState = isFullyConnected(state) ? this.dotShape : this.getDefaultState();
-			blockState = blockState.with(POWER, state.get(POWER));
-			blockState = this.method_27840(world, blockState, pos);
-			if (blockState != state) {
-				world.setBlockState(pos, blockState, 3);
-				this.method_28482(world, pos, state, blockState);
-				return ActionResult.SUCCESS;
+		if (!player.abilities.allowModifyWorld) {
+			return ActionResult.PASS;
+		} else {
+			if (isFullyConnected(state) || isNotConnected(state)) {
+				BlockState blockState = isFullyConnected(state) ? this.dotShape : this.getDefaultState();
+				blockState = blockState.with(POWER, state.get(POWER));
+				blockState = this.method_27840(world, blockState, pos);
+				if (blockState != state) {
+					world.setBlockState(pos, blockState, 3);
+					this.method_28482(world, pos, state, blockState);
+					return ActionResult.SUCCESS;
+				}
 			}
-		}
 
-		return ActionResult.PASS;
+			return ActionResult.PASS;
+		}
 	}
 
 	private void method_28482(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {

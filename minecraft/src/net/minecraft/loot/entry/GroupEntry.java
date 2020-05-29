@@ -3,8 +3,13 @@ package net.minecraft.loot.entry;
 import net.minecraft.loot.condition.LootCondition;
 
 public class GroupEntry extends CombinedEntry {
-	GroupEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
-		super(lootEntrys, lootConditions);
+	GroupEntry(LootPoolEntry[] lootPoolEntrys, LootCondition[] lootConditions) {
+		super(lootPoolEntrys, lootConditions);
+	}
+
+	@Override
+	public LootPoolEntryType method_29318() {
+		return LootPoolEntryTypes.SEQUENCE;
 	}
 
 	@Override
@@ -15,17 +20,13 @@ public class GroupEntry extends CombinedEntry {
 			case 1:
 				return children[0];
 			case 2:
-				EntryCombiner entryCombiner = children[0];
-				EntryCombiner entryCombiner2 = children[1];
-				return (context, lootChoiceExpander) -> {
-					entryCombiner.expand(context, lootChoiceExpander);
-					entryCombiner2.expand(context, lootChoiceExpander);
-					return true;
-				};
+				return children[0].and(children[1]);
 			default:
 				return (context, lootChoiceExpander) -> {
-					for (EntryCombiner entryCombinerx : children) {
-						entryCombinerx.expand(context, lootChoiceExpander);
+					for (EntryCombiner entryCombiner : children) {
+						if (!entryCombiner.expand(context, lootChoiceExpander)) {
+							return false;
+						}
 					}
 
 					return true;

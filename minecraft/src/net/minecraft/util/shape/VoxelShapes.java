@@ -162,11 +162,11 @@ public final class VoxelShapes {
 			boolean bl2 = predicate.apply(false, true);
 
 			for (Direction.Axis axis : AxisCycleDirection.AXES) {
-				if (shape1.getMaximum(axis) < shape2.getMinimum(axis) - 1.0E-7) {
+				if (shape1.getMax(axis) < shape2.getMin(axis) - 1.0E-7) {
 					return bl || bl2;
 				}
 
-				if (shape2.getMaximum(axis) < shape1.getMinimum(axis) - 1.0E-7) {
+				if (shape2.getMax(axis) < shape1.getMin(axis) - 1.0E-7) {
 					return bl || bl2;
 				}
 			}
@@ -293,8 +293,8 @@ public final class VoxelShapes {
 			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? shape : neighbor;
 			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? neighbor : shape;
 			BooleanBiFunction booleanBiFunction = axisDirection == Direction.AxisDirection.POSITIVE ? BooleanBiFunction.ONLY_FIRST : BooleanBiFunction.ONLY_SECOND;
-			return DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7)
-				&& DoubleMath.fuzzyEquals(voxelShape2.getMinimum(axis), 0.0, 1.0E-7)
+			return DoubleMath.fuzzyEquals(voxelShape.getMax(axis), 1.0, 1.0E-7)
+				&& DoubleMath.fuzzyEquals(voxelShape2.getMin(axis), 0.0, 1.0E-7)
 				&& !matchesAnywhere(
 					new SlicedVoxelShape(voxelShape, axis, voxelShape.voxels.getSize(axis) - 1), new SlicedVoxelShape(voxelShape2, axis, 0), booleanBiFunction
 				);
@@ -309,10 +309,10 @@ public final class VoxelShapes {
 			boolean bl;
 			int i;
 			if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-				bl = DoubleMath.fuzzyEquals(shape.getMaximum(axis), 1.0, 1.0E-7);
+				bl = DoubleMath.fuzzyEquals(shape.getMax(axis), 1.0, 1.0E-7);
 				i = shape.voxels.getSize(axis) - 1;
 			} else {
-				bl = DoubleMath.fuzzyEquals(shape.getMinimum(axis), 0.0, 1.0E-7);
+				bl = DoubleMath.fuzzyEquals(shape.getMin(axis), 0.0, 1.0E-7);
 				i = 0;
 			}
 
@@ -326,11 +326,11 @@ public final class VoxelShapes {
 			Direction.AxisDirection axisDirection = direction.getDirection();
 			VoxelShape voxelShape = axisDirection == Direction.AxisDirection.POSITIVE ? one : two;
 			VoxelShape voxelShape2 = axisDirection == Direction.AxisDirection.POSITIVE ? two : one;
-			if (!DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7)) {
+			if (!DoubleMath.fuzzyEquals(voxelShape.getMax(axis), 1.0, 1.0E-7)) {
 				voxelShape = empty();
 			}
 
-			if (!DoubleMath.fuzzyEquals(voxelShape2.getMinimum(axis), 0.0, 1.0E-7)) {
+			if (!DoubleMath.fuzzyEquals(voxelShape2.getMin(axis), 0.0, 1.0E-7)) {
 				voxelShape2 = empty();
 			}
 

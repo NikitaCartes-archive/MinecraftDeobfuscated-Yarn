@@ -534,7 +534,6 @@ public class BookEditScreen extends Screen {
 		if (string.isEmpty()) {
 			return BookEditScreen.class_5233.field_24271;
 		} else {
-			String string2 = this.textRenderer.isRightToLeft() ? this.textRenderer.mirror(string) : string;
 			int i = this.field_24269.getSelectionStart();
 			int j = this.field_24269.getSelectionEnd();
 			IntList intList = new IntArrayList();
@@ -542,24 +541,24 @@ public class BookEditScreen extends Screen {
 			MutableInt mutableInt = new MutableInt();
 			MutableBoolean mutableBoolean = new MutableBoolean();
 			TextHandler textHandler = this.textRenderer.getTextHandler();
-			textHandler.wrapLines(string2, 114, Style.EMPTY, true, (style, ix, jx) -> {
+			textHandler.wrapLines(string, 114, Style.EMPTY, true, (style, ix, jx) -> {
 				int k = mutableInt.getAndIncrement();
-				String string2x = string2.substring(ix, jx);
+				String string2x = string.substring(ix, jx);
 				mutableBoolean.setValue(string2x.endsWith("\n"));
-				String string3x = StringUtils.stripEnd(string2x, " \n");
+				String string3 = StringUtils.stripEnd(string2x, " \n");
 				int lx = k * 9;
 				BookEditScreen.class_5234 lvx = this.method_27590(new BookEditScreen.class_5234(0, lx));
 				intList.add(ix);
-				list.add(new BookEditScreen.Position(style, string3x, lvx.field_24281, lvx.field_24282));
+				list.add(new BookEditScreen.Position(style, string3, lvx.field_24281, lvx.field_24282));
 			});
 			int[] is = intList.toIntArray();
-			boolean bl = i == string2.length();
+			boolean bl = i == string.length();
 			BookEditScreen.class_5234 lv;
 			if (bl && mutableBoolean.isTrue()) {
 				lv = new BookEditScreen.class_5234(0, list.size() * 9);
 			} else {
 				int k = method_27591(is, i);
-				int l = this.textRenderer.getWidth(string2.substring(is[k], i));
+				int l = this.textRenderer.getWidth(string.substring(is[k], i));
 				lv = new BookEditScreen.class_5234(l, k * 9);
 			}
 
@@ -572,24 +571,24 @@ public class BookEditScreen extends Screen {
 				if (n == o) {
 					int p = n * 9;
 					int q = is[n];
-					list2.add(this.method_27585(string2, textHandler, l, m, p, q));
+					list2.add(this.method_27585(string, textHandler, l, m, p, q));
 				} else {
-					int p = n + 1 > is.length ? string2.length() : is[n + 1];
-					list2.add(this.method_27585(string2, textHandler, l, p, n * 9, is[n]));
+					int p = n + 1 > is.length ? string.length() : is[n + 1];
+					list2.add(this.method_27585(string, textHandler, l, p, n * 9, is[n]));
 
 					for (int q = n + 1; q < o; q++) {
 						int r = q * 9;
-						String string3 = string2.substring(is[q], is[q + 1]);
-						int s = (int)textHandler.getWidth(string3);
+						String string2 = string.substring(is[q], is[q + 1]);
+						int s = (int)textHandler.getWidth(string2);
 						list2.add(this.method_27583(new BookEditScreen.class_5234(0, r), new BookEditScreen.class_5234(s, r + 9)));
 					}
 
-					list2.add(this.method_27585(string2, textHandler, is[o], m, o * 9, is[o]));
+					list2.add(this.method_27585(string, textHandler, is[o], m, o * 9, is[o]));
 				}
 			}
 
 			return new BookEditScreen.class_5233(
-				string2, lv, bl, is, (BookEditScreen.Position[])list.toArray(new BookEditScreen.Position[0]), (Rect2i[])list2.toArray(new Rect2i[0])
+				string, lv, bl, is, (BookEditScreen.Position[])list.toArray(new BookEditScreen.Position[0]), (Rect2i[])list2.toArray(new Rect2i[0])
 			);
 		}
 	}

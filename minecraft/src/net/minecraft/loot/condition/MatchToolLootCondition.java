@@ -10,13 +10,18 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonSerializable;
 
 public class MatchToolLootCondition implements LootCondition {
 	private final ItemPredicate predicate;
 
 	public MatchToolLootCondition(ItemPredicate predicate) {
 		this.predicate = predicate;
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.MATCH_TOOL;
 	}
 
 	@Override
@@ -33,11 +38,7 @@ public class MatchToolLootCondition implements LootCondition {
 		return () -> new MatchToolLootCondition(predicate.build());
 	}
 
-	public static class Factory extends LootCondition.Factory<MatchToolLootCondition> {
-		protected Factory() {
-			super(new Identifier("match_tool"), MatchToolLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<MatchToolLootCondition> {
 		public void toJson(JsonObject jsonObject, MatchToolLootCondition matchToolLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("predicate", matchToolLootCondition.predicate.toJson());
 		}

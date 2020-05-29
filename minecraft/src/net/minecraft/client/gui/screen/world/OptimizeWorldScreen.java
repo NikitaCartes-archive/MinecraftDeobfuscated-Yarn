@@ -4,7 +4,6 @@ import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
-import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -17,17 +16,17 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
 
 @Environment(EnvType.CLIENT)
 public class OptimizeWorldScreen extends Screen {
-	private static final Object2IntMap<RegistryKey<DimensionType>> DIMENSION_COLORS = Util.make(
+	private static final Object2IntMap<RegistryKey<World>> DIMENSION_COLORS = Util.make(
 		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
-			object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD_REGISTRY_KEY, -13408734);
-			object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER_REGISTRY_KEY, -10075085);
-			object2IntOpenCustomHashMap.put(DimensionType.THE_END_REGISTRY_KEY, -8943531);
+			object2IntOpenCustomHashMap.put(World.OVERWORLD, -13408734);
+			object2IntOpenCustomHashMap.put(World.NETHER, -10075085);
+			object2IntOpenCustomHashMap.put(World.END, -8943531);
 			object2IntOpenCustomHashMap.defaultReturnValue(-2236963);
 		}
 	);
@@ -91,9 +90,9 @@ public class OptimizeWorldScreen extends Screen {
 			);
 			int m = 0;
 
-			for (Entry<RegistryKey<DimensionType>, DimensionType> entry : this.updater.method_28304().entrySet()) {
-				int n = MathHelper.floor(this.updater.getProgress((DimensionType)entry.getValue()) * (float)(j - i));
-				fill(matrices, i + m, k, i + m + n, l, DIMENSION_COLORS.getInt(entry.getKey()));
+			for (RegistryKey<World> registryKey : this.updater.method_28304()) {
+				int n = MathHelper.floor(this.updater.getProgress(registryKey) * (float)(j - i));
+				fill(matrices, i + m, k, i + m + n, l, DIMENSION_COLORS.getInt(registryKey));
 				m += n;
 			}
 

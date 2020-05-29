@@ -14,6 +14,7 @@ import net.minecraft.class_5309;
 import net.minecraft.class_5310;
 import net.minecraft.class_5311;
 import net.minecraft.class_5314;
+import net.minecraft.class_5324;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.text.Text;
@@ -24,14 +25,14 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public final class ChunkGeneratorType {
 	public static final Codec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.create(
 		instance -> instance.group(
-					class_5311.field_24821.fieldOf("structures").forGetter(ChunkGeneratorType::getConfig),
-					class_5309.field_24804.fieldOf("noise").forGetter(ChunkGeneratorType::method_28559),
+					class_5311.CODEC.fieldOf("structures").forGetter(ChunkGeneratorType::getConfig),
+					class_5309.CODEC.fieldOf("noise").forGetter(ChunkGeneratorType::method_28559),
 					BlockState.field_24734.fieldOf("default_block").forGetter(ChunkGeneratorType::getDefaultBlock),
 					BlockState.field_24734.fieldOf("default_fluid").forGetter(ChunkGeneratorType::getDefaultFluid),
-					Codec.INT.stable().fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorType::getBedrockCeilingY),
-					Codec.INT.stable().fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorType::getBedrockFloorY),
-					Codec.INT.stable().fieldOf("sea_level").forGetter(ChunkGeneratorType::method_28561),
-					Codec.BOOL.stable().fieldOf("disable_mob_generation").forGetter(ChunkGeneratorType::method_28562)
+					class_5324.method_29229(-20, 276).fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorType::getBedrockCeilingY),
+					class_5324.method_29229(-20, 276).fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorType::getBedrockFloorY),
+					class_5324.method_29229(0, 255).fieldOf("sea_level").forGetter(ChunkGeneratorType::method_28561),
+					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorType::method_28562)
 				)
 				.apply(instance, ChunkGeneratorType::new)
 	);

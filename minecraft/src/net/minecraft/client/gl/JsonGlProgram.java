@@ -7,6 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -285,32 +287,33 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 	private void finalizeUniformsAndSamplers() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		int i = 0;
+		IntList intList = new IntArrayList();
 
-		for (int j = 0; i < this.samplerNames.size(); j++) {
+		for (int i = 0; i < this.samplerNames.size(); i++) {
 			String string = (String)this.samplerNames.get(i);
-			int k = GlUniform.getUniformLocation(this.programRef, string);
-			if (k == -1) {
-				LOGGER.warn("Shader {}could not find sampler named {} in the specified shader program.", this.name, string);
+			int j = GlUniform.getUniformLocation(this.programRef, string);
+			if (j == -1) {
+				LOGGER.warn("Shader {} could not find sampler named {} in the specified shader program.", this.name, string);
 				this.samplerBinds.remove(string);
-				this.samplerNames.remove(j);
-				j--;
+				intList.add(i);
 			} else {
-				this.samplerShaderLocs.add(k);
+				this.samplerShaderLocs.add(j);
 			}
+		}
 
-			i++;
+		for (int ix = intList.size() - 1; ix >= 0; ix--) {
+			this.samplerNames.remove(intList.getInt(ix));
 		}
 
 		for (GlUniform glUniform : this.uniformData) {
-			String string = glUniform.getName();
-			int k = GlUniform.getUniformLocation(this.programRef, string);
+			String string2 = glUniform.getName();
+			int k = GlUniform.getUniformLocation(this.programRef, string2);
 			if (k == -1) {
-				LOGGER.warn("Could not find uniform named {} in the specified shader program.", string);
+				LOGGER.warn("Could not find uniform named {} in the specified shader program.", string2);
 			} else {
 				this.uniformLocs.add(k);
 				glUniform.setLoc(k);
-				this.uniformByName.put(string, glUniform);
+				this.uniformByName.put(string2, glUniform);
 			}
 		}
 	}

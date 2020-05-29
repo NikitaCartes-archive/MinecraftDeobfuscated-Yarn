@@ -55,6 +55,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -70,8 +71,8 @@ public class WorldChunk implements Chunk {
 	private final UpgradeData upgradeData;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	private final TypeFilterableList<Entity>[] entitySections;
-	private final Map<String, StructureStart<?>> structureStarts = Maps.<String, StructureStart<?>>newHashMap();
-	private final Map<String, LongSet> structureReferences = Maps.<String, LongSet>newHashMap();
+	private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
+	private final Map<StructureFeature<?>, LongSet> structureReferences = Maps.<StructureFeature<?>, LongSet>newHashMap();
 	private final ShortList[] postProcessingLists = new ShortList[16];
 	private TickScheduler<Block> blockTickScheduler;
 	private TickScheduler<Fluid> fluidTickScheduler;
@@ -648,43 +649,43 @@ public class WorldChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public StructureStart<?> getStructureStart(String structure) {
-		return (StructureStart<?>)this.structureStarts.get(structure);
+	public StructureStart<?> getStructureStart(StructureFeature<?> structureFeature) {
+		return (StructureStart<?>)this.structureStarts.get(structureFeature);
 	}
 
 	@Override
-	public void setStructureStart(String structure, StructureStart<?> start) {
-		this.structureStarts.put(structure, start);
+	public void setStructureStart(StructureFeature<?> structureFeature, StructureStart<?> start) {
+		this.structureStarts.put(structureFeature, start);
 	}
 
 	@Override
-	public Map<String, StructureStart<?>> getStructureStarts() {
+	public Map<StructureFeature<?>, StructureStart<?>> getStructureStarts() {
 		return this.structureStarts;
 	}
 
 	@Override
-	public void setStructureStarts(Map<String, StructureStart<?>> map) {
+	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> map) {
 		this.structureStarts.clear();
 		this.structureStarts.putAll(map);
 	}
 
 	@Override
-	public LongSet getStructureReferences(String structure) {
-		return (LongSet)this.structureReferences.computeIfAbsent(structure, string -> new LongOpenHashSet());
+	public LongSet getStructureReferences(StructureFeature<?> structureFeature) {
+		return (LongSet)this.structureReferences.computeIfAbsent(structureFeature, structureFeaturex -> new LongOpenHashSet());
 	}
 
 	@Override
-	public void addStructureReference(String structure, long reference) {
-		((LongSet)this.structureReferences.computeIfAbsent(structure, string -> new LongOpenHashSet())).add(reference);
+	public void addStructureReference(StructureFeature<?> structureFeature, long reference) {
+		((LongSet)this.structureReferences.computeIfAbsent(structureFeature, structureFeaturex -> new LongOpenHashSet())).add(reference);
 	}
 
 	@Override
-	public Map<String, LongSet> getStructureReferences() {
+	public Map<StructureFeature<?>, LongSet> getStructureReferences() {
 		return this.structureReferences;
 	}
 
 	@Override
-	public void setStructureReferences(Map<String, LongSet> structureReferences) {
+	public void setStructureReferences(Map<StructureFeature<?>, LongSet> structureReferences) {
 		this.structureReferences.clear();
 		this.structureReferences.putAll(structureReferences);
 	}

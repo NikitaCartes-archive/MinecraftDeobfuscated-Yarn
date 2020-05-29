@@ -16,7 +16,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 public class EndPortalBlock extends BlockWithEntity {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
@@ -46,7 +45,7 @@ public class EndPortalBlock extends BlockWithEntity {
 				state.getOutlineShape(world, pos),
 				BooleanBiFunction.AND
 			)) {
-			RegistryKey<DimensionType> registryKey = world.getDimension().isEnd() ? DimensionType.OVERWORLD_REGISTRY_KEY : DimensionType.THE_END_REGISTRY_KEY;
+			RegistryKey<World> registryKey = world.getDimension().isEnd() ? World.OVERWORLD : World.END;
 			entity.changeDimension(registryKey);
 		}
 	}

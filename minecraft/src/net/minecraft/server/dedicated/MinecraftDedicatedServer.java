@@ -25,10 +25,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.network.NetworkEncryptionUtils;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
@@ -47,7 +49,7 @@ import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,6 +67,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	public MinecraftDedicatedServer(
 		LevelStorage.Session session,
+		ResourcePackManager<ResourcePackProfile> resourcePackManager,
+		ServerResourceManager serverResourceManager,
 		SaveProperties saveProperties,
 		ServerPropertiesLoader serverPropertiesLoader,
 		DataFixer dataFixer,
@@ -76,9 +80,10 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		super(
 			session,
 			saveProperties,
+			resourcePackManager,
 			Proxy.NO_PROXY,
 			dataFixer,
-			new CommandManager(true),
+			serverResourceManager,
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
@@ -86,22 +91,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		);
 		this.propertiesLoader = serverPropertiesLoader;
 		this.rconCommandOutput = new ServerCommandOutput(this);
-		new Thread("Server Infinisleeper") {
-			{
-				this.setDaemon(true);
-				this.setUncaughtExceptionHandler(new UncaughtExceptionLogger(MinecraftDedicatedServer.LOGGER));
-				this.start();
-			}
-
-			public void run() {
-				while (true) {
-					try {
-						Thread.sleep(2147483647L);
-					} catch (InterruptedException var2) {
-					}
-				}
-			}
-		};
 	}
 
 	@Override
@@ -145,7 +134,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.setForceGameMode(serverPropertiesHandler.forceGameMode);
 		super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
 		this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
-		this.field_24372.setGameMode(serverPropertiesHandler.gameMode);
+		this.saveProperties.setGameMode(serverPropertiesHandler.gameMode);
 		LOGGER.info("Default game type: {}", serverPropertiesHandler.gameMode);
 		InetAddress inetAddress = null;
 		if (!this.getServerIp().isEmpty()) {
@@ -185,7 +174,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (!ServerConfigHandler.checkSuccess(this)) {
 			return false;
 		} else {
-			this.setPlayerManager(new DedicatedPlayerManager(this, this.field_25132, this.field_24371));
+			this.setPlayerManager(new DedicatedPlayerManager(this, this.dimensionTracker, this.field_24371));
 			long l = Util.getMeasuringTimeNano();
 			this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
 			SkullBlockEntity.setUserCache(this.getUserCache());
@@ -405,7 +394,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
-		if (serverWorld.method_27983() != DimensionType.OVERWORLD_REGISTRY_KEY) {
+		if (serverWorld.getRegistryKey() != World.OVERWORLD) {
 			return false;
 		} else if (this.getPlayerManager().getOpList().isEmpty()) {
 			return false;

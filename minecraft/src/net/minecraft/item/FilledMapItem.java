@@ -33,7 +33,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionType;
 
 public class FilledMapItem extends NetworkSyncedItem {
 	public FilledMapItem(Item.Settings settings) {
@@ -42,7 +41,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 	public static ItemStack createMap(World world, int x, int z, byte scale, boolean showIcons, boolean unlimitedTracking) {
 		ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
-		createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.method_27983());
+		createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.getRegistryKey());
 		return itemStack;
 	}
 
@@ -55,7 +54,9 @@ public class FilledMapItem extends NetworkSyncedItem {
 	public static MapState getOrCreateMapState(ItemStack map, World world) {
 		MapState mapState = getMapState(map, world);
 		if (mapState == null && world instanceof ServerWorld) {
-			mapState = createMapState(map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.method_27983());
+			mapState = createMapState(
+				map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.getRegistryKey()
+			);
 		}
 
 		return mapState;
@@ -67,7 +68,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	private static MapState createMapState(
-		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<DimensionType> dimension
+		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension
 	) {
 		int i = world.getNextMapId();
 		MapState mapState = new MapState(getMapName(i));
@@ -82,7 +83,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	public void updateColors(World world, Entity entity, MapState state) {
-		if (world.method_27983() == state.dimension && entity instanceof PlayerEntity) {
+		if (world.getRegistryKey() == state.dimension && entity instanceof PlayerEntity) {
 			int i = 1 << state.scale;
 			int j = state.xCenter;
 			int k = state.zCenter;
@@ -219,7 +220,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	public static void fillExplorationMap(ServerWorld serverWorld, ItemStack map) {
 		MapState mapState = getOrCreateMapState(map, serverWorld);
 		if (mapState != null) {
-			if (serverWorld.method_27983() == mapState.dimension) {
+			if (serverWorld.getRegistryKey() == mapState.dimension) {
 				int i = 1 << mapState.scale;
 				int j = mapState.xCenter;
 				int k = mapState.zCenter;
@@ -408,7 +409,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 				mapState.addBanner(context.getWorld(), context.getBlockPos());
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(context.world.isClient);
 		} else {
 			return super.useOnBlock(context);
 		}

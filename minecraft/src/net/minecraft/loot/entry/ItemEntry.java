@@ -23,6 +23,11 @@ public class ItemEntry extends LeafEntry {
 	}
 
 	@Override
+	public LootPoolEntryType method_29318() {
+		return LootPoolEntryTypes.ITEM;
+	}
+
+	@Override
 	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
 		lootConsumer.accept(new ItemStack(this.item));
 	}
@@ -32,12 +37,8 @@ public class ItemEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<ItemEntry> {
-		public Serializer() {
-			super(new Identifier("item"), ItemEntry.class);
-		}
-
-		public void toJson(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, itemEntry, jsonSerializationContext);
+		public void method_442(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
+			super.method_422(jsonObject, itemEntry, jsonSerializationContext);
 			Identifier identifier = Registry.ITEM.getId(itemEntry.item);
 			if (identifier == null) {
 				throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);

@@ -13,6 +13,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
+/**
+ * Represents a scoped, read-only view of block states, fluid states and block entities.
+ */
 public interface BlockView {
 	@Nullable
 	BlockEntity getBlockEntity(BlockPos pos);

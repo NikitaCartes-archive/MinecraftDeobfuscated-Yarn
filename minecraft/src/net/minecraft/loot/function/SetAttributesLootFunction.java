@@ -34,6 +34,11 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.SET_ATTRIBUTES;
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Random random = context.getRandom();
 
@@ -175,10 +180,6 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetAttributesLootFunction> {
-		public Factory() {
-			super(new Identifier("set_attributes"), SetAttributesLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, SetAttributesLootFunction setAttributesLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setAttributesLootFunction, jsonSerializationContext);
 			JsonArray jsonArray = new JsonArray();

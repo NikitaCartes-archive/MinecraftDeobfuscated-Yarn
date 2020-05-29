@@ -26,7 +26,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NamedScreenHandlerFactory {
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
@@ -116,7 +115,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Nullable
 	@Override
-	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
+	public Entity changeDimension(RegistryKey<World> newDimension) {
 		this.field_7733 = false;
 		return super.changeDimension(newDimension);
 	}

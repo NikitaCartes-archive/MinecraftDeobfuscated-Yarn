@@ -1,4 +1,4 @@
-package net.minecraft.world.biome;
+package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -14,6 +14,7 @@ import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.Carver;
@@ -33,42 +34,6 @@ import net.minecraft.world.gen.decorator.NoiseHeightmapDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.decorator.TrunkVineTreeDecorator;
-import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
-import net.minecraft.world.gen.feature.BastionRemnantFeatureConfig;
-import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
-import net.minecraft.world.gen.feature.BoulderFeatureConfig;
-import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.DeltaFeatureConfig;
-import net.minecraft.world.gen.feature.DiskFeatureConfig;
-import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
-import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
-import net.minecraft.world.gen.feature.JungleFoliagePlacer;
-import net.minecraft.world.gen.feature.MegaPineFoliagePlacer;
-import net.minecraft.world.gen.feature.MineshaftFeature;
-import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
-import net.minecraft.world.gen.feature.OceanRuinFeature;
-import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.feature.RandomBooleanFeatureConfig;
-import net.minecraft.world.gen.feature.RandomFeatureConfig;
-import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
-import net.minecraft.world.gen.feature.RandomRandomFeatureConfig;
-import net.minecraft.world.gen.feature.RuinedPortalFeature;
-import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
-import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
-import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
-import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
-import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
-import net.minecraft.world.gen.feature.SpringFeatureConfig;
-import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
-import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.feature.size.ThreeLayersFeatureSize;
 import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 import net.minecraft.world.gen.foliage.AcaciaFoliagePlacer;
@@ -192,7 +157,7 @@ public class DefaultBiomeFeatures {
 		.configure(new ShipwreckFeatureConfig(false));
 	public static final ConfiguredStructureFeature<ShipwreckFeatureConfig, ? extends StructureFeature<ShipwreckFeatureConfig>> field_24695 = StructureFeature.SHIPWRECK
 		.configure(new ShipwreckFeatureConfig(true));
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24696 = StructureFeature.field_24851
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24696 = StructureFeature.SWAMP_HUT
 		.configure(DefaultFeatureConfig.INSTANCE);
 	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24697 = StructureFeature.STRONGHOLD
 		.configure(DefaultFeatureConfig.INSTANCE);
@@ -222,19 +187,19 @@ public class DefaultBiomeFeatures {
 		.configure(new StructurePoolFeatureConfig(new Identifier("village/snowy/town_centers"), 6));
 	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> field_24710 = StructureFeature.VILLAGE
 		.configure(new StructurePoolFeatureConfig(new Identifier("village/taiga/town_centers"), 6));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> field_24711 = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> STANDARD_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> field_24712 = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> DESERT_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.DESERT));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> field_24682 = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> JUNGLE_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.JUNGLE));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> field_24683 = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> SWAMP_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.SWAMP));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> field_24684 = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> MOUNTAIN_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.MOUNTAIN));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> field_24685 = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> OCEAN_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.OCEAN));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> field_24686 = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> NETHER_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER));
 	public static final TreeFeatureConfig OAK_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(OAK_LOG),
@@ -243,7 +208,7 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(4, 2, 0),
 			new TwoLayersFeatureSize(1, 0, 1)
 		)
-		.method_27374()
+		.ignoreVines()
 		.build();
 	private static final BeehiveTreeDecorator VERY_RARE_BEEHIVES_CONFIG = new BeehiveTreeDecorator(0.002F);
 	private static final BeehiveTreeDecorator REGULAR_BEEHIVES_CONFIG = new BeehiveTreeDecorator(0.02F);
@@ -258,8 +223,8 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(4, 8, 0),
 			new TwoLayersFeatureSize(1, 0, 1)
 		)
-		.method_27376(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.field_24965, LeaveVineTreeDecorator.field_24961))
-		.method_27374()
+		.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.field_24965, LeaveVineTreeDecorator.field_24961))
+		.ignoreVines()
 		.build();
 	public static final TreeFeatureConfig JUNGLE_SAPLING_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(JUNGLE_LOG),
@@ -268,7 +233,7 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(4, 8, 0),
 			new TwoLayersFeatureSize(1, 0, 1)
 		)
-		.method_27374()
+		.ignoreVines()
 		.build();
 	public static final TreeFeatureConfig PINE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(SPRUCE_LOG),
@@ -277,16 +242,16 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(6, 4, 0),
 			new TwoLayersFeatureSize(2, 0, 2)
 		)
-		.method_27374()
+		.ignoreVines()
 		.build();
 	public static final TreeFeatureConfig SPRUCE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(SPRUCE_LOG),
 			new SimpleBlockStateProvider(SPRUCE_LEAVES),
 			new SpruceFoliagePlacer(2, 1, 0, 2, 1, 1),
-			new StraightTrunkPlacer(4, 3, 2),
+			new StraightTrunkPlacer(5, 2, 1),
 			new TwoLayersFeatureSize(2, 0, 2)
 		)
-		.method_27374()
+		.ignoreVines()
 		.build();
 	public static final TreeFeatureConfig ACACIA_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(ACACIA_LOG),
@@ -295,7 +260,7 @@ public class DefaultBiomeFeatures {
 			new ForkingTrunkPlacer(5, 2, 2),
 			new TwoLayersFeatureSize(1, 0, 2)
 		)
-		.method_27374()
+		.ignoreVines()
 		.build();
 	public static final TreeFeatureConfig BIRCH_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(BIRCH_LOG),
@@ -304,7 +269,7 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(5, 2, 0),
 			new TwoLayersFeatureSize(1, 0, 1)
 		)
-		.method_27374()
+		.ignoreVines()
 		.build();
 	public static final TreeFeatureConfig BIRCH_TREE_WITH_RARE_BEEHIVES_CONFIG = BIRCH_TREE_CONFIG.setTreeDecorators(ImmutableList.of(VERY_RARE_BEEHIVES_CONFIG));
 	public static final TreeFeatureConfig BIRCH_TREE_WITH_BEEHIVES_CONFIG = BIRCH_TREE_CONFIG.setTreeDecorators(ImmutableList.of(REGULAR_BEEHIVES_CONFIG));
@@ -316,8 +281,8 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(5, 2, 6),
 			new TwoLayersFeatureSize(1, 0, 1)
 		)
-		.method_27374()
-		.method_27376(ImmutableList.of(VERY_RARE_BEEHIVES_CONFIG))
+		.ignoreVines()
+		.decorators(ImmutableList.of(VERY_RARE_BEEHIVES_CONFIG))
 		.build();
 	public static final TreeFeatureConfig SWAMP_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(OAK_LOG),
@@ -326,8 +291,8 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(5, 3, 0),
 			new TwoLayersFeatureSize(1, 0, 1)
 		)
-		.baseHeight(1)
-		.method_27376(ImmutableList.of(LeaveVineTreeDecorator.field_24961))
+		.maxWaterDepth(1)
+		.decorators(ImmutableList.of(LeaveVineTreeDecorator.field_24961))
 		.build();
 	public static final TreeFeatureConfig FANCY_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(OAK_LOG),
@@ -336,8 +301,8 @@ public class DefaultBiomeFeatures {
 			new LargeOakTrunkPlacer(3, 11, 0),
 			new TwoLayersFeatureSize(0, 0, 0, OptionalInt.of(4))
 		)
-		.method_27374()
-		.method_27375(Heightmap.Type.MOTION_BLOCKING)
+		.ignoreVines()
+		.heightmap(Heightmap.Type.MOTION_BLOCKING)
 		.build();
 	public static final TreeFeatureConfig FANCY_TREE_WITH_RARE_BEEHIVES_CONFIG = FANCY_TREE_CONFIG.setTreeDecorators(ImmutableList.of(VERY_RARE_BEEHIVES_CONFIG));
 	public static final TreeFeatureConfig FANCY_TREE_WITH_BEEHIVES_CONFIG = FANCY_TREE_CONFIG.setTreeDecorators(ImmutableList.of(REGULAR_BEEHIVES_CONFIG));
@@ -349,7 +314,7 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(1, 0, 0),
 			new TwoLayersFeatureSize(0, 0, 0)
 		)
-		.method_27375(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)
+		.heightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)
 		.build();
 	public static final TreeFeatureConfig DARK_OAK_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(DARK_OAK_LOG),
@@ -358,9 +323,9 @@ public class DefaultBiomeFeatures {
 			new DarkOakTrunkPlacer(6, 2, 1),
 			new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())
 		)
-		.baseHeight(Integer.MAX_VALUE)
-		.method_27375(Heightmap.Type.MOTION_BLOCKING)
-		.method_27374()
+		.maxWaterDepth(Integer.MAX_VALUE)
+		.heightmap(Heightmap.Type.MOTION_BLOCKING)
+		.ignoreVines()
 		.build();
 	public static final TreeFeatureConfig MEGA_SPRUCE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(SPRUCE_LOG),
@@ -369,7 +334,7 @@ public class DefaultBiomeFeatures {
 			new GiantTrunkPlacer(13, 2, 14),
 			new TwoLayersFeatureSize(1, 1, 2)
 		)
-		.method_27376(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(PODZOL))))
+		.decorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(PODZOL))))
 		.build();
 	public static final TreeFeatureConfig MEGA_PINE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(SPRUCE_LOG),
@@ -378,7 +343,7 @@ public class DefaultBiomeFeatures {
 			new GiantTrunkPlacer(13, 2, 14),
 			new TwoLayersFeatureSize(1, 1, 2)
 		)
-		.method_27376(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(PODZOL))))
+		.decorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(PODZOL))))
 		.build();
 	public static final TreeFeatureConfig MEGA_JUNGLE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(JUNGLE_LOG),
@@ -387,7 +352,7 @@ public class DefaultBiomeFeatures {
 			new MegaJungleTrunkPlacer(10, 2, 19),
 			new TwoLayersFeatureSize(1, 1, 2)
 		)
-		.method_27376(ImmutableList.of(TrunkVineTreeDecorator.field_24965, LeaveVineTreeDecorator.field_24961))
+		.decorators(ImmutableList.of(TrunkVineTreeDecorator.field_24965, LeaveVineTreeDecorator.field_24961))
 		.build();
 	public static final RandomPatchFeatureConfig GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
 			new SimpleBlockStateProvider(GRASS), SimpleBlockPlacer.field_24871
@@ -558,27 +523,27 @@ public class DefaultBiomeFeatures {
 		LAVA_FLUID, true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE)
 	);
 	public static final SpringFeatureConfig NETHER_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, false, 4, 1, ImmutableSet.of(Blocks.NETHERRACK));
-	public static final SpringFeatureConfig field_23851 = new SpringFeatureConfig(
+	public static final SpringFeatureConfig MIXED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(
 		LAVA_FLUID, true, 4, 1, ImmutableSet.of(Blocks.NETHERRACK, Blocks.SOUL_SAND, Blocks.GRAVEL, Blocks.MAGMA_BLOCK, Blocks.BLACKSTONE)
 	);
 	public static final SpringFeatureConfig ENCLOSED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK));
-	public static final SpringFeatureConfig field_23852 = new SpringFeatureConfig(LAVA_FLUID, false, 4, 1, ImmutableSet.of(Blocks.SOUL_SAND));
-	public static final SpringFeatureConfig field_23853 = new SpringFeatureConfig(LAVA_FLUID, false, 5, 0, ImmutableSet.of(Blocks.SOUL_SAND));
-	public static final BasaltColumnsFeatureConfig field_23854 = new BasaltColumnsFeatureConfig.Builder().reach(1).height(1, 4).build();
-	public static final BasaltColumnsFeatureConfig field_23855 = new BasaltColumnsFeatureConfig.Builder().reach(2, 3).height(5, 10).build();
-	public static final NetherrackReplaceBlobsFeatureConfig field_23856 = new NetherrackReplaceBlobsFeatureConfig.Builder()
+	public static final SpringFeatureConfig SOUL_SAND_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, false, 4, 1, ImmutableSet.of(Blocks.SOUL_SAND));
+	public static final SpringFeatureConfig ENCLOSED_SOUL_SAND_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, false, 5, 0, ImmutableSet.of(Blocks.SOUL_SAND));
+	public static final BasaltColumnsFeatureConfig BASALT_COLUMN_CONFIG = new BasaltColumnsFeatureConfig.Builder().reach(1).height(1, 4).build();
+	public static final BasaltColumnsFeatureConfig TALL_BASALT_COLUMN_CONFIG = new BasaltColumnsFeatureConfig.Builder().reach(2, 3).height(5, 10).build();
+	public static final NetherrackReplaceBlobsFeatureConfig BASALT_BLOB_CONFIG = new NetherrackReplaceBlobsFeatureConfig.Builder()
 		.minReachPos(new Vec3i(3, 3, 3))
 		.maxReachPos(new Vec3i(7, 7, 7))
 		.target(Blocks.NETHERRACK.getDefaultState())
 		.state(Blocks.BASALT.getDefaultState())
 		.build();
-	public static final NetherrackReplaceBlobsFeatureConfig field_23857 = new NetherrackReplaceBlobsFeatureConfig.Builder()
+	public static final NetherrackReplaceBlobsFeatureConfig BLACKSTONE_BLOB_CONFIG = new NetherrackReplaceBlobsFeatureConfig.Builder()
 		.minReachPos(new Vec3i(3, 3, 3))
 		.maxReachPos(new Vec3i(7, 7, 7))
 		.target(Blocks.NETHERRACK.getDefaultState())
 		.state(Blocks.BLACKSTONE.getDefaultState())
 		.build();
-	public static final DeltaFeatureConfig field_23858 = new DeltaFeatureConfig.Builder()
+	public static final DeltaFeatureConfig DELTA_CONFIG = new DeltaFeatureConfig.Builder()
 		.contents(Blocks.LAVA.getDefaultState())
 		.radius(3, 7)
 		.rim(Blocks.MAGMA_BLOCK.getDefaultState(), 2)
@@ -635,18 +600,18 @@ public class DefaultBiomeFeatures {
 
 	public static void addDefaultLakes(Biome biome) {
 		biome.addFeature(
-			GenerationStep.Feature.LOCAL_MODIFICATIONS,
+			GenerationStep.Feature.LAKES,
 			Feature.LAKE.configure(new SingleStateFeatureConfig(WATER)).createDecoratedFeature(Decorator.WATER_LAKE.configure(new ChanceDecoratorConfig(4)))
 		);
 		biome.addFeature(
-			GenerationStep.Feature.LOCAL_MODIFICATIONS,
+			GenerationStep.Feature.LAKES,
 			Feature.LAKE.configure(new SingleStateFeatureConfig(LAVA)).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new ChanceDecoratorConfig(80)))
 		);
 	}
 
 	public static void addDesertLakes(Biome biome) {
 		biome.addFeature(
-			GenerationStep.Feature.LOCAL_MODIFICATIONS,
+			GenerationStep.Feature.LAKES,
 			Feature.LAKE.configure(new SingleStateFeatureConfig(LAVA)).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new ChanceDecoratorConfig(80)))
 		);
 	}
@@ -1346,15 +1311,11 @@ public class DefaultBiomeFeatures {
 			GenerationStep.Feature.SURFACE_STRUCTURES,
 			Feature.DESERT_WELL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP.configure(new ChanceDecoratorConfig(1000)))
 		);
-		biome.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.FOSSIL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_PASSTHROUGH.configure(new ChanceDecoratorConfig(64)))
-		);
 	}
 
 	public static void addFossils(Biome biome) {
 		biome.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			GenerationStep.Feature.UNDERGROUND_STRUCTURES,
 			Feature.FOSSIL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHANCE_PASSTHROUGH.configure(new ChanceDecoratorConfig(64)))
 		);
 	}
@@ -1441,7 +1402,7 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FREEZE_TOP_LAYER.configure(FeatureConfig.DEFAULT));
 	}
 
-	public static void addNetherOres(Biome biome) {
+	public static void addNetherMineables(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.ORE
@@ -1454,26 +1415,26 @@ public class DefaultBiomeFeatures {
 				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.BLACKSTONE.getDefaultState(), 33))
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(2, 5, 10, 37)))
 		);
-		method_28438(biome, 10, 16);
-		method_28439(biome);
+		addNetherOres(biome, 10, 16);
+		addAncientDebris(biome);
 	}
 
-	public static void method_28438(Biome biome, int i, int j) {
+	public static void addNetherOres(Biome biome, int goldCount, int quartzCount) {
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, NETHER_GOLD_ORE, 10))
-				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(i, 10, 20, 128)))
+				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(goldCount, 10, 20, 128)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.ORE
 				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, NETHER_QUARTZ_ORE, 14))
-				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(j, 10, 20, 128)))
+				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(quartzCount, 10, 20, 128)))
 		);
 	}
 
-	public static void method_28439(Biome biome) {
+	public static void addAncientDebris(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.NO_SURFACE_ORE

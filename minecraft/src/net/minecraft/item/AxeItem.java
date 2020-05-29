@@ -77,7 +77,7 @@ public class AxeItem extends MiningToolItem {
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}

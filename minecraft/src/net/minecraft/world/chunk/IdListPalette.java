@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.ListTag;
@@ -22,7 +23,7 @@ public class IdListPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public boolean accepts(T object) {
+	public boolean accepts(Predicate<T> predicate) {
 		return true;
 	}
 

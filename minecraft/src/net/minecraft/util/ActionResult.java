@@ -36,4 +36,8 @@ public enum ActionResult {
 	public boolean shouldSwingHand() {
 		return this == SUCCESS;
 	}
+
+	public static ActionResult method_29236(boolean bl) {
+		return bl ? SUCCESS : CONSUME;
+	}
 }

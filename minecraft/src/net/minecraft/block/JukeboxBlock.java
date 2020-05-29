@@ -32,7 +32,7 @@ public class JukeboxBlock extends BlockWithEntity {
 			this.removeRecord(world, pos);
 			state = state.with(HAS_RECORD, Boolean.valueOf(false));
 			world.setBlockState(pos, state, 2);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}

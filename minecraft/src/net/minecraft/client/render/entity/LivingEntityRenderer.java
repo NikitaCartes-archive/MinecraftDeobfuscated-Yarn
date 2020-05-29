@@ -135,7 +135,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl) {
 		Identifier identifier = this.getTexture(entity);
 		if (translucent) {
-			return RenderLayer.getEntityTranslucent(identifier);
+			return RenderLayer.method_29379(identifier);
 		} else if (showBody) {
 			return this.model.getLayer(identifier);
 		} else {

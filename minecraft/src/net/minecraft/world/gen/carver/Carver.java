@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +20,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
 	public static final Carver<ProbabilityConfig> CAVE = register("cave", new CaveCarver(ProbabilityConfig.CODEC, 256));
@@ -127,12 +127,12 @@ public abstract class Carver<C extends CarverConfig> {
 						int r = q + chunkZ * 16;
 						double g = ((double)r + 0.5 - z) / yaw;
 						if (!(f * f + g * g >= 1.0)) {
-							AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+							MutableBoolean mutableBoolean = new MutableBoolean(false);
 
 							for (int s = l; s > k; s--) {
 								double h = ((double)s - 0.5 - y) / pitch;
 								if (!this.isPositionExcluded(f, h, g, s)) {
-									bl |= this.carveAtPoint(chunk, posToBiome, carvingMask, random, mutable, mutable2, mutable3, seaLevel, chunkX, chunkZ, p, r, o, s, q, atomicBoolean);
+									bl |= this.carveAtPoint(chunk, posToBiome, carvingMask, random, mutable, mutable2, mutable3, seaLevel, chunkX, chunkZ, p, r, o, s, q, mutableBoolean);
 								}
 							}
 						}
@@ -162,7 +162,7 @@ public abstract class Carver<C extends CarverConfig> {
 		int relativeX,
 		int y,
 		int relativeZ,
-		AtomicBoolean foundSurface
+		MutableBoolean mutableBoolean
 	) {
 		int i = relativeX | relativeZ << 4 | y << 8;
 		if (carvingMask.get(i)) {
@@ -173,7 +173,7 @@ public abstract class Carver<C extends CarverConfig> {
 			BlockState blockState = chunk.getBlockState(mutable);
 			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable, Direction.UP));
 			if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
-				foundSurface.set(true);
+				mutableBoolean.setTrue();
 			}
 
 			if (!this.canCarveBlock(blockState, blockState2)) {
@@ -183,7 +183,7 @@ public abstract class Carver<C extends CarverConfig> {
 					chunk.setBlockState(mutable, LAVA.getBlockState(), false);
 				} else {
 					chunk.setBlockState(mutable, CAVE_AIR, false);
-					if (foundSurface.get()) {
+					if (mutableBoolean.isTrue()) {
 						mutable3.set(mutable, Direction.DOWN);
 						if (chunk.getBlockState(mutable3).isOf(Blocks.DIRT)) {
 							chunk.setBlockState(mutable3, ((Biome)posToBiome.apply(mutable)).getSurfaceConfig().getTopMaterial(), false);

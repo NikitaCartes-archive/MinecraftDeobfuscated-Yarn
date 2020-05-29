@@ -91,7 +91,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			}
 
 			this.playToggleSound(player, world, pos, (Boolean)state.get(OPEN));
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		}
 	}
 

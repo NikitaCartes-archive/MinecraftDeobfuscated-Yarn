@@ -4,12 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class class_5308 {
+	private static final Codec<Double> field_25188 = class_5324.method_29227(0.001, 1000.0);
 	public static final Codec<class_5308> field_24799 = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.DOUBLE.fieldOf("xz_scale").forGetter(class_5308::method_28576),
-					Codec.DOUBLE.fieldOf("y_scale").forGetter(class_5308::method_28578),
-					Codec.DOUBLE.fieldOf("xz_factor").forGetter(class_5308::method_28579),
-					Codec.DOUBLE.fieldOf("y_factor").forGetter(class_5308::method_28580)
+					field_25188.fieldOf("xz_scale").forGetter(class_5308::method_28576),
+					field_25188.fieldOf("y_scale").forGetter(class_5308::method_28578),
+					field_25188.fieldOf("xz_factor").forGetter(class_5308::method_28579),
+					field_25188.fieldOf("y_factor").forGetter(class_5308::method_28580)
 				)
 				.apply(instance, class_5308::new)
 	);

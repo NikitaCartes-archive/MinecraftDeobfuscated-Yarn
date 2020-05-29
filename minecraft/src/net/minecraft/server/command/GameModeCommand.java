@@ -40,7 +40,7 @@ public class GameModeCommand {
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
 		} else {
 			if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-				player.sendSystemMessage(new TranslatableText("gameMode.changed", text), Util.field_25140);
+				player.sendSystemMessage(new TranslatableText("gameMode.changed", text), Util.NIL_UUID);
 			}
 
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.other", player.getDisplayName(), text), true);

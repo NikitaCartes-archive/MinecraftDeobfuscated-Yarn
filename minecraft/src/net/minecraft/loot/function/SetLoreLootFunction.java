@@ -19,7 +19,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class SetLoreLootFunction extends ConditionalLootFunction {
@@ -33,6 +32,11 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 		this.replace = replace;
 		this.lore = ImmutableList.copyOf(lore);
 		this.entity = entity;
+	}
+
+	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.SET_LORE;
 	}
 
 	@Override
@@ -93,10 +97,6 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetLoreLootFunction> {
-		public Factory() {
-			super(new Identifier("set_lore"), SetLoreLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setLoreLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("replace", setLoreLootFunction.replace);

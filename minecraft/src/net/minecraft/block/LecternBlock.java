@@ -252,7 +252,7 @@ public class LecternBlock extends BlockWithEntity {
 				this.openScreen(world, pos, player);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
 			return !itemStack.isEmpty() && !itemStack.getItem().isIn(ItemTags.LECTERN_BOOKS) ? ActionResult.CONSUME : ActionResult.PASS;

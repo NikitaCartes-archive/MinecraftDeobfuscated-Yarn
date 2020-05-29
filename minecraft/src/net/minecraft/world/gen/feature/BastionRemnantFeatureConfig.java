@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import net.minecraft.util.Identifier;
 
 public class BastionRemnantFeatureConfig implements FeatureConfig {
-	public static final Codec<BastionRemnantFeatureConfig> field_24889 = StructurePoolFeatureConfig.CODEC
+	public static final Codec<BastionRemnantFeatureConfig> CODEC = StructurePoolFeatureConfig.CODEC
 		.listOf()
 		.xmap(BastionRemnantFeatureConfig::new, bastionRemnantFeatureConfig -> bastionRemnantFeatureConfig.possibleConfigs);
 	private final List<StructurePoolFeatureConfig> possibleConfigs;

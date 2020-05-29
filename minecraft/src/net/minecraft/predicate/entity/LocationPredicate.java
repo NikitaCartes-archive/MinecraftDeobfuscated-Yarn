@@ -17,8 +17,8 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +45,7 @@ public class LocationPredicate {
 	@Nullable
 	private final StructureFeature<?> feature;
 	@Nullable
-	private final RegistryKey<DimensionType> dimension;
+	private final RegistryKey<World> dimension;
 	@Nullable
 	private final Boolean smokey;
 	private final LightPredicate light;
@@ -58,7 +58,7 @@ public class LocationPredicate {
 		NumberRange.FloatRange z,
 		@Nullable Biome biome,
 		@Nullable StructureFeature<?> feature,
-		@Nullable RegistryKey<DimensionType> dimension,
+		@Nullable RegistryKey<World> dimension,
 		@Nullable Boolean smokey,
 		LightPredicate light,
 		BlockPredicate block,
@@ -91,7 +91,7 @@ public class LocationPredicate {
 		);
 	}
 
-	public static LocationPredicate dimension(RegistryKey<DimensionType> dimension) {
+	public static LocationPredicate dimension(RegistryKey<World> dimension) {
 		return new LocationPredicate(
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
@@ -132,7 +132,7 @@ public class LocationPredicate {
 			return false;
 		} else if (!this.z.test(z)) {
 			return false;
-		} else if (this.dimension != null && this.dimension != world.method_27983()) {
+		} else if (this.dimension != null && this.dimension != world.getRegistryKey()) {
 			return false;
 		} else {
 			BlockPos blockPos = new BlockPos((double)x, (double)y, (double)z);
@@ -171,7 +171,7 @@ public class LocationPredicate {
 			}
 
 			if (this.dimension != null) {
-				DimensionType.field_24751
+				World.CODEC
 					.encodeStart(JsonOps.INSTANCE, this.dimension)
 					.resultOrPartial(field_24732::error)
 					.ifPresent(jsonElement -> jsonObject.add("dimension", jsonElement));
@@ -203,11 +203,11 @@ public class LocationPredicate {
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject2.get("x"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));
 			NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject2.get("z"));
-			RegistryKey<DimensionType> registryKey = jsonObject.has("dimension")
+			RegistryKey<World> registryKey = jsonObject.has("dimension")
 				? (RegistryKey)Identifier.field_25139
 					.parse(JsonOps.INSTANCE, jsonObject.get("dimension"))
 					.resultOrPartial(field_24732::error)
-					.map(identifier -> RegistryKey.of(Registry.DIMENSION_TYPE_KEY, identifier))
+					.map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier))
 					.orElse(null)
 				: null;
 			StructureFeature<?> structureFeature = jsonObject.has("feature")
@@ -240,7 +240,7 @@ public class LocationPredicate {
 		@Nullable
 		private StructureFeature<?> feature;
 		@Nullable
-		private RegistryKey<DimensionType> dimension;
+		private RegistryKey<World> dimension;
 		@Nullable
 		private Boolean smokey;
 		private LightPredicate light = LightPredicate.ANY;
