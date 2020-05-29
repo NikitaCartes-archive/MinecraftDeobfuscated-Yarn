@@ -26,6 +26,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -246,7 +247,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"safely_harvest_honey",
 				ItemUsedOnBlockCriterion.Conditions.create(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(Blocks.BEEHIVE).build()).smokey(true),
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().method_29233(BlockTags.BEEHIVES).build()).smokey(true),
 					ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE)
 				)
 			)

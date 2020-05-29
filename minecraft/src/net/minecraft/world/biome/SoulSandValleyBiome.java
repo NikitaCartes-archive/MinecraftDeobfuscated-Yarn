@@ -16,6 +16,7 @@ import net.minecraft.world.gen.decorator.ChanceRangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
@@ -49,7 +50,7 @@ public class SoulSandValleyBiome extends Biome {
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24701);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24702);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24686);
+		this.addStructureFeature(DefaultBiomeFeatures.NETHER_CONFIGURED_RUINED_PORTAL);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24705);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
 		this.addFeature(
@@ -59,7 +60,7 @@ public class SoulSandValleyBiome extends Biome {
 				.createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(20, 8, 16, 256)))
 		);
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			GenerationStep.Feature.LOCAL_MODIFICATIONS,
 			Feature.BASALT_PILLAR.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(10, 0, 0, 128)))
 		);
 		this.addFeature(
@@ -108,7 +109,7 @@ public class SoulSandValleyBiome extends Biome {
 				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.SOUL_SAND.getDefaultState(), 12))
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(12, 0, 0, 32)))
 		);
-		DefaultBiomeFeatures.addNetherOres(this);
+		DefaultBiomeFeatures.addNetherMineables(this);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 2, 5, 5));
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 50, 4, 4));
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));

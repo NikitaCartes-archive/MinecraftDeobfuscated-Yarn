@@ -15,6 +15,7 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
@@ -46,7 +47,7 @@ public class CrimsonForestBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.4F, 0.0F, 0.0F, 0.0F, 0.0F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24686);
+		this.addStructureFeature(DefaultBiomeFeatures.NETHER_CONFIGURED_RUINED_PORTAL);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
 		this.addStructureFeature(DefaultBiomeFeatures.field_24701);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24705);
@@ -92,7 +93,7 @@ public class CrimsonForestBiome extends Biome {
 			Feature.WEEPING_VINES.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(10, 0, 0, 128)))
 		);
 		DefaultBiomeFeatures.addCrimsonForestVegetation(this);
-		DefaultBiomeFeatures.addNetherOres(this);
+		DefaultBiomeFeatures.addNetherMineables(this);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 4));
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.HOGLIN, 9, 3, 4));
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.PIGLIN, 5, 3, 4));

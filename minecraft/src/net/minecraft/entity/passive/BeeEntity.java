@@ -107,7 +107,6 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		this.moveControl = new FlightMoveControl(this, 20, true);
 		this.lookControl = new BeeEntity.BeeLookControl(this);
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0F);
-		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.COCOA, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.FENCE, -1.0F);

@@ -8,7 +8,6 @@ import net.minecraft.loot.LootTableRange;
 import net.minecraft.loot.LootTableRanges;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
 	private final LootTableRange countRange;
@@ -16,6 +15,11 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 	private SetCountLootFunction(LootCondition[] conditions, LootTableRange countRange) {
 		super(conditions);
 		this.countRange = countRange;
+	}
+
+	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.SET_COUNT;
 	}
 
 	@Override
@@ -29,10 +33,6 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetCountLootFunction> {
-		protected Factory() {
-			super(new Identifier("set_count"), SetCountLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setCountLootFunction, jsonSerializationContext);
 			jsonObject.add("count", LootTableRanges.toJson(setCountLootFunction.countRange, jsonSerializationContext));

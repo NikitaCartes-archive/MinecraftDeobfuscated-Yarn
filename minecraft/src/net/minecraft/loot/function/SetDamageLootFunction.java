@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +19,11 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	private SetDamageLootFunction(LootCondition[] contents, UniformLootTableRange durabilityRange) {
 		super(contents);
 		this.durabilityRange = durabilityRange;
+	}
+
+	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.SET_DAMAGE;
 	}
 
 	@Override
@@ -39,10 +43,6 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetDamageLootFunction> {
-		protected Factory() {
-			super(new Identifier("set_damage"), SetDamageLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setDamageLootFunction, jsonSerializationContext);
 			jsonObject.add("damage", jsonSerializationContext.serialize(setDamageLootFunction.durabilityRange));

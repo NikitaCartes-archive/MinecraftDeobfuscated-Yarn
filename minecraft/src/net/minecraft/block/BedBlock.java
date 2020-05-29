@@ -257,7 +257,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	public static Optional<Vec3d> canWakeUpAt(EntityType<?> type, WorldView world, BlockPos pos) {
 		VoxelShape voxelShape = world.getBlockState(pos).getCollisionShape(world, pos);
-		if (voxelShape.getMaximum(Direction.Axis.Y) > 0.4375) {
+		if (voxelShape.getMax(Direction.Axis.Y) > 0.4375) {
 			return Optional.empty();
 		} else {
 			BlockPos.Mutable mutable = pos.mutableCopy();
@@ -270,7 +270,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			if (voxelShape2.isEmpty()) {
 				return Optional.empty();
 			} else {
-				double d = (double)mutable.getY() + voxelShape2.getMaximum(Direction.Axis.Y) + 2.0E-7;
+				double d = (double)mutable.getY() + voxelShape2.getMax(Direction.Axis.Y) + 2.0E-7;
 				if ((double)pos.getY() - d > 2.0) {
 					return Optional.empty();
 				} else {

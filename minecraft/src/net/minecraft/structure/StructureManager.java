@@ -20,8 +20,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -30,18 +28,17 @@ import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class StructureManager implements SynchronousResourceReloadListener {
+public class StructureManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<Identifier, Structure> structures = Maps.<Identifier, Structure>newHashMap();
 	private final DataFixer dataFixer;
-	private final MinecraftServer server;
+	private ResourceManager field_25189;
 	private final Path generatedPath;
 
-	public StructureManager(MinecraftServer server, LevelStorage.Session session, DataFixer dataFixer) {
-		this.server = server;
+	public StructureManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
+		this.field_25189 = resourceManager;
 		this.dataFixer = dataFixer;
 		this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
-		server.getDataManager().registerListener(this);
 	}
 
 	public Structure getStructureOrBlank(Identifier id) {
@@ -62,8 +59,8 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		});
 	}
 
-	@Override
-	public void apply(ResourceManager manager) {
+	public void method_29300(ResourceManager resourceManager) {
+		this.field_25189 = resourceManager;
 		this.structures.clear();
 	}
 
@@ -72,7 +69,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
 
 		try {
-			Resource resource = this.server.getDataManager().getResource(identifier);
+			Resource resource = this.field_25189.getResource(identifier);
 			Throwable var4 = null;
 
 			Structure var5;

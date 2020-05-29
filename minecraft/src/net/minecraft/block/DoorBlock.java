@@ -201,7 +201,7 @@ public class DoorBlock extends Block {
 			state = state.cycle(OPEN);
 			world.setBlockState(pos, state, 10);
 			world.syncWorldEvent(player, state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		}
 	}
 

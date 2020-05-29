@@ -7,11 +7,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
 
 public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 	private ExplosionDecayLootFunction(LootCondition[] conditions) {
 		super(conditions);
+	}
+
+	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.EXPLOSION_DECAY;
 	}
 
 	@Override
@@ -40,10 +44,6 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<ExplosionDecayLootFunction> {
-		protected Factory() {
-			super(new Identifier("explosion_decay"), ExplosionDecayLootFunction.class);
-		}
-
 		public ExplosionDecayLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new ExplosionDecayLootFunction(lootConditions);
 		}

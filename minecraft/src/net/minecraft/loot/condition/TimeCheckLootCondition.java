@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 
 public class TimeCheckLootCondition implements LootCondition {
 	@Nullable
@@ -18,6 +18,11 @@ public class TimeCheckLootCondition implements LootCondition {
 	private TimeCheckLootCondition(@Nullable Long period, UniformLootTableRange value) {
 		this.period = period;
 		this.value = value;
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.TIME_CHECK;
 	}
 
 	public boolean test(LootContext lootContext) {
@@ -30,11 +35,7 @@ public class TimeCheckLootCondition implements LootCondition {
 		return this.value.contains((int)l);
 	}
 
-	public static class Factory extends LootCondition.Factory<TimeCheckLootCondition> {
-		public Factory() {
-			super(new Identifier("time_check"), TimeCheckLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<TimeCheckLootCondition> {
 		public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("period", timeCheckLootCondition.period);
 			jsonObject.add("value", jsonSerializationContext.serialize(timeCheckLootCondition.value));

@@ -57,7 +57,7 @@ import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.DynamicEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
-import net.minecraft.loot.entry.LootEntry;
+import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.CopyNameLootFunction;
 import net.minecraft.loot.function.CopyNbtLootFunction;
@@ -132,7 +132,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			.pool(addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(drop))));
 	}
 
-	private static LootTable.Builder drops(Block drop, LootCondition.Builder conditionBuilder, LootEntry.Builder<?> child) {
+	private static LootTable.Builder drops(Block drop, LootCondition.Builder conditionBuilder, LootPoolEntry.Builder<?> child) {
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
@@ -141,15 +141,15 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			);
 	}
 
-	private static LootTable.Builder dropsWithSilkTouch(Block drop, LootEntry.Builder<?> child) {
+	private static LootTable.Builder dropsWithSilkTouch(Block drop, LootPoolEntry.Builder<?> child) {
 		return drops(drop, WITH_SILK_TOUCH, child);
 	}
 
-	private static LootTable.Builder dropsWithShears(Block drop, LootEntry.Builder<?> child) {
+	private static LootTable.Builder dropsWithShears(Block drop, LootPoolEntry.Builder<?> child) {
 		return drops(drop, WITH_SHEARS, child);
 	}
 
-	private static LootTable.Builder dropsWithSilkTouchOrShears(Block drop, LootEntry.Builder<?> child) {
+	private static LootTable.Builder dropsWithSilkTouchOrShears(Block drop, LootPoolEntry.Builder<?> child) {
 		return drops(drop, WITH_SILK_TOUCH_OR_SHEARS, child);
 	}
 
@@ -789,13 +789,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.LODESTONE);
 		this.addDrop(Blocks.WARPED_STEM);
 		this.addDrop(Blocks.WARPED_HYPHAE);
-		this.addDrop(Blocks.WARPED_NYLIUM);
 		this.addDrop(Blocks.WARPED_FUNGUS);
 		this.addDrop(Blocks.WARPED_WART_BLOCK);
 		this.addDrop(Blocks.WARPED_ROOTS);
 		this.addDrop(Blocks.CRIMSON_STEM);
 		this.addDrop(Blocks.CRIMSON_HYPHAE);
-		this.addDrop(Blocks.CRIMSON_NYLIUM);
 		this.addDrop(Blocks.CRIMSON_FUNGUS);
 		this.addDrop(Blocks.SHROOMLIGHT);
 		this.addDrop(Blocks.CRIMSON_ROOTS);
@@ -848,6 +846,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.BUBBLE_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_BUBBLE_CORAL_BLOCK));
 		this.addDrop(Blocks.FIRE_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_FIRE_CORAL_BLOCK));
 		this.addDrop(Blocks.HORN_CORAL_BLOCK, blockx -> drops(blockx, Blocks.DEAD_HORN_CORAL_BLOCK));
+		this.addDrop(Blocks.CRIMSON_NYLIUM, blockx -> drops(blockx, Blocks.NETHERRACK));
+		this.addDrop(Blocks.WARPED_NYLIUM, blockx -> drops(blockx, Blocks.NETHERRACK));
 		this.addDrop(Blocks.BOOKSHELF, blockx -> drops(blockx, Items.BOOK, ConstantLootTableRange.create(3)));
 		this.addDrop(Blocks.CLAY, blockx -> drops(blockx, Items.CLAY_BALL, ConstantLootTableRange.create(4)));
 		this.addDrop(Blocks.ENDER_CHEST, blockx -> drops(blockx, Blocks.OBSIDIAN, ConstantLootTableRange.create(8)));

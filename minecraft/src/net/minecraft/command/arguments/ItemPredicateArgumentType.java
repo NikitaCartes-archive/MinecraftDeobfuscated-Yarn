@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -64,7 +65,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return itemStringReader.getSuggestions(builder);
+		return itemStringReader.getSuggestions(builder, ItemTags.getContainer());
 	}
 
 	@Override

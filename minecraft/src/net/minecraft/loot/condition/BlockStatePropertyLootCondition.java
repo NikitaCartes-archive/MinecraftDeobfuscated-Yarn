@@ -14,6 +14,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 import net.minecraft.util.registry.Registry;
 
 public class BlockStatePropertyLootCondition implements LootCondition {
@@ -23,6 +24,11 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 	private BlockStatePropertyLootCondition(Block block, StatePredicate properties) {
 		this.block = block;
 		this.properties = properties;
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.BLOCK_STATE_PROPERTY;
 	}
 
 	@Override
@@ -58,11 +64,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 		}
 	}
 
-	public static class Factory extends LootCondition.Factory<BlockStatePropertyLootCondition> {
-		protected Factory() {
-			super(new Identifier("block_state_property"), BlockStatePropertyLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<BlockStatePropertyLootCondition> {
 		public void toJson(JsonObject jsonObject, BlockStatePropertyLootCondition blockStatePropertyLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("block", Registry.BLOCK.getId(blockStatePropertyLootCondition.block).toString());
 			jsonObject.add("properties", blockStatePropertyLootCondition.properties.toJson());

@@ -1,8 +1,10 @@
 package net.minecraft.tag;
 
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.util.Identifier;
 
 public class BlockTags {
 	private static final GlobalTagAccessor<Block> ACCESSOR = new GlobalTagAccessor<>();
@@ -84,6 +86,8 @@ public class BlockTags {
 	public static final Tag.Identified<Block> CAMPFIRES = register("campfires");
 	public static final Tag.Identified<Block> GUARDED_BY_PIGLINS = register("guarded_by_piglins");
 	public static final Tag.Identified<Block> PREVENT_MOB_SPAWNING_INSIDE = register("prevent_mob_spawning_inside");
+	public static final Tag.Identified<Block> FENCE_GATES = register("fence_gates");
+	public static final Tag.Identified<Block> UNSTABLE_BOTTOM_CENTER = register("unstable_bottom_center");
 
 	private static Tag.Identified<Block> register(String id) {
 		return ACCESSOR.get(id);
@@ -100,5 +104,9 @@ public class BlockTags {
 
 	public static TagContainer<Block> getContainer() {
 		return ACCESSOR.getContainer();
+	}
+
+	public static Set<Identifier> method_29214(TagContainer<Block> tagContainer) {
+		return ACCESSOR.method_29224(tagContainer);
 	}
 }

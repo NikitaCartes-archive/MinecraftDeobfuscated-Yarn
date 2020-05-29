@@ -334,7 +334,7 @@ public class WolfEntity extends TameableEntity {
 			return this.isOwner(player) || item == Items.BONE && !this.isTamed() && !this.isAngry();
 		} else {
 			if (this.isTamed()) {
-				if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
+				if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
@@ -403,7 +403,7 @@ public class WolfEntity extends TameableEntity {
 		if (this.isAngry()) {
 			return 1.5393804F;
 		} else {
-			return this.isTamed() ? (0.55F - (this.getMaximumHealth() - this.getHealth()) * 0.02F) * (float) Math.PI : (float) (Math.PI / 5);
+			return this.isTamed() ? (0.55F - (this.getMaxHealth() - this.getHealth()) * 0.02F) * (float) Math.PI : (float) (Math.PI / 5);
 		}
 	}
 

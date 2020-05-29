@@ -30,6 +30,10 @@ public class BlockHitResult extends HitResult {
 		return new BlockHitResult(this.missed, this.pos, side, this.blockPos, this.insideBlock);
 	}
 
+	public BlockHitResult method_29328(BlockPos blockPos) {
+		return new BlockHitResult(this.missed, this.pos, this.side, blockPos, this.insideBlock);
+	}
+
 	public BlockPos getBlockPos() {
 		return this.blockPos;
 	}

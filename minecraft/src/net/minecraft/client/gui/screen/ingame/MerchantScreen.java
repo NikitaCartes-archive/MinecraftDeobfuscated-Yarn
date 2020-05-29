@@ -30,6 +30,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	public MerchantScreen(MerchantScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
 		this.backgroundWidth = 276;
+		this.field_25269 = 107;
 	}
 
 	private void syncRecipeIndex() {
@@ -59,24 +60,22 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		int i = this.handler.getLevelProgress();
-		int j = this.backgroundHeight - 94;
 		if (i > 0 && i <= 5 && this.handler.isLevelled()) {
 			String string = "- " + I18n.translate("merchant.level." + i);
-			int k = this.textRenderer.getWidth(this.title);
-			int l = this.textRenderer.getWidth(string);
-			int m = k + l + 3;
-			int n = 49 + this.backgroundWidth / 2 - m / 2;
-			this.textRenderer.draw(matrices, this.title, (float)n, 6.0F, 4210752);
-			this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 107.0F, (float)j, 4210752);
-			this.textRenderer.draw(matrices, string, (float)(n + k + 3), 6.0F, 4210752);
+			int j = this.textRenderer.getWidth(this.title);
+			int k = this.textRenderer.getWidth(string);
+			int l = j + k + 3;
+			int m = 49 + this.backgroundWidth / 2 - l / 2;
+			this.textRenderer.draw(matrices, this.title, (float)m, 6.0F, 4210752);
+			this.textRenderer.draw(matrices, string, (float)(m + j + 3), 6.0F, 4210752);
 		} else {
 			this.textRenderer.draw(matrices, this.title, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
-			this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 107.0F, (float)j, 4210752);
 		}
 
+		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.field_25269, (float)this.field_25270, 4210752);
 		String string = I18n.translate("merchant.trades");
-		int k = this.textRenderer.getWidth(string);
-		this.textRenderer.draw(matrices, string, (float)(5 - k / 2 + 48), 6.0F, 4210752);
+		int j = this.textRenderer.getWidth(string);
+		this.textRenderer.draw(matrices, string, (float)(5 - j / 2 + 48), 6.0F, 4210752);
 	}
 
 	@Override
@@ -111,7 +110,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 			int m = VillagerData.getLowerLevelExperience(k);
 			if (l >= m && VillagerData.canLevelUp(k)) {
 				int n = 100;
-				float f = (float)(100 / (VillagerData.getUpperLevelExperience(k) - m));
+				float f = 100.0F / (float)(VillagerData.getUpperLevelExperience(k) - m);
 				int o = Math.min(MathHelper.floor(f * (float)(l - m)), 100);
 				drawTexture(matrixStack, i + 136, j + 16, this.getZOffset(), 0.0F, 191.0F, o + 1, 5, 256, 512);
 				int p = this.handler.getTraderRewardedExperience();
@@ -166,12 +165,12 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 					int n = k + 2;
 					this.method_20222(matrices, itemStack2, itemStack, l, n);
 					if (!itemStack3.isEmpty()) {
-						this.itemRenderer.renderGuiItem(itemStack3, i + 5 + 35, n);
+						this.itemRenderer.method_27953(itemStack3, i + 5 + 35, n);
 						this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack3, i + 5 + 35, n);
 					}
 
 					this.method_20223(matrices, tradeOffer, i, n);
-					this.itemRenderer.renderGuiItem(itemStack4, i + 5 + 68, n);
+					this.itemRenderer.method_27953(itemStack4, i + 5 + 68, n);
 					this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack4, i + 5 + 68, n);
 					this.itemRenderer.zOffset = 0.0F;
 					k += 20;
@@ -217,7 +216,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	}
 
 	private void method_20222(MatrixStack matrixStack, ItemStack itemStack, ItemStack itemStack2, int i, int j) {
-		this.itemRenderer.renderGuiItem(itemStack, i, j);
+		this.itemRenderer.method_27953(itemStack, i, j);
 		if (itemStack2.getCount() == itemStack.getCount()) {
 			this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i, j);
 		} else {

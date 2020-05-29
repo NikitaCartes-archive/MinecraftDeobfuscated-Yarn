@@ -4,9 +4,10 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
+import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
@@ -73,10 +74,14 @@ public class DamageSource {
 		return new ProjectileDamageSource("fireworks", firework, attacker).setExplosive();
 	}
 
-	public static DamageSource explosiveProjectile(ExplosiveProjectileEntity projectile, @Nullable Entity attacker) {
+	public static DamageSource explosiveProjectile(AbstractFireballEntity abstractFireballEntity, @Nullable Entity attacker) {
 		return attacker == null
-			? new ProjectileDamageSource("onFire", projectile, projectile).setFire().setProjectile()
-			: new ProjectileDamageSource("fireball", projectile, attacker).setFire().setProjectile();
+			? new ProjectileDamageSource("onFire", abstractFireballEntity, abstractFireballEntity).setFire().setProjectile()
+			: new ProjectileDamageSource("fireball", abstractFireballEntity, attacker).setFire().setProjectile();
+	}
+
+	public static DamageSource method_29238(WitherSkullEntity witherSkullEntity, Entity entity) {
+		return new ProjectileDamageSource("witherSkull", witherSkullEntity, entity).setProjectile();
 	}
 
 	public static DamageSource thrownProjectile(Entity projectile, @Nullable Entity attacker) {
@@ -92,9 +97,7 @@ public class DamageSource {
 	}
 
 	public static DamageSource explosion(@Nullable Explosion explosion) {
-		return explosion != null && explosion.getCausingEntity() != null
-			? new EntityDamageSource("explosion.player", explosion.getCausingEntity()).setScaledWithDifficulty().setExplosive()
-			: new DamageSource("explosion").setScaledWithDifficulty().setExplosive();
+		return explosion(explosion != null ? explosion.getCausingEntity() : null);
 	}
 
 	public static DamageSource explosion(@Nullable LivingEntity attacker) {

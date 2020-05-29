@@ -149,7 +149,7 @@ public class ChickenEntity extends AnimalEntity {
 
 	@Override
 	public boolean canImmediatelyDespawn(double distanceSquared) {
-		return this.hasJockey() && !this.hasPassengers();
+		return this.hasJockey();
 	}
 
 	@Override

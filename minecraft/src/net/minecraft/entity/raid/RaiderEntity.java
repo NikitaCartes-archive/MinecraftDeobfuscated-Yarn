@@ -259,7 +259,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Override
 	public boolean cannotDespawn() {
-		return this.getRaid() != null;
+		return super.cannotDespawn() || this.getRaid() != null;
 	}
 
 	public int getOutOfRaidCounter() {

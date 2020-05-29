@@ -108,7 +108,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
 			matrices.translate(-0.5, -0.5, -0.5);
 			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl2)) {
-				RenderLayer renderLayer = RenderLayers.getItemLayer(stack);
+				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, renderMode != ModelTransformation.Mode.GROUND);
 				VertexConsumer vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
 				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
 			} else {

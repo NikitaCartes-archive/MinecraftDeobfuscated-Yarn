@@ -41,7 +41,7 @@ public class TagContainer<T> {
 	private static final Gson GSON = new Gson();
 	private static final int JSON_EXTENSION_LENGTH = ".json".length();
 	private final Tag<T> empty = Tag.of(ImmutableSet.of());
-	private BiMap<Identifier, Tag<T>> entries = HashBiMap.create();
+	private volatile BiMap<Identifier, Tag<T>> entries = HashBiMap.create();
 	private final Function<Identifier, Optional<T>> getter;
 	private final String dataType;
 	private final String entryType;

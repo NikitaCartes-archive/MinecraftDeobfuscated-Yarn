@@ -57,7 +57,7 @@ public class EnderEyeItem extends Item {
 				world.syncGlobalEvent(1038, blockPos2.add(1, 0, 1), 0);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

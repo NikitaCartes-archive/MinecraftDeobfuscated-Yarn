@@ -123,6 +123,10 @@ public class BlockBox {
 		return new BlockBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
 
+	public void method_29299(Vec3i vec3i) {
+		this.offset(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+	}
+
 	public boolean contains(Vec3i vec) {
 		return vec.getX() >= this.minX
 			&& vec.getX() <= this.maxX

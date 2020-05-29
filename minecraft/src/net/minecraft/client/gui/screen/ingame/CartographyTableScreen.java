@@ -23,18 +23,13 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 
 	public CartographyTableScreen(CartographyTableScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
+		this.field_25268 -= 2;
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		super.render(matrices, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-	}
-
-	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.draw(matrices, this.title, 8.0F, 4.0F, 4210752);
-		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override

@@ -5,10 +5,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 
 public class class_5310 {
-	public static final Codec<class_5310> field_24817 = RecordCodecBuilder.create(
+	public static final Codec<class_5310> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.INT.fieldOf("target").forGetter(class_5310::method_28594),
-					Codec.INT.fieldOf("size").forGetter(class_5310::method_28596),
+					class_5324.method_29229(0, 256).fieldOf("size").forGetter(class_5310::method_28596),
 					Codec.INT.fieldOf("offset").forGetter(class_5310::method_28597)
 				)
 				.apply(instance, class_5310::new)

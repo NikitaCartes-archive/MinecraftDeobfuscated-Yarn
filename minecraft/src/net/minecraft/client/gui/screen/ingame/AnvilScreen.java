@@ -24,6 +24,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 
 	public AnvilScreen(AnvilScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title, TEXTURE);
+		this.field_25267 = 60;
 	}
 
 	@Override
@@ -80,8 +81,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
-		this.textRenderer.draw(matrices, this.title, 60.0F, 6.0F, 4210752);
-		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
+		super.drawForeground(matrices, mouseX, mouseY);
 		int i = this.handler.getLevelCost();
 		if (i > 0) {
 			int j = 8453920;

@@ -178,7 +178,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		if (this.isPushingHoneyBlock()) {
 			Direction direction = this.getMovementDirection();
 			if (direction.getAxis().isHorizontal()) {
-				double d = this.pushedBlock.getCollisionShape(this.world, this.pos).getMaximum(Direction.Axis.Y);
+				double d = this.pushedBlock.getCollisionShape(this.world, this.pos).getMax(Direction.Axis.Y);
 				Box box = this.offsetHeadBox(new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0));
 				double e = (double)(f - this.progress);
 

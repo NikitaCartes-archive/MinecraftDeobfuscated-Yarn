@@ -3,10 +3,9 @@ package net.minecraft.client.gui.hud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-@Environment(EnvType.CLIENT)
 public class BackgroundHelper {
-	@Environment(EnvType.CLIENT)
 	public static class ColorMixer {
+		@Environment(EnvType.CLIENT)
 		public static int getAlpha(int argb) {
 			return argb >>> 24;
 		}
@@ -23,10 +22,12 @@ public class BackgroundHelper {
 			return argb & 0xFF;
 		}
 
+		@Environment(EnvType.CLIENT)
 		public static int getArgb(int alpha, int red, int green, int blue) {
 			return alpha << 24 | red << 16 | green << 8 | blue;
 		}
 
+		@Environment(EnvType.CLIENT)
 		public static int mixColor(int first, int second) {
 			return getArgb(
 				getAlpha(first) * getAlpha(second) / 255,

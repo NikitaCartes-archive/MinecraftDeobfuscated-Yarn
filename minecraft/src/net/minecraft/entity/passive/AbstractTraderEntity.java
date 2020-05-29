@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -33,7 +34,6 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractTraderEntity extends PassiveEntity implements Npc, Trader {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(AbstractTraderEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -45,6 +45,8 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	public AbstractTraderEntity(EntityType<? extends AbstractTraderEntity> entityType, World world) {
 		super(entityType, world);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 	}
 
 	@Override
@@ -178,7 +180,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Nullable
 	@Override
-	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
+	public Entity changeDimension(RegistryKey<World> newDimension) {
 		this.resetCustomer();
 		return super.changeDimension(newDimension);
 	}

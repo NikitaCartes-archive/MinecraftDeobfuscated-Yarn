@@ -39,20 +39,21 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 				buttonWidget -> Util.getOperatingSystem().open(this.client.getResourcePackDir())
 			)
 		);
+		ResourcePackManager<ClientResourcePackProfile> resourcePackManager = this.client.getResourcePackManager();
 		this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, buttonWidget -> {
 			if (this.dirty) {
-				List<ClientResourcePackProfile> listxx = Lists.<ClientResourcePackProfile>newArrayList();
+				List<String> listxx = Lists.newArrayList();
 
 				for(ResourcePackListWidget.ResourcePackEntry resourcePackEntry : this.enabledPacks.children()) {
-					listxx.add(resourcePackEntry.getPack());
+					listxx.add(resourcePackEntry.getPack().getName());
 				}
 
 				Collections.reverse(listxx);
-				this.client.getResourcePackManager().setEnabledProfiles(listxx);
+				resourcePackManager.setEnabledProfiles(listxx);
 				this.gameOptions.resourcePacks.clear();
 				this.gameOptions.incompatibleResourcePacks.clear();
 
-				for(ClientResourcePackProfile clientResourcePackProfilexx : listxx) {
+				for(ClientResourcePackProfile clientResourcePackProfilexx : resourcePackManager.getEnabledProfiles()) {
 					if (!clientResourcePackProfilexx.isPinned()) {
 						this.gameOptions.resourcePacks.add(clientResourcePackProfilexx.getName());
 						if (!clientResourcePackProfilexx.getCompatibility().isCompatible()) {
@@ -90,7 +91,6 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 		if (!this.dirty) {
 			this.availablePacks.children().clear();
 			this.enabledPacks.children().clear();
-			ResourcePackManager<ClientResourcePackProfile> resourcePackManager = this.client.getResourcePackManager();
 			resourcePackManager.scanPacks();
 			List<ClientResourcePackProfile> list = Lists.<ClientResourcePackProfile>newArrayList(resourcePackManager.getProfiles());
 			list.removeAll(resourcePackManager.getEnabledProfiles());

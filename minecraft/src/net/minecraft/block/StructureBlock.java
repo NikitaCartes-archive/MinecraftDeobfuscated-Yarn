@@ -34,7 +34,7 @@ public class StructureBlock extends BlockWithEntity {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof StructureBlockBlockEntity) {
-			return ((StructureBlockBlockEntity)blockEntity).openScreen(player) ? ActionResult.SUCCESS : ActionResult.PASS;
+			return ((StructureBlockBlockEntity)blockEntity).openScreen(player) ? ActionResult.method_29236(world.isClient) : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}

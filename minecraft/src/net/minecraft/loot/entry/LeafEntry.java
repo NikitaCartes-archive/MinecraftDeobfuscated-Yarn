@@ -14,13 +14,12 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
-import net.minecraft.loot.function.LootFunctions;
-import net.minecraft.util.Identifier;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
 
-public abstract class LeafEntry extends LootEntry {
+public abstract class LeafEntry extends LootPoolEntry {
 	protected final int weight;
 	protected final int quality;
 	protected final LootFunction[] functions;
@@ -37,7 +36,7 @@ public abstract class LeafEntry extends LootEntry {
 		this.weight = weight;
 		this.quality = quality;
 		this.functions = functions;
-		this.compiledFunctions = LootFunctions.join(functions);
+		this.compiledFunctions = LootFunctionTypes.join(functions);
 	}
 
 	@Override
@@ -77,12 +76,12 @@ public abstract class LeafEntry extends LootEntry {
 		}
 
 		@Override
-		public LootEntry build() {
+		public LootPoolEntry build() {
 			return this.factory.build(this.weight, this.quality, this.getConditions(), this.getFunctions());
 		}
 	}
 
-	public abstract static class Builder<T extends LeafEntry.Builder<T>> extends LootEntry.Builder<T> implements LootFunctionConsumingBuilder<T> {
+	public abstract static class Builder<T extends LeafEntry.Builder<T>> extends LootPoolEntry.Builder<T> implements LootFunctionConsumingBuilder<T> {
 		protected int weight = 1;
 		protected int quality = 0;
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
@@ -122,12 +121,8 @@ public abstract class LeafEntry extends LootEntry {
 		LeafEntry build(int weight, int quality, LootCondition[] conditions, LootFunction[] functions);
 	}
 
-	public abstract static class Serializer<T extends LeafEntry> extends LootEntry.Serializer<T> {
-		public Serializer(Identifier identifier, Class<T> class_) {
-			super(identifier, class_);
-		}
-
-		public void toJson(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
+	public abstract static class Serializer<T extends LeafEntry> extends LootPoolEntry.class_5337<T> {
+		public void method_422(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
 			if (leafEntry.weight != 1) {
 				jsonObject.addProperty("weight", leafEntry.weight);
 			}

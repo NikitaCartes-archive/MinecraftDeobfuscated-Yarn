@@ -12,7 +12,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditions;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
@@ -334,7 +334,7 @@ public class EntityPredicate {
 
 		private Extended(LootCondition[] conditions) {
 			this.conditions = conditions;
-			this.combinedCondition = LootConditions.joinAnd(conditions);
+			this.combinedCondition = LootConditionTypes.joinAnd(conditions);
 		}
 
 		public static EntityPredicate.Extended create(LootCondition... conditions) {

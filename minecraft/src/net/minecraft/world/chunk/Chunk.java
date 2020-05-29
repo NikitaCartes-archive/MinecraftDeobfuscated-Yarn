@@ -22,8 +22,12 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.source.BiomeArray;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 
+/**
+ * Represents a scoped, modifable view of biomes, block states, fluid states and block entities.
+ */
 public interface Chunk extends BlockView, StructureHolder {
 	@Nullable
 	BlockState setBlockState(BlockPos pos, BlockState state, boolean moved);
@@ -67,9 +71,9 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	void setLastSaveTime(long lastSaveTime);
 
-	Map<String, StructureStart<?>> getStructureStarts();
+	Map<StructureFeature<?>, StructureStart<?>> getStructureStarts();
 
-	void setStructureStarts(Map<String, StructureStart<?>> map);
+	void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> map);
 
 	default boolean method_12228(int i, int j) {
 		if (i < 0) {

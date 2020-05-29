@@ -9,6 +9,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.SeaPickleFeatureConfig;
@@ -32,7 +33,7 @@ public class WarmOceanBiome extends Biome {
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24700);
 		DefaultBiomeFeatures.method_28441(this);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24685);
+		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

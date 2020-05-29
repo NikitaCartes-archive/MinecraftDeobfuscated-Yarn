@@ -7,11 +7,11 @@ import net.minecraft.particle.DefaultParticleType;
 
 @Environment(EnvType.CLIENT)
 public class CampfireSmokeParticle extends SpriteBillboardParticle {
-	private CampfireSmokeParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, boolean bl) {
+	private CampfireSmokeParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, boolean signalFire) {
 		super(world, x, y, z);
 		this.scale(3.0F);
 		this.setBoundingBoxSpacing(0.25F, 0.25F);
-		if (bl) {
+		if (signalFire) {
 			this.maxAge = this.random.nextInt(50) + 280;
 		} else {
 			this.maxAge = this.random.nextInt(50) + 80;

@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -46,7 +47,8 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i
+		int i,
+		BlockBox blockBox
 	) {
 		BlockPos blockPos = treeNode.getCenter();
 		int j = 0;
@@ -61,7 +63,7 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 				n = m;
 			}
 
-			this.generate(world, random, config, new BlockPos(blockPos.getX(), k, blockPos.getZ()), n, leaves, 0, treeNode.isGiantTrunk());
+			this.generate(world, random, config, new BlockPos(blockPos.getX(), k, blockPos.getZ()), n, leaves, 0, treeNode.isGiantTrunk(), blockBox);
 			j = m;
 		}
 	}

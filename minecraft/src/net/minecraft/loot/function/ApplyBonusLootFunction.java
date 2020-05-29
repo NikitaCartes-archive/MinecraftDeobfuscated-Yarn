@@ -32,6 +32,11 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.APPLY_BONUS;
+	}
+
+	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return ImmutableSet.of(LootContextParameters.TOOL);
 	}
@@ -110,10 +115,6 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<ApplyBonusLootFunction> {
-		public Factory() {
-			super(new Identifier("apply_bonus"), ApplyBonusLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, applyBonusLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());

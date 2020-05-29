@@ -56,6 +56,9 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final RenderLayer TRANSLUCENT = of(
 		"translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, createTranslucentPhaseData()
 	);
+	private static final RenderLayer TRANSLUCENT_MOVING_BLOCK = of(
+		"translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, false, method_29381()
+	);
 	private static final RenderLayer TRANSLUCENT_NO_CRUMBLING = of(
 		"translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, true, createTranslucentPhaseData()
 	);
@@ -134,7 +137,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		false,
 		true,
-		RenderLayer.MultiPhaseParameters.builder().writeMaskState(COLOR_MASK).transparency(LIGHTNING_TRANSPARENCY).shadeModel(SMOOTH_SHADE_MODEL).build(false)
+		RenderLayer.MultiPhaseParameters.builder().writeMaskState(ALL_MASK).transparency(LIGHTNING_TRANSPARENCY).shadeModel(SMOOTH_SHADE_MODEL).build(false)
 	);
 	public static final RenderLayer.MultiPhase LINES = of(
 		"lines",
@@ -145,7 +148,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.writeMaskState(COLOR_MASK)
+			.writeMaskState(ALL_MASK)
 			.build(false)
 	);
 	private final VertexFormat vertexFormat;
@@ -173,11 +176,25 @@ public abstract class RenderLayer extends RenderPhase {
 			.lightmap(ENABLE_LIGHTMAP)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.target(TRANSLUCENT_TARGET)
 			.build(true);
 	}
 
 	public static RenderLayer getTranslucent() {
 		return TRANSLUCENT;
+	}
+
+	private static RenderLayer.MultiPhaseParameters method_29381() {
+		return RenderLayer.MultiPhaseParameters.builder()
+			.shadeModel(SMOOTH_SHADE_MODEL)
+			.lightmap(ENABLE_LIGHTMAP)
+			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
+			.transparency(ITEM_TRANSPARENCY)
+			.build(true);
+	}
+
+	public static RenderLayer method_29380() {
+		return TRANSLUCENT_MOVING_BLOCK;
 	}
 
 	public static RenderLayer getTranslucentNoCrumbling() {
@@ -254,6 +271,19 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer method_28116(Identifier identifier) {
 		return method_28115(identifier, true);
+	}
+
+	public static RenderLayer method_29379(Identifier identifier) {
+		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+			.texture(new RenderPhase.Texture(identifier, false, false))
+			.transparency(ITEM_TRANSPARENCY)
+			.diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
+			.alpha(ONE_TENTH_ALPHA)
+			.lightmap(ENABLE_LIGHTMAP)
+			.overlay(ENABLE_OVERLAY_COLOR)
+			.writeMaskState(RenderPhase.ALL_MASK)
+			.build(true);
+		return of("item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, true, multiPhaseParameters);
 	}
 
 	public static RenderLayer getEntityTranslucentCull(Identifier texture) {

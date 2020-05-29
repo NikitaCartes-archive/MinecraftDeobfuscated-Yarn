@@ -446,7 +446,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			}
 		}
 
-		if (this.getHealth() < this.getMaximumHealth() && f > 0.0F) {
+		if (this.getHealth() < this.getMaxHealth() && f > 0.0F) {
 			this.heal(f);
 			bl = true;
 		}
@@ -730,16 +730,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 					this.setInAir(false);
 				}
 
-				this.lastLimbDistance = this.limbDistance;
-				double d = this.getX() - this.prevX;
-				double e = this.getZ() - this.prevZ;
-				float j = MathHelper.sqrt(d * d + e * e) * 4.0F;
-				if (j > 1.0F) {
-					j = 1.0F;
-				}
-
-				this.limbDistance += (j - this.limbDistance) * 0.4F;
-				this.limbAngle += this.limbDistance;
+				this.method_29242(this, false);
 			} else {
 				this.flyingSpeed = 0.02F;
 				super.travel(movementInput);
@@ -802,7 +793,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	protected boolean canBreed() {
-		return !this.hasPassengers() && !this.hasVehicle() && this.isTame() && !this.isBaby() && this.getHealth() >= this.getMaximumHealth() && this.isInLove();
+		return !this.hasPassengers() && !this.hasVehicle() && this.isTame() && !this.isBaby() && this.getHealth() >= this.getMaxHealth() && this.isInLove();
 	}
 
 	@Nullable

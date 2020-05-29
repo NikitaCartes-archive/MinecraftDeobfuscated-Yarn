@@ -10,7 +10,6 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class SetNbtLootFunction extends ConditionalLootFunction {
@@ -19,6 +18,11 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 	private SetNbtLootFunction(LootCondition[] conditions, CompoundTag tag) {
 		super(conditions);
 		this.tag = tag;
+	}
+
+	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.SET_NBT;
 	}
 
 	@Override
@@ -32,10 +36,6 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Builder extends ConditionalLootFunction.Factory<SetNbtLootFunction> {
-		public Builder() {
-			super(new Identifier("set_nbt"), SetNbtLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, SetNbtLootFunction setNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setNbtLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("tag", setNbtLootFunction.tag.toString());

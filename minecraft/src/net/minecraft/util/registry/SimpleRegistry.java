@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Int2ObjectBiMap;
@@ -64,14 +67,10 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return (Identifier)this.entriesById.inverse().get(entry);
 	}
 
+	@Environment(EnvType.CLIENT)
 	@Override
-	public RegistryKey<T> getKey(T value) {
-		RegistryKey<T> registryKey = (RegistryKey)this.entriesByKey.inverse().get(value);
-		if (registryKey == null) {
-			throw new IllegalStateException("Unregistered registry element: " + value + " in " + this);
-		} else {
-			return registryKey;
-		}
+	public Optional<RegistryKey<T>> getKey(T value) {
+		return Optional.ofNullable(this.entriesByKey.inverse().get(value));
 	}
 
 	@Override
@@ -80,6 +79,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Nullable
+	@Environment(EnvType.CLIENT)
 	@Override
 	public T get(@Nullable RegistryKey<T> registryKey) {
 		return (T)this.entriesByKey.get(registryKey);
@@ -131,11 +131,6 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public boolean containsKey(RegistryKey<T> registryKey) {
-		return this.entriesByKey.containsKey(registryKey);
-	}
-
-	@Override
 	public boolean containsId(int id) {
 		return this.indexedEntries.containsId(id);
 	}
@@ -155,8 +150,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 			}, simpleRegistry -> {
 				Builder<Pair<RegistryKey<T>, T>> builder = ImmutableList.builder();
 	
-				for(T object : simpleRegistry) {
-					builder.add(Pair.of(simpleRegistry.getKey(object), object));
+				for(Entry<RegistryKey<T>, T> entry : simpleRegistry.entriesByKey.entrySet()) {
+					builder.add(Pair.of((RegistryKey<T>)entry.getKey(), (T)entry.getValue()));
 				}
 	
 				return builder.build();

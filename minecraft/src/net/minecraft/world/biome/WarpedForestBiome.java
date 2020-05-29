@@ -15,6 +15,7 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
@@ -48,7 +49,7 @@ public class WarpedForestBiome extends Biome {
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24701);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24705);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24686);
+		this.addStructureFeature(DefaultBiomeFeatures.NETHER_CONFIGURED_RUINED_PORTAL);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -92,7 +93,7 @@ public class WarpedForestBiome extends Biome {
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(16, 10, 20, 128)))
 		);
 		DefaultBiomeFeatures.addWarpedForestVegetation(this);
-		DefaultBiomeFeatures.addNetherOres(this);
+		DefaultBiomeFeatures.addNetherMineables(this);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
 		this.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 2, 4));
 		this.addSpawnDensity(EntityType.ENDERMAN, 1.0, 0.08);

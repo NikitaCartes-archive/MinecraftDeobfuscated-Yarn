@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class DesertBiome extends Biome {
@@ -24,8 +25,9 @@ public final class DesertBiome extends Biome {
 		this.addStructureFeature(DefaultBiomeFeatures.field_24707);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24687);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24692);
+		DefaultBiomeFeatures.addFossils(this);
 		DefaultBiomeFeatures.method_28440(this);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24712);
+		this.addStructureFeature(DefaultBiomeFeatures.DESERT_CONFIGURED_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDesertLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

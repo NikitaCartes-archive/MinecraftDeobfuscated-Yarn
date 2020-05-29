@@ -65,7 +65,7 @@ public class SpawnEggItem extends Item {
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, 3);
 					itemStack.decrement(1);
-					return ActionResult.SUCCESS;
+					return ActionResult.CONSUME;
 				}
 			}
 
@@ -84,7 +84,7 @@ public class SpawnEggItem extends Item {
 				itemStack.decrement(1);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 
@@ -111,7 +111,7 @@ public class SpawnEggItem extends Item {
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					return TypedActionResult.success(itemStack);
+					return TypedActionResult.consume(itemStack);
 				}
 			} else {
 				return TypedActionResult.fail(itemStack);

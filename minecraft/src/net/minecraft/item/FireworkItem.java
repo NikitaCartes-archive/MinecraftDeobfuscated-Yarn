@@ -47,7 +47,7 @@ public class FireworkItem extends Item {
 			itemStack.decrement(1);
 		}
 
-		return ActionResult.SUCCESS;
+		return ActionResult.method_29236(world.isClient);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class FireworkItem extends Item {
 				}
 			}
 
-			return TypedActionResult.success(user.getStackInHand(hand));
+			return TypedActionResult.method_29237(user.getStackInHand(hand), world.isClient());
 		} else {
 			return TypedActionResult.pass(user.getStackInHand(hand));
 		}

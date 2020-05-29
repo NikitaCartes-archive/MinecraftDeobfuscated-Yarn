@@ -20,7 +20,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
@@ -36,7 +36,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				false,
 				false
 			)
-			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_END_REGISTRY_KEY))
+			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(World.END))
 			.build(consumer, "end/root");
 		Advancement advancement2 = Advancement.Task.create()
 			.parent(advancement)

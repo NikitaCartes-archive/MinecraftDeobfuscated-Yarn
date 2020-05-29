@@ -22,7 +22,7 @@ import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
-import net.minecraft.loot.function.LootFunctions;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
@@ -43,7 +43,7 @@ public class LootTable {
 		this.type = type;
 		this.pools = pools;
 		this.functions = functions;
-		this.combinedFunction = LootFunctions.join(functions);
+		this.combinedFunction = LootFunctionTypes.join(functions);
 	}
 
 	public static Consumer<ItemStack> processStacks(Consumer<ItemStack> lootConsumer) {

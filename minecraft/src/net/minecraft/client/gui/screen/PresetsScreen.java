@@ -278,7 +278,7 @@ public class PresetsScreen extends Screen {
 			Blocks.STONE,
 			Biomes.MOUNTAINS,
 			Arrays.asList(
-				StructureFeature.field_24851,
+				StructureFeature.SWAMP_HUT,
 				StructureFeature.DESERT_PYRAMID,
 				StructureFeature.JUNGLE_PYRAMID,
 				StructureFeature.IGLOO,
@@ -299,7 +299,7 @@ public class PresetsScreen extends Screen {
 			Items.WATER_BUCKET,
 			Biomes.DEEP_OCEAN,
 			Arrays.asList(
-				StructureFeature.field_24851,
+				StructureFeature.SWAMP_HUT,
 				StructureFeature.DESERT_PYRAMID,
 				StructureFeature.JUNGLE_PYRAMID,
 				StructureFeature.IGLOO,
@@ -322,7 +322,7 @@ public class PresetsScreen extends Screen {
 			Biomes.PLAINS,
 			Arrays.asList(
 				StructureFeature.VILLAGE,
-				StructureFeature.field_24851,
+				StructureFeature.SWAMP_HUT,
 				StructureFeature.DESERT_PYRAMID,
 				StructureFeature.JUNGLE_PYRAMID,
 				StructureFeature.IGLOO,
@@ -346,7 +346,7 @@ public class PresetsScreen extends Screen {
 			Biomes.SNOWY_TUNDRA,
 			Arrays.asList(
 				StructureFeature.VILLAGE,
-				StructureFeature.field_24851,
+				StructureFeature.SWAMP_HUT,
 				StructureFeature.DESERT_PYRAMID,
 				StructureFeature.JUNGLE_PYRAMID,
 				StructureFeature.IGLOO,
@@ -368,7 +368,7 @@ public class PresetsScreen extends Screen {
 			Biomes.PLAINS,
 			Arrays.asList(
 				StructureFeature.VILLAGE,
-				StructureFeature.field_24851,
+				StructureFeature.SWAMP_HUT,
 				StructureFeature.DESERT_PYRAMID,
 				StructureFeature.JUNGLE_PYRAMID,
 				StructureFeature.IGLOO,
@@ -388,7 +388,7 @@ public class PresetsScreen extends Screen {
 			Biomes.DESERT,
 			Arrays.asList(
 				StructureFeature.VILLAGE,
-				StructureFeature.field_24851,
+				StructureFeature.SWAMP_HUT,
 				StructureFeature.DESERT_PYRAMID,
 				StructureFeature.JUNGLE_PYRAMID,
 				StructureFeature.IGLOO,

@@ -14,6 +14,7 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 import net.minecraft.util.registry.Registry;
 
 public class TableBonusLootCondition implements LootCondition {
@@ -23,6 +24,11 @@ public class TableBonusLootCondition implements LootCondition {
 	private TableBonusLootCondition(Enchantment enchantment, float[] chances) {
 		this.enchantment = enchantment;
 		this.chances = chances;
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.TABLE_BONUS;
 	}
 
 	@Override
@@ -41,11 +47,7 @@ public class TableBonusLootCondition implements LootCondition {
 		return () -> new TableBonusLootCondition(enchantment, chances);
 	}
 
-	public static class Factory extends LootCondition.Factory<TableBonusLootCondition> {
-		public Factory() {
-			super(new Identifier("table_bonus"), TableBonusLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<TableBonusLootCondition> {
 		public void toJson(JsonObject jsonObject, TableBonusLootCondition tableBonusLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(tableBonusLootCondition.enchantment).toString());
 			jsonObject.add("chances", jsonSerializationContext.serialize(tableBonusLootCondition.chances));

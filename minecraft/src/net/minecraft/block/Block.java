@@ -208,7 +208,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
 		BlockState blockState = world.getBlockState(pos);
-		return !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(side), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+		if (side == Direction.DOWN && blockState.isIn(BlockTags.UNSTABLE_BOTTOM_CENTER)) {
+			return false;
+		} else {
+			return !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(side), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+		}
 	}
 
 	public static boolean isSideSolidFullSquare(BlockState state, BlockView world, BlockPos pos, Direction side) {

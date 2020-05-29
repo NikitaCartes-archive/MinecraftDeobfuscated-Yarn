@@ -7,11 +7,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.util.Identifier;
 
 public class EmptyEntry extends LeafEntry {
 	private EmptyEntry(int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
 		super(weight, quality, conditions, functions);
+	}
+
+	@Override
+	public LootPoolEntryType method_29318() {
+		return LootPoolEntryTypes.EMPTY;
 	}
 
 	@Override
@@ -23,11 +27,7 @@ public class EmptyEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<EmptyEntry> {
-		public Serializer() {
-			super(new Identifier("empty"), EmptyEntry.class);
-		}
-
-		protected EmptyEntry fromJson(
+		public EmptyEntry fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			return new EmptyEntry(i, j, lootConditions, lootFunctions);

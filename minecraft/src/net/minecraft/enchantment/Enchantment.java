@@ -54,20 +54,20 @@ public abstract class Enchantment {
 		return this.rarity;
 	}
 
-	public int getMinimumLevel() {
+	public int getMinLevel() {
 		return 1;
 	}
 
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 1;
 	}
 
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return 1 + level * 10;
 	}
 
-	public int getMaximumPower(int level) {
-		return this.getMinimumPower(level) + 5;
+	public int getMaxPower(int level) {
+		return this.getMinPower(level) + 5;
 	}
 
 	public int getProtectionAmount(int level, DamageSource source) {
@@ -115,7 +115,7 @@ public abstract class Enchantment {
 			mutableText.formatted(Formatting.GRAY);
 		}
 
-		if (level != 1 || this.getMaximumLevel() != 1) {
+		if (level != 1 || this.getMaxLevel() != 1) {
 			mutableText.append(" ").append(new TranslatableText("enchantment.level." + level));
 		}
 

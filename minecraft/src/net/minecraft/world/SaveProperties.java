@@ -82,5 +82,5 @@ public interface SaveProperties {
 
 	void method_29037(CompoundTag compoundTag);
 
-	GeneratorOptions method_28057();
+	GeneratorOptions getGeneratorOptions();
 }

@@ -7,6 +7,7 @@ import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class DeepFrozenOceanBiome extends Biome {
@@ -28,7 +29,7 @@ public class DeepFrozenOceanBiome extends Biome {
 		this.addStructureFeature(DefaultBiomeFeatures.field_24699);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24698);
 		DefaultBiomeFeatures.method_28441(this);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24685);
+		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addIcebergs(this);

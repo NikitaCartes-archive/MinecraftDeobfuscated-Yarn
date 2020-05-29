@@ -39,6 +39,11 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.ENCHANT_RANDOMLY;
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Random random = context.getRandom();
 		Enchantment enchantment;
@@ -63,7 +68,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	}
 
 	private static ItemStack method_26266(ItemStack itemStack, Enchantment enchantment, Random random) {
-		int i = MathHelper.nextInt(random, enchantment.getMinimumLevel(), enchantment.getMaximumLevel());
+		int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
 		if (itemStack.getItem() == Items.BOOK) {
 			itemStack = new ItemStack(Items.ENCHANTED_BOOK);
 			EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry(enchantment, i));
@@ -97,10 +102,6 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<EnchantRandomlyLootFunction> {
-		public Factory() {
-			super(new Identifier("enchant_randomly"), EnchantRandomlyLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, EnchantRandomlyLootFunction enchantRandomlyLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, enchantRandomlyLootFunction, jsonSerializationContext);
 			if (!enchantRandomlyLootFunction.enchantments.isEmpty()) {

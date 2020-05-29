@@ -127,7 +127,7 @@ public class HopperBlock extends BlockWithEntity {
 				player.incrementStat(Stats.INSPECT_HOPPER);
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

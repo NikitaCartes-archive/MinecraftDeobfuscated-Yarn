@@ -308,7 +308,10 @@ public class FoxEntity extends AnimalEntity {
 			this.setBreedingAge(-24000);
 		}
 
-		this.addTypeSpecificGoals();
+		if (world instanceof ServerWorld) {
+			this.addTypeSpecificGoals();
+		}
+
 		this.initEquipment(difficulty);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
@@ -394,7 +397,9 @@ public class FoxEntity extends AnimalEntity {
 		this.setType(FoxEntity.Type.byName(tag.getString("Type")));
 		this.setSitting(tag.getBoolean("Sitting"));
 		this.setCrouching(tag.getBoolean("Crouching"));
-		this.addTypeSpecificGoals();
+		if (this.world instanceof ServerWorld) {
+			this.addTypeSpecificGoals();
+		}
 	}
 
 	public boolean isSitting() {

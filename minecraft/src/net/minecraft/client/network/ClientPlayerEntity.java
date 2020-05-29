@@ -121,16 +121,24 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean showsDeathScreen = true;
 
 	public ClientPlayerEntity(
-		MinecraftClient client, ClientWorld clientWorld, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook
+		MinecraftClient minecraftClient,
+		ClientWorld clientWorld,
+		ClientPlayNetworkHandler clientPlayNetworkHandler,
+		StatHandler stats,
+		ClientRecipeBook recipeBook,
+		boolean bl,
+		boolean bl2
 	) {
-		super(clientWorld, networkHandler.getProfile());
-		this.networkHandler = networkHandler;
+		super(clientWorld, clientPlayNetworkHandler.getProfile());
+		this.client = minecraftClient;
+		this.networkHandler = clientPlayNetworkHandler;
 		this.statHandler = stats;
 		this.recipeBook = recipeBook;
-		this.client = client;
-		this.tickables.add(new AmbientSoundPlayer(this, client.getSoundManager()));
+		this.lastIsHoldingSneakKey = bl;
+		this.lastSprinting = bl2;
+		this.tickables.add(new AmbientSoundPlayer(this, minecraftClient.getSoundManager()));
 		this.tickables.add(new BubbleColumnSoundPlayer(this));
-		this.tickables.add(new BiomeEffectSoundPlayer(this, client.getSoundManager(), clientWorld.getBiomeAccess()));
+		this.tickables.add(new BiomeEffectSoundPlayer(this, minecraftClient.getSoundManager(), clientWorld.getBiomeAccess()));
 	}
 
 	@Override
@@ -959,7 +967,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 									BlockState blockState3 = this.world.getBlockState(blockPos3);
 									VoxelShape voxelShape;
 									if (!(voxelShape = blockState3.getCollisionShape(this.world, blockPos3, shapeContext)).isEmpty()) {
-										r = (float)voxelShape.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY();
+										r = (float)voxelShape.getMax(Direction.Axis.Y) + (float)blockPos3.getY();
 										if ((double)r - this.getY() > (double)n) {
 											return;
 										}

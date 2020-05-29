@@ -22,6 +22,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class ReadOnlyChunk extends ProtoChunk {
 	private final WorldChunk wrapped;
@@ -110,39 +111,39 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public StructureStart<?> getStructureStart(String structure) {
-		return this.wrapped.getStructureStart(structure);
+	public StructureStart<?> getStructureStart(StructureFeature<?> structureFeature) {
+		return this.wrapped.getStructureStart(structureFeature);
 	}
 
 	@Override
-	public void setStructureStart(String structure, StructureStart<?> start) {
+	public void setStructureStart(StructureFeature<?> structureFeature, StructureStart<?> start) {
 	}
 
 	@Override
-	public Map<String, StructureStart<?>> getStructureStarts() {
+	public Map<StructureFeature<?>, StructureStart<?>> getStructureStarts() {
 		return this.wrapped.getStructureStarts();
 	}
 
 	@Override
-	public void setStructureStarts(Map<String, StructureStart<?>> map) {
+	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> map) {
 	}
 
 	@Override
-	public LongSet getStructureReferences(String structure) {
-		return this.wrapped.getStructureReferences(structure);
+	public LongSet getStructureReferences(StructureFeature<?> structureFeature) {
+		return this.wrapped.getStructureReferences(structureFeature);
 	}
 
 	@Override
-	public void addStructureReference(String structure, long reference) {
+	public void addStructureReference(StructureFeature<?> structureFeature, long reference) {
 	}
 
 	@Override
-	public Map<String, LongSet> getStructureReferences() {
+	public Map<StructureFeature<?>, LongSet> getStructureReferences() {
 		return this.wrapped.getStructureReferences();
 	}
 
 	@Override
-	public void setStructureReferences(Map<String, LongSet> structureReferences) {
+	public void setStructureReferences(Map<StructureFeature<?>, LongSet> structureReferences) {
 	}
 
 	@Override

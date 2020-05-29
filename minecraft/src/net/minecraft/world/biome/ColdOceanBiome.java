@@ -6,6 +6,7 @@ import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
@@ -26,7 +27,7 @@ public class ColdOceanBiome extends Biome {
 		);
 		DefaultBiomeFeatures.method_28441(this);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24699);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24685);
+		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

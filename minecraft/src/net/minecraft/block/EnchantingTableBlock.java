@@ -94,7 +94,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 			return ActionResult.SUCCESS;
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

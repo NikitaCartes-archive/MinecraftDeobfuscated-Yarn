@@ -68,7 +68,7 @@ public class DispenserBlock extends BlockWithEntity {
 				}
 			}
 
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

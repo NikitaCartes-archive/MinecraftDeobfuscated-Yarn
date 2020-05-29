@@ -6,6 +6,7 @@ import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
@@ -25,7 +26,7 @@ public final class RiverBiome extends Biome {
 				.parent(null)
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.field_24688);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24711);
+		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_CONFIGURED_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

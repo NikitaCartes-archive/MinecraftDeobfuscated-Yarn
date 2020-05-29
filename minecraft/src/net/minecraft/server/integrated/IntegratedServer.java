@@ -15,10 +15,12 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.NetworkEncryptionUtils;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.LanServerPinger;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashCallable;
@@ -43,6 +45,8 @@ public class IntegratedServer extends MinecraftServer {
 	public IntegratedServer(
 		MinecraftClient client,
 		LevelStorage.Session session,
+		ResourcePackManager<ResourcePackProfile> resourcePackManager,
+		ServerResourceManager serverResourceManager,
 		SaveProperties saveProperties,
 		MinecraftSessionService minecraftSessionService,
 		GameProfileRepository gameProfileRepository,
@@ -52,9 +56,10 @@ public class IntegratedServer extends MinecraftServer {
 		super(
 			session,
 			saveProperties,
+			resourcePackManager,
 			client.getNetworkProxy(),
 			client.getDataFixer(),
-			new CommandManager(false),
+			serverResourceManager,
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
@@ -63,7 +68,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setServerName(client.getSession().getUsername());
 		this.setDemo(client.isDemo());
 		this.setWorldHeight(256);
-		this.setPlayerManager(new IntegratedPlayerManager(this, this.field_25132, this.field_24371));
+		this.setPlayerManager(new IntegratedPlayerManager(this, this.dimensionTracker, this.field_24371));
 		this.client = client;
 	}
 
@@ -76,7 +81,7 @@ public class IntegratedServer extends MinecraftServer {
 		LOGGER.info("Generating keypair");
 		this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
 		this.loadWorld();
-		this.setMotd(this.getUserName() + " - " + this.method_27728().getLevelName());
+		this.setMotd(this.getUserName() + " - " + this.getSaveProperties().getLevelName());
 		return true;
 	}
 

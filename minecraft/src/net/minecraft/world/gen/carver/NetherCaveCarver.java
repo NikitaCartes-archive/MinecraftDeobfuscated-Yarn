@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NetherCaveCarver extends CaveCarver {
 	public NetherCaveCarver(Codec<ProbabilityConfig> codec) {
@@ -76,7 +76,7 @@ public class NetherCaveCarver extends CaveCarver {
 		int relativeX,
 		int y,
 		int relativeZ,
-		AtomicBoolean foundSurface
+		MutableBoolean mutableBoolean
 	) {
 		int i = relativeX | relativeZ << 4 | y << 8;
 		if (carvingMask.get(i)) {

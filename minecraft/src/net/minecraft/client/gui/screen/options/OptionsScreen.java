@@ -1,13 +1,11 @@
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.screen.options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.options.AccessibilityScreen;
-import net.minecraft.client.gui.screen.options.ChatOptionsScreen;
-import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
-import net.minecraft.client.gui.screen.options.LanguageOptionsScreen;
-import net.minecraft.client.gui.screen.options.SkinOptionsScreen;
-import net.minecraft.client.gui.screen.options.SoundOptionsScreen;
+import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.VideoOptionsScreen;
 import net.minecraft.client.gui.screen.resourcepack.ResourcePackOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
@@ -22,7 +20,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
-public class SettingsScreen extends Screen {
+public class OptionsScreen extends Screen {
 	private static final Option[] OPTIONS = new Option[]{Option.FOV};
 	private final Screen parent;
 	private final GameOptions settings;
@@ -30,7 +28,7 @@ public class SettingsScreen extends Screen {
 	private LockButtonWidget lockDifficultyButton;
 	private Difficulty difficulty;
 
-	public SettingsScreen(Screen parent, GameOptions gameOptions) {
+	public OptionsScreen(Screen parent, GameOptions gameOptions) {
 		super(new TranslatableText("options.title"));
 		this.parent = parent;
 		this.settings = gameOptions;
@@ -177,7 +175,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.accessibility.title"),
-				buttonWidget -> this.client.openScreen(new AccessibilityScreen(this, this.settings))
+				buttonWidget -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));

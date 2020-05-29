@@ -105,7 +105,7 @@ public class MinecartItem extends Item {
 			}
 
 			itemStack.decrement(1);
-			return ActionResult.SUCCESS;
+			return ActionResult.method_29236(world.isClient);
 		}
 	}
 }

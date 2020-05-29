@@ -46,7 +46,6 @@ public class MilkBucketItem extends Item {
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		user.setCurrentHand(hand);
-		return TypedActionResult.success(user.getStackInHand(hand));
+		return ItemUsage.consumeHeldItem(world, user, hand);
 	}
 }

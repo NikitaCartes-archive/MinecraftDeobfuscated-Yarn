@@ -191,6 +191,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			this.world.removeBlock(pos, false);
 		} else if (CampfireBlock.isLitCampfire(blockState)) {
 			this.world.syncWorldEvent(null, 1009, pos, 0);
+			CampfireBlock.extinguish(this.world, pos, blockState);
 			this.world.setBlockState(pos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
 	}

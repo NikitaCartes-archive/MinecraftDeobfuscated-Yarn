@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -212,16 +213,16 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				if (this.level.isLocked()) {
 					DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 					if (bl) {
-						Text text2 = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-						this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
+						class_5348 lv = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+						this.screen.setTooltip(this.client.textRenderer.wrapLines(lv, 175));
 					}
 				} else if (this.level.isDifferentVersion()) {
 					DrawableHelper.drawTexture(matrices, x, y, 32.0F, (float)j, 32, 32, 256, 256);
 					if (this.level.method_29020()) {
 						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 						if (bl) {
-							Text text2 = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
-							this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
+							class_5348 lv = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
+							this.screen.setTooltip(this.client.textRenderer.wrapLines(lv, 175));
 						}
 					} else if (this.level.isLegacyCustomizedWorld()) {
 						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);

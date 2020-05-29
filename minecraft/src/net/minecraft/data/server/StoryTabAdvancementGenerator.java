@@ -19,7 +19,7 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
@@ -214,7 +214,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_NETHER_REGISTRY_KEY))
+			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(World.NETHER))
 			.build(consumer, "story/enter_the_nether");
 		Advancement.Task.create()
 			.parent(advancement10)
@@ -256,7 +256,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_END_REGISTRY_KEY))
+			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(World.END))
 			.build(consumer, "story/enter_the_end");
 	}
 }

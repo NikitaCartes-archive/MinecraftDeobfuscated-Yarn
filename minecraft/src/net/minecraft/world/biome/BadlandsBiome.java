@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class BadlandsBiome extends Biome {
@@ -24,7 +25,7 @@ public final class BadlandsBiome extends Biome {
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(-0.25F, -0.5F, 0.5F, 0.2F, 1.0F)))
 		);
 		DefaultBiomeFeatures.method_28437(this);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24711);
+		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_CONFIGURED_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

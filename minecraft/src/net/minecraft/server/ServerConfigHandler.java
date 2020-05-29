@@ -426,7 +426,7 @@ public class ServerConfigHandler {
 	}
 
 	private static File getLevelPlayersFolder(MinecraftServer server) {
-		return server.method_27050(WorldSavePath.PLAYERS).toFile();
+		return server.getSavePath(WorldSavePath.PLAYERS).toFile();
 	}
 
 	private static void markFileConverted(File file) {

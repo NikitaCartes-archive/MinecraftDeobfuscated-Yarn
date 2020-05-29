@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsBridge;
@@ -94,7 +95,7 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				new TranslatableText("menu.options"),
-				buttonWidgetx -> this.client.openScreen(new SettingsScreen(this, this.client.options))
+				buttonWidgetx -> this.client.openScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
 		ButtonWidget buttonWidget = this.addButton(

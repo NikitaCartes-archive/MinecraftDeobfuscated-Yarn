@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
@@ -31,11 +32,12 @@ public class BushFoliagePlacer extends BlobFoliagePlacer {
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
-		int i
+		int i,
+		BlockBox blockBox
 	) {
 		for(int j = i; j >= i - foliageHeight; --j) {
 			int k = radius + treeNode.getFoliageRadius() - 1 - j;
-			this.generate(world, random, config, treeNode.getCenter(), k, leaves, j, treeNode.isGiantTrunk());
+			this.generate(world, random, config, treeNode.getCenter(), k, leaves, j, treeNode.isGiantTrunk(), blockBox);
 		}
 	}
 

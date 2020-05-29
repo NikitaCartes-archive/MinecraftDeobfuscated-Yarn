@@ -408,6 +408,7 @@ public class ParticleManager implements ResourceReloadListener {
 
 		RenderSystem.popMatrix();
 		RenderSystem.depthMask(true);
+		RenderSystem.depthFunc(515);
 		RenderSystem.disableBlend();
 		RenderSystem.defaultAlphaFunc();
 		lightmapTextureManager.disable();

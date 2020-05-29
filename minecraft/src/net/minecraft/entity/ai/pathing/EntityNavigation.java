@@ -210,10 +210,11 @@ public abstract class EntityNavigation {
 		Vec3d vec3d = this.getPos();
 		this.nodeReachProximity = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
 		Vec3i vec3i = this.currentPath.getCurrentPosition();
-		boolean bl = Math.abs(this.entity.getX() - (double)((float)vec3i.getX() + 0.5F)) < (double)this.nodeReachProximity
-			&& Math.abs(this.entity.getZ() - (double)((float)vec3i.getZ() + 0.5F)) < (double)this.nodeReachProximity
-			&& Math.abs(this.entity.getY() - (double)vec3i.getY()) < 1.0;
-		if (bl || this.method_27799(vec3d)) {
+		double d = Math.abs(this.entity.getX() - (double)((float)vec3i.getX() + 0.5F));
+		double e = Math.abs(this.entity.getY() - (double)vec3i.getY());
+		double f = Math.abs(this.entity.getZ() - (double)((float)vec3i.getZ() + 0.5F));
+		boolean bl = d < (double)this.nodeReachProximity && f < (double)this.nodeReachProximity && e < 1.0;
+		if (bl || this.entity.method_29244(this.currentPath.method_29301().type) && this.method_27799(vec3d)) {
 			this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 		}
 

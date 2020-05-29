@@ -1,8 +1,11 @@
 package net.minecraft.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -10,7 +13,6 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
@@ -125,16 +127,31 @@ public abstract class DrawableHelper {
 		textRenderer.drawWithShadow(matrices, text, (float)(x - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
-	public void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {
-		textRenderer.drawWithShadow(matrices, text, (float)(x - textRenderer.getWidth(text) / 2), (float)y, color);
+	public void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, class_5348 arg, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, arg, (float)(x - textRenderer.getWidth(arg) / 2), (float)y, color);
 	}
 
 	public void drawStringWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
-	public void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {
-		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
+	public void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, class_5348 arg, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, arg, (float)x, (float)y, color);
+	}
+
+	public void method_29343(int i, int j, BiConsumer<Integer, Integer> biConsumer) {
+		RenderSystem.blendFuncSeparate(
+			GlStateManager.SrcFactor.ZERO,
+			GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
+			GlStateManager.SrcFactor.SRC_ALPHA,
+			GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
+		);
+		biConsumer.accept(i + 1, j);
+		biConsumer.accept(i - 1, j);
+		biConsumer.accept(i, j + 1);
+		biConsumer.accept(i, j - 1);
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+		biConsumer.accept(i, j);
 	}
 
 	public static void drawSprite(MatrixStack matrices, int x, int y, int z, int width, int height, Sprite sprite) {

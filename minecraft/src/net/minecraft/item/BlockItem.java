@@ -38,7 +38,7 @@ public class BlockItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		ActionResult actionResult = this.place(new ItemPlacementContext(context));
-		return actionResult != ActionResult.SUCCESS && this.isFood() ? this.use(context.world, context.player, context.hand).getResult() : actionResult;
+		return !actionResult.isAccepted() && this.isFood() ? this.use(context.world, context.player, context.hand).getResult() : actionResult;
 	}
 
 	public ActionResult place(ItemPlacementContext context) {
@@ -80,7 +80,7 @@ public class BlockItem extends Item {
 						blockSoundGroup.getPitch() * 0.8F
 					);
 					itemStack.decrement(1);
-					return ActionResult.SUCCESS;
+					return ActionResult.method_29236(world.isClient);
 				}
 			}
 		}

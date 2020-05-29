@@ -16,6 +16,9 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 
+/**
+ * Represents a scoped, read-only view of a world like structure that contains biomes, chunks and is bound to a dimension.
+ */
 public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.Storage {
 	@Nullable
 	Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create);
@@ -49,6 +52,11 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ);
 
+	/**
+	 * Checks if this world view is on the logical client.
+	 * 
+	 * <p>If the value returned is false, it is expected that this world is present on a logical server.
+	 */
 	boolean isClient();
 
 	@Deprecated

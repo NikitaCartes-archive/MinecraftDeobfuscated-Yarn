@@ -37,7 +37,7 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 			return ActionResult.SUCCESS;
 		} else {
 			this.openScreen(world, pos, player);
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

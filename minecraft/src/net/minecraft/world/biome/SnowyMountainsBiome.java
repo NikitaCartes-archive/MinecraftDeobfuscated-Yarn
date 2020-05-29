@@ -3,6 +3,7 @@ package net.minecraft.world.biome;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class SnowyMountainsBiome extends Biome {
@@ -20,7 +21,7 @@ public final class SnowyMountainsBiome extends Biome {
 				.parent(null)
 		);
 		DefaultBiomeFeatures.method_28440(this);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24684);
+		this.addStructureFeature(DefaultBiomeFeatures.MOUNTAIN_CONFIGURED_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

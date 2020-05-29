@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.class_5325;
+import net.minecraft.class_5326;
+import net.minecraft.class_5327;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
@@ -17,17 +20,22 @@ import net.minecraft.world.poi.PointOfInterestType;
 public class VillagerTaskListProvider {
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession profession, float f) {
 		return ImmutableList.of(
-			Pair.of(0, new StayAboveWaterTask(0.4F, 0.8F)),
+			Pair.of(0, new StayAboveWaterTask(0.8F)),
 			Pair.of(0, new OpenDoorsTask()),
 			Pair.of(0, new LookAroundTask(45, 90)),
 			Pair.of(0, new PanicTask()),
 			Pair.of(0, new WakeUpTask()),
 			Pair.of(0, new HideWhenBellRingsTask()),
 			Pair.of(0, new StartRaidTask()),
+			Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE)),
+			Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.POTENTIAL_JOB_SITE)),
 			Pair.of(1, new WanderAroundTask(200)),
-			Pair.of(2, new FollowCustomerTask(f)),
-			Pair.of(5, new WalkToNearestVisibleWantedItemTask<>(0.5F, false, 4)),
-			Pair.of(10, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, true)),
+			Pair.of(2, new class_5326(profession)),
+			Pair.of(3, new FollowCustomerTask(f)),
+			Pair.of(5, new WalkToNearestVisibleWantedItemTask(f, false, 4)),
+			Pair.of(6, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true)),
+			Pair.of(6, new class_5325(f)),
+			Pair.of(7, new class_5327(f)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true)),
 			Pair.of(10, new GoToWorkTask()),
@@ -62,7 +70,6 @@ public class VillagerTaskListProvider {
 			Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
 			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.JOB_SITE, f, 9, 100, 1200)),
 			Pair.of(3, new GiveGiftsToHeroTask(100)),
-			Pair.of(3, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE)),
 			Pair.of(99, new ScheduleActivityTask())
 		);
 	}

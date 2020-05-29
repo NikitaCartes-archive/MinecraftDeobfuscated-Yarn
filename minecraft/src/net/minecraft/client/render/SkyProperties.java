@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,8 +34,8 @@ public abstract class SkyProperties {
 		this.shouldRenderSky = shouldRenderSky;
 	}
 
-	public static SkyProperties byDimensionType(@Nullable RegistryKey<DimensionType> registryKey) {
-		return BY_DIMENSION_TYPE.get(registryKey);
+	public static SkyProperties byDimensionType(Optional<RegistryKey<DimensionType>> optional) {
+		return BY_DIMENSION_TYPE.get(optional.orElse(DimensionType.OVERWORLD_REGISTRY_KEY));
 	}
 
 	@Nullable

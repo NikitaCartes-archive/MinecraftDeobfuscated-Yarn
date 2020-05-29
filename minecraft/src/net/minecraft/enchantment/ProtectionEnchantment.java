@@ -14,17 +14,17 @@ public class ProtectionEnchantment extends Enchantment {
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return this.protectionType.getBasePower() + (level - 1) * this.protectionType.getPowerPerLevel();
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return this.getMinimumPower(level) + this.protectionType.getPowerPerLevel();
+	public int getMaxPower(int level) {
+		return this.getMinPower(level) + this.protectionType.getPowerPerLevel();
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 4;
 	}
 

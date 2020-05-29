@@ -18,12 +18,6 @@ public class GrindstoneScreen extends HandledScreen<GrindstoneScreenHandler> {
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.draw(matrices, this.title, 8.0F, 6.0F, 4210752);
-		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
-	}
-
-	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.drawBackground(matrices, delta, mouseX, mouseY);

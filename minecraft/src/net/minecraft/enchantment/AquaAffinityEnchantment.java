@@ -8,17 +8,17 @@ public class AquaAffinityEnchantment extends Enchantment {
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return 1;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return this.getMinimumPower(level) + 40;
+	public int getMaxPower(int level) {
+		return this.getMinPower(level) + 40;
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 1;
 	}
 }

@@ -57,7 +57,7 @@ public class AnvilBlock extends FallingBlock {
 		} else {
 			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_ANVIL);
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

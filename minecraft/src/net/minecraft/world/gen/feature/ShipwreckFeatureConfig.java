@@ -3,7 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 
 public class ShipwreckFeatureConfig implements FeatureConfig {
-	public static final Codec<ShipwreckFeatureConfig> field_24908 = Codec.BOOL
+	public static final Codec<ShipwreckFeatureConfig> CODEC = Codec.BOOL
 		.fieldOf("is_beached")
 		.withDefault(false)
 		.<ShipwreckFeatureConfig>xmap(ShipwreckFeatureConfig::new, shipwreckFeatureConfig -> shipwreckFeatureConfig.isBeached)

@@ -14,7 +14,7 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 	private boolean allowFlying;
 	private boolean creativeMode;
 	private float flySpeed;
-	private float fovModifier;
+	private float walkSpeed;
 
 	public PlayerAbilitiesS2CPacket() {
 	}
@@ -25,7 +25,7 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		this.setAllowFlying(playerAbilities.allowFlying);
 		this.setCreativeMode(playerAbilities.creativeMode);
 		this.setFlySpeed(playerAbilities.getFlySpeed());
-		this.setFovModifier(playerAbilities.getWalkSpeed());
+		this.setWalkSpeed(playerAbilities.getWalkSpeed());
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		this.setAllowFlying((b & 4) > 0);
 		this.setCreativeMode((b & 8) > 0);
 		this.setFlySpeed(buf.readFloat());
-		this.setFovModifier(buf.readFloat());
+		this.setWalkSpeed(buf.readFloat());
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 
 		buf.writeByte(b);
 		buf.writeFloat(this.flySpeed);
-		buf.writeFloat(this.fovModifier);
+		buf.writeFloat(this.walkSpeed);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -109,11 +109,11 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getFovModifier() {
-		return this.fovModifier;
+	public float getWalkSpeed() {
+		return this.walkSpeed;
 	}
 
-	public void setFovModifier(float f) {
-		this.fovModifier = f;
+	public void setWalkSpeed(float f) {
+		this.walkSpeed = f;
 	}
 }

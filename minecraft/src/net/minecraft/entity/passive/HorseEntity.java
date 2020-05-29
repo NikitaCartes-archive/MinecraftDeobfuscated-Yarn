@@ -103,9 +103,11 @@ public class HorseEntity extends HorseBaseEntity {
 
 	@Override
 	protected void updateSaddle() {
-		super.updateSaddle();
-		this.setArmorTypeFromStack(this.items.getStack(1));
-		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
+		if (!this.world.isClient) {
+			super.updateSaddle();
+			this.setArmorTypeFromStack(this.items.getStack(1));
+			this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
+		}
 	}
 
 	private void setArmorTypeFromStack(ItemStack stack) {

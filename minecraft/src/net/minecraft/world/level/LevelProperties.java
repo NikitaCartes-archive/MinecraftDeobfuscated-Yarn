@@ -508,7 +508,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public GeneratorOptions method_28057() {
+	public GeneratorOptions getGeneratorOptions() {
 		return this.field_25030.getGeneratorOptions();
 	}
 

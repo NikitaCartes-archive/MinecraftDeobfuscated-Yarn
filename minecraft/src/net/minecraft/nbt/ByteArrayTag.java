@@ -137,7 +137,7 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		return ByteTag.of(b);
 	}
 
-	public void add(int i, ByteTag byteTag) {
+	public void method_10531(int i, ByteTag byteTag) {
 		this.value = ArrayUtils.add(this.value, i, byteTag.getByte());
 	}
 
@@ -161,7 +161,7 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		}
 	}
 
-	public ByteTag remove(int i) {
+	public ByteTag method_10536(int i) {
 		byte b = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
 		return ByteTag.of(b);

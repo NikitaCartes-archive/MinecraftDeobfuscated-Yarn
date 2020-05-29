@@ -87,7 +87,7 @@ public class LeverBlock extends WallMountedBlock {
 			BlockState blockState = this.method_21846(state, world, pos);
 			float f = blockState.get(POWERED) ? 0.6F : 0.5F;
 			world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-			return ActionResult.SUCCESS;
+			return ActionResult.CONSUME;
 		}
 	}
 

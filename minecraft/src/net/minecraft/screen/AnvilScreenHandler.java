@@ -167,8 +167,8 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 								bl3 = true;
 							} else {
 								bl2 = true;
-								if (r > enchantment.getMaximumLevel()) {
-									r = enchantment.getMaximumLevel();
+								if (r > enchantment.getMaxLevel()) {
+									r = enchantment.getMaxLevel();
 								}
 
 								map.put(enchantment, r);

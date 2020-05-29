@@ -1,7 +1,6 @@
 package net.minecraft.world.gen;
 
 import java.util.Random;
-import net.minecraft.class_5304;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -19,7 +18,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
 
-public class PhantomSpawner implements class_5304 {
+public class PhantomSpawner implements Spawner {
 	private int ticksUntilNextSpawn;
 
 	@Override

@@ -14,7 +14,6 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class LootingEnchantLootFunction extends ConditionalLootFunction {
@@ -25,6 +24,11 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 		super(conditions);
 		this.countRange = countRange;
 		this.limit = limit;
+	}
+
+	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.LOOTING_ENCHANT;
 	}
 
 	@Override
@@ -83,10 +87,6 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<LootingEnchantLootFunction> {
-		protected Factory() {
-			super(new Identifier("looting_enchant"), LootingEnchantLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
 			jsonObject.add("count", jsonSerializationContext.serialize(lootingEnchantLootFunction.countRange));

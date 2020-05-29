@@ -114,6 +114,7 @@ public class FireBlock extends AbstractFireBlock {
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		world.getBlockTickScheduler().schedule(pos, this, method_26155(world.random));
 		if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			if (!state.canPlaceAt(world, pos)) {
 				world.removeBlock(pos, false);
@@ -132,7 +133,6 @@ public class FireBlock extends AbstractFireBlock {
 				}
 
 				if (!bl) {
-					world.getBlockTickScheduler().schedule(pos, this, method_26155(world.random));
 					if (!this.areBlocksAroundFlammable(world, pos)) {
 						BlockPos blockPos = pos.down();
 						if (!world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || i > 3) {

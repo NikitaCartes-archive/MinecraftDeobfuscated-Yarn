@@ -33,6 +33,11 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
+	public LootFunctionType method_29321() {
+		return LootFunctionTypes.SET_STEW_EFFECT;
+	}
+
+	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.getItem() == Items.SUSPICIOUS_STEW && !this.effects.isEmpty()) {
 			Random random = context.getRandom();
@@ -74,10 +79,6 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetStewEffectLootFunction> {
-		public Factory() {
-			super(new Identifier("set_stew_effect"), SetStewEffectLootFunction.class);
-		}
-
 		public void toJson(JsonObject jsonObject, SetStewEffectLootFunction setStewEffectLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setStewEffectLootFunction, jsonSerializationContext);
 			if (!setStewEffectLootFunction.effects.isEmpty()) {

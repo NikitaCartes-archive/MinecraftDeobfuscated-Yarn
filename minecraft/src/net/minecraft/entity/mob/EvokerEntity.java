@@ -194,7 +194,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
 						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
 						if (!voxelShape.isEmpty()) {
-							d = voxelShape.getMaximum(Direction.Axis.Y);
+							d = voxelShape.getMax(Direction.Axis.Y);
 						}
 					}
 

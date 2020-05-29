@@ -25,7 +25,7 @@ public class SnowyBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
+		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().up());
 		return this.getDefaultState().with(SNOWY, Boolean.valueOf(blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.SNOW)));
 	}
 

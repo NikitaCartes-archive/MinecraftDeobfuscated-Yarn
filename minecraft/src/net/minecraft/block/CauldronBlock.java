@@ -88,7 +88,7 @@ public class CauldronBlock extends Block {
 					world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.method_29236(world.isClient);
 			} else if (item == Items.BUCKET) {
 				if (i == 3 && !world.isClient) {
 					if (!player.abilities.creativeMode) {
@@ -105,7 +105,7 @@ public class CauldronBlock extends Block {
 					world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.method_29236(world.isClient);
 			} else if (item == Items.GLASS_BOTTLE) {
 				if (i > 0 && !world.isClient) {
 					if (!player.abilities.creativeMode) {
@@ -125,7 +125,7 @@ public class CauldronBlock extends Block {
 					this.setLevel(world, pos, state, i - 1);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.method_29236(world.isClient);
 			} else if (item == Items.POTION && PotionUtil.getPotion(itemStack) == Potions.WATER) {
 				if (i < 3 && !world.isClient) {
 					if (!player.abilities.creativeMode) {
@@ -141,7 +141,7 @@ public class CauldronBlock extends Block {
 					this.setLevel(world, pos, state, i + 1);
 				}
 
-				return ActionResult.SUCCESS;
+				return ActionResult.method_29236(world.isClient);
 			} else {
 				if (i > 0 && item instanceof DyeableItem) {
 					DyeableItem dyeableItem = (DyeableItem)item;
@@ -173,7 +173,7 @@ public class CauldronBlock extends Block {
 						}
 					}
 
-					return ActionResult.SUCCESS;
+					return ActionResult.method_29236(world.isClient);
 				} else if (i > 0 && item instanceof BlockItem) {
 					Block block = ((BlockItem)item).getBlock();
 					if (block instanceof ShulkerBoxBlock && !world.isClient()) {

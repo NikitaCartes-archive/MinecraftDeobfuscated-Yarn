@@ -20,8 +20,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
@@ -86,7 +86,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 		private ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
-			RegistryKey<DimensionType> registryKey = clientWorld.method_27983();
+			RegistryKey<World> registryKey = clientWorld.getRegistryKey();
 			int i = (int)d >> 4;
 			int j = (int)e >> 4;
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();

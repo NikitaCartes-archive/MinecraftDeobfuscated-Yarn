@@ -11,8 +11,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 
 public class RandomChanceWithLootingLootCondition implements LootCondition {
 	private final float chance;
@@ -21,6 +21,11 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 	private RandomChanceWithLootingLootCondition(float chance, float lootingMultiplier) {
 		this.chance = chance;
 		this.lootingMultiplier = lootingMultiplier;
+	}
+
+	@Override
+	public LootConditionType method_29325() {
+		return LootConditionTypes.RANDOM_CHANCE_WITH_LOOTING;
 	}
 
 	@Override
@@ -42,11 +47,7 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 		return () -> new RandomChanceWithLootingLootCondition(chance, lootingMultiplier);
 	}
 
-	public static class Factory extends LootCondition.Factory<RandomChanceWithLootingLootCondition> {
-		protected Factory() {
-			super(new Identifier("random_chance_with_looting"), RandomChanceWithLootingLootCondition.class);
-		}
-
+	public static class Factory implements JsonSerializable<RandomChanceWithLootingLootCondition> {
 		public void toJson(
 			JsonObject jsonObject, RandomChanceWithLootingLootCondition randomChanceWithLootingLootCondition, JsonSerializationContext jsonSerializationContext
 		) {

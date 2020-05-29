@@ -10,17 +10,17 @@ public class EfficiencyEnchantment extends Enchantment {
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return 1 + 10 * (level - 1);
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
-		return super.getMinimumPower(level) + 50;
+	public int getMaxPower(int level) {
+		return super.getMinPower(level) + 50;
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 5;
 	}
 

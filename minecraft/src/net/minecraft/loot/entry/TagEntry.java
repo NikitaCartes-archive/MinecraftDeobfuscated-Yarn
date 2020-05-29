@@ -11,8 +11,8 @@ import net.minecraft.loot.LootChoice;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagContainers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -24,6 +24,11 @@ public class TagEntry extends LeafEntry {
 		super(weight, quality, conditions, functions);
 		this.name = name;
 		this.expand = expand;
+	}
+
+	@Override
+	public LootPoolEntryType method_29318() {
+		return LootPoolEntryTypes.TAG;
 	}
 
 	@Override
@@ -58,13 +63,9 @@ public class TagEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<TagEntry> {
-		public Serializer() {
-			super(new Identifier("tag"), TagEntry.class);
-		}
-
-		public void toJson(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, tagEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", ItemTags.getContainer().checkId(tagEntry.name).toString());
+		public void method_422(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
+			super.method_422(jsonObject, tagEntry, jsonSerializationContext);
+			jsonObject.addProperty("name", TagContainers.instance().items().checkId(tagEntry.name).toString());
 			jsonObject.addProperty("expand", tagEntry.expand);
 		}
 
@@ -72,7 +73,7 @@ public class TagEntry extends LeafEntry {
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			Tag<Item> tag = ItemTags.getContainer().get(identifier);
+			Tag<Item> tag = TagContainers.instance().items().get(identifier);
 			if (tag == null) {
 				throw new JsonParseException("Can't find tag: " + identifier);
 			} else {

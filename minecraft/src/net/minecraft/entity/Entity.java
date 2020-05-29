@@ -91,7 +91,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -171,6 +170,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public int chunkX;
 	public int chunkY;
 	public int chunkZ;
+	private boolean field_25154;
 	public long trackedX;
 	public long trackedY;
 	public long trackedZ;
@@ -987,7 +987,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	private void updateSubmergedInWaterState() {
-		this.submergedInWater = this.isSubmergedIn(FluidTags.WATER, true);
+		this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
 	}
 
 	protected void onSwimmingStart() {
@@ -1058,23 +1058,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	public boolean isSubmergedIn(Tag<Fluid> fluidTag) {
-		return this.isSubmergedIn(fluidTag, false);
-	}
-
-	public boolean isSubmergedIn(Tag<Fluid> fluidTag, boolean requireLoadedChunk) {
-		if (this.getVehicle() instanceof BoatEntity) {
-			return false;
-		} else {
-			double d = this.getEyeY();
-			BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
-			if (requireLoadedChunk && !this.world.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
-				return false;
-			} else {
-				FluidState fluidState = this.world.getFluidState(blockPos);
-				return fluidState.matches(fluidTag) && d < (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos) + 0.11111111F);
-			}
-		}
+	public boolean isSubmergedIn(Tag<Fluid> tag) {
+		return (double)this.getStandingEyeHeight() < this.getFluidHeight(tag);
 	}
 
 	public void setInLava() {
@@ -1127,6 +1112,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.pitch = MathHelper.clamp(pitch, -90.0F, 90.0F) % 360.0F;
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
+	}
+
+	public void positAfterTeleport(double x, double y, double z) {
+		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
 	}
 
 	public void refreshPositionAndAngles(BlockPos pos, float yaw, float pitch) {
@@ -1333,7 +1322,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public CompoundTag toTag(CompoundTag tag) {
 		try {
-			tag.put("Pos", this.toListTag(this.getX(), this.getY(), this.getZ()));
+			if (this.vehicle != null) {
+				tag.put("Pos", this.toListTag(this.vehicle.getX(), this.vehicle.getY(), this.vehicle.getZ()));
+			} else {
+				tag.put("Pos", this.toListTag(this.getX(), this.getY(), this.getZ()));
+			}
+
 			Vec3d vec3d = this.getVelocity();
 			tag.put("Motion", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
 			tag.put("Rotation", this.toListTag(this.yaw, this.pitch));
@@ -1582,9 +1576,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.updatePassengerPosition(passenger, Entity::updatePosition);
 	}
 
-	public void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+	private void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		if (this.hasPassenger(passenger)) {
-			positionUpdater.accept(passenger, this.getX(), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ());
+			double d = this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset();
+			positionUpdater.accept(passenger, this.getX(), d, this.getZ());
 		}
 	}
 
@@ -1631,11 +1626,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected boolean canStartRiding(Entity entity) {
-		return this.ridingCooldown <= 0;
+		return !this.isSneaking() && this.ridingCooldown <= 0;
 	}
 
 	protected boolean wouldPoseNotCollide(EntityPose pose) {
-		return this.world.doesNotCollide(this, this.calculateBoundsForPose(pose));
+		return this.world.doesNotCollide(this, this.calculateBoundsForPose(pose).contract(1.0E-7));
 	}
 
 	public void removeAllPassengers() {
@@ -1644,12 +1639,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	public void stopRiding() {
+	public void method_29239() {
 		if (this.vehicle != null) {
 			Entity entity = this.vehicle;
 			this.vehicle = null;
 			entity.removePassenger(this);
 		}
+	}
+
+	public void stopRiding() {
+		this.method_29239();
 	}
 
 	protected void addPassenger(Entity passenger) {
@@ -1746,9 +1745,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					this.world.getProfiler().push("portal");
 					this.netherPortalTime = i;
 					this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
-					RegistryKey<DimensionType> registryKey = this.world.getDimension().isNether()
-						? DimensionType.OVERWORLD_REGISTRY_KEY
-						: DimensionType.THE_NETHER_REGISTRY_KEY;
+					RegistryKey<World> registryKey = this.world.getDimension().isNether() ? World.OVERWORLD : World.NETHER;
 					this.changeDimension(registryKey);
 					this.world.getProfiler().pop();
 				}
@@ -2063,7 +2060,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			Locale.ROOT,
 			"%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]",
 			this.getClass().getSimpleName(),
-			this.getName().asString(),
+			this.getName().getString(),
 			this.entityId,
 			this.world == null ? "~NULL~" : this.world.toString(),
 			this.getX(),
@@ -2099,11 +2096,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Nullable
-	public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
+	public Entity changeDimension(RegistryKey<World> newDimension) {
 		if (!this.world.isClient && !this.removed) {
 			this.world.getProfiler().push("changeDimension");
 			MinecraftServer minecraftServer = this.getServer();
-			RegistryKey<DimensionType> registryKey = this.world.method_27983();
+			RegistryKey<World> registryKey = this.world.getRegistryKey();
 			ServerWorld serverWorld = minecraftServer.getWorld(registryKey);
 			ServerWorld serverWorld2 = minecraftServer.getWorld(newDimension);
 			this.detach();
@@ -2111,16 +2108,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 			Vec3d vec3d = this.getVelocity();
 			float f = 0.0F;
 			BlockPos blockPos;
-			if (registryKey == DimensionType.THE_END_REGISTRY_KEY && newDimension == DimensionType.OVERWORLD_REGISTRY_KEY) {
+			if (registryKey == World.END && newDimension == World.OVERWORLD) {
 				blockPos = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.getSpawnPos());
-			} else if (newDimension == DimensionType.THE_END_REGISTRY_KEY) {
+			} else if (newDimension == World.END) {
 				blockPos = ServerWorld.field_25144;
 			} else {
 				double d = this.getX();
 				double e = this.getZ();
-				Registry<DimensionType> registry = minecraftServer.method_29174().getRegistry();
-				DimensionType dimensionType = registry.get(registryKey);
-				DimensionType dimensionType2 = registry.get(newDimension);
+				DimensionType dimensionType = serverWorld.getDimension();
+				DimensionType dimensionType2 = serverWorld2.getDimension();
 				double g = 8.0;
 				if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
 					d /= 8.0;
@@ -2156,7 +2152,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				entity.refreshPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
 				entity.setVelocity(vec3d);
 				serverWorld2.onDimensionChanged(entity);
-				if (newDimension == DimensionType.THE_END_REGISTRY_KEY) {
+				if (newDimension == World.END) {
 					ServerWorld.method_29200(serverWorld2);
 				}
 			}
@@ -2296,7 +2292,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.streamPassengersRecursively().forEach(entity -> {
 				serverWorld.checkChunk(entity);
 				entity.teleportRequested = true;
-				entity.updatePositionsRecursively(Entity::positAfterTeleport);
+
+				for(Entity entity2 : entity.passengerList) {
+					entity.updatePassengerPosition(entity2, Entity::positAfterTeleport);
+				}
 			});
 		}
 	}
@@ -2467,6 +2466,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return bl;
 	}
 
+	public boolean method_29240() {
+		boolean bl = this.field_25154;
+		this.field_25154 = false;
+		return bl;
+	}
+
 	@Nullable
 	public Entity getPrimaryPassenger() {
 		return null;
@@ -2562,12 +2567,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 
 		return false;
-	}
-
-	public void updatePositionsRecursively(Entity.PositionUpdater positionUpdater) {
-		for(Entity entity : this.passengerList) {
-			this.updatePassengerPosition(entity, positionUpdater);
-		}
 	}
 
 	public boolean isLogicalSideForUpdatingMovement() {
@@ -2722,6 +2721,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.fluidHeight.getDouble(fluid);
 	}
 
+	public double method_29241() {
+		return (double)this.getStandingEyeHeight() < 0.4 ? 0.0 : 0.4;
+	}
+
 	public final float getWidth() {
 		return this.dimensions.width;
 	}
@@ -2805,14 +2808,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 			if (i != this.blockPos.getX() || j != this.blockPos.getY() || k != this.blockPos.getZ()) {
 				this.blockPos = new BlockPos(i, j, k);
 			}
+
+			this.field_25154 = true;
 		}
 	}
 
 	public void checkDespawn() {
-	}
-
-	public void positAfterTeleport(double x, double y, double z) {
-		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
 	}
 
 	@FunctionalInterface

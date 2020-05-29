@@ -3,7 +3,6 @@ package net.minecraft.world;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_5304;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
@@ -14,11 +13,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
-public class WanderingTraderManager implements class_5304 {
+public class WanderingTraderManager implements Spawner {
 	private final Random random = new Random();
 	private final ServerWorldProperties field_24387;
 	private int spawnTimer;

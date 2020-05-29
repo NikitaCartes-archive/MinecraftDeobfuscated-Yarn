@@ -40,9 +40,11 @@ public class GenerationStep {
 
 	public static enum Feature implements StringIdentifiable {
 		RAW_GENERATION("raw_generation"),
+		LAKES("lakes"),
 		LOCAL_MODIFICATIONS("local_modifications"),
 		UNDERGROUND_STRUCTURES("underground_structures"),
 		SURFACE_STRUCTURES("surface_structures"),
+		STRONGHOLDS("strongholds"),
 		UNDERGROUND_ORES("underground_ores"),
 		UNDERGROUND_DECORATION("underground_decoration"),
 		VEGETAL_DECORATION("vegetal_decoration"),

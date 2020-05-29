@@ -1,8 +1,10 @@
 package net.minecraft.tag;
 
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
+import net.minecraft.util.Identifier;
 
 public class EntityTypeTags {
 	private static final GlobalTagAccessor<EntityType<?>> ACCESSOR = new GlobalTagAccessor<>();
@@ -27,5 +29,9 @@ public class EntityTypeTags {
 
 	public static TagContainer<EntityType<?>> getContainer() {
 		return ACCESSOR.getContainer();
+	}
+
+	public static Set<Identifier> method_29215(TagContainer<EntityType<?>> tagContainer) {
+		return ACCESSOR.method_29224(tagContainer);
 	}
 }

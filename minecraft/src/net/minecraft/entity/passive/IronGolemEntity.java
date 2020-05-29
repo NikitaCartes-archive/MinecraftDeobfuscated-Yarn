@@ -186,7 +186,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	public IronGolemEntity.Crack getCrack() {
-		return IronGolemEntity.Crack.from(this.getHealth() / this.getMaximumHealth());
+		return IronGolemEntity.Crack.from(this.getHealth() / this.getMaxHealth());
 	}
 
 	@Environment(EnvType.CLIENT)

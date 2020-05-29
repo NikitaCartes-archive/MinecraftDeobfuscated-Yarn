@@ -12,12 +12,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class DynamicEntry extends LeafEntry {
-	public static final Identifier instance = new Identifier("dynamic");
 	private final Identifier name;
 
 	private DynamicEntry(Identifier name, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
 		super(weight, quality, conditions, functions);
 		this.name = name;
+	}
+
+	@Override
+	public LootPoolEntryType method_29318() {
+		return LootPoolEntryTypes.DYNAMIC;
 	}
 
 	@Override
@@ -30,12 +34,8 @@ public class DynamicEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<DynamicEntry> {
-		public Serializer() {
-			super(new Identifier("dynamic"), DynamicEntry.class);
-		}
-
-		public void toJson(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, dynamicEntry, jsonSerializationContext);
+		public void method_422(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
+			super.method_422(jsonObject, dynamicEntry, jsonSerializationContext);
 			jsonObject.addProperty("name", dynamicEntry.name.toString());
 		}
 

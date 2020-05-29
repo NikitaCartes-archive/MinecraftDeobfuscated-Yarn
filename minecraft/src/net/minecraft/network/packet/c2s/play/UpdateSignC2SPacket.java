@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -17,9 +16,9 @@ public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public UpdateSignC2SPacket(BlockPos blockPos, Text text, Text text2, Text text3, Text text4) {
+	public UpdateSignC2SPacket(BlockPos blockPos, String string, String string2, String string3, String string4) {
 		this.pos = blockPos;
-		this.text = new String[]{text.getString(), text2.getString(), text3.getString(), text4.getString()};
+		this.text = new String[]{string, string2, string3, string4};
 	}
 
 	@Override

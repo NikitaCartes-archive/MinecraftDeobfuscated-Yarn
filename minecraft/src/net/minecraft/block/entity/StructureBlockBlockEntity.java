@@ -186,6 +186,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.author = entity.getName().getString();
 	}
 
+	@Environment(EnvType.CLIENT)
 	public BlockPos getOffset() {
 		return this.offset;
 	}
@@ -211,7 +212,6 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.mirror = mirror;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BlockRotation getRotation() {
 		return this.rotation;
 	}
@@ -457,7 +457,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			}
 
 			BlockPos blockPos3 = blockPos.add(this.offset);
-			structure.place(this.world, blockPos3, structurePlacementData);
+			structure.place(this.world, blockPos3, structurePlacementData, createRandom(this.seed));
 			return true;
 		}
 	}

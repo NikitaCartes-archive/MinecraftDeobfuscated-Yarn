@@ -8,17 +8,17 @@ public class QuickChargeEnchantment extends Enchantment {
 	}
 
 	@Override
-	public int getMinimumPower(int level) {
+	public int getMinPower(int level) {
 		return 12 + (level - 1) * 20;
 	}
 
 	@Override
-	public int getMaximumPower(int level) {
+	public int getMaxPower(int level) {
 		return 50;
 	}
 
 	@Override
-	public int getMaximumLevel() {
+	public int getMaxLevel() {
 		return 3;
 	}
 }
