@@ -20,13 +20,14 @@ extends ForgingScreen<SmithingScreenHandler> {
 
     public SmithingScreen(SmithingScreenHandler handler, PlayerInventory playerInventory, Text title) {
         super(handler, playerInventory, title, TEXTURE);
+        this.field_25267 = 60;
+        this.field_25268 = 18;
     }
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         RenderSystem.disableBlend();
-        this.textRenderer.draw(matrices, this.title, 60.0f, 20.0f, 0x404040);
-        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
+        super.drawForeground(matrices, mouseX, mouseY);
     }
 }
 

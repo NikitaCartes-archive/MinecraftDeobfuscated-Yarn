@@ -14,6 +14,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -33,8 +34,8 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        HitResult hitResult = BoatItem.rayTrace(world, user, RayTraceContext.FluidHandling.ANY);
-        if (hitResult.getType() == HitResult.Type.MISS) {
+        BlockHitResult hitResult = BoatItem.rayTrace(world, user, RayTraceContext.FluidHandling.ANY);
+        if (((HitResult)hitResult).getType() == HitResult.Type.MISS) {
             return TypedActionResult.pass(itemStack);
         }
         Vec3d vec3d = user.getRotationVec(1.0f);
@@ -48,7 +49,7 @@ extends Item {
                 return TypedActionResult.pass(itemStack);
             }
         }
-        if (hitResult.getType() == HitResult.Type.BLOCK) {
+        if (((HitResult)hitResult).getType() == HitResult.Type.BLOCK) {
             BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
             boatEntity.setBoatType(this.type);
             boatEntity.yaw = user.yaw;
@@ -62,7 +63,7 @@ extends Item {
                 }
             }
             user.incrementStat(Stats.USED.getOrCreateStat(this));
-            return TypedActionResult.success(itemStack);
+            return TypedActionResult.method_29237(itemStack, world.isClient());
         }
         return TypedActionResult.pass(itemStack);
     }

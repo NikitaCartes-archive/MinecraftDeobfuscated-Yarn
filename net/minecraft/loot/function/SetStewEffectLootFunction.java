@@ -25,6 +25,8 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -36,6 +38,11 @@ extends ConditionalLootFunction {
     private SetStewEffectLootFunction(LootCondition[] conditions, Map<StatusEffect, UniformLootTableRange> effects) {
         super(conditions);
         this.effects = ImmutableMap.copyOf(effects);
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.SET_STEW_EFFECT;
     }
 
     @Override
@@ -61,10 +68,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<SetStewEffectLootFunction> {
-        public Factory() {
-            super(new Identifier("set_stew_effect"), SetStewEffectLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, SetStewEffectLootFunction setStewEffectLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, setStewEffectLootFunction, jsonSerializationContext);

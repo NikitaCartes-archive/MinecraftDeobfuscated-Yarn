@@ -83,7 +83,7 @@ extends ChunkManager {
         this.mainThreadExecutor = new MainThreadExecutor(serverWorld);
         this.chunkGenerator = chunkGenerator;
         this.serverThread = Thread.currentThread();
-        File file = session.method_27424(serverWorld.method_27983());
+        File file = session.method_27424(serverWorld.getRegistryKey());
         File file2 = new File(file, "data");
         file2.mkdirs();
         this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
@@ -308,14 +308,14 @@ extends ChunkManager {
         this.threadedAnvilChunkStorage.close();
     }
 
-    public void tick(BooleanSupplier booleanSupplier) {
+    public void tick(BooleanSupplier shouldKeepTicking) {
         this.world.getProfiler().push("purge");
         this.ticketManager.purge();
         this.tick();
         this.world.getProfiler().swap("chunks");
         this.tickChunks();
         this.world.getProfiler().swap("unload");
-        this.threadedAnvilChunkStorage.tick(booleanSupplier);
+        this.threadedAnvilChunkStorage.tick(shouldKeepTicking);
         this.world.getProfiler().pop();
         this.initChunkCaches();
     }
@@ -397,7 +397,17 @@ extends ChunkManager {
         int i = pos.getX() >> 4;
         ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j = pos.getZ() >> 4));
         if (chunkHolder != null) {
-            chunkHolder.markForBlockUpdate(pos.getX() & 0xF, pos.getY(), pos.getZ() & 0xF);
+            chunkHolder.markForBlockUpdate(this, pos.getX() & 0xF, pos.getY(), pos.getZ() & 0xF);
+        }
+    }
+
+    protected void method_29482(int i, int j) {
+        for (int k = -1; k <= 1; ++k) {
+            for (int l = -1; l <= 1; ++l) {
+                ChunkHolder chunkHolder;
+                if (k == 0 && l == 0 || (chunkHolder = this.getChunkHolder(ChunkPos.toLong(i + k, j + l))) == null) continue;
+                chunkHolder.method_29481();
+            }
         }
     }
 
@@ -485,7 +495,7 @@ extends ChunkManager {
     final class MainThreadExecutor
     extends ThreadExecutor<Runnable> {
         private MainThreadExecutor(World world) {
-            super("Chunk source main thread executor for " + world.method_27983().getValue());
+            super("Chunk source main thread executor for " + world.getRegistryKey().getValue());
         }
 
         @Override

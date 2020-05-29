@@ -6,7 +6,6 @@ package net.minecraft.world.gen.decorator;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -69,6 +68,7 @@ import net.minecraft.world.gen.decorator.WaterLakeDecorator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<NopeDecoratorConfig> NOPE = Decorator.register("nope", new NopeDecorator(NopeDecoratorConfig.field_24891));
@@ -128,12 +128,13 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     }
 
     protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        MutableBoolean mutableBoolean = new MutableBoolean();
         this.getPositions(serverWorldAccess, chunkGenerator, random, decoratorConfig, blockPos2).forEach(blockPos -> {
-            boolean bl = configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, (BlockPos)blockPos);
-            atomicBoolean.set(atomicBoolean.get() || bl);
+            if (configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, (BlockPos)blockPos)) {
+                mutableBoolean.setTrue();
+            }
         });
-        return atomicBoolean.get();
+        return mutableBoolean.isTrue();
     }
 
     public abstract Stream<BlockPos> getPositions(WorldAccess var1, ChunkGenerator var2, Random var3, DC var4, BlockPos var5);

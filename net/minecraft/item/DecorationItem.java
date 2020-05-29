@@ -43,7 +43,7 @@ extends Item {
         } else if (this.entityType == EntityType.ITEM_FRAME) {
             abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
         } else {
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null) {
@@ -55,7 +55,7 @@ extends Item {
                 world.spawnEntity(abstractDecorationEntity);
             }
             itemStack.decrement(1);
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         return ActionResult.CONSUME;
     }

@@ -10,7 +10,7 @@ import net.minecraft.world.gen.feature.RuinedPortalFeature;
 
 public class RuinedPortalFeatureConfig
 implements FeatureConfig {
-    public static final Codec<RuinedPortalFeatureConfig> field_24906 = ((MapCodec)RuinedPortalFeature.Type.field_24840.fieldOf("portal_type")).xmap(RuinedPortalFeatureConfig::new, ruinedPortalFeatureConfig -> ruinedPortalFeatureConfig.portalType).codec();
+    public static final Codec<RuinedPortalFeatureConfig> CODEC = ((MapCodec)RuinedPortalFeature.Type.field_24840.fieldOf("portal_type")).xmap(RuinedPortalFeatureConfig::new, ruinedPortalFeatureConfig -> ruinedPortalFeatureConfig.portalType).codec();
     public final RuinedPortalFeature.Type portalType;
 
     public RuinedPortalFeatureConfig(RuinedPortalFeature.Type type) {

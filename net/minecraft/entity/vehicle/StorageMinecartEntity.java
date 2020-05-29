@@ -29,7 +29,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class StorageMinecartEntity
@@ -122,7 +121,7 @@ NamedScreenHandlerFactory {
 
     @Override
     @Nullable
-    public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
+    public Entity changeDimension(RegistryKey<World> newDimension) {
         this.field_7733 = false;
         return super.changeDimension(newDimension);
     }

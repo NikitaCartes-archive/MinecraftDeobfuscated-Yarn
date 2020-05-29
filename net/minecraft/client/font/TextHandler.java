@@ -11,12 +11,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.util.TextCollector;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
@@ -47,9 +45,9 @@ public class TextHandler {
     /**
      * Returns the width of a text.
      */
-    public float getWidth(Text text) {
+    public float getWidth(class_5348 arg) {
         MutableFloat mutableFloat = new MutableFloat();
-        TextVisitFactory.visitFormatted(text, Style.EMPTY, (i, style, j) -> {
+        TextVisitFactory.visitFormatted(arg, Style.EMPTY, (i, style, j) -> {
             mutableFloat.add(this.widthRetriever.getWidth(j, style));
             return true;
         });
@@ -111,41 +109,35 @@ public class TextHandler {
      * 
      * @return the trimmed text
      * 
-     * @param text the text
      * @param maxWidth the max width of the trimmed text
      */
     @Nullable
-    public Text trimToWidth(Text text, int maxWidth) {
+    public Style trimToWidth(class_5348 arg, int maxWidth) {
         WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(maxWidth);
-        return text.visit((style, string) -> {
-            if (!TextVisitFactory.visitFormatted(string, style, (TextVisitFactory.CharacterVisitor)widthLimitingVisitor)) {
-                return Optional.of(new LiteralText(string).setStyle(style));
-            }
-            return Optional.empty();
-        }, Style.EMPTY).orElse(null);
+        return arg.visit((style, string) -> TextVisitFactory.visitFormatted(string, style, (TextVisitFactory.CharacterVisitor)widthLimitingVisitor) ? Optional.empty() : Optional.of(style), Style.EMPTY).orElse(null);
     }
 
-    public MutableText trimToWidth(Text text, int width, Style style) {
+    public class_5348 trimToWidth(class_5348 arg, int width, Style style) {
         final WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(width);
-        return text.visit(new Text.StyledVisitor<MutableText>(){
+        return arg.visit(new class_5348.StyledVisitor<class_5348>(){
             private final TextCollector collector = new TextCollector();
 
             @Override
-            public Optional<MutableText> accept(Style style, String string) {
+            public Optional<class_5348> accept(Style style, String string) {
                 widthLimitingVisitor.resetLength();
                 if (!TextVisitFactory.visitFormatted(string, style, (TextVisitFactory.CharacterVisitor)widthLimitingVisitor)) {
                     String string2 = string.substring(0, widthLimitingVisitor.getLength());
                     if (!string2.isEmpty()) {
-                        this.collector.add(new LiteralText(string2).fillStyle(style));
+                        this.collector.add(class_5348.method_29431(string2, style));
                     }
                     return Optional.of(this.collector.getCombined());
                 }
                 if (!string.isEmpty()) {
-                    this.collector.add(new LiteralText(string).fillStyle(style));
+                    this.collector.add(class_5348.method_29431(string, style));
                 }
                 return Optional.empty();
             }
-        }, style).orElseGet(text::shallowCopy);
+        }, style).orElse(arg);
     }
 
     public static int moveCursorByWords(String text, int offset, int cursor, boolean consumeSpaceOrBreak) {
@@ -197,18 +189,18 @@ public class TextHandler {
         }
     }
 
-    public List<Text> wrapLines(String text, int maxWidth, Style style2) {
-        ArrayList<Text> list = Lists.newArrayList();
-        this.wrapLines(text, maxWidth, style2, false, (style, i, j) -> list.add(new LiteralText(text.substring(i, j)).setStyle(style)));
+    public List<class_5348> wrapLines(String text, int maxWidth, Style style2) {
+        ArrayList<class_5348> list = Lists.newArrayList();
+        this.wrapLines(text, maxWidth, style2, false, (style, i, j) -> list.add(class_5348.method_29431(text.substring(i, j), style)));
         return list;
     }
 
-    public List<Text> wrapLines(Text text, int maxWidth, Style style2) {
-        ArrayList<Text> list = Lists.newArrayList();
-        ArrayList<FormattedString> list2 = Lists.newArrayList();
-        text.visit((style, string) -> {
+    public List<class_5348> wrapLines(class_5348 arg, int maxWidth, Style style2) {
+        ArrayList<class_5348> list = Lists.newArrayList();
+        ArrayList<class_5345> list2 = Lists.newArrayList();
+        arg.visit((style, string) -> {
             if (!string.isEmpty()) {
-                list2.add(new FormattedString(string, style));
+                list2.add(new class_5345(string, style));
             }
             return Optional.empty();
         }, style2);
@@ -218,8 +210,8 @@ public class TextHandler {
         block0: while (bl) {
             bl = false;
             LineBreakingVisitor lineBreakingVisitor = new LineBreakingVisitor(maxWidth);
-            for (FormattedString formattedString : lineWrappingCollector.parts) {
-                boolean bl3 = TextVisitFactory.visitFormatted(formattedString.text, 0, formattedString.style, style2, lineBreakingVisitor);
+            for (class_5345 lv : lineWrappingCollector.parts) {
+                boolean bl3 = TextVisitFactory.visitFormatted(lv.field_25261, 0, lv.field_25262, style2, lineBreakingVisitor);
                 if (!bl3) {
                     int i = lineBreakingVisitor.getEndingIndex();
                     Style style22 = lineBreakingVisitor.getEndingStyle();
@@ -231,51 +223,51 @@ public class TextHandler {
                     bl = true;
                     continue block0;
                 }
-                lineBreakingVisitor.offset(formattedString.text.length());
+                lineBreakingVisitor.offset(lv.field_25261.length());
             }
         }
-        Text text2 = lineWrappingCollector.collectRemainers();
-        if (text2 != null) {
-            list.add(text2);
+        class_5348 lv2 = lineWrappingCollector.collectRemainers();
+        if (lv2 != null) {
+            list.add(lv2);
         } else if (bl2) {
-            list.add(new LiteralText("").fillStyle(style2));
+            list.add(class_5348.field_25310);
         }
         return list;
     }
 
     @Environment(value=EnvType.CLIENT)
     static class LineWrappingCollector {
-        private final List<FormattedString> parts;
+        private final List<class_5345> parts;
         private String joined;
 
-        public LineWrappingCollector(List<FormattedString> parts) {
+        public LineWrappingCollector(List<class_5345> parts) {
             this.parts = parts;
-            this.joined = parts.stream().map(formattedString -> ((FormattedString)formattedString).text).collect(Collectors.joining());
+            this.joined = parts.stream().map(arg -> ((class_5345)arg).field_25261).collect(Collectors.joining());
         }
 
         public char charAt(int index) {
             return this.joined.charAt(index);
         }
 
-        public Text collectLine(int lineLength, int skippedLength, Style style) {
+        public class_5348 collectLine(int lineLength, int skippedLength, Style style) {
             TextCollector textCollector = new TextCollector();
-            ListIterator<FormattedString> listIterator = this.parts.listIterator();
+            ListIterator<class_5345> listIterator = this.parts.listIterator();
             int i = lineLength;
             boolean bl = false;
             while (listIterator.hasNext()) {
                 String string2;
-                FormattedString formattedString = listIterator.next();
-                String string = formattedString.text;
+                class_5345 lv = listIterator.next();
+                String string = lv.field_25261;
                 int j = string.length();
                 if (!bl) {
                     if (i > j) {
-                        textCollector.add(formattedString.getText());
+                        textCollector.add(lv);
                         listIterator.remove();
                         i -= j;
                     } else {
                         string2 = string.substring(0, i);
                         if (!string2.isEmpty()) {
-                            textCollector.add(new LiteralText(string2).setStyle(formattedString.style));
+                            textCollector.add(class_5348.method_29431(string2, lv.field_25262));
                         }
                         i += skippedLength;
                         bl = true;
@@ -292,7 +284,7 @@ public class TextHandler {
                     listIterator.remove();
                     break;
                 }
-                listIterator.set(new FormattedString(string2, style));
+                listIterator.set(new class_5345(string2, style));
                 break;
             }
             this.joined = this.joined.substring(lineLength + skippedLength);
@@ -300,26 +292,33 @@ public class TextHandler {
         }
 
         @Nullable
-        public Text collectRemainers() {
+        public class_5348 collectRemainers() {
             TextCollector textCollector = new TextCollector();
-            this.parts.forEach(formattedString -> textCollector.add(formattedString.getText()));
+            this.parts.forEach(textCollector::add);
             this.parts.clear();
             return textCollector.getRawCombined();
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class FormattedString {
-        private final String text;
-        private final Style style;
+    static class class_5345
+    implements class_5348 {
+        private final String field_25261;
+        private final Style field_25262;
 
-        public FormattedString(String text, Style style) {
-            this.text = text;
-            this.style = style;
+        public class_5345(String string, Style style) {
+            this.field_25261 = string;
+            this.field_25262 = style;
         }
 
-        public MutableText getText() {
-            return new LiteralText(this.text).setStyle(this.style);
+        @Override
+        public <T> Optional<T> visit(class_5348.Visitor<T> visitor) {
+            return visitor.accept(this.field_25261);
+        }
+
+        @Override
+        public <T> Optional<T> visit(class_5348.StyledVisitor<T> styledVisitor, Style style) {
+            return styledVisitor.accept(this.field_25262.withParent(style), this.field_25261);
         }
     }
 

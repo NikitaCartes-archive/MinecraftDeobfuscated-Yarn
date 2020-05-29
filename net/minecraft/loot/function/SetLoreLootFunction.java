@@ -18,12 +18,13 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.function.SetNameLootFunction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,11 @@ extends ConditionalLootFunction {
         this.replace = replace;
         this.lore = ImmutableList.copyOf(lore);
         this.entity = entity;
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.SET_LORE;
     }
 
     @Override
@@ -92,10 +98,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<SetLoreLootFunction> {
-        public Factory() {
-            super(new Identifier("set_lore"), SetLoreLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, setLoreLootFunction, jsonSerializationContext);

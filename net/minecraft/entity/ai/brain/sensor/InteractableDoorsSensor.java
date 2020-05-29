@@ -16,13 +16,13 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class InteractableDoorsSensor
 extends Sensor<LivingEntity> {
     @Override
     protected void sense(ServerWorld world, LivingEntity entity) {
-        RegistryKey<DimensionType> registryKey = world.method_27983();
+        RegistryKey<World> registryKey = world.getRegistryKey();
         BlockPos blockPos = entity.getBlockPos();
         ArrayList<GlobalPos> list = Lists.newArrayList();
         for (int i = -1; i <= 1; ++i) {

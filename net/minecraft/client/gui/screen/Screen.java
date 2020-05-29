@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -35,6 +36,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -126,23 +128,27 @@ Drawable {
         return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
     }
 
-    public void renderTooltip(MatrixStack matrices, Text line, int x, int y) {
-        this.renderTooltip(matrices, Arrays.asList(line), x, y);
+    public void renderTooltip(MatrixStack matrices, class_5348 arg, int x, int y) {
+        this.renderTooltip(matrices, Arrays.asList(arg), x, y);
     }
 
-    public void renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y) {
+    /*
+     * WARNING - void declaration
+     */
+    public void renderTooltip(MatrixStack matrices, List<? extends class_5348> lines, int x, int y) {
+        int n;
         int j;
         if (lines.isEmpty()) {
             return;
         }
         int i = 0;
-        for (Text text : lines) {
-            j = this.textRenderer.getWidth(text);
+        for (class_5348 class_53482 : lines) {
+            j = this.textRenderer.getWidth(class_53482);
             if (j <= i) continue;
             i = j;
         }
         int k = x + 12;
-        int l = y - 12;
+        int n2 = y - 12;
         j = i;
         int m = 8;
         if (lines.size() > 1) {
@@ -151,28 +157,27 @@ Drawable {
         if (k + i > this.width) {
             k -= 28 + i;
         }
-        if (l + m + 6 > this.height) {
-            l = this.height - m - 6;
+        if (n2 + m + 6 > this.height) {
+            n = this.height - m - 6;
         }
         matrices.push();
-        this.itemRenderer.zOffset = 300.0f;
-        int n = -267386864;
+        int n3 = -267386864;
         int o = 0x505000FF;
         int p = 1344798847;
-        int q = 300;
+        int q = 400;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
         Matrix4f matrix4f = matrices.peek().getModel();
-        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, l - 4, k + j + 3, l - 3, 300, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 3, k + j + 3, l + m + 4, 300, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + j + 3, l + m + 3, 300, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, k - 4, l - 3, k - 3, l + m + 3, 300, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, k + j + 3, l - 3, k + j + 4, l + m + 3, 300, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 300, 0x505000FF, 1344798847);
-        Screen.fillGradient(matrix4f, bufferBuilder, k + j + 2, l - 3 + 1, k + j + 3, l + m + 3 - 1, 300, 0x505000FF, 1344798847);
-        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, l - 3, k + j + 3, l - 3 + 1, 300, 0x505000FF, 0x505000FF);
-        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, l + m + 2, k + j + 3, l + m + 3, 300, 1344798847, 1344798847);
+        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, n - 4, k + j + 3, n - 3, 400, -267386864, -267386864);
+        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, n + m + 3, k + j + 3, n + m + 4, 400, -267386864, -267386864);
+        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, n - 3, k + j + 3, n + m + 3, 400, -267386864, -267386864);
+        Screen.fillGradient(matrix4f, bufferBuilder, k - 4, n - 3, k - 3, n + m + 3, 400, -267386864, -267386864);
+        Screen.fillGradient(matrix4f, bufferBuilder, k + j + 3, n - 3, k + j + 4, n + m + 3, 400, -267386864, -267386864);
+        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, n - 3 + 1, k - 3 + 1, n + m + 3 - 1, 400, 0x505000FF, 1344798847);
+        Screen.fillGradient(matrix4f, bufferBuilder, k + j + 2, n - 3 + 1, k + j + 3, n + m + 3 - 1, 400, 0x505000FF, 1344798847);
+        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, n - 3, k + j + 3, n - 3 + 1, 400, 0x505000FF, 0x505000FF);
+        Screen.fillGradient(matrix4f, bufferBuilder, k - 3, n + m + 2, k + j + 3, n + m + 3, 400, 1344798847, 1344798847);
         RenderSystem.enableDepthTest();
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
@@ -184,27 +189,27 @@ Drawable {
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        matrices.translate(0.0, 0.0, this.itemRenderer.zOffset);
+        matrices.translate(0.0, 0.0, 400.0);
         for (int r = 0; r < lines.size(); ++r) {
-            Text text2 = lines.get(r);
-            if (text2 != null) {
-                this.textRenderer.draw(text2, (float)k, (float)l, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+            class_5348 lv2 = lines.get(r);
+            if (lv2 != null) {
+                void var7_11;
+                this.textRenderer.draw(lv2, (float)k, (float)var7_11, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
             }
             if (r == 0) {
-                l += 2;
+                var7_11 += 2;
             }
-            l += 10;
+            var7_11 += 10;
         }
         immediate.draw();
         matrices.pop();
-        this.itemRenderer.zOffset = 0.0f;
     }
 
-    protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Text text, int i, int j) {
-        if (text == null || text.getStyle().getHoverEvent() == null) {
+    protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int i, int j) {
+        if (style == null || style.getHoverEvent() == null) {
             return;
         }
-        HoverEvent hoverEvent = text.getStyle().getHoverEvent();
+        HoverEvent hoverEvent = style.getHoverEvent();
         HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
         if (itemStackContent != null) {
             this.renderTooltip(matrices, itemStackContent.asStack(), i, j);
@@ -215,9 +220,9 @@ Drawable {
                     this.renderTooltip(matrices, entityContent.asTooltip(), i, j);
                 }
             } else {
-                Text text2 = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
-                if (text2 != null) {
-                    this.renderTooltip(matrices, this.client.textRenderer.wrapLines(text2, Math.max(this.width / 2, 200)), i, j);
+                Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
+                if (text != null) {
+                    this.renderTooltip(matrices, this.client.textRenderer.wrapLines(text, Math.max(this.width / 2, 200)), i, j);
                 }
             }
         }
@@ -226,14 +231,14 @@ Drawable {
     protected void insertText(String text, boolean override) {
     }
 
-    public boolean handleTextClick(Text text) {
-        if (text == null) {
+    public boolean handleTextClick(@Nullable Style style) {
+        if (style == null) {
             return false;
         }
-        ClickEvent clickEvent = text.getStyle().getClickEvent();
+        ClickEvent clickEvent = style.getClickEvent();
         if (Screen.hasShiftDown()) {
-            if (text.getStyle().getInsertion() != null) {
-                this.insertText(text.getStyle().getInsertion(), false);
+            if (style.getInsertion() != null) {
+                this.insertText(style.getInsertion(), false);
             }
         } else if (clickEvent != null) {
             block21: {

@@ -37,5 +37,9 @@ public class TypedActionResult<T> {
     public static <T> TypedActionResult<T> fail(T data) {
         return new TypedActionResult<T>(ActionResult.FAIL, data);
     }
+
+    public static <T> TypedActionResult<T> method_29237(T object, boolean bl) {
+        return bl ? TypedActionResult.success(object) : TypedActionResult.consume(object);
+    }
 }
 

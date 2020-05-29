@@ -93,8 +93,6 @@ ModelWithHead {
 
     @Override
     public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
-        float m;
-        float l;
         boolean bl = ((LivingEntity)livingEntity).getRoll() > 4;
         boolean bl2 = ((LivingEntity)livingEntity).isInSwimmingPose();
         this.head.yaw = i * ((float)Math.PI / 180);
@@ -174,31 +172,7 @@ ModelWithHead {
             this.leftArm.pitch = this.leftArm.pitch * 0.5f - (float)Math.PI;
             this.leftArm.yaw = 0.0f;
         }
-        if (this.handSwingProgress > 0.0f) {
-            Arm arm = this.getPreferredArm(livingEntity);
-            ModelPart modelPart = this.getArm(arm);
-            l = this.handSwingProgress;
-            this.torso.yaw = MathHelper.sin(MathHelper.sqrt(l) * ((float)Math.PI * 2)) * 0.2f;
-            if (arm == Arm.LEFT) {
-                this.torso.yaw *= -1.0f;
-            }
-            this.rightArm.pivotZ = MathHelper.sin(this.torso.yaw) * 5.0f;
-            this.rightArm.pivotX = -MathHelper.cos(this.torso.yaw) * 5.0f;
-            this.leftArm.pivotZ = -MathHelper.sin(this.torso.yaw) * 5.0f;
-            this.leftArm.pivotX = MathHelper.cos(this.torso.yaw) * 5.0f;
-            this.rightArm.yaw += this.torso.yaw;
-            this.leftArm.yaw += this.torso.yaw;
-            this.leftArm.pitch += this.torso.yaw;
-            l = 1.0f - this.handSwingProgress;
-            l *= l;
-            l *= l;
-            l = 1.0f - l;
-            m = MathHelper.sin(l * (float)Math.PI);
-            float n = MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -(this.head.pitch - 0.7f) * 0.75f;
-            modelPart.pitch = (float)((double)modelPart.pitch - ((double)m * 1.2 + (double)n));
-            modelPart.yaw += this.torso.yaw * 2.0f;
-            modelPart.roll += MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -0.4f;
-        }
+        this.method_29353(livingEntity, h);
         if (this.isSneaking) {
             this.torso.pitch = 0.5f;
             this.rightArm.pitch += 0.4f;
@@ -222,10 +196,7 @@ ModelWithHead {
             this.leftArm.pivotY = 2.0f;
             this.rightArm.pivotY = 2.0f;
         }
-        this.rightArm.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
-        this.leftArm.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
-        this.rightArm.pitch += MathHelper.sin(h * 0.067f) * 0.05f;
-        this.leftArm.pitch -= MathHelper.sin(h * 0.067f) * 0.05f;
+        CrossbowPosing.method_29350(this.rightArm, this.leftArm, h);
         if (this.rightArmPose == ArmPose.BOW_AND_ARROW) {
             this.rightArm.yaw = -0.1f + this.head.yaw;
             this.leftArm.yaw = 0.1f + this.head.yaw + 0.4f;
@@ -248,39 +219,69 @@ ModelWithHead {
             CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
         }
         if (this.leaningPitch > 0.0f) {
-            float p;
-            float o = f % 26.0f;
-            float f2 = p = this.handSwingProgress > 0.0f ? 0.0f : this.leaningPitch;
-            if (o < 14.0f) {
+            float n;
+            float m;
+            float l = f % 26.0f;
+            float f2 = m = this.handSwingProgress > 0.0f ? 0.0f : this.leaningPitch;
+            if (l < 14.0f) {
                 this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, 0.0f, this.leaningPitch);
-                this.rightArm.pitch = MathHelper.lerp(p, this.rightArm.pitch, 0.0f);
+                this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 0.0f);
                 this.leftArm.yaw = this.lerpAngle(this.leftArm.yaw, (float)Math.PI, this.leaningPitch);
-                this.rightArm.yaw = MathHelper.lerp(p, this.rightArm.yaw, (float)Math.PI);
-                this.leftArm.roll = this.lerpAngle(this.leftArm.roll, (float)Math.PI + 1.8707964f * this.method_2807(o) / this.method_2807(14.0f), this.leaningPitch);
-                this.rightArm.roll = MathHelper.lerp(p, this.rightArm.roll, (float)Math.PI - 1.8707964f * this.method_2807(o) / this.method_2807(14.0f));
-            } else if (o >= 14.0f && o < 22.0f) {
-                l = (o - 14.0f) / 8.0f;
-                this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, 1.5707964f * l, this.leaningPitch);
-                this.rightArm.pitch = MathHelper.lerp(p, this.rightArm.pitch, 1.5707964f * l);
+                this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
+                this.leftArm.roll = this.lerpAngle(this.leftArm.roll, (float)Math.PI + 1.8707964f * this.method_2807(l) / this.method_2807(14.0f), this.leaningPitch);
+                this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float)Math.PI - 1.8707964f * this.method_2807(l) / this.method_2807(14.0f));
+            } else if (l >= 14.0f && l < 22.0f) {
+                n = (l - 14.0f) / 8.0f;
+                this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, 1.5707964f * n, this.leaningPitch);
+                this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 1.5707964f * n);
                 this.leftArm.yaw = this.lerpAngle(this.leftArm.yaw, (float)Math.PI, this.leaningPitch);
-                this.rightArm.yaw = MathHelper.lerp(p, this.rightArm.yaw, (float)Math.PI);
-                this.leftArm.roll = this.lerpAngle(this.leftArm.roll, 5.012389f - 1.8707964f * l, this.leaningPitch);
-                this.rightArm.roll = MathHelper.lerp(p, this.rightArm.roll, 1.2707963f + 1.8707964f * l);
-            } else if (o >= 22.0f && o < 26.0f) {
-                l = (o - 22.0f) / 4.0f;
-                this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, 1.5707964f - 1.5707964f * l, this.leaningPitch);
-                this.rightArm.pitch = MathHelper.lerp(p, this.rightArm.pitch, 1.5707964f - 1.5707964f * l);
+                this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
+                this.leftArm.roll = this.lerpAngle(this.leftArm.roll, 5.012389f - 1.8707964f * n, this.leaningPitch);
+                this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, 1.2707963f + 1.8707964f * n);
+            } else if (l >= 22.0f && l < 26.0f) {
+                n = (l - 22.0f) / 4.0f;
+                this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, 1.5707964f - 1.5707964f * n, this.leaningPitch);
+                this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 1.5707964f - 1.5707964f * n);
                 this.leftArm.yaw = this.lerpAngle(this.leftArm.yaw, (float)Math.PI, this.leaningPitch);
-                this.rightArm.yaw = MathHelper.lerp(p, this.rightArm.yaw, (float)Math.PI);
+                this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
                 this.leftArm.roll = this.lerpAngle(this.leftArm.roll, (float)Math.PI, this.leaningPitch);
-                this.rightArm.roll = MathHelper.lerp(p, this.rightArm.roll, (float)Math.PI);
+                this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float)Math.PI);
             }
-            l = 0.3f;
-            m = 0.33333334f;
+            n = 0.3f;
+            float o = 0.33333334f;
             this.leftLeg.pitch = MathHelper.lerp(this.leaningPitch, this.leftLeg.pitch, 0.3f * MathHelper.cos(f * 0.33333334f + (float)Math.PI));
             this.rightLeg.pitch = MathHelper.lerp(this.leaningPitch, this.rightLeg.pitch, 0.3f * MathHelper.cos(f * 0.33333334f));
         }
         this.helmet.copyPositionAndRotation(this.head);
+    }
+
+    protected void method_29353(T livingEntity, float f) {
+        if (this.handSwingProgress <= 0.0f) {
+            return;
+        }
+        Arm arm = this.getPreferredArm(livingEntity);
+        ModelPart modelPart = this.getArm(arm);
+        float g = this.handSwingProgress;
+        this.torso.yaw = MathHelper.sin(MathHelper.sqrt(g) * ((float)Math.PI * 2)) * 0.2f;
+        if (arm == Arm.LEFT) {
+            this.torso.yaw *= -1.0f;
+        }
+        this.rightArm.pivotZ = MathHelper.sin(this.torso.yaw) * 5.0f;
+        this.rightArm.pivotX = -MathHelper.cos(this.torso.yaw) * 5.0f;
+        this.leftArm.pivotZ = -MathHelper.sin(this.torso.yaw) * 5.0f;
+        this.leftArm.pivotX = MathHelper.cos(this.torso.yaw) * 5.0f;
+        this.rightArm.yaw += this.torso.yaw;
+        this.leftArm.yaw += this.torso.yaw;
+        this.leftArm.pitch += this.torso.yaw;
+        g = 1.0f - this.handSwingProgress;
+        g *= g;
+        g *= g;
+        g = 1.0f - g;
+        float h = MathHelper.sin(g * (float)Math.PI);
+        float i = MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -(this.head.pitch - 0.7f) * 0.75f;
+        modelPart.pitch = (float)((double)modelPart.pitch - ((double)h * 1.2 + (double)i));
+        modelPart.yaw += this.torso.yaw * 2.0f;
+        modelPart.roll += MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -0.4f;
     }
 
     protected float lerpAngle(float from, float to, float position) {

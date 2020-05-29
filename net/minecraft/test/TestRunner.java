@@ -4,10 +4,13 @@
 package net.minecraft.test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.GameTestBatch;
@@ -17,7 +20,9 @@ import net.minecraft.test.TestListener;
 import net.minecraft.test.TestManager;
 import net.minecraft.test.TestSet;
 import net.minecraft.test.TestUtil;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,23 +31,25 @@ public class TestRunner {
     private final BlockPos pos;
     private final ServerWorld world;
     private final TestManager testManager;
+    private final int sizeZ;
     private final List<GameTest> tests = Lists.newArrayList();
+    private final Map<GameTest, BlockPos> field_25300 = Maps.newHashMap();
     private final List<Pair<GameTestBatch, Collection<GameTest>>> batches = Lists.newArrayList();
     private TestSet currentBatchTests;
     private int currentBatchIndex = 0;
     private BlockPos.Mutable reusablePos;
-    private int sizeZ = 0;
 
-    public TestRunner(Collection<GameTestBatch> batches, BlockPos pos, ServerWorld world, TestManager testManager) {
+    public TestRunner(Collection<GameTestBatch> collection, BlockPos pos, BlockRotation blockRotation, ServerWorld serverWorld, TestManager testManager, int i) {
         this.reusablePos = pos.mutableCopy();
         this.pos = pos;
-        this.world = world;
+        this.world = serverWorld;
         this.testManager = testManager;
-        batches.forEach(gameTestBatch -> {
+        this.sizeZ = i;
+        collection.forEach(gameTestBatch -> {
             ArrayList<GameTest> collection = Lists.newArrayList();
             Collection<TestFunction> collection2 = gameTestBatch.getTestFunctions();
             for (TestFunction testFunction : collection2) {
-                GameTest gameTest = new GameTest(testFunction, world);
+                GameTest gameTest = new GameTest(testFunction, blockRotation, serverWorld);
                 collection.add(gameTest);
                 this.tests.add(gameTest);
             }
@@ -67,7 +74,7 @@ public class TestRunner {
         Pair<GameTestBatch, Collection<GameTest>> pair = this.batches.get(this.currentBatchIndex);
         GameTestBatch gameTestBatch = pair.getFirst();
         Collection<GameTest> collection = pair.getSecond();
-        this.method_23632(collection);
+        this.method_29401(collection);
         gameTestBatch.setWorld(this.world);
         String string = gameTestBatch.getId();
         LOGGER.info("Running test batch '" + string + "' (" + collection.size() + " tests)...");
@@ -84,7 +91,8 @@ public class TestRunner {
                     TestRunner.this.onTestCompleted(test);
                 }
             });
-            TestUtil.startTest(gameTest, this.testManager);
+            BlockPos blockPos = this.field_25300.get(gameTest);
+            TestUtil.startTest(gameTest, blockPos, this.testManager);
         });
     }
 
@@ -94,21 +102,21 @@ public class TestRunner {
         }
     }
 
-    private void method_23632(Collection<GameTest> collection) {
+    private void method_29401(Collection<GameTest> collection) {
         int i = 0;
+        Box box = new Box(this.reusablePos);
         for (GameTest gameTest : collection) {
             BlockPos blockPos = new BlockPos(this.reusablePos);
-            gameTest.setPos(blockPos);
-            StructureTestUtil.method_22250(gameTest.getStructureName(), blockPos, 2, this.world, true);
-            BlockPos blockPos2 = gameTest.getSize();
-            int j = blockPos2 == null ? 1 : blockPos2.getX();
-            int k = blockPos2 == null ? 1 : blockPos2.getZ();
-            this.sizeZ = Math.max(this.sizeZ, k);
-            this.reusablePos.move(j + 4, 0, 0);
-            if (i++ % 8 != 0) continue;
-            this.reusablePos.move(0, 0, this.sizeZ + 5);
+            StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.method_22250(gameTest.getStructureName(), blockPos, gameTest.method_29402(), 2, this.world, true);
+            Box box2 = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
+            gameTest.setPos(structureBlockBlockEntity.getPos());
+            this.field_25300.put(gameTest, new BlockPos(this.reusablePos));
+            box = box.union(box2);
+            this.reusablePos.move((int)box2.getXLength() + 5, 0, 0);
+            if (i++ % this.sizeZ != this.sizeZ - 1) continue;
+            this.reusablePos.move(0, 0, (int)box.getZLength() + 6);
             this.reusablePos.setX(this.pos.getX());
-            this.sizeZ = 0;
+            box = new Box(this.reusablePos);
         }
     }
 }

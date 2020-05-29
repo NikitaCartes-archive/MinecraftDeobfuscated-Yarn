@@ -47,33 +47,44 @@ extends Block {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() == Items.GLOWSTONE && state.get(CHARGES) < 4) {
+        if (hand == Hand.MAIN_HAND && !RespawnAnchorBlock.isChargeItem(itemStack) && RespawnAnchorBlock.isChargeItem(player.getStackInHand(Hand.OFF_HAND))) {
+            return ActionResult.PASS;
+        }
+        if (RespawnAnchorBlock.isChargeItem(itemStack) && RespawnAnchorBlock.canCharge(state)) {
             RespawnAnchorBlock.charge(world, pos, state);
             if (!player.abilities.creativeMode) {
                 itemStack.decrement(1);
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         if (state.get(CHARGES) == 0) {
             return ActionResult.PASS;
         }
-        if (RespawnAnchorBlock.method_27353(world)) {
+        if (RespawnAnchorBlock.isNether(world)) {
             ServerPlayerEntity serverPlayerEntity;
-            if (!(world.isClient || (serverPlayerEntity = (ServerPlayerEntity)player).getSpawnPointDimension() == world.method_27983() && serverPlayerEntity.getSpawnPointPosition().equals(pos))) {
-                serverPlayerEntity.setSpawnPoint(world.method_27983(), pos, false, true);
+            if (!(world.isClient || (serverPlayerEntity = (ServerPlayerEntity)player).getSpawnPointDimension() == world.getRegistryKey() && serverPlayerEntity.getSpawnPointPosition().equals(pos))) {
+                serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), pos, false, true);
                 world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 return ActionResult.SUCCESS;
             }
-            return state.get(CHARGES) < 4 ? ActionResult.PASS : ActionResult.CONSUME;
+            return RespawnAnchorBlock.canCharge(state) ? ActionResult.PASS : ActionResult.CONSUME;
         }
         if (!world.isClient) {
             world.removeBlock(pos, false);
             world.createExplosion(null, DamageSource.netherBed(), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.method_29236(world.isClient);
     }
 
-    public static boolean method_27353(World world) {
+    private static boolean isChargeItem(ItemStack itemStack) {
+        return itemStack.getItem() == Items.GLOWSTONE;
+    }
+
+    private static boolean canCharge(BlockState blockState) {
+        return blockState.get(CHARGES) < 4;
+    }
+
+    public static boolean isNether(World world) {
         return world.getDimension().isNether();
     }
 

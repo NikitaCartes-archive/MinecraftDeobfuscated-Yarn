@@ -85,6 +85,7 @@ import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerGossips;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -111,9 +112,10 @@ VillagerDataContainer {
     private long lastRestockTime;
     private int restocksToday;
     private long lastRestockCheckTime;
-    private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.WALK_TARGET, MemoryModuleType.LOOK_TARGET, new MemoryModuleType[]{MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
+    private boolean field_25167;
+    private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.WALK_TARGET, new MemoryModuleType[]{MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
     private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN);
-    public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.HOME, MemoryModuleType.JOB_SITE, (villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType, MemoryModuleType.MEETING_POINT, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.MEETING);
+    public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.HOME, MemoryModuleType.JOB_SITE, (villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType, MemoryModuleType.POTENTIAL_JOB_SITE, (villagerEntity, pointOfInterestType) -> PointOfInterestType.IS_USED_BY_PROFESSION.test((PointOfInterestType)pointOfInterestType), MemoryModuleType.MEETING_POINT, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.MEETING);
 
     public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world) {
         this(entityType, world, VillagerType.PLAINS);
@@ -151,7 +153,6 @@ VillagerDataContainer {
 
     private void initBrain(Brain<VillagerEntity> brain) {
         VillagerProfession villagerProfession = this.getVillagerData().getProfession();
-        float f = 0.5f;
         if (this.isBaby()) {
             brain.setSchedule(Schedule.VILLAGER_BABY);
             brain.setTaskList(Activity.PLAY, VillagerTaskListProvider.createPlayTasks(0.5f));
@@ -185,12 +186,19 @@ VillagerDataContainer {
         return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
     }
 
+    public boolean method_29279() {
+        return this.field_25167;
+    }
+
     @Override
     protected void mobTick() {
         Raid raid;
         this.world.getProfiler().push("villagerBrain");
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
+        if (this.field_25167) {
+            this.field_25167 = false;
+        }
         if (!this.hasCustomer() && this.levelUpTimer > 0) {
             --this.levelUpTimer;
             if (this.levelUpTimer <= 0) {
@@ -380,6 +388,9 @@ VillagerDataContainer {
         tag2.putLong("LastRestock", this.lastRestockTime);
         tag2.putLong("LastGossipDecay", this.lastGossipDecayTime);
         tag2.putInt("RestocksToday", this.restocksToday);
+        if (this.field_25167) {
+            tag2.putBoolean("AssignProfessionWhenSpawned", true);
+        }
     }
 
     @Override
@@ -407,6 +418,9 @@ VillagerDataContainer {
             this.reinitializeBrain((ServerWorld)this.world);
         }
         this.restocksToday = tag.getInt("RestocksToday");
+        if (tag.contains("AssignProfessionWhenSpawned")) {
+            this.field_25167 = tag.getBoolean("AssignProfessionWhenSpawned");
+        }
     }
 
     @Override
@@ -608,6 +622,9 @@ VillagerDataContainer {
         if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
             this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
         }
+        if (spawnReason == SpawnReason.STRUCTURE) {
+            this.field_25167 = true;
+        }
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
@@ -622,16 +639,24 @@ VillagerDataContainer {
 
     @Override
     public void onStruckByLightning(LightningEntity lightning) {
-        WitchEntity witchEntity = EntityType.WITCH.create(this.world);
-        witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-        witchEntity.initialize(this.world, this.world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
-        witchEntity.setAiDisabled(this.isAiDisabled());
-        if (this.hasCustomName()) {
-            witchEntity.setCustomName(this.getCustomName());
-            witchEntity.setCustomNameVisible(this.isCustomNameVisible());
+        if (this.world.getDifficulty() != Difficulty.PEACEFUL) {
+            LOGGER.info("Villager {} was struck by lightning {}.", (Object)this, (Object)lightning);
+            WitchEntity witchEntity = EntityType.WITCH.create(this.world);
+            witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+            witchEntity.initialize(this.world, this.world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
+            witchEntity.setAiDisabled(this.isAiDisabled());
+            if (this.hasCustomName()) {
+                witchEntity.setCustomName(this.getCustomName());
+                witchEntity.setCustomNameVisible(this.isCustomNameVisible());
+            }
+            if (this.getExperience() > 0) {
+                witchEntity.setPersistent();
+            }
+            this.world.spawnEntity(witchEntity);
+            this.remove();
+        } else {
+            super.onStruckByLightning(lightning);
         }
-        this.world.spawnEntity(witchEntity);
-        this.remove();
     }
 
     @Override
@@ -823,6 +848,8 @@ VillagerDataContainer {
     public void sleep(BlockPos pos) {
         super.sleep(pos);
         this.brain.remember(MemoryModuleType.LAST_SLEPT, Timestamp.of(this.world.getTime()));
+        this.brain.forget(MemoryModuleType.WALK_TARGET);
+        this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
     }
 
     @Override

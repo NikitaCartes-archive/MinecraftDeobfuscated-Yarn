@@ -85,7 +85,7 @@ extends BlockWithEntity {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return this.ring(world, state, hit, player, true) ? ActionResult.SUCCESS : ActionResult.PASS;
+        return this.ring(world, state, hit, player, true) ? ActionResult.method_29236(world.isClient) : ActionResult.PASS;
     }
 
     public boolean ring(World world, BlockState state, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity, boolean bl) {
@@ -228,7 +228,11 @@ extends BlockWithEntity {
 
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return WallMountedBlock.canPlaceAt(world, pos, BellBlock.getPlacementSide(state).getOpposite());
+        Direction direction = BellBlock.getPlacementSide(state).getOpposite();
+        if (direction == Direction.UP) {
+            return Block.sideCoversSmallSquare(world, pos.up(), Direction.DOWN);
+        }
+        return WallMountedBlock.canPlaceAt(world, pos, direction);
     }
 
     private static Direction getPlacementSide(BlockState state) {

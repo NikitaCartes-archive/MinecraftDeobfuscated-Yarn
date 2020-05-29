@@ -12,9 +12,10 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.FeatureUpdater;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.storage.StorageIoWorker;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,12 +31,12 @@ implements AutoCloseable {
         this.worker = new StorageIoWorker(file, bl, "chunk");
     }
 
-    public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
+    public CompoundTag updateChunkTag(RegistryKey<World> registryKey, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
         int i = VersionedChunkStorage.getDataVersion(tag);
         int j = 1493;
         if (i < 1493 && (tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, i, 1493)).getCompound("Level").getBoolean("hasLegacyStructureData")) {
             if (this.featureUpdater == null) {
-                this.featureUpdater = FeatureUpdater.create(dimensionType, persistentStateManagerFactory.get());
+                this.featureUpdater = FeatureUpdater.create(registryKey, persistentStateManagerFactory.get());
             }
             tag = this.featureUpdater.getUpdatedReferences(tag);
         }

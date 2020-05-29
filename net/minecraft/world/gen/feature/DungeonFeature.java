@@ -75,12 +75,13 @@ extends Feature<DefaultFeatureConfig> {
             for (t = 3; t >= -1; --t) {
                 for (u = p; u <= q; ++u) {
                     blockPos2 = blockPos.add(s, t, u);
+                    BlockState blockState = serverWorldAccess.getBlockState(blockPos2);
                     if (s == k || t == -1 || u == p || s == l || t == 4 || u == q) {
                         if (blockPos2.getY() >= 0 && !serverWorldAccess.getBlockState(blockPos2.down()).getMaterial().isSolid()) {
                             serverWorldAccess.setBlockState(blockPos2, AIR, 2);
                             continue;
                         }
-                        if (!serverWorldAccess.getBlockState(blockPos2).getMaterial().isSolid() || serverWorldAccess.getBlockState(blockPos2).isOf(Blocks.CHEST)) continue;
+                        if (!blockState.getMaterial().isSolid() || blockState.isOf(Blocks.CHEST)) continue;
                         if (t == -1 && random.nextInt(4) != 0) {
                             serverWorldAccess.setBlockState(blockPos2, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
                             continue;
@@ -88,7 +89,7 @@ extends Feature<DefaultFeatureConfig> {
                         serverWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
                         continue;
                     }
-                    if (serverWorldAccess.getBlockState(blockPos2).isOf(Blocks.CHEST)) continue;
+                    if (blockState.isOf(Blocks.CHEST) || blockState.isOf(Blocks.SPAWNER)) continue;
                     serverWorldAccess.setBlockState(blockPos2, AIR, 2);
                 }
             }

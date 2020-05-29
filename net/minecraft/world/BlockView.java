@@ -17,6 +17,9 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.RayTraceContext;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a scoped, read-only view of block states, fluid states and block entities.
+ */
 public interface BlockView {
     @Nullable
     public BlockEntity getBlockEntity(BlockPos var1);

@@ -43,15 +43,7 @@ extends AbstractClientPlayerEntity {
     @Override
     public void tick() {
         super.tick();
-        this.lastLimbDistance = this.limbDistance;
-        double d = this.getX() - this.prevX;
-        double e = this.getZ() - this.prevZ;
-        float f = MathHelper.sqrt(d * d + e * e) * 4.0f;
-        if (f > 1.0f) {
-            f = 1.0f;
-        }
-        this.limbDistance += (f - this.limbDistance) * 0.4f;
-        this.limbAngle += this.limbDistance;
+        this.method_29242(this, false);
     }
 
     @Override
@@ -91,7 +83,7 @@ extends AbstractClientPlayerEntity {
     @Override
     public void sendSystemMessage(Text message, UUID uUID) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        if (!minecraftClient.method_29042(uUID)) {
+        if (!minecraftClient.shouldBlockMessages(uUID)) {
             minecraftClient.inGameHud.getChatHud().addMessage(message);
         }
     }

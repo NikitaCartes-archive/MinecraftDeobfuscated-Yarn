@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -23,7 +24,6 @@ import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -44,14 +44,14 @@ extends Screen {
         }
 
         @Override
-        public Text getPageUnchecked(int index) {
-            return LiteralText.EMPTY;
+        public class_5348 getPageUnchecked(int index) {
+            return class_5348.field_25310;
         }
     };
     public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
     private Contents contents;
     private int pageIndex;
-    private List<Text> cachedPage = Collections.emptyList();
+    private List<class_5348> cachedPage = Collections.emptyList();
     private int cachedPageIndex = -1;
     private PageTurnWidget nextPageButton;
     private PageTurnWidget previousPageButton;
@@ -162,20 +162,20 @@ extends Screen {
         this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
         String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
         if (this.cachedPageIndex != this.pageIndex) {
-            Text text = this.contents.getPage(this.pageIndex);
-            this.cachedPage = this.textRenderer.getTextHandler().wrapLines(text, 114, Style.EMPTY);
+            class_5348 lv = this.contents.getPage(this.pageIndex);
+            this.cachedPage = this.textRenderer.getTextHandler().wrapLines(lv, 114, Style.EMPTY);
         }
         this.cachedPageIndex = this.pageIndex;
         int k = this.getStringWidth(string);
         this.textRenderer.draw(matrices, string, (float)(i - k + 192 - 44), 18.0f, 0);
         int l = Math.min(128 / this.textRenderer.fontHeight, this.cachedPage.size());
         for (int m = 0; m < l; ++m) {
-            Text text2 = this.cachedPage.get(m);
-            this.textRenderer.draw(matrices, text2, (float)(i + 36), (float)(32 + m * this.textRenderer.fontHeight), 0);
+            class_5348 lv2 = this.cachedPage.get(m);
+            this.textRenderer.draw(matrices, lv2, (float)(i + 36), (float)(32 + m * this.textRenderer.fontHeight), 0);
         }
-        Text text3 = this.getTextAt(mouseX, mouseY);
-        if (text3 != null) {
-            this.renderTextHoverEffect(matrices, text3, mouseX, mouseY);
+        Style style = this.getTextAt(mouseX, mouseY);
+        if (style != null) {
+            this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -186,16 +186,16 @@ extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Text text;
-        if (button == 0 && (text = this.getTextAt(mouseX, mouseY)) != null && this.handleTextClick(text)) {
+        Style style;
+        if (button == 0 && (style = this.getTextAt(mouseX, mouseY)) != null && this.handleTextClick(style)) {
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean handleTextClick(Text text) {
-        ClickEvent clickEvent = text.getStyle().getClickEvent();
+    public boolean handleTextClick(Style style) {
+        ClickEvent clickEvent = style.getClickEvent();
         if (clickEvent == null) {
             return false;
         }
@@ -208,7 +208,7 @@ extends Screen {
                 return false;
             }
         }
-        boolean bl = super.handleTextClick(text);
+        boolean bl = super.handleTextClick(style);
         if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
             this.client.openScreen(null);
         }
@@ -216,7 +216,7 @@ extends Screen {
     }
 
     @Nullable
-    public Text getTextAt(double x, double y) {
+    public Style getTextAt(double x, double y) {
         if (this.cachedPage == null) {
             return null;
         }
@@ -229,8 +229,8 @@ extends Screen {
         if (i <= 114 && j < this.client.textRenderer.fontHeight * k + k) {
             int l = j / this.client.textRenderer.fontHeight;
             if (l >= 0 && l < this.cachedPage.size()) {
-                Text text = this.cachedPage.get(l);
-                return this.client.textRenderer.getTextHandler().trimToWidth(text, i);
+                class_5348 lv = this.cachedPage.get(l);
+                return this.client.textRenderer.getTextHandler().trimToWidth(lv, i);
             }
             return null;
         }
@@ -266,8 +266,8 @@ extends Screen {
         }
 
         @Override
-        public Text getPageUnchecked(int index) {
-            return new LiteralText(this.pages.get(index));
+        public class_5348 getPageUnchecked(int index) {
+            return class_5348.method_29430(this.pages.get(index));
         }
     }
 
@@ -294,17 +294,17 @@ extends Screen {
         }
 
         @Override
-        public Text getPageUnchecked(int index) {
+        public class_5348 getPageUnchecked(int index) {
             String string = this.pages.get(index);
             try {
-                MutableText text = Text.Serializer.fromJson(string);
-                if (text != null) {
-                    return text;
+                MutableText lv = Text.Serializer.fromJson(string);
+                if (lv != null) {
+                    return lv;
                 }
             } catch (Exception exception) {
                 // empty catch block
             }
-            return new LiteralText(string);
+            return class_5348.method_29430(string);
         }
     }
 
@@ -312,13 +312,13 @@ extends Screen {
     public static interface Contents {
         public int getPageCount();
 
-        public Text getPageUnchecked(int var1);
+        public class_5348 getPageUnchecked(int var1);
 
-        default public Text getPage(int index) {
+        default public class_5348 getPage(int index) {
             if (index >= 0 && index < this.getPageCount()) {
                 return this.getPageUnchecked(index);
             }
-            return LiteralText.EMPTY;
+            return class_5348.field_25310;
         }
 
         public static Contents create(ItemStack stack) {

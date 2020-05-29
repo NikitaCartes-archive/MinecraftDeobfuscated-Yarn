@@ -63,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EnderDragonFight {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maximumDistance(0.0, 128.0, 0.0, 192.0));
+    private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maxDistance(0.0, 128.0, 0.0, 192.0));
     private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(new TranslatableText("entity.minecraft.ender_dragon"), BossBar.Color.PINK, BossBar.Style.PROGRESS).setDragonMusic(true).setThickenFog(true);
     private final ServerWorld world;
     private final List<Integer> gateways = Lists.newArrayList();
@@ -80,9 +80,8 @@ public class EnderDragonFight {
     private EnderDragonSpawnState dragonSpawnState;
     private int spawnStateTimer;
     private List<EndCrystalEntity> crystals;
-    private boolean field_24506;
 
-    public EnderDragonFight(ServerWorld world, CompoundTag compoundTag) {
+    public EnderDragonFight(ServerWorld world, long l, CompoundTag compoundTag) {
         this.world = world;
         if (compoundTag.contains("DragonKilled", 99)) {
             if (compoundTag.containsUuid("Dragon")) {
@@ -106,7 +105,8 @@ public class EnderDragonFight {
                 this.gateways.add(listTag.getInt(i));
             }
         } else {
-            this.field_24506 = true;
+            this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
+            Collections.shuffle(this.gateways, new Random(l));
         }
         this.endPortalPattern = BlockPatternBuilder.start().aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  ").aisle("       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       ").where('#', CachedBlockPosition.matchesBlockState(BlockPredicate.make(Blocks.BEDROCK))).build();
     }
@@ -318,11 +318,6 @@ public class EnderDragonFight {
     }
 
     private void generateNewEndGateway() {
-        if (this.field_24506) {
-            this.field_24506 = false;
-            this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
-            Collections.shuffle(this.gateways, new Random(this.world.getSeed()));
-        }
         if (this.gateways.isEmpty()) {
             return;
         }
@@ -360,7 +355,7 @@ public class EnderDragonFight {
 
     public void updateFight(EnderDragonEntity dragon) {
         if (dragon.getUuid().equals(this.dragonUuid)) {
-            this.bossBar.setPercent(dragon.getHealth() / dragon.getMaximumHealth());
+            this.bossBar.setPercent(dragon.getHealth() / dragon.getMaxHealth());
             this.dragonSeenTimer = 0;
             if (dragon.hasCustomName()) {
                 this.bossBar.setName(dragon.getDisplayName());

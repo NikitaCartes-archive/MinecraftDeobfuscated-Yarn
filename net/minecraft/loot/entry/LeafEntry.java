@@ -15,17 +15,16 @@ import net.minecraft.loot.LootChoice;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.loot.entry.LootEntry;
+import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
-import net.minecraft.loot.function.LootFunctions;
-import net.minecraft.util.Identifier;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class LeafEntry
-extends LootEntry {
+extends LootPoolEntry {
     protected final int weight;
     protected final int quality;
     protected final LootFunction[] functions;
@@ -43,7 +42,7 @@ extends LootEntry {
         this.weight = weight;
         this.quality = quality;
         this.functions = functions;
-        this.compiledFunctions = LootFunctions.join(functions);
+        this.compiledFunctions = LootFunctionTypes.join(functions);
     }
 
     @Override
@@ -70,13 +69,9 @@ extends LootEntry {
     }
 
     public static abstract class Serializer<T extends LeafEntry>
-    extends LootEntry.Serializer<T> {
-        public Serializer(Identifier identifier, Class<T> class_) {
-            super(identifier, class_);
-        }
-
+    extends LootPoolEntry.class_5337<T> {
         @Override
-        public void toJson(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
+        public void method_422(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
             if (((LeafEntry)leafEntry).weight != 1) {
                 jsonObject.addProperty("weight", ((LeafEntry)leafEntry).weight);
             }
@@ -99,8 +94,8 @@ extends LootEntry {
         protected abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, int var3, int var4, LootCondition[] var5, LootFunction[] var6);
 
         @Override
-        public /* synthetic */ LootEntry fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
-            return this.fromJson(json, context, conditions);
+        public /* synthetic */ LootPoolEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -118,12 +113,12 @@ extends LootEntry {
         }
 
         @Override
-        public LootEntry build() {
+        public LootPoolEntry build() {
             return this.factory.build(this.weight, this.quality, this.getConditions(), this.getFunctions());
         }
 
         @Override
-        protected /* synthetic */ LootEntry.Builder getThisBuilder() {
+        protected /* synthetic */ LootPoolEntry.Builder getThisBuilder() {
             return this.getThisBuilder();
         }
     }
@@ -134,7 +129,7 @@ extends LootEntry {
     }
 
     public static abstract class Builder<T extends Builder<T>>
-    extends LootEntry.Builder<T>
+    extends LootPoolEntry.Builder<T>
     implements LootFunctionConsumingBuilder<T> {
         protected int weight = 1;
         protected int quality = 0;

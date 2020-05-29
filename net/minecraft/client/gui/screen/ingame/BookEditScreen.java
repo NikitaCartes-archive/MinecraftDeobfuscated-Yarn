@@ -529,7 +529,6 @@ extends Screen {
         if (string.isEmpty()) {
             return class_5233.field_24271;
         }
-        String string2 = this.textRenderer.isRightToLeft() ? this.textRenderer.mirror(string) : string;
         int i2 = this.field_24269.getSelectionStart();
         int j2 = this.field_24269.getSelectionEnd();
         IntArrayList intList = new IntArrayList();
@@ -537,9 +536,9 @@ extends Screen {
         MutableInt mutableInt = new MutableInt();
         MutableBoolean mutableBoolean = new MutableBoolean();
         TextHandler textHandler = this.textRenderer.getTextHandler();
-        textHandler.wrapLines(string2, 114, Style.EMPTY, true, (style, i, j) -> {
+        textHandler.wrapLines(string, 114, Style.EMPTY, true, (style, i, j) -> {
             int k = mutableInt.getAndIncrement();
-            String string2 = string2.substring(i, j);
+            String string2 = string.substring(i, j);
             mutableBoolean.setValue(string2.endsWith("\n"));
             String string3 = StringUtils.stripEnd(string2, " \n");
             int l = k * this.textRenderer.fontHeight;
@@ -548,12 +547,12 @@ extends Screen {
             list.add(new Position(style, string3, lv.field_24281, lv.field_24282));
         });
         int[] is = intList.toIntArray();
-        boolean bl2 = bl = i2 == string2.length();
+        boolean bl2 = bl = i2 == string.length();
         if (bl && mutableBoolean.isTrue()) {
             lv = new class_5234(0, list.size() * this.textRenderer.fontHeight);
         } else {
             int k = BookEditScreen.method_27591(is, i2);
-            l = this.textRenderer.getWidth(string2.substring(is[k], i2));
+            l = this.textRenderer.getWidth(string.substring(is[k], i2));
             lv = new class_5234(l, k * this.textRenderer.fontHeight);
         }
         ArrayList<Rect2i> list2 = Lists.newArrayList();
@@ -565,20 +564,20 @@ extends Screen {
             if (n == (o = BookEditScreen.method_27591(is, m))) {
                 int p = n * this.textRenderer.fontHeight;
                 int q = is[n];
-                list2.add(this.method_27585(string2, textHandler, l, m, p, q));
+                list2.add(this.method_27585(string, textHandler, l, m, p, q));
             } else {
-                int p = n + 1 > is.length ? string2.length() : is[n + 1];
-                list2.add(this.method_27585(string2, textHandler, l, p, n * this.textRenderer.fontHeight, is[n]));
+                int p = n + 1 > is.length ? string.length() : is[n + 1];
+                list2.add(this.method_27585(string, textHandler, l, p, n * this.textRenderer.fontHeight, is[n]));
                 for (int q = n + 1; q < o; ++q) {
                     int r = q * this.textRenderer.fontHeight;
-                    String string3 = string2.substring(is[q], is[q + 1]);
-                    int s = (int)textHandler.getWidth(string3);
+                    String string2 = string.substring(is[q], is[q + 1]);
+                    int s = (int)textHandler.getWidth(string2);
                     list2.add(this.method_27583(new class_5234(0, r), new class_5234(s, r + this.textRenderer.fontHeight)));
                 }
-                list2.add(this.method_27585(string2, textHandler, is[o], m, o * this.textRenderer.fontHeight, is[o]));
+                list2.add(this.method_27585(string, textHandler, is[o], m, o * this.textRenderer.fontHeight, is[o]));
             }
         }
-        return new class_5233(string2, lv, bl, is, list.toArray(new Position[0]), list2.toArray(new Rect2i[0]));
+        return new class_5233(string, lv, bl, is, list.toArray(new Position[0]), list2.toArray(new Rect2i[0]));
     }
 
     private static int method_27591(int[] is, int i) {

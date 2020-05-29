@@ -3,10 +3,13 @@
  */
 package net.minecraft.client.gui.screen.recipebook;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
@@ -18,7 +21,6 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -117,9 +119,9 @@ extends AbstractButtonWidget {
         return list.get(this.currentResultIndex);
     }
 
-    public List<Text> getTooltip(Screen screen) {
+    public List<class_5348> getTooltip(Screen screen) {
         ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput();
-        List<Text> list = screen.getTooltipFromItem(itemStack);
+        ArrayList<class_5348> list = Lists.newArrayList(screen.getTooltipFromItem(itemStack));
         if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
             list.add(new TranslatableText("gui.recipebook.moreRecipes"));
         }

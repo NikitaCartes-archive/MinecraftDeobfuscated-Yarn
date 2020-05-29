@@ -92,7 +92,7 @@ extends WallMountedBlock {
         BlockState blockState = this.method_21846(state, world, pos);
         float f = blockState.get(POWERED) != false ? 0.6f : 0.5f;
         world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, f);
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     public BlockState method_21846(BlockState blockState, World world, BlockPos blockPos) {

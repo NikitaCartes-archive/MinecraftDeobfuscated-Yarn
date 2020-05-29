@@ -85,7 +85,7 @@ extends BlockWithEntity {
             return ActionResult.SUCCESS;
         }
         if (player.isSpectator()) {
-            return ActionResult.SUCCESS;
+            return ActionResult.CONSUME;
         }
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ShulkerBoxBlockEntity) {
@@ -102,7 +102,7 @@ extends BlockWithEntity {
                 player.incrementStat(Stats.OPEN_SHULKER_BOX);
                 PiglinBrain.onGoldBlockBroken(player);
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.CONSUME;
         }
         return ActionResult.PASS;
     }

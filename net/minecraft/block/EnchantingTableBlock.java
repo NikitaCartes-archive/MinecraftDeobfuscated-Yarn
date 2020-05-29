@@ -89,7 +89,7 @@ extends BlockWithEntity {
             return ActionResult.SUCCESS;
         }
         player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     @Override

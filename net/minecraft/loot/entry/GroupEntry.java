@@ -6,12 +6,19 @@ package net.minecraft.loot.entry;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.entry.CombinedEntry;
 import net.minecraft.loot.entry.EntryCombiner;
-import net.minecraft.loot.entry.LootEntry;
+import net.minecraft.loot.entry.LootPoolEntry;
+import net.minecraft.loot.entry.LootPoolEntryType;
+import net.minecraft.loot.entry.LootPoolEntryTypes;
 
 public class GroupEntry
 extends CombinedEntry {
-    GroupEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
-        super(lootEntrys, lootConditions);
+    GroupEntry(LootPoolEntry[] lootPoolEntrys, LootCondition[] lootConditions) {
+        super(lootPoolEntrys, lootConditions);
+    }
+
+    @Override
+    public LootPoolEntryType method_29318() {
+        return LootPoolEntryTypes.SEQUENCE;
     }
 
     @Override
@@ -24,18 +31,13 @@ extends CombinedEntry {
                 return children[0];
             }
             case 2: {
-                EntryCombiner entryCombiner = children[0];
-                EntryCombiner entryCombiner2 = children[1];
-                return (context, lootChoiceExpander) -> {
-                    entryCombiner.expand(context, lootChoiceExpander);
-                    entryCombiner2.expand(context, lootChoiceExpander);
-                    return true;
-                };
+                return children[0].and(children[1]);
             }
         }
         return (context, lootChoiceExpander) -> {
             for (EntryCombiner entryCombiner : children) {
-                entryCombiner.expand(context, lootChoiceExpander);
+                if (entryCombiner.expand(context, lootChoiceExpander)) continue;
+                return false;
             }
             return true;
         };

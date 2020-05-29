@@ -114,7 +114,6 @@ implements Flutterer {
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.lookControl = new BeeLookControl(this);
         this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0f);
-        this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0f);
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
         this.setPathfindingPenalty(PathNodeType.COCOA, -1.0f);
         this.setPathfindingPenalty(PathNodeType.FENCE, -1.0f);

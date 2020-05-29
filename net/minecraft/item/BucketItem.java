@@ -46,13 +46,13 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        HitResult hitResult = BucketItem.rayTrace(world, user, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE);
-        if (hitResult.getType() == HitResult.Type.MISS) {
+        BlockHitResult hitResult = BucketItem.rayTrace(world, user, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE);
+        if (((HitResult)hitResult).getType() == HitResult.Type.MISS) {
             return TypedActionResult.pass(itemStack);
         }
-        if (hitResult.getType() == HitResult.Type.BLOCK) {
+        if (((HitResult)hitResult).getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos3;
-            BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+            BlockHitResult blockHitResult = hitResult;
             BlockPos blockPos = blockHitResult.getBlockPos();
             Direction direction = blockHitResult.getSide();
             BlockPos blockPos2 = blockPos.offset(direction);
@@ -69,7 +69,7 @@ extends Item {
                     if (!world.isClient) {
                         Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
                     }
-                    return TypedActionResult.success(itemStack2);
+                    return TypedActionResult.method_29237(itemStack2, world.isClient());
                 }
                 return TypedActionResult.fail(itemStack);
             }
@@ -81,7 +81,7 @@ extends Item {
                     Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, itemStack);
                 }
                 user.incrementStat(Stats.USED.getOrCreateStat(this));
-                return TypedActionResult.success(this.getEmptiedStack(itemStack, user));
+                return TypedActionResult.method_29237(this.getEmptiedStack(itemStack, user), world.isClient());
             }
             return TypedActionResult.fail(itemStack);
         }

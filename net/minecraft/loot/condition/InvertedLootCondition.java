@@ -9,10 +9,12 @@ import com.google.gson.JsonSerializationContext;
 import java.util.Set;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 
 public class InvertedLootCondition
 implements LootCondition {
@@ -20,6 +22,11 @@ implements LootCondition {
 
     private InvertedLootCondition(LootCondition term) {
         this.term = term;
+    }
+
+    @Override
+    public LootConditionType method_29325() {
+        return LootConditionTypes.INVERTED;
     }
 
     @Override
@@ -49,11 +56,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<InvertedLootCondition> {
-        public Factory() {
-            super(new Identifier("inverted"), InvertedLootCondition.class);
-        }
-
+    implements JsonSerializable<InvertedLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("term", jsonSerializationContext.serialize(invertedLootCondition.term));
@@ -66,8 +69,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
+        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

@@ -27,11 +27,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.network.NetworkEncryptionUtils;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.DedicatedPlayerManager;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -57,7 +59,7 @@ import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,31 +78,10 @@ implements DedicatedServer {
     @Nullable
     private DedicatedServerGui gui;
 
-    public MinecraftDedicatedServer(LevelStorage.Session session, SaveProperties saveProperties, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(session, saveProperties, Proxy.NO_PROXY, dataFixer, new CommandManager(true), minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
+    public MinecraftDedicatedServer(LevelStorage.Session session, ResourcePackManager<ResourcePackProfile> resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(session, saveProperties, resourcePackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new ServerCommandOutput(this);
-        new Thread("Server Infinisleeper"){
-            {
-                this.setDaemon(true);
-                this.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
-                this.start();
-            }
-
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        while (true) {
-                            Thread.sleep(Integer.MAX_VALUE);
-                        }
-                    } catch (InterruptedException interruptedException) {
-                        continue;
-                    }
-                    break;
-                }
-            }
-        };
     }
 
     @Override
@@ -143,7 +124,7 @@ implements DedicatedServer {
         this.setForceGameMode(serverPropertiesHandler.forceGameMode);
         super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
         this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
-        this.field_24372.setGameMode(serverPropertiesHandler.gameMode);
+        this.saveProperties.setGameMode(serverPropertiesHandler.gameMode);
         LOGGER.info("Default game type: {}", (Object)serverPropertiesHandler.gameMode);
         InetAddress inetAddress = null;
         if (!this.getServerIp().isEmpty()) {
@@ -175,7 +156,7 @@ implements DedicatedServer {
         if (!ServerConfigHandler.checkSuccess(this)) {
             return false;
         }
-        this.setPlayerManager(new DedicatedPlayerManager(this, this.field_25132, this.field_24371));
+        this.setPlayerManager(new DedicatedPlayerManager(this, this.dimensionTracker, this.field_24371));
         long l = Util.getMeasuringTimeNano();
         this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
         SkullBlockEntity.setUserCache(this.getUserCache());
@@ -389,7 +370,7 @@ implements DedicatedServer {
     @Override
     public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
         int j;
-        if (serverWorld.method_27983() != DimensionType.OVERWORLD_REGISTRY_KEY) {
+        if (serverWorld.getRegistryKey() != World.OVERWORLD) {
             return false;
         }
         if (this.getPlayerManager().getOpList().isEmpty()) {

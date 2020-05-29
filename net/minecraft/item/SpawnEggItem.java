@@ -71,27 +71,27 @@ extends Item {
             blockEntity.markDirty();
             world.updateListeners(blockPos, blockState, blockState, 3);
             itemStack.decrement(1);
-            return ActionResult.SUCCESS;
+            return ActionResult.CONSUME;
         }
         BlockPos blockPos2 = blockState.getCollisionShape(world, blockPos).isEmpty() ? blockPos : blockPos.offset(direction);
         EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
         if (entityType2.spawnFromItemStack(world, itemStack, context.getPlayer(), blockPos2, SpawnReason.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP) != null) {
             itemStack.decrement(1);
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        HitResult hitResult = SpawnEggItem.rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
-        if (hitResult.getType() != HitResult.Type.BLOCK) {
+        BlockHitResult hitResult = SpawnEggItem.rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
+        if (((HitResult)hitResult).getType() != HitResult.Type.BLOCK) {
             return TypedActionResult.pass(itemStack);
         }
         if (world.isClient) {
             return TypedActionResult.success(itemStack);
         }
-        BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+        BlockHitResult blockHitResult = hitResult;
         BlockPos blockPos = blockHitResult.getBlockPos();
         if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
             return TypedActionResult.pass(itemStack);
@@ -107,7 +107,7 @@ extends Item {
             itemStack.decrement(1);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
-        return TypedActionResult.success(itemStack);
+        return TypedActionResult.consume(itemStack);
     }
 
     public boolean isOfSameEntityType(@Nullable CompoundTag tag, EntityType<?> type) {

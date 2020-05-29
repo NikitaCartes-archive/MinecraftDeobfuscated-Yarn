@@ -110,7 +110,7 @@ public class CommandManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private final CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher();
 
-    public CommandManager(boolean isDedicatedServer) {
+    public CommandManager(boolean dedicated) {
         AdvancementCommand.register(this.dispatcher);
         AttributeCommand.register(this.dispatcher);
         ExecuteCommand.register(this.dispatcher);
@@ -170,7 +170,7 @@ public class CommandManager {
         if (SharedConstants.isDevelopment) {
             TestCommand.register(this.dispatcher);
         }
-        if (isDedicatedServer) {
+        if (dedicated) {
             BanIpCommand.register(this.dispatcher);
             BanListCommand.register(this.dispatcher);
             BanCommand.register(this.dispatcher);

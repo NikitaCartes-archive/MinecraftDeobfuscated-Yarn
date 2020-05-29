@@ -10,7 +10,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
-import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class SwampHillsBiome
@@ -18,7 +18,7 @@ extends Biome {
     protected SwampHillsBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.SWAMP, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.SWAMP).depth(-0.1f).scale(0.3f).temperature(0.8f).downfall(0.9f).effects(new BiomeEffects.Builder().waterColor(6388580).waterFogColor(2302743).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent("swamp"));
         this.addStructureFeature(DefaultBiomeFeatures.field_24688);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24683);
+        this.addStructureFeature(DefaultBiomeFeatures.SWAMP_CONFIGURED_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

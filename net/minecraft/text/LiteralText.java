@@ -6,14 +6,20 @@ package net.minecraft.text;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Language;
+import org.jetbrains.annotations.Nullable;
 
 public class LiteralText
 extends BaseText {
     public static final Text EMPTY = new LiteralText("");
     private final String string;
+    @Nullable
+    private Language field_25315;
+    private String field_25316;
 
     public LiteralText(String string) {
         this.string = string;
+        this.field_25316 = string;
     }
 
     public String getRawString() {
@@ -22,7 +28,15 @@ extends BaseText {
 
     @Override
     public String asString() {
-        return this.string;
+        if (this.string.isEmpty()) {
+            return this.string;
+        }
+        Language language = Language.getInstance();
+        if (this.field_25315 != language) {
+            this.field_25316 = language.method_29426(this.string, false);
+            this.field_25315 = language;
+        }
+        return this.field_25316;
     }
 
     @Override

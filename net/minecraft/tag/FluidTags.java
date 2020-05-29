@@ -3,12 +3,14 @@
  */
 package net.minecraft.tag;
 
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.GlobalTagAccessor;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
+import net.minecraft.util.Identifier;
 
 public class FluidTags {
     private static final GlobalTagAccessor<Fluid> ACCESSOR = new GlobalTagAccessor();
@@ -30,6 +32,10 @@ public class FluidTags {
 
     public static TagContainer<Fluid> getContainer() {
         return ACCESSOR.getContainer();
+    }
+
+    public static Set<Identifier> method_29216(TagContainer<Fluid> tagContainer) {
+        return ACCESSOR.method_29224(tagContainer);
     }
 }
 

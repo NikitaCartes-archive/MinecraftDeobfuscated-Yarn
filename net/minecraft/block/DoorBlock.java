@@ -198,7 +198,7 @@ extends Block {
         state = (BlockState)state.cycle(OPEN);
         world.setBlockState(pos, state, 10);
         world.syncWorldEvent(player, state.get(OPEN) != false ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
-        return ActionResult.SUCCESS;
+        return ActionResult.method_29236(world.isClient);
     }
 
     public void setOpen(World world, BlockPos pos, boolean open) {

@@ -126,15 +126,17 @@ extends AbstractClientPlayerEntity {
     private int underwaterVisibilityTicks;
     private boolean showsDeathScreen = true;
 
-    public ClientPlayerEntity(MinecraftClient client, ClientWorld clientWorld, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook) {
-        super(clientWorld, networkHandler.getProfile());
-        this.networkHandler = networkHandler;
+    public ClientPlayerEntity(MinecraftClient minecraftClient, ClientWorld clientWorld, ClientPlayNetworkHandler clientPlayNetworkHandler, StatHandler stats, ClientRecipeBook recipeBook, boolean bl, boolean bl2) {
+        super(clientWorld, clientPlayNetworkHandler.getProfile());
+        this.client = minecraftClient;
+        this.networkHandler = clientPlayNetworkHandler;
         this.statHandler = stats;
         this.recipeBook = recipeBook;
-        this.client = client;
-        this.tickables.add(new AmbientSoundPlayer(this, client.getSoundManager()));
+        this.lastIsHoldingSneakKey = bl;
+        this.lastSprinting = bl2;
+        this.tickables.add(new AmbientSoundPlayer(this, minecraftClient.getSoundManager()));
         this.tickables.add(new BubbleColumnSoundPlayer(this));
-        this.tickables.add(new BiomeEffectSoundPlayer(this, client.getSoundManager(), clientWorld.getBiomeAccess()));
+        this.tickables.add(new BiomeEffectSoundPlayer(this, minecraftClient.getSoundManager(), clientWorld.getBiomeAccess()));
     }
 
     @Override
@@ -914,7 +916,7 @@ extends AbstractClientPlayerEntity {
                 BlockPos blockPos3 = blockPos2.up(s);
                 BlockState blockState3 = this.world.getBlockState(blockPos3);
                 VoxelShape voxelShape2 = blockState3.getCollisionShape(this.world, blockPos3, shapeContext);
-                if (!voxelShape2.isEmpty() && (double)(r = (float)voxelShape2.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getY() > (double)n) {
+                if (!voxelShape2.isEmpty() && (double)(r = (float)voxelShape2.getMax(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getY() > (double)n) {
                     return;
                 }
                 if (s > 1 && !(blockState4 = this.world.getBlockState(blockPos = blockPos.up())).getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {

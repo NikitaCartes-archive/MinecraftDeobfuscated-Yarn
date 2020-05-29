@@ -7,6 +7,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.class_5325;
+import net.minecraft.class_5326;
+import net.minecraft.class_5327;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
@@ -72,12 +75,12 @@ import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerTaskListProvider {
     public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession profession, float f) {
-        return ImmutableList.of(Pair.of(0, new StayAboveWaterTask(0.4f, 0.8f)), Pair.of(0, new OpenDoorsTask()), Pair.of(0, new LookAroundTask(45, 90)), Pair.of(0, new PanicTask()), Pair.of(0, new WakeUpTask()), Pair.of(0, new HideWhenBellRingsTask()), Pair.of(0, new StartRaidTask()), Pair.of(1, new WanderAroundTask(200)), Pair.of(2, new FollowCustomerTask(f)), Pair.of(5, new WalkToNearestVisibleWantedItemTask(0.5f, false, 4)), Pair.of(10, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, true)), Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false)), new Pair[]{Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true)), Pair.of(10, new GoToWorkTask()), Pair.of(10, new LoseJobOnSiteLossTask())});
+        return ImmutableList.of(Pair.of(0, new StayAboveWaterTask(0.8f)), Pair.of(0, new OpenDoorsTask()), Pair.of(0, new LookAroundTask(45, 90)), Pair.of(0, new PanicTask()), Pair.of(0, new WakeUpTask()), Pair.of(0, new HideWhenBellRingsTask()), Pair.of(0, new StartRaidTask()), Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE)), Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.POTENTIAL_JOB_SITE)), Pair.of(1, new WanderAroundTask(200)), Pair.of(2, new class_5326(profession)), Pair.of(3, new FollowCustomerTask(f)), new Pair[]{Pair.of(5, new WalkToNearestVisibleWantedItemTask(f, false, 4)), Pair.of(6, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true)), Pair.of(6, new class_5325(f)), Pair.of(7, new class_5327(f)), Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false)), Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true)), Pair.of(10, new GoToWorkTask()), Pair.of(10, new LoseJobOnSiteLossTask())});
     }
 
     public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createWorkTasks(VillagerProfession profession, float f) {
         VillagerWorkTask villagerWorkTask = profession == VillagerProfession.FARMER ? new FarmerWorkTask() : new VillagerWorkTask();
-        return ImmutableList.of(VillagerTaskListProvider.createBusyFollowTask(), Pair.of(5, new RandomTask(ImmutableList.of(Pair.of(villagerWorkTask, 7), Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 4), 2), Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 1, 10), 5), Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, f, 1, 6, MemoryModuleType.JOB_SITE), 5), Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5), Pair.of(new BoneMealTask(), profession == VillagerProfession.FARMER ? 4 : 7)))), Pair.of(10, new HoldTradeOffersTask(400, 1600)), Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)), Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.JOB_SITE, f, 9, 100, 1200)), Pair.of(3, new GiveGiftsToHeroTask(100)), Pair.of(3, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE)), Pair.of(99, new ScheduleActivityTask()));
+        return ImmutableList.of(VillagerTaskListProvider.createBusyFollowTask(), Pair.of(5, new RandomTask(ImmutableList.of(Pair.of(villagerWorkTask, 7), Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 4), 2), Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 1, 10), 5), Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, f, 1, 6, MemoryModuleType.JOB_SITE), 5), Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5), Pair.of(new BoneMealTask(), profession == VillagerProfession.FARMER ? 4 : 7)))), Pair.of(10, new HoldTradeOffersTask(400, 1600)), Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)), Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.JOB_SITE, f, 9, 100, 1200)), Pair.of(3, new GiveGiftsToHeroTask(100)), Pair.of(99, new ScheduleActivityTask()));
     }
 
     public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createPlayTasks(float f) {

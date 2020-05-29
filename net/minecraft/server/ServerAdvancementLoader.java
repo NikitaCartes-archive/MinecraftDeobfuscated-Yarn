@@ -6,6 +6,7 @@ package net.minecraft.server;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.util.Collection;
@@ -38,12 +39,12 @@ extends JsonDataLoader {
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+    protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
         HashMap<Identifier, Advancement.Task> map2 = Maps.newHashMap();
-        map.forEach((identifier, jsonObject) -> {
+        map.forEach((identifier, jsonElement) -> {
             try {
-                JsonObject jsonObject2 = JsonHelper.asObject(jsonObject, "advancement");
-                Advancement.Task task = Advancement.Task.fromJson(jsonObject2, new AdvancementEntityPredicateDeserializer((Identifier)identifier, this.conditionManager));
+                JsonObject jsonObject = JsonHelper.asObject(jsonElement, "advancement");
+                Advancement.Task task = Advancement.Task.fromJson(jsonObject, new AdvancementEntityPredicateDeserializer((Identifier)identifier, this.conditionManager));
                 map2.put((Identifier)identifier, task);
             } catch (JsonParseException | IllegalArgumentException runtimeException) {
                 LOGGER.error("Parsing error loading custom advancement {}: {}", identifier, (Object)runtimeException.getMessage());

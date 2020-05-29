@@ -14,8 +14,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagContainers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
@@ -74,7 +74,7 @@ public class BlockPredicate {
         Tag<Block> tag = null;
         if (jsonObject.has("tag")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-            tag = BlockTags.getContainer().get(identifier2);
+            tag = TagContainers.instance().blocks().get(identifier2);
             if (tag == null) {
                 throw new JsonSyntaxException("Unknown block tag '" + identifier2 + "'");
             }
@@ -92,7 +92,7 @@ public class BlockPredicate {
             jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
         }
         if (this.tag != null) {
-            jsonObject.addProperty("tag", BlockTags.getContainer().checkId(this.tag).toString());
+            jsonObject.addProperty("tag", TagContainers.instance().blocks().checkId(this.tag).toString());
         }
         jsonObject.add("nbt", this.nbt.toJson());
         jsonObject.add("state", this.state.toJson());
@@ -116,6 +116,11 @@ public class BlockPredicate {
 
         public Builder block(Block block) {
             this.block = block;
+            return this;
+        }
+
+        public Builder method_29233(Tag<Block> tag) {
+            this.tag = tag;
             return this;
         }
 

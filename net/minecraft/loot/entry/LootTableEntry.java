@@ -13,6 +13,8 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.LeafEntry;
+import net.minecraft.loot.entry.LootPoolEntryType;
+import net.minecraft.loot.entry.LootPoolEntryTypes;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -24,6 +26,11 @@ extends LeafEntry {
     private LootTableEntry(Identifier id, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
         super(weight, quality, conditions, functions);
         this.id = id;
+    }
+
+    @Override
+    public LootPoolEntryType method_29318() {
+        return LootPoolEntryTypes.LOOT_TABLE;
     }
 
     @Override
@@ -53,13 +60,9 @@ extends LeafEntry {
 
     public static class Serializer
     extends LeafEntry.Serializer<LootTableEntry> {
-        public Serializer() {
-            super(new Identifier("loot_table"), LootTableEntry.class);
-        }
-
         @Override
-        public void toJson(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
-            super.toJson(jsonObject, lootTableEntry, jsonSerializationContext);
+        public void method_422(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
+            super.method_422(jsonObject, lootTableEntry, jsonSerializationContext);
             jsonObject.addProperty("name", lootTableEntry.id.toString());
         }
 

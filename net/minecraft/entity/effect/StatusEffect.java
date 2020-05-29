@@ -47,7 +47,7 @@ public class StatusEffect {
 
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
         if (this == StatusEffects.REGENERATION) {
-            if (entity.getHealth() < entity.getMaximumHealth()) {
+            if (entity.getHealth() < entity.getMaxHealth()) {
                 entity.heal(1.0f);
             }
         } else if (this == StatusEffects.POISON) {

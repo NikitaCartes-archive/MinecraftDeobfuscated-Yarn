@@ -95,7 +95,7 @@ public class MoveControl {
             BlockState blockState = this.entity.world.getBlockState(blockPos);
             Block block = blockState.getBlock();
             VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
-            if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0f, this.entity.getWidth()) || !voxelShape.isEmpty() && this.entity.getY() < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY() && !block.isIn(BlockTags.DOORS) && !block.isIn(BlockTags.FENCES)) {
+            if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0f, this.entity.getWidth()) || !voxelShape.isEmpty() && this.entity.getY() < voxelShape.getMax(Direction.Axis.Y) + (double)blockPos.getY() && !block.isIn(BlockTags.DOORS) && !block.isIn(BlockTags.FENCES)) {
                 this.entity.getJumpControl().setActive();
                 this.state = State.JUMPING;
             }

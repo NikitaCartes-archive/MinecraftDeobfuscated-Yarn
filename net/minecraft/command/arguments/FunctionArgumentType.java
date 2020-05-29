@@ -68,7 +68,7 @@ implements ArgumentType<FunctionArgument> {
     }
 
     private static Tag<CommandFunction> getFunctionTag(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
-        Tag<CommandFunction> tag = context.getSource().getMinecraftServer().getCommandFunctionManager().getTags().get(id);
+        Tag<CommandFunction> tag = context.getSource().getMinecraftServer().getCommandFunctionManager().method_29462(id);
         if (tag == null) {
             throw UNKNOWN_FUNCTION_TAG_EXCEPTION.create(id.toString());
         }

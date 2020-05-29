@@ -10,23 +10,23 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public final class GlobalPos {
-    public static final Codec<GlobalPos> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)DimensionType.field_24751.fieldOf("dimension")).forGetter(GlobalPos::getDimension), ((MapCodec)BlockPos.field_25064.fieldOf("pos")).forGetter(GlobalPos::getPos)).apply((Applicative<GlobalPos, ?>)instance, GlobalPos::create));
-    private final RegistryKey<DimensionType> dimension;
+    public static final Codec<GlobalPos> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)World.CODEC.fieldOf("dimension")).forGetter(GlobalPos::getDimension), ((MapCodec)BlockPos.field_25064.fieldOf("pos")).forGetter(GlobalPos::getPos)).apply((Applicative<GlobalPos, ?>)instance, GlobalPos::create));
+    private final RegistryKey<World> dimension;
     private final BlockPos pos;
 
-    private GlobalPos(RegistryKey<DimensionType> registryKey, BlockPos pos) {
+    private GlobalPos(RegistryKey<World> registryKey, BlockPos pos) {
         this.dimension = registryKey;
         this.pos = pos;
     }
 
-    public static GlobalPos create(RegistryKey<DimensionType> registryKey, BlockPos pos) {
+    public static GlobalPos create(RegistryKey<World> registryKey, BlockPos pos) {
         return new GlobalPos(registryKey, pos);
     }
 
-    public RegistryKey<DimensionType> getDimension() {
+    public RegistryKey<World> getDimension() {
         return this.dimension;
     }
 

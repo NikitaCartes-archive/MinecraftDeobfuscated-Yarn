@@ -5,7 +5,6 @@ package net.minecraft.world.gen;
 
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5304;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.PatrolEntity;
@@ -17,9 +16,10 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.Spawner;
 
 public class PillagerSpawner
-implements class_5304 {
+implements Spawner {
     private int ticksUntilNextSpawn;
 
     @Override

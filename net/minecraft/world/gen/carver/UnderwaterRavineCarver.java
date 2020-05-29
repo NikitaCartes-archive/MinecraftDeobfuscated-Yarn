@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -17,6 +16,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.RavineCarver;
 import net.minecraft.world.gen.carver.UnderwaterCaveCarver;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class UnderwaterRavineCarver
 extends RavineCarver {
@@ -31,7 +31,7 @@ extends RavineCarver {
     }
 
     @Override
-    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> posToBiome, BitSet carvingMask, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int seaLevel, int mainChunkX, int mainChunkZ, int x, int z, int relativeX, int y, int relativeZ, AtomicBoolean foundSurface) {
+    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> posToBiome, BitSet carvingMask, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, BlockPos.Mutable mutable3, int seaLevel, int mainChunkX, int mainChunkZ, int x, int z, int relativeX, int y, int relativeZ, MutableBoolean mutableBoolean) {
         return UnderwaterCaveCarver.carveAtPoint(this, chunk, carvingMask, random, mutable, seaLevel, mainChunkX, mainChunkZ, x, z, relativeX, y, relativeZ);
     }
 }

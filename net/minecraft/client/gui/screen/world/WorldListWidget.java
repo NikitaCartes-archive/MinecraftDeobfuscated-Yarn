@@ -192,16 +192,16 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 if (this.level.isLocked()) {
                     DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                     if (bl) {
-                        MutableText text2 = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-                        this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
+                        MutableText lv = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+                        this.screen.setTooltip(this.client.textRenderer.wrapLines(lv, 175));
                     }
                 } else if (this.level.isDifferentVersion()) {
                     DrawableHelper.drawTexture(matrices, x, y, 32.0f, j, 32, 32, 256, 256);
                     if (this.level.method_29020()) {
                         DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            MutableText text2 = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
-                            this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
+                            MutableText lv = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
+                            this.screen.setTooltip(this.client.textRenderer.wrapLines(lv, 175));
                         }
                     } else if (this.level.isLegacyCustomizedWorld()) {
                         DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);

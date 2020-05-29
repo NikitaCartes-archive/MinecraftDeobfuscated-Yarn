@@ -9,6 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -34,14 +35,14 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int i) {
+    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int i, BlockBox blockBox) {
         BlockPos blockPos = treeNode.getCenter();
         int j = 0;
         for (int k = blockPos.getY() - foliageHeight + i; k <= blockPos.getY() + i; ++k) {
             int l = blockPos.getY() - k;
             int m = radius + treeNode.getFoliageRadius() + MathHelper.floor((float)l / (float)foliageHeight * 3.5f);
             int n = l > 0 && m == j && (k & 1) == 0 ? m + 1 : m;
-            this.generate(world, random, config, new BlockPos(blockPos.getX(), k, blockPos.getZ()), n, leaves, 0, treeNode.isGiantTrunk());
+            this.generate(world, random, config, new BlockPos(blockPos.getX(), k, blockPos.getZ()), n, leaves, 0, treeNode.isGiantTrunk(), blockBox);
             j = m;
         }
     }

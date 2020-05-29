@@ -51,7 +51,7 @@ extends Task<LivingEntity> {
             brain.forget(MemoryModuleType.LOOK_TARGET);
             brain.forget(MemoryModuleType.BREED_TARGET);
             brain.forget(MemoryModuleType.INTERACTION_TARGET);
-            brain.remember(MemoryModuleType.HIDING_PLACE, GlobalPos.create(world.method_27983(), optional.get()));
+            brain.remember(MemoryModuleType.HIDING_PLACE, GlobalPos.create(world.getRegistryKey(), optional.get()));
             if (!optional.get().isWithinDistance(entity.getPos(), (double)this.preferredDistance)) {
                 brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(optional.get(), this.walkSpeed, this.preferredDistance));
             }

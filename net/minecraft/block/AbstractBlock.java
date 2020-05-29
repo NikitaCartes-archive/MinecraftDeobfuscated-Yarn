@@ -369,6 +369,7 @@ public abstract class AbstractBlock {
         private final Material material;
         private final MaterialColor materialColor;
         private final float hardness;
+        private final boolean toolRequired;
         private final boolean opaque;
         private final ContextPredicate solidBlockPredicate;
         private final ContextPredicate suffocationPredicate;
@@ -387,6 +388,7 @@ public abstract class AbstractBlock {
             this.material = settings.material;
             this.materialColor = (MaterialColor)settings.materialColorFactory.apply(this.asBlockState());
             this.hardness = settings.hardness;
+            this.toolRequired = settings.toolRequired;
             this.opaque = settings.opaque;
             this.solidBlockPredicate = settings.solidBlockPredicate;
             this.suffocationPredicate = settings.suffocationPredicate;
@@ -730,6 +732,10 @@ public abstract class AbstractBlock {
 
         protected abstract BlockState asBlockState();
 
+        public boolean isToolRequired() {
+            return this.toolRequired;
+        }
+
         static final class ShapeCache {
             private static final Direction[] DIRECTIONS = Direction.values();
             protected final boolean fullOpaque;
@@ -760,7 +766,7 @@ public abstract class AbstractBlock {
                     }
                 }
                 this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
-                this.exceedsCube = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> this.collisionShape.getMinimum((Direction.Axis)axis) < 0.0 || this.collisionShape.getMaximum((Direction.Axis)axis) > 1.0);
+                this.exceedsCube = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> this.collisionShape.getMin((Direction.Axis)axis) < 0.0 || this.collisionShape.getMax((Direction.Axis)axis) > 1.0);
                 this.solidFullSquare = new boolean[6];
                 for (Direction direction2 : DIRECTIONS) {
                     this.solidFullSquare[direction2.ordinal()] = Block.isSideSolidFullSquare(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
@@ -778,6 +784,7 @@ public abstract class AbstractBlock {
         private ToIntFunction<BlockState> luminance = state -> 0;
         private float resistance;
         private float hardness;
+        private boolean toolRequired;
         private boolean randomTicks;
         private float slipperiness = 0.6f;
         private float velocityMultiplier = 1.0f;
@@ -833,6 +840,7 @@ public abstract class AbstractBlock {
             settings.dynamicBounds = block.settings.dynamicBounds;
             settings.opaque = block.settings.opaque;
             settings.isAir = block.settings.isAir;
+            settings.toolRequired = block.settings.toolRequired;
             return settings;
         }
 
@@ -939,6 +947,11 @@ public abstract class AbstractBlock {
 
         public Settings emissiveLighting(ContextPredicate predicate) {
             this.emissiveLightingPredicate = predicate;
+            return this;
+        }
+
+        public Settings method_29292() {
+            this.toolRequired = true;
             return this;
         }
     }

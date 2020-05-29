@@ -32,7 +32,7 @@ extends Item {
             if (!world.isClient && playerEntity != null) {
                 LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         return ActionResult.PASS;
     }

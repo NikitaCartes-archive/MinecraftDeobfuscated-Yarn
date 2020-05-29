@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class SeaPickleFeatureConfig
 implements FeatureConfig {
-    public static final Codec<SeaPickleFeatureConfig> field_24878 = ((MapCodec)Codec.INT.fieldOf("count")).xmap(SeaPickleFeatureConfig::new, seaPickleFeatureConfig -> seaPickleFeatureConfig.count).codec();
+    public static final Codec<SeaPickleFeatureConfig> CODEC = ((MapCodec)Codec.INT.fieldOf("count")).xmap(SeaPickleFeatureConfig::new, seaPickleFeatureConfig -> seaPickleFeatureConfig.count).codec();
     public final int count;
 
     public SeaPickleFeatureConfig(int count) {

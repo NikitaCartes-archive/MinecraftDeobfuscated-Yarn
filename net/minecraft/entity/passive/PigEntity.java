@@ -45,8 +45,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -213,32 +213,27 @@ Saddleable {
 
     @Override
     public void onStruckByLightning(LightningEntity lightning) {
-        ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world);
-        zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-        zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-        zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
-        zombifiedPiglinEntity.setBaby(this.isBaby());
-        if (this.hasCustomName()) {
-            zombifiedPiglinEntity.setCustomName(this.getCustomName());
-            zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
+        if (this.world.getDifficulty() != Difficulty.PEACEFUL) {
+            ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world);
+            zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+            zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+            zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
+            zombifiedPiglinEntity.setBaby(this.isBaby());
+            if (this.hasCustomName()) {
+                zombifiedPiglinEntity.setCustomName(this.getCustomName());
+                zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
+            }
+            this.world.spawnEntity(zombifiedPiglinEntity);
+            this.remove();
+        } else {
+            super.onStruckByLightning(lightning);
         }
-        this.world.spawnEntity(zombifiedPiglinEntity);
-        this.remove();
     }
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.travel(this, this.saddledComponent, movementInput)) {
-            double e;
-            this.lastLimbDistance = this.limbDistance;
-            double d = this.getX() - this.prevX;
-            float f = MathHelper.sqrt(d * d + (e = this.getZ() - this.prevZ) * e) * 4.0f;
-            if (f > 1.0f) {
-                f = 1.0f;
-            }
-            this.limbDistance += (f - this.limbDistance) * 0.4f;
-            this.limbAngle += this.limbDistance;
-        }
+        this.setMovementSpeed(this.getSaddledSpeed());
+        this.travel(this, this.saddledComponent, movementInput);
     }
 
     @Override

@@ -31,12 +31,6 @@ extends HandledScreen<HorseScreenHandler> {
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        this.textRenderer.draw(matrices, this.title, 8.0f, 6.0f, 0x404040);
-        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
-    }
-
-    @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         AbstractDonkeyEntity abstractDonkeyEntity;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);

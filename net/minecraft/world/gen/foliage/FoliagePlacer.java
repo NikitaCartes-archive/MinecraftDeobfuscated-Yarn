@@ -9,6 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -36,14 +37,14 @@ public abstract class FoliagePlacer {
 
     protected abstract FoliagePlacerType<?> method_28843();
 
-    public void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves) {
-        this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.method_27386(random));
+    public void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, BlockBox blockBox) {
+        this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.method_27386(random), blockBox);
     }
 
     /**
      * This is the main method used to generate foliage.
      */
-    protected abstract void generate(ModifiableTestableWorld var1, Random var2, TreeFeatureConfig var3, int var4, TreeNode var5, int var6, int var7, Set<BlockPos> var8, int var9);
+    protected abstract void generate(ModifiableTestableWorld var1, Random var2, TreeFeatureConfig var3, int var4, TreeNode var5, int var6, int var7, Set<BlockPos> var8, int var9, BlockBox var10);
 
     public abstract int getHeight(Random var1, int var2, TreeFeatureConfig var3);
 
@@ -70,7 +71,7 @@ public abstract class FoliagePlacer {
         return this.isInvalidForLeaves(random, m, j, n, l, bl);
     }
 
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, BlockPos blockPos, int baseHeight, Set<BlockPos> leaves, int i, boolean giantTrunk) {
+    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, BlockPos blockPos, int baseHeight, Set<BlockPos> set, int i, boolean giantTrunk, BlockBox blockBox) {
         int j = giantTrunk ? 1 : 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int k = -baseHeight; k <= baseHeight + j; ++k) {
@@ -79,7 +80,8 @@ public abstract class FoliagePlacer {
                 mutable.set(blockPos, k, i, l);
                 if (!TreeFeature.canReplace(world, mutable)) continue;
                 world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
-                leaves.add(mutable.toImmutable());
+                blockBox.encompass(new BlockBox(mutable, mutable));
+                set.add(mutable.toImmutable());
             }
         }
     }

@@ -97,8 +97,12 @@ public class Path {
     }
 
     public Vec3i getCurrentPosition() {
-        PathNode pathNode = this.nodes.get(this.currentNodeIndex);
+        PathNode pathNode = this.method_29301();
         return new Vec3i(pathNode.x, pathNode.y, pathNode.z);
+    }
+
+    public PathNode method_29301() {
+        return this.nodes.get(this.currentNodeIndex);
     }
 
     public boolean equalsPath(@Nullable Path path) {

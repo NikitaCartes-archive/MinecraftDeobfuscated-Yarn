@@ -22,8 +22,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.structure.Structure;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
@@ -34,19 +32,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-public class StructureManager
-implements SynchronousResourceReloadListener {
+public class StructureManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<Identifier, Structure> structures = Maps.newHashMap();
     private final DataFixer dataFixer;
-    private final MinecraftServer server;
+    private ResourceManager field_25189;
     private final Path generatedPath;
 
-    public StructureManager(MinecraftServer server, LevelStorage.Session session, DataFixer dataFixer) {
-        this.server = server;
+    public StructureManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
+        this.field_25189 = resourceManager;
         this.dataFixer = dataFixer;
         this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
-        server.getDataManager().registerListener(this);
     }
 
     public Structure getStructureOrBlank(Identifier id) {
@@ -66,8 +62,8 @@ implements SynchronousResourceReloadListener {
         });
     }
 
-    @Override
-    public void apply(ResourceManager manager) {
+    public void method_29300(ResourceManager resourceManager) {
+        this.field_25189 = resourceManager;
         this.structures.clear();
     }
 
@@ -79,7 +75,7 @@ implements SynchronousResourceReloadListener {
     @Nullable
     private Structure loadStructureFromResource(Identifier id) {
         Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
-        try (Resource resource = this.server.getDataManager().getResource(identifier);){
+        try (Resource resource = this.field_25189.getResource(identifier);){
             Structure structure = this.readStructure(resource.getInputStream());
             return structure;
         } catch (FileNotFoundException fileNotFoundException) {

@@ -4,6 +4,7 @@
 package net.minecraft.server.function;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -34,11 +35,11 @@ public class CommandFunction {
         return this.elements;
     }
 
-    public static CommandFunction create(Identifier id, CommandFunctionManager commandFunctionManager, List<String> fileLines) {
-        ArrayList<CommandElement> list = Lists.newArrayListWithCapacity(fileLines.size());
-        for (int i = 0; i < fileLines.size(); ++i) {
+    public static CommandFunction create(Identifier id, CommandDispatcher<ServerCommandSource> commandDispatcher, ServerCommandSource serverCommandSource, List<String> list) {
+        ArrayList<CommandElement> list2 = Lists.newArrayListWithCapacity(list.size());
+        for (int i = 0; i < list.size(); ++i) {
             int j = i + 1;
-            String string = fileLines.get(i).trim();
+            String string = list.get(i).trim();
             StringReader stringReader = new StringReader(string);
             if (!stringReader.canRead() || stringReader.peek() == '#') continue;
             if (stringReader.peek() == '/') {
@@ -50,17 +51,17 @@ public class CommandFunction {
                 throw new IllegalArgumentException("Unknown or invalid command '" + string + "' on line " + j + " (did you mean '" + string2 + "'? Do not use a preceding forwards slash.)");
             }
             try {
-                ParseResults<ServerCommandSource> parseResults = commandFunctionManager.getServer().getCommandManager().getDispatcher().parse(stringReader, commandFunctionManager.getCommandFunctionSource());
+                ParseResults<ServerCommandSource> parseResults = commandDispatcher.parse(stringReader, serverCommandSource);
                 if (parseResults.getReader().canRead()) {
                     throw CommandManager.getException(parseResults);
                 }
-                list.add(new CommandElement(parseResults));
+                list2.add(new CommandElement(parseResults));
                 continue;
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + commandSyntaxException.getMessage());
             }
         }
-        return new CommandFunction(id, list.toArray(new Element[0]));
+        return new CommandFunction(id, list2.toArray(new Element[0]));
     }
 
     public static class LazyContainer {

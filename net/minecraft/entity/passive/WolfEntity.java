@@ -343,7 +343,7 @@ extends TameableEntity {
             return true;
         }
         if (this.isTamed()) {
-            if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
+            if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
                 if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
@@ -406,7 +406,7 @@ extends TameableEntity {
             return 1.5393804f;
         }
         if (this.isTamed()) {
-            return (0.55f - (this.getMaximumHealth() - this.getHealth()) * 0.02f) * (float)Math.PI;
+            return (0.55f - (this.getMaxHealth() - this.getHealth()) * 0.02f) * (float)Math.PI;
         }
         return 0.62831855f;
     }

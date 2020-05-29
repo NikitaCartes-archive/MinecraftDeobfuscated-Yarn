@@ -8,9 +8,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourcePack;
 import net.minecraft.util.Identifier;
 
 public interface ResourceManager {
@@ -25,5 +27,8 @@ public interface ResourceManager {
     public List<Resource> getAllResources(Identifier var1) throws IOException;
 
     public Collection<Identifier> findResources(String var1, Predicate<String> var2);
+
+    @Environment(value=EnvType.CLIENT)
+    public Stream<ResourcePack> method_29213();
 }
 

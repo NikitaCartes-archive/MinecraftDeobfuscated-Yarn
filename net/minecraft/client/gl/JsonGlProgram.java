@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -266,35 +267,33 @@ AutoCloseable {
     }
 
     private void finalizeUniformsAndSamplers() {
-        int k;
-        String string;
+        int i;
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        int i = 0;
-        int j = 0;
-        while (i < this.samplerNames.size()) {
-            string = this.samplerNames.get(i);
-            k = GlUniform.getUniformLocation(this.programRef, string);
-            if (k == -1) {
-                LOGGER.warn("Shader {}could not find sampler named {} in the specified shader program.", (Object)this.name, (Object)string);
+        IntArrayList intList = new IntArrayList();
+        for (i = 0; i < this.samplerNames.size(); ++i) {
+            String string = this.samplerNames.get(i);
+            int j = GlUniform.getUniformLocation(this.programRef, string);
+            if (j == -1) {
+                LOGGER.warn("Shader {} could not find sampler named {} in the specified shader program.", (Object)this.name, (Object)string);
                 this.samplerBinds.remove(string);
-                this.samplerNames.remove(j);
-                --j;
-            } else {
-                this.samplerShaderLocs.add(k);
+                intList.add(i);
+                continue;
             }
-            ++i;
-            ++j;
+            this.samplerShaderLocs.add(j);
+        }
+        for (i = intList.size() - 1; i >= 0; --i) {
+            this.samplerNames.remove(intList.getInt(i));
         }
         for (GlUniform glUniform : this.uniformData) {
-            string = glUniform.getName();
-            k = GlUniform.getUniformLocation(this.programRef, string);
+            String string2 = glUniform.getName();
+            int k = GlUniform.getUniformLocation(this.programRef, string2);
             if (k == -1) {
-                LOGGER.warn("Could not find uniform named {} in the specified shader program.", (Object)string);
+                LOGGER.warn("Could not find uniform named {} in the specified shader program.", (Object)string2);
                 continue;
             }
             this.uniformLocs.add(k);
             glUniform.setLoc(k);
-            this.uniformByName.put(string, glUniform);
+            this.uniformByName.put(string2, glUniform);
         }
     }
 

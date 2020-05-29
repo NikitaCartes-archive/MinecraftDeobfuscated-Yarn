@@ -88,7 +88,7 @@ extends Block {
                 this.setLevel(world, pos, state, 3);
                 world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         if (item == Items.BUCKET) {
             if (i == 3 && !world.isClient) {
@@ -104,7 +104,7 @@ extends Block {
                 this.setLevel(world, pos, state, 0);
                 world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         if (item == Items.GLASS_BOTTLE) {
             if (i > 0 && !world.isClient) {
@@ -123,7 +123,7 @@ extends Block {
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 this.setLevel(world, pos, state, i - 1);
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         if (item == Items.POTION && PotionUtil.getPotion(itemStack) == Potions.WATER) {
             if (i < 3 && !world.isClient) {
@@ -138,7 +138,7 @@ extends Block {
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 this.setLevel(world, pos, state, i + 1);
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         if (i > 0 && item instanceof DyeableItem && (dyeableItem = (DyeableItem)((Object)item)).hasColor(itemStack) && !world.isClient) {
             dyeableItem.removeColor(itemStack);
@@ -164,7 +164,7 @@ extends Block {
                     ((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
                 }
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         if (i > 0 && item instanceof BlockItem) {
             Block block = ((BlockItem)item).getBlock();

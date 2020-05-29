@@ -36,7 +36,7 @@ extends ChatScreen {
         } else if (keyCode == 257 || keyCode == 335) {
             String string = this.chatField.getText().trim();
             if (!string.isEmpty()) {
-                this.client.player.sendChatMessage(string);
+                this.sendMessage(string);
             }
             this.chatField.setText("");
             this.client.inGameHud.getChatHud().resetScroll();

@@ -48,7 +48,7 @@ extends BlockWithEntity {
             return ActionResult.SUCCESS;
         }
         this.openScreen(world, pos, player);
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     protected abstract void openScreen(World var1, BlockPos var2, PlayerEntity var3);

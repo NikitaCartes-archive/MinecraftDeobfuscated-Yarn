@@ -8,10 +8,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 import org.jetbrains.annotations.Nullable;
 
 public class TimeCheckLootCondition
@@ -23,6 +25,11 @@ implements LootCondition {
     private TimeCheckLootCondition(@Nullable Long period, UniformLootTableRange value) {
         this.period = period;
         this.value = value;
+    }
+
+    @Override
+    public LootConditionType method_29325() {
+        return LootConditionTypes.TIME_CHECK;
     }
 
     @Override
@@ -41,11 +48,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<TimeCheckLootCondition> {
-        public Factory() {
-            super(new Identifier("time_check"), TimeCheckLootCondition.class);
-        }
-
+    implements JsonSerializable<TimeCheckLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("period", timeCheckLootCondition.period);
@@ -60,8 +63,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
+        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

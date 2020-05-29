@@ -642,7 +642,7 @@ extends DrawableHelper {
         if (entity == null || !entity.isLiving()) {
             return 0;
         }
-        float f = entity.getMaximumHealth();
+        float f = entity.getMaxHealth();
         int i = (int)(f + 0.5f) / 2;
         if (i > 30) {
             i = 30;

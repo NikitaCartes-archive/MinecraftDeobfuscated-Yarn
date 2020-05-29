@@ -426,7 +426,7 @@ Saddleable {
                 this.lovePlayer(player);
             }
         }
-        if (this.getHealth() < this.getMaximumHealth() && f > 0.0f) {
+        if (this.getHealth() < this.getMaxHealth() && f > 0.0f) {
             this.heal(f);
             bl = true;
         }
@@ -626,8 +626,6 @@ Saddleable {
 
     @Override
     public void travel(Vec3d movementInput) {
-        double e;
-        double d;
         if (!this.isAlive()) {
             return;
         }
@@ -652,8 +650,8 @@ Saddleable {
             g = 0.0f;
         }
         if (this.jumpStrength > 0.0f && !this.isInAir() && this.onGround) {
-            d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.getJumpVelocityMultiplier();
-            e = this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1f) : d;
+            double d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.getJumpVelocityMultiplier();
+            double e = this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1f) : d;
             Vec3d vec3d = this.getVelocity();
             this.setVelocity(vec3d.x, e, vec3d.z);
             this.setInAir(true);
@@ -677,14 +675,7 @@ Saddleable {
             this.jumpStrength = 0.0f;
             this.setInAir(false);
         }
-        this.lastLimbDistance = this.limbDistance;
-        d = this.getX() - this.prevX;
-        float j = MathHelper.sqrt(d * d + (e = this.getZ() - this.prevZ) * e) * 4.0f;
-        if (j > 1.0f) {
-            j = 1.0f;
-        }
-        this.limbDistance += (j - this.limbDistance) * 0.4f;
-        this.limbAngle += this.limbDistance;
+        this.method_29242(this, false);
     }
 
     protected void playJumpSound() {
@@ -736,7 +727,7 @@ Saddleable {
     }
 
     protected boolean canBreed() {
-        return !this.hasPassengers() && !this.hasVehicle() && this.isTame() && !this.isBaby() && this.getHealth() >= this.getMaximumHealth() && this.isInLove();
+        return !this.hasPassengers() && !this.hasVehicle() && this.isTame() && !this.isBaby() && this.getHealth() >= this.getMaxHealth() && this.isInLove();
     }
 
     @Override

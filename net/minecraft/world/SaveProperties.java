@@ -88,6 +88,6 @@ public interface SaveProperties {
 
     public void method_29037(CompoundTag var1);
 
-    public GeneratorOptions method_28057();
+    public GeneratorOptions getGeneratorOptions();
 }
 

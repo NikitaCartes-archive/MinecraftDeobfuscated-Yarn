@@ -9,8 +9,8 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagContainers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -42,7 +42,7 @@ public abstract class EntityTypePredicate {
         String string = JsonHelper.asString(json, "type");
         if (string.startsWith("#")) {
             Identifier identifier = new Identifier(string.substring(1));
-            return new Tagged(EntityTypeTags.getContainer().getOrCreate(identifier));
+            return new Tagged(TagContainers.instance().entityTypes().getOrCreate(identifier));
         }
         Identifier identifier = new Identifier(string);
         EntityType entityType = (EntityType)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.getIds())));
@@ -72,7 +72,7 @@ public abstract class EntityTypePredicate {
 
         @Override
         public JsonElement toJson() {
-            return new JsonPrimitive("#" + EntityTypeTags.getContainer().checkId(this.tag));
+            return new JsonPrimitive("#" + TagContainers.instance().entityTypes().checkId(this.tag));
         }
     }
 

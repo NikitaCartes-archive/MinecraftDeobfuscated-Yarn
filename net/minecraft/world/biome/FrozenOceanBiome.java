@@ -11,8 +11,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
-import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class FrozenOceanBiome
@@ -23,7 +23,7 @@ extends Biome {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.SNOW).category(Biome.Category.OCEAN).depth(-1.0f).scale(0.1f).temperature(0.0f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
         this.addStructureFeature(DefaultBiomeFeatures.field_24699);
         DefaultBiomeFeatures.method_28441(this);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24685);
+        this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
         DefaultBiomeFeatures.addOceanCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addIcebergs(this);

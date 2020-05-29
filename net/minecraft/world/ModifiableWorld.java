@@ -8,6 +8,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a modifable world where block states can be changed and entities spawned.
+ */
 public interface ModifiableWorld {
     /**
      * Updates the block state at a position, calling appropriate callbacks.

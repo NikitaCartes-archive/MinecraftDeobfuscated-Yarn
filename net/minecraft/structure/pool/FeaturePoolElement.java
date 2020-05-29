@@ -35,7 +35,7 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class FeaturePoolElement
 extends StructurePoolElement {
-    public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.field_24833.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.method_28883()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
+    public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.CODEC.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.method_28883()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
     private final ConfiguredFeature<?, ?> feature;
     private final CompoundTag tag;
 

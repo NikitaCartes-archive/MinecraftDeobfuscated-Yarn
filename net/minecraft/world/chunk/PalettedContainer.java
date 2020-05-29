@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -209,8 +210,8 @@ implements PaletteResizeListener<T> {
         return 1 + this.palette.getPacketSize() + PacketByteBuf.getVarIntSizeBytes(this.data.getSize()) + this.data.getStorage().length * 8;
     }
 
-    public boolean method_19526(T object) {
-        return this.palette.accepts(object);
+    public boolean method_19526(Predicate<T> predicate) {
+        return this.palette.accepts(predicate);
     }
 
     public void count(CountConsumer<T> consumer) {

@@ -95,6 +95,10 @@ extends Vec3i {
         return new BlockPos(BlockPos.unpackLongX(value), BlockPos.unpackLongY(value), BlockPos.unpackLongZ(value));
     }
 
+    public long asLong() {
+        return BlockPos.asLong(this.getX(), this.getY(), this.getZ());
+    }
+
     public static long asLong(int x, int y, int z) {
         long l = 0L;
         l |= ((long)x & BITS_X) << BIT_SHIFT_X;
@@ -104,10 +108,6 @@ extends Vec3i {
 
     public static long removeChunkSectionLocalY(long y) {
         return y & 0xFFFFFFFFFFFFFFF0L;
-    }
-
-    public long asLong() {
-        return BlockPos.asLong(this.getX(), this.getY(), this.getZ());
     }
 
     public BlockPos add(double x, double y, double z) {

@@ -53,7 +53,7 @@ public abstract class MobSpawnerLogic {
             return ChatUtil.isEmpty(string) ? null : new Identifier(string);
         } catch (InvalidIdentifierException invalidIdentifierException) {
             BlockPos blockPos = this.getPos();
-            LOGGER.warn("Invalid entity id '{}' at spawner {}:[{},{},{}]", (Object)string, (Object)this.getWorld().method_27983().getValue(), (Object)blockPos.getX(), (Object)blockPos.getY(), (Object)blockPos.getZ());
+            LOGGER.warn("Invalid entity id '{}' at spawner {}:[{},{},{}]", (Object)string, (Object)this.getWorld().getRegistryKey().getValue(), (Object)blockPos.getX(), (Object)blockPos.getY(), (Object)blockPos.getZ());
             return null;
         }
     }

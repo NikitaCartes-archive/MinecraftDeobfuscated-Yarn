@@ -12,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -94,6 +95,11 @@ extends Entity {
         this.prevX = x;
         this.prevY = y;
         this.prevZ = z;
+    }
+
+    @Override
+    protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return dimensions.height;
     }
 
     @Override

@@ -15,7 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class SecondaryPointsOfInterestSensor
 extends Sensor<VillagerEntity> {
@@ -25,7 +25,7 @@ extends Sensor<VillagerEntity> {
 
     @Override
     protected void sense(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-        RegistryKey<DimensionType> registryKey = serverWorld.method_27983();
+        RegistryKey<World> registryKey = serverWorld.getRegistryKey();
         BlockPos blockPos = villagerEntity.getBlockPos();
         ArrayList<GlobalPos> list = Lists.newArrayList();
         int i = 4;

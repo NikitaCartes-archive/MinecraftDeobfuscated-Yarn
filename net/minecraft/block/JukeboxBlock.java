@@ -41,7 +41,7 @@ extends BlockWithEntity {
             this.removeRecord(world, pos);
             state = (BlockState)state.with(HAS_RECORD, false);
             world.setBlockState(pos, state, 2);
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         return ActionResult.PASS;
     }

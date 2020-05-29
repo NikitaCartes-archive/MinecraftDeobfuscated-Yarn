@@ -23,7 +23,7 @@ public class WeightedList<U> {
     }
 
     private WeightedList(List<Entry<U>> list) {
-        this.entries = list;
+        this.entries = Lists.newArrayList(list);
     }
 
     public static <U> Codec<WeightedList<U>> method_28338(Codec<U> codec) {

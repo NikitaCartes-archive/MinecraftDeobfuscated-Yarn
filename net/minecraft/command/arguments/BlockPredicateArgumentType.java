@@ -25,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
@@ -71,7 +72,7 @@ implements ArgumentType<BlockPredicate> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return blockArgumentParser.getSuggestions(builder);
+        return blockArgumentParser.getSuggestions(builder, BlockTags.getContainer());
     }
 
     @Override

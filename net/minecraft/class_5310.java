@@ -7,9 +7,10 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.class_5324;
 
 public class class_5310 {
-    public static final Codec<class_5310> field_24817 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("target")).forGetter(class_5310::method_28594), ((MapCodec)Codec.INT.fieldOf("size")).forGetter(class_5310::method_28596), ((MapCodec)Codec.INT.fieldOf("offset")).forGetter(class_5310::method_28597)).apply((Applicative<class_5310, ?>)instance, class_5310::new));
+    public static final Codec<class_5310> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("target")).forGetter(class_5310::method_28594), ((MapCodec)class_5324.method_29229(0, 256).fieldOf("size")).forGetter(class_5310::method_28596), ((MapCodec)Codec.INT.fieldOf("offset")).forGetter(class_5310::method_28597)).apply((Applicative<class_5310, ?>)instance, class_5310::new));
     private final int field_24818;
     private final int field_24819;
     private final int field_24820;

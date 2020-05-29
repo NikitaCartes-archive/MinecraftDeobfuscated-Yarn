@@ -11,7 +11,6 @@ import java.lang.invoke.LambdaMetafactory;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -21,11 +20,11 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.screen.SettingsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
-import net.minecraft.client.gui.screen.options.AccessibilityScreen;
+import net.minecraft.client.gui.screen.options.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.options.LanguageOptionsScreen;
+import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -118,9 +117,9 @@ extends Screen {
             this.initWidgetsNormal(j, 24);
         }
         this.addButton(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_LOCATION, 256, 256, buttonWidget -> this.client.openScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), new TranslatableText("narrator.button.language")));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, new TranslatableText("menu.options"), buttonWidget -> this.client.openScreen(new SettingsScreen(this, this.client.options))));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, new TranslatableText("menu.options"), buttonWidget -> this.client.openScreen(new OptionsScreen(this, this.client.options))));
         this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, new TranslatableText("menu.quit"), buttonWidget -> this.client.scheduleStop()));
-        this.addButton(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, buttonWidget -> this.client.openScreen(new AccessibilityScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
+        this.addButton(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, buttonWidget -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
         this.client.setConnectedToRealms(false);
         if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
             RealmsBridge realmsBridge = new RealmsBridge();
@@ -198,7 +197,7 @@ extends Screen {
         this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, g);
         if (this.isMinceraft) {
-            this.method_29063(j, 30, (integer, integer2) -> {
+            this.method_29343(j, 30, (integer, integer2) -> {
                 this.drawTexture(matrices, integer + 0, (int)integer2, 0, 0, 99, 44);
                 this.drawTexture(matrices, integer + 99, (int)integer2, 129, 0, 27, 44);
                 this.drawTexture(matrices, integer + 99 + 26, (int)integer2, 126, 0, 3, 44);
@@ -206,7 +205,7 @@ extends Screen {
                 this.drawTexture(matrices, integer + 155, (int)integer2, 0, 45, 155, 44);
             });
         } else {
-            this.method_29063(j, 30, (integer, integer2) -> {
+            this.method_29343(j, 30, (integer, integer2) -> {
                 this.drawTexture(matrices, integer + 0, (int)integer2, 0, 0, 155, 44);
                 this.drawTexture(matrices, integer + 155, (int)integer2, 0, 45, 155, 44);
             });
@@ -240,14 +239,6 @@ extends Screen {
         if (this.areRealmsNotificationsEnabled() && g >= 1.0f) {
             this.realmsNotificationGui.render(matrices, mouseX, mouseY, delta);
         }
-    }
-
-    private void method_29063(int i, int j, BiConsumer<Integer, Integer> biConsumer) {
-        biConsumer.accept(i + 1, j);
-        biConsumer.accept(i - 1, j);
-        biConsumer.accept(i, j + 1);
-        biConsumer.accept(i, j - 1);
-        biConsumer.accept(i, j);
     }
 
     @Override

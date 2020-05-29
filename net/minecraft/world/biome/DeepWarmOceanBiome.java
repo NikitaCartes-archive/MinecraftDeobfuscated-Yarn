@@ -8,7 +8,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
-import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class DeepWarmOceanBiome
@@ -18,7 +18,7 @@ extends Biome {
         this.addStructureFeature(DefaultBiomeFeatures.field_24700);
         this.addStructureFeature(DefaultBiomeFeatures.field_24698);
         DefaultBiomeFeatures.method_28441(this);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24685);
+        this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
         DefaultBiomeFeatures.addOceanCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

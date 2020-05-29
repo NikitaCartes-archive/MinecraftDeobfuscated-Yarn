@@ -76,7 +76,7 @@ extends BlockWithEntity {
                 player.incrementStat(Stats.INSPECT_DISPENSER);
             }
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     protected void dispense(World world, BlockPos pos) {

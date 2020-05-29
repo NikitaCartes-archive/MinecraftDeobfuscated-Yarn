@@ -87,11 +87,11 @@ implements Waterloggable {
         EnderChestInventory enderChestInventory = player.getEnderChestInventory();
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (enderChestInventory == null || !(blockEntity instanceof EnderChestBlockEntity)) {
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         BlockPos blockPos = pos.up();
         if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         if (world.isClient) {
             return ActionResult.SUCCESS;
@@ -101,7 +101,7 @@ implements Waterloggable {
         player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME));
         player.incrementStat(Stats.OPEN_ENDERCHEST);
         PiglinBrain.onGoldBlockBroken(player);
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     @Override

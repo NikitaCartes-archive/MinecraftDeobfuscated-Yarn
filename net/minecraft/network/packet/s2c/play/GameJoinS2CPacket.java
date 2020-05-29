@@ -3,24 +3,31 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
+import com.google.common.collect.Sets;
 import java.io.IOException;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.dimension.DimensionType;
 
 public class GameJoinS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private int playerEntityId;
-    private long seed;
+    private long sha256Seed;
     private boolean hardcore;
     private GameMode gameMode;
+    private Set<RegistryKey<World>> field_25320;
     private DimensionTracker.Modifiable dimensionTracker;
-    private Identifier dimensionId;
+    private RegistryKey<DimensionType> field_25321;
+    private RegistryKey<World> dimensionId;
     private int maxPlayers;
     private int chunkLoadDistance;
     private boolean reducedDebugInfo;
@@ -31,19 +38,21 @@ implements Packet<ClientPlayPacketListener> {
     public GameJoinS2CPacket() {
     }
 
-    public GameJoinS2CPacket(int playerEntityId, GameMode gameMode, long seed, boolean hardcore, DimensionTracker.Modifiable dimensionTracker, Identifier dimensionId, int maxPlayers, int chunkLoadDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld) {
+    public GameJoinS2CPacket(int playerEntityId, GameMode gameMode, long sha256Seed, boolean hardcore, Set<RegistryKey<World>> set, DimensionTracker.Modifiable modifiable, RegistryKey<DimensionType> registryKey, RegistryKey<World> registryKey2, int i, int j, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
         this.playerEntityId = playerEntityId;
-        this.dimensionTracker = dimensionTracker;
-        this.dimensionId = dimensionId;
-        this.seed = seed;
+        this.field_25320 = set;
+        this.dimensionTracker = modifiable;
+        this.field_25321 = registryKey;
+        this.dimensionId = registryKey2;
+        this.sha256Seed = sha256Seed;
         this.gameMode = gameMode;
-        this.maxPlayers = maxPlayers;
+        this.maxPlayers = i;
         this.hardcore = hardcore;
-        this.chunkLoadDistance = chunkLoadDistance;
-        this.reducedDebugInfo = reducedDebugInfo;
-        this.showDeathScreen = showDeathScreen;
-        this.debugWorld = debugWorld;
-        this.flatWorld = flatWorld;
+        this.chunkLoadDistance = j;
+        this.reducedDebugInfo = bl;
+        this.showDeathScreen = bl2;
+        this.debugWorld = bl3;
+        this.flatWorld = bl4;
     }
 
     @Override
@@ -52,9 +61,15 @@ implements Packet<ClientPlayPacketListener> {
         int i = buf.readUnsignedByte();
         this.hardcore = (i & 8) == 8;
         this.gameMode = GameMode.byId(i &= 0xFFFFFFF7);
+        int j = buf.readVarInt();
+        this.field_25320 = Sets.newHashSet();
+        for (int k = 0; k < j; ++k) {
+            this.field_25320.add(RegistryKey.of(Registry.DIMENSION, buf.readIdentifier()));
+        }
         this.dimensionTracker = buf.decode(DimensionTracker.Modifiable.CODEC);
-        this.dimensionId = buf.readIdentifier();
-        this.seed = buf.readLong();
+        this.field_25321 = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, buf.readIdentifier());
+        this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+        this.sha256Seed = buf.readLong();
         this.maxPlayers = buf.readUnsignedByte();
         this.chunkLoadDistance = buf.readVarInt();
         this.reducedDebugInfo = buf.readBoolean();
@@ -71,9 +86,14 @@ implements Packet<ClientPlayPacketListener> {
             i |= 8;
         }
         buf.writeByte(i);
+        buf.writeVarInt(this.field_25320.size());
+        for (RegistryKey<World> registryKey : this.field_25320) {
+            buf.writeIdentifier(registryKey.getValue());
+        }
         buf.encode(DimensionTracker.Modifiable.CODEC, this.dimensionTracker);
-        buf.writeIdentifier(this.dimensionId);
-        buf.writeLong(this.seed);
+        buf.writeIdentifier(this.field_25321.getValue());
+        buf.writeIdentifier(this.dimensionId.getValue());
+        buf.writeLong(this.sha256Seed);
         buf.writeByte(this.maxPlayers);
         buf.writeVarInt(this.chunkLoadDistance);
         buf.writeBoolean(this.reducedDebugInfo);
@@ -93,8 +113,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public long getSeed() {
-        return this.seed;
+    public long getSha256Seed() {
+        return this.sha256Seed;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -108,12 +128,22 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public Set<RegistryKey<World>> method_29443() {
+        return this.field_25320;
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public DimensionTracker getDimension() {
         return this.dimensionTracker;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Identifier getDimensionId() {
+    public RegistryKey<DimensionType> method_29444() {
+        return this.field_25321;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public RegistryKey<World> getDimensionId() {
         return this.dimensionId;
     }
 

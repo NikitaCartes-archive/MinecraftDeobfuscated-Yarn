@@ -159,6 +159,10 @@ extends LivingEntity {
         this.pathfindingPenalties.put(nodeType, Float.valueOf(penalty));
     }
 
+    public boolean method_29244(PathNodeType pathNodeType) {
+        return pathNodeType != PathNodeType.DANGER_FIRE && pathNodeType != PathNodeType.DANGER_CACTUS && pathNodeType != PathNodeType.DANGER_OTHER;
+    }
+
     protected BodyControl createBodyControl() {
         return new BodyControl(this);
     }
@@ -744,7 +748,7 @@ extends LivingEntity {
         if (this.getTarget() == null) {
             return 3;
         }
-        int i = (int)(this.getHealth() - this.getMaximumHealth() * 0.33f);
+        int i = (int)(this.getHealth() - this.getMaxHealth() * 0.33f);
         if ((i -= (3 - this.world.getDifficulty().getId()) * 4) < 0) {
             i = 0;
         }
@@ -1065,6 +1069,36 @@ extends LivingEntity {
 
     public boolean hasPositionTarget() {
         return this.positionTargetRange != -1.0f;
+    }
+
+    @Nullable
+    protected <T extends MobEntity> T method_29243(EntityType<T> entityType) {
+        if (this.removed) {
+            return null;
+        }
+        MobEntity mobEntity = (MobEntity)entityType.create(this.world);
+        mobEntity.copyPositionAndRotation(this);
+        mobEntity.setCanPickUpLoot(this.canPickUpLoot());
+        mobEntity.setBaby(this.isBaby());
+        mobEntity.setAiDisabled(this.isAiDisabled());
+        if (this.hasCustomName()) {
+            mobEntity.setCustomName(this.getCustomName());
+            mobEntity.setCustomNameVisible(this.isCustomNameVisible());
+        }
+        if (this.isPersistent()) {
+            mobEntity.setPersistent();
+        }
+        mobEntity.setInvulnerable(this.isInvulnerable());
+        for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+            ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+            if (itemStack.isEmpty()) continue;
+            mobEntity.equipStack(equipmentSlot, itemStack.copy());
+            mobEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
+            itemStack.setCount(0);
+        }
+        this.world.spawnEntity(mobEntity);
+        this.remove();
+        return (T)mobEntity;
     }
 
     protected void updateLeash() {

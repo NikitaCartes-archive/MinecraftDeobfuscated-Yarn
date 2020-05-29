@@ -662,7 +662,6 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             m += this.backgroundHeight - 4;
         }
         this.drawTexture(matrixStack, l, m, j, k, 28, 32);
-        this.setZOffset(100);
         this.itemRenderer.zOffset = 100.0f;
         int n2 = bl2 ? 1 : -1;
         RenderSystem.enableRescaleNormal();
@@ -670,7 +669,6 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         this.itemRenderer.renderGuiItem(itemStack, l += 6, m += 8 + n2);
         this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, l, m);
         this.itemRenderer.zOffset = 0.0f;
-        this.setZOffset(0);
     }
 
     public int getSelectedTab() {

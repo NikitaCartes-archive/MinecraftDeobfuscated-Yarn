@@ -165,8 +165,8 @@ extends ForgingScreenHandler {
                         continue;
                     }
                     bl22 = true;
-                    if (r > enchantment.getMaximumLevel()) {
-                        r = enchantment.getMaximumLevel();
+                    if (r > enchantment.getMaxLevel()) {
+                        r = enchantment.getMaxLevel();
                     }
                     map.put(enchantment, r);
                     int s = 0;

@@ -41,7 +41,7 @@ implements Vanishable {
             }
             user.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-        return TypedActionResult.success(itemStack);
+        return TypedActionResult.method_29237(itemStack, world.isClient());
     }
 
     @Override

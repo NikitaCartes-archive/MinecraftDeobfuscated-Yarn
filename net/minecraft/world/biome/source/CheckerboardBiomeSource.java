@@ -11,13 +11,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5324;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 
 public class CheckerboardBiomeSource
 extends BiomeSource {
-    public static final Codec<CheckerboardBiomeSource> field_24715 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.BIOME.listOf().fieldOf("biomes")).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray), ((MapCodec)Codec.INT.fieldOf("scale")).withDefault(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)).apply((Applicative<CheckerboardBiomeSource, ?>)instance, CheckerboardBiomeSource::new));
+    public static final Codec<CheckerboardBiomeSource> field_24715 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.BIOME.listOf().fieldOf("biomes")).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray), ((MapCodec)class_5324.method_29229(0, 62).fieldOf("scale")).withDefault(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)).apply((Applicative<CheckerboardBiomeSource, ?>)instance, CheckerboardBiomeSource::new));
     private final List<Biome> biomeArray;
     private final int gridSize;
     private final int field_24716;

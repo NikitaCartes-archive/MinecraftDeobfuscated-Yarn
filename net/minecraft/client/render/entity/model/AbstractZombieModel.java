@@ -6,8 +6,8 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractZombieModel<T extends HostileEntity>
@@ -18,23 +18,8 @@ extends BipedEntityModel<T> {
 
     @Override
     public void setAngles(T hostileEntity, float f, float g, float h, float i, float j) {
-        float m;
         super.setAngles(hostileEntity, f, g, h, i, j);
-        boolean bl = this.isAttacking(hostileEntity);
-        float k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
-        float l = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
-        this.rightArm.roll = 0.0f;
-        this.leftArm.roll = 0.0f;
-        this.rightArm.yaw = -(0.1f - k * 0.6f);
-        this.leftArm.yaw = 0.1f - k * 0.6f;
-        this.rightArm.pitch = m = (float)(-Math.PI) / (bl ? 1.5f : 2.25f);
-        this.leftArm.pitch = m;
-        this.rightArm.pitch += k * 1.2f - l * 0.4f;
-        this.leftArm.pitch += k * 1.2f - l * 0.4f;
-        this.rightArm.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
-        this.leftArm.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
-        this.rightArm.pitch += MathHelper.sin(h * 0.067f) * 0.05f;
-        this.leftArm.pitch -= MathHelper.sin(h * 0.067f) * 0.05f;
+        CrossbowPosing.method_29352(this.leftArm, this.rightArm, this.isAttacking(hostileEntity), this.handSwingProgress, h);
     }
 
     public abstract boolean isAttacking(T var1);

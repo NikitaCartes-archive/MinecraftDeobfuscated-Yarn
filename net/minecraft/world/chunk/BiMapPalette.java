@@ -4,6 +4,7 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -43,8 +44,12 @@ implements Palette<T> {
     }
 
     @Override
-    public boolean accepts(T object) {
-        return this.map.getId(object) != -1;
+    public boolean accepts(Predicate<T> predicate) {
+        for (int i = 0; i < this.getIndexBits(); ++i) {
+            if (!predicate.test(this.map.get(i))) continue;
+            return true;
+        }
+        return false;
     }
 
     @Override

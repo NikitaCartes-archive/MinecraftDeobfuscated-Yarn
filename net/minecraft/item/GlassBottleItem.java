@@ -38,20 +38,20 @@ extends Item {
             AreaEffectCloudEntity areaEffectCloudEntity = list.get(0);
             areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5f);
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-            return TypedActionResult.success(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)));
+            return TypedActionResult.method_29237(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
         }
-        HitResult hitResult = GlassBottleItem.rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
-        if (hitResult.getType() == HitResult.Type.MISS) {
+        BlockHitResult hitResult = GlassBottleItem.rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
+        if (((HitResult)hitResult).getType() == HitResult.Type.MISS) {
             return TypedActionResult.pass(itemStack);
         }
-        if (hitResult.getType() == HitResult.Type.BLOCK) {
-            BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
+        if (((HitResult)hitResult).getType() == HitResult.Type.BLOCK) {
+            BlockPos blockPos = hitResult.getBlockPos();
             if (!world.canPlayerModifyAt(user, blockPos)) {
                 return TypedActionResult.pass(itemStack);
             }
             if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
                 world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-                return TypedActionResult.success(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+                return TypedActionResult.method_29237(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)), world.isClient());
             }
         }
         return TypedActionResult.pass(itemStack);

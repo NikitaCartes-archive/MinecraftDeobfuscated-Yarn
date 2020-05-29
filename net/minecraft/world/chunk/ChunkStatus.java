@@ -41,7 +41,7 @@ public class ChunkStatus {
     public static final ChunkStatus EMPTY = ChunkStatus.register("empty", null, -1, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ServerWorld serverWorld, ChunkGenerator chunkGenerator, List<Chunk> list, Chunk chunk) -> {});
     public static final ChunkStatus STRUCTURE_STARTS = ChunkStatus.register("structure_starts", EMPTY, 0, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ChunkStatus chunkStatus, ServerWorld serverWorld, ChunkGenerator chunkGenerator, StructureManager structureManager, ServerLightingProvider serverLightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> list, Chunk chunk) -> {
         if (!chunk.getStatus().isAtLeast(chunkStatus)) {
-            if (serverWorld.getServer().method_27728().method_28057().shouldGenerateStructures()) {
+            if (serverWorld.getServer().getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
                 chunkGenerator.setStructureStarts(serverWorld.getStructureAccessor(), chunk, structureManager, serverWorld.getSeed());
             }
             if (chunk instanceof ProtoChunk) {

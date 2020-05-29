@@ -26,8 +26,8 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeFinder;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagContainers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -162,7 +162,7 @@ implements Predicate<ItemStack> {
         }
         if (json.has("tag")) {
             Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-            Tag<Item> tag = ItemTags.getContainer().get(identifier);
+            Tag<Item> tag = TagContainers.instance().items().get(identifier);
             if (tag == null) {
                 throw new JsonSyntaxException("Unknown item tag '" + identifier + "'");
             }
@@ -196,7 +196,7 @@ implements Predicate<ItemStack> {
         @Override
         public JsonObject toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("tag", ItemTags.getContainer().checkId(this.tag).toString());
+            jsonObject.addProperty("tag", TagContainers.instance().items().checkId(this.tag).toString());
             return jsonObject;
         }
     }

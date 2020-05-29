@@ -277,7 +277,7 @@ extends LivingEntity {
     }
 
     protected boolean updateWaterSubmersionState() {
-        this.isSubmergedInWater = this.isSubmergedIn(FluidTags.WATER, true);
+        this.isSubmergedInWater = this.isSubmergedIn(FluidTags.WATER);
         return this.isSubmergedInWater;
     }
 
@@ -415,17 +415,10 @@ extends LivingEntity {
         double d = this.getX();
         double e = this.getY();
         double f = this.getZ();
-        float g = this.yaw;
-        float h = this.pitch;
         super.tickRiding();
         this.prevStrideDistance = this.strideDistance;
         this.strideDistance = 0.0f;
         this.increaseRidingMotionStats(this.getX() - d, this.getY() - e, this.getZ() - f);
-        if (this.getVehicle() instanceof PigEntity) {
-            this.pitch = h;
-            this.yaw = g;
-            this.bodyYaw = ((PigEntity)this.getVehicle()).bodyYaw;
-        }
     }
 
     @Override
@@ -433,7 +426,7 @@ extends LivingEntity {
     public void afterSpawn() {
         this.setPose(EntityPose.STANDING);
         super.afterSpawn();
-        this.setHealth(this.getMaximumHealth());
+        this.setHealth(this.getMaxHealth());
         this.deathTime = 0;
     }
 
@@ -450,7 +443,7 @@ extends LivingEntity {
             --this.abilityResyncCountdown;
         }
         if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.world.getGameRules().getBoolean(GameRules.NATURAL_REGENERATION)) {
-            if (this.getHealth() < this.getMaximumHealth() && this.age % 20 == 0) {
+            if (this.getHealth() < this.getMaxHealth() && this.age % 20 == 0) {
                 this.heal(1.0f);
             }
             if (this.hungerManager.isNotFull() && this.age % 10 == 0) {
@@ -656,7 +649,7 @@ extends LivingEntity {
     }
 
     public boolean isUsingEffectiveTool(BlockState block) {
-        return block.getMaterial().canBreakByHand() || this.inventory.isUsingEffectiveTool(block);
+        return !block.isToolRequired() || this.inventory.getMainHandStack().isEffectiveOn(block);
     }
 
     @Override
@@ -1152,7 +1145,7 @@ extends LivingEntity {
     public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, boolean bl, boolean bl2) {
         BlockState blockState = world.getBlockState(pos);
         Block block = blockState.getBlock();
-        if (block instanceof RespawnAnchorBlock && blockState.get(RespawnAnchorBlock.CHARGES) > 0 && RespawnAnchorBlock.method_27353(world)) {
+        if (block instanceof RespawnAnchorBlock && blockState.get(RespawnAnchorBlock.CHARGES) > 0 && RespawnAnchorBlock.isNether(world)) {
             Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
             if (!bl2 && optional.isPresent()) {
                 world.setBlockState(pos, (BlockState)blockState.with(RespawnAnchorBlock.CHARGES, blockState.get(RespawnAnchorBlock.CHARGES) - 1), 3);
@@ -1283,7 +1276,7 @@ extends LivingEntity {
                 this.increaseStat(Stats.SWIM_ONE_CM, i);
                 this.addExhaustion(0.01f * (float)i * 0.01f);
             }
-        } else if (this.isSubmergedIn(FluidTags.WATER, true)) {
+        } else if (this.isSubmergedIn(FluidTags.WATER)) {
             int i = Math.round(MathHelper.sqrt(dx * dx + dy * dy + dz * dz) * 100.0f);
             if (i > 0) {
                 this.increaseStat(Stats.WALK_UNDER_WATER_ONE_CM, i);
@@ -1475,7 +1468,7 @@ extends LivingEntity {
     }
 
     public boolean canFoodHeal() {
-        return this.getHealth() > 0.0f && this.getHealth() < this.getMaximumHealth();
+        return this.getHealth() > 0.0f && this.getHealth() < this.getMaxHealth();
     }
 
     public boolean canModifyBlocks() {

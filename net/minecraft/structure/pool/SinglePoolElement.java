@@ -115,7 +115,7 @@ extends StructurePoolElement {
     public boolean generate(StructureManager structureManager, ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean bl) {
         StructurePlacementData structurePlacementData;
         Structure structure = this.method_27233(structureManager);
-        if (structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox, bl), 18)) {
+        if (structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox, bl), random, 18)) {
             List<Structure.StructureBlockInfo> list = Structure.process(serverWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 this.method_16756(serverWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);

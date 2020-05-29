@@ -274,7 +274,7 @@ implements Waterloggable {
             player.incrementStat(this.getOpenStat());
             PiglinBrain.onGoldBlockBroken(player);
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     protected Stat<Identifier> getOpenStat() {

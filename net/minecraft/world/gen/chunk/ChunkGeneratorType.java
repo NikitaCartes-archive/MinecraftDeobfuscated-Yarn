@@ -22,13 +22,14 @@ import net.minecraft.class_5309;
 import net.minecraft.class_5310;
 import net.minecraft.class_5311;
 import net.minecraft.class_5314;
+import net.minecraft.class_5324;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorType {
-    public static final Codec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)class_5311.field_24821.fieldOf("structures")).forGetter(ChunkGeneratorType::getConfig), ((MapCodec)class_5309.field_24804.fieldOf("noise")).forGetter(ChunkGeneratorType::method_28559), ((MapCodec)BlockState.field_24734.fieldOf("default_block")).forGetter(ChunkGeneratorType::getDefaultBlock), ((MapCodec)BlockState.field_24734.fieldOf("default_fluid")).forGetter(ChunkGeneratorType::getDefaultFluid), ((MapCodec)Codec.INT.stable().fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorType::getBedrockCeilingY), ((MapCodec)Codec.INT.stable().fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorType::getBedrockFloorY), ((MapCodec)Codec.INT.stable().fieldOf("sea_level")).forGetter(ChunkGeneratorType::method_28561), ((MapCodec)Codec.BOOL.stable().fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorType::method_28562)).apply((Applicative<ChunkGeneratorType, ?>)instance, ChunkGeneratorType::new));
+    public static final Codec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)class_5311.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorType::getConfig), ((MapCodec)class_5309.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorType::method_28559), ((MapCodec)BlockState.field_24734.fieldOf("default_block")).forGetter(ChunkGeneratorType::getDefaultBlock), ((MapCodec)BlockState.field_24734.fieldOf("default_fluid")).forGetter(ChunkGeneratorType::getDefaultFluid), ((MapCodec)class_5324.method_29229(-20, 276).fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorType::getBedrockCeilingY), ((MapCodec)class_5324.method_29229(-20, 276).fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorType::getBedrockFloorY), ((MapCodec)class_5324.method_29229(0, 255).fieldOf("sea_level")).forGetter(ChunkGeneratorType::method_28561), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorType::method_28562)).apply((Applicative<ChunkGeneratorType, ?>)instance, ChunkGeneratorType::new));
     public static final Codec<ChunkGeneratorType> field_24781 = Codec.either(Preset.field_24788, field_24780).xmap(either -> either.map(Preset::getChunkGeneratorType, Function.identity()), chunkGeneratorType -> chunkGeneratorType.field_24787.map(Either::left).orElseGet(() -> Either.right(chunkGeneratorType)));
     private final class_5311 config;
     private final class_5309 field_24782;

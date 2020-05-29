@@ -99,7 +99,7 @@ extends ScreenHandler {
                     Enchantment enchantment = entry.getKey();
                     Integer integer = entry.getValue();
                     if (enchantment.isCursed()) continue;
-                    i += enchantment.getMinimumPower(integer);
+                    i += enchantment.getMinPower(integer);
                 }
                 return i;
             }

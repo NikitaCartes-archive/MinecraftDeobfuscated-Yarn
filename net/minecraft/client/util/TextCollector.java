@@ -3,37 +3,35 @@
  */
 package net.minecraft.client.util;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
+import net.minecraft.class_5348;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TextCollector {
-    private boolean needsFakeRoot = true;
-    @Nullable
-    private MutableText root;
+    private final List<class_5348> field_25260 = Lists.newArrayList();
 
-    public void add(MutableText text) {
-        if (this.root == null) {
-            this.root = text;
-        } else {
-            if (this.needsFakeRoot) {
-                this.root = new LiteralText("").append(this.root);
-                this.needsFakeRoot = false;
-            }
-            this.root.append(text);
+    public void add(class_5348 arg) {
+        this.field_25260.add(arg);
+    }
+
+    @Nullable
+    public class_5348 getRawCombined() {
+        if (this.field_25260.isEmpty()) {
+            return null;
         }
+        if (this.field_25260.size() == 1) {
+            return this.field_25260.get(0);
+        }
+        return class_5348.method_29432(this.field_25260);
     }
 
-    @Nullable
-    public MutableText getRawCombined() {
-        return this.root;
-    }
-
-    public MutableText getCombined() {
-        return this.root != null ? this.root : new LiteralText("");
+    public class_5348 getCombined() {
+        class_5348 lv = this.getRawCombined();
+        return lv != null ? lv : class_5348.field_25310;
     }
 }
 

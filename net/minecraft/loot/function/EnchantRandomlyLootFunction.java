@@ -28,6 +28,8 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
@@ -43,6 +45,11 @@ extends ConditionalLootFunction {
     private EnchantRandomlyLootFunction(LootCondition[] conditions, Collection<Enchantment> enchantments) {
         super(conditions);
         this.enchantments = ImmutableList.copyOf(enchantments);
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.ENCHANT_RANDOMLY;
     }
 
     @Override
@@ -64,7 +71,7 @@ extends ConditionalLootFunction {
     }
 
     private static ItemStack method_26266(ItemStack itemStack, Enchantment enchantment, Random random) {
-        int i = MathHelper.nextInt(random, enchantment.getMinimumLevel(), enchantment.getMaximumLevel());
+        int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
         if (itemStack.getItem() == Items.BOOK) {
             itemStack = new ItemStack(Items.ENCHANTED_BOOK);
             EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry(enchantment, i));
@@ -80,10 +87,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<EnchantRandomlyLootFunction> {
-        public Factory() {
-            super(new Identifier("enchant_randomly"), EnchantRandomlyLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, EnchantRandomlyLootFunction enchantRandomlyLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, enchantRandomlyLootFunction, jsonSerializationContext);

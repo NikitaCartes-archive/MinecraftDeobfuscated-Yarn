@@ -209,6 +209,9 @@ implements ItemConvertible {
 
     public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
         BlockState blockState = world.getBlockState(pos);
+        if (side == Direction.DOWN && blockState.isIn(BlockTags.UNSTABLE_BOTTOM_CENTER)) {
+            return false;
+        }
         return !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(side), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 

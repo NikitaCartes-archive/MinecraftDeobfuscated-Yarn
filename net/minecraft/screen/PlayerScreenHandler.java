@@ -191,5 +191,9 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     public int getCraftingSlotCount() {
         return 5;
     }
+
+    public CraftingInventory method_29281() {
+        return this.craftingInput;
+    }
 }
 

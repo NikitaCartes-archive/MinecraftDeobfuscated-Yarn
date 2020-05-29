@@ -26,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public class EnderPearlEntity
@@ -126,9 +125,9 @@ extends ThrownItemEntity {
 
     @Override
     @Nullable
-    public Entity changeDimension(RegistryKey<DimensionType> newDimension) {
+    public Entity changeDimension(RegistryKey<World> newDimension) {
         Entity entity = this.getOwner();
-        if (entity != null && entity.world.method_27983() != newDimension) {
+        if (entity != null && entity.world.getRegistryKey() != newDimension) {
             this.setOwner(null);
         }
         return super.changeDimension(newDimension);

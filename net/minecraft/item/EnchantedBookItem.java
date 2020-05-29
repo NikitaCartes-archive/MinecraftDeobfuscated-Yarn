@@ -89,7 +89,7 @@ extends Item {
                 if (group != ItemGroup.SEARCH) break block3;
                 for (Enchantment enchantment : Registry.ENCHANTMENT) {
                     if (enchantment.type == null) continue;
-                    for (int i = enchantment.getMinimumLevel(); i <= enchantment.getMaximumLevel(); ++i) {
+                    for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); ++i) {
                         stacks.add(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i)));
                     }
                 }
@@ -98,7 +98,7 @@ extends Item {
             if (group.getEnchantments().length == 0) break block4;
             for (Enchantment enchantment : Registry.ENCHANTMENT) {
                 if (!group.containsEnchantments(enchantment.type)) continue;
-                stacks.add(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, enchantment.getMaximumLevel())));
+                stacks.add(EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, enchantment.getMaxLevel())));
             }
         }
     }

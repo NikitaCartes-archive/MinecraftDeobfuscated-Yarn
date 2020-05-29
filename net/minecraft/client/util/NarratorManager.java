@@ -30,7 +30,7 @@ implements ClientChatListener {
 
     @Override
     public void onChatMessage(MessageType messageType, Text message, UUID uUID) {
-        if (MinecraftClient.getInstance().method_29042(uUID)) {
+        if (MinecraftClient.getInstance().shouldBlockMessages(uUID)) {
             return;
         }
         NarratorOption narratorOption = NarratorManager.getNarratorOption();

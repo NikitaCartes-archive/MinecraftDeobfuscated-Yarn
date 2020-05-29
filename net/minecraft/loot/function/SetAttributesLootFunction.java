@@ -24,6 +24,8 @@ import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -37,6 +39,11 @@ extends ConditionalLootFunction {
     private SetAttributesLootFunction(LootCondition[] conditions, List<Attribute> attributes) {
         super(conditions);
         this.attributes = ImmutableList.copyOf(attributes);
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.SET_ATTRIBUTES;
     }
 
     @Override
@@ -162,10 +169,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<SetAttributesLootFunction> {
-        public Factory() {
-            super(new Identifier("set_attributes"), SetAttributesLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, SetAttributesLootFunction setAttributesLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, setAttributesLootFunction, jsonSerializationContext);

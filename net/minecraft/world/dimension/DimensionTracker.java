@@ -14,6 +14,7 @@ import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.dimension.DimensionType;
 
 public interface DimensionTracker {
+    @Environment(value=EnvType.CLIENT)
     public Registry<DimensionType> getRegistry();
 
     @Environment(value=EnvType.CLIENT)
@@ -39,6 +40,7 @@ public interface DimensionTracker {
         }
 
         @Override
+        @Environment(value=EnvType.CLIENT)
         public Registry<DimensionType> getRegistry() {
             return this.registry;
         }

@@ -53,7 +53,7 @@ extends Item {
             }
         }
         context.getStack().decrement(1);
-        return ActionResult.SUCCESS;
+        return ActionResult.method_29236(world.isClient);
     }
 
     @Override

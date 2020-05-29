@@ -138,9 +138,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private int watchDistance;
 
     public ThreadedAnvilChunkStorage(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ThreadExecutor<Runnable> mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier, int i, boolean bl) {
-        super(new File(session.method_27424(serverWorld.method_27983()), "region"), dataFixer, bl);
+        super(new File(session.method_27424(serverWorld.getRegistryKey()), "region"), dataFixer, bl);
         this.structureManager = structureManager;
-        this.saveDir = session.method_27424(serverWorld.method_27983());
+        this.saveDir = session.method_27424(serverWorld.getRegistryKey());
         this.world = serverWorld;
         this.chunkGenerator = chunkGenerator;
         this.mainThreadExecutor = mainThreadExecutor;
@@ -708,7 +708,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         if (compoundTag == null) {
             return null;
         }
-        return this.updateChunkTag(this.world.getDimension(), this.persistentStateManagerFactory, compoundTag);
+        return this.updateChunkTag(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
     }
 
     boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {

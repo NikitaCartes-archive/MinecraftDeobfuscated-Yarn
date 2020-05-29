@@ -266,16 +266,16 @@ extends FacingBlock {
             map.put(blockPos2, blockState);
         }
         List<BlockPos> list3 = pistonHandler.getBrokenBlocks();
-        int j = list.size() + list3.size();
-        BlockState[] blockStates = new BlockState[j];
+        BlockState[] blockStates = new BlockState[list.size() + list3.size()];
         Direction direction = retract ? dir : dir.getOpposite();
+        int j = 0;
         for (k = list3.size() - 1; k >= 0; --k) {
             blockPos3 = list3.get(k);
             BlockState blockState = world.getBlockState(blockPos3);
             BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
             PistonBlock.dropStacks(blockState, world, blockPos3, blockEntity);
             world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), 18);
-            blockStates[--j] = blockState;
+            blockStates[j++] = blockState;
         }
         for (k = list.size() - 1; k >= 0; --k) {
             blockPos3 = list.get(k);
@@ -284,7 +284,7 @@ extends FacingBlock {
             map.remove(blockPos3);
             world.setBlockState(blockPos3, (BlockState)Blocks.MOVING_PISTON.getDefaultState().with(FACING, dir), 68);
             world.setBlockEntity(blockPos3, PistonExtensionBlock.createBlockEntityPiston((BlockState)list2.get(k), dir, retract, false));
-            blockStates[--j] = blockState;
+            blockStates[j++] = blockState;
         }
         if (retract) {
             PistonType pistonType = this.sticky ? PistonType.STICKY : PistonType.DEFAULT;
@@ -305,6 +305,7 @@ extends FacingBlock {
             blockState4.updateNeighbors(world, blockPos5, 2);
             blockState4.prepare(world, blockPos5, 2);
         }
+        j = 0;
         for (l = list3.size() - 1; l >= 0; --l) {
             BlockState blockState = blockStates[j++];
             blockPos5 = list3.get(l);

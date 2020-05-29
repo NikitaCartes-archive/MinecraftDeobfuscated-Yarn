@@ -9,6 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
@@ -33,10 +34,10 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int i) {
+    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int i, BlockBox blockBox) {
         int j = 0;
         for (int k = i; k >= i - foliageHeight; --k) {
-            this.generate(world, random, config, treeNode.getCenter(), j, leaves, k, treeNode.isGiantTrunk());
+            this.generate(world, random, config, treeNode.getCenter(), j, leaves, k, treeNode.isGiantTrunk(), blockBox);
             if (j >= 1 && k == i - foliageHeight + 1) {
                 --j;
                 continue;

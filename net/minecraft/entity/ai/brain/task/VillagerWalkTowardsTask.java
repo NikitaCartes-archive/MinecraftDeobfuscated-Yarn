@@ -51,7 +51,7 @@ extends Task<VillagerEntity> {
                 int i;
                 Vec3d vec3d = null;
                 int j = 1000;
-                for (i = 0; i < 1000 && (vec3d == null || this.exceedsMaxRange(serverWorld, villagerEntity, GlobalPos.create(serverWorld.method_27983(), new BlockPos(vec3d)))); ++i) {
+                for (i = 0; i < 1000 && (vec3d == null || this.exceedsMaxRange(serverWorld, villagerEntity, GlobalPos.create(serverWorld.getRegistryKey(), new BlockPos(vec3d)))); ++i) {
                     vec3d = TargetFinder.findTargetTowards(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()));
                 }
                 if (i == 1000) {
@@ -74,11 +74,11 @@ extends Task<VillagerEntity> {
     }
 
     private boolean exceedsMaxRange(ServerWorld world, VillagerEntity villager, GlobalPos pos) {
-        return pos.getDimension() != world.method_27983() || pos.getPos().getManhattanDistance(villager.getBlockPos()) > this.maxRange;
+        return pos.getDimension() != world.getRegistryKey() || pos.getPos().getManhattanDistance(villager.getBlockPos()) > this.maxRange;
     }
 
     private boolean reachedDestination(ServerWorld world, VillagerEntity villager, GlobalPos pos) {
-        return pos.getDimension() == world.method_27983() && pos.getPos().getManhattanDistance(villager.getBlockPos()) <= this.completionRange;
+        return pos.getDimension() == world.getRegistryKey() && pos.getPos().getManhattanDistance(villager.getBlockPos()) <= this.completionRange;
     }
 }
 

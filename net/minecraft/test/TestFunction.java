@@ -5,6 +5,7 @@ package net.minecraft.test;
 
 import java.util.function.Consumer;
 import net.minecraft.test.StartupParameter;
+import net.minecraft.util.BlockRotation;
 
 public class TestFunction {
     private final String batchId;
@@ -14,6 +15,7 @@ public class TestFunction {
     private final Consumer<StartupParameter> starter;
     private final int tickLimit;
     private final long duration;
+    private final BlockRotation field_25306;
 
     public void start(StartupParameter startupParameter) {
         this.starter.accept(startupParameter);
@@ -45,6 +47,10 @@ public class TestFunction {
 
     public long getDuration() {
         return this.duration;
+    }
+
+    public BlockRotation method_29424() {
+        return this.field_25306;
     }
 }
 

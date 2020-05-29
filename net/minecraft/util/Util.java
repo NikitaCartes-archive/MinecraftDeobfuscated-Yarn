@@ -56,6 +56,7 @@ import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -68,7 +69,7 @@ public class Util {
     private static final ExecutorService SERVER_WORKER_EXECUTOR = Util.method_28122("Main");
     private static final ExecutorService field_24477 = Util.method_27959();
     public static LongSupplier nanoTimeSupplier = System::nanoTime;
-    public static final UUID field_25140 = new UUID(0L, 0L);
+    public static final UUID NIL_UUID = new UUID(0L, 0L);
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static <K, V> Collector<Map.Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
@@ -400,6 +401,26 @@ public class Util {
             return DataResult.error(string);
         }
         return DataResult.success(is);
+    }
+
+    public static void method_29476() {
+        Thread thread = new Thread("Timer hack thread"){
+
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        Thread.sleep(Integer.MAX_VALUE);
+                    }
+                } catch (InterruptedException interruptedException) {
+                    LOGGER.warn("Timer hack thread interrupted, that really should not happen");
+                    return;
+                }
+            }
+        };
+        thread.setDaemon(true);
+        thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
+        thread.start();
     }
 
     static enum IdentityHashStrategy implements Hash.Strategy<Object>

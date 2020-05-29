@@ -62,6 +62,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -76,7 +77,6 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 import org.jetbrains.annotations.Nullable;
@@ -102,9 +102,9 @@ extends World {
     });
     private final ClientChunkManager chunkManager;
 
-    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, Properties properties, DimensionType dimensionType, int chunkLoadDistance, Supplier<Profiler> supplier, WorldRenderer worldRenderer, boolean bl, long l) {
-        super(properties, dimensionType, supplier, true, bl, l);
-        this.chunkManager = new ClientChunkManager(this, chunkLoadDistance);
+    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, Properties properties, RegistryKey<World> registryKey, RegistryKey<DimensionType> registryKey2, DimensionType dimensionType, int i, Supplier<Profiler> supplier, WorldRenderer worldRenderer, boolean bl, long l) {
+        super(properties, registryKey, registryKey2, dimensionType, supplier, true, bl, l);
+        this.chunkManager = new ClientChunkManager(this, i);
         this.clientWorldProperties = properties;
         this.netHandler = clientPlayNetworkHandler;
         this.worldRenderer = worldRenderer;
@@ -189,6 +189,7 @@ extends World {
 
     public void tickEntity(Entity entity) {
         if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
+            this.checkChunk(entity);
             return;
         }
         entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
@@ -231,7 +232,10 @@ extends World {
         }
     }
 
-    public void checkChunk(Entity entity) {
+    private void checkChunk(Entity entity) {
+        if (!entity.method_29240()) {
+            return;
+        }
         this.getProfiler().push("chunkCheck");
         int i = MathHelper.floor(entity.getX() / 16.0);
         int j = MathHelper.floor(entity.getY() / 16.0);
@@ -243,6 +247,9 @@ extends World {
             if (entity.teleportRequested() || this.isChunkLoaded(i, k)) {
                 this.getChunk(i, k).addEntity(entity);
             } else {
+                if (entity.updateNeeded) {
+                    LOGGER.warn("Entity {} left loaded chunk area", (Object)entity);
+                }
                 entity.updateNeeded = false;
             }
         }
@@ -383,20 +390,20 @@ extends World {
             return;
         }
         VoxelShape voxelShape = state.getCollisionShape(this, pos);
-        double d = voxelShape.getMaximum(Direction.Axis.Y);
+        double d = voxelShape.getMax(Direction.Axis.Y);
         if (d < 1.0) {
             if (bl) {
                 this.addParticle(pos.getX(), pos.getX() + 1, pos.getZ(), pos.getZ() + 1, (double)(pos.getY() + 1) - 0.05, parameters);
             }
         } else if (!state.isIn(BlockTags.IMPERMEABLE)) {
-            double e = voxelShape.getMinimum(Direction.Axis.Y);
+            double e = voxelShape.getMin(Direction.Axis.Y);
             if (e > 0.0) {
                 this.addParticle(pos, parameters, voxelShape, (double)pos.getY() + e - 0.05);
             } else {
                 BlockPos blockPos = pos.down();
                 BlockState blockState = this.getBlockState(blockPos);
                 VoxelShape voxelShape2 = blockState.getCollisionShape(this, blockPos);
-                double f = voxelShape2.getMaximum(Direction.Axis.Y);
+                double f = voxelShape2.getMax(Direction.Axis.Y);
                 if (f < 1.0 && blockState.getFluidState().isEmpty()) {
                     this.addParticle(pos, parameters, voxelShape, (double)pos.getY() - 0.05);
                 }
@@ -405,7 +412,7 @@ extends World {
     }
 
     private void addParticle(BlockPos pos, ParticleEffect parameters, VoxelShape shape, double y) {
-        this.addParticle((double)pos.getX() + shape.getMinimum(Direction.Axis.X), (double)pos.getX() + shape.getMaximum(Direction.Axis.X), (double)pos.getZ() + shape.getMinimum(Direction.Axis.Z), (double)pos.getZ() + shape.getMaximum(Direction.Axis.Z), y, parameters);
+        this.addParticle((double)pos.getX() + shape.getMin(Direction.Axis.X), (double)pos.getX() + shape.getMax(Direction.Axis.X), (double)pos.getZ() + shape.getMin(Direction.Axis.Z), (double)pos.getZ() + shape.getMax(Direction.Axis.Z), y, parameters);
     }
 
     private void addParticle(double minX, double maxX, double minZ, double maxZ, double y, ParticleEffect parameters) {
@@ -522,18 +529,13 @@ extends World {
     }
 
     @Override
-    public DimensionTracker method_28380() {
-        return this.netHandler.method_29091();
-    }
-
-    @Override
     public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
         this.worldRenderer.updateBlock(this, pos, oldState, newState, flags);
     }
 
     @Override
-    public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
-        this.worldRenderer.checkBlockRerender(pos, old, updated);
+    public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
+        this.worldRenderer.scheduleBlockRerenderIfNeeded(pos, old, updated);
     }
 
     public void scheduleBlockRenders(int x, int y, int z) {

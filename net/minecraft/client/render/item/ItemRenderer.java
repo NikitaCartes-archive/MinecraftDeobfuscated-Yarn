@@ -103,7 +103,7 @@ implements SynchronousResourceReloadListener {
         if (model.isBuiltin() || stack.getItem() == Items.TRIDENT && !bl2) {
             BuiltinModelItemRenderer.INSTANCE.render(stack, matrices, vertexConsumers, light, overlay);
         } else {
-            RenderLayer renderLayer = RenderLayers.getItemLayer(stack);
+            RenderLayer renderLayer = RenderLayers.getItemLayer(stack, renderMode != ModelTransformation.Mode.GROUND);
             VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
             this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
         }

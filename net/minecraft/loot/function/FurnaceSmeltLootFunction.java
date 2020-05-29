@@ -11,9 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmeltingRecipe;
-import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,6 +24,11 @@ extends ConditionalLootFunction {
 
     private FurnaceSmeltLootFunction(LootCondition[] conditions) {
         super(conditions);
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.FURNACE_SMELT;
     }
 
     @Override
@@ -45,12 +51,8 @@ extends ConditionalLootFunction {
         return FurnaceSmeltLootFunction.builder(FurnaceSmeltLootFunction::new);
     }
 
-    public static class Factory
+    public static class class_5340
     extends ConditionalLootFunction.Factory<FurnaceSmeltLootFunction> {
-        protected Factory() {
-            super(new Identifier("furnace_smelt"), FurnaceSmeltLootFunction.class);
-        }
-
         @Override
         public FurnaceSmeltLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             return new FurnaceSmeltLootFunction(lootConditions);

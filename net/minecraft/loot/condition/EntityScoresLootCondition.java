@@ -16,12 +16,14 @@ import java.util.Set;
 import net.minecraft.entity.Entity;
 import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 
 public class EntityScoresLootCondition
 implements LootCondition {
@@ -31,6 +33,11 @@ implements LootCondition {
     private EntityScoresLootCondition(Map<String, UniformLootTableRange> scores, LootContext.EntityTarget target) {
         this.scores = ImmutableMap.copyOf(scores);
         this.target = target;
+    }
+
+    @Override
+    public LootConditionType method_29325() {
+        return LootConditionTypes.ENTITY_SCORES;
     }
 
     @Override
@@ -70,11 +77,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<EntityScoresLootCondition> {
-        protected Factory() {
-            super(new Identifier("entity_scores"), EntityScoresLootCondition.class);
-        }
-
+    implements JsonSerializable<EntityScoresLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject2 = new JsonObject();
@@ -96,8 +99,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
+        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

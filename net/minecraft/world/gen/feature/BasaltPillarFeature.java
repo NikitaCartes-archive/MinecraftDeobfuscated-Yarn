@@ -50,6 +50,7 @@ extends Feature<DefaultFeatureConfig> {
         this.tryPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
         this.tryPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.WEST));
         this.tryPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.EAST));
+        mutable.move(Direction.DOWN);
         BlockPos.Mutable mutable3 = new BlockPos.Mutable();
         for (int i = -3; i < 4; ++i) {
             for (int j = -3; j < 4; ++j) {

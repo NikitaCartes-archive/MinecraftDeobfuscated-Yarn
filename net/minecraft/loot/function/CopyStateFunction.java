@@ -20,6 +20,8 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -36,6 +38,11 @@ extends ConditionalLootFunction {
         super(lootConditions);
         this.block = block;
         this.properties = properties;
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.COPY_STATE;
     }
 
     @Override
@@ -71,10 +78,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<CopyStateFunction> {
-        public Factory() {
-            super(new Identifier("copy_state"), CopyStateFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, CopyStateFunction copyStateFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, copyStateFunction, jsonSerializationContext);

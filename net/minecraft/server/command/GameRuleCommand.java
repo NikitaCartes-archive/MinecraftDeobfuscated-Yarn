@@ -14,17 +14,17 @@ import net.minecraft.world.GameRules;
 public class GameRuleCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         final LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("gamerule").requires(source -> source.hasPermissionLevel(2));
-        GameRules.forEachType(new GameRules.RuleTypeConsumer(){
+        GameRules.forEachType(new GameRules.TypeConsumer(){
 
             @Override
-            public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> key, GameRules.RuleType<T> type) {
+            public <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
                 literalArgumentBuilder.then(((LiteralArgumentBuilder)CommandManager.literal(key.getName()).executes(context -> GameRuleCommand.executeQuery((ServerCommandSource)context.getSource(), key))).then(type.argument("value").executes(context -> GameRuleCommand.executeSet(context, key))));
             }
         });
         dispatcher.register(literalArgumentBuilder);
     }
 
-    private static <T extends GameRules.Rule<T>> int executeSet(CommandContext<ServerCommandSource> context, GameRules.RuleKey<T> key) {
+    private static <T extends GameRules.Rule<T>> int executeSet(CommandContext<ServerCommandSource> context, GameRules.Key<T> key) {
         ServerCommandSource serverCommandSource = context.getSource();
         T rule = serverCommandSource.getMinecraftServer().getGameRules().get(key);
         ((GameRules.Rule)rule).set(context, "value");
@@ -32,7 +32,7 @@ public class GameRuleCommand {
         return ((GameRules.Rule)rule).getCommandResult();
     }
 
-    private static <T extends GameRules.Rule<T>> int executeQuery(ServerCommandSource source, GameRules.RuleKey<T> key) {
+    private static <T extends GameRules.Rule<T>> int executeQuery(ServerCommandSource source, GameRules.Key<T> key) {
         T rule = source.getMinecraftServer().getGameRules().get(key);
         source.sendFeedback(new TranslatableText("commands.gamerule.query", key.getName(), ((GameRules.Rule)rule).toString()), false);
         return ((GameRules.Rule)rule).getCommandResult();

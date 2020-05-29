@@ -45,7 +45,7 @@ extends Block {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (world.isClient) {
             ItemStack itemStack = player.getStackInHand(hand);
-            if (this.tryEat(world, pos, state, player) == ActionResult.SUCCESS) {
+            if (this.tryEat(world, pos, state, player).isAccepted()) {
                 return ActionResult.SUCCESS;
             }
             if (itemStack.isEmpty()) {

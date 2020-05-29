@@ -16,7 +16,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class RandomFeatureEntry<FC extends FeatureConfig> {
-    public static final Codec<RandomFeatureEntry<?>> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.field_24833.fieldOf("feature")).forGetter(randomFeatureEntry -> randomFeatureEntry.feature), ((MapCodec)Codec.FLOAT.fieldOf("chance")).forGetter(randomFeatureEntry -> Float.valueOf(randomFeatureEntry.chance))).apply((Applicative<RandomFeatureEntry, ?>)instance, RandomFeatureEntry::new));
+    public static final Codec<RandomFeatureEntry<?>> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.CODEC.fieldOf("feature")).forGetter(randomFeatureEntry -> randomFeatureEntry.feature), ((MapCodec)Codec.FLOAT.fieldOf("chance")).forGetter(randomFeatureEntry -> Float.valueOf(randomFeatureEntry.chance))).apply((Applicative<RandomFeatureEntry, ?>)instance, RandomFeatureEntry::new));
     public final ConfiguredFeature<FC, ?> feature;
     public final float chance;
 

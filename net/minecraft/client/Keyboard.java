@@ -12,7 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.options.AccessibilityScreen;
+import net.minecraft.client.gui.screen.options.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.options.ChatOptionsScreen;
 import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -166,7 +166,7 @@ public class Keyboard {
                     return false;
                 }
                 this.debugWarn("debug.copy_location.message", new Object[0]);
-                this.setClipboard(String.format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f", this.client.player.world.method_27983().getValue(), this.client.player.getX(), this.client.player.getY(), this.client.player.getZ(), Float.valueOf(this.client.player.yaw), Float.valueOf(this.client.player.pitch)));
+                this.setClipboard(String.format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f", this.client.player.world.getRegistryKey().getValue(), this.client.player.getX(), this.client.player.getY(), this.client.player.getZ(), Float.valueOf(this.client.player.yaw), Float.valueOf(this.client.player.pitch)));
                 return true;
             }
         }
@@ -288,8 +288,8 @@ public class Keyboard {
             if (parentElement instanceof ChatOptionsScreen) {
                 ((ChatOptionsScreen)parentElement).setNarratorMessage();
             }
-            if (parentElement instanceof AccessibilityScreen) {
-                ((AccessibilityScreen)parentElement).setNarratorMessage();
+            if (parentElement instanceof AccessibilityOptionsScreen) {
+                ((AccessibilityOptionsScreen)parentElement).setNarratorMessage();
             }
         }
         if (parentElement != null) {

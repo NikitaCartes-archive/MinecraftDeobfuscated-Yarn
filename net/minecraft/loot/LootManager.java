@@ -6,7 +6,6 @@ package net.minecraft.loot;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.loot.LootGsons;
@@ -39,15 +38,15 @@ extends JsonDataLoader {
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+    protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder<Identifier, LootTable> builder = ImmutableMap.builder();
-        JsonObject jsonObject2 = map.remove(LootTables.EMPTY);
-        if (jsonObject2 != null) {
+        JsonElement jsonElement2 = map.remove(LootTables.EMPTY);
+        if (jsonElement2 != null) {
             LOGGER.warn("Datapack tried to redefine {} loot table, ignoring", (Object)LootTables.EMPTY);
         }
-        map.forEach((identifier, jsonObject) -> {
+        map.forEach((identifier, jsonElement) -> {
             try {
-                LootTable lootTable = GSON.fromJson((JsonElement)jsonObject, LootTable.class);
+                LootTable lootTable = GSON.fromJson((JsonElement)jsonElement, LootTable.class);
                 builder.put((Identifier)identifier, lootTable);
             } catch (Exception exception) {
                 LOGGER.error("Couldn't parse loot table {}", identifier, (Object)exception);

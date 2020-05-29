@@ -12,10 +12,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.BaseText;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.ParsableText;
 import net.minecraft.text.Style;
@@ -28,15 +28,14 @@ import org.jetbrains.annotations.Nullable;
 public class TranslatableText
 extends BaseText
 implements ParsableText {
-    private static final Language EMPTY_LANGUAGE = new Language();
     private static final Object[] EMPTY_ARGUMENTS = new Object[0];
-    private static final Language LANGUAGE = Language.getInstance();
-    private static final LiteralText LITERAL_PERCENT_SIGN = new LiteralText("%");
-    private static final LiteralText NULL_ARGUMENT = new LiteralText("null");
+    private static final class_5348 LITERAL_PERCENT_SIGN = class_5348.method_29430("%");
+    private static final class_5348 NULL_ARGUMENT = class_5348.method_29430("null");
     private final String key;
     private final Object[] args;
-    private long languageReloadTimestamp = -1L;
-    private final List<Text> translations = Lists.newArrayList();
+    @Nullable
+    private Language field_25317;
+    private final List<class_5348> translations = Lists.newArrayList();
     private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
     public TranslatableText(String key) {
@@ -49,23 +48,23 @@ implements ParsableText {
         this.args = args;
     }
 
-    private synchronized void updateTranslations() {
-        long l = LANGUAGE.getTimeLoaded();
-        if (l == this.languageReloadTimestamp) {
+    private void updateTranslations() {
+        Language language = Language.getInstance();
+        if (language == this.field_25317) {
             return;
         }
-        this.languageReloadTimestamp = l;
+        this.field_25317 = language;
         this.translations.clear();
-        String string = LANGUAGE.translate(this.key);
+        String string = language.get(this.key);
         try {
-            this.setTranslation(string);
+            this.setTranslation(language.method_29426(string, true), language);
         } catch (TranslationException translationException) {
             this.translations.clear();
-            this.translations.add(new LiteralText(string));
+            this.translations.add(class_5348.method_29430(string));
         }
     }
 
-    private void setTranslation(String translation) {
+    private void setTranslation(String translation, Language language) {
         Matcher matcher = ARG_FORMAT.matcher(translation);
         try {
             int i = 0;
@@ -79,7 +78,7 @@ implements ParsableText {
                     if (string.indexOf(37) != -1) {
                         throw new IllegalArgumentException();
                     }
-                    this.translations.add(new LiteralText(string));
+                    this.translations.add(class_5348.method_29430(string));
                 }
                 string = matcher.group(2);
                 String string2 = translation.substring(k, l);
@@ -90,7 +89,7 @@ implements ParsableText {
                     String string3 = matcher.group(1);
                     int n = m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
                     if (m < this.args.length) {
-                        this.translations.add(this.getArg(m));
+                        this.translations.add(this.method_29434(m, language));
                     }
                 } else {
                     throw new TranslationException(this, "Unsupported format: '" + string2 + "'");
@@ -102,20 +101,22 @@ implements ParsableText {
                 if (string4.indexOf(37) != -1) {
                     throw new IllegalArgumentException();
                 }
-                this.translations.add(new LiteralText(string4));
+                this.translations.add(class_5348.method_29430(string4));
             }
         } catch (IllegalArgumentException illegalArgumentException) {
             throw new TranslationException(this, (Throwable)illegalArgumentException);
         }
     }
 
-    private Text getArg(int index) {
-        if (index >= this.args.length) {
-            throw new TranslationException(this, index);
+    private class_5348 method_29434(int i, Language language) {
+        if (i >= this.args.length) {
+            throw new TranslationException(this, i);
         }
-        Object object = this.args[index];
-        Text text = object instanceof Text ? (Text)object : (object == null ? NULL_ARGUMENT : new LiteralText(object.toString()));
-        return text;
+        Object object = this.args[i];
+        if (object instanceof Text) {
+            return (Text)object;
+        }
+        return object == null ? NULL_ARGUMENT : class_5348.method_29430(language.method_29426(object.toString(), false));
     }
 
     @Override
@@ -125,10 +126,10 @@ implements ParsableText {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public <T> Optional<T> visitSelf(Text.StyledVisitor<T> visitor, Style style) {
+    public <T> Optional<T> visitSelf(class_5348.StyledVisitor<T> visitor, Style style) {
         this.updateTranslations();
-        for (Text text : this.translations) {
-            Optional<T> optional = text.visit(visitor, style);
+        for (class_5348 lv : this.translations) {
+            Optional<T> optional = lv.visit(visitor, style);
             if (!optional.isPresent()) continue;
             return optional;
         }
@@ -136,10 +137,10 @@ implements ParsableText {
     }
 
     @Override
-    public <T> Optional<T> visitSelf(Text.Visitor<T> visitor) {
+    public <T> Optional<T> visitSelf(class_5348.Visitor<T> visitor) {
         this.updateTranslations();
-        for (Text text : this.translations) {
-            Optional<T> optional = text.visit(visitor);
+        for (class_5348 lv : this.translations) {
+            Optional<T> optional = lv.visit(visitor);
             if (!optional.isPresent()) continue;
             return optional;
         }

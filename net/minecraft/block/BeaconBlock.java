@@ -49,7 +49,7 @@ implements Stainable {
             player.openHandledScreen((BeaconBlockEntity)blockEntity);
             player.incrementStat(Stats.INTERACT_WITH_BEACON);
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     @Override

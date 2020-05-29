@@ -12,6 +12,8 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -25,6 +27,11 @@ extends ConditionalLootFunction {
         super(conditions);
         this.id = id;
         this.seed = seed;
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.SET_LOOT_TABLE;
     }
 
     @Override
@@ -58,10 +65,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<SetLootTableLootFunction> {
-        protected Factory() {
-            super(new Identifier("set_loot_table"), SetLootTableLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);

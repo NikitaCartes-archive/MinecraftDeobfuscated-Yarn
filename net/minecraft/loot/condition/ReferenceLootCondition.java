@@ -8,9 +8,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,8 +22,13 @@ implements LootCondition {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Identifier id;
 
-    public ReferenceLootCondition(Identifier id) {
+    private ReferenceLootCondition(Identifier id) {
         this.id = id;
+    }
+
+    @Override
+    public LootConditionType method_29325() {
+        return LootConditionTypes.REFERENCE;
     }
 
     @Override
@@ -62,11 +70,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<ReferenceLootCondition> {
-        protected Factory() {
-            super(new Identifier("reference"), ReferenceLootCondition.class);
-        }
-
+    implements JsonSerializable<ReferenceLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, ReferenceLootCondition referenceLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("name", referenceLootCondition.id.toString());
@@ -79,8 +83,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
+        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

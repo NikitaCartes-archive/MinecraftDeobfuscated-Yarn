@@ -128,7 +128,7 @@ implements AutoCloseable {
     private void parsePass(TextureManager textureManager, JsonElement jsonPass) throws IOException {
         JsonArray jsonArray2;
         JsonObject jsonObject;
-        block16: {
+        block21: {
             jsonObject = JsonHelper.asObject(jsonPass, "pass");
             String string = JsonHelper.getString(jsonObject, "name");
             String string2 = JsonHelper.getString(jsonObject, "intarget");
@@ -143,26 +143,38 @@ implements AutoCloseable {
             }
             PostProcessShader postProcessShader = this.addPass(string, framebuffer, framebuffer2);
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "auxtargets", null);
-            if (jsonArray == null) break block16;
+            if (jsonArray == null) break block21;
             int i = 0;
             for (JsonElement jsonElement : jsonArray) {
-                block15: {
+                block20: {
                     try {
                         Framebuffer framebuffer3;
+                        boolean bl;
                         String string4;
-                        block17: {
+                        block22: {
+                            String string6;
                             JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "auxtarget");
                             string4 = JsonHelper.getString(jsonObject2, "name");
                             String string5 = JsonHelper.getString(jsonObject2, "id");
-                            framebuffer3 = this.getTarget(string5);
-                            if (framebuffer3 != null) break block17;
-                            Identifier identifier = new Identifier("textures/effect/" + string5 + ".png");
+                            if (string5.endsWith(":depth")) {
+                                bl = true;
+                                string6 = string5.substring(0, string5.lastIndexOf(58));
+                            } else {
+                                bl = false;
+                                string6 = string5;
+                            }
+                            framebuffer3 = this.getTarget(string6);
+                            if (framebuffer3 != null) break block22;
+                            if (bl) {
+                                throw new ShaderParseException("Render target '" + string6 + "' can't be used as depth buffer");
+                            }
+                            Identifier identifier = new Identifier("textures/effect/" + string6 + ".png");
                             Resource resource = null;
                             try {
                                 resource = this.resourceManager.getResource(identifier);
                             } catch (FileNotFoundException fileNotFoundException) {
                                 try {
-                                    throw new ShaderParseException("Render target or texture '" + string5 + "' does not exist");
+                                    throw new ShaderParseException("Render target or texture '" + string6 + "' does not exist");
                                 } catch (Throwable throwable) {
                                     IOUtils.closeQuietly(resource);
                                     throw throwable;
@@ -173,8 +185,8 @@ implements AutoCloseable {
                             AbstractTexture abstractTexture = textureManager.getTexture(identifier);
                             int j = JsonHelper.getInt(jsonObject2, "width");
                             int k = JsonHelper.getInt(jsonObject2, "height");
-                            boolean bl = JsonHelper.getBoolean(jsonObject2, "bilinear");
-                            if (bl) {
+                            boolean bl2 = JsonHelper.getBoolean(jsonObject2, "bilinear");
+                            if (bl2) {
                                 RenderSystem.texParameter(3553, 10241, 9729);
                                 RenderSystem.texParameter(3553, 10240, 9729);
                             } else {
@@ -182,9 +194,13 @@ implements AutoCloseable {
                                 RenderSystem.texParameter(3553, 10240, 9728);
                             }
                             postProcessShader.addAuxTarget(string4, abstractTexture.getGlId(), j, k);
-                            break block15;
+                            break block20;
                         }
-                        postProcessShader.addAuxTarget(string4, framebuffer3, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                        if (bl) {
+                            postProcessShader.addAuxTarget(string4, framebuffer3.depthAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                        } else {
+                            postProcessShader.addAuxTarget(string4, framebuffer3, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                        }
                     } catch (Exception exception) {
                         ShaderParseException shaderParseException = ShaderParseException.wrap(exception);
                         shaderParseException.addFaultyElement("auxtargets[" + i + "]");

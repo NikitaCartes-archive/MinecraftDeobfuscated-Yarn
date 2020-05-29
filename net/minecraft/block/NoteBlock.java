@@ -75,7 +75,7 @@ extends Block {
         world.setBlockState(pos, state, 3);
         this.playNote(world, pos);
         player.incrementStat(Stats.TUNE_NOTEBLOCK);
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     @Override

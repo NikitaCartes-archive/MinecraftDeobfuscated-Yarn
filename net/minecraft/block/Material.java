@@ -33,13 +33,13 @@ public final class Material {
     /**
      * Material for non-full blocks of snow. Has the replaceable property.
      */
-    public static final Material SNOW_LAYER = Builder.method_15808(new Builder(MaterialColor.WHITE).allowsMovement()).notSolid().destroyedByPiston().replaceable().requiresTool().build();
+    public static final Material SNOW_LAYER = Builder.method_15808(new Builder(MaterialColor.WHITE).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
     public static final Material FIRE = Builder.method_15808(new Builder(MaterialColor.AIR).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
     /**
      * Material for blocks that require a supporting block such as redstone components, torches, flower pots, and skulls.
      */
     public static final Material SUPPORTED = Builder.method_15808(new Builder(MaterialColor.AIR).allowsMovement()).notSolid().destroyedByPiston().build();
-    public static final Material COBWEB = Builder.method_15808(new Builder(MaterialColor.WEB).allowsMovement()).destroyedByPiston().requiresTool().build();
+    public static final Material COBWEB = Builder.method_15808(new Builder(MaterialColor.WEB).allowsMovement()).destroyedByPiston().build();
     public static final Material REDSTONE_LAMP = new Builder(MaterialColor.AIR).build();
     /**
      * Material for blocks that come from mobs such as honey, slime, or infested blocks. Includes clay but not bone blocks.
@@ -91,17 +91,17 @@ public final class Material {
     /**
      * Material for blocks that are stone or made from it, and generally prefer to be broken by a pickaxe.
      */
-    public static final Material STONE = new Builder(MaterialColor.STONE).requiresTool().build();
-    public static final Material METAL = new Builder(MaterialColor.IRON).requiresTool().build();
+    public static final Material STONE = new Builder(MaterialColor.STONE).build();
+    public static final Material METAL = new Builder(MaterialColor.IRON).build();
     /**
      * Material for full sized snow blocks.
      */
-    public static final Material SNOW_BLOCK = new Builder(MaterialColor.WHITE).requiresTool().build();
+    public static final Material SNOW_BLOCK = new Builder(MaterialColor.WHITE).build();
     /**
      * Material for blocks that can repair tools, including grindstone and anvils.
      */
-    public static final Material REPAIR_STATION = new Builder(MaterialColor.IRON).requiresTool().blocksPistons().build();
-    public static final Material BARRIER = new Builder(MaterialColor.AIR).requiresTool().blocksPistons().build();
+    public static final Material REPAIR_STATION = new Builder(MaterialColor.IRON).blocksPistons().build();
+    public static final Material BARRIER = new Builder(MaterialColor.AIR).blocksPistons().build();
     public static final Material PISTON = new Builder(MaterialColor.STONE).blocksPistons().build();
     /**
      * Not in use, but has foliage color.
@@ -120,21 +120,19 @@ public final class Material {
     private final PistonBehavior pistonBehavior;
     private final boolean blocksMovement;
     private final boolean burnable;
-    private final boolean breakByHand;
     private final boolean liquid;
     private final boolean blocksLight;
     private final boolean replaceable;
     private final boolean solid;
 
-    public Material(MaterialColor color, boolean liquid, boolean solid, boolean blocksMovement, boolean blocksLight, boolean breakByHand, boolean burnable, boolean replaceable, PistonBehavior pistonBehavior) {
+    public Material(MaterialColor color, boolean liquid, boolean solid, boolean blocksMovement, boolean blocksLight, boolean breakByHand, boolean burnable, PistonBehavior pistonBehavior) {
         this.color = color;
         this.liquid = liquid;
         this.solid = solid;
         this.blocksMovement = blocksMovement;
         this.blocksLight = blocksLight;
-        this.breakByHand = breakByHand;
-        this.burnable = burnable;
-        this.replaceable = replaceable;
+        this.burnable = breakByHand;
+        this.replaceable = burnable;
         this.pistonBehavior = pistonBehavior;
     }
 
@@ -162,10 +160,6 @@ public final class Material {
         return this.blocksLight;
     }
 
-    public boolean canBreakByHand() {
-        return this.breakByHand;
-    }
-
     public PistonBehavior getPistonBehavior() {
         return this.pistonBehavior;
     }
@@ -178,7 +172,6 @@ public final class Material {
         private PistonBehavior pistonBehavior = PistonBehavior.NORMAL;
         private boolean blocksMovement = true;
         private boolean burnable;
-        private boolean breakByHand = true;
         private boolean liquid;
         private boolean replaceable;
         private boolean solid = true;
@@ -209,11 +202,6 @@ public final class Material {
             return this;
         }
 
-        protected Builder requiresTool() {
-            this.breakByHand = false;
-            return this;
-        }
-
         protected Builder burnable() {
             this.burnable = true;
             return this;
@@ -235,7 +223,7 @@ public final class Material {
         }
 
         public Material build() {
-            return new Material(this.color, this.liquid, this.solid, this.blocksMovement, this.blocksLight, this.breakByHand, this.burnable, this.replaceable, this.pistonBehavior);
+            return new Material(this.color, this.liquid, this.solid, this.blocksMovement, this.blocksLight, this.burnable, this.replaceable, this.pistonBehavior);
         }
 
         static /* synthetic */ Builder method_15808(Builder builder) {

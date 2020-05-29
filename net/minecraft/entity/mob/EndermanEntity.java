@@ -304,6 +304,11 @@ extends HostileEntity {
         this.dataTracker.set(PROVOKED, true);
     }
 
+    @Override
+    public boolean cannotDespawn() {
+        return super.cannotDespawn() || this.getCarriedBlock() != null;
+    }
+
     static class PickUpBlockGoal
     extends Goal {
         private final EndermanEntity enderman;

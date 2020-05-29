@@ -63,7 +63,7 @@ extends StructurePiece {
     public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
         this.placementData.setBoundingBox(boundingBox);
         this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-        if (this.structure.place(serverWorldAccess, this.pos, blockPos, this.placementData, 2)) {
+        if (this.structure.place(serverWorldAccess, this.pos, blockPos, this.placementData, random, 2)) {
             List<Structure.StructureBlockInfo> list = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 StructureBlockMode structureBlockMode;

@@ -110,6 +110,9 @@ extends HorseBaseEntity {
 
     @Override
     protected void updateSaddle() {
+        if (this.world.isClient) {
+            return;
+        }
         super.updateSaddle();
         this.setArmorTypeFromStack(this.items.getStack(1));
         this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0f);

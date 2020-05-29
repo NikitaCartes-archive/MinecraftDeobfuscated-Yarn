@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.NetherFossilGenerator;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.VillageStructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -31,7 +31,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     public static class Start
-    extends StructureStart<DefaultFeatureConfig> {
+    extends VillageStructureStart<DefaultFeatureConfig> {
         public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
             super(structureFeature, i, j, blockBox, k, l);
         }

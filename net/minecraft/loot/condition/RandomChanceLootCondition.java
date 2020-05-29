@@ -7,9 +7,11 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 
 public class RandomChanceLootCondition
 implements LootCondition {
@@ -17,6 +19,11 @@ implements LootCondition {
 
     private RandomChanceLootCondition(float chance) {
         this.chance = chance;
+    }
+
+    @Override
+    public LootConditionType method_29325() {
+        return LootConditionTypes.RANDOM_CHANCE;
     }
 
     @Override
@@ -34,11 +41,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<RandomChanceLootCondition> {
-        protected Factory() {
-            super(new Identifier("random_chance"), RandomChanceLootCondition.class);
-        }
-
+    implements JsonSerializable<RandomChanceLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("chance", Float.valueOf(randomChanceLootCondition.chance));
@@ -50,8 +53,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
+        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

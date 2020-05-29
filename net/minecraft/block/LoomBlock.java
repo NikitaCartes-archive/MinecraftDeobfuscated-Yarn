@@ -37,7 +37,7 @@ extends HorizontalFacingBlock {
         }
         player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
         player.incrementStat(Stats.INTERACT_WITH_LOOM);
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     @Override

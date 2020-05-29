@@ -197,7 +197,7 @@ implements RangedAttackMob {
                 this.lovePlayer(player);
             }
         }
-        if (this.getHealth() < this.getMaximumHealth() && f > 0.0f) {
+        if (this.getHealth() < this.getMaxHealth() && f > 0.0f) {
             this.heal(f);
             bl = true;
         }

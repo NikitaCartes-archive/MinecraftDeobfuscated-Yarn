@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -675,7 +676,7 @@ extends RealmsScreen {
         int k = this.popupX0();
         int l = this.popupY0();
         TranslatableText text = new TranslatableText("mco.selectServer.popup");
-        List<Text> list = this.textRenderer.wrapLines(text, 100);
+        List<class_5348> list = this.textRenderer.wrapLines(text, 100);
         if (!this.showingPopup) {
             RealmSelectionList element;
             this.carouselIndex = 0;
@@ -714,9 +715,9 @@ extends RealmsScreen {
             }
         }
         int o = 0;
-        for (Text text2 : list) {
+        for (class_5348 lv : list) {
             int p = l + 10 * ++o - 3;
-            this.textRenderer.draw(matrixStack, text2, (float)(this.width / 2 + 52), (float)p, 0x4C4C4C);
+            this.textRenderer.draw(matrixStack, lv, (float)(this.width / 2 + 52), (float)p, 0x4C4C4C);
         }
     }
 

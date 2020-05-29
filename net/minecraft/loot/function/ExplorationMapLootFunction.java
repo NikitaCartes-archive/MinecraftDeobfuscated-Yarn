@@ -20,9 +20,10 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -47,6 +48,11 @@ extends ConditionalLootFunction {
         this.zoom = zoom;
         this.searchRadius = searchRadius;
         this.skipExistingChunks = skipExistingChunks;
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.EXPLORATION_MAP;
     }
 
     @Override
@@ -78,10 +84,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<ExplorationMapLootFunction> {
-        protected Factory() {
-            super(new Identifier("exploration_map"), ExplorationMapLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);

@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 
 public class RemoveOffHandItemTask<E extends PiglinEntity>
@@ -20,7 +21,7 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
-        return !((LivingEntity)piglinEntity).getOffHandStack().isEmpty();
+        return !((LivingEntity)piglinEntity).getOffHandStack().isEmpty() && ((LivingEntity)piglinEntity).getOffHandStack().getItem() != Items.SHIELD;
     }
 
     @Override

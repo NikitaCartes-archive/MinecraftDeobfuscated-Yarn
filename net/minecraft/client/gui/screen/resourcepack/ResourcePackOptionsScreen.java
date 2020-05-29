@@ -37,17 +37,18 @@ extends GameOptionsScreen {
     @Override
     protected void init() {
         this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("resourcePack.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.client.getResourcePackDir())));
+        ResourcePackManager<ClientResourcePackProfile> resourcePackManager = this.client.getResourcePackManager();
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, buttonWidget -> {
             if (this.dirty) {
-                ArrayList<ClientResourcePackProfile> list = Lists.newArrayList();
+                ArrayList<String> list = Lists.newArrayList();
                 for (ResourcePackListWidget.ResourcePackEntry resourcePackEntry : this.enabledPacks.children()) {
-                    list.add(resourcePackEntry.getPack());
+                    list.add(resourcePackEntry.getPack().getName());
                 }
                 Collections.reverse(list);
-                this.client.getResourcePackManager().setEnabledProfiles(list);
+                resourcePackManager.setEnabledProfiles(list);
                 this.gameOptions.resourcePacks.clear();
                 this.gameOptions.incompatibleResourcePacks.clear();
-                for (ClientResourcePackProfile clientResourcePackProfile : list) {
+                for (ClientResourcePackProfile clientResourcePackProfile : resourcePackManager.getEnabledProfiles()) {
                     if (clientResourcePackProfile.isPinned()) continue;
                     this.gameOptions.resourcePacks.add(clientResourcePackProfile.getName());
                     if (clientResourcePackProfile.getCompatibility().isCompatible()) continue;
@@ -80,7 +81,6 @@ extends GameOptionsScreen {
         if (!this.dirty) {
             this.availablePacks.children().clear();
             this.enabledPacks.children().clear();
-            ResourcePackManager<ClientResourcePackProfile> resourcePackManager = this.client.getResourcePackManager();
             resourcePackManager.scanPacks();
             ArrayList<ClientResourcePackProfile> list = Lists.newArrayList(resourcePackManager.getProfiles());
             list.removeAll(resourcePackManager.getEnabledProfiles());

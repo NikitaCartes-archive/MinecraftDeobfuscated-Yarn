@@ -82,7 +82,7 @@ RangedAttackMob {
 
     public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
-        this.setHealth(this.getMaximumHealth());
+        this.setHealth(this.getMaxHealth());
         this.getNavigation().setCanSwim(true);
         this.experiencePoints = 50;
     }
@@ -309,7 +309,7 @@ RangedAttackMob {
         if (this.age % 20 == 0) {
             this.heal(1.0f);
         }
-        this.bossBar.setPercent(this.getHealth() / this.getMaximumHealth());
+        this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
     }
 
     public static boolean canDestroy(BlockState block) {
@@ -318,7 +318,7 @@ RangedAttackMob {
 
     public void method_6885() {
         this.setInvulTimer(220);
-        this.setHealth(this.getMaximumHealth() / 3.0f);
+        this.setHealth(this.getMaxHealth() / 3.0f);
     }
 
     @Override
@@ -388,6 +388,7 @@ RangedAttackMob {
         double k = e - h;
         double l = f - i;
         WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, j, k, l);
+        witherSkullEntity.setOwner(this);
         if (bl) {
             witherSkullEntity.setCharged(true);
         }
@@ -490,7 +491,7 @@ RangedAttackMob {
 
     @Override
     public boolean shouldRenderOverlay() {
-        return this.getHealth() <= this.getMaximumHealth() / 2.0f;
+        return this.getHealth() <= this.getMaxHealth() / 2.0f;
     }
 
     @Override

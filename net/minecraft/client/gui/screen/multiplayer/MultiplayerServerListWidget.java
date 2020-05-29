@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -168,7 +169,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             boolean bl2 = this.server.protocolVersion < SharedConstants.getGameVersion().getProtocolVersion();
             boolean bl3 = bl || bl2;
             this.client.textRenderer.draw(matrices, this.server.name, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
-            List<Text> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
+            List<class_5348> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
             for (int i = 0; i < Math.min(list.size(), 2); ++i) {
                 this.client.textRenderer.draw(matrices, list.get(i), (float)(x + 32 + 3), (float)(y + 12 + this.client.textRenderer.fontHeight * i), 0x808080);
             }

@@ -5,7 +5,7 @@ package net.minecraft.resource;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class JsonDataLoader
-extends SinglePreparationResourceReloadListener<Map<Identifier, JsonObject>> {
+extends SinglePreparationResourceReloadListener<Map<Identifier, JsonElement>> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int FILE_SUFFIX_LENGTH = ".json".length();
     private final Gson gson;
@@ -37,8 +37,8 @@ extends SinglePreparationResourceReloadListener<Map<Identifier, JsonObject>> {
     }
 
     @Override
-    protected Map<Identifier, JsonObject> prepare(ResourceManager resourceManager, Profiler profiler) {
-        HashMap<Identifier, JsonObject> map = Maps.newHashMap();
+    protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
+        HashMap<Identifier, JsonElement> map = Maps.newHashMap();
         int i = this.dataType.length() + 1;
         for (Identifier identifier : resourceManager.findResources(this.dataType, string -> string.endsWith(".json"))) {
             String string2 = identifier.getPath();
@@ -53,10 +53,10 @@ extends SinglePreparationResourceReloadListener<Map<Identifier, JsonObject>> {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                         Throwable throwable3 = null;
                         try {
-                            JsonObject jsonObject = JsonHelper.deserialize(this.gson, (Reader)reader, JsonObject.class);
-                            if (jsonObject != null) {
-                                JsonObject jsonObject2 = map.put(identifier2, jsonObject);
-                                if (jsonObject2 == null) continue;
+                            JsonElement jsonElement = JsonHelper.deserialize(this.gson, (Reader)reader, JsonElement.class);
+                            if (jsonElement != null) {
+                                JsonElement jsonElement2 = map.put(identifier2, jsonElement);
+                                if (jsonElement2 == null) continue;
                                 throw new IllegalStateException("Duplicate data file ignored with ID " + identifier2);
                             }
                             LOGGER.error("Couldn't load data file {} from {} as it's null or empty", (Object)identifier2, (Object)identifier);

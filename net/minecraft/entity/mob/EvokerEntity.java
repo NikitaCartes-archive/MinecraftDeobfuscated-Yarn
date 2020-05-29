@@ -333,7 +333,7 @@ extends SpellcastingIllagerEntity {
                 BlockState blockState;
                 if (!(blockState = EvokerEntity.this.world.getBlockState(blockPos2 = blockPos.down())).isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.UP)) continue;
                 if (!EvokerEntity.this.world.isAir(blockPos) && !(voxelShape = (blockState2 = EvokerEntity.this.world.getBlockState(blockPos)).getCollisionShape(EvokerEntity.this.world, blockPos)).isEmpty()) {
-                    d = voxelShape.getMaximum(Direction.Axis.Y);
+                    d = voxelShape.getMax(Direction.Axis.Y);
                 }
                 bl = true;
                 break;

@@ -14,11 +14,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
-import net.minecraft.loot.condition.LootConditions;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class ConditionalLootFunction
@@ -28,7 +28,7 @@ implements LootFunction {
 
     protected ConditionalLootFunction(LootCondition[] conditions) {
         this.conditions = conditions;
-        this.predicate = LootConditions.joinAnd(conditions);
+        this.predicate = LootConditionTypes.joinAnd(conditions);
     }
 
     @Override
@@ -56,11 +56,7 @@ implements LootFunction {
     }
 
     public static abstract class Factory<T extends ConditionalLootFunction>
-    extends LootFunction.Factory<T> {
-        public Factory(Identifier identifier, Class<T> class_) {
-            super(identifier, class_);
-        }
-
+    implements JsonSerializable<T> {
         @Override
         public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
             if (!ArrayUtils.isEmpty(((ConditionalLootFunction)conditionalLootFunction).conditions)) {
@@ -77,8 +73,8 @@ implements LootFunction {
         public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootCondition[] var3);
 
         @Override
-        public /* synthetic */ LootFunction fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
+        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 

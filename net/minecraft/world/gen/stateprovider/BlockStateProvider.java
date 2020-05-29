@@ -11,7 +11,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
 public abstract class BlockStateProvider {
-    public static final Codec<BlockStateProvider> field_24937 = Registry.BLOCK_STATE_PROVIDER_TYPE.dispatch(BlockStateProvider::method_28862, BlockStateProviderType::method_28863);
+    public static final Codec<BlockStateProvider> CODEC = Registry.BLOCK_STATE_PROVIDER_TYPE.dispatch(BlockStateProvider::method_28862, BlockStateProviderType::method_28863);
 
     protected abstract BlockStateProviderType<?> method_28862();
 

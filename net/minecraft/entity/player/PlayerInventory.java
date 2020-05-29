@@ -156,36 +156,16 @@ Nameable {
         }
     }
 
-    public int clearItem(Predicate<ItemStack> itemPredicate, int amount) {
-        int j;
-        int i = 0;
-        for (j = 0; j < this.size(); ++j) {
-            ItemStack itemStack = this.getStack(j);
-            if (itemStack.isEmpty() || !itemPredicate.test(itemStack)) continue;
-            int k = amount <= 0 ? itemStack.getCount() : Math.min(amount - i, itemStack.getCount());
-            i += k;
-            if (amount == 0) continue;
-            itemStack.decrement(k);
-            if (itemStack.isEmpty()) {
-                this.setStack(j, ItemStack.EMPTY);
-            }
-            if (amount <= 0 || i < amount) continue;
-            return i;
+    public int method_29280(Predicate<ItemStack> predicate, int i, Inventory inventory) {
+        int j = 0;
+        boolean bl = i == 0;
+        j += Inventories.method_29234(this, predicate, i - j, bl);
+        j += Inventories.method_29234(inventory, predicate, i - j, bl);
+        j += Inventories.method_29235(this.cursorStack, predicate, i - j, bl);
+        if (this.cursorStack.isEmpty()) {
+            this.cursorStack = ItemStack.EMPTY;
         }
-        if (!this.cursorStack.isEmpty() && itemPredicate.test(this.cursorStack)) {
-            j = amount <= 0 ? this.cursorStack.getCount() : Math.min(amount - i, this.cursorStack.getCount());
-            i += j;
-            if (amount != 0) {
-                this.cursorStack.decrement(j);
-                if (this.cursorStack.isEmpty()) {
-                    this.cursorStack = ItemStack.EMPTY;
-                }
-                if (amount > 0 && i >= amount) {
-                    return i;
-                }
-            }
-        }
-        return i;
+        return j;
     }
 
     private int addStack(ItemStack stack) {
@@ -466,10 +446,6 @@ Nameable {
     @Override
     public Text getName() {
         return new TranslatableText("container.inventory");
-    }
-
-    public boolean isUsingEffectiveTool(BlockState state) {
-        return this.getStack(this.selectedSlot).isEffectiveOn(state);
     }
 
     @Environment(value=EnvType.CLIENT)

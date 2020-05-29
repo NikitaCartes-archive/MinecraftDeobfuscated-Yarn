@@ -235,7 +235,7 @@ extends BlockWithEntity {
             if (!world.isClient) {
                 this.openScreen(world, pos, player);
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.isEmpty() || itemStack.getItem().isIn(ItemTags.LECTERN_BOOKS)) {

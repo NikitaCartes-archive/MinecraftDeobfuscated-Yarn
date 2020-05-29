@@ -21,6 +21,7 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -55,13 +56,13 @@ public class ChunkHolder {
     private final short[] blockUpdatePositions = new short[64];
     private int blockUpdateCount;
     private int sectionsNeedingUpdateMask;
-    private int lightSentWithBlocksBits;
     private int blockLightUpdateBits;
     private int skyLightUpdateBits;
     private final LightingProvider lightingProvider;
     private final LevelUpdateListener levelUpdateListener;
     private final PlayersWatchingChunkProvider playersWatchingChunkProvider;
     private boolean ticking;
+    private boolean field_25344;
 
     public ChunkHolder(ChunkPos pos, int level, LightingProvider lightingProvider, LevelUpdateListener levelUpdateListener, PlayersWatchingChunkProvider playersWatchingChunkProvider) {
         this.pos = pos;
@@ -135,19 +136,22 @@ public class ChunkHolder {
         return this.future;
     }
 
-    public void markForBlockUpdate(int x, int y, int z) {
+    public void markForBlockUpdate(ServerChunkManager serverChunkManager, int i, int j, int k) {
         WorldChunk worldChunk = this.getWorldChunk();
         if (worldChunk == null) {
             return;
         }
-        this.sectionsNeedingUpdateMask |= 1 << (y >> 4);
+        this.sectionsNeedingUpdateMask |= 1 << (j >> 4);
         if (this.blockUpdateCount < 64) {
-            short s = (short)(x << 12 | z << 8 | y);
-            for (int i = 0; i < this.blockUpdateCount; ++i) {
-                if (this.blockUpdatePositions[i] != s) continue;
+            short s = (short)(i << 12 | k << 8 | j);
+            for (int l = 0; l < this.blockUpdateCount; ++l) {
+                if (this.blockUpdatePositions[l] != s) continue;
                 return;
             }
             this.blockUpdatePositions[this.blockUpdateCount++] = s;
+            if (this.blockUpdateCount == 64) {
+                serverChunkManager.method_29482(this.pos.x, this.pos.z);
+            }
         }
     }
 
@@ -165,29 +169,16 @@ public class ChunkHolder {
     }
 
     public void flushUpdates(WorldChunk worldChunk) {
-        int j;
-        int i;
         if (this.blockUpdateCount == 0 && this.skyLightUpdateBits == 0 && this.blockLightUpdateBits == 0) {
             return;
         }
         World world = worldChunk.getWorld();
-        if (this.blockUpdateCount == 64) {
-            this.lightSentWithBlocksBits = -1;
-        }
-        if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
-            this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, this.skyLightUpdateBits & ~this.lightSentWithBlocksBits, this.blockLightUpdateBits & ~this.lightSentWithBlocksBits), true);
-            i = this.skyLightUpdateBits & this.lightSentWithBlocksBits;
-            j = this.blockLightUpdateBits & this.lightSentWithBlocksBits;
-            if (i != 0 || j != 0) {
-                this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, i, j), false);
-            }
-            this.skyLightUpdateBits = 0;
-            this.blockLightUpdateBits = 0;
-            this.lightSentWithBlocksBits &= ~(this.skyLightUpdateBits & this.blockLightUpdateBits);
+        if (!(!this.field_25344 && this.blockUpdateCount != 64 || this.skyLightUpdateBits == 0 && this.blockLightUpdateBits == 0)) {
+            this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits), false);
         }
         if (this.blockUpdateCount == 1) {
-            i = (this.blockUpdatePositions[0] >> 12 & 0xF) + this.pos.x * 16;
-            j = this.blockUpdatePositions[0] & 0xFF;
+            int i = (this.blockUpdatePositions[0] >> 12 & 0xF) + this.pos.x * 16;
+            int j = this.blockUpdatePositions[0] & 0xFF;
             int k = (this.blockUpdatePositions[0] >> 8 & 0xF) + this.pos.z * 16;
             BlockPos blockPos = new BlockPos(i, j, k);
             this.sendPacketToPlayersWatching(new BlockUpdateS2CPacket(world, blockPos), false);
@@ -198,8 +189,8 @@ public class ChunkHolder {
             this.sendPacketToPlayersWatching(new ChunkDataS2CPacket(worldChunk, this.sectionsNeedingUpdateMask), false);
         } else if (this.blockUpdateCount != 0) {
             this.sendPacketToPlayersWatching(new ChunkDeltaUpdateS2CPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false);
-            for (i = 0; i < this.blockUpdateCount; ++i) {
-                j = (this.blockUpdatePositions[i] >> 12 & 0xF) + this.pos.x * 16;
+            for (int i = 0; i < this.blockUpdateCount; ++i) {
+                int j = (this.blockUpdatePositions[i] >> 12 & 0xF) + this.pos.x * 16;
                 int k = this.blockUpdatePositions[i] & 0xFF;
                 int l = (this.blockUpdatePositions[i] >> 8 & 0xF) + this.pos.z * 16;
                 BlockPos blockPos2 = new BlockPos(j, k, l);
@@ -209,6 +200,9 @@ public class ChunkHolder {
         }
         this.blockUpdateCount = 0;
         this.sectionsNeedingUpdateMask = 0;
+        this.field_25344 = false;
+        this.skyLightUpdateBits = 0;
+        this.blockLightUpdateBits = 0;
     }
 
     private void sendBlockEntityUpdatePacket(World world, BlockPos pos) {
@@ -361,6 +355,10 @@ public class ChunkHolder {
             this.futuresByStatus.set(i, CompletableFuture.completedFuture(Either.left(readOnlyChunk)));
         }
         this.updateFuture(CompletableFuture.completedFuture(Either.left(readOnlyChunk.getWrappedChunk())));
+    }
+
+    public void method_29481() {
+        this.field_25344 = true;
     }
 
     public static interface PlayersWatchingChunkProvider {

@@ -14,9 +14,7 @@ import net.minecraft.block.FireBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SoulFireBlock;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -132,7 +130,7 @@ extends Block {
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (!(entity.isFireImmune() || entity instanceof LivingEntity && EnchantmentHelper.hasFrostWalker((LivingEntity)entity))) {
+        if (!entity.isFireImmune()) {
             entity.setFireTicks(entity.getFireTicks() + 1);
             if (entity.getFireTicks() == 0) {
                 entity.setOnFireFor(8);

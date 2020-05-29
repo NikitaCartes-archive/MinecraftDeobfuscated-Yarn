@@ -5,7 +5,6 @@ package net.minecraft.world;
 
 import java.util.Optional;
 import java.util.Random;
-import net.minecraft.class_5304;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
@@ -21,13 +20,14 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class WanderingTraderManager
-implements class_5304 {
+implements Spawner {
     private final Random random = new Random();
     private final ServerWorldProperties field_24387;
     private int spawnTimer;

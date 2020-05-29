@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
@@ -123,6 +124,12 @@ implements ResourceManager {
         }
         Collections.sort(list);
         return list;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public Stream<ResourcePack> method_29213() {
+        return this.packList.stream();
     }
 
     static Identifier getMetadataPath(Identifier id) {

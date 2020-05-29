@@ -29,11 +29,24 @@ extends Task<MobEntityWithAi> {
     private final Long2LongMap foundPositionsToExpiry = new Long2LongOpenHashMap();
     private int tries;
 
-    public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> targetMemoryModule, boolean onlyRunIfChild) {
-        super(ImmutableMap.of(targetMemoryModule, MemoryModuleState.VALUE_ABSENT));
+    public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl) {
+        super(FindPointOfInterestTask.method_29245(memoryModuleType, memoryModuleType2));
         this.poiType = poiType;
-        this.targetMemoryModuleType = targetMemoryModule;
-        this.onlyRunIfChild = onlyRunIfChild;
+        this.targetMemoryModuleType = memoryModuleType2;
+        this.onlyRunIfChild = bl;
+    }
+
+    public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
+        this(pointOfInterestType, memoryModuleType, memoryModuleType, bl);
+    }
+
+    private static ImmutableMap<MemoryModuleType<?>, MemoryModuleState> method_29245(MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2) {
+        ImmutableMap.Builder<MemoryModuleType<GlobalPos>, MemoryModuleState> builder = ImmutableMap.builder();
+        builder.put(memoryModuleType, MemoryModuleState.VALUE_ABSENT);
+        if (memoryModuleType2 != memoryModuleType) {
+            builder.put(memoryModuleType2, MemoryModuleState.VALUE_ABSENT);
+        }
+        return builder.build();
     }
 
     @Override
@@ -66,7 +79,7 @@ extends Task<MobEntityWithAi> {
             BlockPos blockPos2 = path.getTarget();
             pointOfInterestStorage.getType(blockPos2).ifPresent(pointOfInterestType -> {
                 pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos2), blockPos2, 1);
-                mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.method_27983(), blockPos2));
+                mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getRegistryKey(), blockPos2));
                 DebugInfoSender.sendPointOfInterest(serverWorld, blockPos2);
             });
         } else if (this.tries < 5) {

@@ -8,6 +8,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.util.math.MathHelper;
@@ -51,10 +53,21 @@ extends PlayerEntityModel<T> {
         float m = 0.08f + g * 0.4f;
         this.rightEar.roll = -0.5235988f - MathHelper.cos(l * 1.2f) * m;
         this.leftEar.roll = 0.5235988f + MathHelper.cos(l) * m;
-        if (mobEntity instanceof PiglinEntity) {
+        if (((Entity)mobEntity).getType() == EntityType.PIGLIN) {
             PiglinEntity piglinEntity = (PiglinEntity)mobEntity;
             PiglinEntity.Activity activity = piglinEntity.getActivity();
-            if (activity == PiglinEntity.Activity.CROSSBOW_HOLD) {
+            if (activity == PiglinEntity.Activity.DANCING) {
+                float n = h / 60.0f;
+                this.leftEar.roll = 0.5235988f + (float)Math.PI / 180 * MathHelper.sin(n * 30.0f) * 10.0f;
+                this.rightEar.roll = -0.5235988f - (float)Math.PI / 180 * MathHelper.cos(n * 30.0f) * 10.0f;
+                this.head.pivotX = MathHelper.sin(n * 10.0f);
+                this.head.pivotY = MathHelper.sin(n * 40.0f);
+                this.rightArm.roll = (float)Math.PI / 180 * (70.0f + MathHelper.cos(n * 40.0f) * 10.0f);
+                this.leftArm.roll = this.rightArm.roll * -1.0f;
+                this.torso.pivotY = MathHelper.sin(n * 40.0f) * 0.35f;
+            } else if (activity == PiglinEntity.Activity.ATTACKING_WITH_MELEE_WEAPON && this.handSwingProgress == 0.0f) {
+                this.method_29354(mobEntity);
+            } else if (activity == PiglinEntity.Activity.CROSSBOW_HOLD) {
                 CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, !((MobEntity)mobEntity).isLeftHanded());
             } else if (activity == PiglinEntity.Activity.CROSSBOW_CHARGE) {
                 CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, !((MobEntity)mobEntity).isLeftHanded());
@@ -69,6 +82,25 @@ extends PlayerEntityModel<T> {
                     this.leftArm.pitch = -0.9f;
                 }
             }
+        } else if (((Entity)mobEntity).getType() == EntityType.ZOMBIFIED_PIGLIN) {
+            CrossbowPosing.method_29352(this.leftArm, this.rightArm, ((MobEntity)mobEntity).isAttacking(), this.handSwingProgress, h);
+        }
+    }
+
+    @Override
+    protected void method_29353(T mobEntity, float f) {
+        if (this.handSwingProgress > 0.0f && mobEntity instanceof PiglinEntity && ((PiglinEntity)mobEntity).getActivity() == PiglinEntity.Activity.ATTACKING_WITH_MELEE_WEAPON) {
+            CrossbowPosing.method_29351(this.rightArm, this.leftArm, mobEntity, this.handSwingProgress, f);
+            return;
+        }
+        super.method_29353(mobEntity, f);
+    }
+
+    private void method_29354(T mobEntity) {
+        if (((MobEntity)mobEntity).isLeftHanded()) {
+            this.leftArm.pitch = -1.8f;
+        } else {
+            this.rightArm.pitch = -1.8f;
         }
     }
 }

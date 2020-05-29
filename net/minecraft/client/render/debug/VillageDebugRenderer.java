@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render.debug;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -140,10 +141,18 @@ implements DebugRenderer.Renderer {
 
     private void drawPointOfInterestInfo(PointOfInterest pointOfInterest) {
         int i = 0;
-        if (this.getVillagerNames(pointOfInterest).size() < 4) {
-            VillageDebugRenderer.drawString("" + this.getVillagerNames(pointOfInterest), pointOfInterest, i, -256);
+        Set<String> set = this.getVillagerNames(pointOfInterest);
+        if (set.size() < 4) {
+            VillageDebugRenderer.drawString("Owners: " + set, pointOfInterest, i, -256);
         } else {
-            VillageDebugRenderer.drawString("" + this.getVillagerNames(pointOfInterest).size() + " ticket holders", pointOfInterest, i, -256);
+            VillageDebugRenderer.drawString("" + set.size() + " ticket holders", pointOfInterest, i, -256);
+        }
+        ++i;
+        Set<String> set2 = this.method_29385(pointOfInterest);
+        if (set2.size() < 4) {
+            VillageDebugRenderer.drawString("Candidates: " + set2, pointOfInterest, i, -23296);
+        } else {
+            VillageDebugRenderer.drawString("" + set2.size() + " potential owners", pointOfInterest, i, -23296);
         }
         VillageDebugRenderer.drawString("Free tickets: " + pointOfInterest.freeTicketCount, pointOfInterest, ++i, -256);
         VillageDebugRenderer.drawString(pointOfInterest.field_18932, pointOfInterest, ++i, -1);
@@ -239,6 +248,10 @@ implements DebugRenderer.Renderer {
         return this.getBrains(pointOfInterest.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
     }
 
+    private Set<String> method_29385(PointOfInterest pointOfInterest) {
+        return this.method_29386(pointOfInterest.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
+    }
+
     private boolean isTargeted(Brain brain) {
         return Objects.equals(this.targetedEntity, brain.uuid);
     }
@@ -254,10 +267,14 @@ implements DebugRenderer.Renderer {
         return this.brains.values().stream().filter(brain -> ((Brain)brain).isPointOfInterest(pointOfInterest)).map(Brain::getUuid).collect(Collectors.toSet());
     }
 
+    private Collection<UUID> method_29386(BlockPos blockPos) {
+        return this.brains.values().stream().filter(brain -> ((Brain)brain).method_29388(blockPos)).map(Brain::getUuid).collect(Collectors.toSet());
+    }
+
     private Map<BlockPos, List<String>> getGhostPointsOfInterest() {
         HashMap<BlockPos, List<String>> map = Maps.newHashMap();
         for (Brain brain : this.brains.values()) {
-            for (BlockPos blockPos : brain.pointsOfInterest) {
+            for (BlockPos blockPos : Iterables.concat(brain.pointsOfInterest, brain.field_25287)) {
                 if (this.pointsOfInterest.containsKey(blockPos)) continue;
                 ArrayList<String> list = (ArrayList<String>)map.get(blockPos);
                 if (list == null) {
@@ -294,9 +311,10 @@ implements DebugRenderer.Renderer {
         public final List<String> field_19374 = Lists.newArrayList();
         public final List<String> field_19375 = Lists.newArrayList();
         public final Set<BlockPos> pointsOfInterest = Sets.newHashSet();
+        public final Set<BlockPos> field_25287 = Sets.newHashSet();
 
-        public Brain(UUID uuid, int i, String string, String profession, int xp, float f, float g, Position position, String string2, @Nullable Path path, boolean bl) {
-            this.uuid = uuid;
+        public Brain(UUID uUID, int i, String string, String profession, int xp, float f, float g, Position position, String string2, @Nullable Path path, boolean bl) {
+            this.uuid = uUID;
             this.field_18924 = i;
             this.field_19328 = string;
             this.profession = profession;
@@ -311,6 +329,10 @@ implements DebugRenderer.Renderer {
 
         private boolean isPointOfInterest(BlockPos blockPos) {
             return this.pointsOfInterest.stream().anyMatch(blockPos::equals);
+        }
+
+        private boolean method_29388(BlockPos blockPos) {
+            return this.field_25287.contains(blockPos);
         }
 
         public UUID getUuid() {

@@ -37,7 +37,7 @@ extends Task<LivingEntity> {
         }
         Brain<?> brain = entity.getBrain();
         GlobalPos globalPos = brain.getOptionalMemory(MemoryModuleType.HOME).get();
-        if (world.method_27983() != globalPos.getDimension()) {
+        if (world.getRegistryKey() != globalPos.getDimension()) {
             return false;
         }
         Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);

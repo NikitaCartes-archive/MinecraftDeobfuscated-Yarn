@@ -3,12 +3,14 @@
  */
 package net.minecraft.tag;
 
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.tag.GlobalTagAccessor;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
+import net.minecraft.util.Identifier;
 
 public class ItemTags {
     private static final GlobalTagAccessor<Item> ACCESSOR = new GlobalTagAccessor();
@@ -82,6 +84,10 @@ public class ItemTags {
 
     public static TagContainer<Item> getContainer() {
         return ACCESSOR.getContainer();
+    }
+
+    public static Set<Identifier> method_29217(TagContainer<Item> tagContainer) {
+        return ACCESSOR.method_29224(tagContainer);
     }
 }
 

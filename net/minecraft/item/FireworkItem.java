@@ -48,7 +48,7 @@ extends Item {
             world.spawnEntity(fireworkRocketEntity);
             itemStack.decrement(1);
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.method_29236(world.isClient);
     }
 
     @Override
@@ -61,7 +61,7 @@ extends Item {
                     itemStack.decrement(1);
                 }
             }
-            return TypedActionResult.success(user.getStackInHand(hand));
+            return TypedActionResult.method_29237(user.getStackInHand(hand), world.isClient());
         }
         return TypedActionResult.pass(user.getStackInHand(hand));
     }

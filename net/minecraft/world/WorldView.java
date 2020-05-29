@@ -23,6 +23,9 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a scoped, read-only view of a world like structure that contains biomes, chunks and is bound to a dimension.
+ */
 public interface WorldView
 extends BlockRenderView,
 CollisionView,
@@ -60,6 +63,11 @@ BiomeAccess.Storage {
 
     public Biome getGeneratorStoredBiome(int var1, int var2, int var3);
 
+    /**
+     * Checks if this world view is on the logical client.
+     * 
+     * <p>If the value returned is false, it is expected that this world is present on a logical server.
+     */
     public boolean isClient();
 
     @Deprecated

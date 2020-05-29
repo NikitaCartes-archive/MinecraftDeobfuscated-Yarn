@@ -10,13 +10,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
+import net.minecraft.class_5348;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -37,7 +37,7 @@ implements Toast {
         manager.drawTexture(matrices, 0, 0, 0, 0, this.method_29049(), this.method_29050());
         if (advancementDisplay != null) {
             int i;
-            List<Text> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
+            List<class_5348> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
             int n = i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 0xFF88FF : 0xFFFF00;
             if (list.size() == 1) {
                 manager.getGame().textRenderer.draw(matrices, I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId(), new Object[0]), 30.0f, 7.0f, i | 0xFF000000);
@@ -51,8 +51,8 @@ implements Toast {
                 } else {
                     int k = MathHelper.floor(MathHelper.clamp((float)(startTime - 1500L) / 300.0f, 0.0f, 1.0f) * 252.0f) << 24 | 0x4000000;
                     int l = this.method_29050() / 2 - list.size() * manager.getGame().textRenderer.fontHeight / 2;
-                    for (Text text : list) {
-                        manager.getGame().textRenderer.draw(matrices, text, 30.0f, (float)l, 0xFFFFFF | k);
+                    for (class_5348 lv : list) {
+                        manager.getGame().textRenderer.draw(matrices, lv, 30.0f, (float)l, 0xFFFFFF | k);
                         l += manager.getGame().textRenderer.fontHeight;
                     }
                 }

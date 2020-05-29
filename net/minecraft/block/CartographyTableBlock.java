@@ -35,7 +35,7 @@ extends Block {
         }
         player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
         player.incrementStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     @Override

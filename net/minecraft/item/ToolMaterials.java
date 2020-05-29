@@ -4,7 +4,6 @@
 package net.minecraft.item;
 
 import java.util.function.Supplier;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
@@ -14,7 +13,7 @@ import net.minecraft.util.Lazy;
 public enum ToolMaterials implements ToolMaterial
 {
     WOOD(0, 59, 2.0f, 0.0f, 15, () -> Ingredient.fromTag(ItemTags.PLANKS)),
-    STONE(1, 131, 4.0f, 1.0f, 5, () -> Ingredient.ofItems(Blocks.COBBLESTONE)),
+    STONE(1, 131, 4.0f, 1.0f, 5, () -> Ingredient.fromTag(ItemTags.STONE_TOOL_MATERIALS)),
     IRON(2, 250, 6.0f, 2.0f, 14, () -> Ingredient.ofItems(Items.IRON_INGOT)),
     DIAMOND(3, 1561, 8.0f, 3.0f, 10, () -> Ingredient.ofItems(Items.DIAMOND)),
     GOLD(0, 32, 12.0f, 0.0f, 22, () -> Ingredient.ofItems(Items.GOLD_INGOT)),

@@ -18,11 +18,11 @@ import net.minecraft.util.ProgressListener;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.AlphaChunkIo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.RegionFile;
@@ -37,9 +37,9 @@ public class AnvilLevelStorage {
         ArrayList<File> list = Lists.newArrayList();
         ArrayList<File> list2 = Lists.newArrayList();
         ArrayList<File> list3 = Lists.newArrayList();
-        File file = session.method_27424(DimensionType.OVERWORLD_REGISTRY_KEY);
-        File file2 = session.method_27424(DimensionType.THE_NETHER_REGISTRY_KEY);
-        File file3 = session.method_27424(DimensionType.THE_END_REGISTRY_KEY);
+        File file = session.method_27424(World.OVERWORLD);
+        File file2 = session.method_27424(World.NETHER);
+        File file3 = session.method_27424(World.END);
         LOGGER.info("Scanning folders...");
         AnvilLevelStorage.addRegionFiles(file, list);
         if (file2.exists()) {
@@ -51,8 +51,8 @@ public class AnvilLevelStorage {
         int i = list.size() + list2.size() + list3.size();
         LOGGER.info("Total conversion count is {}", (Object)i);
         SaveProperties saveProperties = session.readLevelProperties();
-        long l = saveProperties != null ? saveProperties.method_28057().getSeed() : 0L;
-        BiomeSource biomeSource = saveProperties != null && saveProperties.method_28057().isFlatWorld() ? new FixedBiomeSource(Biomes.PLAINS) : new VanillaLayeredBiomeSource(l, false, false);
+        long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
+        BiomeSource biomeSource = saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld() ? new FixedBiomeSource(Biomes.PLAINS) : new VanillaLayeredBiomeSource(l, false, false);
         AnvilLevelStorage.convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
         AnvilLevelStorage.convertRegions(new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
         AnvilLevelStorage.convertRegions(new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);

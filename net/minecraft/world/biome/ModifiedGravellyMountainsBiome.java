@@ -8,7 +8,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
-import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class ModifiedGravellyMountainsBiome
@@ -16,7 +16,7 @@ extends Biome {
     protected ModifiedGravellyMountainsBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.GRAVELLY_MOUNTAIN, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.EXTREME_HILLS).depth(1.0f).scale(0.5f).temperature(0.2f).downfall(0.3f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent("wooded_mountains"));
         DefaultBiomeFeatures.method_28440(this);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24684);
+        this.addStructureFeature(DefaultBiomeFeatures.MOUNTAIN_CONFIGURED_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

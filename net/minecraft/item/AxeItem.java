@@ -58,7 +58,7 @@ extends MiningToolItem {
                     context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
                 }
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         return ActionResult.PASS;
     }

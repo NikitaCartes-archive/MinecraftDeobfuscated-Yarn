@@ -338,7 +338,7 @@ implements Monster {
             return false;
         }
         if (super.damage(source, amount)) {
-            if ((double)this.getHealth() < (double)this.getMaximumHealth() * 0.5 && this.random.nextInt(4) == 0) {
+            if ((double)this.getHealth() < (double)this.getMaxHealth() * 0.5 && this.random.nextInt(4) == 0) {
                 this.tryTeleport();
             }
             return true;

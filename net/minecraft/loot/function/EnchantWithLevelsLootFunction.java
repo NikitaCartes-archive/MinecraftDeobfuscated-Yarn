@@ -15,7 +15,8 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.util.Identifier;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.JsonHelper;
 
 public class EnchantWithLevelsLootFunction
@@ -30,6 +31,11 @@ extends ConditionalLootFunction {
     }
 
     @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.ENCHANT_WITH_LEVELS;
+    }
+
+    @Override
     public ItemStack process(ItemStack stack, LootContext context) {
         Random random = context.getRandom();
         return EnchantmentHelper.enchant(random, stack, this.range.next(random), this.treasureEnchantmentsAllowed);
@@ -41,10 +47,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<EnchantWithLevelsLootFunction> {
-        public Factory() {
-            super(new Identifier("enchant_with_levels"), EnchantWithLevelsLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);

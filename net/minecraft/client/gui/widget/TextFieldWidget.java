@@ -442,10 +442,10 @@ Element {
         RenderSystem.enableTexture();
     }
 
-    public void setMaxLength(int maximumLength) {
-        this.maxLength = maximumLength;
-        if (this.text.length() > maximumLength) {
-            this.text = this.text.substring(0, maximumLength);
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
+        if (this.text.length() > maxLength) {
+            this.text = this.text.substring(0, maxLength);
             this.onChanged(this.text);
         }
     }

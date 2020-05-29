@@ -17,9 +17,10 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class FillPlayerHeadLootFunction
@@ -29,6 +30,11 @@ extends ConditionalLootFunction {
     public FillPlayerHeadLootFunction(LootCondition[] conditions, LootContext.EntityTarget entity) {
         super(conditions);
         this.entity = entity;
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.FILL_PLAYER_HEAD;
     }
 
     @Override
@@ -48,10 +54,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<FillPlayerHeadLootFunction> {
-        public Factory() {
-            super(new Identifier("fill_player_head"), FillPlayerHeadLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);

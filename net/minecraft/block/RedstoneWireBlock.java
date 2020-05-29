@@ -265,6 +265,7 @@ extends Block {
         if (oldState.isOf(state.getBlock()) || world.isClient) {
             return;
         }
+        world.setBlockState(pos, this.method_27840(world, this.getDefaultState(), pos), 2);
         this.update(world, pos, state);
         for (Direction direction : Direction.Type.VERTICAL) {
             world.updateNeighborsAlways(pos.offset(direction), this);
@@ -439,6 +440,9 @@ extends Block {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!player.abilities.allowModifyWorld) {
+            return ActionResult.PASS;
+        }
         if (RedstoneWireBlock.isFullyConnected(state) || RedstoneWireBlock.isNotConnected(state)) {
             BlockState blockState = RedstoneWireBlock.isFullyConnected(state) ? this.dotShape : this.getDefaultState();
             blockState = (BlockState)blockState.with(POWER, state.get(POWER));

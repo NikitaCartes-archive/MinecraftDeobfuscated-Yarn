@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -41,7 +42,7 @@ extends Screen {
     private final Set<AbstractRuleWidget> invalidRuleWidgets = Sets.newHashSet();
     private ButtonWidget doneButton;
     @Nullable
-    private List<Text> tooltip;
+    private List<class_5348> tooltip;
     private final GameRules gameRules;
 
     public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
@@ -81,7 +82,7 @@ extends Screen {
         }
     }
 
-    private void setTooltipDescription(@Nullable List<Text> description) {
+    private void setTooltipDescription(@Nullable List<class_5348> description) {
         this.tooltip = description;
     }
 
@@ -105,19 +106,19 @@ extends Screen {
         public RuleListWidget(final GameRules gameRules) {
             super(EditGameRulesScreen.this.client, EditGameRulesScreen.this.width, EditGameRulesScreen.this.height, 43, EditGameRulesScreen.this.height - 32, 24);
             final HashMap map = Maps.newHashMap();
-            GameRules.forEachType(new GameRules.RuleTypeConsumer(){
+            GameRules.forEachType(new GameRules.TypeConsumer(){
 
                 @Override
-                public void acceptBoolean(GameRules.RuleKey<GameRules.BooleanRule> key, GameRules.RuleType<GameRules.BooleanRule> type) {
+                public void acceptBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
                     this.createRuleWidget(key, (text, list, string, booleanRule) -> new BooleanRuleWidget(text, list, string, (GameRules.BooleanRule)booleanRule));
                 }
 
                 @Override
-                public void acceptInt(GameRules.RuleKey<GameRules.IntRule> key, GameRules.RuleType<GameRules.IntRule> type) {
+                public void acceptInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
                     this.createRuleWidget(key, (text, list, string, intRule) -> new IntRuleWidget(text, list, string, (GameRules.IntRule)intRule));
                 }
 
-                private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.RuleKey<T> key, RuleWidgetFactory<T> widgetFactory) {
+                private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, RuleWidgetFactory<T> widgetFactory) {
                     String string3;
                     ImmutableCollection list;
                     TranslatableText text = new TranslatableText(key.getTranslationKey());
@@ -136,12 +137,12 @@ extends Screen {
                         list = ImmutableList.of(text2, text3);
                         string3 = text3.getString();
                     }
-                    map.computeIfAbsent(key.getCategory(), ruleCategory -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<Text>)((Object)list), string3, rule));
+                    map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<class_5348>)((Object)list), string3, rule));
                 }
             });
             map.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry2 -> {
-                this.addEntry(new RuleCategoryWidget(new TranslatableText(((GameRules.RuleCategory)((Object)((Object)entry2.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
-                ((Map)entry2.getValue()).entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(GameRules.RuleKey::getName))).forEach(entry -> this.addEntry((EntryListWidget.Entry)entry.getValue()));
+                this.addEntry(new RuleCategoryWidget(new TranslatableText(((GameRules.Category)((Object)((Object)entry2.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
+                ((Map)entry2.getValue()).entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName))).forEach(entry -> this.addEntry((EntryListWidget.Entry)entry.getValue()));
             });
         }
 
@@ -162,7 +163,7 @@ extends Screen {
         private final TextFieldWidget valueWidget;
         private final List<? extends Element> children;
 
-        public IntRuleWidget(Text name, List<Text> description, String ruleName, GameRules.IntRule rule) {
+        public IntRuleWidget(Text name, List<class_5348> description, String ruleName, GameRules.IntRule rule) {
             super(description);
             this.name = name;
             this.valueWidget = new TextFieldWidget(((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer, 10, 5, 42, 20, name.shallowCopy().append("\n").append(ruleName).append("\n"));
@@ -196,7 +197,7 @@ extends Screen {
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
     static interface RuleWidgetFactory<T extends GameRules.Rule<T>> {
-        public AbstractRuleWidget create(Text var1, List<Text> var2, String var3, T var4);
+        public AbstractRuleWidget create(Text var1, List<class_5348> var2, String var3, T var4);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -205,7 +206,7 @@ extends Screen {
         private final ButtonWidget toggleButton;
         private final List<? extends Element> children;
 
-        public BooleanRuleWidget(Text name, List<Text> description, final String ruleName, GameRules.BooleanRule rule) {
+        public BooleanRuleWidget(Text name, List<class_5348> description, final String ruleName, GameRules.BooleanRule rule) {
             super(description);
             this.toggleButton = new ButtonWidget(10, 5, 220, 20, this.createBooleanRuleText(name, rule.get()), buttonWidget -> {
                 boolean bl = !rule.get();
@@ -263,9 +264,9 @@ extends Screen {
     public abstract class AbstractRuleWidget
     extends ElementListWidget.Entry<AbstractRuleWidget> {
         @Nullable
-        private final List<Text> description;
+        private final List<class_5348> description;
 
-        public AbstractRuleWidget(List<Text> description) {
+        public AbstractRuleWidget(List<class_5348> description) {
             this.description = description;
         }
     }

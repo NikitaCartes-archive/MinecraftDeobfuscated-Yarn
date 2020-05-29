@@ -397,7 +397,6 @@ RecipeGridAligner<Ingredient> {
             languageManager.setLanguage(languageDefinition);
             this.client.options.language = languageDefinition.getCode();
             this.client.reloadResources();
-            this.client.textRenderer.setRightToLeft(languageManager.isRightToLeft());
             this.client.options.write();
         }
     }

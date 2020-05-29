@@ -27,7 +27,7 @@ public class MessageCommand {
     }
 
     private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text message) {
-        UUID uUID = source.getEntity() == null ? Util.field_25140 : source.getEntity().getUuid();
+        UUID uUID = source.getEntity() == null ? Util.NIL_UUID : source.getEntity().getUuid();
         for (ServerPlayerEntity serverPlayerEntity : targets) {
             serverPlayerEntity.sendSystemMessage(new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), uUID);
             source.sendFeedback(new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), false);

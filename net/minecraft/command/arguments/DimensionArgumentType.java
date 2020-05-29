@@ -20,11 +20,11 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 public class DimensionArgumentType
 implements ArgumentType<Identifier> {
-    private static final Collection<String> EXAMPLES = Stream.of(DimensionType.OVERWORLD_REGISTRY_KEY, DimensionType.THE_NETHER_REGISTRY_KEY).map(registryKey -> registryKey.getValue().toString()).collect(Collectors.toList());
+    private static final Collection<String> EXAMPLES = Stream.of(World.OVERWORLD, World.NETHER).map(registryKey -> registryKey.getValue().toString()).collect(Collectors.toList());
     private static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("argument.dimension.invalid", object));
 
     @Override
@@ -35,7 +35,7 @@ implements ArgumentType<Identifier> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         if (context.getSource() instanceof CommandSource) {
-            return CommandSource.suggestIdentifiers(((CommandSource)context.getSource()).method_29038().getRegistry().getIds().stream(), builder);
+            return CommandSource.suggestIdentifiers(((CommandSource)context.getSource()).method_29310().stream().map(RegistryKey::getValue), builder);
         }
         return Suggestions.empty();
     }
@@ -49,10 +49,10 @@ implements ArgumentType<Identifier> {
         return new DimensionArgumentType();
     }
 
-    public static RegistryKey<DimensionType> getDimensionArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+    public static RegistryKey<World> getDimensionArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         Identifier identifier = context.getArgument(name, Identifier.class);
-        RegistryKey<DimensionType> registryKey = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, identifier);
-        if (!context.getSource().getMinecraftServer().method_29174().getRegistry().containsKey(registryKey)) {
+        RegistryKey<World> registryKey = RegistryKey.of(Registry.DIMENSION, identifier);
+        if (context.getSource().getMinecraftServer().getWorld(registryKey) == null) {
             throw INVALID_DIMENSION_EXCEPTION.create(identifier);
         }
         return registryKey;

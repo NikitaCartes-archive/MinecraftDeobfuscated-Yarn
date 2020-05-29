@@ -157,7 +157,7 @@ extends Entity {
     public float lastLimbDistance;
     public float limbDistance;
     public float limbAngle;
-    public final int defaultMaximumHealth = 20;
+    public final int defaultMaxHealth = 20;
     public final float randomLargeSeed;
     public final float randomSmallSeed;
     public float bodyYaw;
@@ -212,7 +212,7 @@ extends Entity {
     protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
         this.attributes = new AttributeContainer(DefaultAttributeRegistry.get(entityType));
-        this.setHealth(this.getMaximumHealth());
+        this.setHealth(this.getMaxHealth());
         this.inanimate = true;
         this.randomSmallSeed = (float)((Math.random() + 1.0) * (double)0.01f);
         this.refreshPosition();
@@ -826,7 +826,7 @@ extends Entity {
     }
 
     public void setHealth(float health) {
-        this.dataTracker.set(HEALTH, Float.valueOf(MathHelper.clamp(health, 0.0f, this.getMaximumHealth())));
+        this.dataTracker.set(HEALTH, Float.valueOf(MathHelper.clamp(health, 0.0f, this.getMaxHealth())));
     }
 
     @Override
@@ -1331,7 +1331,7 @@ extends Entity {
         return null;
     }
 
-    public final float getMaximumHealth() {
+    public final float getMaxHealth() {
         return (float)this.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH);
     }
 
@@ -1668,12 +1668,9 @@ extends Entity {
     }
 
     public void travel(Vec3d movementInput) {
-        double r;
-        double e;
-        double d;
         if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
             boolean bl;
-            d = 0.08;
+            double d = 0.08;
             boolean bl2 = bl = this.getVelocity().y <= 0.0;
             if (bl && this.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
                 d = 0.01;
@@ -1681,7 +1678,7 @@ extends Entity {
             }
             FluidState fluidState = this.world.getFluidState(this.getBlockPos());
             if (!(!this.isTouchingWater() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying || this.canWalkOnLava(fluidState.getFluid()))) {
-                double e2 = this.getY();
+                double e = this.getY();
                 float f = this.isSprinting() ? 0.9f : this.getBaseMovementSpeedMultiplier();
                 float g = 0.02f;
                 float h = EnchantmentHelper.getDepthStrider(this);
@@ -1707,11 +1704,11 @@ extends Entity {
                 this.setVelocity(vec3d.multiply(f, 0.8f, f));
                 Vec3d vec3d2 = this.method_26317(d, bl, this.getVelocity());
                 this.setVelocity(vec3d2);
-                if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + (double)0.6f - this.getY() + e2, vec3d2.z)) {
+                if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + (double)0.6f - this.getY() + e, vec3d2.z)) {
                     this.setVelocity(vec3d2.x, 0.3f, vec3d2.z);
                 }
             } else if (!(!this.isInLava() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying || this.canWalkOnLava(fluidState.getFluid()))) {
-                double e3 = this.getY();
+                double e = this.getY();
                 this.updateVelocity(0.02f, movementInput);
                 this.move(MovementType.SELF, this.getVelocity());
                 this.setVelocity(this.getVelocity().multiply(0.5));
@@ -1719,7 +1716,7 @@ extends Entity {
                     this.setVelocity(this.getVelocity().add(0.0, -d / 4.0, 0.0));
                 }
                 Vec3d vec3d3 = this.getVelocity();
-                if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.getY() + e3, vec3d3.z)) {
+                if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.getY() + e, vec3d3.z)) {
                     this.setVelocity(vec3d3.x, 0.3f, vec3d3.z);
                 }
             } else if (this.isFallFlying()) {
@@ -1777,14 +1774,20 @@ extends Entity {
                 this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
             }
         }
-        this.lastLimbDistance = this.limbDistance;
-        d = this.getX() - this.prevX;
-        float f = MathHelper.sqrt(d * d + (e = this instanceof Flutterer ? this.getY() - this.prevY : 0.0) * e + (r = this.getZ() - this.prevZ) * r) * 4.0f;
-        if (f > 1.0f) {
-            f = 1.0f;
+        this.method_29242(this, this instanceof Flutterer);
+    }
+
+    public void method_29242(LivingEntity livingEntity, boolean bl) {
+        double f;
+        double e;
+        livingEntity.lastLimbDistance = livingEntity.limbDistance;
+        double d = livingEntity.getX() - livingEntity.prevX;
+        float g = MathHelper.sqrt(d * d + (e = bl ? livingEntity.getY() - livingEntity.prevY : 0.0) * e + (f = livingEntity.getZ() - livingEntity.prevZ) * f) * 4.0f;
+        if (g > 1.0f) {
+            g = 1.0f;
         }
-        this.limbDistance += (f - this.limbDistance) * 0.4f;
-        this.limbAngle += this.limbDistance;
+        livingEntity.limbDistance += (g - livingEntity.limbDistance) * 0.4f;
+        livingEntity.limbAngle += livingEntity.limbDistance;
     }
 
     public Vec3d method_26318(Vec3d vec3d, float f) {
@@ -2046,14 +2049,14 @@ extends Entity {
         this.world.getProfiler().pop();
         this.world.getProfiler().push("jump");
         if (this.jumping) {
-            boolean bl;
             double k = this.getFluidHeight(FluidTags.WATER);
-            boolean bl2 = bl = this.isTouchingWater() && k > 0.0;
-            if (bl && (!this.onGround || k > 0.4)) {
+            boolean bl = this.isTouchingWater() && k > 0.0;
+            double l = this.method_29241();
+            if (bl && (!this.onGround || k > l)) {
                 this.swimUpward(FluidTags.WATER);
             } else if (this.isInLava()) {
                 this.swimUpward(FluidTags.LAVA);
-            } else if ((this.onGround || bl && k <= 0.4) && this.jumpingCooldown == 0) {
+            } else if ((this.onGround || bl && k <= l) && this.jumpingCooldown == 0) {
                 this.jump();
                 this.jumpingCooldown = 10;
             }

@@ -3,12 +3,14 @@
  */
 package net.minecraft.tag;
 
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.tag.GlobalTagAccessor;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
+import net.minecraft.util.Identifier;
 
 public class BlockTags {
     private static final GlobalTagAccessor<Block> ACCESSOR = new GlobalTagAccessor();
@@ -90,6 +92,8 @@ public class BlockTags {
     public static final Tag.Identified<Block> CAMPFIRES = BlockTags.register("campfires");
     public static final Tag.Identified<Block> GUARDED_BY_PIGLINS = BlockTags.register("guarded_by_piglins");
     public static final Tag.Identified<Block> PREVENT_MOB_SPAWNING_INSIDE = BlockTags.register("prevent_mob_spawning_inside");
+    public static final Tag.Identified<Block> FENCE_GATES = BlockTags.register("fence_gates");
+    public static final Tag.Identified<Block> UNSTABLE_BOTTOM_CENTER = BlockTags.register("unstable_bottom_center");
 
     private static Tag.Identified<Block> register(String id) {
         return ACCESSOR.get(id);
@@ -106,6 +110,10 @@ public class BlockTags {
 
     public static TagContainer<Block> getContainer() {
         return ACCESSOR.getContainer();
+    }
+
+    public static Set<Identifier> method_29214(TagContainer<Block> tagContainer) {
+        return ACCESSOR.method_29224(tagContainer);
     }
 }
 

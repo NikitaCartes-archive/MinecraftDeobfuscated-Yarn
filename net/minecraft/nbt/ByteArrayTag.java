@@ -149,8 +149,7 @@ extends AbstractListTag<ByteTag> {
         return ByteTag.of(b);
     }
 
-    @Override
-    public void add(int i, ByteTag byteTag) {
+    public void method_10531(int i, ByteTag byteTag) {
         this.value = ArrayUtils.add(this.value, i, byteTag.getByte());
     }
 
@@ -172,8 +171,7 @@ extends AbstractListTag<ByteTag> {
         return false;
     }
 
-    @Override
-    public ByteTag remove(int i) {
+    public ByteTag method_10536(int i) {
         byte b = this.value[i];
         this.value = ArrayUtils.remove(this.value, i);
         return ByteTag.of(b);
@@ -191,12 +189,12 @@ extends AbstractListTag<ByteTag> {
 
     @Override
     public /* synthetic */ Tag remove(int i) {
-        return this.remove(i);
+        return this.method_10536(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Tag tag) {
-        this.add(i, (ByteTag)tag);
+        this.method_10531(i, (ByteTag)tag);
     }
 
     @Override
@@ -206,12 +204,12 @@ extends AbstractListTag<ByteTag> {
 
     @Override
     public /* synthetic */ Object remove(int i) {
-        return this.remove(i);
+        return this.method_10536(i);
     }
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.add(i, (ByteTag)object);
+        this.method_10531(i, (ByteTag)object);
     }
 
     @Override

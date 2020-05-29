@@ -32,7 +32,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -178,10 +177,10 @@ public class ModelPredicateProviderRegistry {
 
             @Nullable
             private BlockPos getLodestonePos(World world, CompoundTag tag) {
-                Optional<RegistryKey<DimensionType>> optional;
+                Optional<RegistryKey<World>> optional;
                 boolean bl = tag.contains("LodestonePos");
                 boolean bl2 = tag.contains("LodestoneDimension");
-                if (bl && bl2 && (optional = CompassItem.getLodestoneDimension(tag)).isPresent() && world.method_27983() == optional.get()) {
+                if (bl && bl2 && (optional = CompassItem.getLodestoneDimension(tag)).isPresent() && world.getRegistryKey() == optional.get()) {
                     return NbtHelper.toBlockPos(tag.getCompound("LodestonePos"));
                 }
                 return null;

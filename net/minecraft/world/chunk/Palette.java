@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.chunk;
 
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.ListTag;
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public interface Palette<T> {
     public int getIndex(T var1);
 
-    public boolean accepts(T var1);
+    public boolean accepts(Predicate<T> var1);
 
     @Nullable
     public T getByIndex(int var1);

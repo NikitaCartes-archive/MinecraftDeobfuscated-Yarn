@@ -265,6 +265,7 @@ public class ServerPlayerInteractionManager {
 
     public ActionResult interactBlock(ServerPlayerEntity serverPlayerEntity, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
         ActionResult actionResult2;
+        ActionResult actionResult;
         BlockPos blockPos = hitResult.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         if (this.gameMode == GameMode.SPECTATOR) {
@@ -278,14 +279,9 @@ public class ServerPlayerInteractionManager {
         boolean bl = !serverPlayerEntity.getMainHandStack().isEmpty() || !serverPlayerEntity.getOffHandStack().isEmpty();
         boolean bl2 = serverPlayerEntity.shouldCancelInteraction() && bl;
         ItemStack itemStack = stack.copy();
-        if (!bl2) {
-            ActionResult actionResult = blockState.onUse(world, serverPlayerEntity, hand, hitResult);
-            if (actionResult == ActionResult.SUCCESS) {
-                Criteria.ITEM_USED_ON_BLOCK.test(serverPlayerEntity, blockPos, itemStack);
-            }
-            if (actionResult.isAccepted()) {
-                return actionResult;
-            }
+        if (!bl2 && (actionResult = blockState.onUse(world, serverPlayerEntity, hand, hitResult)).isAccepted()) {
+            Criteria.ITEM_USED_ON_BLOCK.test(serverPlayerEntity, blockPos, itemStack);
+            return actionResult;
         }
         if (stack.isEmpty() || serverPlayerEntity.getItemCooldownManager().isCoolingDown(stack.getItem())) {
             return ActionResult.PASS;
@@ -298,7 +294,7 @@ public class ServerPlayerInteractionManager {
         } else {
             actionResult2 = stack.useOnBlock(itemUsageContext);
         }
-        if (actionResult2 == ActionResult.SUCCESS) {
+        if (actionResult2.isAccepted()) {
             Criteria.ITEM_USED_ON_BLOCK.test(serverPlayerEntity, blockPos, itemStack);
         }
         return actionResult2;

@@ -13,11 +13,14 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 import net.minecraft.util.registry.Registry;
 
 public class TableBonusLootCondition
@@ -28,6 +31,11 @@ implements LootCondition {
     private TableBonusLootCondition(Enchantment enchantment, float[] chances) {
         this.enchantment = enchantment;
         this.chances = chances;
+    }
+
+    @Override
+    public LootConditionType method_29325() {
+        return LootConditionTypes.TABLE_BONUS;
     }
 
     @Override
@@ -53,11 +61,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<TableBonusLootCondition> {
-        public Factory() {
-            super(new Identifier("table_bonus"), TableBonusLootCondition.class);
-        }
-
+    implements JsonSerializable<TableBonusLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, TableBonusLootCondition tableBonusLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(tableBonusLootCondition.enchantment).toString());
@@ -73,8 +77,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
+        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 }

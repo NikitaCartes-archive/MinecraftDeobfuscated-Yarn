@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
@@ -20,6 +21,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -169,16 +171,16 @@ public class Structure {
         return Structure.transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
     }
 
-    public void place(WorldAccess world, BlockPos pos, StructurePlacementData placementData) {
+    public void place(WorldAccess world, BlockPos pos, StructurePlacementData placementData, Random random) {
         placementData.calculateBoundingBox();
-        this.placeAndNotifyListeners(world, pos, placementData);
+        this.placeAndNotifyListeners(world, pos, placementData, random);
     }
 
-    public void placeAndNotifyListeners(WorldAccess world, BlockPos pos, StructurePlacementData data) {
-        this.place(world, pos, pos, data, 2);
+    public void placeAndNotifyListeners(WorldAccess world, BlockPos pos, StructurePlacementData data, Random random) {
+        this.place(world, pos, pos, data, random, 2);
     }
 
-    public boolean place(WorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, int i) {
+    public boolean place(WorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, Random random, int i) {
         if (this.blockInfoLists.isEmpty()) {
             return false;
         }
@@ -219,6 +221,9 @@ public class Structure {
                 structureBlockInfo.tag.putInt("x", blockPos2.getX());
                 structureBlockInfo.tag.putInt("y", blockPos2.getY());
                 structureBlockInfo.tag.putInt("z", blockPos2.getZ());
+                if (blockEntity instanceof LootableContainerBlockEntity) {
+                    structureBlockInfo.tag.putLong("LootTable", random.nextLong());
+                }
                 blockEntity.fromTag(structureBlockInfo.state, structureBlockInfo.tag);
                 blockEntity.applyMirror(placementData.getMirror());
                 blockEntity.applyRotation(placementData.getRotation());
@@ -393,7 +398,7 @@ public class Structure {
         return bl ? new BlockPos(i, j, k) : pos;
     }
 
-    private static Vec3d transformAround(Vec3d point, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot) {
+    public static Vec3d transformAround(Vec3d point, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot) {
         double d = point.x;
         double e = point.y;
         double f = point.z;

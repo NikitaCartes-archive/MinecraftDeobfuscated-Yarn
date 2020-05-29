@@ -3,10 +3,13 @@
  */
 package net.minecraft.tag;
 
+import com.google.common.collect.HashMultimap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
@@ -19,6 +22,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.RegistryTagContainer;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagContainers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
@@ -73,11 +77,24 @@ implements ResourceReloadListener {
             this.items.applyReload((Map)completableFuture2.join());
             this.fluids.applyReload((Map)completableFuture3.join());
             this.entityTypes.applyReload((Map)completableFuture4.join());
-            BlockTags.setContainer(this.blocks);
-            ItemTags.setContainer(this.items);
-            FluidTags.setContainer(this.fluids);
-            EntityTypeTags.setContainer(this.entityTypes);
+            TagContainers.method_29219(this.blocks, this.items, this.fluids, this.entityTypes);
+            HashMultimap<String, Identifier> multimap = HashMultimap.create();
+            multimap.putAll("blocks", BlockTags.method_29214(this.blocks));
+            multimap.putAll("items", ItemTags.method_29217(this.items));
+            multimap.putAll("fluids", FluidTags.method_29216(this.fluids));
+            multimap.putAll("entity_types", EntityTypeTags.method_29215(this.entityTypes));
+            if (!multimap.isEmpty()) {
+                throw new IllegalStateException("Missing required tags: " + multimap.entries().stream().map(entry -> (String)entry.getKey() + ":" + entry.getValue()).sorted().collect(Collectors.joining(",")));
+            }
         }, applyExecutor);
+    }
+
+    public void method_29226() {
+        BlockTags.setContainer(this.blocks);
+        ItemTags.setContainer(this.items);
+        FluidTags.setContainer(this.fluids);
+        EntityTypeTags.setContainer(this.entityTypes);
+        Blocks.refreshShapeCache();
     }
 }
 

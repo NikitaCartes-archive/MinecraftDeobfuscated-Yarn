@@ -19,8 +19,8 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,14 +37,14 @@ public class LocationPredicate {
     @Nullable
     private final StructureFeature<?> feature;
     @Nullable
-    private final RegistryKey<DimensionType> dimension;
+    private final RegistryKey<World> dimension;
     @Nullable
     private final Boolean smokey;
     private final LightPredicate light;
     private final BlockPredicate block;
     private final FluidPredicate fluid;
 
-    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable Biome biome, @Nullable StructureFeature<?> feature, @Nullable RegistryKey<DimensionType> dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
+    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable Biome biome, @Nullable StructureFeature<?> feature, @Nullable RegistryKey<World> dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -61,7 +61,7 @@ public class LocationPredicate {
         return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, biome, null, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
     }
 
-    public static LocationPredicate dimension(RegistryKey<DimensionType> dimension) {
+    public static LocationPredicate dimension(RegistryKey<World> dimension) {
         return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, null, dimension, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
     }
 
@@ -83,7 +83,7 @@ public class LocationPredicate {
         if (!this.z.test(z)) {
             return false;
         }
-        if (this.dimension != null && this.dimension != world.method_27983()) {
+        if (this.dimension != null && this.dimension != world.getRegistryKey()) {
             return false;
         }
         BlockPos blockPos = new BlockPos(x, y, z);
@@ -119,7 +119,7 @@ public class LocationPredicate {
             jsonObject.add("position", jsonObject2);
         }
         if (this.dimension != null) {
-            DimensionType.field_24751.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(field_24732::error).ifPresent(jsonElement -> jsonObject.add("dimension", (JsonElement)jsonElement));
+            World.CODEC.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(field_24732::error).ifPresent(jsonElement -> jsonObject.add("dimension", (JsonElement)jsonElement));
         }
         if (this.feature != null) {
             jsonObject.addProperty("feature", this.feature.getName());
@@ -145,7 +145,7 @@ public class LocationPredicate {
         NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject2.get("x"));
         NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));
         NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject2.get("z"));
-        RegistryKey registryKey = jsonObject.has("dimension") ? (RegistryKey)Identifier.field_25139.parse(JsonOps.INSTANCE, jsonObject.get("dimension")).resultOrPartial(field_24732::error).map(identifier -> RegistryKey.of(Registry.DIMENSION_TYPE_KEY, identifier)).orElse(null) : null;
+        RegistryKey registryKey = jsonObject.has("dimension") ? (RegistryKey)Identifier.field_25139.parse(JsonOps.INSTANCE, jsonObject.get("dimension")).resultOrPartial(field_24732::error).map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier)).orElse(null) : null;
         StructureFeature structureFeature = jsonObject.has("feature") ? (StructureFeature)StructureFeature.STRUCTURES.get(JsonHelper.getString(jsonObject, "feature")) : null;
         Biome biome = null;
         if (jsonObject.has("biome")) {
@@ -168,7 +168,7 @@ public class LocationPredicate {
         @Nullable
         private StructureFeature<?> feature;
         @Nullable
-        private RegistryKey<DimensionType> dimension;
+        private RegistryKey<World> dimension;
         @Nullable
         private Boolean smokey;
         private LightPredicate light = LightPredicate.ANY;

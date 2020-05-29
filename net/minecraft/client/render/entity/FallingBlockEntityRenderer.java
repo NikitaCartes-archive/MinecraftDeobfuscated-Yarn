@@ -44,7 +44,7 @@ extends EntityRenderer<FallingBlockEntity> {
         BlockPos blockPos = new BlockPos(fallingBlockEntity.getX(), fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.getZ());
         matrixStack.translate(-0.5, 0.0, -0.5);
         BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
-        blockRenderManager.getModelRenderer().render(world, blockRenderManager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayers.getBlockLayer(blockState)), false, new Random(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()), OverlayTexture.DEFAULT_UV);
+        blockRenderManager.getModelRenderer().render(world, blockRenderManager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayers.method_29359(blockState)), false, new Random(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()), OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
         super.render(fallingBlockEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }

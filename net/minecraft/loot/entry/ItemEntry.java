@@ -13,6 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.LeafEntry;
+import net.minecraft.loot.entry.LootPoolEntryType;
+import net.minecraft.loot.entry.LootPoolEntryTypes;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -28,6 +30,11 @@ extends LeafEntry {
     }
 
     @Override
+    public LootPoolEntryType method_29318() {
+        return LootPoolEntryTypes.ITEM;
+    }
+
+    @Override
     public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
         lootConsumer.accept(new ItemStack(this.item));
     }
@@ -38,13 +45,8 @@ extends LeafEntry {
 
     public static class Serializer
     extends LeafEntry.Serializer<ItemEntry> {
-        public Serializer() {
-            super(new Identifier("item"), ItemEntry.class);
-        }
-
-        @Override
-        public void toJson(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
-            super.toJson(jsonObject, itemEntry, jsonSerializationContext);
+        public void method_442(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
+            super.method_422(jsonObject, itemEntry, jsonSerializationContext);
             Identifier identifier = Registry.ITEM.getId(itemEntry.item);
             if (identifier == null) {
                 throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);

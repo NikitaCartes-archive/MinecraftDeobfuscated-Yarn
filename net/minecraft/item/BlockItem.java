@@ -47,7 +47,7 @@ extends Item {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         ActionResult actionResult = this.place(new ItemPlacementContext(context));
-        if (actionResult != ActionResult.SUCCESS && this.isFood()) {
+        if (!actionResult.isAccepted() && this.isFood()) {
             return this.use(context.world, context.player, context.hand).getResult();
         }
         return actionResult;
@@ -85,7 +85,7 @@ extends Item {
         BlockSoundGroup blockSoundGroup = blockState2.getSoundGroup();
         world.playSound(playerEntity, blockPos, this.getPlaceSound(blockState2), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0f) / 2.0f, blockSoundGroup.getPitch() * 0.8f);
         itemStack.decrement(1);
-        return ActionResult.SUCCESS;
+        return ActionResult.method_29236(world.isClient);
     }
 
     protected SoundEvent getPlaceSound(BlockState state) {

@@ -626,8 +626,7 @@ public class GameOptions {
     }
 
     public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> manager) {
-        manager.scanPacks();
-        LinkedHashSet<ClientResourcePackProfile> set = Sets.newLinkedHashSet();
+        LinkedHashSet<String> set = Sets.newLinkedHashSet();
         Iterator<String> iterator = this.resourcePacks.iterator();
         while (iterator.hasNext()) {
             String string = iterator.next();
@@ -650,7 +649,7 @@ public class GameOptions {
                 this.incompatibleResourcePacks.remove(string);
                 continue;
             }
-            set.add(clientResourcePackProfile);
+            set.add(clientResourcePackProfile.getName());
         }
         manager.setEnabledProfiles(set);
     }

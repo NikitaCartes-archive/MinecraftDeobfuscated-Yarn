@@ -96,7 +96,7 @@ extends Feature<TreeFeatureConfig> {
         if (!config.skipFluidCheck) {
             int m = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
             int n = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
-            if (n - m > config.baseHeight) {
+            if (n - m > config.maxWaterDepth) {
                 return false;
             }
             o = config.heightmap == Heightmap.Type.OCEAN_FLOOR ? m : (config.heightmap == Heightmap.Type.WORLD_SURFACE ? n : world.getTopPosition(config.heightmap, pos).getY());
@@ -111,10 +111,10 @@ extends Feature<TreeFeatureConfig> {
             return false;
         }
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        OptionalInt optionalInt = config.featureSize.getMinClippedHeight();
+        OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
         o = i;
         for (p = 0; p <= i + 1; ++p) {
-            int q = config.featureSize.method_27378(i, p);
+            int q = config.minimumSize.method_27378(i, p);
             block1: for (int r = -q; r <= q; ++r) {
                 for (int s = -q; s <= q; ++s) {
                     mutable.set(blockPos, r, p, s);
@@ -129,7 +129,7 @@ extends Feature<TreeFeatureConfig> {
         }
         p = o;
         List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, p, blockPos, logPositions, box, config);
-        list.forEach(treeNode -> treeFeatureConfig.foliagePlacer.generate(world, random, config, p, (FoliagePlacer.TreeNode)treeNode, j, l, leavesPositions));
+        list.forEach(treeNode -> treeFeatureConfig.foliagePlacer.generate(world, random, config, p, (FoliagePlacer.TreeNode)treeNode, j, l, leavesPositions, box));
         return true;
     }
 

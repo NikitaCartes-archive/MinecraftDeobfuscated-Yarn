@@ -34,7 +34,7 @@ extends Item {
         if (!user.abilities.creativeMode) {
             itemStack.decrement(1);
         }
-        return TypedActionResult.success(itemStack);
+        return TypedActionResult.method_29237(itemStack, world.isClient());
     }
 }
 

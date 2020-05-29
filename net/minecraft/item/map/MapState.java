@@ -29,6 +29,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +41,7 @@ extends PersistentState {
     private static final Logger field_25019 = LogManager.getLogger();
     public int xCenter;
     public int zCenter;
-    public RegistryKey<DimensionType> dimension;
+    public RegistryKey<World> dimension;
     public boolean showIcons;
     public boolean unlimitedTracking;
     public byte scale;
@@ -56,7 +57,7 @@ extends PersistentState {
         super(string);
     }
 
-    public void init(int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<DimensionType> dimension) {
+    public void init(int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
         this.scale = (byte)scale;
         this.calculateCenter(x, z, this.scale);
         this.dimension = dimension;
@@ -152,7 +153,7 @@ extends PersistentState {
                 this.icons.remove(string);
                 continue;
             }
-            if (stack.isInFrame() || playerUpdateTracker2.player.world.method_27983() != this.dimension || !this.showIcons) continue;
+            if (stack.isInFrame() || playerUpdateTracker2.player.world.getRegistryKey() != this.dimension || !this.showIcons) continue;
             this.addIcon(MapIcon.Type.PLAYER, playerUpdateTracker2.player.world, string, playerUpdateTracker2.player.getX(), playerUpdateTracker2.player.getZ(), playerUpdateTracker2.player.yaw, null);
         }
         if (stack.isInFrame() && this.showIcons) {
@@ -207,7 +208,7 @@ extends PersistentState {
         int j = 63;
         if (f >= -63.0f && g >= -63.0f && f <= 63.0f && g <= 63.0f) {
             d = (byte)((rotation += rotation < 0.0 ? -8.0 : 8.0) * 16.0 / 360.0);
-            if (this.dimension == DimensionType.THE_NETHER_REGISTRY_KEY && world != null) {
+            if (this.dimension == World.NETHER && world != null) {
                 int k = (int)(world.getLevelProperties().getTimeOfDay() / 10L);
                 d = (byte)(k * k * 34187121 + k * 121 >> 15 & 0xF);
             }

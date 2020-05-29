@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -36,7 +37,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
-import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,15 +53,8 @@ import org.jetbrains.annotations.Nullable;
  * @see MutableText
  */
 public interface Text
-extends Message {
-    /**
-     * An {@link Optional} that indicates a text visitor should be terminated.
-     * 
-     * @see Visitor#accept(String)
-     * @see StyledVisitor#accept(Style, String)
-     */
-    public static final Optional<Unit> TERMINATE_VISIT = Optional.of(Unit.INSTANCE);
-
+extends Message,
+class_5348 {
     /**
      * Returns the style of this text.
      */
@@ -98,7 +91,7 @@ extends Message {
         this.visit(string -> {
             int j = length - stringBuilder.length();
             if (j <= 0) {
-                return TERMINATE_VISIT;
+                return field_25309;
             }
             stringBuilder.append(string.length() <= j ? string : string.substring(0, j));
             return Optional.empty();
@@ -123,48 +116,24 @@ extends Message {
      */
     public MutableText shallowCopy();
 
-    /**
-     * Visits the code points of in each {@link Text#asString() partial string}
-     * representation of {@code text} and its siblings, applying the formatting
-     * codes within.
-     * 
-     * <p>The visit is in forward direction.</p>
-     * 
-     * @return {@code true} if the full string was visited, or {@code false} indicating
-     * the {@code visitor} terminated half-way
-     * @see Text#visit(Text.StyledVisitor, Style)
-     * 
-     * @param visitor the styled text visitor
-     * @param style the starting style
-     */
+    @Override
     @Environment(value=EnvType.CLIENT)
-    default public <T> Optional<T> visit(StyledVisitor<T> visitor, Style style) {
+    default public <T> Optional<T> visit(class_5348.StyledVisitor<T> styledVisitor, Style style) {
         Style style2 = this.getStyle().withParent(style);
-        Optional<T> optional = this.visitSelf(visitor, style2);
+        Optional<T> optional = this.visitSelf(styledVisitor, style2);
         if (optional.isPresent()) {
             return optional;
         }
         for (Text text : this.getSiblings()) {
-            Optional<T> optional2 = text.visit(visitor, style2);
+            Optional<T> optional2 = text.visit(styledVisitor, style2);
             if (!optional2.isPresent()) continue;
             return optional2;
         }
         return Optional.empty();
     }
 
-    /**
-     * Visits this text and its siblings.
-     * 
-     * <p>When the visitor returns a {@link Optional#isPresent() non-empty
-     * optional} during visit, the visit is immediately terminated and the
-     * result is returned.</p>
-     * 
-     * @return what the visitor returns, or {@link Optional#empty()} if the
-     * visitor always returned {@code Optional.empty()}.
-     * 
-     * @param visitor the text visitor
-     */
-    default public <T> Optional<T> visit(Visitor<T> visitor) {
+    @Override
+    default public <T> Optional<T> visit(class_5348.Visitor<T> visitor) {
         Optional<T> optional = this.visitSelf(visitor);
         if (optional.isPresent()) {
             return optional;
@@ -187,7 +156,7 @@ extends Message {
      * @param style the current style
      */
     @Environment(value=EnvType.CLIENT)
-    default public <T> Optional<T> visitSelf(StyledVisitor<T> visitor, Style style) {
+    default public <T> Optional<T> visitSelf(class_5348.StyledVisitor<T> visitor, Style style) {
         return visitor.accept(style, this.asString());
     }
 
@@ -199,7 +168,7 @@ extends Message {
      * 
      * @param visitor the visitor
      */
-    default public <T> Optional<T> visitSelf(Visitor<T> visitor) {
+    default public <T> Optional<T> visitSelf(class_5348.Visitor<T> visitor) {
         return visitor.accept(this.asString());
     }
 
@@ -445,15 +414,6 @@ extends Message {
         public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
             return this.deserialize(json, type, context);
         }
-    }
-
-    public static interface Visitor<T> {
-        public Optional<T> accept(String var1);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static interface StyledVisitor<T> {
-        public Optional<T> accept(Style var1, String var2);
     }
 }
 

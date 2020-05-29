@@ -63,6 +63,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
@@ -253,7 +254,7 @@ public class LevelStorage {
             return this.field_24190.computeIfAbsent(worldSavePath2, worldSavePath -> this.directory.resolve(worldSavePath.getRelativePath()));
         }
 
-        public File method_27424(RegistryKey<DimensionType> registryKey) {
+        public File method_27424(RegistryKey<World> registryKey) {
             return DimensionType.getSaveDirectory(registryKey, this.directory.toFile());
         }
 

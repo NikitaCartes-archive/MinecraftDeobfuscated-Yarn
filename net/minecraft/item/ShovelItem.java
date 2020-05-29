@@ -54,6 +54,7 @@ extends MiningToolItem {
                 if (!world.isClient()) {
                     world.syncWorldEvent(null, 1009, blockPos, 0);
                 }
+                CampfireBlock.extinguish(world, blockPos, blockState);
                 blockState3 = (BlockState)blockState.with(CampfireBlock.LIT, false);
             }
             if (blockState3 != null) {
@@ -63,7 +64,7 @@ extends MiningToolItem {
                         context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
                     }
                 }
-                return ActionResult.SUCCESS;
+                return ActionResult.method_29236(world.isClient);
             }
             return ActionResult.PASS;
         }

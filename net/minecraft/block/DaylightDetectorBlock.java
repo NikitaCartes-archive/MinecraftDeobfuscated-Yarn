@@ -82,7 +82,7 @@ extends BlockWithEntity {
             BlockState blockState = (BlockState)state.cycle(INVERTED);
             world.setBlockState(pos, blockState, 4);
             DaylightDetectorBlock.updateState(blockState, world, pos);
-            return ActionResult.SUCCESS;
+            return ActionResult.CONSUME;
         }
         return super.onUse(state, world, pos, player, hand, hit);
     }

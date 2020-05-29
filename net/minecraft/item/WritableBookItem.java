@@ -32,7 +32,7 @@ extends Item {
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
         if (blockState.isOf(Blocks.LECTERN)) {
-            return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
+            return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.method_29236(world.isClient) : ActionResult.PASS;
         }
         return ActionResult.PASS;
     }
@@ -42,7 +42,7 @@ extends Item {
         ItemStack itemStack = user.getStackInHand(hand);
         user.openEditBookScreen(itemStack, hand);
         user.incrementStat(Stats.USED.getOrCreateStat(this));
-        return TypedActionResult.success(itemStack);
+        return TypedActionResult.method_29237(itemStack, world.isClient());
     }
 
     public static boolean isValid(@Nullable CompoundTag tag) {

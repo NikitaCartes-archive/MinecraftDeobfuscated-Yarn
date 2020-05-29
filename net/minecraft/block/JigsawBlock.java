@@ -70,7 +70,7 @@ implements BlockEntityProvider {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof JigsawBlockEntity && player.isCreativeLevelTwoOp()) {
             player.openJigsawScreen((JigsawBlockEntity)blockEntity);
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(world.isClient);
         }
         return ActionResult.PASS;
     }

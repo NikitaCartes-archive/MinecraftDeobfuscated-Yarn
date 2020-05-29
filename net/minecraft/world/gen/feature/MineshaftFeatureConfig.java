@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.MineshaftFeature;
 
 public class MineshaftFeatureConfig
 implements FeatureConfig {
-    public static final Codec<MineshaftFeatureConfig> field_24888 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.DOUBLE.fieldOf("probability")).forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.probability), ((MapCodec)MineshaftFeature.Type.field_24839.fieldOf("type")).forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.type)).apply((Applicative<MineshaftFeatureConfig, ?>)instance, MineshaftFeatureConfig::new));
+    public static final Codec<MineshaftFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.DOUBLE.fieldOf("probability")).forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.probability), ((MapCodec)MineshaftFeature.Type.field_24839.fieldOf("type")).forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.type)).apply((Applicative<MineshaftFeatureConfig, ?>)instance, MineshaftFeatureConfig::new));
     public final double probability;
     public final MineshaftFeature.Type type;
 

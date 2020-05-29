@@ -7,10 +7,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class ZombieVillagerEntityModel<T extends ZombieEntity>
@@ -64,22 +64,8 @@ implements ModelWithHat {
 
     @Override
     public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
-        float m;
         super.setAngles(zombieEntity, f, g, h, i, j);
-        float k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
-        float l = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
-        this.rightArm.roll = 0.0f;
-        this.leftArm.roll = 0.0f;
-        this.rightArm.yaw = -(0.1f - k * 0.6f);
-        this.leftArm.yaw = 0.1f - k * 0.6f;
-        this.rightArm.pitch = m = (float)(-Math.PI) / (((MobEntity)zombieEntity).isAttacking() ? 1.5f : 2.25f);
-        this.leftArm.pitch = m;
-        this.rightArm.pitch += k * 1.2f - l * 0.4f;
-        this.leftArm.pitch += k * 1.2f - l * 0.4f;
-        this.rightArm.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
-        this.leftArm.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
-        this.rightArm.pitch += MathHelper.sin(h * 0.067f) * 0.05f;
-        this.leftArm.pitch -= MathHelper.sin(h * 0.067f) * 0.05f;
+        CrossbowPosing.method_29352(this.leftArm, this.rightArm, ((MobEntity)zombieEntity).isAttacking(), this.handSwingProgress, h);
     }
 
     @Override

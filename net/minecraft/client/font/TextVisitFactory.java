@@ -6,8 +6,8 @@ package net.minecraft.client.font;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Unit;
 
@@ -186,8 +186,8 @@ public class TextVisitFactory {
      * the {@code visitor} terminated half-way
      * @see Text#visit(Text.StyledVisitor, Style)
      */
-    public static boolean visitFormatted(Text text, Style style2, CharacterVisitor visitor) {
-        return !text.visit((style, string) -> TextVisitFactory.visitFormatted(string, 0, style, visitor) ? Optional.empty() : VISIT_TERMINATED, style2).isPresent();
+    public static boolean visitFormatted(class_5348 arg, Style style2, CharacterVisitor visitor) {
+        return !arg.visit((style, string) -> TextVisitFactory.visitFormatted(string, 0, style, visitor) ? Optional.empty() : VISIT_TERMINATED, style2).isPresent();
     }
 
     /**

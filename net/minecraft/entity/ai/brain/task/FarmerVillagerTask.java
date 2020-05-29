@@ -33,7 +33,6 @@ public class FarmerVillagerTask
 extends Task<VillagerEntity> {
     @Nullable
     private BlockPos currentTarget;
-    private boolean ableToPlant;
     private long nextResponseTime;
     private int ticksRan;
     private final List<BlockPos> targetPositions = Lists.newArrayList();
@@ -50,7 +49,6 @@ extends Task<VillagerEntity> {
         if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {
             return false;
         }
-        this.ableToPlant = villagerEntity.hasSeedToPlant();
         BlockPos.Mutable mutable = villagerEntity.getBlockPos().mutableCopy();
         this.targetPositions.clear();
         for (int i = -1; i <= 1; ++i) {
@@ -63,7 +61,7 @@ extends Task<VillagerEntity> {
             }
         }
         this.currentTarget = this.chooseRandomTarget(serverWorld);
-        return this.ableToPlant && this.currentTarget != null;
+        return this.currentTarget != null;
     }
 
     @Nullable
@@ -75,7 +73,7 @@ extends Task<VillagerEntity> {
         BlockState blockState = world.getBlockState(pos);
         Block block = blockState.getBlock();
         Block block2 = world.getBlockState(pos.down()).getBlock();
-        return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) || blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant;
+        return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) || blockState.isAir() && block2 instanceof FarmlandBlock;
     }
 
     @Override
@@ -106,7 +104,7 @@ extends Task<VillagerEntity> {
             if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState)) {
                 serverWorld.breakBlock(this.currentTarget, true, villagerEntity);
             }
-            if (blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant) {
+            if (blockState.isAir() && block2 instanceof FarmlandBlock && villagerEntity.hasSeedToPlant()) {
                 SimpleInventory simpleInventory = villagerEntity.getInventory();
                 for (int i = 0; i < simpleInventory.size(); ++i) {
                     ItemStack itemStack = simpleInventory.getStack(i);

@@ -33,13 +33,14 @@ extends Screen {
     private TextFieldWidget poolField;
     private TextFieldWidget finalStateField;
     private int generationDepth;
+    private boolean field_25271 = true;
     private ButtonWidget jointRotationButton;
     private ButtonWidget doneButton;
     private JigsawBlockEntity.Joint joint;
 
-    public JigsawBlockScreen(JigsawBlockEntity jigsaw) {
+    public JigsawBlockScreen(JigsawBlockEntity jigsawBlockEntity) {
         super(NarratorManager.EMPTY);
-        this.jigsaw = jigsaw;
+        this.jigsaw = jigsawBlockEntity;
     }
 
     @Override
@@ -64,7 +65,7 @@ extends Screen {
     }
 
     private void generate() {
-        this.client.getNetworkHandler().sendPacket(new JigsawGeneratingC2SPacket(this.jigsaw.getPos(), this.generationDepth));
+        this.client.getNetworkHandler().sendPacket(new JigsawGeneratingC2SPacket(this.jigsaw.getPos(), this.generationDepth, this.field_25271));
     }
 
     @Override
@@ -76,8 +77,6 @@ extends Screen {
     protected void init() {
         boolean bl;
         this.client.keyboard.enableRepeatEvents(true);
-        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, buttonWidget -> this.onDone()));
-        this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCancel()));
         this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 20, 300, 20, new TranslatableText("jigsaw_block.pool"));
         this.poolField.setMaxLength(128);
         this.poolField.setText(this.jigsaw.getPool().toString());
@@ -97,7 +96,17 @@ extends Screen {
         this.finalStateField.setMaxLength(256);
         this.finalStateField.setText(this.jigsaw.getFinalState());
         this.children.add(this.finalStateField);
-        this.addButton(new SliderWidget(this.width / 2 - 152, 180, 150, 20, LiteralText.EMPTY, 0.0){
+        this.joint = this.jigsaw.getJoint();
+        int i = this.textRenderer.getWidth(I18n.translate("jigsaw_block.joint_label", new Object[0])) + 10;
+        this.jointRotationButton = this.addButton(new ButtonWidget(this.width / 2 - 152 + i, 150, 300 - i, 20, this.getLocalizedJointName(), buttonWidget -> {
+            JigsawBlockEntity.Joint[] joints = JigsawBlockEntity.Joint.values();
+            int i = (this.joint.ordinal() + 1) % joints.length;
+            this.joint = joints[i];
+            buttonWidget.setMessage(this.getLocalizedJointName());
+        }));
+        this.jointRotationButton.active = bl = JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical();
+        this.jointRotationButton.visible = bl;
+        this.addButton(new SliderWidget(this.width / 2 - 154, 180, 100, 20, LiteralText.EMPTY, 0.0){
             {
                 this.updateMessage();
             }
@@ -112,17 +121,19 @@ extends Screen {
                 JigsawBlockScreen.this.generationDepth = MathHelper.floor(MathHelper.clampedLerp(0.0, 7.0, this.value));
             }
         });
-        this.addButton(new ButtonWidget(this.width / 2 + 4, 180, 150, 20, new TranslatableText("jigsaw_block.generate"), buttonWidget -> this.generate()));
-        this.joint = this.jigsaw.getJoint();
-        int i = this.textRenderer.getWidth(I18n.translate("jigsaw_block.joint_label", new Object[0])) + 10;
-        this.jointRotationButton = this.addButton(new ButtonWidget(this.width / 2 - 152 + i, 150, 300 - i, 20, this.getLocalizedJointName(), buttonWidget -> {
-            JigsawBlockEntity.Joint[] joints = JigsawBlockEntity.Joint.values();
-            int i = (this.joint.ordinal() + 1) % joints.length;
-            this.joint = joints[i];
-            buttonWidget.setMessage(this.getLocalizedJointName());
-        }));
-        this.jointRotationButton.active = bl = JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical();
-        this.jointRotationButton.visible = bl;
+        this.addButton(new ButtonWidget(this.width / 2 - 50, 180, 100, 20, new TranslatableText("jigsaw_block.keep_jigsaws"), buttonWidget -> {
+            this.field_25271 = !this.field_25271;
+            buttonWidget.queueNarration(250);
+        }){
+
+            @Override
+            public Text getMessage() {
+                return super.getMessage().shallowCopy().append(" ").append(ScreenTexts.getToggleText(JigsawBlockScreen.this.field_25271));
+            }
+        });
+        this.addButton(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), buttonWidget -> this.generate()));
+        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, buttonWidget -> this.onDone()));
+        this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCancel()));
         this.setInitialFocus(this.poolField);
         this.updateDoneButtonState();
     }

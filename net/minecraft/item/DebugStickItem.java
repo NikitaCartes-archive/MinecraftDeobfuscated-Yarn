@@ -53,7 +53,7 @@ extends Item {
             BlockPos blockPos = context.getBlockPos();
             this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, context.getStack());
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.method_29236(world.isClient);
     }
 
     private void use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {
@@ -95,7 +95,7 @@ extends Item {
     }
 
     private static void sendMessage(PlayerEntity player, Text message) {
-        ((ServerPlayerEntity)player).sendMessage(message, MessageType.GAME_INFO, Util.field_25140);
+        ((ServerPlayerEntity)player).sendMessage(message, MessageType.GAME_INFO, Util.NIL_UUID);
     }
 
     private static <T extends Comparable<T>> String getValueString(BlockState state, Property<T> property) {

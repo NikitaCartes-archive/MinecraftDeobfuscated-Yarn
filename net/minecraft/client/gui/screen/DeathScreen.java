@@ -16,6 +16,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -92,14 +93,14 @@ extends Screen {
         }
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("deathScreen.score", new Object[0]) + ": " + (Object)((Object)Formatting.YELLOW) + this.client.player.getScore(), this.width / 2, 100, 0xFFFFFF);
         if (this.message != null && mouseY > 85 && mouseY < 85 + this.textRenderer.fontHeight) {
-            Text text = this.getTextComponentUnderMouse(mouseX);
-            this.renderTextHoverEffect(matrices, text, mouseX, mouseY);
+            Style style = this.getTextComponentUnderMouse(mouseX);
+            this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Nullable
-    public Text getTextComponentUnderMouse(int mouseX) {
+    private Style getTextComponentUnderMouse(int mouseX) {
         if (this.message == null) {
             return null;
         }
@@ -114,9 +115,9 @@ extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Text text;
-        if (this.message != null && mouseY > 85.0 && mouseY < (double)(85 + this.textRenderer.fontHeight) && (text = this.getTextComponentUnderMouse((int)mouseX)) != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
-            this.handleTextClick(text);
+        Style style;
+        if (this.message != null && mouseY > 85.0 && mouseY < (double)(85 + this.textRenderer.fontHeight) && (style = this.getTextComponentUnderMouse((int)mouseX)) != null && style.getClickEvent() != null && style.getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
+            this.handleTextClick(style);
             return false;
         }
         return super.mouseClicked(mouseX, mouseY, button);

@@ -70,7 +70,7 @@ extends BlockWithEntity {
             player.openHandledScreen((BrewingStandBlockEntity)blockEntity);
             player.incrementStat(Stats.INTERACT_WITH_BREWINGSTAND);
         }
-        return ActionResult.SUCCESS;
+        return ActionResult.CONSUME;
     }
 
     @Override

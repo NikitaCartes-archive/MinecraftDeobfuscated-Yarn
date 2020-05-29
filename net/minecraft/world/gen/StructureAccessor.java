@@ -26,20 +26,20 @@ public class StructureAccessor {
     }
 
     public Stream<? extends StructureStart<?>> getStructuresWithChildren(ChunkSectionPos pos, StructureFeature<?> feature) {
-        return this.field_24404.getChunk(pos.getSectionX(), pos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(feature.getName()).stream().map(long_ -> ChunkSectionPos.from(new ChunkPos((long)long_), 0)).map(chunkSectionPos -> this.getStructureStart((ChunkSectionPos)chunkSectionPos, feature, this.field_24404.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS))).filter(structureStart -> structureStart != null && structureStart.hasChildren());
+        return this.field_24404.getChunk(pos.getSectionX(), pos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(feature).stream().map(long_ -> ChunkSectionPos.from(new ChunkPos((long)long_), 0)).map(chunkSectionPos -> this.getStructureStart((ChunkSectionPos)chunkSectionPos, feature, this.field_24404.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS))).filter(structureStart -> structureStart != null && structureStart.hasChildren());
     }
 
     @Nullable
     public StructureStart<?> getStructureStart(ChunkSectionPos pos, StructureFeature<?> feature, StructureHolder holder) {
-        return holder.getStructureStart(feature.getName());
+        return holder.getStructureStart(feature);
     }
 
     public void setStructureStart(ChunkSectionPos pos, StructureFeature<?> feature, StructureStart<?> structureStart, StructureHolder holder) {
-        holder.setStructureStart(feature.getName(), structureStart);
+        holder.setStructureStart(feature, structureStart);
     }
 
     public void addStructureReference(ChunkSectionPos pos, StructureFeature<?> feature, long reference, StructureHolder holder) {
-        holder.addStructureReference(feature.getName(), reference);
+        holder.addStructureReference(feature, reference);
     }
 
     public boolean method_27834() {

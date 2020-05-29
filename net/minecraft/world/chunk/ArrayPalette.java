@@ -4,6 +4,7 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -12,7 +13,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class ArrayPalette<T>
@@ -47,8 +47,12 @@ implements Palette<T> {
     }
 
     @Override
-    public boolean accepts(T object) {
-        return ArrayUtils.contains(this.array, object);
+    public boolean accepts(Predicate<T> predicate) {
+        for (int i = 0; i < this.size; ++i) {
+            if (!predicate.test(this.array[i])) continue;
+            return true;
+        }
+        return false;
     }
 
     @Override

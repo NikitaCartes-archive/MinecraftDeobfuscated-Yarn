@@ -3,14 +3,16 @@
  */
 package net.minecraft.client.resource.language;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.language.I18n;
@@ -28,52 +30,53 @@ import org.apache.logging.log4j.Logger;
 public class LanguageManager
 implements SynchronousResourceReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected static final TranslationStorage STORAGE = new TranslationStorage();
+    private static final LanguageDefinition field_25291 = new LanguageDefinition("en_us", "US", "English", false);
+    private Map<String, LanguageDefinition> languageDefs = ImmutableMap.of("en_us", field_25291);
     private String currentLanguageCode;
-    private final Map<String, LanguageDefinition> languageDefs = Maps.newHashMap();
+    private LanguageDefinition field_25292 = field_25291;
 
     public LanguageManager(String string) {
         this.currentLanguageCode = string;
-        I18n.setLanguage(STORAGE);
     }
 
-    public void reloadResources(List<ResourcePack> list) {
-        this.languageDefs.clear();
-        for (ResourcePack resourcePack : list) {
+    private static Map<String, LanguageDefinition> method_29393(Stream<ResourcePack> stream) {
+        HashMap map = Maps.newHashMap();
+        stream.forEach(resourcePack -> {
             try {
                 LanguageResourceMetadata languageResourceMetadata = resourcePack.parseMetadata(LanguageResourceMetadata.READER);
-                if (languageResourceMetadata == null) continue;
-                for (LanguageDefinition languageDefinition : languageResourceMetadata.getLanguageDefinitions()) {
-                    if (this.languageDefs.containsKey(languageDefinition.getCode())) continue;
-                    this.languageDefs.put(languageDefinition.getCode(), languageDefinition);
+                if (languageResourceMetadata != null) {
+                    for (LanguageDefinition languageDefinition : languageResourceMetadata.getLanguageDefinitions()) {
+                        map.putIfAbsent(languageDefinition.getCode(), languageDefinition);
+                    }
                 }
             } catch (IOException | RuntimeException exception) {
                 LOGGER.warn("Unable to parse language metadata section of resourcepack: {}", (Object)resourcePack.getName(), (Object)exception);
             }
-        }
+        });
+        return ImmutableMap.copyOf(map);
     }
 
     @Override
     public void apply(ResourceManager manager) {
-        ArrayList<String> list = Lists.newArrayList("en_us");
-        if (!"en_us".equals(this.currentLanguageCode)) {
-            list.add(this.currentLanguageCode);
+        this.languageDefs = LanguageManager.method_29393(manager.method_29213());
+        LanguageDefinition languageDefinition = this.languageDefs.getOrDefault("en_us", field_25291);
+        this.field_25292 = this.languageDefs.getOrDefault(this.currentLanguageCode, languageDefinition);
+        ArrayList<LanguageDefinition> list = Lists.newArrayList(languageDefinition);
+        if (this.field_25292 != languageDefinition) {
+            list.add(this.field_25292);
         }
-        STORAGE.load(manager, list);
-        Language.load(LanguageManager.STORAGE.translations);
-    }
-
-    public boolean isRightToLeft() {
-        return this.getLanguage() != null && this.getLanguage().isRightToLeft();
+        TranslationStorage translationStorage = TranslationStorage.load(manager, list);
+        I18n.method_29391(translationStorage);
+        Language.method_29427(translationStorage);
     }
 
     public void setLanguage(LanguageDefinition languageDefinition) {
         this.currentLanguageCode = languageDefinition.getCode();
+        this.field_25292 = languageDefinition;
     }
 
     public LanguageDefinition getLanguage() {
-        String string = this.languageDefs.containsKey(this.currentLanguageCode) ? this.currentLanguageCode : "en_us";
-        return this.languageDefs.get(string);
+        return this.field_25292;
     }
 
     public SortedSet<LanguageDefinition> getAllLanguages() {

@@ -13,7 +13,6 @@ import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.IllagerEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
@@ -113,27 +112,7 @@ ModelWithHead {
         }
         IllagerEntity.State state = ((IllagerEntity)illagerEntity).getState();
         if (state == IllagerEntity.State.ATTACKING) {
-            float k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
-            float l = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
-            this.rightAttackingArm.roll = 0.0f;
-            this.leftAttackingArm.roll = 0.0f;
-            this.rightAttackingArm.yaw = 0.15707964f;
-            this.leftAttackingArm.yaw = -0.15707964f;
-            if (((MobEntity)illagerEntity).getMainArm() == Arm.RIGHT) {
-                this.rightAttackingArm.pitch = -1.8849558f + MathHelper.cos(h * 0.09f) * 0.15f;
-                this.leftAttackingArm.pitch = -0.0f + MathHelper.cos(h * 0.19f) * 0.5f;
-                this.rightAttackingArm.pitch += k * 2.2f - l * 0.4f;
-                this.leftAttackingArm.pitch += k * 1.2f - l * 0.4f;
-            } else {
-                this.rightAttackingArm.pitch = -0.0f + MathHelper.cos(h * 0.19f) * 0.5f;
-                this.leftAttackingArm.pitch = -1.8849558f + MathHelper.cos(h * 0.09f) * 0.15f;
-                this.rightAttackingArm.pitch += k * 1.2f - l * 0.4f;
-                this.leftAttackingArm.pitch += k * 2.2f - l * 0.4f;
-            }
-            this.rightAttackingArm.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
-            this.leftAttackingArm.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
-            this.rightAttackingArm.pitch += MathHelper.sin(h * 0.067f) * 0.05f;
-            this.leftAttackingArm.pitch -= MathHelper.sin(h * 0.067f) * 0.05f;
+            CrossbowPosing.method_29351(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, this.handSwingProgress, h);
         } else if (state == IllagerEntity.State.SPELLCASTING) {
             this.rightAttackingArm.pivotZ = 0.0f;
             this.rightAttackingArm.pivotX = -5.0f;

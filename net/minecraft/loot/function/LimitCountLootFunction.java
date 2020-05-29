@@ -10,8 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.operator.BoundedIntUnaryOperator;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class LimitCountLootFunction
@@ -21,6 +22,11 @@ extends ConditionalLootFunction {
     private LimitCountLootFunction(LootCondition[] conditions, BoundedIntUnaryOperator limit) {
         super(conditions);
         this.limit = limit;
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.LIMIT_COUNT;
     }
 
     @Override
@@ -36,10 +42,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<LimitCountLootFunction> {
-        protected Factory() {
-            super(new Identifier("limit_count"), LimitCountLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, LimitCountLootFunction limitCountLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, limitCountLootFunction, jsonSerializationContext);

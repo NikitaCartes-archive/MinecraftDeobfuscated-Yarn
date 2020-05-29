@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -36,6 +38,12 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
+import net.minecraft.loot.entry.LootPoolEntryType;
+import net.minecraft.loot.entry.LootPoolEntryTypes;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -60,6 +68,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -136,7 +145,11 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<SensorType<?>>> SENSOR_TYPE_KEY = Registry.createRegistryKey("sensor_type");
     public static final RegistryKey<Registry<Schedule>> SCHEDULE_KEY = Registry.createRegistryKey("schedule");
     public static final RegistryKey<Registry<Activity>> ACTIVITY_KEY = Registry.createRegistryKey("activity");
+    public static final RegistryKey<Registry<LootPoolEntryType>> LOOT_POOL_ENTRY_TYPE_KEY = Registry.createRegistryKey("loot_pool_entry_type");
+    public static final RegistryKey<Registry<LootFunctionType>> LOOT_FUNCTION_TYPE_KEY = Registry.createRegistryKey("loot_function_type");
+    public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE_KEY = Registry.createRegistryKey("loot_condition_type");
     public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = Registry.createRegistryKey("dimension_type");
+    public static final RegistryKey<Registry<World>> DIMENSION = Registry.createRegistryKey("dimension");
     public static final Registry<SoundEvent> SOUND_EVENT = Registry.create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
     public static final DefaultedRegistry<Fluid> FLUID = Registry.create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
     public static final Registry<StatusEffect> STATUS_EFFECT = Registry.create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
@@ -181,6 +194,9 @@ IndexedIterable<T> {
     public static final DefaultedRegistry<SensorType<?>> SENSOR_TYPE = Registry.create(SENSOR_TYPE_KEY, "dummy", () -> SensorType.DUMMY);
     public static final Registry<Schedule> SCHEDULE = Registry.create(SCHEDULE_KEY, () -> Schedule.EMPTY);
     public static final Registry<Activity> ACTIVITY = Registry.create(ACTIVITY_KEY, () -> Activity.IDLE);
+    public static final Registry<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = Registry.create(LOOT_POOL_ENTRY_TYPE_KEY, () -> LootPoolEntryTypes.EMPTY);
+    public static final Registry<LootFunctionType> LOOT_FUNCTION_TYPE = Registry.create(LOOT_FUNCTION_TYPE_KEY, () -> LootFunctionTypes.SET_COUNT);
+    public static final Registry<LootConditionType> LOOT_CONDITION_TYPE = Registry.create(LOOT_CONDITION_TYPE_KEY, () -> LootConditionTypes.INVERTED);
     /**
      * The {@linkplain RegistryKey} representing the ID of the actual registry.
      */
@@ -273,11 +289,13 @@ IndexedIterable<T> {
     @Nullable
     public abstract Identifier getId(T var1);
 
-    public abstract RegistryKey<T> getKey(T var1);
+    @Environment(value=EnvType.CLIENT)
+    public abstract Optional<RegistryKey<T>> getKey(T var1);
 
     public abstract int getRawId(@Nullable T var1);
 
     @Nullable
+    @Environment(value=EnvType.CLIENT)
     public abstract T get(@Nullable RegistryKey<T> var1);
 
     @Nullable
@@ -292,8 +310,6 @@ IndexedIterable<T> {
     }
 
     public abstract boolean containsId(Identifier var1);
-
-    public abstract boolean containsKey(RegistryKey<T> var1);
 
     public abstract boolean containsId(int var1);
 

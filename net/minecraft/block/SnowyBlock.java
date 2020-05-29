@@ -34,7 +34,7 @@ extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
+        BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().up());
         return (BlockState)this.getDefaultState().with(SNOWY, blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.SNOW));
     }
 

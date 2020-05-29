@@ -104,7 +104,7 @@ implements SynchronousResourceReloadListener {
                 float f = (float)(i >> 16 & 0xFF) / 255.0f;
                 float g = (float)(i >> 8 & 0xFF) / 255.0f;
                 float h = (float)(i & 0xFF) / 255.0f;
-                this.blockModelRenderer.render(matrixStack.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state)), state, bakedModel, f, g, h, light, overlay);
+                this.blockModelRenderer.render(matrixStack.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state, false)), state, bakedModel, f, g, h, light, overlay);
                 break;
             }
             case ENTITYBLOCK_ANIMATED: {

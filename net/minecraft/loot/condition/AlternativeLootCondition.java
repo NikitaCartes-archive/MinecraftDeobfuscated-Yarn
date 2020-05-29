@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditions;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.JsonSerializable;
 
 public class AlternativeLootCondition
 implements LootCondition {
@@ -23,7 +24,12 @@ implements LootCondition {
 
     private AlternativeLootCondition(LootCondition[] terms) {
         this.terms = terms;
-        this.predicate = LootConditions.joinOr(terms);
+        this.predicate = LootConditionTypes.joinOr(terms);
+    }
+
+    @Override
+    public LootConditionType method_29325() {
+        return LootConditionTypes.ALTERNATIVE;
     }
 
     @Override
@@ -49,11 +55,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<AlternativeLootCondition> {
-        public Factory() {
-            super(new Identifier("alternative"), AlternativeLootCondition.class);
-        }
-
+    implements JsonSerializable<AlternativeLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
@@ -66,8 +68,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject json, JsonDeserializationContext context) {
-            return this.fromJson(json, context);
+        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+            return this.fromJson(jsonObject, jsonDeserializationContext);
         }
     }
 

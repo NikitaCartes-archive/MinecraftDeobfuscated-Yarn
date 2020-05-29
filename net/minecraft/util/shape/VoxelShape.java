@@ -35,7 +35,7 @@ public abstract class VoxelShape {
         this.voxels = voxels;
     }
 
-    public double getMinimum(Direction.Axis axis) {
+    public double getMin(Direction.Axis axis) {
         int i = this.voxels.getMin(axis);
         if (i >= this.voxels.getSize(axis)) {
             return Double.POSITIVE_INFINITY;
@@ -43,7 +43,7 @@ public abstract class VoxelShape {
         return this.getPointPosition(axis, i);
     }
 
-    public double getMaximum(Direction.Axis axis) {
+    public double getMax(Direction.Axis axis) {
         int i = this.voxels.getMax(axis);
         if (i <= 0) {
             return Double.NEGATIVE_INFINITY;
@@ -55,7 +55,7 @@ public abstract class VoxelShape {
         if (this.isEmpty()) {
             throw Util.throwOrPause(new UnsupportedOperationException("No bounds for empty shape."));
         }
-        return new Box(this.getMinimum(Direction.Axis.X), this.getMinimum(Direction.Axis.Y), this.getMinimum(Direction.Axis.Z), this.getMaximum(Direction.Axis.X), this.getMaximum(Direction.Axis.Y), this.getMaximum(Direction.Axis.Z));
+        return new Box(this.getMin(Direction.Axis.X), this.getMin(Direction.Axis.Y), this.getMin(Direction.Axis.Z), this.getMax(Direction.Axis.X), this.getMax(Direction.Axis.Y), this.getMax(Direction.Axis.Z));
     }
 
     protected double getPointPosition(Direction.Axis axis, int index) {

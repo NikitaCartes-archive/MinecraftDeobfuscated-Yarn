@@ -33,6 +33,10 @@ implements ScreenHandlerProvider<T> {
     public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
     protected int backgroundWidth = 176;
     protected int backgroundHeight = 166;
+    protected int field_25267;
+    protected int field_25268;
+    protected int field_25269;
+    protected int field_25270;
     protected final T handler;
     protected final PlayerInventory playerInventory;
     protected int x;
@@ -65,6 +69,10 @@ implements ScreenHandlerProvider<T> {
         this.handler = handler;
         this.playerInventory = inventory;
         this.cancelNextRelease = true;
+        this.field_25267 = 8;
+        this.field_25268 = 6;
+        this.field_25269 = 8;
+        this.field_25270 = this.backgroundHeight - 94;
     }
 
     @Override
@@ -161,6 +169,8 @@ implements ScreenHandlerProvider<T> {
     }
 
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        this.textRenderer.draw(matrices, this.title, (float)this.field_25267, (float)this.field_25268, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.field_25269, (float)this.field_25270, 0x404040);
     }
 
     protected abstract void drawBackground(MatrixStack var1, float var2, int var3, int var4);

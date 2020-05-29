@@ -29,11 +29,12 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.predicate.NbtPredicate;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class CopyNbtLootFunction
@@ -47,6 +48,11 @@ extends ConditionalLootFunction {
         super(conditions);
         this.source = source;
         this.operations = ImmutableList.copyOf(operations);
+    }
+
+    @Override
+    public LootFunctionType method_29321() {
+        return LootFunctionTypes.COPY_NBT;
     }
 
     private static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
@@ -85,10 +91,6 @@ extends ConditionalLootFunction {
 
     public static class Factory
     extends ConditionalLootFunction.Factory<CopyNbtLootFunction> {
-        public Factory() {
-            super(new Identifier("copy_nbt"), CopyNbtLootFunction.class);
-        }
-
         @Override
         public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);

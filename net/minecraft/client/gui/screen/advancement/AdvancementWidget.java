@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementProgress;
+import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.DrawableHelper;
@@ -31,9 +32,9 @@ extends DrawableHelper {
     private final AdvancementTab tab;
     private final Advancement advancement;
     private final AdvancementDisplay display;
-    private final Text title;
+    private final class_5348 title;
     private final int width;
-    private final List<Text> description;
+    private final List<class_5348> description;
     private final MinecraftClient client;
     private AdvancementWidget parent;
     private final List<AdvancementWidget> children = Lists.newArrayList();
@@ -54,22 +55,22 @@ extends DrawableHelper {
         int k = i > 1 ? client.textRenderer.getWidth("  ") + client.textRenderer.getWidth("0") * j * 2 + client.textRenderer.getWidth("/") : 0;
         int l = 29 + client.textRenderer.getWidth(this.title) + k;
         this.description = this.wrapDescription(display.getDescription().shallowCopy().formatted(display.getFrame().getTitleFormat()), l);
-        for (Text text : this.description) {
-            l = Math.max(l, client.textRenderer.getWidth(text));
+        for (class_5348 lv : this.description) {
+            l = Math.max(l, client.textRenderer.getWidth(lv));
         }
         this.width = l + 3 + 5;
     }
 
-    private static float method_27572(TextHandler textHandler, List<Text> list) {
+    private static float method_27572(TextHandler textHandler, List<class_5348> list) {
         return (float)list.stream().mapToDouble(textHandler::getWidth).max().orElse(0.0);
     }
 
-    private List<Text> wrapDescription(Text text, int width) {
+    private List<class_5348> wrapDescription(Text text, int width) {
         TextHandler textHandler = this.client.textRenderer.getTextHandler();
-        List<Text> list = null;
+        List<class_5348> list = null;
         float f = Float.MAX_VALUE;
         for (int i : field_24262) {
-            List<Text> list2 = textHandler.wrapLines(text, width - i, Style.EMPTY);
+            List<class_5348> list2 = textHandler.wrapLines(text, width - i, Style.EMPTY);
             float g = Math.abs(AdvancementWidget.method_27572(textHandler, list2) - (float)width);
             if (g <= 10.0f) {
                 return list2;

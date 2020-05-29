@@ -4,6 +4,7 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -70,7 +72,6 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
@@ -81,13 +82,17 @@ public abstract class World
 implements WorldAccess,
 AutoCloseable {
     protected static final Logger LOGGER = LogManager.getLogger();
+    public static final Codec<RegistryKey<World>> CODEC = Identifier.field_25139.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue);
+    public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.DIMENSION, new Identifier("overworld"));
+    public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.DIMENSION, new Identifier("the_nether"));
+    public static final RegistryKey<World> END = RegistryKey.of(Registry.DIMENSION, new Identifier("the_end"));
     private static final Direction[] DIRECTIONS = Direction.values();
     public final List<BlockEntity> blockEntities = Lists.newArrayList();
     public final List<BlockEntity> tickingBlockEntities = Lists.newArrayList();
     protected final List<BlockEntity> pendingBlockEntities = Lists.newArrayList();
     protected final List<BlockEntity> unloadedBlockEntities = Lists.newArrayList();
     private final Thread thread;
-    private final boolean field_24496;
+    private final boolean debugWorld;
     private int ambientDarkness;
     protected int lcgBlockSeed = new Random().nextInt();
     protected final int unusedIncrement = 1013904223;
@@ -103,11 +108,15 @@ AutoCloseable {
     protected boolean iteratingTickingBlockEntities;
     private final WorldBorder border;
     private final BiomeAccess biomeAccess;
+    private final RegistryKey<World> registryKey;
+    private final RegistryKey<DimensionType> dimensionRegistryKey;
 
-    protected World(MutableWorldProperties mutableWorldProperties, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l) {
-        this.profiler = supplier;
+    protected World(MutableWorldProperties mutableWorldProperties, RegistryKey<World> registryKey, RegistryKey<DimensionType> registryKey2, DimensionType dimensionType, Supplier<Profiler> profiler, boolean bl, boolean bl2, long l) {
+        this.profiler = profiler;
         this.properties = mutableWorldProperties;
         this.dimension = dimensionType;
+        this.registryKey = registryKey;
+        this.dimensionRegistryKey = registryKey2;
         this.isClient = bl;
         this.border = dimensionType.isShrunk() ? new WorldBorder(){
 
@@ -123,7 +132,7 @@ AutoCloseable {
         } : new WorldBorder();
         this.thread = Thread.currentThread();
         this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
-        this.field_24496 = bl2;
+        this.debugWorld = bl2;
     }
 
     @Override
@@ -180,13 +189,13 @@ AutoCloseable {
             BlockPos blockPos = pos.down();
             BlockState blockState2 = this.getBlockState(blockPos);
             VoxelShape voxelShape22 = predicate.test(blockState2) ? VoxelShapes.empty() : blockState2.getCollisionShape(this, blockPos);
-            double d = voxelShape22.getMaximum(Direction.Axis.Y);
+            double d = voxelShape22.getMax(Direction.Axis.Y);
             if (d >= 1.0) {
                 return d - 1.0;
             }
             return Double.NEGATIVE_INFINITY;
         }
-        return voxelShape.getMaximum(Direction.Axis.Y);
+        return voxelShape.getMax(Direction.Axis.Y);
     }
 
     public double method_26096(BlockPos blockPos, double d) {
@@ -195,7 +204,7 @@ AutoCloseable {
         for (int j = 0; j < i; ++j) {
             VoxelShape voxelShape = this.getBlockState(mutable).getCollisionShape(this, mutable);
             if (!voxelShape.isEmpty()) {
-                return (double)j + voxelShape.getMinimum(Direction.Axis.Y);
+                return (double)j + voxelShape.getMin(Direction.Axis.Y);
             }
             mutable.move(Direction.UP);
         }
@@ -240,7 +249,7 @@ AutoCloseable {
             }
             if (blockState2 == state) {
                 if (blockState != blockState2) {
-                    this.checkBlockRerender(pos, blockState, blockState2);
+                    this.scheduleBlockRerenderIfNeeded(pos, blockState, blockState2);
                 }
                 if ((flags & 2) != 0 && (!this.isClient || (flags & 4) == 0) && (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
                     this.updateListeners(pos, blockState, state, flags);
@@ -296,7 +305,7 @@ AutoCloseable {
 
     public abstract void updateListeners(BlockPos var1, BlockState var2, BlockState var3, int var4);
 
-    public void checkBlockRerender(BlockPos pos, BlockState old, BlockState updated) {
+    public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
     }
 
     public void updateNeighborsAlways(BlockPos pos, Block block) {
@@ -994,7 +1003,7 @@ AutoCloseable {
         CrashReportSection crashReportSection = report.addElement("Affected level", 1);
         crashReportSection.add("All players", () -> this.getPlayers().size() + " total; " + this.getPlayers());
         crashReportSection.add("Chunk stats", this.getChunkManager()::getDebugString);
-        crashReportSection.add("Level dimension", () -> this.method_27983().getValue().toString());
+        crashReportSection.add("Level dimension", () -> this.getRegistryKey().getValue().toString());
         try {
             this.properties.populateCrashReport(crashReportSection);
         } catch (Throwable throwable) {
@@ -1058,8 +1067,12 @@ AutoCloseable {
         return this.dimension;
     }
 
-    public RegistryKey<DimensionType> method_27983() {
-        return this.method_28380().getRegistry().getKey(this.dimension);
+    public RegistryKey<DimensionType> getDimensionRegistryKey() {
+        return this.dimensionRegistryKey;
+    }
+
+    public RegistryKey<World> getRegistryKey() {
+        return this.registryKey;
     }
 
     @Override
@@ -1100,10 +1113,8 @@ AutoCloseable {
     }
 
     public final boolean isDebugWorld() {
-        return this.field_24496;
+        return this.debugWorld;
     }
-
-    public abstract DimensionTracker method_28380();
 
     @Override
     public /* synthetic */ Chunk getChunk(int chunkX, int chunkZ) {

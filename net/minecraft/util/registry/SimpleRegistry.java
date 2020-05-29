@@ -12,9 +12,12 @@ import com.mojang.serialization.Lifecycle;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Int2ObjectBiMap;
@@ -68,12 +71,9 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public RegistryKey<T> getKey(T value) {
-        RegistryKey registryKey = (RegistryKey)this.entriesByKey.inverse().get(value);
-        if (registryKey == null) {
-            throw new IllegalStateException("Unregistered registry element: " + value + " in " + this);
-        }
-        return registryKey;
+    @Environment(value=EnvType.CLIENT)
+    public Optional<RegistryKey<T>> getKey(T value) {
+        return Optional.ofNullable(this.entriesByKey.inverse().get(value));
     }
 
     @Override
@@ -83,6 +83,7 @@ extends MutableRegistry<T> {
 
     @Override
     @Nullable
+    @Environment(value=EnvType.CLIENT)
     public T get(@Nullable RegistryKey<T> registryKey) {
         return (T)this.entriesByKey.get(registryKey);
     }
@@ -132,11 +133,6 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public boolean containsKey(RegistryKey<T> registryKey) {
-        return this.entriesByKey.containsKey(registryKey);
-    }
-
-    @Override
     public boolean containsId(int id) {
         return this.indexedEntries.containsId(id);
     }
@@ -150,8 +146,8 @@ extends MutableRegistry<T> {
             return simpleRegistry;
         }, simpleRegistry -> {
             ImmutableList.Builder builder = ImmutableList.builder();
-            for (Object object : simpleRegistry) {
-                builder.add(Pair.of(simpleRegistry.getKey(object), object));
+            for (Map.Entry entry : simpleRegistry.entriesByKey.entrySet()) {
+                builder.add(Pair.of(entry.getKey(), entry.getValue()));
             }
             return builder.build();
         });

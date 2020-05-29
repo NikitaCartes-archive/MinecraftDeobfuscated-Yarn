@@ -39,7 +39,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public class FilledMapItem
@@ -50,7 +49,7 @@ extends NetworkSyncedItem {
 
     public static ItemStack createMap(World world, int x, int z, byte scale, boolean showIcons, boolean unlimitedTracking) {
         ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
-        FilledMapItem.createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.method_27983());
+        FilledMapItem.createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.getRegistryKey());
         return itemStack;
     }
 
@@ -63,7 +62,7 @@ extends NetworkSyncedItem {
     public static MapState getOrCreateMapState(ItemStack map, World world) {
         MapState mapState = FilledMapItem.getMapState(map, world);
         if (mapState == null && world instanceof ServerWorld) {
-            mapState = FilledMapItem.createMapState(map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.method_27983());
+            mapState = FilledMapItem.createMapState(map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.getRegistryKey());
         }
         return mapState;
     }
@@ -73,7 +72,7 @@ extends NetworkSyncedItem {
         return compoundTag != null && compoundTag.contains("map", 99) ? compoundTag.getInt("map") : 0;
     }
 
-    private static MapState createMapState(ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<DimensionType> dimension) {
+    private static MapState createMapState(ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
         int i = world.getNextMapId();
         MapState mapState = new MapState(FilledMapItem.getMapName(i));
         mapState.init(x, z, scale, showIcons, unlimitedTracking, dimension);
@@ -87,7 +86,7 @@ extends NetworkSyncedItem {
     }
 
     public void updateColors(World world, Entity entity, MapState state) {
-        if (world.method_27983() != state.dimension || !(entity instanceof PlayerEntity)) {
+        if (world.getRegistryKey() != state.dimension || !(entity instanceof PlayerEntity)) {
             return;
         }
         int i = 1 << state.scale;
@@ -211,7 +210,7 @@ extends NetworkSyncedItem {
         if (mapState == null) {
             return;
         }
-        if (serverWorld.method_27983() != mapState.dimension) {
+        if (serverWorld.getRegistryKey() != mapState.dimension) {
             return;
         }
         int i = 1 << mapState.scale;
@@ -372,7 +371,7 @@ extends NetworkSyncedItem {
                 MapState mapState = FilledMapItem.getOrCreateMapState(context.getStack(), context.getWorld());
                 mapState.addBanner(context.getWorld(), context.getBlockPos());
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.method_29236(context.world.isClient);
         }
         return super.useOnBlock(context);
     }

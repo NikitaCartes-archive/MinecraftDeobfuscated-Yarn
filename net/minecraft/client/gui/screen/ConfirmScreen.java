@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -19,7 +20,7 @@ import net.minecraft.text.Text;
 public class ConfirmScreen
 extends Screen {
     private final Text message;
-    private final List<Text> messageSplit = Lists.newArrayList();
+    private final List<class_5348> messageSplit = Lists.newArrayList();
     protected Text yesTranslated;
     protected Text noTranslated;
     private int buttonEnableTimer;
@@ -56,8 +57,8 @@ extends Screen {
         this.renderBackground(matrices);
         this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         int i = 90;
-        for (Text text : this.messageSplit) {
-            this.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
+        for (class_5348 lv : this.messageSplit) {
+            this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 0xFFFFFF);
             i += this.textRenderer.fontHeight;
         }
         super.render(matrices, mouseX, mouseY, delta);

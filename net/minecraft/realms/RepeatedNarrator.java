@@ -30,7 +30,7 @@ public class RepeatedNarrator {
             return parameters;
         });
         if (parameters2.rateLimiter.tryAcquire(1)) {
-            NarratorManager.INSTANCE.onChatMessage(MessageType.SYSTEM, new LiteralText(message), Util.field_25140);
+            NarratorManager.INSTANCE.onChatMessage(MessageType.SYSTEM, new LiteralText(message), Util.NIL_UUID);
         }
     }
 
