@@ -1,11 +1,9 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.TargetFinder;
-import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -53,13 +51,18 @@ public class GoToRememberedPositionTask<T> extends Task<MobEntityWithAi> {
 		return (Vec3d)this.posRetriever.apply(entity.getBrain().getOptionalMemory(this.entityMemory).get());
 	}
 
-	private boolean isWalkTargetPresentAndFar(MobEntityWithAi entity) {
-		if (!entity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
+	private boolean isWalkTargetPresentAndFar(MobEntityWithAi mobEntityWithAi) {
+		if (!mobEntityWithAi.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
 			return false;
 		} else {
-			Optional<WalkTarget> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET);
-			LookTarget lookTarget = ((WalkTarget)optional.get()).getLookTarget();
-			return optional.isPresent() && !lookTarget.getBlockPos().isWithinDistance(this.getPos(entity), (double)this.range);
+			WalkTarget walkTarget = (WalkTarget)mobEntityWithAi.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+			if (walkTarget.getSpeed() != this.speed) {
+				return false;
+			} else {
+				Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(mobEntityWithAi.getPos());
+				Vec3d vec3d2 = this.getPos(mobEntityWithAi).subtract(mobEntityWithAi.getPos());
+				return vec3d.dotProduct(vec3d2) < 0.0;
+			}
 		}
 	}
 

@@ -16,6 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.time.Instant;
@@ -423,6 +425,13 @@ public class Util {
 		thread.setDaemon(true);
 		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 		thread.start();
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void method_29775(Path path, Path path2, Path path3) throws IOException {
+		Path path4 = path.relativize(path3);
+		Path path5 = path2.resolve(path4);
+		Files.copy(path3, path5);
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

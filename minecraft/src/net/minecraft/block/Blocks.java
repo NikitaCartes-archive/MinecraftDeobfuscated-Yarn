@@ -141,7 +141,8 @@ public class Blocks {
 	public static final Block IRON_ORE = register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).method_29292().strength(3.0F, 3.0F)));
 	public static final Block COAL_ORE = register("coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).method_29292().strength(3.0F, 3.0F)));
 	public static final Block NETHER_GOLD_ORE = register(
-		"nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).method_29292().strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_GOLD_ORE))
+		"nether_gold_ore",
+		new OreBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).method_29292().strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_GOLD_ORE))
 	);
 	public static final Block OAK_LOG = register("oak_log", createLogBlock(MaterialColor.WOOD, MaterialColor.SPRUCE));
 	public static final Block SPRUCE_LOG = register("spruce_log", createLogBlock(MaterialColor.SPRUCE, MaterialColor.BROWN));
@@ -2621,7 +2622,6 @@ public class Blocks {
 				.method_29292()
 				.strength(50.0F, 1200.0F)
 				.lightLevel(blockStatex -> RespawnAnchorBlock.getLightLevel(blockStatex, 15))
-				.nonOpaque()
 		)
 	);
 	public static final Block POTTED_CRIMSON_FUNGUS = register(

@@ -34,6 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5362;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -65,7 +66,6 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
@@ -139,7 +139,6 @@ import org.apache.logging.log4j.Logger;
 public class ServerWorld extends World implements ServerWorldAccess {
 	public static final BlockPos field_25144 = new BlockPos(100, 50, 0);
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final List<Entity> globalEntities = Lists.<Entity>newArrayList();
 	private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectLinkedOpenHashMap<>();
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
 	private final Queue<Entity> entitiesToLoad = Queues.<Entity>newArrayDeque();
@@ -360,60 +359,46 @@ public class ServerWorld extends World implements ServerWorldAccess {
 				this.enderDragonFight.tick();
 			}
 
-			profiler.push("global");
-
-			for (int j = 0; j < this.globalEntities.size(); j++) {
-				Entity entity = (Entity)this.globalEntities.get(j);
-				this.tickEntity(entityx -> {
-					entityx.age++;
-					entityx.tick();
-				}, entity);
-				if (entity.removed) {
-					this.globalEntities.remove(j--);
-				}
-			}
-
-			profiler.swap("regular");
 			this.inEntityTick = true;
 			ObjectIterator<Entry<Entity>> objectIterator = this.entitiesById.int2ObjectEntrySet().iterator();
 
 			while (objectIterator.hasNext()) {
 				Entry<Entity> entry = (Entry<Entity>)objectIterator.next();
-				Entity entity2 = (Entity)entry.getValue();
-				Entity entity3 = entity2.getVehicle();
-				if (!this.server.shouldSpawnAnimals() && (entity2 instanceof AnimalEntity || entity2 instanceof WaterCreatureEntity)) {
-					entity2.remove();
+				Entity entity = (Entity)entry.getValue();
+				Entity entity2 = entity.getVehicle();
+				if (!this.server.shouldSpawnAnimals() && (entity instanceof AnimalEntity || entity instanceof WaterCreatureEntity)) {
+					entity.remove();
 				}
 
-				if (!this.server.shouldSpawnNpcs() && entity2 instanceof Npc) {
-					entity2.remove();
+				if (!this.server.shouldSpawnNpcs() && entity instanceof Npc) {
+					entity.remove();
 				}
 
 				profiler.push("checkDespawn");
-				if (!entity2.removed) {
-					entity2.checkDespawn();
+				if (!entity.removed) {
+					entity.checkDespawn();
 				}
 
 				profiler.pop();
-				if (entity3 != null) {
-					if (!entity3.removed && entity3.hasPassenger(entity2)) {
+				if (entity2 != null) {
+					if (!entity2.removed && entity2.hasPassenger(entity)) {
 						continue;
 					}
 
-					entity2.stopRiding();
+					entity.stopRiding();
 				}
 
 				profiler.push("tick");
-				if (!entity2.removed && !(entity2 instanceof EnderDragonPart)) {
-					this.tickEntity(this::tickEntity, entity2);
+				if (!entity.removed && !(entity instanceof EnderDragonPart)) {
+					this.tickEntity(this::tickEntity, entity);
 				}
 
 				profiler.pop();
 				profiler.push("remove");
-				if (entity2.removed) {
-					this.removeEntityFromChunk(entity2);
+				if (entity.removed) {
+					this.removeEntityFromChunk(entity);
 					objectIterator.remove();
-					this.unloadEntity(entity2);
+					this.unloadEntity(entity);
 				}
 
 				profiler.pop();
@@ -421,12 +406,11 @@ public class ServerWorld extends World implements ServerWorldAccess {
 
 			this.inEntityTick = false;
 
-			Entity entity;
-			while ((entity = (Entity)this.entitiesToLoad.poll()) != null) {
-				this.loadEntityUnchecked(entity);
+			Entity entity3;
+			while ((entity3 = (Entity)this.entitiesToLoad.poll()) != null) {
+				this.loadEntityUnchecked(entity3);
 			}
 
-			profiler.pop();
 			this.tickBlockEntities();
 		}
 
@@ -479,7 +463,10 @@ public class ServerWorld extends World implements ServerWorldAccess {
 					this.spawnEntity(skeletonHorseEntity);
 				}
 
-				this.addLightning(new LightningEntity(this, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, bl2));
+				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this);
+				lightningEntity.method_29495(Vec3d.ofBottomCenter(blockPos));
+				lightningEntity.method_29498(bl2);
+				this.spawnEntity(lightningEntity);
 			}
 		}
 
@@ -918,15 +905,6 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		this.updateSleepingPlayers();
 	}
 
-	public void addLightning(LightningEntity lightningEntity) {
-		this.globalEntities.add(lightningEntity);
-		this.server
-			.getPlayerManager()
-			.sendToAround(
-				null, lightningEntity.getX(), lightningEntity.getY(), lightningEntity.getZ(), 512.0, this.getRegistryKey(), new EntitySpawnGlobalS2CPacket(lightningEntity)
-			);
-	}
-
 	@Override
 	public void setBlockBreakingInfo(int entityId, BlockPos pos, int progress) {
 		for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
@@ -1006,18 +984,15 @@ public class ServerWorld extends World implements ServerWorldAccess {
 	public Explosion createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
-		double x,
-		double y,
-		double z,
-		float power,
-		boolean createFire,
+		@Nullable class_5362 arg,
+		double d,
+		double e,
+		double f,
+		float g,
+		boolean bl,
 		Explosion.DestructionType destructionType
 	) {
-		Explosion explosion = new Explosion(this, entity, x, y, z, power, createFire, destructionType);
-		if (damageSource != null) {
-			explosion.setDamageSource(damageSource);
-		}
-
+		Explosion explosion = new Explosion(this, entity, damageSource, arg, d, e, f, g, bl, destructionType);
 		explosion.collectBlocksAndDamageEntities();
 		explosion.affectWorld(false);
 		if (destructionType == Explosion.DestructionType.NONE) {
@@ -1025,9 +1000,9 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		}
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			if (serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0) {
+			if (serverPlayerEntity.squaredDistanceTo(d, e, f) < 4096.0) {
 				serverPlayerEntity.networkHandler
-					.sendPacket(new ExplosionS2CPacket(x, y, z, power, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
+					.sendPacket(new ExplosionS2CPacket(d, e, f, g, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
 			}
 		}
 
@@ -1306,16 +1281,16 @@ public class ServerWorld extends World implements ServerWorldAccess {
 			writer.write(String.format("fluid_ticks: %d\n", this.getFluidTickScheduler().getTicks()));
 			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().toDumpString() + "\n");
 			writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().getPendingTasks()));
-		} catch (Throwable var165) {
-			path2 = var165;
-			throw var165;
+		} catch (Throwable var121) {
+			path2 = var121;
+			throw var121;
 		} finally {
 			if (writer != null) {
 				if (path2 != null) {
 					try {
 						writer.close();
-					} catch (Throwable var154) {
-						path2.addSuppressed(var154);
+					} catch (Throwable var112) {
+						path2.addSuppressed(var112);
 					}
 				} else {
 					writer.close();
@@ -1326,20 +1301,20 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
 		this.addDetailsToCrashReport(crashReport);
 		Writer writer2 = Files.newBufferedWriter(path.resolve("example_crash.txt"));
-		Throwable var170 = null;
+		Throwable var126 = null;
 
 		try {
 			writer2.write(crashReport.asString());
-		} catch (Throwable var159) {
-			var170 = var159;
-			throw var159;
+		} catch (Throwable var116) {
+			var126 = var116;
+			throw var116;
 		} finally {
 			if (writer2 != null) {
-				if (var170 != null) {
+				if (var126 != null) {
 					try {
 						writer2.close();
-					} catch (Throwable var153) {
-						var170.addSuppressed(var153);
+					} catch (Throwable var111) {
+						var126.addSuppressed(var111);
 					}
 				} else {
 					writer2.close();
@@ -1349,20 +1324,20 @@ public class ServerWorld extends World implements ServerWorldAccess {
 
 		Path path2x = path.resolve("chunks.csv");
 		Writer writer3 = Files.newBufferedWriter(path2x);
-		Throwable var173 = null;
+		Throwable var129 = null;
 
 		try {
 			threadedAnvilChunkStorage.dump(writer3);
-		} catch (Throwable var158) {
-			var173 = var158;
-			throw var158;
+		} catch (Throwable var115) {
+			var129 = var115;
+			throw var115;
 		} finally {
 			if (writer3 != null) {
-				if (var173 != null) {
+				if (var129 != null) {
 					try {
 						writer3.close();
-					} catch (Throwable var152) {
-						var173.addSuppressed(var152);
+					} catch (Throwable var110) {
+						var129.addSuppressed(var110);
 					}
 				} else {
 					writer3.close();
@@ -1372,20 +1347,20 @@ public class ServerWorld extends World implements ServerWorldAccess {
 
 		Path path3 = path.resolve("entities.csv");
 		Writer writer4 = Files.newBufferedWriter(path3);
-		Throwable var176 = null;
+		Throwable var132 = null;
 
 		try {
 			dumpEntities(writer4, this.entitiesById.values());
-		} catch (Throwable var157) {
-			var176 = var157;
-			throw var157;
+		} catch (Throwable var114) {
+			var132 = var114;
+			throw var114;
 		} finally {
 			if (writer4 != null) {
-				if (var176 != null) {
+				if (var132 != null) {
 					try {
 						writer4.close();
-					} catch (Throwable var151) {
-						var176.addSuppressed(var151);
+					} catch (Throwable var109) {
+						var132.addSuppressed(var109);
 					}
 				} else {
 					writer4.close();
@@ -1393,48 +1368,25 @@ public class ServerWorld extends World implements ServerWorldAccess {
 			}
 		}
 
-		Path path4 = path.resolve("global_entities.csv");
+		Path path4 = path.resolve("block_entities.csv");
 		Writer writer5 = Files.newBufferedWriter(path4);
-		Throwable writer6 = null;
+		Throwable var8 = null;
 
 		try {
-			dumpEntities(writer5, this.globalEntities);
-		} catch (Throwable var156) {
-			writer6 = var156;
-			throw var156;
+			this.dumpBlockEntities(writer5);
+		} catch (Throwable var113) {
+			var8 = var113;
+			throw var113;
 		} finally {
 			if (writer5 != null) {
-				if (writer6 != null) {
+				if (var8 != null) {
 					try {
 						writer5.close();
-					} catch (Throwable var150) {
-						writer6.addSuppressed(var150);
+					} catch (Throwable var108) {
+						var8.addSuppressed(var108);
 					}
 				} else {
 					writer5.close();
-				}
-			}
-		}
-
-		Path path5 = path.resolve("block_entities.csv");
-		Writer writer6x = Files.newBufferedWriter(path5);
-		Throwable var9 = null;
-
-		try {
-			this.dumpBlockEntities(writer6x);
-		} catch (Throwable var155) {
-			var9 = var155;
-			throw var155;
-		} finally {
-			if (writer6x != null) {
-				if (var9 != null) {
-					try {
-						writer6x.close();
-					} catch (Throwable var149) {
-						var9.addSuppressed(var149);
-					}
-				} else {
-					writer6x.close();
 				}
 			}
 		}

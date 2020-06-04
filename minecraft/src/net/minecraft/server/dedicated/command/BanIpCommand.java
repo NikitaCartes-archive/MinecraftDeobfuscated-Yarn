@@ -28,9 +28,7 @@ public class BanIpCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("ban-ip")
-				.requires(
-					serverCommandSource -> serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled() && serverCommandSource.hasPermissionLevel(3)
-				)
+				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("target", StringArgumentType.word())
 						.executes(commandContext -> checkIp(commandContext.getSource(), StringArgumentType.getString(commandContext, "target"), null))

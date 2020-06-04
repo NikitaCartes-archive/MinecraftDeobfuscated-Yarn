@@ -94,7 +94,6 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
@@ -173,7 +172,6 @@ public enum NetworkState {
 				new NetworkState.PacketHandler()
 					.register(EntitySpawnS2CPacket.class, EntitySpawnS2CPacket::new)
 					.register(ExperienceOrbSpawnS2CPacket.class, ExperienceOrbSpawnS2CPacket::new)
-					.register(EntitySpawnGlobalS2CPacket.class, EntitySpawnGlobalS2CPacket::new)
 					.register(MobSpawnS2CPacket.class, MobSpawnS2CPacket::new)
 					.register(PaintingSpawnS2CPacket.class, PaintingSpawnS2CPacket::new)
 					.register(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)

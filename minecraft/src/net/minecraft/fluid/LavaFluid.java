@@ -46,9 +46,9 @@ public abstract class LavaFluid extends FlowableFluid {
 		BlockPos blockPos = pos.up();
 		if (world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
 			if (random.nextInt(100) == 0) {
-				double d = (double)((float)pos.getX() + random.nextFloat());
-				double e = (double)(pos.getY() + 1);
-				double f = (double)((float)pos.getZ() + random.nextFloat());
+				double d = (double)pos.getX() + random.nextDouble();
+				double e = (double)pos.getY() + 1.0;
+				double f = (double)pos.getZ() + random.nextDouble();
 				world.addParticle(ParticleTypes.LAVA, d, e, f, 0.0, 0.0, 0.0);
 				world.playSound(d, e, f, SoundEvents.BLOCK_LAVA_POP, SoundCategory.BLOCKS, 0.2F + random.nextFloat() * 0.2F, 0.9F + random.nextFloat() * 0.15F, false);
 			}

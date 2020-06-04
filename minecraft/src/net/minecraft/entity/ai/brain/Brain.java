@@ -180,6 +180,10 @@ public class Brain<E extends LivingEntity> {
 		return ((Optional)this.memories.get(type)).map(Memory::getValue);
 	}
 
+	public <U> boolean method_29519(MemoryModuleType<U> memoryModuleType, U object) {
+		return !this.hasMemoryModule(memoryModuleType) ? false : this.getOptionalMemory(memoryModuleType).filter(object2 -> object2.equals(object)).isPresent();
+	}
+
 	public boolean isMemoryInState(MemoryModuleType<?> type, MemoryModuleState state) {
 		Optional<? extends Memory<?>> optional = (Optional<? extends Memory<?>>)this.memories.get(type);
 		return optional == null

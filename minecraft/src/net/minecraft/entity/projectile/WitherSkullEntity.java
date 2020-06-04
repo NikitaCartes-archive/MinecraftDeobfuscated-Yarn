@@ -60,9 +60,11 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 		if (!this.world.isClient) {
 			Entity entity = entityHitResult.getEntity();
 			Entity entity2 = this.getOwner();
+			boolean bl;
 			if (entity2 instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity2;
-				if (entity.damage(DamageSource.method_29238(this, livingEntity), 8.0F)) {
+				bl = entity.damage(DamageSource.method_29238(this, livingEntity), 8.0F);
+				if (bl) {
 					if (entity.isAlive()) {
 						this.dealDamage(livingEntity, entity);
 					} else {
@@ -70,10 +72,10 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 					}
 				}
 			} else {
-				entity.damage(DamageSource.MAGIC, 5.0F);
+				bl = entity.damage(DamageSource.MAGIC, 5.0F);
 			}
 
-			if (entity instanceof LivingEntity) {
+			if (bl && entity instanceof LivingEntity) {
 				int i = 0;
 				if (this.world.getDifficulty() == Difficulty.NORMAL) {
 					i = 10;

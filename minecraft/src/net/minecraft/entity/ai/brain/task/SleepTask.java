@@ -13,7 +13,6 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.dynamic.GlobalPos;
-import net.minecraft.util.dynamic.Timestamp;
 import net.minecraft.util.math.BlockPos;
 
 public class SleepTask extends Task<LivingEntity> {
@@ -33,9 +32,9 @@ public class SleepTask extends Task<LivingEntity> {
 			if (world.getRegistryKey() != globalPos.getDimension()) {
 				return false;
 			} else {
-				Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
+				Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
 				if (optional.isPresent()) {
-					long l = world.getTime() - ((Timestamp)optional.get()).getTime();
+					long l = world.getTime() - (Long)optional.get();
 					if (l > 0L && l < 100L) {
 						return false;
 					}

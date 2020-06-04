@@ -32,8 +32,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.SaveProperties;
+import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -202,7 +204,7 @@ public class TitleScreen extends Screen {
 				200,
 				20,
 				new TranslatableText("menu.playdemo"),
-				buttonWidget -> this.client.startIntegratedServer("Demo_World", MinecraftServer.DEMO_LEVEL_INFO)
+				buttonWidget -> this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, DimensionTracker.create(), GeneratorOptions.DEMO_CONFIG)
 			)
 		);
 		this.buttonResetDemo = this.addButton(
@@ -216,14 +218,14 @@ public class TitleScreen extends Screen {
 					LevelStorage levelStorage = this.client.getLevelStorage();
 
 					try (LevelStorage.Session session = levelStorage.createSession("Demo_World")) {
-						SaveProperties savePropertiesx = session.readLevelProperties();
-						if (savePropertiesx != null) {
+						LevelSummary levelSummaryx = session.method_29584();
+						if (levelSummaryx != null) {
 							this.client
 								.openScreen(
 									new ConfirmScreen(
 										this::onDemoDeletionConfirmed,
 										new TranslatableText("selectWorld.deleteQuestion"),
-										new TranslatableText("selectWorld.deleteWarning", savePropertiesx.getLevelName()),
+										new TranslatableText("selectWorld.deleteWarning", levelSummaryx.getDisplayName()),
 										new TranslatableText("selectWorld.deleteButton"),
 										ScreenTexts.CANCEL
 									)
@@ -238,8 +240,8 @@ public class TitleScreen extends Screen {
 		);
 
 		try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
-			SaveProperties saveProperties = session.readLevelProperties();
-			if (saveProperties == null) {
+			LevelSummary levelSummary = session.method_29584();
+			if (levelSummary == null) {
 				this.buttonResetDemo.active = false;
 			}
 		} catch (IOException var16) {

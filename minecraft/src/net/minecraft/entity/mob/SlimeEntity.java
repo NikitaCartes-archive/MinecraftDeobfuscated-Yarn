@@ -186,7 +186,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Override
 	public void remove() {
 		int i = this.getSize();
-		if (!this.world.isClient && i > 1 && this.getHealth() <= 0.0F) {
+		if (!this.world.isClient && i > 1 && this.method_29504()) {
 			Text text = this.getCustomName();
 			boolean bl = this.isAiDisabled();
 			float f = (float)i / 4.0F;

@@ -1,6 +1,5 @@
 package net.minecraft.client.world;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -29,7 +28,6 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.EntityTrackingSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -76,7 +74,6 @@ import net.minecraft.world.level.ColorResolver;
 
 @Environment(EnvType.CLIENT)
 public class ClientWorld extends World {
-	private final List<Entity> globalEntities = Lists.<Entity>newArrayList();
 	private final Int2ObjectMap<Entity> regularEntities = new Int2ObjectOpenHashMap<>();
 	private final ClientPlayNetworkHandler netHandler;
 	private final WorldRenderer worldRenderer;
@@ -152,49 +149,34 @@ public class ClientWorld extends World {
 	}
 
 	public Iterable<Entity> getEntities() {
-		return Iterables.concat(this.regularEntities.values(), this.globalEntities);
+		return this.regularEntities.values();
 	}
 
 	public void tickEntities() {
 		Profiler profiler = this.getProfiler();
 		profiler.push("entities");
-		profiler.push("global");
-
-		for (int i = 0; i < this.globalEntities.size(); i++) {
-			Entity entity = (Entity)this.globalEntities.get(i);
-			this.tickEntity(entityx -> {
-				entityx.age++;
-				entityx.tick();
-			}, entity);
-			if (entity.removed) {
-				this.globalEntities.remove(i--);
-			}
-		}
-
-		profiler.swap("regular");
 		ObjectIterator<Entry<Entity>> objectIterator = this.regularEntities.int2ObjectEntrySet().iterator();
 
 		while (objectIterator.hasNext()) {
 			Entry<Entity> entry = (Entry<Entity>)objectIterator.next();
-			Entity entity2 = (Entity)entry.getValue();
-			if (!entity2.hasVehicle()) {
+			Entity entity = (Entity)entry.getValue();
+			if (!entity.hasVehicle()) {
 				profiler.push("tick");
-				if (!entity2.removed) {
-					this.tickEntity(this::tickEntity, entity2);
+				if (!entity.removed) {
+					this.tickEntity(this::tickEntity, entity);
 				}
 
 				profiler.pop();
 				profiler.push("remove");
-				if (entity2.removed) {
+				if (entity.removed) {
 					objectIterator.remove();
-					this.finishRemovingEntity(entity2);
+					this.finishRemovingEntity(entity);
 				}
 
 				profiler.pop();
 			}
 		}
 
-		profiler.pop();
 		this.tickBlockEntities();
 		profiler.pop();
 	}
@@ -289,10 +271,6 @@ public class ClientWorld extends World {
 
 	public int getRegularEntityCount() {
 		return this.regularEntities.size();
-	}
-
-	public void addLightning(LightningEntity lightning) {
-		this.globalEntities.add(lightning);
 	}
 
 	public void addPlayer(int id, AbstractClientPlayerEntity player) {
@@ -404,9 +382,9 @@ public class ClientWorld extends World {
 						if (biomeParticleConfig.shouldAddParticle(this.random)) {
 							this.addParticle(
 								biomeParticleConfig.getParticleType(),
-								(double)((float)pos.getX() + this.random.nextFloat()),
-								(double)((float)pos.getY() + this.random.nextFloat()),
-								(double)((float)pos.getZ() + this.random.nextFloat()),
+								(double)pos.getX() + this.random.nextDouble(),
+								(double)pos.getY() + this.random.nextDouble(),
+								(double)pos.getZ() + this.random.nextDouble(),
 								0.0,
 								0.0,
 								0.0
@@ -501,7 +479,7 @@ public class ClientWorld extends World {
 	@Override
 	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float f, float g, boolean bl) {
 		double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
-		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, f, g, (float)x, (float)y, (float)z);
+		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, f, g, x, y, z);
 		if (bl && d > 100.0) {
 			double e = Math.sqrt(d) / 40.0;
 			this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));

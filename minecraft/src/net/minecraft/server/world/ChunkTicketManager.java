@@ -169,7 +169,7 @@ public abstract class ChunkTicketManager {
 	}
 
 	protected void setChunkForced(ChunkPos pos, boolean forced) {
-		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.FORCED, 31, pos);
+		ChunkTicket<ChunkPos> chunkTicket = new ChunkTicket<>(ChunkTicketType.field_14031, 31, pos);
 		if (forced) {
 			this.addTicket(pos.toLong(), chunkTicket);
 		} else {
@@ -177,9 +177,9 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	public void handleChunkEnter(ChunkSectionPos pos, ServerPlayerEntity serverPlayerEntity) {
+	public void handleChunkEnter(ChunkSectionPos pos, ServerPlayerEntity player) {
 		long l = pos.toChunkPos().toLong();
-		this.playersByChunkPos.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
+		this.playersByChunkPos.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(player);
 		this.distanceFromNearestPlayerTracker.updateLevel(l, 0, true);
 		this.nearbyChunkTicketUpdater.updateLevel(l, 0, true);
 	}

@@ -33,7 +33,7 @@ public class PointOfInterestSet {
 		return RecordCodecBuilder.<PointOfInterestSet>create(
 				instance -> instance.group(
 							RecordCodecBuilder.point(runnable),
-							Codec.BOOL.fieldOf("Valid").forGetter(pointOfInterestSet -> pointOfInterestSet.valid),
+							Codec.BOOL.optionalFieldOf("Valid", Boolean.valueOf(false)).forGetter(pointOfInterestSet -> pointOfInterestSet.valid),
 							PointOfInterest.method_28359(runnable)
 								.listOf()
 								.fieldOf("Records")

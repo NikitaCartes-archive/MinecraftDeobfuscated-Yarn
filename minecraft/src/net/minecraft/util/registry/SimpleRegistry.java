@@ -3,7 +3,9 @@ package net.minecraft.util.registry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
@@ -15,8 +17,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraft.class_5380;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Int2ObjectBiMap;
@@ -28,7 +29,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	protected final Int2ObjectBiMap<T> indexedEntries = new Int2ObjectBiMap<>(256);
 	protected final BiMap<Identifier, T> entriesById = HashBiMap.create();
-	protected final BiMap<RegistryKey<T>, T> entriesByKey = HashBiMap.create();
+	private final BiMap<RegistryKey<T>, T> entriesByKey = HashBiMap.create();
+	private final Set<RegistryKey<T>> field_25489 = Sets.newIdentityHashSet();
 	protected Object[] randomEntries;
 	private int nextId;
 
@@ -66,7 +68,6 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return (Identifier)this.entriesById.inverse().get(entry);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public Optional<RegistryKey<T>> getKey(T value) {
 		return Optional.ofNullable(this.entriesByKey.inverse().get(value));
@@ -78,7 +79,6 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	@Override
 	public T get(@Nullable RegistryKey<T> registryKey) {
 		return (T)this.entriesByKey.get(registryKey);
@@ -110,6 +110,10 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return Collections.unmodifiableSet(this.entriesById.keySet());
 	}
 
+	public Set<Entry<RegistryKey<T>, T>> method_29722() {
+		return Collections.unmodifiableMap(this.entriesByKey).entrySet();
+	}
+
 	@Nullable
 	public T getRandom(Random random) {
 		if (this.randomEntries == null) {
@@ -134,6 +138,14 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return this.indexedEntries.containsId(id);
 	}
 
+	public boolean method_29723(RegistryKey<T> registryKey) {
+		return this.field_25489.contains(registryKey);
+	}
+
+	public void method_29725(RegistryKey<T> registryKey) {
+		this.field_25489.add(registryKey);
+	}
+
 	public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
 		return Codec.mapPair(Identifier.field_25139.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("key"), codec.fieldOf("element"))
 			.codec()
@@ -147,13 +159,32 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 				return simpleRegistry;
 			}, simpleRegistry -> {
-				Builder<Pair<RegistryKey<T>, T>> builder = ImmutableList.builder();
+				com.google.common.collect.ImmutableList.Builder<Pair<RegistryKey<T>, T>> builder = ImmutableList.builder();
 
-				for (Entry<RegistryKey<T>, T> entry : simpleRegistry.entriesByKey.entrySet()) {
-					builder.add(Pair.of((RegistryKey<T>)entry.getKey(), (T)entry.getValue()));
+				for (T object : simpleRegistry.indexedEntries) {
+					builder.add(Pair.of((RegistryKey<T>)simpleRegistry.getKey(object).get(), object));
 				}
 
 				return builder.build();
 			});
+	}
+
+	public static <T> Codec<SimpleRegistry<T>> method_29721(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
+		return class_5380.method_29745(registryKey, lifecycle, codec);
+	}
+
+	public static <T> Codec<SimpleRegistry<T>> method_29724(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
+		return Codec.unboundedMap(Identifier.field_25139.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue), codec).xmap(map -> {
+			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
+			map.forEach((registryKeyxx, object) -> {
+				simpleRegistry.set(simpleRegistry.nextId, registryKeyxx, object);
+				simpleRegistry.method_29725(registryKeyxx);
+			});
+			return simpleRegistry;
+		}, simpleRegistry -> {
+			Builder<RegistryKey<T>, T> builder = ImmutableMap.builder();
+			simpleRegistry.entriesByKey.entrySet().stream().filter(entry -> simpleRegistry.method_29723((RegistryKey<T>)entry.getKey())).forEach(builder::put);
+			return builder.build();
+		});
 	}
 }

@@ -79,8 +79,8 @@ public interface WorldAccess extends EntityView, WorldView, ModifiableTestableWo
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
-		return EntityView.super.intersectsEntities(entity, shape);
+	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
+		return EntityView.super.intersectsEntities(except, shape);
 	}
 
 	@Override

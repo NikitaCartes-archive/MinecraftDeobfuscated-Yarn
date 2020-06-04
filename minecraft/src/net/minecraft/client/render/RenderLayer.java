@@ -57,7 +57,7 @@ public abstract class RenderLayer extends RenderPhase {
 		"translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, createTranslucentPhaseData()
 	);
 	private static final RenderLayer TRANSLUCENT_MOVING_BLOCK = of(
-		"translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, false, method_29381()
+		"translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, true, method_29381()
 	);
 	private static final RenderLayer TRANSLUCENT_NO_CRUMBLING = of(
 		"translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, true, createTranslucentPhaseData()
@@ -82,7 +82,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_TRANSPARENCY)
+			.transparency(field_25485)
 			.texturing(GLINT_TEXTURING)
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
@@ -97,7 +97,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_TRANSPARENCY)
+			.transparency(field_25485)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
@@ -116,6 +116,20 @@ public abstract class RenderLayer extends RenderPhase {
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
+	private static final RenderLayer GLINT_DIRECT = of(
+		"glint_direct",
+		VertexFormats.POSITION_TEXTURE,
+		7,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.writeMaskState(COLOR_MASK)
+			.cull(DISABLE_CULLING)
+			.depthTest(EQUAL_DEPTH_TEST)
+			.transparency(field_25485)
+			.texturing(GLINT_TEXTURING)
+			.build(false)
+	);
 	private static final RenderLayer ENTITY_GLINT = of(
 		"entity_glint",
 		VertexFormats.POSITION_TEXTURE,
@@ -127,6 +141,20 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
+			.texturing(ENTITY_GLINT_TEXTURING)
+			.build(false)
+	);
+	private static final RenderLayer ENTITY_GLINT_DIRECT = of(
+		"entity_glint_direct",
+		VertexFormats.POSITION_TEXTURE,
+		7,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.writeMaskState(COLOR_MASK)
+			.cull(DISABLE_CULLING)
+			.depthTest(EQUAL_DEPTH_TEST)
+			.transparency(field_25485)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
@@ -147,7 +175,7 @@ public abstract class RenderLayer extends RenderPhase {
 		RenderLayer.MultiPhaseParameters.builder()
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
 			.layering(VIEW_OFFSET_Z_LAYERING)
-			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.transparency(ITEM_TRANSPARENCY)
 			.writeMaskState(ALL_MASK)
 			.build(false)
 	);
@@ -382,6 +410,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getEntityAlpha(Identifier texture, float alpha) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+			.transparency(field_25486)
 			.texture(new RenderPhase.Texture(texture, false, false))
 			.alpha(new RenderPhase.Alpha(alpha))
 			.cull(DISABLE_CULLING)
@@ -466,8 +495,16 @@ public abstract class RenderLayer extends RenderPhase {
 		return GLINT;
 	}
 
+	public static RenderLayer method_29706() {
+		return GLINT_DIRECT;
+	}
+
 	public static RenderLayer getEntityGlint() {
 		return ENTITY_GLINT;
+	}
+
+	public static RenderLayer method_29707() {
+		return ENTITY_GLINT_DIRECT;
 	}
 
 	public static RenderLayer getBlockBreaking(Identifier texture) {

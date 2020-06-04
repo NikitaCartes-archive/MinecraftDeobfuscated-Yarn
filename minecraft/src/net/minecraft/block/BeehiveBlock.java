@@ -12,6 +12,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -91,7 +92,7 @@ public class BeehiveBlock extends BlockWithEntity {
 
 			for (BeeEntity beeEntity : list) {
 				if (beeEntity.getTarget() == null) {
-					beeEntity.setBeeAttacker((Entity)list2.get(world.random.nextInt(i)));
+					beeEntity.setTarget((LivingEntity)list2.get(world.random.nextInt(i)));
 				}
 			}
 		}

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.class_5355;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.Durations;
@@ -37,6 +38,7 @@ import net.minecraft.util.math.IntRange;
 
 public class HoglinBrain {
 	private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
+	private static final IntRange field_25383 = IntRange.between(5, 16);
 
 	protected static Brain<?> create(Brain<HoglinEntity> brain) {
 		addCoreTasks(brain);
@@ -66,6 +68,7 @@ public class HoglinBrain {
 					HoglinEntity::isAdult, (Task<? super MobEntityWithAi>)GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4F, 8, false)
 				),
 				new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0F), IntRange.between(30, 60)),
+				new class_5355(field_25383, 0.6F),
 				makeRandomWalkTask()
 			)
 		);
@@ -93,7 +96,7 @@ public class HoglinBrain {
 			Activity.AVOID,
 			10,
 			ImmutableList.of(
-				GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, 1.0F, 15, false),
+				GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, 1.3F, 15, false),
 				makeRandomWalkTask(),
 				new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0F), IntRange.between(30, 60)),
 				new ForgetTask(HoglinBrain::method_25947, MemoryModuleType.AVOID_TARGET)
@@ -142,6 +145,7 @@ public class HoglinBrain {
 
 	private static void avoid(HoglinEntity hoglin, LivingEntity target) {
 		hoglin.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+		hoglin.getBrain().forget(MemoryModuleType.WALK_TARGET);
 		hoglin.getBrain().remember(MemoryModuleType.AVOID_TARGET, target, (long)AVOID_MEMORY_DURATION.choose(hoglin.world.random));
 	}
 
@@ -206,9 +210,11 @@ public class HoglinBrain {
 	}
 
 	private static void setAttackTargetIfCloser(HoglinEntity hoglin, LivingEntity targetCandidate) {
-		Optional<LivingEntity> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
-		LivingEntity livingEntity = LookTargetUtil.getCloserEntity(hoglin, optional, targetCandidate);
-		setAttackTarget(hoglin, livingEntity);
+		if (!isNearPlayer(hoglin)) {
+			Optional<LivingEntity> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
+			LivingEntity livingEntity = LookTargetUtil.getCloserEntity(hoglin, optional, targetCandidate);
+			setAttackTarget(hoglin, livingEntity);
+		}
 	}
 
 	private static void playSound(HoglinEntity hoglin) {

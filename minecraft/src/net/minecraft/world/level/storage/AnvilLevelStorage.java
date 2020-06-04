@@ -8,8 +8,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.class_5359;
+import net.minecraft.class_5382;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.ChunkPos;
@@ -19,6 +24,7 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.storage.RegionFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +52,9 @@ public class AnvilLevelStorage {
 
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
-		SaveProperties saveProperties = session.readLevelProperties();
+		DimensionTracker.Modifiable modifiable = DimensionTracker.create();
+		class_5382<Tag> lv = class_5382.method_29753(NbtOps.INSTANCE, ResourceManager.class_5353.field_25351, modifiable);
+		SaveProperties saveProperties = session.readLevelProperties(lv, class_5359.field_25393);
 		long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
 		BiomeSource biomeSource;
 		if (saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld()) {
@@ -59,7 +67,7 @@ public class AnvilLevelStorage {
 		convertRegions(new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
 		convertRegions(new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);
 		makeMcrLevelDatBackup(session);
-		session.method_27425(saveProperties);
+		session.method_27425(modifiable, saveProperties);
 		return true;
 	}
 

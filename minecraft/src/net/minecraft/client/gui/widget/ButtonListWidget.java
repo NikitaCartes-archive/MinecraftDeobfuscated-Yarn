@@ -2,6 +2,7 @@ package net.minecraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -40,6 +41,18 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 	@Override
 	protected int getScrollbarPositionX() {
 		return super.getScrollbarPositionX() + 32;
+	}
+
+	public Optional<AbstractButtonWidget> method_29624(double d, double e) {
+		for (ButtonListWidget.ButtonEntry buttonEntry : this.children()) {
+			for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
+				if (abstractButtonWidget.isMouseOver(d, e)) {
+					return Optional.of(abstractButtonWidget);
+				}
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -3,13 +3,17 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.ImmutableList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5354;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.GoToEntityTargetGoal;
 import net.minecraft.entity.ai.goal.IronGolemLookGoal;
@@ -39,17 +43,22 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class IronGolemEntity extends GolemEntity {
+public class IronGolemEntity extends GolemEntity implements class_5354 {
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private int attackTicksLeft;
 	private int lookingAtVillagerTicksLeft;
+	private static final IntRange field_25365 = Durations.betweenSeconds(20, 39);
+	private int field_25366;
+	private UUID field_25367;
 
 	public IronGolemEntity(EntityType<? extends IronGolemEntity> entityType, World world) {
 		super(entityType, world);
@@ -67,6 +76,7 @@ public class IronGolemEntity extends GolemEntity {
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new TrackIronGolemTargetGoal(this));
 		this.targetSelector.add(2, new RevengeGoal(this));
+		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::method_29515));
 		this.targetSelector
 			.add(
 				3,
@@ -131,6 +141,10 @@ public class IronGolemEntity extends GolemEntity {
 					);
 			}
 		}
+
+		if (!this.world.isClient) {
+			this.method_29510();
+		}
 	}
 
 	@Override
@@ -146,12 +160,39 @@ public class IronGolemEntity extends GolemEntity {
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		tag.putBoolean("PlayerCreated", this.isPlayerCreated());
+		this.method_29517(tag);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
+		this.method_29512(this.world, tag);
+	}
+
+	@Override
+	public void method_29509() {
+		this.method_29514(field_25365.choose(this.random));
+	}
+
+	@Override
+	public void method_29514(int i) {
+		this.field_25366 = i;
+	}
+
+	@Override
+	public int method_29507() {
+		return this.field_25366;
+	}
+
+	@Override
+	public void method_29513(@Nullable UUID uUID) {
+		this.field_25367 = uUID;
+	}
+
+	@Override
+	public UUID method_29508() {
+		return this.field_25367;
 	}
 
 	private float getAttackDamage() {
@@ -230,16 +271,16 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected boolean interactMob(PlayerEntity player, Hand hand) {
+	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (item != Items.IRON_INGOT) {
-			return false;
+			return ActionResult.PASS;
 		} else {
 			float f = this.getHealth();
 			this.heal(25.0F);
 			if (this.getHealth() == f) {
-				return false;
+				return ActionResult.PASS;
 			} else {
 				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
 				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
@@ -247,7 +288,7 @@ public class IronGolemEntity extends GolemEntity {
 					itemStack.decrement(1);
 				}
 
-				return true;
+				return ActionResult.method_29236(this.world.isClient);
 			}
 		}
 	}

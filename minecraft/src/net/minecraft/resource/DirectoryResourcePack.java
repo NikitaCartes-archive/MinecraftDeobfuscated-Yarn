@@ -85,7 +85,8 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 		return set;
 	}
 
-	public void close() throws IOException {
+	@Override
+	public void close() {
 	}
 
 	@Override

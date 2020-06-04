@@ -94,7 +94,7 @@ public class RegistryTagManager implements ResourceReloadListener {
 			);
 	}
 
-	public void method_29226() {
+	public void apply() {
 		BlockTags.setContainer(this.blocks);
 		ItemTags.setContainer(this.items);
 		FluidTags.setContainer(this.fluids);

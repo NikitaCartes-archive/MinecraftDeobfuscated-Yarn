@@ -19,6 +19,7 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
@@ -155,9 +156,9 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
+	public ActionResult interact(PlayerEntity player, Hand hand) {
 		player.openHandledScreen(this);
-		return true;
+		return ActionResult.method_29236(this.world.isClient);
 	}
 
 	@Override

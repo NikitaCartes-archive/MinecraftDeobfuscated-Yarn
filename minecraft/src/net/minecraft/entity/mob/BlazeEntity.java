@@ -114,11 +114,12 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void mobTick() {
-		if (this.isWet()) {
-			this.damage(DamageSource.DROWN, 1.0F);
-		}
+	public boolean method_29503() {
+		return true;
+	}
 
+	@Override
+	protected void mobTick() {
 		this.eyeOffsetCooldown--;
 		if (this.eyeOffsetCooldown <= 0) {
 			this.eyeOffsetCooldown = 100;

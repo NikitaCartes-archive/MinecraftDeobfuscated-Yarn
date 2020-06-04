@@ -41,7 +41,6 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
@@ -54,6 +53,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -378,13 +378,15 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(player, hand);
-		} else if (this.world.isClient) {
-			return this.isTamed() && this.isOwner(player) || this.isBreedingItem(itemStack);
+		if (this.world.isClient) {
+			if (this.isTamed() && this.isOwner(player)) {
+				return ActionResult.SUCCESS;
+			} else {
+				return !this.isBreedingItem(itemStack) || !(this.getHealth() < this.getMaxHealth()) && this.isTamed() ? ActionResult.PASS : ActionResult.SUCCESS;
+			}
 		} else {
 			if (this.isTamed()) {
 				if (this.isOwner(player)) {
@@ -392,15 +394,15 @@ public class CatEntity extends TameableEntity {
 						if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 							this.eat(player, itemStack);
 							this.heal((float)item.getFoodComponent().getHunger());
-							return true;
+							return ActionResult.CONSUME;
 						}
 
-						boolean bl = super.interactMob(player, hand);
-						if (!bl || this.isBaby()) {
+						ActionResult actionResult = super.interactMob(player, hand);
+						if (!actionResult.isAccepted() || this.isBaby()) {
 							this.setSitting(!this.isSitting());
 						}
 
-						return bl;
+						return actionResult;
 					}
 
 					DyeColor dyeColor = ((DyeItem)item).getColor();
@@ -411,7 +413,7 @@ public class CatEntity extends TameableEntity {
 						}
 
 						this.setPersistent();
-						return true;
+						return ActionResult.CONSUME;
 					}
 				}
 			} else if (this.isBreedingItem(itemStack)) {
@@ -425,15 +427,15 @@ public class CatEntity extends TameableEntity {
 				}
 
 				this.setPersistent();
-				return true;
+				return ActionResult.CONSUME;
 			}
 
-			boolean bl = super.interactMob(player, hand);
-			if (bl) {
+			ActionResult actionResult = super.interactMob(player, hand);
+			if (actionResult.isAccepted()) {
 				this.setPersistent();
 			}
 
-			return bl;
+			return actionResult;
 		}
 	}
 
@@ -585,9 +587,9 @@ public class CatEntity extends TameableEntity {
 					.spawnEntity(
 						new ItemEntity(
 							this.cat.world,
-							(double)((float)mutable.getX() - MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0))),
+							(double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
 							(double)mutable.getY(),
-							(double)((float)mutable.getZ() + MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0))),
+							(double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
 							itemStack
 						)
 					);

@@ -2,10 +2,12 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.function.BiPredicate;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.GameRules;
 
 public class DefeatTargetTask extends Task<LivingEntity> {
 	private final int duration;
@@ -30,7 +32,7 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return this.getAttackTarget(entity).getHealth() <= 0.0F;
+		return this.getAttackTarget(entity).method_29504();
 	}
 
 	@Override
@@ -41,8 +43,10 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 		}
 
 		entity.getBrain().remember(MemoryModuleType.CELEBRATE_LOCATION, livingEntity.getBlockPos(), (long)this.duration);
-		entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
-		entity.getBrain().forget(MemoryModuleType.ANGRY_AT);
+		if (livingEntity.getType() != EntityType.PLAYER || world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+			entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+			entity.getBrain().forget(MemoryModuleType.ANGRY_AT);
+		}
 	}
 
 	private LivingEntity getAttackTarget(LivingEntity entity) {

@@ -376,7 +376,7 @@ public class PacketByteBuf extends ByteBuf {
 		float h = this.readFloat();
 		boolean bl = this.readBoolean();
 		return new BlockHitResult(
-			new Vec3d((double)((float)blockPos.getX() + f), (double)((float)blockPos.getY() + g), (double)((float)blockPos.getZ() + h)), direction, blockPos, bl
+			new Vec3d((double)blockPos.getX() + (double)f, (double)blockPos.getY() + (double)g, (double)blockPos.getZ() + (double)h), direction, blockPos, bl
 		);
 	}
 

@@ -28,9 +28,13 @@ public class DatapackCommand {
 	private static final SuggestionProvider<ServerCommandSource> ENABLED_CONTAINERS_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
 			commandContext.getSource().getMinecraftServer().getDataPackManager().method_29210().stream().map(StringArgumentType::escapeIfRequired), suggestionsBuilder
 		);
-	private static final SuggestionProvider<ServerCommandSource> DISABLED_CONTAINERS_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-			commandContext.getSource().getMinecraftServer().getDataPackManager().method_29206().stream().map(StringArgumentType::escapeIfRequired), suggestionsBuilder
+	private static final SuggestionProvider<ServerCommandSource> DISABLED_CONTAINERS_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
+		ResourcePackManager<?> resourcePackManager = commandContext.getSource().getMinecraftServer().getDataPackManager();
+		Collection<String> collection = resourcePackManager.method_29210();
+		return CommandSource.suggestMatching(
+			resourcePackManager.method_29206().stream().filter(string -> !collection.contains(string)).map(StringArgumentType::escapeIfRequired), suggestionsBuilder
 		);
+	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(

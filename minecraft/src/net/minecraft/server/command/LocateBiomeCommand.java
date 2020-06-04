@@ -1,7 +1,6 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.command.arguments.IdentifierArgumentType;
@@ -27,23 +26,20 @@ public class LocateBiomeCommand {
 				.then(
 					CommandManager.argument("biome", IdentifierArgumentType.identifier())
 						.suggests(SuggestionProviders.ALL_BIOMES)
-						.executes(commandContext -> execute(commandContext.getSource(), getBiome(commandContext, "biome")))
+						.executes(commandContext -> execute(commandContext.getSource(), commandContext.getArgument("biome", Identifier.class)))
 				)
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Biome biome) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource source, Identifier identifier) throws CommandSyntaxException {
+		Biome biome = (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> INVALID_EXCEPTION.create(identifier));
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		BlockPos blockPos2 = source.getWorld().locateBiome(biome, blockPos, 6400, 8);
+		String string = identifier.toString();
 		if (blockPos2 == null) {
-			throw NOT_FOUND_EXCEPTION.create(biome.getName().getString());
+			throw NOT_FOUND_EXCEPTION.create(string);
 		} else {
-			return LocateCommand.sendCoordinates(source, biome.getName().getString(), blockPos, blockPos2, "commands.locatebiome.success");
+			return LocateCommand.sendCoordinates(source, string, blockPos, blockPos2, "commands.locatebiome.success");
 		}
-	}
-
-	private static Biome getBiome(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-		Identifier identifier = context.getArgument(argumentName, Identifier.class);
-		return (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> INVALID_EXCEPTION.create(identifier));
 	}
 }

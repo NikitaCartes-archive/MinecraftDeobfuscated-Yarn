@@ -146,8 +146,8 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
-	public boolean useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-		return false;
+	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+		return ActionResult.PASS;
 	}
 
 	@Environment(EnvType.CLIENT)

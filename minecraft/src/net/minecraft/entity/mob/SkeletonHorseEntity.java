@@ -12,11 +12,11 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
@@ -162,33 +162,32 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(player, hand);
-		} else if (!this.isTame()) {
-			return false;
+		if (!this.isTame()) {
+			return ActionResult.PASS;
 		} else if (this.isBaby()) {
 			return super.interactMob(player, hand);
 		} else if (player.shouldCancelInteraction()) {
 			this.openInventory(player);
-			return true;
+			return ActionResult.method_29236(this.world.isClient);
 		} else if (this.hasPassengers()) {
 			return super.interactMob(player, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
 					this.openInventory(player);
-					return true;
+					return ActionResult.method_29236(this.world.isClient);
 				}
 
-				if (itemStack.useOnEntity(player, this, hand)) {
-					return true;
+				ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
+				if (actionResult.isAccepted()) {
+					return actionResult;
 				}
 			}
 
 			this.putPlayerOnBack(player);
-			return true;
+			return ActionResult.method_29236(this.world.isClient);
 		}
 	}
 }

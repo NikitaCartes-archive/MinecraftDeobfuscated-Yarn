@@ -34,6 +34,8 @@ import net.minecraft.util.registry.Registry;
 public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final EntityType<?>[] BREEDABLE_ANIMALS = new EntityType[]{
 		EntityType.HORSE,
+		EntityType.DONKEY,
+		EntityType.MULE,
 		EntityType.SHEEP,
 		EntityType.COW,
 		EntityType.MOOSHROOM,
@@ -171,7 +173,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion("netherite_hoe", InventoryChangedCriterion.Conditions.items(Items.NETHERITE_HOE))
-			.build(consumer, "husbandry/break_diamond_hoe");
+			.build(consumer, "husbandry/obtain_netherite_hoe");
 		Advancement advancement4 = Advancement.Task.create()
 			.parent(advancement)
 			.display(

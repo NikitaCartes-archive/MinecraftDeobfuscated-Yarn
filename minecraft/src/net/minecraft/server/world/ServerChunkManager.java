@@ -228,7 +228,7 @@ public class ServerChunkManager extends ChunkManager {
 		int i = 33 + ChunkStatus.getTargetGenerationRadius(leastStatus);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
 		if (create) {
-			this.ticketManager.addTicketWithLevel(ChunkTicketType.UNKNOWN, chunkPos, i, chunkPos);
+			this.ticketManager.addTicketWithLevel(ChunkTicketType.field_14032, chunkPos, i, chunkPos);
 			if (this.isMissingForLevel(chunkHolder, i)) {
 				Profiler profiler = this.world.getProfiler();
 				profiler.push("chunkLoad");
@@ -456,12 +456,22 @@ public class ServerChunkManager extends ChunkManager {
 		});
 	}
 
-	public <T> void addTicket(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
-		this.ticketManager.addTicket(chunkTicketType, chunkPos, i, object);
+	/**
+	 * Adds a chunk ticket to the ticket manager.
+	 * 
+	 * <p>Addition of a ticket may load chunk(s) at some point in the future depending on the loading level in the ticket's vicinity.
+	 */
+	public <T> void addTicket(ChunkTicketType<T> ticketType, ChunkPos pos, int radius, T argument) {
+		this.ticketManager.addTicket(ticketType, pos, radius, argument);
 	}
 
-	public <T> void removeTicket(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
-		this.ticketManager.removeTicket(chunkTicketType, chunkPos, i, object);
+	/**
+	 * Removes a chunk ticket from the ticket manager.
+	 * 
+	 * <p>Removal of a ticket may unload chunk(s) at some point in the future depending on the loading levels in the ticket's vicinity after removal.
+	 */
+	public <T> void removeTicket(ChunkTicketType<T> ticketType, ChunkPos pos, int radius, T argument) {
+		this.ticketManager.removeTicket(ticketType, pos, radius, argument);
 	}
 
 	@Override

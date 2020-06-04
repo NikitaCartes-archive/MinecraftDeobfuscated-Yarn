@@ -12,7 +12,7 @@ import net.minecraft.server.function.FunctionLoader;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.util.Unit;
 
-public class ServerResourceManager {
+public class ServerResourceManager implements AutoCloseable {
 	private static final CompletableFuture<Unit> field_25334 = CompletableFuture.completedFuture(Unit.INSTANCE);
 	private final ReloadableResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA);
 	private final CommandManager commandManager;
@@ -23,8 +23,8 @@ public class ServerResourceManager {
 	private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootConditionManager);
 	private final FunctionLoader functionLoader;
 
-	public ServerResourceManager(boolean dedicated, int i) {
-		this.commandManager = new CommandManager(dedicated);
+	public ServerResourceManager(CommandManager.RegistrationEnvironment registrationEnvironment, int i) {
+		this.commandManager = new CommandManager(registrationEnvironment);
 		this.functionLoader = new FunctionLoader(i, this.commandManager.getDispatcher());
 		this.resourceManager.registerListener(this.registryTagManager);
 		this.resourceManager.registerListener(this.lootConditionManager);
@@ -66,13 +66,23 @@ public class ServerResourceManager {
 		return this.resourceManager;
 	}
 
-	public static CompletableFuture<ServerResourceManager> reload(List<ResourcePack> list, boolean bl, int i, Executor executor, Executor executor2) {
-		ServerResourceManager serverResourceManager = new ServerResourceManager(bl, i);
+	public static CompletableFuture<ServerResourceManager> reload(
+		List<ResourcePack> list, CommandManager.RegistrationEnvironment registrationEnvironment, int i, Executor executor, Executor executor2
+	) {
+		ServerResourceManager serverResourceManager = new ServerResourceManager(registrationEnvironment, i);
 		CompletableFuture<Unit> completableFuture = serverResourceManager.resourceManager.beginReload(executor, executor2, list, field_25334);
-		return completableFuture.thenApply(unit -> serverResourceManager);
+		return completableFuture.whenComplete((unit, throwable) -> {
+			if (throwable != null) {
+				serverResourceManager.close();
+			}
+		}).thenApply(unit -> serverResourceManager);
 	}
 
-	public void method_29475() {
-		this.registryTagManager.method_29226();
+	public void loadRegistryTags() {
+		this.registryTagManager.apply();
+	}
+
+	public void close() {
+		this.resourceManager.close();
 	}
 }

@@ -28,6 +28,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -71,10 +72,13 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.BOWL && !this.isBaby() && !player.abilities.creativeMode) {
-			itemStack.decrement(1);
+		if (itemStack.getItem() == Items.BOWL && !this.isBaby()) {
+			if (!player.abilities.creativeMode) {
+				itemStack.decrement(1);
+			}
+
 			boolean bl = false;
 			ItemStack itemStack2;
 			if (this.stewEffect != null) {
@@ -101,54 +105,54 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 			}
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
-			return true;
+			return ActionResult.method_29236(this.world.isClient);
 		} else if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
 			this.sheared(SoundCategory.PLAYERS);
 			if (!this.world.isClient) {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
-			return true;
-		} else {
-			if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
-				if (this.stewEffect != null) {
-					for (int i = 0; i < 2; i++) {
-						this.world
-							.addParticle(
-								ParticleTypes.SMOKE,
-								this.getX() + (double)(this.random.nextFloat() / 2.0F),
-								this.getBodyY(0.5),
-								this.getZ() + (double)(this.random.nextFloat() / 2.0F),
-								0.0,
-								(double)(this.random.nextFloat() / 5.0F),
-								0.0
-							);
-					}
-				} else {
-					Pair<StatusEffect, Integer> pair = this.getStewEffectFrom(itemStack);
-					if (!player.abilities.creativeMode) {
-						itemStack.decrement(1);
-					}
-
-					for (int j = 0; j < 4; j++) {
-						this.world
-							.addParticle(
-								ParticleTypes.EFFECT,
-								this.getX() + (double)(this.random.nextFloat() / 2.0F),
-								this.getBodyY(0.5),
-								this.getZ() + (double)(this.random.nextFloat() / 2.0F),
-								0.0,
-								(double)(this.random.nextFloat() / 5.0F),
-								0.0
-							);
-					}
-
-					this.stewEffect = pair.getLeft();
-					this.stewEffectDuration = pair.getRight();
-					this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
+			return ActionResult.method_29236(this.world.isClient);
+		} else if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
+			if (this.stewEffect != null) {
+				for (int i = 0; i < 2; i++) {
+					this.world
+						.addParticle(
+							ParticleTypes.SMOKE,
+							this.getX() + this.random.nextDouble() / 2.0,
+							this.getBodyY(0.5),
+							this.getZ() + this.random.nextDouble() / 2.0,
+							0.0,
+							this.random.nextDouble() / 5.0,
+							0.0
+						);
 				}
+			} else {
+				Pair<StatusEffect, Integer> pair = this.getStewEffectFrom(itemStack);
+				if (!player.abilities.creativeMode) {
+					itemStack.decrement(1);
+				}
+
+				for (int j = 0; j < 4; j++) {
+					this.world
+						.addParticle(
+							ParticleTypes.EFFECT,
+							this.getX() + this.random.nextDouble() / 2.0,
+							this.getBodyY(0.5),
+							this.getZ() + this.random.nextDouble() / 2.0,
+							0.0,
+							this.random.nextDouble() / 5.0,
+							0.0
+						);
+				}
+
+				this.stewEffect = pair.getLeft();
+				this.stewEffectDuration = pair.getRight();
+				this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
 			}
 
+			return ActionResult.method_29236(this.world.isClient);
+		} else {
 			return super.interactMob(player, hand);
 		}
 	}

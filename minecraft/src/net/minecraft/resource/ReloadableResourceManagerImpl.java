@@ -1,5 +1,6 @@
 package net.minecraft.resource;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -84,6 +85,12 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
+	public Collection<Identifier> method_29489(Identifier identifier, Predicate<String> predicate) {
+		ResourceManager resourceManager = (ResourceManager)this.namespaceManagers.get(identifier.getNamespace());
+		return (Collection<Identifier>)(resourceManager != null ? resourceManager.findResources(identifier.getPath(), predicate) : ImmutableSet.<Identifier>of());
+	}
+
+	@Override
 	public Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
@@ -99,7 +106,13 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	private void clear() {
 		this.namespaceManagers.clear();
 		this.namespaces.clear();
+		this.field_25145.forEach(ResourcePack::close);
 		this.field_25145.clear();
+	}
+
+	@Override
+	public void close() {
+		this.clear();
 	}
 
 	@Override
@@ -129,7 +142,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 		Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs
 	) {
 		this.clear();
-		LOGGER.info("Reloading ResourceManager: {}", packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
+		LOGGER.info("Reloading ResourceManager: {}", () -> (String)packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
 
 		for (ResourcePack resourcePack : packs) {
 			try {

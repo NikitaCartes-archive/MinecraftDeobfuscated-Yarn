@@ -9,7 +9,6 @@ import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -77,27 +76,20 @@ public class SummonCommand {
 		} else {
 			CompoundTag compoundTag = nbt.copy();
 			compoundTag.putString("id", entity.toString());
-			if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(entity)) {
-				LightningEntity lightningEntity = new LightningEntity(source.getWorld(), pos.x, pos.y, pos.z, false);
-				source.getWorld().addLightning(lightningEntity);
-				source.sendFeedback(new TranslatableText("commands.summon.success", lightningEntity.getDisplayName()), true);
-				return 1;
+			ServerWorld serverWorld = source.getWorld();
+			Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
+				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
+				return !serverWorld.tryLoadEntity(entityx) ? null : entityx;
+			});
+			if (entity2 == null) {
+				throw FAILED_EXCEPTION.create();
 			} else {
-				ServerWorld serverWorld = source.getWorld();
-				Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
-					entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
-					return !serverWorld.tryLoadEntity(entityx) ? null : entityx;
-				});
-				if (entity2 == null) {
-					throw FAILED_EXCEPTION.create();
-				} else {
-					if (initialize && entity2 instanceof MobEntity) {
-						((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity2.getBlockPos()), SpawnReason.COMMAND, null, null);
-					}
-
-					source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
-					return 1;
+				if (initialize && entity2 instanceof MobEntity) {
+					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity2.getBlockPos()), SpawnReason.COMMAND, null, null);
 				}
+
+				source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
+				return 1;
 			}
 		}
 	}

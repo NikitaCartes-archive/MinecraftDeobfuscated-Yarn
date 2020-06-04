@@ -95,7 +95,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 						double l = (double)MathHelper.sqrt(g * g + h * h + k * k);
 						double m = l + biomeMoodSound.getExtraDistance();
 						PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(
-							biomeMoodSound.getEvent(), (float)(this.player.getX() + g / l * m), (float)(this.player.getEyeY() + h / l * m), (float)(this.player.getZ() + k / l * m)
+							biomeMoodSound.getEvent(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m
 						);
 						this.soundManager.play(positionedSoundInstance);
 						this.moodPercentage = 0.0F;

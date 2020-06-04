@@ -427,14 +427,14 @@ public class RedstoneWireBlock extends Block {
 		if (!(random.nextFloat() >= 0.2F * h)) {
 			float i = 0.4375F;
 			float j = f + h * random.nextFloat();
-			float k = 0.5F + 0.4375F * (float)direction.getOffsetX() + j * (float)direction2.getOffsetX();
-			float l = 0.5F + 0.4375F * (float)direction.getOffsetY() + j * (float)direction2.getOffsetY();
-			float m = 0.5F + 0.4375F * (float)direction.getOffsetZ() + j * (float)direction2.getOffsetZ();
+			double d = 0.5 + (double)(0.4375F * (float)direction.getOffsetX()) + (double)(j * (float)direction2.getOffsetX());
+			double e = 0.5 + (double)(0.4375F * (float)direction.getOffsetY()) + (double)(j * (float)direction2.getOffsetY());
+			double k = 0.5 + (double)(0.4375F * (float)direction.getOffsetZ()) + (double)(j * (float)direction2.getOffsetZ());
 			world.addParticle(
 				new DustParticleEffect(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0F),
-				(double)((float)blockPos.getX() + k),
-				(double)((float)blockPos.getY() + l),
-				(double)((float)blockPos.getZ() + m),
+				(double)blockPos.getX() + d,
+				(double)blockPos.getY() + e,
+				(double)blockPos.getZ() + k,
 				0.0,
 				0.0,
 				0.0

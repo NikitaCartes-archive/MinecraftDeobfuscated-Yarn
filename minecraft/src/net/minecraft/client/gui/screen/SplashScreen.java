@@ -125,8 +125,8 @@ public class SplashScreen extends Overlay {
 		int m = MathHelper.ceil((float)(k - i - 2) * this.progress);
 		int n = Math.round(f * 255.0F);
 		int o = BackgroundHelper.ColorMixer.getArgb(n, 255, 255, 255);
-		fill(matrixStack, i, j, k, j + 1, o);
-		fill(matrixStack, i, l, k, l - 1, o);
+		fill(matrixStack, i + 1, j, k - 1, j + 1, o);
+		fill(matrixStack, i + 1, l, k - 1, l - 1, o);
 		fill(matrixStack, i, j, i + 1, l, o);
 		fill(matrixStack, k, j, k - 1, l, o);
 		fill(matrixStack, i + 2, j + 2, i + m, l - 2, o);

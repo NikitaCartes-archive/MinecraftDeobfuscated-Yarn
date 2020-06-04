@@ -43,7 +43,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -51,6 +50,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -510,7 +510,7 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	protected void loot(ItemEntity item) {
 		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && IS_FOOD.test(item)) {
-			this.method_27964(item);
+			this.method_29499(item);
 			ItemStack itemStack = item.getStack();
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 			this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
@@ -590,15 +590,13 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(player, hand);
-		} else if (this.isScaredByThunderstorm()) {
-			return false;
+		if (this.isScaredByThunderstorm()) {
+			return ActionResult.PASS;
 		} else if (this.isLyingOnBack()) {
 			this.setLyingOnBack(false);
-			return true;
+			return ActionResult.method_29236(this.world.isClient);
 		} else if (this.isBreedingItem(itemStack)) {
 			if (this.getTarget() != null) {
 				this.shouldGetRevenge = true;
@@ -612,7 +610,7 @@ public class PandaEntity extends AnimalEntity {
 				this.lovePlayer(player);
 			} else {
 				if (this.world.isClient || this.isScared() || this.isTouchingWater()) {
-					return false;
+					return ActionResult.PASS;
 				}
 
 				this.stop();
@@ -626,10 +624,9 @@ public class PandaEntity extends AnimalEntity {
 				this.eat(player, itemStack);
 			}
 
-			player.swingHand(hand, true);
-			return true;
+			return ActionResult.SUCCESS;
 		} else {
-			return false;
+			return ActionResult.PASS;
 		}
 	}
 

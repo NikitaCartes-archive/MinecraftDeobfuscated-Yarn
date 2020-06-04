@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5348;
@@ -13,6 +14,7 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class BackupPromptScreen extends Screen {
+	@Nullable
 	private final Screen parent;
 	protected final BackupPromptScreen.Callback callback;
 	private final Text subtitle;
@@ -20,7 +22,7 @@ public class BackupPromptScreen extends Screen {
 	private final List<class_5348> wrappedText = Lists.<class_5348>newArrayList();
 	private CheckboxWidget eraseCacheCheckbox;
 
-	public BackupPromptScreen(Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
+	public BackupPromptScreen(@Nullable Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
 		super(title);
 		this.parent = parent;
 		this.callback = callback;

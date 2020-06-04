@@ -13,9 +13,9 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected final Identifier id;
 	protected float volume = 1.0F;
 	protected float pitch = 1.0F;
-	protected float x;
-	protected float y;
-	protected float z;
+	protected double x;
+	protected double y;
+	protected double z;
 	protected boolean repeat;
 	protected int repeatDelay;
 	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
@@ -79,17 +79,17 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	}
 
 	@Override
-	public float getX() {
+	public double getX() {
 		return this.x;
 	}
 
 	@Override
-	public float getY() {
+	public double getY() {
 		return this.y;
 	}
 
 	@Override
-	public float getZ() {
+	public double getZ() {
 		return this.z;
 	}
 

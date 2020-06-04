@@ -34,6 +34,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -103,7 +104,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
 			if (hand == Hand.MAIN_HAND) {
@@ -111,14 +112,14 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			}
 
 			if (this.getOffers().isEmpty()) {
-				return super.interactMob(player, hand);
+				return ActionResult.method_29236(this.world.isClient);
 			} else {
 				if (!this.world.isClient) {
 					this.setCurrentCustomer(player);
 					this.sendOffers(player, this.getDisplayName(), 1);
 				}
 
-				return true;
+				return ActionResult.method_29236(this.world.isClient);
 			}
 		} else {
 			return super.interactMob(player, hand);

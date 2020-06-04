@@ -230,7 +230,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		} else {
 			Item item2 = itemStack.getItem();
 			if (this.method_7111(item2)) {
-				this.method_27964(item);
+				this.method_29499(item);
 				ItemStack itemStack2 = this.inventory.addStack(itemStack);
 				if (itemStack2.isEmpty()) {
 					item.remove();

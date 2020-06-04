@@ -48,6 +48,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
@@ -73,6 +74,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		.includeTeammates()
 		.includeHidden()
 		.setPredicate(IS_BRED_HORSE);
+	private static final Ingredient field_25374 = Ingredient.ofItems(
+		Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE
+	);
 	private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	private int eatingGrassTicks;
@@ -484,7 +488,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return false;
+		return field_25374.test(stack);
 	}
 
 	private void wagTail() {
@@ -643,10 +647,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	public void playAngrySound() {
-		this.updateAnger();
-		SoundEvent soundEvent = this.getAngrySound();
-		if (soundEvent != null) {
-			this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+		if (!this.isAngry()) {
+			this.updateAnger();
+			SoundEvent soundEvent = this.getAngrySound();
+			if (soundEvent != null) {
+				this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+			}
 		}
 	}
 

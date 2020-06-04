@@ -15,6 +15,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -88,9 +89,9 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
+	public ActionResult interact(PlayerEntity player, Hand hand) {
 		if (this.world.isClient) {
-			return true;
+			return ActionResult.SUCCESS;
 		} else {
 			boolean bl = false;
 			double d = 7.0;
@@ -117,7 +118,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 				}
 			}
 
-			return true;
+			return ActionResult.CONSUME;
 		}
 	}
 

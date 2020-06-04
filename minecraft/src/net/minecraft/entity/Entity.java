@@ -564,7 +564,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 			float i = this.getVelocityMultiplier();
 			this.setVelocity(this.getVelocity().multiply((double)i, 1.0, (double)i));
-			if (!this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001)) && this.fireTicks <= 0) {
+			if (this.world
+					.method_29556(this.getBoundingBox().contract(0.001))
+					.noneMatch(blockStatex -> blockStatex.isIn(BlockTags.FIRE) || blockStatex.isOf(Blocks.LAVA))
+				&& this.fireTicks <= 0) {
 				this.fireTicks = -this.getBurningDuration();
 			}
 
@@ -1003,24 +1006,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 		float h = (float)MathHelper.floor(this.getY());
 
 		for (int i = 0; (float)i < 1.0F + this.dimensions.width * 20.0F; i++) {
-			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.dimensions.width;
-			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.dimensions.width;
+			double d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
 			this.world
-				.addParticle(
-					ParticleTypes.BUBBLE,
-					this.getX() + (double)j,
-					(double)(h + 1.0F),
-					this.getZ() + (double)k,
-					vec3d.x,
-					vec3d.y - (double)(this.random.nextFloat() * 0.2F),
-					vec3d.z
-				);
+				.addParticle(ParticleTypes.BUBBLE, this.getX() + d, (double)(h + 1.0F), this.getZ() + e, vec3d.x, vec3d.y - this.random.nextDouble() * 0.2F, vec3d.z);
 		}
 
 		for (int i = 0; (float)i < 1.0F + this.dimensions.width * 20.0F; i++) {
-			float j = (this.random.nextFloat() * 2.0F - 1.0F) * this.dimensions.width;
-			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.dimensions.width;
-			this.world.addParticle(ParticleTypes.SPLASH, this.getX() + (double)j, (double)(h + 1.0F), this.getZ() + (double)k, vec3d.x, vec3d.y, vec3d.z);
+			double d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+			this.world.addParticle(ParticleTypes.SPLASH, this.getX() + d, (double)(h + 1.0F), this.getZ() + e, vec3d.x, vec3d.y, vec3d.z);
 		}
 	}
 
@@ -1043,9 +1038,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.world
 				.addParticle(
 					new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
-					this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.dimensions.width,
+					this.getX() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width,
 					this.getY() + 0.1,
-					this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.dimensions.width,
+					this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width,
 					vec3d.x * -4.0,
 					1.5,
 					vec3d.z * -4.0
@@ -1107,6 +1102,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.pitch = MathHelper.clamp(pitch, -90.0F, 90.0F) % 360.0F;
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
+	}
+
+	public void method_29495(Vec3d vec3d) {
+		this.positAfterTeleport(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	public void positAfterTeleport(double x, double y, double z) {
@@ -1550,8 +1549,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	 * @param player the player
 	 * @param hand the hand the player used to interact with this entity
 	 */
-	public boolean interact(PlayerEntity player, Hand hand) {
-		return false;
+	public ActionResult interact(PlayerEntity player, Hand hand) {
+		return ActionResult.PASS;
 	}
 
 	@Nullable
@@ -2274,7 +2273,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public final void teleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
 			ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
-			((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
+			((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.field_19347, chunkPos, 0, this.getEntityId());
 			this.world.getChunk(chunkPos.x, chunkPos.z);
 			this.requestTeleport(destX, destY, destZ);
 		}

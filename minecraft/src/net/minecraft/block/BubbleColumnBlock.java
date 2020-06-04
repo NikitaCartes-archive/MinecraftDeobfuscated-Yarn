@@ -42,9 +42,9 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 				for (int i = 0; i < 2; i++) {
 					serverWorld.spawnParticles(
 						ParticleTypes.SPLASH,
-						(double)((float)pos.getX() + world.random.nextFloat()),
+						(double)pos.getX() + world.random.nextDouble(),
 						(double)(pos.getY() + 1),
-						(double)((float)pos.getZ() + world.random.nextFloat()),
+						(double)pos.getZ() + world.random.nextDouble(),
 						1,
 						0.0,
 						0.0,
@@ -53,9 +53,9 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 					);
 					serverWorld.spawnParticles(
 						ParticleTypes.BUBBLE,
-						(double)((float)pos.getX() + world.random.nextFloat()),
+						(double)pos.getX() + world.random.nextDouble(),
 						(double)(pos.getY() + 1),
-						(double)((float)pos.getZ() + world.random.nextFloat()),
+						(double)pos.getZ() + world.random.nextDouble(),
 						1,
 						0.0,
 						0.01,

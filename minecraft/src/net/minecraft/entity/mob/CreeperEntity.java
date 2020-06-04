@@ -34,6 +34,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameRules;
@@ -209,7 +210,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
-	protected boolean interactMob(PlayerEntity player, Hand hand) {
+	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
 			this.world
@@ -221,7 +222,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
-			return true;
+			return ActionResult.method_29236(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

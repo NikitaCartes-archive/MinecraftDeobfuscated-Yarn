@@ -1,6 +1,7 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
+import net.minecraft.class_5357;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -38,6 +39,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	CookingRecipeSerializer<SmokingRecipe> SMOKING = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
 	CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
 	RecipeSerializer<StonecuttingRecipe> STONECUTTING = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
+	RecipeSerializer<class_5357> SMITHING = register("smithing", new class_5357.class_5358());
 
 	T read(Identifier id, JsonObject json);
 

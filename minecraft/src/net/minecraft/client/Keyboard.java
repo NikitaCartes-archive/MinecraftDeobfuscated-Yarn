@@ -297,6 +297,7 @@ public class Keyboard {
 				if (this.client.options.keyFullscreen.matchesKey(key, scancode)) {
 					this.client.getWindow().toggleFullscreen();
 					this.client.options.fullscreen = this.client.getWindow().isFullscreen();
+					this.client.options.write();
 					return;
 				}
 

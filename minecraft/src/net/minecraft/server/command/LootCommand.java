@@ -483,6 +483,7 @@ public class LootCommand {
 		LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld())
 			.parameter(LootContextParameters.POSITION, pos)
 			.parameter(LootContextParameters.TOOL, stack)
+			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
 			.build(LootContextTypes.FISHING);
 		return getFeedbackMessageSingle(context, lootTable, lootContext, constructor);
 	}

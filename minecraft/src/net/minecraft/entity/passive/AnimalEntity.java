@@ -19,6 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
@@ -123,20 +124,24 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (this.isBreedingItem(itemStack)) {
-			if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
+			int i = this.getBreedingAge();
+			if (!this.world.isClient && i == 0 && this.canEat()) {
 				this.eat(player, itemStack);
 				this.lovePlayer(player);
-				player.swingHand(hand, true);
-				return true;
+				return ActionResult.SUCCESS;
 			}
 
 			if (this.isBaby()) {
 				this.eat(player, itemStack);
-				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
-				return true;
+				this.growUp((int)((float)(-i / 20) * 0.1F), true);
+				return ActionResult.method_29236(this.world.isClient);
+			}
+
+			if (this.world.isClient) {
+				return ActionResult.CONSUME;
 			}
 		}
 

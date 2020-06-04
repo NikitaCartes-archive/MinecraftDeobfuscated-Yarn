@@ -64,13 +64,13 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.prevStrideDistance = this.strideDistance;
 		this.tickHandSwing();
 		float g;
-		if (this.onGround && !(this.getHealth() <= 0.0F)) {
+		if (this.onGround && !this.method_29504()) {
 			g = Math.min(0.1F, MathHelper.sqrt(squaredHorizontalLength(this.getVelocity())));
 		} else {
 			g = 0.0F;
 		}
 
-		if (!this.onGround && !(this.getHealth() <= 0.0F)) {
+		if (!this.onGround && !this.method_29504()) {
 			float h = (float)Math.atan(-this.getVelocity().y * 0.2F) * 15.0F;
 		} else {
 			float h = 0.0F;

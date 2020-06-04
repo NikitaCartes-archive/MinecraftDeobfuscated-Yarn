@@ -165,7 +165,8 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("options.resourcepack"),
-				buttonWidget -> this.client.openScreen(new ResourcePackOptionsScreen(this, this.settings))
+				buttonWidget -> this.client
+						.openScreen(new ResourcePackOptionsScreen(this, this.settings, this.client.getResourcePackManager(), this.client::reloadResources))
 			)
 		);
 		this.addButton(

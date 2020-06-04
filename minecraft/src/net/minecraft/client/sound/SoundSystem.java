@@ -175,7 +175,7 @@ public class SoundSystem {
 			} else {
 				float f = this.getAdjustedVolume(tickableSoundInstance);
 				float g = this.getAdjustedPitch(tickableSoundInstance);
-				Vec3d vec3d = new Vec3d((double)tickableSoundInstance.getX(), (double)tickableSoundInstance.getY(), (double)tickableSoundInstance.getZ());
+				Vec3d vec3d = new Vec3d(tickableSoundInstance.getX(), tickableSoundInstance.getY(), tickableSoundInstance.getZ());
 				Channel.SourceManager sourceManager = (Channel.SourceManager)this.sources.get(tickableSoundInstance);
 				if (sourceManager != null) {
 					sourceManager.run(source -> {
@@ -282,7 +282,7 @@ public class SoundSystem {
 						if (h == 0.0F && !soundInstance.shouldAlwaysPlay()) {
 							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound.getIdentifier());
 						} else {
-							Vec3d vec3d = new Vec3d((double)soundInstance.getX(), (double)soundInstance.getY(), (double)soundInstance.getZ());
+							Vec3d vec3d = new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ());
 							if (!this.listeners.isEmpty()) {
 								boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.method_27268().squaredDistanceTo(vec3d) < (double)(g * g);
 								if (bl2) {

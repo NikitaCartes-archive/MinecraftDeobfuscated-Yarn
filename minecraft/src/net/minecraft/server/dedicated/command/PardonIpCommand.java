@@ -18,9 +18,7 @@ public class PardonIpCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("pardon-ip")
-				.requires(
-					serverCommandSource -> serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled() && serverCommandSource.hasPermissionLevel(3)
-				)
+				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("target", StringArgumentType.word())
 						.suggests(

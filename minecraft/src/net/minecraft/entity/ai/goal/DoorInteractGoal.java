@@ -82,14 +82,14 @@ public abstract class DoorInteractGoal extends Goal {
 	@Override
 	public void start() {
 		this.shouldStop = false;
-		this.xOffset = (float)((double)((float)this.doorPos.getX() + 0.5F) - this.mob.getX());
-		this.zOffset = (float)((double)((float)this.doorPos.getZ() + 0.5F) - this.mob.getZ());
+		this.xOffset = (float)((double)this.doorPos.getX() + 0.5 - this.mob.getX());
+		this.zOffset = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ());
 	}
 
 	@Override
 	public void tick() {
-		float f = (float)((double)((float)this.doorPos.getX() + 0.5F) - this.mob.getX());
-		float g = (float)((double)((float)this.doorPos.getZ() + 0.5F) - this.mob.getZ());
+		float f = (float)((double)this.doorPos.getX() + 0.5 - this.mob.getX());
+		float g = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ());
 		float h = this.xOffset * f + this.zOffset * g;
 		if (h < 0.0F) {
 			this.shouldStop = true;

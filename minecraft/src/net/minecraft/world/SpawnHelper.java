@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -130,12 +129,12 @@ public final class SpawnHelper {
 					l += world.random.nextInt(6) - world.random.nextInt(6);
 					m += world.random.nextInt(6) - world.random.nextInt(6);
 					mutable.set(l, i, m);
-					float f = (float)l + 0.5F;
-					float g = (float)m + 0.5F;
-					PlayerEntity playerEntity = world.getClosestPlayer((double)f, (double)i, (double)g, -1.0, false);
+					double d = (double)l + 0.5;
+					double e = (double)m + 0.5;
+					PlayerEntity playerEntity = world.getClosestPlayer(d, (double)i, e, -1.0, false);
 					if (playerEntity != null) {
-						double d = playerEntity.squaredDistanceTo((double)f, (double)i, (double)g);
-						if (isAcceptableSpawnPosition(world, chunk, mutable, d)) {
+						double f = playerEntity.squaredDistanceTo(d, (double)i, e);
+						if (isAcceptableSpawnPosition(world, chunk, mutable, f)) {
 							if (spawnEntry == null) {
 								spawnEntry = pickRandomSpawnEntry(world, structureAccessor, chunkGenerator, group, world.random, mutable);
 								if (spawnEntry == null) {
@@ -145,14 +144,14 @@ public final class SpawnHelper {
 								o = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 							}
 
-							if (canSpawn(world, group, structureAccessor, chunkGenerator, spawnEntry, mutable, d) && checker.test(spawnEntry.type, mutable, chunk)) {
+							if (canSpawn(world, group, structureAccessor, chunkGenerator, spawnEntry, mutable, f) && checker.test(spawnEntry.type, mutable, chunk)) {
 								MobEntity mobEntity = createMob(world, spawnEntry.type);
 								if (mobEntity == null) {
 									return;
 								}
 
-								mobEntity.refreshPositionAndAngles((double)f, (double)i, (double)g, world.random.nextFloat() * 360.0F, 0.0F);
-								if (isValidSpawn(world, mobEntity, d)) {
+								mobEntity.refreshPositionAndAngles(d, (double)i, e, world.random.nextFloat() * 360.0F, 0.0F);
+								if (isValidSpawn(world, mobEntity, f)) {
 									entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.NATURAL, entityData, null);
 									j++;
 									p++;
@@ -177,7 +176,7 @@ public final class SpawnHelper {
 	private static boolean isAcceptableSpawnPosition(ServerWorld world, Chunk chunk, BlockPos.Mutable pos, double squaredDistance) {
 		if (squaredDistance <= 576.0) {
 			return false;
-		} else if (world.getSpawnPos().isWithinDistance(new Vec3d((double)((float)pos.getX() + 0.5F), (double)pos.getY(), (double)((float)pos.getZ() + 0.5F)), 24.0)) {
+		} else if (world.getSpawnPos().isWithinDistance(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5), 24.0)) {
 			return false;
 		} else {
 			ChunkPos chunkPos = new ChunkPos(pos);
@@ -207,7 +206,7 @@ public final class SpawnHelper {
 			} else {
 				return !SpawnRestriction.canSpawn(entityType, world, SpawnReason.NATURAL, pos, world.random)
 					? false
-					: world.doesNotCollide(entityType.createSimpleBoundingBox((double)((float)pos.getX() + 0.5F), (double)pos.getY(), (double)((float)pos.getZ() + 0.5F)));
+					: world.doesNotCollide(entityType.createSimpleBoundingBox((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5));
 			}
 		} else {
 			return false;
@@ -272,7 +271,7 @@ public final class SpawnHelper {
 		} else if (!fluidState.isEmpty()) {
 			return false;
 		} else {
-			return state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE) ? false : !state.isOf(Blocks.WITHER_ROSE) || entityType == EntityType.WITHER_SKELETON;
+			return state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE) ? false : !entityType.method_29496(state);
 		}
 	}
 

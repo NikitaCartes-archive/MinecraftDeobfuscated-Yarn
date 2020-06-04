@@ -5,12 +5,13 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5348;
+import net.minecraft.class_5369;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.LiteralText;
@@ -20,19 +21,17 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidget<ResourcePackListWidget.ResourcePackEntry> {
+public class ResourcePackListWidget extends AlwaysSelectedEntryListWidget<ResourcePackListWidget.ResourcePackEntry> {
 	private static final Identifier RESOURCE_PACKS_LOCATION = new Identifier("textures/gui/resource_packs.png");
-	private static final Text INCOMPATIBLE = new TranslatableText("resourcePack.incompatible");
-	private static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("resourcePack.incompatible.confirm.title");
-	protected final MinecraftClient client;
+	private static final Text INCOMPATIBLE = new TranslatableText("pack.incompatible");
+	private static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("pack.incompatible.confirm.title");
 	private final Text title;
 
 	public ResourcePackListWidget(MinecraftClient client, int width, int height, Text title) {
 		super(client, width, height, 32, height - 55 + 4, 36);
-		this.client = client;
+		this.title = title;
 		this.centerListVertically = false;
 		this.setRenderHeader(true, (int)(9.0F * 1.5F));
-		this.title = title;
 	}
 
 	@Override
@@ -53,60 +52,34 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		return this.right - 6;
 	}
 
-	public void add(ResourcePackListWidget.ResourcePackEntry entry) {
-		this.addEntry(entry);
-		entry.resourcePackList = this;
-	}
-
 	@Environment(EnvType.CLIENT)
 	public static class ResourcePackEntry extends AlwaysSelectedEntryListWidget.Entry<ResourcePackListWidget.ResourcePackEntry> {
 		private ResourcePackListWidget resourcePackList;
 		protected final MinecraftClient client;
-		protected final ResourcePackOptionsScreen screen;
-		private final ClientResourcePackProfile pack;
+		protected final Screen field_25476;
+		private final class_5369.class_5371 screen;
 
-		public ResourcePackEntry(ResourcePackListWidget listWidget, ResourcePackOptionsScreen screen, ClientResourcePackProfile pack) {
-			this.screen = screen;
-			this.client = MinecraftClient.getInstance();
-			this.pack = pack;
-			this.resourcePackList = listWidget;
-		}
-
-		public void enable(SelectedResourcePackListWidget list) {
-			this.getPack().getInitialPosition().insert(list.children(), this, ResourcePackListWidget.ResourcePackEntry::getPack, true);
-			this.method_24232(list);
-		}
-
-		public void method_24232(SelectedResourcePackListWidget selectedResourcePackListWidget) {
-			this.resourcePackList = selectedResourcePackListWidget;
-		}
-
-		protected void drawIcon() {
-			this.pack.drawIcon(this.client.getTextureManager());
-		}
-
-		protected ResourcePackCompatibility getCompatibility() {
-			return this.pack.getCompatibility();
-		}
-
-		public ClientResourcePackProfile getPack() {
-			return this.pack;
+		public ResourcePackEntry(MinecraftClient minecraftClient, ResourcePackListWidget resourcePackListWidget, Screen screen, class_5369.class_5371 arg) {
+			this.client = minecraftClient;
+			this.field_25476 = screen;
+			this.screen = arg;
+			this.resourcePackList = resourcePackListWidget;
 		}
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
+			ResourcePackCompatibility resourcePackCompatibility = this.screen.method_29648();
 			if (!resourcePackCompatibility.isCompatible()) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
 			}
 
-			this.drawIcon();
+			this.screen.method_29649(this.client.getTextureManager());
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
-			Text text = this.pack.getDisplayName();
-			Text text2 = this.pack.getDescription();
-			if (this.isMoveable() && (this.client.options.touchscreen || hovered)) {
+			Text text = this.screen.method_29650();
+			class_5348 lv = this.screen.method_29653();
+			if (this.isSelectable() && (this.client.options.touchscreen || hovered)) {
 				this.client.getTextureManager().bindTexture(ResourcePackListWidget.RESOURCE_PACKS_LOCATION);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -114,17 +87,17 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 				int j = mouseY - y;
 				if (!resourcePackCompatibility.isCompatible()) {
 					text = ResourcePackListWidget.INCOMPATIBLE;
-					text2 = resourcePackCompatibility.getNotification();
+					lv = resourcePackCompatibility.getNotification();
 				}
 
-				if (this.isSelectable()) {
+				if (this.screen.method_29661()) {
 					if (i < 32) {
 						DrawableHelper.drawTexture(matrices, x, y, 0.0F, 32.0F, 32, 32, 256, 256);
 					} else {
 						DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 256, 256);
 					}
 				} else {
-					if (this.isRemovable()) {
+					if (this.screen.method_29662()) {
 						if (i < 16) {
 							DrawableHelper.drawTexture(matrices, x, y, 32.0F, 32.0F, 32, 32, 256, 256);
 						} else {
@@ -132,7 +105,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 						}
 					}
 
-					if (this.canMoveUp()) {
+					if (this.screen.method_29663()) {
 						if (i < 32 && i > 16 && j < 16) {
 							DrawableHelper.drawTexture(matrices, x, y, 96.0F, 32.0F, 32, 32, 256, 256);
 						} else {
@@ -140,7 +113,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 						}
 					}
 
-					if (this.canMoveDown()) {
+					if (this.screen.method_29664()) {
 						if (i < 32 && i > 16 && j > 16) {
 							DrawableHelper.drawTexture(matrices, x, y, 64.0F, 32.0F, 32, 32, 256, 256);
 						} else {
@@ -152,62 +125,41 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 
 			int ix = this.client.textRenderer.getWidth(text);
 			if (ix > 157) {
-				class_5348 lv = class_5348.method_29433(
+				class_5348 lv2 = class_5348.method_29433(
 					this.client.textRenderer.trimToWidth(text, 157 - this.client.textRenderer.getWidth("...")), class_5348.method_29430("...")
 				);
-				this.client.textRenderer.drawWithShadow(matrices, lv, (float)(x + 32 + 2), (float)(y + 1), 16777215);
+				this.client.textRenderer.drawWithShadow(matrices, lv2, (float)(x + 32 + 2), (float)(y + 1), 16777215);
 			} else {
 				this.client.textRenderer.drawWithShadow(matrices, text, (float)(x + 32 + 2), (float)(y + 1), 16777215);
 			}
 
 			this.client.textRenderer.drawWithShadow(matrices, text, (float)(x + 32 + 2), (float)(y + 1), 16777215);
-			List<class_5348> list = this.client.textRenderer.wrapLines(text2, 157);
+			List<class_5348> list = this.client.textRenderer.wrapLines(lv, 157);
 
 			for (int k = 0; k < 2 && k < list.size(); k++) {
 				this.client.textRenderer.drawWithShadow(matrices, (class_5348)list.get(k), (float)(x + 32 + 2), (float)(y + 12 + 10 * k), 8421504);
 			}
 		}
 
-		protected boolean isMoveable() {
-			return !this.pack.isPinned() || !this.pack.isAlwaysEnabled();
-		}
-
-		protected boolean isSelectable() {
-			return !this.screen.isEnabled(this);
-		}
-
-		protected boolean isRemovable() {
-			return this.screen.isEnabled(this) && !this.pack.isAlwaysEnabled();
-		}
-
-		protected boolean canMoveUp() {
-			List<ResourcePackListWidget.ResourcePackEntry> list = this.resourcePackList.children();
-			int i = list.indexOf(this);
-			return i > 0 && !((ResourcePackListWidget.ResourcePackEntry)list.get(i - 1)).pack.isPinned();
-		}
-
-		protected boolean canMoveDown() {
-			List<ResourcePackListWidget.ResourcePackEntry> list = this.resourcePackList.children();
-			int i = list.indexOf(this);
-			return i >= 0 && i < list.size() - 1 && !((ResourcePackListWidget.ResourcePackEntry)list.get(i + 1)).pack.isPinned();
+		private boolean isSelectable() {
+			return !this.screen.method_29654() || !this.screen.method_29655();
 		}
 
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			double d = mouseX - (double)this.resourcePackList.getRowLeft();
 			double e = mouseY - (double)this.resourcePackList.getRowTop(this.resourcePackList.children().indexOf(this));
-			if (this.isMoveable() && d <= 32.0) {
-				if (this.isSelectable()) {
-					this.getScreen().markDirty();
-					ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
+			if (this.isSelectable() && d <= 32.0) {
+				if (this.screen.method_29661()) {
+					ResourcePackCompatibility resourcePackCompatibility = this.screen.method_29648();
 					if (resourcePackCompatibility.isCompatible()) {
-						this.getScreen().enable(this);
+						this.screen.method_29656();
 					} else {
 						Text text = resourcePackCompatibility.getConfirmMessage();
 						this.client.openScreen(new ConfirmScreen(bl -> {
-							this.client.openScreen(this.getScreen());
+							this.client.openScreen(this.field_25476);
 							if (bl) {
-								this.getScreen().enable(this);
+								this.screen.method_29656();
 							}
 						}, ResourcePackListWidget.INCOMPATIBLE_CONFIRM, text));
 					}
@@ -215,35 +167,23 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 					return true;
 				}
 
-				if (d < 16.0 && this.isRemovable()) {
-					this.getScreen().disable(this);
+				if (d < 16.0 && this.screen.method_29662()) {
+					this.screen.method_29657();
 					return true;
 				}
 
-				if (d > 16.0 && e < 16.0 && this.canMoveUp()) {
-					List<ResourcePackListWidget.ResourcePackEntry> list = this.resourcePackList.children();
-					int i = list.indexOf(this);
-					list.remove(i);
-					list.add(i - 1, this);
-					this.getScreen().markDirty();
+				if (d > 16.0 && e < 16.0 && this.screen.method_29663()) {
+					this.screen.method_29658();
 					return true;
 				}
 
-				if (d > 16.0 && e > 16.0 && this.canMoveDown()) {
-					List<ResourcePackListWidget.ResourcePackEntry> list = this.resourcePackList.children();
-					int i = list.indexOf(this);
-					list.remove(i);
-					list.add(i + 1, this);
-					this.getScreen().markDirty();
+				if (d > 16.0 && e > 16.0 && this.screen.method_29664()) {
+					this.screen.method_29659();
 					return true;
 				}
 			}
 
 			return false;
-		}
-
-		public ResourcePackOptionsScreen getScreen() {
-			return this.screen;
 		}
 	}
 }

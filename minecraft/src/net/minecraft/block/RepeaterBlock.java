@@ -78,9 +78,9 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(POWERED)) {
 			Direction direction = state.get(FACING);
-			double d = (double)((float)pos.getX() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
-			double e = (double)((float)pos.getY() + 0.4F) + (double)(random.nextFloat() - 0.5F) * 0.2;
-			double f = (double)((float)pos.getZ() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
+			double d = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
+			double e = (double)pos.getY() + 0.4 + (random.nextDouble() - 0.5) * 0.2;
+			double f = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
 			float g = -5.0F;
 			if (random.nextBoolean()) {
 				g = (float)((Integer)state.get(DELAY) * 2 - 1);

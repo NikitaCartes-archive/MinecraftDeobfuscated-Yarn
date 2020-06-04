@@ -227,6 +227,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		for (int i = 0; i < this.samplerShaderLocs.size(); i++) {
 			if (this.samplerBinds.get(this.samplerNames.get(i)) != null) {
 				GlStateManager.activeTexture(33984 + i);
+				GlStateManager.disableTexture();
 				GlStateManager.bindTexture(0);
 			}
 		}
@@ -258,7 +259,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 				if (j != -1) {
 					RenderSystem.bindTexture(j);
-					GlUniform.uniform1(GlUniform.getUniformLocation(this.programRef, (CharSequence)this.samplerNames.get(i)), i);
+					GlUniform.uniform1((Integer)this.samplerShaderLocs.get(i), i);
 				}
 			}
 		}

@@ -496,6 +496,7 @@ public class Biome {
 		return this.downfall;
 	}
 
+	@Environment(EnvType.CLIENT)
 	public Text getName() {
 		return new TranslatableText(this.getTranslationKey());
 	}
@@ -628,7 +629,7 @@ public class Biome {
 	public static class MixedNoisePoint {
 		public static final Codec<Biome.MixedNoisePoint> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.FLOAT.fieldOf("temparature").forGetter(mixedNoisePoint -> mixedNoisePoint.temperature),
+						Codec.FLOAT.fieldOf("temperature").forGetter(mixedNoisePoint -> mixedNoisePoint.temperature),
 						Codec.FLOAT.fieldOf("humidity").forGetter(mixedNoisePoint -> mixedNoisePoint.humidity),
 						Codec.FLOAT.fieldOf("altitude").forGetter(mixedNoisePoint -> mixedNoisePoint.altitude),
 						Codec.FLOAT.fieldOf("weirdness").forGetter(mixedNoisePoint -> mixedNoisePoint.weirdness),

@@ -53,12 +53,9 @@ public class EndPortalBlock extends BlockWithEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		double d = (double)pos.getX() + (double)random.nextFloat();
+		double d = (double)pos.getX() + random.nextDouble();
 		double e = (double)pos.getY() + 0.8;
-		double f = (double)pos.getZ() + (double)random.nextFloat();
-		double g = 0.0;
-		double h = 0.0;
-		double i = 0.0;
+		double f = (double)pos.getZ() + random.nextDouble();
 		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 	}
 

@@ -10,10 +10,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class SeedCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
 		dispatcher.register(
 			CommandManager.literal("seed")
-				.requires(serverCommandSource -> serverCommandSource.getMinecraftServer().isSinglePlayer() || serverCommandSource.hasPermissionLevel(2))
+				.requires(serverCommandSource -> !dedicated || serverCommandSource.hasPermissionLevel(2))
 				.executes(
 					commandContext -> {
 						long l = commandContext.getSource().getWorld().getSeed();

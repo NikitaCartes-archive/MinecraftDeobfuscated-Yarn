@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.OptionalDynamic;
+import com.mojang.serialization.Lifecycle;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -14,6 +14,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_5315;
+import net.minecraft.class_5359;
+import net.minecraft.class_5384;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
@@ -31,6 +33,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.timer.Timer;
 import net.minecraft.world.timer.TimerCallbackSerializer;
@@ -40,6 +43,8 @@ import org.apache.logging.log4j.Logger;
 public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private LevelInfo field_25030;
+	private final GeneratorOptions field_25425;
+	private final Lifecycle field_25426;
 	private int spawnX;
 	private int spawnY;
 	private int spawnZ;
@@ -60,8 +65,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private boolean initialized;
 	private boolean difficultyLocked;
 	private WorldBorder.Properties worldBorder;
-	private final Set<String> disabledDataPacks;
-	private final Set<String> enabledDataPacks;
 	private CompoundTag field_25031;
 	@Nullable
 	private CompoundTag customBossEvents;
@@ -96,16 +99,15 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		int wanderingTraderSpawnChance,
 		@Nullable UUID wanderingTraderId,
 		LinkedHashSet<String> serverBrands,
-		LinkedHashSet<String> enabledDataPacks,
-		Set<String> disabledDataPacks,
-		Timer<MinecraftServer> scheduledEvents,
-		@Nullable CompoundTag customBossEvents,
-		CompoundTag compoundTag,
-		LevelInfo levelInfo
+		Timer<MinecraftServer> timer,
+		@Nullable CompoundTag compoundTag,
+		CompoundTag compoundTag2,
+		LevelInfo levelInfo,
+		GeneratorOptions generatorOptions,
+		Lifecycle lifecycle
 	) {
 		this.dataFixer = dataFixer;
 		this.modded = modded;
-		this.field_25030 = levelInfo;
 		this.spawnX = spawnX;
 		this.spawnY = spawnY;
 		this.spawnZ = spawnZ;
@@ -126,14 +128,15 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		this.serverBrands = serverBrands;
 		this.playerData = playerData;
 		this.dataVersion = dataVersion;
-		this.scheduledEvents = scheduledEvents;
-		this.enabledDataPacks = enabledDataPacks;
-		this.disabledDataPacks = disabledDataPacks;
-		this.customBossEvents = customBossEvents;
-		this.field_25031 = compoundTag;
+		this.scheduledEvents = timer;
+		this.customBossEvents = compoundTag;
+		this.field_25031 = compoundTag2;
+		this.field_25030 = levelInfo;
+		this.field_25425 = generatorOptions;
+		this.field_25426 = lifecycle;
 	}
 
-	public LevelProperties(LevelInfo levelInfo) {
+	public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
 		this(
 			null,
 			SharedConstants.getGameVersion().getWorldVersion(),
@@ -157,20 +160,26 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			0,
 			null,
 			Sets.newLinkedHashSet(),
-			Sets.newLinkedHashSet(),
-			Sets.<String>newHashSet(),
 			new Timer<>(TimerCallbackSerializer.INSTANCE),
 			null,
 			new CompoundTag(),
-			levelInfo.method_28385()
+			levelInfo.method_28385(),
+			generatorOptions,
+			lifecycle
 		);
 	}
 
 	public static LevelProperties method_29029(
-		Dynamic<Tag> dynamic, DataFixer dataFixer, int i, @Nullable CompoundTag compoundTag, LevelInfo levelInfo, class_5315 arg
+		Dynamic<Tag> dynamic,
+		DataFixer dataFixer,
+		int i,
+		@Nullable CompoundTag compoundTag,
+		LevelInfo levelInfo,
+		class_5315 arg,
+		GeneratorOptions generatorOptions,
+		Lifecycle lifecycle
 	) {
 		long l = dynamic.get("Time").asLong(0L);
-		OptionalDynamic<?> optionalDynamic = dynamic.get("DataPacks");
 		CompoundTag compoundTag2 = (CompoundTag)dynamic.get("DragonFight")
 			.result()
 			.map(Dynamic::getValue)
@@ -196,101 +205,84 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			WorldBorder.Properties.fromDynamic(dynamic, WorldBorder.DEFAULT_BORDER),
 			dynamic.get("WanderingTraderSpawnDelay").asInt(0),
 			dynamic.get("WanderingTraderSpawnChance").asInt(0),
-			(UUID)dynamic.get("WanderingTraderId").read(DynamicSerializableUuid.field_25122).result().map(DynamicSerializableUuid::getUuid).orElse(null),
+			(UUID)dynamic.get("WanderingTraderId").read(DynamicSerializableUuid.field_25122).result().orElse(null),
 			(LinkedHashSet<String>)dynamic.get("ServerBrands")
 				.asStream()
 				.flatMap(dynamicx -> Util.stream(dynamicx.asString().result()))
 				.collect(Collectors.toCollection(Sets::newLinkedHashSet)),
-			(LinkedHashSet<String>)optionalDynamic.get("Enabled")
-				.asStream()
-				.flatMap(dynamicx -> Util.stream(dynamicx.asString().result()))
-				.collect(Collectors.toCollection(Sets::newLinkedHashSet)),
-			(Set<String>)optionalDynamic.get("Disabled").asStream().flatMap(dynamicx -> Util.stream(dynamicx.asString().result())).collect(Collectors.toSet()),
 			new Timer<>(TimerCallbackSerializer.INSTANCE, dynamic.get("ScheduledEvents").asStream()),
 			(CompoundTag)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(),
 			compoundTag2,
-			levelInfo
+			levelInfo,
+			generatorOptions,
+			lifecycle
 		);
 	}
 
 	@Override
-	public CompoundTag cloneWorldTag(@Nullable CompoundTag tag) {
+	public CompoundTag cloneWorldTag(DimensionTracker dimensionTracker, @Nullable CompoundTag compoundTag) {
 		this.loadPlayerData();
-		if (tag == null) {
-			tag = this.playerData;
-		}
-
-		CompoundTag compoundTag = new CompoundTag();
-		this.updateProperties(compoundTag, tag);
-		return compoundTag;
-	}
-
-	private void updateProperties(CompoundTag levelTag, CompoundTag playerTag) {
-		ListTag listTag = new ListTag();
-		this.serverBrands.stream().map(StringTag::of).forEach(listTag::add);
-		levelTag.put("ServerBrands", listTag);
-		levelTag.putBoolean("WasModded", this.modded);
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", SharedConstants.getGameVersion().getName());
-		compoundTag.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
-		compoundTag.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
-		levelTag.put("Version", compoundTag);
-		levelTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		GeneratorOptions.CODEC
-			.encodeStart(NbtOps.INSTANCE, this.field_25030.getGeneratorOptions())
-			.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error))
-			.ifPresent(tag -> levelTag.put("WorldGenSettings", tag));
-		levelTag.putInt("GameType", this.field_25030.getGameMode().getId());
-		levelTag.putInt("SpawnX", this.spawnX);
-		levelTag.putInt("SpawnY", this.spawnY);
-		levelTag.putInt("SpawnZ", this.spawnZ);
-		levelTag.putLong("Time", this.time);
-		levelTag.putLong("DayTime", this.timeOfDay);
-		levelTag.putLong("LastPlayed", Util.getEpochTimeMs());
-		levelTag.putString("LevelName", this.field_25030.getLevelName());
-		levelTag.putInt("version", 19133);
-		levelTag.putInt("clearWeatherTime", this.clearWeatherTime);
-		levelTag.putInt("rainTime", this.rainTime);
-		levelTag.putBoolean("raining", this.raining);
-		levelTag.putInt("thunderTime", this.thunderTime);
-		levelTag.putBoolean("thundering", this.thundering);
-		levelTag.putBoolean("hardcore", this.field_25030.hasStructures());
-		levelTag.putBoolean("allowCommands", this.field_25030.isHardcore());
-		levelTag.putBoolean("initialized", this.initialized);
-		this.worldBorder.toTag(levelTag);
-		levelTag.putByte("Difficulty", (byte)this.field_25030.getDifficulty().getId());
-		levelTag.putBoolean("DifficultyLocked", this.difficultyLocked);
-		levelTag.put("GameRules", this.field_25030.getGameRules().toNbt());
-		levelTag.put("DragonFight", this.field_25031);
-		if (playerTag != null) {
-			levelTag.put("Player", playerTag);
+		if (compoundTag == null) {
+			compoundTag = this.playerData;
 		}
 
 		CompoundTag compoundTag2 = new CompoundTag();
-		ListTag listTag2 = new ListTag();
+		this.updateProperties(dimensionTracker, compoundTag2, compoundTag);
+		return compoundTag2;
+	}
 
-		for (String string : this.enabledDataPacks) {
-			listTag2.add(StringTag.of(string));
+	private void updateProperties(DimensionTracker dimensionTracker, CompoundTag compoundTag, @Nullable CompoundTag compoundTag2) {
+		ListTag listTag = new ListTag();
+		this.serverBrands.stream().map(StringTag::of).forEach(listTag::add);
+		compoundTag.put("ServerBrands", listTag);
+		compoundTag.putBoolean("WasModded", this.modded);
+		CompoundTag compoundTag3 = new CompoundTag();
+		compoundTag3.putString("Name", SharedConstants.getGameVersion().getName());
+		compoundTag3.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
+		compoundTag3.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
+		compoundTag.put("Version", compoundTag3);
+		compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		class_5384<Tag> lv = class_5384.method_29771(NbtOps.INSTANCE, dimensionTracker);
+		GeneratorOptions.CODEC
+			.encodeStart(lv, this.field_25425)
+			.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error))
+			.ifPresent(tag -> compoundTag.put("WorldGenSettings", tag));
+		compoundTag.putInt("GameType", this.field_25030.getGameMode().getId());
+		compoundTag.putInt("SpawnX", this.spawnX);
+		compoundTag.putInt("SpawnY", this.spawnY);
+		compoundTag.putInt("SpawnZ", this.spawnZ);
+		compoundTag.putLong("Time", this.time);
+		compoundTag.putLong("DayTime", this.timeOfDay);
+		compoundTag.putLong("LastPlayed", Util.getEpochTimeMs());
+		compoundTag.putString("LevelName", this.field_25030.getLevelName());
+		compoundTag.putInt("version", 19133);
+		compoundTag.putInt("clearWeatherTime", this.clearWeatherTime);
+		compoundTag.putInt("rainTime", this.rainTime);
+		compoundTag.putBoolean("raining", this.raining);
+		compoundTag.putInt("thunderTime", this.thunderTime);
+		compoundTag.putBoolean("thundering", this.thundering);
+		compoundTag.putBoolean("hardcore", this.field_25030.hasStructures());
+		compoundTag.putBoolean("allowCommands", this.field_25030.isHardcore());
+		compoundTag.putBoolean("initialized", this.initialized);
+		this.worldBorder.toTag(compoundTag);
+		compoundTag.putByte("Difficulty", (byte)this.field_25030.getDifficulty().getId());
+		compoundTag.putBoolean("DifficultyLocked", this.difficultyLocked);
+		compoundTag.put("GameRules", this.field_25030.getGameRules().toNbt());
+		compoundTag.put("DragonFight", this.field_25031);
+		if (compoundTag2 != null) {
+			compoundTag.put("Player", compoundTag2);
 		}
 
-		compoundTag2.put("Enabled", listTag2);
-		ListTag listTag3 = new ListTag();
-
-		for (String string2 : this.disabledDataPacks) {
-			listTag3.add(StringTag.of(string2));
-		}
-
-		compoundTag2.put("Disabled", listTag3);
-		levelTag.put("DataPacks", compoundTag2);
+		class_5359.field_25394.encodeStart(NbtOps.INSTANCE, this.field_25030.method_29558()).result().ifPresent(tag -> compoundTag.put("DataPacks", tag));
 		if (this.customBossEvents != null) {
-			levelTag.put("CustomBossEvents", this.customBossEvents);
+			compoundTag.put("CustomBossEvents", this.customBossEvents);
 		}
 
-		levelTag.put("ScheduledEvents", this.scheduledEvents.toTag());
-		levelTag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
-		levelTag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
+		compoundTag.put("ScheduledEvents", this.scheduledEvents.toTag());
+		compoundTag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
+		compoundTag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
 		if (this.wanderingTraderId != null) {
-			levelTag.putUuid("WanderingTraderId", this.wanderingTraderId);
+			compoundTag.putUuid("WanderingTraderId", this.wanderingTraderId);
 		}
 	}
 
@@ -509,7 +501,13 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 
 	@Override
 	public GeneratorOptions getGeneratorOptions() {
-		return this.field_25030.getGeneratorOptions();
+		return this.field_25425;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Lifecycle method_29588() {
+		return this.field_25426;
 	}
 
 	@Override
@@ -523,13 +521,13 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public Set<String> getDisabledDataPacks() {
-		return this.disabledDataPacks;
+	public class_5359 method_29589() {
+		return this.field_25030.method_29558();
 	}
 
 	@Override
-	public Set<String> getEnabledDataPacks() {
-		return this.enabledDataPacks;
+	public void method_29590(class_5359 arg) {
+		this.field_25030 = this.field_25030.method_29557(arg);
 	}
 
 	@Nullable

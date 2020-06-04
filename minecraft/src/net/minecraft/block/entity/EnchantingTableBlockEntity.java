@@ -52,7 +52,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 		this.pageTurningSpeed = this.nextPageTurningSpeed;
 		this.field_11963 = this.field_11964;
 		PlayerEntity playerEntity = this.world
-			.getClosestPlayer((double)((float)this.pos.getX() + 0.5F), (double)((float)this.pos.getY() + 0.5F), (double)((float)this.pos.getZ() + 0.5F), 3.0, false);
+			.getClosestPlayer((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5, 3.0, false);
 		if (playerEntity != null) {
 			double d = playerEntity.getX() - ((double)this.pos.getX() + 0.5);
 			double e = playerEntity.getZ() - ((double)this.pos.getZ() + 0.5);

@@ -114,13 +114,13 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 			if (!this.entries.isEmpty()) {
 				for (SubtitlesHud.SubtitleEntry subtitleEntry : this.entries) {
 					if (subtitleEntry.getText().equals(text)) {
-						subtitleEntry.reset(new Vec3d((double)sound.getX(), (double)sound.getY(), (double)sound.getZ()));
+						subtitleEntry.reset(new Vec3d(sound.getX(), sound.getY(), sound.getZ()));
 						return;
 					}
 				}
 			}
 
-			this.entries.add(new SubtitlesHud.SubtitleEntry(text, new Vec3d((double)sound.getX(), (double)sound.getY(), (double)sound.getZ())));
+			this.entries.add(new SubtitlesHud.SubtitleEntry(text, new Vec3d(sound.getX(), sound.getY(), sound.getZ())));
 		}
 	}
 

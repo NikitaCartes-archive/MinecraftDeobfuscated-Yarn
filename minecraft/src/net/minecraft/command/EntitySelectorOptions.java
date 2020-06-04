@@ -39,7 +39,6 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -303,13 +302,7 @@ public class EntitySelectorOptions {
 
 					if (entitySelectorReader.readTagCharacter()) {
 						Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
-						Tag<EntityType<?>> tag = EntityTypeTags.getContainer().get(identifier);
-						if (tag == null) {
-							entitySelectorReader.getReader().setCursor(i);
-							throw INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
-						}
-
-						entitySelectorReader.setPredicate(entity -> tag.contains(entity.getType()) != bl);
+						entitySelectorReader.setPredicate(entity -> entity.getServer().getTagManager().entityTypes().getOrCreate(identifier).contains(entity.getType()) != bl);
 					} else {
 						Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
 						EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {

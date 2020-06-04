@@ -2,6 +2,7 @@ package net.minecraft.client;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
+import com.google.gson.JsonElement;
 import com.mojang.authlib.AuthenticationService;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -11,6 +12,10 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.datafixers.util.Function4;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Lifecycle;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +32,7 @@ import java.util.Locale;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -36,6 +42,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5352;
+import net.minecraft.class_5359;
+import net.minecraft.class_5363;
+import net.minecraft.class_5365;
+import net.minecraft.class_5382;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -48,7 +59,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DatapackFailureScreen;
@@ -60,6 +73,7 @@ import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.screen.SplashScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -69,6 +83,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -130,6 +145,7 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -150,6 +166,7 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -164,9 +181,11 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ServerResourceManager;
+import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.ItemTags;
@@ -201,11 +220,14 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.TickTimeTracker;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -340,7 +362,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.sessionPropertyMap = args.network.profileProperties;
 		this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
 		this.resourcePackManager = new ResourcePackManager<>(
-			MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir)
+			MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, class_5352.field_25347)
 		);
 		this.netProxy = args.network.netProxy;
 		this.sessionService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString()).createMinecraftSessionService();
@@ -778,7 +800,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		if (screen == null && this.world == null) {
 			screen = new TitleScreen();
-		} else if (screen == null && this.player.getHealth() <= 0.0F) {
+		} else if (screen == null && this.player.method_29504()) {
 			if (this.player.showsDeathScreen()) {
 				screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
 			} else {
@@ -854,6 +876,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.statusEffectSpriteManager.close();
 			this.paintingManager.close();
 			this.textureManager.close();
+			this.resourceManager.close();
 			Util.shutdownServerWorkerExecutor();
 		} catch (Throwable var5) {
 			LOGGER.error("Shutdown failure!", var5);
@@ -968,7 +991,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				currentFps,
 				(double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : this.options.maxFps,
 				this.options.enableVsync ? " vsync" : "",
-				this.options.fancyGraphics ? "" : " fast",
+				this.options.field_25444.toString(),
 				this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"),
 				this.options.biomeBlendRadius
 			);
@@ -1347,7 +1370,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		if (this.currentScreen == null && this.player != null) {
-			if (this.player.getHealth() <= 0.0F && !(this.currentScreen instanceof DeathScreen)) {
+			if (this.player.method_29504() && !(this.currentScreen instanceof DeathScreen)) {
 				this.openScreen(null);
 			} else if (this.player.isSleeping() && this.world != null) {
 				this.openScreen(new SleepingChatScreen());
@@ -1546,122 +1569,231 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.handleBlockBreaking(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
 	}
 
-	public void startIntegratedServer(String name, @Nullable LevelInfo levelInfo) {
-		this.startIntegratedServer(name, levelInfo, false);
+	public static class_5359 method_29598(LevelStorage.Session session) {
+		MinecraftServer.convertLevel(session);
+		class_5359 lv = session.method_29585();
+		if (lv == null) {
+			throw new IllegalStateException("Failed to load data pack config");
+		} else {
+			return lv;
+		}
 	}
 
-	public void startIntegratedServer(String name, @Nullable LevelInfo levelInfo, boolean safeMode) {
-		this.disconnect();
+	public static SaveProperties method_29599(
+		LevelStorage.Session session, DimensionTracker.Modifiable modifiable, ResourceManager resourceManager, class_5359 arg
+	) {
+		class_5382<Tag> lv = class_5382.method_29753(NbtOps.INSTANCE, resourceManager, modifiable);
+		SaveProperties saveProperties = session.readLevelProperties(lv, arg);
+		if (saveProperties == null) {
+			throw new IllegalStateException("Failed to load world");
+		} else {
+			return saveProperties;
+		}
+	}
 
+	public void method_29606(String string) {
+		this.method_29610(
+			string, DimensionTracker.create(), MinecraftClient::method_29598, MinecraftClient::method_29599, false, MinecraftClient.class_5366.field_25437
+		);
+	}
+
+	public void method_29607(String string, LevelInfo levelInfo, DimensionTracker.Modifiable modifiable, GeneratorOptions generatorOptions) {
+		this.method_29610(string, modifiable, session -> levelInfo.method_29558(), (session, modifiable2, resourceManager, arg) -> {
+			class_5382<JsonElement> lv = class_5382.method_29753(JsonOps.INSTANCE, resourceManager, modifiable);
+			DataResult<SimpleRegistry<class_5363>> dataResult = lv.method_29755(generatorOptions.getDimensionMap(), Registry.field_25490, class_5363.field_25411);
+			SimpleRegistry<class_5363> simpleRegistry = (SimpleRegistry<class_5363>)dataResult.resultOrPartial(LOGGER::error).orElse(generatorOptions.getDimensionMap());
+			return new LevelProperties(levelInfo, generatorOptions.method_29573(simpleRegistry), dataResult.lifecycle());
+		}, false, MinecraftClient.class_5366.field_25436);
+	}
+
+	private void method_29610(
+		String string,
+		DimensionTracker.Modifiable modifiable,
+		Function<LevelStorage.Session, class_5359> function,
+		Function4<LevelStorage.Session, DimensionTracker.Modifiable, ResourceManager, class_5359, SaveProperties> function4,
+		boolean bl,
+		MinecraftClient.class_5366 arg
+	) {
 		LevelStorage.Session session;
 		try {
-			session = this.levelStorage.createSession(name);
-		} catch (IOException var18) {
-			LOGGER.warn("Failed to read level {} data", name, var18);
-			SystemToast.addWorldAccessFailureToast(this, name);
+			session = this.levelStorage.createSession(string);
+		} catch (IOException var21) {
+			LOGGER.warn("Failed to read level {} data", string, var21);
+			SystemToast.addWorldAccessFailureToast(this, string);
 			this.openScreen(null);
 			return;
 		}
 
-		MinecraftServer.convertLevel(session);
-		SaveProperties saveProperties = session.readLevelProperties();
-		String string;
-		if (saveProperties == null) {
-			if (levelInfo == null) {
-				throw new IllegalStateException("Requested world creation without any settings");
-			}
-
-			saveProperties = new LevelProperties(levelInfo);
-			string = levelInfo.getLevelName();
-			session.method_27425(saveProperties);
-		} else {
-			string = saveProperties.getLevelName();
-		}
-
-		this.worldGenProgressTracker.set(null);
-		ResourcePackManager<ResourcePackProfile> resourcePackManager = MinecraftServer.createResourcePackManager(
-			session.getDirectory(WorldSavePath.DATAPACKS), saveProperties, safeMode
-		);
-		CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
-			resourcePackManager.method_29211(), true, 2, Util.getServerWorkerExecutor(), this
-		);
-		this.runTasks(completableFuture::isDone);
-
-		ServerResourceManager serverResourceManager;
+		MinecraftClient.class_5367 lv;
 		try {
-			serverResourceManager = (ServerResourceManager)completableFuture.get();
-			serverResourceManager.method_29475();
-		} catch (Exception var17) {
-			LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)var17);
-			this.openScreen(new DatapackFailureScreen(name, levelInfo));
+			lv = this.method_29604(modifiable, function, function4, bl, session);
+		} catch (Exception var20) {
+			LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)var20);
+			this.openScreen(new DatapackFailureScreen(() -> this.method_29610(string, modifiable, function, function4, true, arg)));
 
 			try {
 				session.close();
-				resourcePackManager.close();
-			} catch (IOException var14) {
-				LOGGER.warn("Failed to unlock access to level {}", name, var17);
+			} catch (IOException var16) {
+				LOGGER.warn("Failed to unlock access to level {}", string, var16);
 			}
 
 			return;
 		}
 
-		try {
-			YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
-			MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-			GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-			UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
-			SkullBlockEntity.setUserCache(userCache);
-			SkullBlockEntity.setSessionService(minecraftSessionService);
-			UserCache.setUseRemote(false);
-			this.server = new IntegratedServer(
-				this, session, resourcePackManager, serverResourceManager, saveProperties, minecraftSessionService, gameProfileRepository, userCache, i -> {
-					WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
-					worldGenerationProgressTracker.start();
-					this.worldGenProgressTracker.set(worldGenerationProgressTracker);
-					return new QueueingWorldGenerationProgressListener(worldGenerationProgressTracker, this.renderTaskQueue::add);
-				}
-			);
-			this.server.start();
-			this.isIntegratedServerRunning = true;
-		} catch (Throwable var16) {
-			CrashReport crashReport = CrashReport.create(var16, "Starting integrated server");
-			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
-			crashReportSection.add("Level ID", name);
-			crashReportSection.add("Level Name", string);
-			throw new CrashException(crashReport);
-		}
-
-		while (this.worldGenProgressTracker.get() == null) {
-			Thread.yield();
-		}
-
-		LevelLoadingScreen levelLoadingScreen = new LevelLoadingScreen((WorldGenerationProgressTracker)this.worldGenProgressTracker.get());
-		this.openScreen(levelLoadingScreen);
-		this.profiler.push("waitForServer");
-
-		while (!this.server.isLoading()) {
-			levelLoadingScreen.tick();
-			this.render(false);
+		SaveProperties saveProperties = lv.method_29614();
+		boolean bl2 = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
+		boolean bl3 = saveProperties.method_29588() != Lifecycle.stable();
+		if (arg == MinecraftClient.class_5366.field_25435 || !bl2 && !bl3) {
+			this.disconnect();
+			this.worldGenProgressTracker.set(null);
 
 			try {
-				Thread.sleep(16L);
-			} catch (InterruptedException var15) {
+				session.method_27425(modifiable, saveProperties);
+				lv.method_29613().loadRegistryTags();
+				YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
+				MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
+				GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
+				UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
+				SkullBlockEntity.setUserCache(userCache);
+				SkullBlockEntity.setSessionService(minecraftSessionService);
+				UserCache.setUseRemote(false);
+				this.server = MinecraftServer.method_29740(
+					thread -> new IntegratedServer(
+							thread,
+							this,
+							modifiable,
+							session,
+							lv.method_29612(),
+							lv.method_29613(),
+							saveProperties,
+							minecraftSessionService,
+							gameProfileRepository,
+							userCache,
+							i -> {
+								WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
+								worldGenerationProgressTracker.start();
+								this.worldGenProgressTracker.set(worldGenerationProgressTracker);
+								return new QueueingWorldGenerationProgressListener(worldGenerationProgressTracker, this.renderTaskQueue::add);
+							}
+						)
+				);
+				this.isIntegratedServerRunning = true;
+			} catch (Throwable var19) {
+				CrashReport crashReport = CrashReport.create(var19, "Starting integrated server");
+				CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
+				crashReportSection.add("Level ID", string);
+				crashReportSection.add("Level Name", saveProperties.getLevelName());
+				throw new CrashException(crashReport);
 			}
 
-			if (this.crashReport != null) {
-				printCrashReport(this.crashReport);
-				return;
+			while (this.worldGenProgressTracker.get() == null) {
+				Thread.yield();
+			}
+
+			LevelLoadingScreen levelLoadingScreen = new LevelLoadingScreen((WorldGenerationProgressTracker)this.worldGenProgressTracker.get());
+			this.openScreen(levelLoadingScreen);
+			this.profiler.push("waitForServer");
+
+			while (!this.server.isLoading()) {
+				levelLoadingScreen.tick();
+				this.render(false);
+
+				try {
+					Thread.sleep(16L);
+				} catch (InterruptedException var18) {
+				}
+
+				if (this.crashReport != null) {
+					printCrashReport(this.crashReport);
+					return;
+				}
+			}
+
+			this.profiler.pop();
+			SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
+			ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
+			clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {
+			}));
+			clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
+			clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
+			this.connection = clientConnection;
+		} else {
+			this.method_29601(arg, session, bl2, () -> this.method_29610(string, modifiable, function, function4, bl, MinecraftClient.class_5366.field_25435));
+			lv.close();
+
+			try {
+				session.close();
+			} catch (IOException var17) {
+				LOGGER.warn("Failed to unlock access to level {}", string, var17);
 			}
 		}
+	}
 
-		this.profiler.pop();
-		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
-		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {
-		}));
-		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
-		this.connection = clientConnection;
+	private void method_29601(MinecraftClient.class_5366 arg, LevelStorage.Session session, boolean bl, Runnable runnable) {
+		if (arg == MinecraftClient.class_5366.field_25437) {
+			Text text;
+			Text text2;
+			if (bl) {
+				text = new TranslatableText("selectWorld.backupQuestion.customized");
+				text2 = new TranslatableText("selectWorld.backupWarning.customized");
+			} else {
+				text = new TranslatableText("selectWorld.backupQuestion.experimental");
+				text2 = new TranslatableText("selectWorld.backupWarning.experimental");
+			}
+
+			this.openScreen(new BackupPromptScreen(null, (blx, bl2) -> {
+				if (blx) {
+					EditWorldScreen.backupLevel(session);
+				}
+
+				runnable.run();
+			}, text, text2, false));
+		} else {
+			this.openScreen(
+				new ConfirmScreen(
+					blx -> {
+						if (blx) {
+							runnable.run();
+						} else {
+							this.openScreen(null);
+						}
+					},
+					new TranslatableText("selectWorld.backupQuestion.experimental"),
+					new TranslatableText("selectWorld.backupWarning.experimental"),
+					ScreenTexts.PROCEED,
+					ScreenTexts.CANCEL
+				)
+			);
+		}
+	}
+
+	public MinecraftClient.class_5367 method_29604(
+		DimensionTracker.Modifiable modifiable,
+		Function<LevelStorage.Session, class_5359> function,
+		Function4<LevelStorage.Session, DimensionTracker.Modifiable, ResourceManager, class_5359, SaveProperties> function4,
+		boolean bl,
+		LevelStorage.Session session
+	) throws InterruptedException, ExecutionException {
+		class_5359 lv = (class_5359)function.apply(session);
+		ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<>(
+			ResourcePackProfile::new,
+			new VanillaDataPackProvider(),
+			new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), class_5352.field_25349)
+		);
+
+		try {
+			class_5359 lv2 = MinecraftServer.method_29736(resourcePackManager, lv, bl);
+			CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
+				resourcePackManager.method_29211(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this
+			);
+			this.runTasks(completableFuture::isDone);
+			ServerResourceManager serverResourceManager = (ServerResourceManager)completableFuture.get();
+			SaveProperties saveProperties = function4.apply(session, modifiable, serverResourceManager.getResourceManager(), lv2);
+			return new MinecraftClient.class_5367(resourcePackManager, serverResourceManager, saveProperties);
+		} catch (ExecutionException | InterruptedException var12) {
+			resourcePackManager.close();
+			throw var12;
+		}
 	}
 
 	public void joinWorld(ClientWorld world) {
@@ -1771,7 +1903,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static boolean isFancyGraphicsEnabled() {
-		return instance.options.fancyGraphics;
+		return instance.options.field_25444.method_29591() >= class_5365.field_25428.method_29591();
+	}
+
+	public static boolean method_29611() {
+		return instance.options.field_25444.method_29591() >= class_5365.field_25429.method_29591();
 	}
 
 	public static boolean isAmbientOcclusionEnabled() {
@@ -2274,7 +2410,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		Supplier<ResourcePack> supplier,
 		ResourcePack resourcePack,
 		PackResourceMetadata packResourceMetadata,
-		ResourcePackProfile.InsertionPosition insertionPosition
+		ResourcePackProfile.InsertionPosition insertionPosition,
+		class_5352 arg
 	) {
 		int i = packResourceMetadata.getPackFormat();
 		Supplier<ResourcePack> supplier2 = supplier;
@@ -2286,7 +2423,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			supplier2 = createV4ResourcePackFactory(supplier2);
 		}
 
-		return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition);
+		return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, arg);
 	}
 
 	private static Supplier<ResourcePack> createV3ResoucePackFactory(Supplier<ResourcePack> supplier) {
@@ -2299,5 +2436,42 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void resetMipmapLevels(int mipmapLevels) {
 		this.bakedModelManager.resetMipmapLevels(mipmapLevels);
+	}
+
+	@Environment(EnvType.CLIENT)
+	static enum class_5366 {
+		field_25435,
+		field_25436,
+		field_25437;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static final class class_5367 implements AutoCloseable {
+		private final ResourcePackManager<ResourcePackProfile> field_25439;
+		private final ServerResourceManager field_25440;
+		private final SaveProperties field_25441;
+
+		private class_5367(ResourcePackManager<ResourcePackProfile> resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties) {
+			this.field_25439 = resourcePackManager;
+			this.field_25440 = serverResourceManager;
+			this.field_25441 = saveProperties;
+		}
+
+		public ResourcePackManager<ResourcePackProfile> method_29612() {
+			return this.field_25439;
+		}
+
+		public ServerResourceManager method_29613() {
+			return this.field_25440;
+		}
+
+		public SaveProperties method_29614() {
+			return this.field_25441;
+		}
+
+		public void close() {
+			this.field_25439.close();
+			this.field_25440.close();
+		}
 	}
 }

@@ -1,15 +1,20 @@
 package net.minecraft.client.options;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5365;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -227,12 +232,30 @@ public abstract class Option {
 	public static final CyclingOption GRAPHICS = new CyclingOption(
 		"options.graphics",
 		(gameOptions, integer) -> {
-			gameOptions.fancyGraphics = !gameOptions.fancyGraphics;
+			gameOptions.field_25444 = gameOptions.field_25444.method_29595();
+			if (gameOptions.field_25444 == class_5365.field_25429 && !GlStateManager.supportsGl30()) {
+				gameOptions.field_25444 = class_5365.field_25427;
+			}
+
 			MinecraftClient.getInstance().worldRenderer.reload();
 		},
-		(gameOptions, cyclingOption) -> gameOptions.fancyGraphics
-				? cyclingOption.getDisplayPrefix().append(new TranslatableText("options.graphics.fancy"))
-				: cyclingOption.getDisplayPrefix().append(new TranslatableText("options.graphics.fast"))
+		(gameOptions, cyclingOption) -> {
+			switch (gameOptions.field_25444) {
+				case field_25427:
+					cyclingOption.method_29618("options.graphics.fast.tooltip");
+					break;
+				case field_25428:
+					cyclingOption.method_29618("options.graphics.fancy.tooltip");
+					break;
+				case field_25429:
+					cyclingOption.method_29618("options.graphics.fabulous.tooltip");
+			}
+
+			TranslatableText translatableText = new TranslatableText(gameOptions.field_25444.method_29593());
+			return gameOptions.field_25444 == class_5365.field_25429
+				? cyclingOption.getDisplayPrefix().append(new LiteralText("").append(translatableText).formatted(Formatting.ITALIC))
+				: cyclingOption.getDisplayPrefix().append(translatableText);
+		}
 	);
 	public static final CyclingOption GUI_SCALE = new CyclingOption(
 		"options.guiScale",
@@ -271,11 +294,12 @@ public abstract class Option {
 		(gameOptions, integer) -> gameOptions.particles = ParticlesOption.byId(gameOptions.particles.getId() + integer),
 		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.particles.getTranslationKey()))
 	);
-	public static final CyclingOption CLOUDS = new CyclingOption(
-		"options.renderClouds",
-		(gameOptions, integer) -> gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer),
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey()))
-	);
+	public static final CyclingOption CLOUDS = new CyclingOption("options.renderClouds", (gameOptions, integer) -> {
+		gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer);
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().worldRenderer.method_29364().clear(MinecraftClient.IS_SYSTEM_MAC);
+		}
+	}, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
 	public static final CyclingOption TEXT_BACKGROUND = new CyclingOption(
 		"options.accessibility.text_background",
 		(gameOptions, integer) -> gameOptions.backgroundForChatOnly = !gameOptions.backgroundForChatOnly,
@@ -365,14 +389,24 @@ public abstract class Option {
 		"options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, boolean_) -> gameOptions.bobView = boolean_
 	);
 	private final String key;
+	private Optional<TranslatableText> field_25442;
 
 	public Option(String key) {
 		this.key = key;
+		this.field_25442 = Optional.empty();
 	}
 
 	public abstract AbstractButtonWidget createButton(GameOptions options, int x, int y, int width);
 
 	public MutableText getDisplayPrefix() {
 		return new TranslatableText(this.key).append(": ");
+	}
+
+	public void method_29618(String string) {
+		this.field_25442 = Optional.of(new TranslatableText(string));
+	}
+
+	public Optional<TranslatableText> method_29619() {
+		return this.field_25442;
 	}
 }

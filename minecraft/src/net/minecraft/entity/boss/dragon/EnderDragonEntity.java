@@ -128,7 +128,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	public double[] getSegmentProperties(int segmentNumber, float tickDelta) {
-		if (this.getHealth() <= 0.0F) {
+		if (this.method_29504()) {
 			tickDelta = 0.0F;
 		}
 
@@ -178,7 +178,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		}
 
 		this.prevWingPosition = this.wingPosition;
-		if (this.getHealth() <= 0.0F) {
+		if (this.method_29504()) {
 			float fx = (this.random.nextFloat() - 0.5F) * 8.0F;
 			float gx = (this.random.nextFloat() - 0.5F) * 4.0F;
 			float h = (this.random.nextFloat() - 0.5F) * 8.0F;
@@ -482,7 +482,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				if (source.getAttacker() instanceof PlayerEntity || source.isExplosive()) {
 					float f = this.getHealth();
 					this.parentDamage(source, amount);
-					if (this.getHealth() <= 0.0F && !this.phaseManager.getCurrent().isSittingOrHovering()) {
+					if (this.method_29504() && !this.phaseManager.getCurrent().isSittingOrHovering()) {
 						this.setHealth(1.0F);
 						this.phaseManager.setPhase(PhaseType.DYING);
 					}

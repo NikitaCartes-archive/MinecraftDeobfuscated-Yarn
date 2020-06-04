@@ -321,6 +321,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
+			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion(
 				"netherite_armor",
 				InventoryChangedCriterion.Conditions.items(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS)
@@ -419,6 +420,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
+			.rewards(AdvancementRewards.Builder.experience(500))
 			.build(consumer, "nether/explore_nether");
 		Advancement advancement13 = Advancement.Task.create()
 			.parent(advancement)

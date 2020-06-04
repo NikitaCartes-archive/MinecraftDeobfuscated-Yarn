@@ -16,11 +16,6 @@ public class DedicatedPlayerManager extends PlayerManager {
 		ServerPropertiesHandler serverPropertiesHandler = minecraftDedicatedServer.getProperties();
 		this.setViewDistance(serverPropertiesHandler.viewDistance);
 		super.setWhitelistEnabled(serverPropertiesHandler.whiteList.get());
-		if (!minecraftDedicatedServer.isSinglePlayer()) {
-			this.getUserBanList().setEnabled(true);
-			this.getIpBanList().setEnabled(true);
-		}
-
 		this.loadUserBanList();
 		this.saveUserBanList();
 		this.loadIpBanList();

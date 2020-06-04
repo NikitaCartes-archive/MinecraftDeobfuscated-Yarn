@@ -48,7 +48,7 @@ public class CommandManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher<>();
 
-	public CommandManager(boolean dedicated) {
+	public CommandManager(CommandManager.RegistrationEnvironment environment) {
 		AdvancementCommand.register(this.dispatcher);
 		AttributeCommand.register(this.dispatcher);
 		ExecuteCommand.register(this.dispatcher);
@@ -80,14 +80,13 @@ public class CommandManager {
 		MessageCommand.register(this.dispatcher);
 		ParticleCommand.register(this.dispatcher);
 		PlaySoundCommand.register(this.dispatcher);
-		PublishCommand.register(this.dispatcher);
 		ReloadCommand.register(this.dispatcher);
 		RecipeCommand.register(this.dispatcher);
 		ReplaceItemCommand.register(this.dispatcher);
 		SayCommand.register(this.dispatcher);
 		ScheduleCommand.register(this.dispatcher);
 		ScoreboardCommand.register(this.dispatcher);
-		SeedCommand.register(this.dispatcher);
+		SeedCommand.register(this.dispatcher, environment == CommandManager.RegistrationEnvironment.INTEGRATED);
 		SetBlockCommand.register(this.dispatcher);
 		SpawnPointCommand.register(this.dispatcher);
 		SetWorldSpawnCommand.register(this.dispatcher);
@@ -109,7 +108,7 @@ public class CommandManager {
 			TestCommand.register(this.dispatcher);
 		}
 
-		if (dedicated) {
+		if (environment.dedicated) {
 			BanIpCommand.register(this.dispatcher);
 			BanListCommand.register(this.dispatcher);
 			BanCommand.register(this.dispatcher);
@@ -123,6 +122,10 @@ public class CommandManager {
 			SetIdleTimeoutCommand.register(this.dispatcher);
 			StopCommand.register(this.dispatcher);
 			WhitelistCommand.register(this.dispatcher);
+		}
+
+		if (environment.integrated) {
+			PublishCommand.register(this.dispatcher);
 		}
 
 		this.dispatcher
@@ -245,8 +248,8 @@ public class CommandManager {
 		}
 	}
 
-	public static LiteralArgumentBuilder<ServerCommandSource> literal(String string) {
-		return LiteralArgumentBuilder.literal(string);
+	public static LiteralArgumentBuilder<ServerCommandSource> literal(String literal) {
+		return LiteralArgumentBuilder.literal(literal);
 	}
 
 	public static <T> RequiredArgumentBuilder<ServerCommandSource, T> argument(String name, ArgumentType<T> type) {
@@ -284,5 +287,22 @@ public class CommandManager {
 	@FunctionalInterface
 	public interface CommandParser {
 		void parse(StringReader stringReader) throws CommandSyntaxException;
+	}
+
+	/**
+	 * Describes the environment in which commands are registered.
+	 */
+	public static enum RegistrationEnvironment {
+		ALL(true, true),
+		DEDICATED(false, true),
+		INTEGRATED(true, false);
+
+		private final boolean integrated;
+		private final boolean dedicated;
+
+		private RegistrationEnvironment(boolean integrated, boolean dedicated) {
+			this.integrated = integrated;
+			this.dedicated = dedicated;
+		}
 	}
 }

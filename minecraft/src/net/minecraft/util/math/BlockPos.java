@@ -132,8 +132,8 @@ public class BlockPos extends Vec3i {
 		return this.offset(Direction.DOWN);
 	}
 
-	public BlockPos down(int distance) {
-		return this.offset(Direction.DOWN, distance);
+	public BlockPos down(int i) {
+		return this.offset(Direction.DOWN, i);
 	}
 
 	public BlockPos north() {
@@ -342,6 +342,17 @@ public class BlockPos extends Vec3i {
 			Math.max(box.minX, box.maxX),
 			Math.max(box.minY, box.maxY),
 			Math.max(box.minZ, box.maxZ)
+		);
+	}
+
+	public static Stream<BlockPos> method_29715(Box box) {
+		return stream(
+			MathHelper.floor(box.minX),
+			MathHelper.floor(box.minY),
+			MathHelper.floor(box.minZ),
+			MathHelper.floor(box.maxX),
+			MathHelper.floor(box.maxY),
+			MathHelper.floor(box.maxZ)
 		);
 	}
 

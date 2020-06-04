@@ -225,7 +225,7 @@ public class SpreadPlayersCommand {
 				pile = piles[j++];
 			}
 
-			entity.teleport((double)((float)MathHelper.floor(pile.x) + 0.5F), (double)pile.getY(world, i), (double)MathHelper.floor(pile.z) + 0.5);
+			entity.teleport((double)MathHelper.floor(pile.x) + 0.5, (double)pile.getY(world, i), (double)MathHelper.floor(pile.z) + 0.5);
 			double e = Double.MAX_VALUE;
 
 			for (SpreadPlayersCommand.Pile pile2 : piles) {

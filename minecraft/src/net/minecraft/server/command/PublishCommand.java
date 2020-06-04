@@ -17,7 +17,7 @@ public class PublishCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("publish")
-				.requires(serverCommandSource -> serverCommandSource.getMinecraftServer().isSinglePlayer() && serverCommandSource.hasPermissionLevel(4))
+				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 				.executes(commandContext -> execute(commandContext.getSource(), NetworkUtils.findLocalPort()))
 				.then(
 					CommandManager.argument("port", IntegerArgumentType.integer(0, 65535))

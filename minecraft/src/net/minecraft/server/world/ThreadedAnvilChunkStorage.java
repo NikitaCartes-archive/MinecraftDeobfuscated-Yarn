@@ -41,7 +41,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -947,24 +946,22 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	protected void loadEntity(Entity entity) {
 		if (!(entity instanceof EnderDragonPart)) {
-			if (!(entity instanceof LightningEntity)) {
-				EntityType<?> entityType = entity.getType();
-				int i = entityType.getMaxTrackDistance() * 16;
-				int j = entityType.getTrackTickInterval();
-				if (this.entityTrackers.containsKey(entity.getEntityId())) {
-					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Entity is already tracked!"));
-				} else {
-					ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
-					this.entityTrackers.put(entity.getEntityId(), entityTracker);
-					entityTracker.updateCameraPosition(this.world.getPlayers());
-					if (entity instanceof ServerPlayerEntity) {
-						ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-						this.handlePlayerAddedOrRemoved(serverPlayerEntity, true);
+			EntityType<?> entityType = entity.getType();
+			int i = entityType.getMaxTrackDistance() * 16;
+			int j = entityType.getTrackTickInterval();
+			if (this.entityTrackers.containsKey(entity.getEntityId())) {
+				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Entity is already tracked!"));
+			} else {
+				ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
+				this.entityTrackers.put(entity.getEntityId(), entityTracker);
+				entityTracker.updateCameraPosition(this.world.getPlayers());
+				if (entity instanceof ServerPlayerEntity) {
+					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+					this.handlePlayerAddedOrRemoved(serverPlayerEntity, true);
 
-						for (ThreadedAnvilChunkStorage.EntityTracker entityTracker2 : this.entityTrackers.values()) {
-							if (entityTracker2.entity != serverPlayerEntity) {
-								entityTracker2.updateCameraPosition(serverPlayerEntity);
-							}
+					for (ThreadedAnvilChunkStorage.EntityTracker entityTracker2 : this.entityTrackers.values()) {
+						if (entityTracker2.entity != serverPlayerEntity) {
+							entityTracker2.updateCameraPosition(serverPlayerEntity);
 						}
 					}
 				}

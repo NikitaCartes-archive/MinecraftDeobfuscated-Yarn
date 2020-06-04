@@ -18,10 +18,10 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 	private final Set<ResourcePackProvider> providers;
 	private Map<String, T> profiles = ImmutableMap.of();
 	private List<T> enabled = ImmutableList.of();
-	private final ResourcePackProfile.Factory<T> profileFactory;
+	private final ResourcePackProfile.class_5351<T> profileFactory;
 
-	public ResourcePackManager(ResourcePackProfile.Factory<T> factory, ResourcePackProvider... resourcePackProviders) {
-		this.profileFactory = factory;
+	public ResourcePackManager(ResourcePackProfile.class_5351<T> arg, ResourcePackProvider... resourcePackProviders) {
+		this.profileFactory = arg;
 		this.providers = ImmutableSet.copyOf(resourcePackProviders);
 	}
 
@@ -36,7 +36,9 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		Map<String, T> map = Maps.newTreeMap();
 
 		for (ResourcePackProvider resourcePackProvider : this.providers) {
-			resourcePackProvider.register(map, this.profileFactory);
+			resourcePackProvider.register(resourcePackProfile -> {
+				ResourcePackProfile var10000 = (ResourcePackProfile)map.put(resourcePackProfile.getName(), resourcePackProfile);
+			}, this.profileFactory);
 		}
 
 		return ImmutableMap.copyOf(map);

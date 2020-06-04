@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -218,7 +219,7 @@ public class ProfileResultImpl implements ProfileResult {
 
 	private void appendTiming(int level, String name, StringBuilder sb) {
 		List<ProfilerTiming> list = this.getTimings(name);
-		Object2LongMap<String> object2LongMap = ((ProfileLocationInfo)this.locationInfos.get(name)).getCounts();
+		Object2LongMap<String> object2LongMap = ObjectUtils.firstNonNull((ProfileLocationInfo)this.locationInfos.get(name), EMPTY_INFO).getCounts();
 		object2LongMap.forEach(
 			(string, long_) -> indent(sb, level).append('#').append(string).append(' ').append(long_).append('/').append(long_ / (long)this.tickDuration).append('\n')
 		);

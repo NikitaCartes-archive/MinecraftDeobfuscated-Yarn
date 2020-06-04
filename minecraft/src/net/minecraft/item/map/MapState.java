@@ -332,14 +332,14 @@ public class MapState extends PersistentState {
 	}
 
 	public void addBanner(WorldAccess world, BlockPos pos) {
-		float f = (float)pos.getX() + 0.5F;
-		float g = (float)pos.getZ() + 0.5F;
+		double d = (double)pos.getX() + 0.5;
+		double e = (double)pos.getZ() + 0.5;
 		int i = 1 << this.scale;
-		float h = (f - (float)this.xCenter) / (float)i;
-		float j = (g - (float)this.zCenter) / (float)i;
-		int k = 63;
+		double f = (d - (double)this.xCenter) / (double)i;
+		double g = (e - (double)this.zCenter) / (double)i;
+		int j = 63;
 		boolean bl = false;
-		if (h >= -63.0F && j >= -63.0F && h <= 63.0F && j <= 63.0F) {
+		if (f >= -63.0 && g >= -63.0 && f <= 63.0 && g <= 63.0) {
 			MapBannerMarker mapBannerMarker = MapBannerMarker.fromWorldBlock(world, pos);
 			if (mapBannerMarker == null) {
 				return;
@@ -355,7 +355,7 @@ public class MapState extends PersistentState {
 
 			if (bl2) {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
-				this.addIcon(mapBannerMarker.getIconType(), world, mapBannerMarker.getKey(), (double)f, (double)g, 180.0, mapBannerMarker.getName());
+				this.addIcon(mapBannerMarker.getIconType(), world, mapBannerMarker.getKey(), d, e, 180.0, mapBannerMarker.getName());
 				bl = true;
 			}
 

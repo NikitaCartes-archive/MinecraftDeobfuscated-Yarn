@@ -64,9 +64,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.dynamic.GlobalPos;
-import net.minecraft.util.dynamic.Timestamp;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -297,13 +297,13 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() == Items.VILLAGER_SPAWN_EGG || !this.isAlive() || this.hasCustomer() || this.isSleeping()) {
 			return super.interactMob(player, hand);
 		} else if (this.isBaby()) {
 			this.sayNo();
-			return super.interactMob(player, hand);
+			return ActionResult.method_29236(this.world.isClient);
 		} else {
 			boolean bl = this.getOffers().isEmpty();
 			if (hand == Hand.MAIN_HAND) {
@@ -315,13 +315,13 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			}
 
 			if (bl) {
-				return super.interactMob(player, hand);
+				return ActionResult.method_29236(this.world.isClient);
 			} else {
 				if (!this.world.isClient && !this.offers.isEmpty()) {
 					this.beginTradeWith(player);
 				}
 
-				return true;
+				return ActionResult.method_29236(this.world.isClient);
 			}
 		}
 	}
@@ -750,10 +750,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 				witchEntity.setCustomNameVisible(this.isCustomNameVisible());
 			}
 
-			if (this.getExperience() > 0) {
-				witchEntity.setPersistent();
-			}
-
+			witchEntity.setPersistent();
 			this.world.spawnEntity(witchEntity);
 			this.remove();
 		} else {
@@ -771,7 +768,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 				return;
 			}
 
-			this.method_27964(item);
+			this.method_29499(item);
 			this.sendPickup(item, itemStack.getCount());
 			ItemStack itemStack2 = simpleInventory.addStack(itemStack);
 			if (itemStack2.isEmpty()) {
@@ -952,7 +949,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	public void sleep(BlockPos pos) {
 		super.sleep(pos);
-		this.brain.remember(MemoryModuleType.LAST_SLEPT, Timestamp.of(this.world.getTime()));
+		this.brain.remember(MemoryModuleType.LAST_SLEPT, this.world.getTime());
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 	}
@@ -960,11 +957,11 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	public void wakeUp() {
 		super.wakeUp();
-		this.brain.remember(MemoryModuleType.LAST_WOKEN, Timestamp.of(this.world.getTime()));
+		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
 	}
 
 	private boolean hasRecentlyWorkedAndSlept(long worldTime) {
-		Optional<Timestamp> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
-		return optional.isPresent() ? worldTime - ((Timestamp)optional.get()).getTime() < 24000L : false;
+		Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
+		return optional.isPresent() ? worldTime - (Long)optional.get() < 24000L : false;
 	}
 }

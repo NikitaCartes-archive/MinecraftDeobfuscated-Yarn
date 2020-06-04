@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5352;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -33,57 +34,36 @@ public class ResourcePackProfile implements AutoCloseable {
 	private final ResourcePackProfile.InsertionPosition position;
 	private final boolean alwaysEnabled;
 	private final boolean pinned;
+	private final class_5352 field_25346;
 
 	@Nullable
 	public static <T extends ResourcePackProfile> T of(
 		String name,
 		boolean alwaysEnabled,
 		Supplier<ResourcePack> packFactory,
-		ResourcePackProfile.Factory<T> containerFactory,
-		ResourcePackProfile.InsertionPosition insertionPosition
+		ResourcePackProfile.class_5351<T> containerFactory,
+		ResourcePackProfile.InsertionPosition insertionPosition,
+		class_5352 arg
 	) {
-		try {
-			ResourcePack resourcePack = (ResourcePack)packFactory.get();
-			Throwable var6 = null;
-
-			ResourcePackProfile var8;
-			try {
-				PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
-				if (alwaysEnabled && packResourceMetadata == null) {
-					LOGGER.error(
-						"Broken/missing pack.mcmeta detected, fudging it into existance. Please check that your launcher has downloaded all assets for the game correctly!"
-					);
-					packResourceMetadata = BROKEN_PACK_META;
-				}
-
-				if (packResourceMetadata == null) {
-					LOGGER.warn("Couldn't find pack meta for pack {}", name);
-					return null;
-				}
-
-				var8 = containerFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition);
-			} catch (Throwable var19) {
-				var6 = var19;
-				throw var19;
-			} finally {
-				if (resourcePack != null) {
-					if (var6 != null) {
-						try {
-							resourcePack.close();
-						} catch (Throwable var18) {
-							var6.addSuppressed(var18);
-						}
-					} else {
-						resourcePack.close();
-					}
-				}
+		try (ResourcePack resourcePack = (ResourcePack)packFactory.get()) {
+			PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
+			if (alwaysEnabled && packResourceMetadata == null) {
+				LOGGER.error(
+					"Broken/missing pack.mcmeta detected, fudging it into existance. Please check that your launcher has downloaded all assets for the game correctly!"
+				);
+				packResourceMetadata = BROKEN_PACK_META;
 			}
 
-			return (T)var8;
-		} catch (IOException var21) {
-			LOGGER.warn("Couldn't get pack info for: {}", var21.toString());
-			return null;
+			if (packResourceMetadata != null) {
+				return containerFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition, arg);
+			}
+
+			LOGGER.warn("Couldn't find pack meta for pack {}", name);
+		} catch (IOException var22) {
+			LOGGER.warn("Couldn't get pack info for: {}", var22.toString());
 		}
+
+		return null;
 	}
 
 	public ResourcePackProfile(
@@ -94,7 +74,8 @@ public class ResourcePackProfile implements AutoCloseable {
 		Text description,
 		ResourcePackCompatibility compatibility,
 		ResourcePackProfile.InsertionPosition direction,
-		boolean pinned
+		boolean pinned,
+		class_5352 arg
 	) {
 		this.name = name;
 		this.packGetter = packFactory;
@@ -104,6 +85,7 @@ public class ResourcePackProfile implements AutoCloseable {
 		this.alwaysEnabled = alwaysEnabled;
 		this.position = direction;
 		this.pinned = pinned;
+		this.field_25346 = arg;
 	}
 
 	public ResourcePackProfile(
@@ -112,7 +94,8 @@ public class ResourcePackProfile implements AutoCloseable {
 		Supplier<ResourcePack> packFactory,
 		ResourcePack pack,
 		PackResourceMetadata metadata,
-		ResourcePackProfile.InsertionPosition direction
+		ResourcePackProfile.InsertionPosition direction,
+		class_5352 arg
 	) {
 		this(
 			name,
@@ -122,7 +105,8 @@ public class ResourcePackProfile implements AutoCloseable {
 			metadata.getDescription(),
 			ResourcePackCompatibility.from(metadata.getPackFormat()),
 			direction,
-			false
+			false,
+			arg
 		);
 	}
 
@@ -137,7 +121,7 @@ public class ResourcePackProfile implements AutoCloseable {
 	}
 
 	public Text getInformationText(boolean enabled) {
-		return Texts.bracketed(new LiteralText(this.name))
+		return Texts.bracketed(this.field_25346.decorate(new LiteralText(this.name)))
 			.styled(
 				style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED)
 						.withInsertion(StringArgumentType.escapeIfRequired(this.name))
@@ -169,6 +153,11 @@ public class ResourcePackProfile implements AutoCloseable {
 		return this.position;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public class_5352 method_29483() {
+		return this.field_25346;
+	}
+
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -185,19 +174,6 @@ public class ResourcePackProfile implements AutoCloseable {
 	}
 
 	public void close() {
-	}
-
-	@FunctionalInterface
-	public interface Factory<T extends ResourcePackProfile> {
-		@Nullable
-		T create(
-			String name,
-			boolean alwaysEnabled,
-			Supplier<ResourcePack> packFactory,
-			ResourcePack pack,
-			PackResourceMetadata meta,
-			ResourcePackProfile.InsertionPosition insertionPosition
-		);
 	}
 
 	public static enum InsertionPosition {
@@ -234,5 +210,19 @@ public class ResourcePackProfile implements AutoCloseable {
 		public ResourcePackProfile.InsertionPosition inverse() {
 			return this == TOP ? BOTTOM : TOP;
 		}
+	}
+
+	@FunctionalInterface
+	public interface class_5351<T extends ResourcePackProfile> {
+		@Nullable
+		T create(
+			String string,
+			boolean bl,
+			Supplier<ResourcePack> supplier,
+			ResourcePack resourcePack,
+			PackResourceMetadata packResourceMetadata,
+			ResourcePackProfile.InsertionPosition insertionPosition,
+			class_5352 arg
+		);
 	}
 }

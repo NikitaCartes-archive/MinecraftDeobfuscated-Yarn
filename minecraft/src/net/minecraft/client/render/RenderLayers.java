@@ -218,6 +218,8 @@ public class RenderLayers {
 		hashMap.put(Blocks.POTTED_WARPED_FUNGUS, renderLayer2);
 		hashMap.put(Blocks.POTTED_CRIMSON_ROOTS, renderLayer2);
 		hashMap.put(Blocks.POTTED_WARPED_ROOTS, renderLayer2);
+		hashMap.put(Blocks.CRIMSON_DOOR, renderLayer2);
+		hashMap.put(Blocks.WARPED_DOOR, renderLayer2);
 		RenderLayer renderLayer3 = RenderLayer.getTranslucent();
 		hashMap.put(Blocks.ICE, renderLayer3);
 		hashMap.put(Blocks.NETHER_PORTAL, renderLayer3);

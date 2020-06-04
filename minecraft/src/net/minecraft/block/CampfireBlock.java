@@ -160,9 +160,9 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		if ((Boolean)state.get(LIT)) {
 			if (random.nextInt(10) == 0) {
 				world.playSound(
-					(double)((float)pos.getX() + 0.5F),
-					(double)((float)pos.getY() + 0.5F),
-					(double)((float)pos.getZ() + 0.5F),
+					(double)pos.getX() + 0.5,
+					(double)pos.getY() + 0.5,
+					(double)pos.getZ() + 0.5,
 					SoundEvents.BLOCK_CAMPFIRE_CRACKLE,
 					SoundCategory.BLOCKS,
 					0.5F + random.nextFloat(),
@@ -175,9 +175,9 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				for (int i = 0; i < random.nextInt(1) + 1; i++) {
 					world.addParticle(
 						ParticleTypes.LAVA,
-						(double)((float)pos.getX() + 0.5F),
-						(double)((float)pos.getY() + 0.5F),
-						(double)((float)pos.getZ() + 0.5F),
+						(double)pos.getX() + 0.5,
+						(double)pos.getY() + 0.5,
+						(double)pos.getZ() + 0.5,
 						(double)(random.nextFloat() / 2.0F),
 						5.0E-5,
 						(double)(random.nextFloat() / 2.0F)

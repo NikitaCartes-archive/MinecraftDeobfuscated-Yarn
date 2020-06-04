@@ -31,13 +31,32 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.Transparency LIGHTNING_TRANSPARENCY = new RenderPhase.Transparency("lightning_transparency", () -> {
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
-		MinecraftClient.getInstance().worldRenderer.method_29363().beginWrite(false);
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().worldRenderer.method_29363().beginWrite(false);
+		}
 	}, () -> {
-		MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		}
+
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
 	});
 	protected static final RenderPhase.Transparency GLINT_TRANSPARENCY = new RenderPhase.Transparency("glint_transparency", () -> {
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE);
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().worldRenderer.method_29361().beginWrite(false);
+		}
+	}, () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		}
+
+		RenderSystem.disableBlend();
+		RenderSystem.defaultBlendFunc();
+	});
+	protected static final RenderPhase.Transparency field_25485 = new RenderPhase.Transparency("glint_gui_transparency", () -> {
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE);
 	}, () -> {
@@ -68,8 +87,20 @@ public abstract class RenderPhase {
 				GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
 			);
 		},
-		() -> RenderSystem.disableBlend()
+		() -> {
+			RenderSystem.disableBlend();
+			RenderSystem.defaultBlendFunc();
+		}
 	);
+	protected static final RenderPhase.Transparency field_25486 = new RenderPhase.Transparency("dragon_explosion_transparency", () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().worldRenderer.method_29363().beginWrite(false);
+		}
+	}, () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		}
+	});
 	protected static final RenderPhase.Transparency ITEM_TRANSPARENCY = new RenderPhase.Transparency(
 		"item_transparency",
 		() -> {
@@ -80,11 +111,17 @@ public abstract class RenderPhase {
 				GlStateManager.SrcFactor.ONE,
 				GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
 			);
-			MinecraftClient.getInstance().worldRenderer.method_29361().beginWrite(false);
+			if (MinecraftClient.method_29611()) {
+				MinecraftClient.getInstance().worldRenderer.method_29361().beginWrite(false);
+			}
 		},
 		() -> {
-			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+			if (MinecraftClient.method_29611()) {
+				MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+			}
+
 			RenderSystem.disableBlend();
+			RenderSystem.defaultBlendFunc();
 		}
 	);
 	protected static final RenderPhase.Alpha ZERO_ALPHA = new RenderPhase.Alpha(0.0F);
@@ -163,26 +200,42 @@ public abstract class RenderPhase {
 		() -> MinecraftClient.getInstance().worldRenderer.getEntityOutlinesFramebuffer().beginWrite(false),
 		() -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)
 	);
-	protected static final RenderPhase.Target TRANSLUCENT_TARGET = new RenderPhase.Target(
-		"translucent_target",
-		() -> MinecraftClient.getInstance().worldRenderer.method_29360().beginWrite(false),
-		() -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)
-	);
-	protected static final RenderPhase.Target PARTICLES_TARGET = new RenderPhase.Target(
-		"particles_target",
-		() -> MinecraftClient.getInstance().worldRenderer.getParticlesFramebuffer().beginWrite(false),
-		() -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)
-	);
-	protected static final RenderPhase.Target WEATHER_TARGET = new RenderPhase.Target(
-		"weather_target",
-		() -> MinecraftClient.getInstance().worldRenderer.method_29363().beginWrite(false),
-		() -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)
-	);
-	protected static final RenderPhase.Target CLOUDS_TARGET = new RenderPhase.Target(
-		"clouds_target",
-		() -> MinecraftClient.getInstance().worldRenderer.method_29364().beginWrite(false),
-		() -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false)
-	);
+	protected static final RenderPhase.Target TRANSLUCENT_TARGET = new RenderPhase.Target("translucent_target", () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().worldRenderer.method_29360().beginWrite(false);
+		}
+	}, () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		}
+	});
+	protected static final RenderPhase.Target PARTICLES_TARGET = new RenderPhase.Target("particles_target", () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().worldRenderer.getParticlesFramebuffer().beginWrite(false);
+		}
+	}, () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		}
+	});
+	protected static final RenderPhase.Target WEATHER_TARGET = new RenderPhase.Target("weather_target", () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().worldRenderer.method_29363().beginWrite(false);
+		}
+	}, () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		}
+	});
+	protected static final RenderPhase.Target CLOUDS_TARGET = new RenderPhase.Target("clouds_target", () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().worldRenderer.method_29364().beginWrite(false);
+		}
+	}, () -> {
+		if (MinecraftClient.method_29611()) {
+			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+		}
+	});
 	protected static final RenderPhase.LineWidth FULL_LINEWIDTH = new RenderPhase.LineWidth(OptionalDouble.of(1.0));
 
 	public RenderPhase(String name, Runnable beginAction, Runnable endAction) {

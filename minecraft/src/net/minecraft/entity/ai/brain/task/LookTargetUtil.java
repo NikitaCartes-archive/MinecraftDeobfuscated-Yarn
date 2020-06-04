@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.brain.task;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
@@ -142,9 +142,9 @@ public class LookTargetUtil {
 		return source.squaredDistanceTo(vec3d) < source.squaredDistanceTo(vec3d2) ? first : second;
 	}
 
-	public static Optional<LivingEntity> getEntity(LivingEntity entity, MemoryModuleType<DynamicSerializableUuid> uuidMemoryModule) {
-		Optional<DynamicSerializableUuid> optional = entity.getBrain().getOptionalMemory(uuidMemoryModule);
-		return optional.map(DynamicSerializableUuid::getUuid).map(uUID -> (LivingEntity)((ServerWorld)entity.world).getEntity(uUID));
+	public static Optional<LivingEntity> getEntity(LivingEntity entity, MemoryModuleType<UUID> uuidMemoryModule) {
+		Optional<UUID> optional = entity.getBrain().getOptionalMemory(uuidMemoryModule);
+		return optional.map(uUID -> (LivingEntity)((ServerWorld)entity.world).getEntity(uUID));
 	}
 
 	public static Stream<VillagerEntity> method_29248(VillagerEntity villagerEntity, Predicate<VillagerEntity> predicate) {

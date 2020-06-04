@@ -2,6 +2,7 @@ package net.minecraft.entity.vehicle;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
@@ -15,17 +16,15 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
+	public ActionResult interact(PlayerEntity player, Hand hand) {
 		if (player.shouldCancelInteraction()) {
-			return false;
+			return ActionResult.PASS;
 		} else if (this.hasPassengers()) {
-			return false;
+			return ActionResult.PASS;
+		} else if (!this.world.isClient) {
+			return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
-			if (!this.world.isClient) {
-				player.startRiding(this);
-			}
-
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 

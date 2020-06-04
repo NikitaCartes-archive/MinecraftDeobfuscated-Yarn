@@ -14,13 +14,7 @@ public class BanListCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("banlist")
-				.requires(
-					serverCommandSource -> (
-								serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList().isEnabled()
-									|| serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled()
-							)
-							&& serverCommandSource.hasPermissionLevel(3)
-				)
+				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.executes(
 					commandContext -> {
 						PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();

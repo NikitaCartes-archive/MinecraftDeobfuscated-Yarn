@@ -50,6 +50,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +67,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private DedicatedServerGui gui;
 
 	public MinecraftDedicatedServer(
+		Thread thread,
+		DimensionTracker.Modifiable modifiable,
 		LevelStorage.Session session,
 		ResourcePackManager<ResourcePackProfile> resourcePackManager,
 		ServerResourceManager serverResourceManager,
@@ -78,6 +81,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
+			thread,
+			modifiable,
 			session,
 			saveProperties,
 			resourcePackManager,

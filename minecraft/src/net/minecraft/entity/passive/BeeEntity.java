@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5354;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -30,6 +31,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.control.LookControl;
@@ -72,6 +74,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
@@ -81,10 +84,11 @@ import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
-public class BeeEntity extends AnimalEntity implements Flutterer {
+public class BeeEntity extends AnimalEntity implements class_5354, Flutterer {
 	private static final TrackedData<Byte> multipleByteTracker = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Integer> anger = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private UUID targetPlayer;
+	private static final IntRange field_25363 = Durations.betweenSeconds(20, 39);
+	private UUID field_25364;
 	private float currentPitch;
 	private float lastPitch;
 	private int ticksSinceSting;
@@ -161,10 +165,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		tag.putInt("TicksSincePollination", this.ticksSincePollination);
 		tag.putInt("CannotEnterHiveTicks", this.cannotEnterHiveTicks);
 		tag.putInt("CropsGrownSincePollination", this.cropsGrownSincePollination);
-		tag.putInt("Anger", this.getAnger());
-		if (this.targetPlayer != null) {
-			tag.putUuid("HurtBy", this.targetPlayer);
-		}
+		this.method_29517(tag);
 	}
 
 	@Override
@@ -182,19 +183,10 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		super.readCustomDataFromTag(tag);
 		this.setHasNectar(tag.getBoolean("HasNectar"));
 		this.setHasStung(tag.getBoolean("HasStung"));
-		this.setAnger(tag.getInt("Anger"));
 		this.ticksSincePollination = tag.getInt("TicksSincePollination");
 		this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
 		this.cropsGrownSincePollination = tag.getInt("CropsGrownSincePollination");
-		if (tag.containsUuid("HurtBy")) {
-			this.targetPlayer = tag.getUuid("HurtBy");
-			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.targetPlayer);
-			this.setAttacker(playerEntity);
-			if (playerEntity != null) {
-				this.attackingPlayer = playerEntity;
-				this.playerHitTimer = this.getLastAttackedTime();
-			}
-		}
+		this.method_29512(this.world, tag);
 	}
 
 	@Override
@@ -313,14 +305,6 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	}
 
 	@Override
-	public void setAttacker(@Nullable LivingEntity attacker) {
-		super.setAttacker(attacker);
-		if (attacker != null) {
-			this.targetPlayer = attacker.getUuid();
-		}
-	}
-
-	@Override
 	protected void mobTick() {
 		boolean bl = this.hasStung();
 		if (this.isInsideWaterOrBubbleColumn()) {
@@ -340,15 +324,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 			}
 		}
 
-		if (this.isAngry()) {
-			int i = this.getAnger();
-			this.setAnger(i - 1);
-			LivingEntity livingEntity = this.getTarget();
-			if (i == 0 && livingEntity != null) {
-				this.setBeeAttacker(livingEntity);
-			}
-		}
-
+		this.method_29510();
 		if (!this.hasNectar()) {
 			this.ticksSincePollination++;
 		}
@@ -367,16 +343,29 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		}
 	}
 
-	public boolean isAngry() {
-		return this.getAnger() > 0;
-	}
-
-	private int getAnger() {
+	@Override
+	public int method_29507() {
 		return this.dataTracker.get(anger);
 	}
 
-	private void setAnger(int ticks) {
-		this.dataTracker.set(anger, ticks);
+	@Override
+	public void method_29514(int i) {
+		this.dataTracker.set(anger, i);
+	}
+
+	@Override
+	public UUID method_29508() {
+		return this.field_25364;
+	}
+
+	@Override
+	public void method_29513(@Nullable UUID uUID) {
+		this.field_25364 = uUID;
+	}
+
+	@Override
+	public void method_29509() {
+		this.method_29514(field_25363.choose(this.random));
 	}
 
 	private boolean doesHiveHaveSpace(BlockPos pos) {
@@ -427,7 +416,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 				this.ticksUntilCanPollinate--;
 			}
 
-			boolean bl = this.isAngry() && !this.hasStung() && this.getTarget() != null && this.getTarget().squaredDistanceTo(this) < 4.0;
+			boolean bl = this.method_29511() && !this.hasStung() && this.getTarget() != null && this.getTarget().squaredDistanceTo(this) < 4.0;
 			this.setNearTarget(bl);
 			if (this.age % 20 == 0 && !this.isHiveValid()) {
 				this.hivePos = null;
@@ -579,24 +568,14 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		this.resetCropCounter();
 	}
 
-	public boolean setBeeAttacker(Entity attacker) {
-		this.setAnger(400 + this.random.nextInt(400));
-		if (attacker instanceof LivingEntity) {
-			this.setAttacker((LivingEntity)attacker);
-		}
-
-		return true;
-	}
-
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
 			Entity entity = source.getAttacker();
-			if (!this.world.isClient && entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity) && !this.isAiDisabled()) {
+			if (!this.world.isClient) {
 				this.pollinateGoal.cancel();
-				this.setBeeAttacker(entity);
 			}
 
 			return super.damage(source, amount);
@@ -619,7 +598,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 	static class BeeFollowTargetGoal extends FollowTargetGoal<PlayerEntity> {
 		BeeFollowTargetGoal(BeeEntity bee) {
-			super(bee, PlayerEntity.class, true);
+			super(bee, PlayerEntity.class, 10, true, false, bee::method_29515);
 		}
 
 		@Override
@@ -640,7 +619,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 		private boolean canSting() {
 			BeeEntity beeEntity = (BeeEntity)this.mob;
-			return beeEntity.isAngry() && !beeEntity.hasStung();
+			return beeEntity.method_29511() && !beeEntity.hasStung();
 		}
 	}
 
@@ -651,7 +630,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 		@Override
 		public void tick() {
-			if (!BeeEntity.this.isAngry()) {
+			if (!BeeEntity.this.method_29511()) {
 				super.tick();
 			}
 		}
@@ -669,7 +648,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 		@Override
 		protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
-			if (mob instanceof BeeEntity && this.mob.canSee(target) && ((BeeEntity)mob).setBeeAttacker(target)) {
+			if (mob instanceof BeeEntity && this.mob.canSee(target)) {
 				mob.setTarget(target);
 			}
 		}
@@ -1037,12 +1016,12 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 		@Override
 		public boolean canStart() {
-			return this.canBeeStart() && !BeeEntity.this.isAngry();
+			return this.canBeeStart() && !BeeEntity.this.method_29511();
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			return this.canBeeContinue() && !BeeEntity.this.isAngry();
+			return this.canBeeContinue() && !BeeEntity.this.method_29511();
 		}
 	}
 
@@ -1225,12 +1204,12 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 		@Override
 		public boolean canStart() {
-			return super.canStart() && BeeEntity.this.isAngry() && !BeeEntity.this.hasStung();
+			return super.canStart() && BeeEntity.this.method_29511() && !BeeEntity.this.hasStung();
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			return super.shouldContinue() && BeeEntity.this.isAngry() && !BeeEntity.this.hasStung();
+			return super.shouldContinue() && BeeEntity.this.method_29511() && !BeeEntity.this.hasStung();
 		}
 	}
 }

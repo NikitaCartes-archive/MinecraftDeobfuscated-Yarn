@@ -9,12 +9,12 @@ import java.util.Set;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.mob.HoglinEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
-import net.minecraft.entity.mob.ZoglinEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -27,7 +27,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		return ImmutableSet.of(
 			MemoryModuleType.VISIBLE_MOBS,
 			MemoryModuleType.MOBS,
-			MemoryModuleType.NEAREST_VISIBLE_WITHER_SKELETON,
+			MemoryModuleType.NEAREST_VISIBLE_NEMESIS,
 			MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD,
 			MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM,
 			MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN,
@@ -44,7 +44,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		Brain<?> brain = entity.getBrain();
 		brain.remember(MemoryModuleType.NEAREST_REPELLENT, findSoulFire(world, entity));
-		Optional<WitherSkeletonEntity> optional = Optional.empty();
+		Optional<MobEntity> optional = Optional.empty();
 		Optional<HoglinEntity> optional2 = Optional.empty();
 		Optional<HoglinEntity> optional3 = Optional.empty();
 		Optional<PiglinEntity> optional4 = Optional.empty();
@@ -82,10 +82,12 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 				if (!optional7.isPresent() && !playerEntity.isSpectator() && PiglinBrain.isGoldHoldingPlayer(playerEntity)) {
 					optional7 = Optional.of(playerEntity);
 				}
-			} else if (!optional.isPresent() && livingEntity instanceof WitherSkeletonEntity) {
-				optional = Optional.of((WitherSkeletonEntity)livingEntity);
-			} else if (!optional5.isPresent() && (livingEntity instanceof ZombifiedPiglinEntity || livingEntity instanceof ZoglinEntity)) {
-				optional5 = Optional.of(livingEntity);
+			} else if (optional.isPresent() || !(livingEntity instanceof WitherSkeletonEntity) && !(livingEntity instanceof WitherEntity)) {
+				if (!optional5.isPresent() && PiglinBrain.method_29534(livingEntity.getType())) {
+					optional5 = Optional.of(livingEntity);
+				}
+			} else {
+				optional = Optional.of((MobEntity)livingEntity);
 			}
 		}
 
@@ -95,7 +97,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 			}
 		}
 
-		brain.remember(MemoryModuleType.NEAREST_VISIBLE_WITHER_SKELETON, optional);
+		brain.remember(MemoryModuleType.NEAREST_VISIBLE_NEMESIS, optional);
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, optional2);
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, optional3);
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_BABY_PIGLIN, optional4);

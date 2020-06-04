@@ -51,9 +51,9 @@ public abstract class AbstractFireBlock extends Block {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (random.nextInt(24) == 0) {
 			world.playSound(
-				(double)((float)pos.getX() + 0.5F),
-				(double)((float)pos.getY() + 0.5F),
-				(double)((float)pos.getZ() + 0.5F),
+				(double)pos.getX() + 0.5,
+				(double)pos.getY() + 0.5,
+				(double)pos.getZ() + 0.5,
 				SoundEvents.BLOCK_FIRE_AMBIENT,
 				SoundCategory.BLOCKS,
 				1.0F + random.nextFloat(),

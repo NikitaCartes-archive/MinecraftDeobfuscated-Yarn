@@ -48,6 +48,7 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -217,17 +218,19 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		if (!this.world.isClient) {
-			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (itemStack.getItem() == Items.SHEARS) {
+			if (!this.world.isClient && this.isShearable()) {
 				this.sheared(SoundCategory.PLAYERS);
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
-				return true;
+				return ActionResult.SUCCESS;
+			} else {
+				return ActionResult.CONSUME;
 			}
+		} else {
+			return super.interactMob(player, hand);
 		}
-
-		return super.interactMob(player, hand);
 	}
 
 	@Override

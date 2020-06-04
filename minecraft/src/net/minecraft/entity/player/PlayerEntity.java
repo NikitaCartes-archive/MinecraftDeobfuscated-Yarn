@@ -516,7 +516,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.setMovementSpeed((float)entityAttributeInstance.getValue());
 		float f;
-		if (this.onGround && !(this.getHealth() <= 0.0F) && !this.isSwimming()) {
+		if (this.onGround && !this.method_29504() && !this.isSwimming()) {
 			f = Math.min(0.1F, MathHelper.sqrt(squaredHorizontalLength(this.getVelocity())));
 		} else {
 			f = 0.0F;
@@ -834,7 +834,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			return false;
 		} else {
 			this.despawnCounter = 0;
-			if (this.getHealth() <= 0.0F) {
+			if (this.method_29504()) {
 				return false;
 			} else {
 				this.dropShoulderEntities();
@@ -972,24 +972,26 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else {
 			ItemStack itemStack = this.getStackInHand(hand);
 			ItemStack itemStack2 = itemStack.copy();
-			if (entity.interact(this, hand)) {
+			ActionResult actionResult = entity.interact(this, hand);
+			if (actionResult.isAccepted()) {
 				if (this.abilities.creativeMode && itemStack == this.getStackInHand(hand) && itemStack.getCount() < itemStack2.getCount()) {
 					itemStack.setCount(itemStack2.getCount());
 				}
 
-				return ActionResult.SUCCESS;
+				return actionResult;
 			} else {
 				if (!itemStack.isEmpty() && entity instanceof LivingEntity) {
 					if (this.abilities.creativeMode) {
 						itemStack = itemStack2;
 					}
 
-					if (itemStack.useOnEntity(this, (LivingEntity)entity, hand)) {
+					ActionResult actionResult2 = itemStack.useOnEntity(this, (LivingEntity)entity, hand);
+					if (actionResult2.isAccepted()) {
 						if (itemStack.isEmpty() && !this.abilities.creativeMode) {
 							this.setStackInHand(hand, ItemStack.EMPTY);
 						}
 
-						return ActionResult.SUCCESS;
+						return actionResult2;
 					}
 				}
 
@@ -2024,6 +2026,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		return super.eatFood(world, stack);
+	}
+
+	@Override
+	protected boolean method_29500(BlockState blockState) {
+		return this.abilities.flying || super.method_29500(blockState);
 	}
 
 	public static enum SleepFailureReason {

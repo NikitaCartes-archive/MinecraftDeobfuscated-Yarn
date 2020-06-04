@@ -91,6 +91,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				world.createExplosion(
 					null,
 					DamageSource.netherBed(),
+					null,
 					(double)pos.getX() + 0.5,
 					(double)pos.getY() + 0.5,
 					(double)pos.getZ() + 0.5,
@@ -274,13 +275,9 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				if ((double)pos.getY() - d > 2.0) {
 					return Optional.empty();
 				} else {
-					float f = type.getWidth() / 2.0F;
 					Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
-					return world.doesNotCollide(
-							new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)type.getHeight(), vec3d.z + (double)f)
-						)
-						? Optional.of(vec3d)
-						: Optional.empty();
+					Box box = type.createSimpleBoundingBox(vec3d.x, vec3d.y, vec3d.z);
+					return world.doesNotCollide(box) && world.method_29546(box.stretch(0.0, -0.2F, 0.0)).noneMatch(type::method_29496) ? Optional.of(vec3d) : Optional.empty();
 				}
 			}
 		}
