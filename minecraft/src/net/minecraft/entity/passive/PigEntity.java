@@ -36,6 +36,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -137,20 +138,22 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
-		if (!super.interactMob(player, hand)) {
-			if (this.isSaddled() && !this.hasPassengers()) {
-				if (!this.world.isClient) {
-					player.startRiding(this);
-				}
-
-				return true;
-			} else {
-				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
+		boolean bl = this.isBreedingItem(player.getStackInHand(hand));
+		if (!bl && this.isSaddled() && !this.hasPassengers()) {
+			if (!this.world.isClient) {
+				player.startRiding(this);
 			}
+
+			return ActionResult.method_29236(this.world.isClient);
 		} else {
-			return true;
+			ActionResult actionResult = super.interactMob(player, hand);
+			if (!actionResult.isAccepted()) {
+				ItemStack itemStack = player.getStackInHand(hand);
+				return itemStack.getItem() == Items.SADDLE ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
+			} else {
+				return actionResult;
+			}
 		}
 	}
 
@@ -223,6 +226,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 				zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
 			}
 
+			zombifiedPiglinEntity.setPersistent();
 			this.world.spawnEntity(zombifiedPiglinEntity);
 			this.remove();
 		} else {

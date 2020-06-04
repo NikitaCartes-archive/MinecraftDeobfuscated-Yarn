@@ -241,7 +241,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				this.dropStack(itemStack2);
 			}
 
-			this.method_27964(item);
+			this.method_29499(item);
 			this.equipStack(equipmentSlot, itemStack);
 			this.sendPickup(item, itemStack.getCount());
 			item.remove();

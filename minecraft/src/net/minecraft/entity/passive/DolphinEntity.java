@@ -55,6 +55,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -240,7 +241,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
 			ItemStack itemStack = item.getStack();
 			if (this.canPickupItem(itemStack)) {
-				this.method_27964(item);
+				this.method_29499(item);
 				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 				this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
 				this.sendPickup(item, itemStack.getCount());
@@ -324,7 +325,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected boolean interactMob(PlayerEntity player, Hand hand) {
+	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (!itemStack.isEmpty() && itemStack.getItem().isIn(ItemTags.FISHES)) {
 			if (!this.world.isClient) {
@@ -336,7 +337,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				itemStack.decrement(1);
 			}
 
-			return true;
+			return ActionResult.method_29236(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

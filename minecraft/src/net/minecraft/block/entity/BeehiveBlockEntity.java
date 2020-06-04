@@ -72,7 +72,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 					BeeEntity beeEntity = (BeeEntity)entity;
 					if (player.getPos().squaredDistanceTo(entity.getPos()) <= 16.0) {
 						if (!this.isSmoked()) {
-							beeEntity.setBeeAttacker(player);
+							beeEntity.setTarget(player);
 						} else {
 							beeEntity.setCannotEnterHiveTicks(400);
 						}
@@ -175,10 +175,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 								}
 							}
 
-							int i = bee.ticksInHive;
-							beeEntity.growUp(i);
-							beeEntity.setLoveTicks(Math.max(0, beeEntity.method_29270() - i));
-							beeEntity.resetPollinationTicks();
+							this.method_29562(bee.ticksInHive, beeEntity);
 							if (list != null) {
 								list.add(beeEntity);
 							}
@@ -201,16 +198,28 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
+	private void method_29562(int i, BeeEntity beeEntity) {
+		int j = beeEntity.getBreedingAge();
+		if (j < 0) {
+			beeEntity.setBreedingAge(Math.min(0, j + i));
+		} else if (j > 0) {
+			beeEntity.setBreedingAge(Math.max(0, j - i));
+		}
+
+		beeEntity.setLoveTicks(Math.max(0, beeEntity.method_29270() - i));
+		beeEntity.resetPollinationTicks();
+	}
+
 	private boolean hasFlowerPos() {
 		return this.flowerPos != null;
 	}
 
 	private void tickBees() {
 		Iterator<BeehiveBlockEntity.Bee> iterator = this.bees.iterator();
-		BlockState blockState = this.getCachedState();
 
-		while(iterator.hasNext()) {
-			BeehiveBlockEntity.Bee bee = (BeehiveBlockEntity.Bee)iterator.next();
+		BeehiveBlockEntity.Bee bee;
+		for(BlockState blockState = this.getCachedState(); iterator.hasNext(); bee.ticksInHive++) {
+			bee = (BeehiveBlockEntity.Bee)iterator.next();
 			if (bee.ticksInHive > bee.minOccupationTIcks) {
 				BeehiveBlockEntity.BeeState beeState = bee.entityData.getBoolean("HasNectar")
 					? BeehiveBlockEntity.BeeState.HONEY_DELIVERED
@@ -218,8 +227,6 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 				if (this.releaseBee(blockState, bee, null, beeState)) {
 					iterator.remove();
 				}
-			} else {
-				bee.ticksInHive++;
 			}
 		}
 	}

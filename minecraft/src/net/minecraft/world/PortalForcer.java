@@ -65,7 +65,7 @@ public class PortalForcer {
 			);
 		return (BlockPattern.TeleportTarget)optional.map(pointOfInterest -> {
 			BlockPos blockPos = pointOfInterest.getPos();
-			this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
+			this.world.getChunkManager().addTicket(ChunkTicketType.field_19280, new ChunkPos(blockPos), 3, blockPos);
 			BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, blockPos);
 			return result.getTeleportTarget(direction, blockPos, y, vec3d, x);
 		}).orElse(null);

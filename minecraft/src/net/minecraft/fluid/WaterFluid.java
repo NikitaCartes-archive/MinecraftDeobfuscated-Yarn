@@ -59,9 +59,9 @@ public abstract class WaterFluid extends FlowableFluid {
 		} else if (random.nextInt(10) == 0) {
 			world.addParticle(
 				ParticleTypes.UNDERWATER,
-				(double)pos.getX() + (double)random.nextFloat(),
-				(double)pos.getY() + (double)random.nextFloat(),
-				(double)pos.getZ() + (double)random.nextFloat(),
+				(double)pos.getX() + random.nextDouble(),
+				(double)pos.getY() + random.nextDouble(),
+				(double)pos.getZ() + random.nextDouble(),
 				0.0,
 				0.0,
 				0.0

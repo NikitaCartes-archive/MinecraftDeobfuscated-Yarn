@@ -241,7 +241,7 @@ public class Structure {
 									structureBlockInfo.tag.putInt("y", blockPos2.getY());
 									structureBlockInfo.tag.putInt("z", blockPos2.getZ());
 									if (blockEntity instanceof LootableContainerBlockEntity) {
-										structureBlockInfo.tag.putLong("LootTable", random.nextLong());
+										structureBlockInfo.tag.putLong("LootTableSeed", random.nextLong());
 									}
 
 									blockEntity.fromTag(structureBlockInfo.state, structureBlockInfo.tag);

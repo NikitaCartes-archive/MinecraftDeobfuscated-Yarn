@@ -49,6 +49,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -345,12 +346,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	protected void mobTick() {
-		if (this.isWet()) {
-			this.damage(DamageSource.DROWN, 1.0F);
-		}
-
-		super.mobTick();
+	public boolean method_29503() {
+		return true;
 	}
 
 	@Override
@@ -386,35 +383,36 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		boolean bl = this.isBreedingItem(player.getStackInHand(hand));
-		if (!super.interactMob(player, hand)) {
-			if (this.isSaddled() && !this.hasPassengers() && !this.isBaby()) {
-				if (!this.world.isClient) {
-					player.startRiding(this);
+		if (!bl && this.isSaddled() && !this.hasPassengers()) {
+			if (!this.world.isClient) {
+				player.startRiding(this);
+			}
+
+			return ActionResult.method_29236(this.world.isClient);
+		} else {
+			ActionResult actionResult = super.interactMob(player, hand);
+			if (!actionResult.isAccepted()) {
+				ItemStack itemStack = player.getStackInHand(hand);
+				return itemStack.getItem() == Items.SADDLE ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
+			} else {
+				if (bl && !this.isSilent()) {
+					this.world
+						.playSound(
+							null,
+							this.getX(),
+							this.getY(),
+							this.getZ(),
+							SoundEvents.ENTITY_STRIDER_EAT,
+							this.getSoundCategory(),
+							1.0F,
+							1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+						);
 				}
 
-				return true;
-			} else {
-				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
+				return actionResult;
 			}
-		} else {
-			if (bl && !this.isSilent()) {
-				this.world
-					.playSound(
-						null,
-						this.getX(),
-						this.getY(),
-						this.getZ(),
-						SoundEvents.ENTITY_STRIDER_EAT,
-						this.getSoundCategory(),
-						1.0F,
-						1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
-					);
-			}
-
-			return false;
 		}
 	}
 

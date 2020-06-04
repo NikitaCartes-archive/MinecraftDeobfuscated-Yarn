@@ -29,6 +29,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,7 +44,9 @@ public class IntegratedServer extends MinecraftServer {
 	private UUID localPlayerUuid;
 
 	public IntegratedServer(
-		MinecraftClient client,
+		Thread thread,
+		MinecraftClient minecraftClient,
+		DimensionTracker.Modifiable modifiable,
 		LevelStorage.Session session,
 		ResourcePackManager<ResourcePackProfile> resourcePackManager,
 		ServerResourceManager serverResourceManager,
@@ -54,22 +57,24 @@ public class IntegratedServer extends MinecraftServer {
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
+			thread,
+			modifiable,
 			session,
 			saveProperties,
 			resourcePackManager,
-			client.getNetworkProxy(),
-			client.getDataFixer(),
+			minecraftClient.getNetworkProxy(),
+			minecraftClient.getDataFixer(),
 			serverResourceManager,
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
 			worldGenerationProgressListenerFactory
 		);
-		this.setServerName(client.getSession().getUsername());
-		this.setDemo(client.isDemo());
+		this.setServerName(minecraftClient.getSession().getUsername());
+		this.setDemo(minecraftClient.isDemo());
 		this.setWorldHeight(256);
 		this.setPlayerManager(new IntegratedPlayerManager(this, this.dimensionTracker, this.field_24371));
-		this.client = client;
+		this.client = minecraftClient;
 	}
 
 	@Override

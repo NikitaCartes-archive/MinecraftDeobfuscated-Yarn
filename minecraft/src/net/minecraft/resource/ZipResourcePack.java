@@ -90,6 +90,7 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 		super.finalize();
 	}
 
+	@Override
 	public void close() {
 		if (this.file != null) {
 			IOUtils.closeQuietly(this.file);

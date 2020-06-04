@@ -11,6 +11,7 @@ import java.util.OptionalInt;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.class_5354;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -29,6 +30,7 @@ import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -127,7 +129,6 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private String clientLanguage = "en_US";
 	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
 	public final ServerPlayerInteractionManager interactionManager;
@@ -502,6 +503,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 
 		this.dropShoulderEntities();
+		if (this.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+			this.method_29779();
+		}
+
 		if (!this.isSpectator()) {
 			this.drop(source);
 		}
@@ -521,6 +526,15 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.extinguish();
 		this.setFlag(0, false);
 		this.getDamageTracker().update();
+	}
+
+	private void method_29779() {
+		Box box = new Box(this.getBlockPos()).expand(32.0, 10.0, 32.0);
+		this.world
+			.getEntitiesIncludingUngeneratedChunks(MobEntity.class, box)
+			.stream()
+			.filter(mobEntity -> mobEntity instanceof class_5354)
+			.forEach(mobEntity -> ((class_5354)mobEntity).method_29516(this));
 	}
 
 	@Override
@@ -1226,7 +1240,6 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
-		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
 		this.clientChatColorsEnabled = clientSettingsC2SPacket.hasChatColors();
 		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());

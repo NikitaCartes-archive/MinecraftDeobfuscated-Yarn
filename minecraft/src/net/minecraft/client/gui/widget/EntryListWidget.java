@@ -472,6 +472,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return bl;
 	}
 
+	private void method_29621(EntryListWidget.Entry<E> entry) {
+		entry.list = this;
+	}
+
 	@Environment(EnvType.CLIENT)
 	class Entries extends AbstractList<E> {
 		private final List<E> entries = Lists.<E>newArrayList();
@@ -489,13 +493,13 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 		public E set(int i, E entry) {
 			E entry2 = (E)this.entries.set(i, entry);
-			entry.list = EntryListWidget.this;
+			EntryListWidget.this.method_29621(entry);
 			return entry2;
 		}
 
 		public void add(int i, E entry) {
 			this.entries.add(i, entry);
-			entry.list = EntryListWidget.this;
+			EntryListWidget.this.method_29621(entry);
 		}
 
 		public E remove(int i) {
@@ -506,7 +510,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	@Environment(EnvType.CLIENT)
 	public abstract static class Entry<E extends EntryListWidget.Entry<E>> implements Element {
 		@Deprecated
-		EntryListWidget<E> list;
+		private EntryListWidget<E> list;
 
 		public abstract void render(
 			MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta

@@ -5,7 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.render.VertexConsumer;
@@ -44,31 +45,44 @@ public class FluidRenderer {
 		return fluidState.getFluid().matchesType(state.getFluid());
 	}
 
-	private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction, float maxDeviation) {
-		BlockPos blockPos = pos.offset(direction);
-		BlockState blockState = world.getBlockState(blockPos);
+	private static boolean method_29710(BlockView blockView, Direction direction, float f, BlockPos blockPos, BlockState blockState) {
 		if (blockState.isOpaque()) {
-			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)maxDeviation, 1.0);
-			VoxelShape voxelShape2 = blockState.getCullingShape(world, blockPos);
+			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)f, 1.0);
+			VoxelShape voxelShape2 = blockState.getCullingShape(blockView, blockPos);
 			return VoxelShapes.isSideCovered(voxelShape, voxelShape2, direction);
 		} else {
 			return false;
 		}
 	}
 
+	private static boolean isSideCovered(BlockView world, BlockPos pos, Direction direction, float maxDeviation) {
+		BlockPos blockPos = pos.offset(direction);
+		BlockState blockState = world.getBlockState(blockPos);
+		return method_29710(world, direction, maxDeviation, blockPos, blockState);
+	}
+
+	private static boolean method_29709(BlockView blockView, BlockPos blockPos, BlockState blockState, Direction direction) {
+		return method_29710(blockView, direction.getOpposite(), 1.0F, blockPos, blockState);
+	}
+
+	public static boolean method_29708(BlockRenderView blockRenderView, BlockPos blockPos, FluidState fluidState, BlockState blockState, Direction direction) {
+		return !method_29709(blockRenderView, blockPos, blockState, direction) && !isSameFluid(blockRenderView, blockPos, direction, fluidState);
+	}
+
 	public boolean render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state) {
 		boolean bl = state.matches(FluidTags.LAVA);
 		Sprite[] sprites = bl ? this.lavaSprites : this.waterSprites;
+		BlockState blockState = world.getBlockState(pos);
 		int i = bl ? 16777215 : BiomeColors.getWaterColor(world, pos);
 		float f = (float)(i >> 16 & 0xFF) / 255.0F;
 		float g = (float)(i >> 8 & 0xFF) / 255.0F;
 		float h = (float)(i & 0xFF) / 255.0F;
 		boolean bl2 = !isSameFluid(world, pos, Direction.UP, state);
-		boolean bl3 = !isSameFluid(world, pos, Direction.DOWN, state) && !isSideCovered(world, pos, Direction.DOWN, 0.8888889F);
-		boolean bl4 = !isSameFluid(world, pos, Direction.NORTH, state);
-		boolean bl5 = !isSameFluid(world, pos, Direction.SOUTH, state);
-		boolean bl6 = !isSameFluid(world, pos, Direction.WEST, state);
-		boolean bl7 = !isSameFluid(world, pos, Direction.EAST, state);
+		boolean bl3 = method_29708(world, pos, state, blockState, Direction.DOWN) && !isSideCovered(world, pos, Direction.DOWN, 0.8888889F);
+		boolean bl4 = method_29708(world, pos, state, blockState, Direction.NORTH);
+		boolean bl5 = method_29708(world, pos, state, blockState, Direction.SOUTH);
+		boolean bl6 = method_29708(world, pos, state, blockState, Direction.WEST);
+		boolean bl7 = method_29708(world, pos, state, blockState, Direction.EAST);
 		if (!bl2 && !bl3 && !bl7 && !bl6 && !bl4 && !bl5) {
 			return false;
 		} else {
@@ -225,7 +239,7 @@ public class FluidRenderer {
 					Sprite sprite2 = sprites[1];
 					if (!bl) {
 						Block block = world.getBlockState(blockPos).getBlock();
-						if (block == Blocks.GLASS || block instanceof StainedGlassBlock) {
+						if (block instanceof TransparentBlock || block instanceof LeavesBlock) {
 							sprite2 = this.waterOverlaySprite;
 						}
 					}

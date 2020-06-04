@@ -308,7 +308,7 @@ public final class ItemStack {
 		return this.getItem().isEffectiveOn(state);
 	}
 
-	public boolean useOnEntity(PlayerEntity user, LivingEntity entity, Hand hand) {
+	public ActionResult useOnEntity(PlayerEntity user, LivingEntity entity, Hand hand) {
 		return this.getItem().useOnEntity(this, user, entity, hand);
 	}
 

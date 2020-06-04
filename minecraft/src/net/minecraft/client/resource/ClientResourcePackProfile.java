@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5352;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -29,37 +30,11 @@ public class ClientResourcePackProfile extends ResourcePackProfile {
 		Supplier<ResourcePack> supplier,
 		ResourcePack resourcePack,
 		PackResourceMetadata packResourceMetadata,
-		ResourcePackProfile.InsertionPosition insertionPosition
+		ResourcePackProfile.InsertionPosition insertionPosition,
+		class_5352 arg
 	) {
-		super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition);
-		NativeImage nativeImage = null;
-
-		try {
-			InputStream inputStream = resourcePack.openRoot("pack.png");
-			Throwable var9 = null;
-
-			try {
-				nativeImage = NativeImage.read(inputStream);
-			} catch (Throwable var19) {
-				var9 = var19;
-				throw var19;
-			} finally {
-				if (inputStream != null) {
-					if (var9 != null) {
-						try {
-							inputStream.close();
-						} catch (Throwable var18) {
-							var9.addSuppressed(var18);
-						}
-					} else {
-						inputStream.close();
-					}
-				}
-			}
-		} catch (IllegalArgumentException | IOException var21) {
-		}
-
-		this.icon = nativeImage;
+		super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition, arg);
+		this.icon = method_29713(resourcePack);
 	}
 
 	public ClientResourcePackProfile(
@@ -71,10 +46,43 @@ public class ClientResourcePackProfile extends ResourcePackProfile {
 		ResourcePackCompatibility compatibility,
 		ResourcePackProfile.InsertionPosition insertionPosition,
 		boolean pinned,
-		@Nullable NativeImage icon
+		class_5352 arg,
+		@Nullable NativeImage nativeImage
 	) {
-		super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned);
-		this.icon = icon;
+		super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned, arg);
+		this.icon = nativeImage;
+	}
+
+	@Nullable
+	public static NativeImage method_29713(ResourcePack resourcePack) {
+		try {
+			InputStream inputStream = resourcePack.openRoot("pack.png");
+			Throwable var2 = null;
+
+			NativeImage var3;
+			try {
+				var3 = NativeImage.read(inputStream);
+			} catch (Throwable var13) {
+				var2 = var13;
+				throw var13;
+			} finally {
+				if (inputStream != null) {
+					if (var2 != null) {
+						try {
+							inputStream.close();
+						} catch (Throwable var12) {
+							var2.addSuppressed(var12);
+						}
+					} else {
+						inputStream.close();
+					}
+				}
+			}
+
+			return var3;
+		} catch (IllegalArgumentException | IOException var15) {
+			return null;
+		}
 	}
 
 	public void drawIcon(TextureManager manager) {

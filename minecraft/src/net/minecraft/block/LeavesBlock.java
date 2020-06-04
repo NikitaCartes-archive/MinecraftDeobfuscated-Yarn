@@ -97,9 +97,9 @@ public class LeavesBlock extends Block {
 				BlockPos blockPos = pos.down();
 				BlockState blockState = world.getBlockState(blockPos);
 				if (!blockState.isOpaque() || !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
-					double d = (double)((float)pos.getX() + random.nextFloat());
+					double d = (double)pos.getX() + random.nextDouble();
 					double e = (double)pos.getY() - 0.05;
-					double f = (double)((float)pos.getZ() + random.nextFloat());
+					double f = (double)pos.getZ() + random.nextDouble();
 					world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}

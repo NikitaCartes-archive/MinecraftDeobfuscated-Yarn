@@ -115,8 +115,6 @@ public abstract class PlayerManager {
 		this.field_24626 = modifiable;
 		this.maxPlayers = i;
 		this.saveHandler = worldSaveHandler;
-		this.getUserBanList().setEnabled(true);
-		this.getIpBanList().setEnabled(true);
 	}
 
 	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player) {

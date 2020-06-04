@@ -1,20 +1,23 @@
 package net.minecraft.world;
 
+import com.mojang.serialization.Lifecycle;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5359;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 
 public interface SaveProperties {
-	Set<String> getDisabledDataPacks();
+	class_5359 method_29589();
 
-	Set<String> getEnabledDataPacks();
+	void method_29590(class_5359 arg);
 
 	boolean isModded();
 
@@ -52,7 +55,7 @@ public interface SaveProperties {
 	@Environment(EnvType.CLIENT)
 	LevelInfo getLevelInfo();
 
-	CompoundTag cloneWorldTag(@Nullable CompoundTag tag);
+	CompoundTag cloneWorldTag(DimensionTracker dimensionTracker, @Nullable CompoundTag compoundTag);
 
 	boolean isHardcore();
 
@@ -83,4 +86,7 @@ public interface SaveProperties {
 	void method_29037(CompoundTag compoundTag);
 
 	GeneratorOptions getGeneratorOptions();
+
+	@Environment(EnvType.CLIENT)
+	Lifecycle method_29588();
 }

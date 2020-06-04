@@ -272,6 +272,7 @@ public class DefaultResourcePack implements ResourcePack {
 		return "Default";
 	}
 
+	@Override
 	public void close() {
 	}
 }

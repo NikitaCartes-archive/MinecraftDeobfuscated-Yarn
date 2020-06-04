@@ -30,14 +30,13 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 				ItemSteerable itemSteerable = (ItemSteerable)entity;
 				if (itemSteerable.consumeOnAStickItem()) {
 					itemStack.damage(this.damagePerUse, user, p -> p.sendToolBreakStatus(hand));
-					user.swingHand(hand, true);
 					if (itemStack.isEmpty()) {
 						ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
 						itemStack2.setTag(itemStack.getTag());
-						return TypedActionResult.consume(itemStack2);
+						return TypedActionResult.success(itemStack2);
 					}
 
-					return TypedActionResult.consume(itemStack);
+					return TypedActionResult.success(itemStack);
 				}
 			}
 

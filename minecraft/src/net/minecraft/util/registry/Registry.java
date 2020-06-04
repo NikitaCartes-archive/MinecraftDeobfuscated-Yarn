@@ -14,9 +14,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5363;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -140,6 +139,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE_KEY = createRegistryKey("loot_condition_type");
 	public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = createRegistryKey("dimension_type");
 	public static final RegistryKey<Registry<World>> DIMENSION = createRegistryKey("dimension");
+	public static final RegistryKey<Registry<class_5363>> field_25490 = createRegistryKey("dimension");
 	public static final Registry<SoundEvent> SOUND_EVENT = create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
 	public static final Registry<StatusEffect> STATUS_EFFECT = create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
@@ -249,6 +249,10 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 		this.lifecycle = lifecycle;
 	}
 
+	public String toString() {
+		return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
+	}
+
 	@Override
 	public <U> DataResult<Pair<T, U>> decode(DynamicOps<U> dynamicOps, U object) {
 		return dynamicOps.compressMaps()
@@ -291,13 +295,11 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	@Nullable
 	public abstract Identifier getId(T entry);
 
-	@Environment(EnvType.CLIENT)
 	public abstract Optional<RegistryKey<T>> getKey(T value);
 
 	public abstract int getRawId(@Nullable T entry);
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public abstract T get(@Nullable RegistryKey<T> registryKey);
 
 	@Nullable

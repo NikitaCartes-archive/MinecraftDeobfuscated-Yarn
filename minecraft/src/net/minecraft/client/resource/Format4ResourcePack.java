@@ -347,7 +347,8 @@ public class Format4ResourcePack implements ResourcePack {
 		return this.parent.getName();
 	}
 
-	public void close() throws IOException {
+	@Override
+	public void close() {
 		this.parent.close();
 	}
 

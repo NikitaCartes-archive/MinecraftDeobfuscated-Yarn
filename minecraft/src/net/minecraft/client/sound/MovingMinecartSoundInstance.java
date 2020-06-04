@@ -22,9 +22,9 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 		this.repeat = true;
 		this.repeatDelay = 0;
 		this.volume = 0.0F;
-		this.x = (float)minecart.getX();
-		this.y = (float)minecart.getY();
-		this.z = (float)minecart.getZ();
+		this.x = (double)((float)minecart.getX());
+		this.y = (double)((float)minecart.getY());
+		this.z = (double)((float)minecart.getZ());
 	}
 
 	@Override
@@ -42,9 +42,9 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 		if (this.minecart.removed) {
 			this.setDone();
 		} else {
-			this.x = (float)this.minecart.getX();
-			this.y = (float)this.minecart.getY();
-			this.z = (float)this.minecart.getZ();
+			this.x = (double)((float)this.minecart.getX());
+			this.y = (double)((float)this.minecart.getY());
+			this.z = (double)((float)this.minecart.getZ());
 			float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.minecart.getVelocity()));
 			if ((double)f >= 0.01) {
 				this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);

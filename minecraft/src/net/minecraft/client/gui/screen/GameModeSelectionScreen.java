@@ -10,7 +10,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.NarratorManager;
@@ -19,12 +18,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GameModeSelectionScreen extends Screen {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
 	private static final int UI_WIDTH = GameModeSelectionScreen.GameMode.values().length * 30 - 5;
+	private static final Text field_25454 = new TranslatableText(
+		"debug.gamemodes.select_next", new TranslatableText("debug.gamemodes.press_f4").formatted(Formatting.AQUA)
+	);
 	private final Optional<GameModeSelectionScreen.GameMode> currentGameMode;
 	private Optional<GameModeSelectionScreen.GameMode> gameMode = Optional.empty();
 	private int lastMouseX;
@@ -62,8 +65,7 @@ public class GameModeSelectionScreen extends Screen {
 			matrices.pop();
 			super.render(matrices, mouseX, mouseY, delta);
 			this.gameMode.ifPresent(gameMode -> this.drawCenteredText(matrices, this.textRenderer, gameMode.getText(), this.width / 2, this.height / 2 - 30 - 20, -1));
-			int k = this.textRenderer.getWidth(I18n.translate("debug.gamemodes.press_f4"));
-			this.drawHotkeys(matrices, I18n.translate("debug.gamemodes.press_f4"), I18n.translate("debug.gamemodes.select_next"), 5, k);
+			this.drawCenteredText(matrices, this.textRenderer, field_25454, this.width / 2, this.height / 2 + 5, 16777215);
 			if (!this.mouseUsedForSelection) {
 				this.lastMouseX = mouseX;
 				this.lastMouseY = mouseY;
@@ -80,15 +82,6 @@ public class GameModeSelectionScreen extends Screen {
 				}
 			}
 		}
-	}
-
-	private void drawHotkeys(MatrixStack matrixStack, String keyName, String action, int x, int y) {
-		int i = 5636095;
-		int j = 16777215;
-		this.drawStringWithShadow(matrixStack, this.textRenderer, "[", this.width / 2 - y - 18, this.height / 2 + x, 5636095);
-		this.drawCenteredString(matrixStack, this.textRenderer, keyName, this.width / 2 - y / 2 - 10, this.height / 2 + x, 5636095);
-		this.drawCenteredString(matrixStack, this.textRenderer, "]", this.width / 2 - 5, this.height / 2 + x, 5636095);
-		this.drawStringWithShadow(matrixStack, this.textRenderer, action, this.width / 2 + 5, this.height / 2 + x, 16777215);
 	}
 
 	private void apply() {

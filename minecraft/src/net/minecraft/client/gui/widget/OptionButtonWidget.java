@@ -13,4 +13,8 @@ public class OptionButtonWidget extends ButtonWidget {
 		super(x, y, width, height, text, pressAction);
 		this.option = option;
 	}
+
+	public Option method_29623() {
+		return this.option;
+	}
 }

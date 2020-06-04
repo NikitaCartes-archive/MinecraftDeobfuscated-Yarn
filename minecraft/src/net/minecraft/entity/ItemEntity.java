@@ -302,6 +302,7 @@ public class ItemEntity extends Entity {
 				}
 
 				player.increaseStat(Stats.PICKED_UP.getOrCreateStat(item), i);
+				player.method_29499(this);
 			}
 		}
 	}

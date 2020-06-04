@@ -20,6 +20,6 @@ public class AggressiveBeeSoundInstance extends AbstractBeeSoundInstance {
 
 	@Override
 	protected boolean shouldReplace() {
-		return !this.bee.isAngry();
+		return !this.bee.method_29511();
 	}
 }

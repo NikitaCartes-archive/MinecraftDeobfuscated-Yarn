@@ -10,11 +10,14 @@ import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ShortMap;
 import it.unimi.dsi.fastutil.ints.Int2ShortOpenHashMap;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
@@ -128,10 +131,14 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -366,14 +373,16 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 				this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-				this.ridingEntity = m >= -0.03125
-					&& !this.server.isFlightEnabled()
-					&& !serverWorld.isAreaNotEmpty(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
+				this.ridingEntity = m >= -0.03125 && !this.server.isFlightEnabled() && this.method_29780(entity);
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
 				this.updatedRiddenZ = entity.getZ();
 			}
 		}
+	}
+
+	private boolean method_29780(Entity entity) {
+		return entity.world.method_29546(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0)).allMatch(AbstractBlock.AbstractBlockState::isAir);
 	}
 
 	@Override
@@ -777,7 +786,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								}
 							}
 
-							boolean bl = this.isPlayerNotCollidingWithBlocks(serverWorld);
+							Box box = this.player.getBoundingBox();
 							m = h - this.updatedX;
 							n = i - this.updatedY;
 							o = j - this.updatedZ;
@@ -798,39 +807,37 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 							o = j - this.player.getZ();
 							q = m * m + n * n + o * o;
-							boolean bl2 = false;
+							boolean bl = false;
 							if (!this.player.isInTeleportationState()
 								&& q > 0.0625
 								&& !this.player.isSleeping()
 								&& !this.player.interactionManager.isCreative()
 								&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
-								bl2 = true;
+								bl = true;
 								LOGGER.warn("{} moved wrongly!", this.player.getName().getString());
 							}
 
 							this.player.updatePositionAndAngles(h, i, j, k, l);
-							if (!this.player.noClip && !this.player.isSleeping()) {
-								boolean bl3 = this.isPlayerNotCollidingWithBlocks(serverWorld);
-								if (bl && (bl2 || !bl3)) {
-									this.requestTeleport(d, e, f, k, l);
-									return;
-								}
+							if (this.player.noClip
+								|| this.player.isSleeping()
+								|| (!bl || !serverWorld.doesNotCollide(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box)) {
+								this.floating = n >= -0.03125
+									&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
+									&& !this.server.isFlightEnabled()
+									&& !this.player.abilities.allowFlying
+									&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
+									&& !this.player.isFallFlying()
+									&& this.method_29780(this.player);
+								this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
+								this.player.handleFall(this.player.getY() - g, packet.isOnGround());
+								this.player.setOnGround(packet.isOnGround());
+								this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
+								this.updatedX = this.player.getX();
+								this.updatedY = this.player.getY();
+								this.updatedZ = this.player.getZ();
+							} else {
+								this.requestTeleport(d, e, f, k, l);
 							}
-
-							this.floating = n >= -0.03125
-								&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
-								&& !this.server.isFlightEnabled()
-								&& !this.player.abilities.allowFlying
-								&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
-								&& !this.player.isFallFlying()
-								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
-							this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
-							this.player.handleFall(this.player.getY() - g, packet.isOnGround());
-							this.player.setOnGround(packet.isOnGround());
-							this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-							this.updatedX = this.player.getX();
-							this.updatedY = this.player.getY();
-							this.updatedZ = this.player.getZ();
 						}
 					}
 				}
@@ -838,8 +845,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 	}
 
-	private boolean isPlayerNotCollidingWithBlocks(WorldView worldView) {
-		return worldView.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5F));
+	private boolean isPlayerNotCollidingWithBlocks(WorldView worldView, Box box) {
+		Stream<VoxelShape> stream = worldView.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5F), entity -> true);
+		VoxelShape voxelShape = VoxelShapes.cuboid(box.contract(1.0E-5F));
+		return stream.anyMatch(voxelShape2 -> !VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND));
 	}
 
 	public void requestTeleport(double x, double y, double z, float yaw, float pitch) {
@@ -953,7 +962,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		this.player.updateLastActionTime();
 		if (!itemStack.isEmpty()) {
-			this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
+			ActionResult actionResult = this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
+			if (actionResult.shouldSwingHand()) {
+				this.player.swingHand(hand, true);
+			}
 		}
 	}
 
@@ -1146,15 +1158,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		if (entity != null) {
 			double d = 36.0;
 			if (this.player.squaredDistanceTo(entity) < 36.0) {
+				Hand hand = rpacket.getHand();
+				Optional<ActionResult> optional = Optional.empty();
 				if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT) {
-					Hand hand = rpacket.getHand();
-					this.player.interact(entity, hand);
+					optional = Optional.of(this.player.interact(entity, hand));
 				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
-					Hand hand = rpacket.getHand();
-					ActionResult actionResult = entity.interactAt(this.player, rpacket.getHitPosition(), hand);
-					if (actionResult.shouldSwingHand()) {
-						this.player.swingHand(hand, true);
-					}
+					optional = Optional.of(entity.interactAt(this.player, rpacket.getHitPosition(), hand));
 				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
 					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof PersistentProjectileEntity || entity == this.player) {
 						this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
@@ -1163,6 +1172,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					}
 
 					this.player.attack(entity);
+				}
+
+				if (optional.isPresent() && ((ActionResult)optional.get()).shouldSwingHand()) {
+					this.player.swingHand(hand, true);
 				}
 			}
 		}

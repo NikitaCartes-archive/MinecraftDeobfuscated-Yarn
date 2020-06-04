@@ -24,6 +24,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -339,24 +340,28 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public boolean interact(PlayerEntity player, Hand hand) {
+	public ActionResult interact(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		boolean bl = !this.getHeldItemStack().isEmpty();
 		boolean bl2 = !itemStack.isEmpty();
-		if (this.world.isClient) {
-			return bl || bl2;
-		} else {
-			if (this.fixed || bl) {
+		if (this.fixed) {
+			return ActionResult.PASS;
+		} else if (!this.world.isClient) {
+			if (!bl) {
+				if (bl2 && !this.removed) {
+					this.setHeldItemStack(itemStack);
+					if (!player.abilities.creativeMode) {
+						itemStack.decrement(1);
+					}
+				}
+			} else {
 				this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ROTATE_ITEM, 1.0F, 1.0F);
 				this.setRotation(this.getRotation() + 1);
-			} else if (bl2 && !this.removed) {
-				this.setHeldItemStack(itemStack);
-				if (!player.abilities.creativeMode) {
-					itemStack.decrement(1);
-				}
 			}
 
-			return true;
+			return ActionResult.CONSUME;
+		} else {
+			return !bl && !bl2 ? ActionResult.PASS : ActionResult.SUCCESS;
 		}
 	}
 

@@ -20,6 +20,7 @@ import net.minecraft.util.Lazy;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharModsCallbackI;
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;
+import org.lwjgl.glfw.GLFWDropCallbackI;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
 import org.lwjgl.glfw.GLFWScrollCallbackI;
@@ -60,11 +61,16 @@ public class InputUtil {
 	}
 
 	public static void setMouseCallbacks(
-		long handle, GLFWCursorPosCallbackI cursorPosCallback, GLFWMouseButtonCallbackI mouseButtonCallback, GLFWScrollCallbackI scrollCallback
+		long handle,
+		GLFWCursorPosCallbackI cursorPosCallback,
+		GLFWMouseButtonCallbackI mouseButtonCallback,
+		GLFWScrollCallbackI scrollCallback,
+		GLFWDropCallbackI gLFWDropCallbackI
 	) {
 		GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
 		GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
 		GLFW.glfwSetScrollCallback(handle, scrollCallback);
+		GLFW.glfwSetDropCallback(handle, gLFWDropCallbackI);
 	}
 
 	public static void setCursorParameters(long handler, int i, double d, double e) {

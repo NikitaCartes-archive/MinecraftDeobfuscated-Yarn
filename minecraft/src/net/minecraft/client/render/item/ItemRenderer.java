@@ -99,20 +99,29 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	) {
 		if (!stack.isEmpty()) {
 			matrices.push();
-			boolean bl = renderMode == ModelTransformation.Mode.GUI;
-			boolean bl2 = bl || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
-			if (stack.getItem() == Items.TRIDENT && bl2) {
+			boolean bl = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
+			if (stack.getItem() == Items.TRIDENT && bl) {
 				model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
 			}
 
 			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
 			matrices.translate(-0.5, -0.5, -0.5);
-			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl2)) {
-				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, renderMode != ModelTransformation.Mode.GROUND);
-				VertexConsumer vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl)) {
+				boolean bl2 = renderMode == ModelTransformation.Mode.GUI
+					|| renderMode == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND
+					|| renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND
+					|| renderMode == ModelTransformation.Mode.FIXED;
+				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl2);
+				VertexConsumer vertexConsumer;
+				if (bl2) {
+					vertexConsumer = method_29711(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+				} else {
+					vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+				}
+
 				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
 			} else {
-				BuiltinModelItemRenderer.INSTANCE.render(stack, matrices, vertexConsumers, light, overlay);
+				BuiltinModelItemRenderer.INSTANCE.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
 			}
 
 			matrices.pop();
@@ -131,6 +140,14 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		return glint
 			? VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
 			: vertexConsumers.getBuffer(layer);
+	}
+
+	public static VertexConsumer method_29711(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
+		return bl2
+			? VertexConsumers.dual(
+				vertexConsumerProvider.getBuffer(bl ? RenderLayer.method_29706() : RenderLayer.method_29707()), vertexConsumerProvider.getBuffer(renderLayer)
+			)
+			: vertexConsumerProvider.getBuffer(renderLayer);
 	}
 
 	private void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {

@@ -57,7 +57,7 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 
 		public static BredAnimalsCriterion.Conditions create(EntityPredicate.Builder builder) {
 			return new BredAnimalsCriterion.Conditions(
-				EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(builder.build()), EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY
+				EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(builder.build())
 			);
 		}
 

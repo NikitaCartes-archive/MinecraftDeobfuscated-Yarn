@@ -10,10 +10,10 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
@@ -131,58 +131,56 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity player, Hand hand) {
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() instanceof SpawnEggItem) {
+		if (!this.isBaby()) {
+			if (this.isTame() && player.shouldCancelInteraction()) {
+				this.openInventory(player);
+				return ActionResult.method_29236(this.world.isClient);
+			}
+
+			if (this.hasPassengers()) {
+				return super.interactMob(player, hand);
+			}
+		}
+
+		if (!itemStack.isEmpty()) {
+			if (this.isBreedingItem(itemStack)) {
+				boolean bl = this.receiveFood(player, itemStack);
+				if (!player.abilities.creativeMode) {
+					itemStack.decrement(1);
+				}
+
+				return bl ? ActionResult.method_29236(this.world.isClient) : ActionResult.CONSUME;
+			}
+
+			if (!this.isTame()) {
+				this.playAngrySound();
+				return ActionResult.method_29236(this.world.isClient);
+			}
+
+			if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
+				this.setHasChest(true);
+				this.playAddChestSound();
+				if (!player.abilities.creativeMode) {
+					itemStack.decrement(1);
+				}
+
+				this.onChestedStatusChanged();
+				return ActionResult.method_29236(this.world.isClient);
+			}
+
+			if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
+				this.openInventory(player);
+				return ActionResult.method_29236(this.world.isClient);
+			}
+		}
+
+		if (this.isBaby()) {
 			return super.interactMob(player, hand);
 		} else {
-			if (!this.isBaby()) {
-				if (this.isTame() && player.shouldCancelInteraction()) {
-					this.openInventory(player);
-					return true;
-				}
-
-				if (this.hasPassengers()) {
-					return super.interactMob(player, hand);
-				}
-			}
-
-			if (!itemStack.isEmpty()) {
-				boolean bl = this.receiveFood(player, itemStack);
-				if (!bl) {
-					if (!this.isTame()) {
-						this.playAngrySound();
-						return true;
-					}
-
-					if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
-						this.setHasChest(true);
-						this.playAddChestSound();
-						bl = true;
-						this.onChestedStatusChanged();
-					}
-
-					if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
-						this.openInventory(player);
-						return true;
-					}
-				}
-
-				if (bl) {
-					if (!player.abilities.creativeMode) {
-						itemStack.decrement(1);
-					}
-
-					return true;
-				}
-			}
-
-			if (this.isBaby()) {
-				return super.interactMob(player, hand);
-			} else {
-				this.putPlayerOnBack(player);
-				return true;
-			}
+			this.putPlayerOnBack(player);
+			return ActionResult.method_29236(this.world.isClient);
 		}
 	}
 

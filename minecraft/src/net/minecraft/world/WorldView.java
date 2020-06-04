@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -34,6 +35,16 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	default Biome getBiome(BlockPos pos) {
 		return this.getBiomeAccess().getBiome(pos);
+	}
+
+	default Stream<BlockState> method_29556(Box box) {
+		int i = MathHelper.floor(box.minX);
+		int j = MathHelper.floor(box.maxX);
+		int k = MathHelper.floor(box.minY);
+		int l = MathHelper.floor(box.maxY);
+		int m = MathHelper.floor(box.minZ);
+		int n = MathHelper.floor(box.maxZ);
+		return this.isRegionLoaded(i, k, m, j, l, n) ? this.method_29546(box) : Stream.empty();
 	}
 
 	@Environment(EnvType.CLIENT)

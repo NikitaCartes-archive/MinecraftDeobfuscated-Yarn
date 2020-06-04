@@ -2,26 +2,21 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5348;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.world.level.LevelInfo;
 
 @Environment(EnvType.CLIENT)
 public class DatapackFailureScreen extends Screen {
-	private final String name;
 	private final List<class_5348> wrappedText = Lists.<class_5348>newArrayList();
-	@Nullable
-	private final LevelInfo levelInfo;
+	private final Runnable field_25452;
 
-	public DatapackFailureScreen(String name, @Nullable LevelInfo levelInfo) {
+	public DatapackFailureScreen(Runnable runnable) {
 		super(new TranslatableText("datapackFailure.title"));
-		this.name = name;
-		this.levelInfo = levelInfo;
+		this.field_25452 = runnable;
 	}
 
 	@Override
@@ -31,12 +26,7 @@ public class DatapackFailureScreen extends Screen {
 		this.wrappedText.addAll(this.textRenderer.wrapLines(this.getTitle(), this.width - 50));
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 155,
-				this.height / 6 + 96,
-				150,
-				20,
-				new TranslatableText("datapackFailure.safeMode"),
-				buttonWidget -> this.client.startIntegratedServer(this.name, this.levelInfo, true)
+				this.width / 2 - 155, this.height / 6 + 96, 150, 20, new TranslatableText("datapackFailure.safeMode"), buttonWidget -> this.field_25452.run()
 			)
 		);
 		this.addButton(

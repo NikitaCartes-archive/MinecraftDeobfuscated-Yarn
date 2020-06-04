@@ -39,7 +39,6 @@ public class class_5315 {
 		return this.field_25024;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public long method_29024() {
 		return this.field_25025;
 	}

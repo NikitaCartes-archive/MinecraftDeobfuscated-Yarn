@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -7,6 +8,10 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -113,6 +118,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -246,7 +252,11 @@ public class EntityType<T extends Entity> {
 			.trackingTickInterval(10)
 	);
 	public static final EntityType<FoxEntity> FOX = register(
-		"fox", EntityType.Builder.<FoxEntity>create(FoxEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8)
+		"fox",
+		EntityType.Builder.<FoxEntity>create(FoxEntity::new, SpawnGroup.CREATURE)
+			.setDimensions(0.6F, 0.7F)
+			.maxTrackingRange(8)
+			.method_29497(Blocks.SWEET_BERRY_BUSH)
 	);
 	public static final EntityType<GhastEntity> GHAST = register(
 		"ghast", EntityType.Builder.<GhastEntity>create(GhastEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(4.0F, 4.0F).maxTrackingRange(10)
@@ -292,6 +302,14 @@ public class EntityType<T extends Entity> {
 			.disableSaving()
 			.setDimensions(0.5F, 0.5F)
 			.maxTrackingRange(10)
+			.trackingTickInterval(Integer.MAX_VALUE)
+	);
+	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(
+		"lightning_bolt",
+		EntityType.Builder.<LightningEntity>create(LightningEntity::new, SpawnGroup.MISC)
+			.disableSaving()
+			.setDimensions(0.0F, 0.0F)
+			.maxTrackingRange(16)
 			.trackingTickInterval(Integer.MAX_VALUE)
 	);
 	public static final EntityType<LlamaEntity> LLAMA = register(
@@ -498,12 +516,18 @@ public class EntityType<T extends Entity> {
 		"witch", EntityType.Builder.<WitchEntity>create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
 	public static final EntityType<WitherEntity> WITHER = register(
-		"wither", EntityType.Builder.<WitherEntity>create(WitherEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(0.9F, 3.5F).maxTrackingRange(10)
+		"wither",
+		EntityType.Builder.<WitherEntity>create(WitherEntity::new, SpawnGroup.MONSTER)
+			.makeFireImmune()
+			.method_29497(Blocks.WITHER_ROSE)
+			.setDimensions(0.9F, 3.5F)
+			.maxTrackingRange(10)
 	);
 	public static final EntityType<WitherSkeletonEntity> WITHER_SKELETON = register(
 		"wither_skeleton",
 		EntityType.Builder.<WitherSkeletonEntity>create(WitherSkeletonEntity::new, SpawnGroup.MONSTER)
 			.makeFireImmune()
+			.method_29497(Blocks.WITHER_ROSE)
 			.setDimensions(0.7F, 2.4F)
 			.maxTrackingRange(8)
 	);
@@ -539,9 +563,6 @@ public class EntityType<T extends Entity> {
 			.setDimensions(0.6F, 1.95F)
 			.maxTrackingRange(8)
 	);
-	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(
-		"lightning_bolt", EntityType.Builder.<LightningEntity>create(SpawnGroup.MISC).disableSaving().setDimensions(0.0F, 0.0F)
-	);
 	public static final EntityType<PlayerEntity> PLAYER = register(
 		"player",
 		EntityType.Builder.<PlayerEntity>create(SpawnGroup.MISC)
@@ -562,6 +583,7 @@ public class EntityType<T extends Entity> {
 	);
 	private final EntityType.EntityFactory<T> factory;
 	private final SpawnGroup spawnGroup;
+	private final ImmutableSet<Block> field_25355;
 	private final boolean saveable;
 	private final boolean summonable;
 	private final boolean fireImmune;
@@ -595,9 +617,10 @@ public class EntityType<T extends Entity> {
 		boolean summonable,
 		boolean fireImmune,
 		boolean spawnableFarFromPlayer,
-		EntityDimensions dimensions,
-		int despawnStartRange,
-		int trackTickInterval
+		ImmutableSet<Block> immutableSet,
+		EntityDimensions entityDimensions,
+		int i,
+		int j
 	) {
 		this.factory = factory;
 		this.spawnGroup = spawnGroup;
@@ -605,9 +628,10 @@ public class EntityType<T extends Entity> {
 		this.saveable = saveable;
 		this.summonable = summonable;
 		this.fireImmune = fireImmune;
-		this.dimensions = dimensions;
-		this.maxTrackDistance = despawnStartRange;
-		this.trackTickInterval = trackTickInterval;
+		this.field_25355 = immutableSet;
+		this.dimensions = entityDimensions;
+		this.maxTrackDistance = i;
+		this.trackTickInterval = j;
 	}
 
 	@Nullable
@@ -797,6 +821,17 @@ public class EntityType<T extends Entity> {
 		return new Box(feetX - (double)f, feetY, feetZ - (double)f, feetX + (double)f, feetY + (double)this.getHeight(), feetZ + (double)f);
 	}
 
+	public boolean method_29496(BlockState blockState) {
+		if (this.field_25355.contains(blockState.getBlock())) {
+			return false;
+		} else if (this.fireImmune
+			|| !blockState.isIn(BlockTags.FIRE) && !blockState.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(blockState) && !blockState.isOf(Blocks.LAVA)) {
+			return blockState.isOf(Blocks.WITHER_ROSE) || blockState.isOf(Blocks.SWEET_BERRY_BUSH) || blockState.isOf(Blocks.CACTUS);
+		} else {
+			return true;
+		}
+	}
+
 	public EntityDimensions getDimensions() {
 		return this.dimensions;
 	}
@@ -864,6 +899,7 @@ public class EntityType<T extends Entity> {
 	public static class Builder<T extends Entity> {
 		private final EntityType.EntityFactory<T> factory;
 		private final SpawnGroup spawnGroup;
+		private ImmutableSet<Block> field_25356 = ImmutableSet.of();
 		private boolean saveable = true;
 		private boolean summonable = true;
 		private boolean fireImmune;
@@ -906,6 +942,11 @@ public class EntityType<T extends Entity> {
 			return this;
 		}
 
+		public EntityType.Builder<T> method_29497(Block... blocks) {
+			this.field_25356 = ImmutableSet.copyOf(blocks);
+			return this;
+		}
+
 		public EntityType.Builder<T> spawnableFarFromPlayer() {
 			this.spawnableFarFromPlayer = true;
 			return this;
@@ -933,6 +974,7 @@ public class EntityType<T extends Entity> {
 				this.summonable,
 				this.fireImmune,
 				this.spawnableFarFromPlayer,
+				this.field_25356,
 				this.dimensions,
 				this.maxTrackingRange,
 				this.trackingTickInterval
