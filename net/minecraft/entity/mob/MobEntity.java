@@ -12,7 +12,6 @@ import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -66,9 +65,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.DebugInfoSender;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -485,17 +484,9 @@ extends LivingEntity {
     protected void loot(ItemEntity item) {
         ItemStack itemStack = item.getStack();
         if (this.tryEquip(itemStack)) {
-            this.method_27964(item);
+            this.method_29499(item);
             this.sendPickup(item, itemStack.getCount());
             item.remove();
-        }
-    }
-
-    protected void method_27964(ItemEntity itemEntity) {
-        PlayerEntity playerEntity;
-        PlayerEntity playerEntity2 = playerEntity = itemEntity.getThrower() != null ? this.world.getPlayerByUuid(itemEntity.getThrower()) : null;
-        if (playerEntity instanceof ServerPlayerEntity) {
-            Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.trigger((ServerPlayerEntity)playerEntity, itemEntity.getStack(), this);
         }
     }
 
@@ -1005,42 +996,53 @@ extends LivingEntity {
     }
 
     @Override
-    public final boolean interact(PlayerEntity player, Hand hand) {
+    public final ActionResult interact(PlayerEntity player, Hand hand) {
         if (!this.isAlive()) {
-            return false;
+            return ActionResult.PASS;
         }
         if (this.getHoldingEntity() == player) {
             this.detachLeash(true, !player.abilities.creativeMode);
-            return true;
+            return ActionResult.method_29236(this.world.isClient);
         }
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() == Items.LEAD && this.canBeLeashedBy(player)) {
-            this.attachLeash(player, true);
-            itemStack.decrement(1);
-            return true;
+        ActionResult actionResult = this.method_29506(player, hand);
+        if (actionResult.isAccepted()) {
+            return actionResult;
         }
-        if (itemStack.getItem() == Items.NAME_TAG) {
-            itemStack.useOnEntity(player, this, hand);
-            return true;
-        }
-        if (this.interactMob(player, hand)) {
-            return true;
+        actionResult = this.interactMob(player, hand);
+        if (actionResult.isAccepted()) {
+            return actionResult;
         }
         return super.interact(player, hand);
+    }
+
+    private ActionResult method_29506(PlayerEntity playerEntity, Hand hand) {
+        ActionResult actionResult;
+        ItemStack itemStack = playerEntity.getStackInHand(hand);
+        if (itemStack.getItem() == Items.LEAD && this.canBeLeashedBy(playerEntity)) {
+            this.attachLeash(playerEntity, true);
+            itemStack.decrement(1);
+            return ActionResult.method_29236(this.world.isClient);
+        }
+        if (itemStack.getItem() == Items.NAME_TAG && (actionResult = itemStack.useOnEntity(playerEntity, this, hand)).isAccepted()) {
+            return actionResult;
+        }
+        if (itemStack.getItem() instanceof SpawnEggItem) {
+            if (!this.world.isClient) {
+                SpawnEggItem spawnEggItem = (SpawnEggItem)itemStack.getItem();
+                Optional<MobEntity> optional = spawnEggItem.spawnBaby(playerEntity, this, this.getType(), this.world, this.getPos(), itemStack);
+                optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(playerEntity, (MobEntity)mobEntity));
+                return optional.isPresent() ? ActionResult.SUCCESS : ActionResult.PASS;
+            }
+            return ActionResult.CONSUME;
+        }
+        return ActionResult.PASS;
     }
 
     protected void onPlayerSpawnedChild(PlayerEntity player, MobEntity child) {
     }
 
-    protected boolean interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        Item item = itemStack.getItem();
-        if (!this.world.isClient && item instanceof SpawnEggItem) {
-            SpawnEggItem spawnEggItem = (SpawnEggItem)item;
-            Optional<MobEntity> optional = spawnEggItem.spawnBaby(player, this, this.getType(), this.world, this.getPos(), itemStack);
-            optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(player, (MobEntity)mobEntity));
-        }
-        return false;
+    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
+        return ActionResult.PASS;
     }
 
     public boolean isInWalkTargetRange() {

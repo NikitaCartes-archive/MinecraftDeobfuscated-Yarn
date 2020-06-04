@@ -15,6 +15,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
@@ -146,8 +147,8 @@ extends Vec3i {
     }
 
     @Override
-    public BlockPos down(int distance) {
-        return this.offset(Direction.DOWN, distance);
+    public BlockPos down(int i) {
+        return this.offset(Direction.DOWN, i);
     }
 
     public BlockPos north() {
@@ -351,6 +352,10 @@ extends Vec3i {
 
     public static Stream<BlockPos> stream(BlockBox box) {
         return BlockPos.stream(Math.min(box.minX, box.maxX), Math.min(box.minY, box.maxY), Math.min(box.minZ, box.maxZ), Math.max(box.minX, box.maxX), Math.max(box.minY, box.maxY), Math.max(box.minZ, box.maxZ));
+    }
+
+    public static Stream<BlockPos> method_29715(Box box) {
+        return BlockPos.stream(MathHelper.floor(box.minX), MathHelper.floor(box.minY), MathHelper.floor(box.minZ), MathHelper.floor(box.maxX), MathHelper.floor(box.maxY), MathHelper.floor(box.maxZ));
     }
 
     public static Stream<BlockPos> stream(int startX, int startY, int startZ, int endX, int endY, int endZ) {

@@ -23,6 +23,7 @@ import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5377;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -942,6 +943,19 @@ implements DataProvider {
         SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, 2).create("has_polished_blackstone_bricks", RecipesProvider.conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS)).offerTo(consumer, "polished_blackstone_brick_slab_from_polished_blackstone_bricks_stonecutting");
         SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS).create("has_polished_blackstone_bricks", RecipesProvider.conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS)).offerTo(consumer, "polished_blackstone_brick_stairs_from_polished_blackstone_bricks_stonecutting");
         SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_WALL).create("has_polished_blackstone_bricks", RecipesProvider.conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS)).offerTo(consumer, "polished_blackstone_brick_wall_from_polished_blackstone_bricks_stonecutting");
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET);
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS);
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD);
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_HOE, Items.NETHERITE_HOE);
+        RecipesProvider.method_29728(consumer, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
+    }
+
+    private static void method_29728(Consumer<RecipeJsonProvider> consumer, Item item, Item item2) {
+        class_5377.method_29729(Ingredient.ofItems(item), Ingredient.ofItems(Items.NETHERITE_INGOT), item2).method_29730("has_netherite_ingot", RecipesProvider.conditionsFromItem(Items.NETHERITE_INGOT)).method_29731(consumer, Registry.ITEM.getId(item2.asItem()).getPath() + "_smithing");
     }
 
     private static void method_24475(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, Tag<Item> tag) {

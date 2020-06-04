@@ -16,12 +16,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_5363;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -150,6 +149,7 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE_KEY = Registry.createRegistryKey("loot_condition_type");
     public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = Registry.createRegistryKey("dimension_type");
     public static final RegistryKey<Registry<World>> DIMENSION = Registry.createRegistryKey("dimension");
+    public static final RegistryKey<Registry<class_5363>> field_25490 = Registry.createRegistryKey("dimension");
     public static final Registry<SoundEvent> SOUND_EVENT = Registry.create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
     public static final DefaultedRegistry<Fluid> FLUID = Registry.create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
     public static final Registry<StatusEffect> STATUS_EFFECT = Registry.create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
@@ -250,6 +250,10 @@ IndexedIterable<T> {
         this.lifecycle = lifecycle;
     }
 
+    public String toString() {
+        return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
+    }
+
     @Override
     public <U> DataResult<Pair<T, U>> decode(DynamicOps<U> dynamicOps, U object2) {
         if (dynamicOps.compressMaps()) {
@@ -289,13 +293,11 @@ IndexedIterable<T> {
     @Nullable
     public abstract Identifier getId(T var1);
 
-    @Environment(value=EnvType.CLIENT)
     public abstract Optional<RegistryKey<T>> getKey(T var1);
 
     public abstract int getRawId(@Nullable T var1);
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public abstract T get(@Nullable RegistryKey<T> var1);
 
     @Nullable

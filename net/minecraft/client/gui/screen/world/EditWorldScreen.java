@@ -3,16 +3,26 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5384;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,8 +38,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.SaveProperties;
+import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +50,7 @@ import org.apache.logging.log4j.Logger;
 public class EditWorldScreen
 extends Screen {
     private static final Logger field_23776 = LogManager.getLogger();
+    private static final Gson field_25481 = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
     private ButtonWidget saveButton;
     private final BooleanConsumer callback;
     private TextFieldWidget levelNameTextField;
@@ -80,20 +93,36 @@ extends Screen {
             if (bl) {
                 EditWorldScreen.backupLevel(this.field_23777);
             }
-            this.client.openScreen(OptimizeWorldScreen.method_27031(this.callback, this.client.getDataFixer(), this.field_23777, bl2));
+            this.client.openScreen(OptimizeWorldScreen.method_27031(this.client, this.callback, this.client.getDataFixer(), this.field_23777, bl2));
         }, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20, new TranslatableText("selectWorld.edit.export_worldgen_settings"), buttonWidget -> {
-            DataResult<String> dataResult = this.field_23777.method_29019();
-            LiteralText text = new LiteralText(dataResult.get().map(Function.identity(), DataResult.PartialResult::message));
-            TranslatableText text2 = new TranslatableText(dataResult.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure");
-            dataResult.error().ifPresent(partialResult -> field_23776.error("Error exporting world settings: {}", partialResult));
-            this.client.getToastManager().add(SystemToast.method_29047(SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
+            DataResult<Object> dataResult2;
+            DimensionTracker.Modifiable modifiable = DimensionTracker.create();
+            try (MinecraftClient.class_5367 lv = this.client.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::method_29599, false, this.field_23777);){
+                class_5384<JsonElement> dynamicOps = class_5384.method_29771(JsonOps.INSTANCE, modifiable);
+                DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, lv.method_29614().getGeneratorOptions());
+                dataResult2 = dataResult.flatMap(jsonElement -> {
+                    Path path = this.field_23777.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
+                    try (JsonWriter jsonWriter = field_25481.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8, new OpenOption[0]));){
+                        field_25481.toJson((JsonElement)jsonElement, jsonWriter);
+                    } catch (JsonIOException | IOException exception) {
+                        return DataResult.error("Error writing file: " + exception.getMessage());
+                    }
+                    return DataResult.success(path.toString());
+                });
+            } catch (InterruptedException | ExecutionException exception) {
+                dataResult2 = DataResult.error("Could not parse level data!");
+            }
+            LiteralText text = new LiteralText(dataResult2.get().map(Function.identity(), DataResult.PartialResult::message));
+            TranslatableText text2 = new TranslatableText(dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure");
+            dataResult2.error().ifPresent(partialResult -> field_23776.error("Error exporting world settings: {}", partialResult));
+            this.client.getToastManager().add(SystemToast.method_29047(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
         }));
         this.saveButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), buttonWidget -> this.commit()));
         this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
         buttonWidget2.active = this.field_23777.getIconFile().isFile();
-        SaveProperties saveProperties = this.field_23777.readLevelProperties();
-        String string2 = saveProperties == null ? "" : saveProperties.getLevelName();
+        LevelSummary levelSummary = this.field_23777.method_29584();
+        String string2 = levelSummary == null ? "" : levelSummary.getDisplayName();
         this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, new TranslatableText("selectWorld.enterName"));
         this.levelNameTextField.setText(string2);
         this.levelNameTextField.setChangedListener(string -> {

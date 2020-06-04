@@ -41,6 +41,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -148,18 +149,23 @@ Saddleable {
     }
 
     @Override
-    public boolean interactMob(PlayerEntity player, Hand hand) {
-        if (!super.interactMob(player, hand)) {
-            if (this.isSaddled() && !this.hasPassengers()) {
-                if (!this.world.isClient) {
-                    player.startRiding(this);
-                }
-                return true;
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        boolean bl = this.isBreedingItem(player.getStackInHand(hand));
+        if (!bl && this.isSaddled() && !this.hasPassengers()) {
+            if (!this.world.isClient) {
+                player.startRiding(this);
             }
-            ItemStack itemStack = player.getStackInHand(hand);
-            return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
+            return ActionResult.method_29236(this.world.isClient);
         }
-        return true;
+        ActionResult actionResult = super.interactMob(player, hand);
+        if (!actionResult.isAccepted()) {
+            ItemStack itemStack = player.getStackInHand(hand);
+            if (itemStack.getItem() == Items.SADDLE) {
+                return itemStack.useOnEntity(player, this, hand);
+            }
+            return ActionResult.PASS;
+        }
+        return actionResult;
     }
 
     @Override
@@ -223,6 +229,7 @@ Saddleable {
                 zombifiedPiglinEntity.setCustomName(this.getCustomName());
                 zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
             }
+            zombifiedPiglinEntity.setPersistent();
             this.world.spawnEntity(zombifiedPiglinEntity);
             this.remove();
         } else {

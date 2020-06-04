@@ -107,9 +107,9 @@ extends Block {
         if (blockState.isOpaque() && blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
             return;
         }
-        double d = (float)pos.getX() + random.nextFloat();
+        double d = (double)pos.getX() + random.nextDouble();
         double e = (double)pos.getY() - 0.05;
-        double f = (float)pos.getZ() + random.nextFloat();
+        double f = (double)pos.getZ() + random.nextDouble();
         world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
     }
 

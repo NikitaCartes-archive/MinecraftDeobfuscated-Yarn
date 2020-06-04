@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -114,6 +115,14 @@ implements ResourceManager {
             throw new FileNotFoundException(id.toString());
         }
         return list;
+    }
+
+    @Override
+    public Collection<Identifier> method_29489(Identifier identifier, Predicate<String> predicate) {
+        if (Objects.equals(identifier.getNamespace(), this.namespace)) {
+            return this.findResources(identifier.getPath(), predicate);
+        }
+        return ImmutableSet.of();
     }
 
     @Override

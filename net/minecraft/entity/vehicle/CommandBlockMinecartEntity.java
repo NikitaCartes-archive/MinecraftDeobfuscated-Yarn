@@ -18,6 +18,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
@@ -82,9 +83,8 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    public boolean interact(PlayerEntity player, Hand hand) {
-        this.commandExecutor.interact(player);
-        return true;
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        return this.commandExecutor.interact(player);
     }
 
     @Override

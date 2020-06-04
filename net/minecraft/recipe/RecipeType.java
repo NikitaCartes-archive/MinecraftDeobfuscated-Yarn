@@ -4,6 +4,7 @@
 package net.minecraft.recipe;
 
 import java.util.Optional;
+import net.minecraft.class_5357;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.recipe.BlastingRecipe;
 import net.minecraft.recipe.CampfireCookingRecipe;
@@ -23,6 +24,7 @@ public interface RecipeType<T extends Recipe<?>> {
     public static final RecipeType<SmokingRecipe> SMOKING = RecipeType.register("smoking");
     public static final RecipeType<CampfireCookingRecipe> CAMPFIRE_COOKING = RecipeType.register("campfire_cooking");
     public static final RecipeType<StonecuttingRecipe> STONECUTTING = RecipeType.register("stonecutting");
+    public static final RecipeType<class_5357> SMITHING = RecipeType.register("smithing");
 
     public static <T extends Recipe<?>> RecipeType<T> register(final String string) {
         return Registry.register(Registry.RECIPE_TYPE, new Identifier(string), new RecipeType<T>(){

@@ -11,11 +11,13 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5354;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -51,6 +53,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -60,7 +63,8 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class EndermanEntity
-extends HostileEntity {
+extends HostileEntity
+implements class_5354 {
     private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
     private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", (double)0.15f, EntityAttributeModifier.Operation.ADDITION);
     private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
@@ -69,6 +73,9 @@ extends HostileEntity {
     private static final Predicate<LivingEntity> PLAYER_ENDERMITE_PREDICATE = livingEntity -> livingEntity instanceof EndermiteEntity && ((EndermiteEntity)livingEntity).isPlayerSpawned();
     private int lastAngrySoundAge = Integer.MIN_VALUE;
     private int ageWhenTargetSet;
+    private static final IntRange field_25378 = Durations.betweenSeconds(20, 39);
+    private int field_25376;
+    private UUID field_25377;
 
     public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
@@ -86,9 +93,10 @@ extends HostileEntity {
         this.goalSelector.add(8, new LookAroundGoal(this));
         this.goalSelector.add(10, new PlaceBlockGoal(this));
         this.goalSelector.add(11, new PickUpBlockGoal(this));
-        this.targetSelector.add(1, new TeleportTowardsPlayerGoal(this));
-        this.targetSelector.add(2, new RevengeGoal(this, new Class[0]));
-        this.targetSelector.add(3, new FollowTargetGoal<EndermiteEntity>(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
+        this.targetSelector.add(1, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::method_29515));
+        this.targetSelector.add(2, new TeleportTowardsPlayerGoal(this));
+        this.targetSelector.add(3, new RevengeGoal(this, new Class[0]));
+        this.targetSelector.add(4, new FollowTargetGoal<EndermiteEntity>(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
     }
 
     public static DefaultAttributeContainer.Builder createEndermanAttributes() {
@@ -96,10 +104,10 @@ extends HostileEntity {
     }
 
     @Override
-    public void setTarget(@Nullable LivingEntity target) {
-        super.setTarget(target);
+    public void setTarget(@Nullable LivingEntity livingEntity) {
+        super.setTarget(livingEntity);
         EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-        if (target == null) {
+        if (livingEntity == null) {
             this.ageWhenTargetSet = 0;
             this.dataTracker.set(ANGRY, false);
             this.dataTracker.set(PROVOKED, false);
@@ -119,6 +127,31 @@ extends HostileEntity {
         this.dataTracker.startTracking(CARRIED_BLOCK, Optional.empty());
         this.dataTracker.startTracking(ANGRY, false);
         this.dataTracker.startTracking(PROVOKED, false);
+    }
+
+    @Override
+    public void method_29509() {
+        this.method_29514(field_25378.choose(this.random));
+    }
+
+    @Override
+    public void method_29514(int i) {
+        this.field_25376 = i;
+    }
+
+    @Override
+    public int method_29507() {
+        return this.field_25376;
+    }
+
+    @Override
+    public void method_29513(@Nullable UUID uUID) {
+        this.field_25377 = uUID;
+    }
+
+    @Override
+    public UUID method_29508() {
+        return this.field_25377;
     }
 
     public void playAngrySound() {
@@ -145,6 +178,7 @@ extends HostileEntity {
         if (blockState != null) {
             tag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
         }
+        this.method_29517(tag);
     }
 
     @Override
@@ -155,6 +189,7 @@ extends HostileEntity {
             blockState = null;
         }
         this.setCarriedBlock(blockState);
+        this.method_29512(this.world, tag);
     }
 
     private boolean isPlayerStaring(PlayerEntity player) {
@@ -185,15 +220,20 @@ extends HostileEntity {
             }
         }
         this.jumping = false;
+        if (!this.world.isClient) {
+            this.method_29510();
+        }
         super.tickMovement();
+    }
+
+    @Override
+    public boolean method_29503() {
+        return true;
     }
 
     @Override
     protected void mobTick() {
         float f;
-        if (this.isWet()) {
-            this.damage(DamageSource.DROWN, 1.0f);
-        }
         if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(this.getBlockPos()) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
             this.setTarget(null);
             this.teleportRandomly();

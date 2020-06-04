@@ -45,7 +45,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -845,9 +844,6 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     protected void loadEntity(Entity entity) {
         if (entity instanceof EnderDragonPart) {
-            return;
-        }
-        if (entity instanceof LightningEntity) {
             return;
         }
         EntityType<?> entityType = entity.getType();

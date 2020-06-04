@@ -69,7 +69,7 @@ extends Block {
         if (world.isClient) {
             return;
         }
-        TntEntity tntEntity = new TntEntity(world, (float)pos.getX() + 0.5f, pos.getY(), (float)pos.getZ() + 0.5f, explosion.getCausingEntity());
+        TntEntity tntEntity = new TntEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, explosion.getCausingEntity());
         tntEntity.setFuse((short)(world.random.nextInt(tntEntity.getFuseTimer() / 4) + tntEntity.getFuseTimer() / 8));
         world.spawnEntity(tntEntity);
     }

@@ -51,12 +51,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -238,11 +238,8 @@ implements Flutterer {
     }
 
     @Override
-    public boolean interactMob(PlayerEntity player, Hand hand) {
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() instanceof SpawnEggItem) {
-            return super.interactMob(player, hand);
-        }
         if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
             if (!player.abilities.creativeMode) {
                 itemStack.decrement(1);
@@ -258,7 +255,7 @@ implements Flutterer {
                     this.world.sendEntityStatus(this, (byte)6);
                 }
             }
-            return true;
+            return ActionResult.method_29236(this.world.isClient);
         }
         if (itemStack.getItem() == COOKIE) {
             if (!player.abilities.creativeMode) {
@@ -268,13 +265,13 @@ implements Flutterer {
             if (player.isCreative() || !this.isInvulnerable()) {
                 this.damage(DamageSource.player(player), Float.MAX_VALUE);
             }
-            return true;
+            return ActionResult.method_29236(this.world.isClient);
         }
         if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
             if (!this.world.isClient) {
                 this.setSitting(!this.isSitting());
             }
-            return true;
+            return ActionResult.method_29236(this.world.isClient);
         }
         return super.interactMob(player, hand);
     }

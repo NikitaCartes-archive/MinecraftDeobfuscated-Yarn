@@ -15,10 +15,12 @@ import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BackupPromptScreen
 extends Screen {
+    @Nullable
     private final Screen parent;
     protected final Callback callback;
     private final Text subtitle;
@@ -26,7 +28,7 @@ extends Screen {
     private final List<class_5348> wrappedText = Lists.newArrayList();
     private CheckboxWidget eraseCacheCheckbox;
 
-    public BackupPromptScreen(Screen parent, Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
+    public BackupPromptScreen(@Nullable Screen parent, Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
         super(title);
         this.parent = parent;
         this.callback = callback;

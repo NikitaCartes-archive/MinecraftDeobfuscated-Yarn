@@ -205,7 +205,7 @@ extends AnimalEntity {
 
     @Override
     protected boolean isImmobile() {
-        return this.getHealth() <= 0.0f;
+        return this.method_29504();
     }
 
     private boolean canEat(ItemStack stack) {
@@ -442,7 +442,7 @@ extends AnimalEntity {
                 this.dropItem(itemStack.split(i - 1));
             }
             this.spit(this.getEquippedStack(EquipmentSlot.MAINHAND));
-            this.method_27964(item);
+            this.method_29499(item);
             this.equipStack(EquipmentSlot.MAINHAND, itemStack.split(1));
             this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0f;
             this.sendPickup(item, itemStack.getCount());
@@ -531,11 +531,11 @@ extends AnimalEntity {
     }
 
     @Override
-    public void setTarget(@Nullable LivingEntity target) {
-        if (this.isAggressive() && target == null) {
+    public void setTarget(@Nullable LivingEntity livingEntity) {
+        if (this.isAggressive() && livingEntity == null) {
             this.setAggressive(false);
         }
-        super.setTarget(target);
+        super.setTarget(livingEntity);
     }
 
     @Override

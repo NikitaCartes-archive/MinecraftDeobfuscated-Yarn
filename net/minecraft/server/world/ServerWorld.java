@@ -41,6 +41,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_5362;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -68,7 +69,6 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
@@ -154,7 +154,6 @@ extends World
 implements ServerWorldAccess {
     public static final BlockPos field_25144 = new BlockPos(100, 50, 0);
     private static final Logger LOGGER = LogManager.getLogger();
-    private final List<Entity> globalEntities = Lists.newArrayList();
     private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectLinkedOpenHashMap<Entity>();
     private final Map<UUID, Entity> entitiesByUuid = Maps.newHashMap();
     private final Queue<Entity> entitiesToLoad = Queues.newArrayDeque();
@@ -217,7 +216,6 @@ implements ServerWorldAccess {
 
     public void tick(BooleanSupplier shouldKeepTicking) {
         boolean bl4;
-        int j;
         Profiler profiler = this.getProfiler();
         this.inBlockTick = true;
         profiler.push("world border");
@@ -227,7 +225,7 @@ implements ServerWorldAccess {
         if (this.getDimension().hasSkyLight()) {
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
                 int i = this.field_24456.getClearWeatherTime();
-                j = this.field_24456.getThunderTime();
+                int j = this.field_24456.getThunderTime();
                 int k = this.field_24456.getRainTime();
                 boolean bl2 = this.properties.isThundering();
                 boolean bl3 = this.properties.isRaining();
@@ -312,60 +310,48 @@ implements ServerWorldAccess {
             this.resetIdleTimeout();
         }
         if (bl4 || this.idleTimeout++ < 300) {
-            Entity entity2;
+            Entity entity3;
             if (this.enderDragonFight != null) {
                 this.enderDragonFight.tick();
             }
-            profiler.push("global");
-            for (j = 0; j < this.globalEntities.size(); ++j) {
-                Entity entity3 = this.globalEntities.get(j);
-                this.tickEntity(entity -> {
-                    ++entity.age;
-                    entity.tick();
-                }, entity3);
-                if (!entity3.removed) continue;
-                this.globalEntities.remove(j--);
-            }
-            profiler.swap("regular");
             this.inEntityTick = true;
             Iterator objectIterator = this.entitiesById.int2ObjectEntrySet().iterator();
             while (objectIterator.hasNext()) {
                 Int2ObjectMap.Entry entry = (Int2ObjectMap.Entry)objectIterator.next();
-                Entity entity22 = (Entity)entry.getValue();
-                Entity entity3 = entity22.getVehicle();
-                if (!this.server.shouldSpawnAnimals() && (entity22 instanceof AnimalEntity || entity22 instanceof WaterCreatureEntity)) {
-                    entity22.remove();
+                Entity entity = (Entity)entry.getValue();
+                Entity entity2 = entity.getVehicle();
+                if (!this.server.shouldSpawnAnimals() && (entity instanceof AnimalEntity || entity instanceof WaterCreatureEntity)) {
+                    entity.remove();
                 }
-                if (!this.server.shouldSpawnNpcs() && entity22 instanceof Npc) {
-                    entity22.remove();
+                if (!this.server.shouldSpawnNpcs() && entity instanceof Npc) {
+                    entity.remove();
                 }
                 profiler.push("checkDespawn");
-                if (!entity22.removed) {
-                    entity22.checkDespawn();
+                if (!entity.removed) {
+                    entity.checkDespawn();
                 }
                 profiler.pop();
-                if (entity3 != null) {
-                    if (!entity3.removed && entity3.hasPassenger(entity22)) continue;
-                    entity22.stopRiding();
+                if (entity2 != null) {
+                    if (!entity2.removed && entity2.hasPassenger(entity)) continue;
+                    entity.stopRiding();
                 }
                 profiler.push("tick");
-                if (!entity22.removed && !(entity22 instanceof EnderDragonPart)) {
-                    this.tickEntity(this::tickEntity, entity22);
+                if (!entity.removed && !(entity instanceof EnderDragonPart)) {
+                    this.tickEntity(this::tickEntity, entity);
                 }
                 profiler.pop();
                 profiler.push("remove");
-                if (entity22.removed) {
-                    this.removeEntityFromChunk(entity22);
+                if (entity.removed) {
+                    this.removeEntityFromChunk(entity);
                     objectIterator.remove();
-                    this.unloadEntity(entity22);
+                    this.unloadEntity(entity);
                 }
                 profiler.pop();
             }
             this.inEntityTick = false;
-            while ((entity2 = this.entitiesToLoad.poll()) != null) {
-                this.loadEntityUnchecked(entity2);
+            while ((entity3 = this.entitiesToLoad.poll()) != null) {
+                this.loadEntityUnchecked(entity3);
             }
-            profiler.pop();
             this.tickBlockEntities();
         }
         profiler.pop();
@@ -416,7 +402,10 @@ implements ServerWorldAccess {
                 skeletonHorseEntity.updatePosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                 this.spawnEntity(skeletonHorseEntity);
             }
-            this.addLightning(new LightningEntity(this, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, bl2));
+            LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this);
+            lightningEntity.method_29495(Vec3d.ofBottomCenter(blockPos));
+            lightningEntity.method_29498(bl2);
+            this.spawnEntity(lightningEntity);
         }
         profiler.swap("iceandsnow");
         if (this.random.nextInt(16) == 0) {
@@ -816,11 +805,6 @@ implements ServerWorldAccess {
         this.updateSleepingPlayers();
     }
 
-    public void addLightning(LightningEntity lightningEntity) {
-        this.globalEntities.add(lightningEntity);
-        this.server.getPlayerManager().sendToAround(null, lightningEntity.getX(), lightningEntity.getY(), lightningEntity.getZ(), 512.0, this.getRegistryKey(), new EntitySpawnGlobalS2CPacket(lightningEntity));
-    }
-
     @Override
     public void setBlockBreakingInfo(int entityId, BlockPos pos, int progress) {
         for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
@@ -877,19 +861,16 @@ implements ServerWorldAccess {
     }
 
     @Override
-    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType) {
-        Explosion explosion = new Explosion(this, entity, x, y, z, power, createFire, destructionType);
-        if (damageSource != null) {
-            explosion.setDamageSource(damageSource);
-        }
+    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable class_5362 arg, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
+        Explosion explosion = new Explosion(this, entity, damageSource, arg, d, e, f, g, bl, destructionType);
         explosion.collectBlocksAndDamageEntities();
         explosion.affectWorld(false);
         if (destructionType == Explosion.DestructionType.NONE) {
             explosion.clearAffectedBlocks();
         }
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            if (!(serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0)) continue;
-            serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(x, y, z, power, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
+            if (!(serverPlayerEntity.squaredDistanceTo(d, e, f) < 4096.0)) continue;
+            serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(d, e, f, g, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
         }
         return explosion;
     }
@@ -1196,13 +1177,9 @@ implements ServerWorldAccess {
             Throwable throwable3 = throwable2;
             throw throwable2;
         }
-        Path path4 = path.resolve("global_entities.csv");
+        Path path4 = path.resolve("block_entities.csv");
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path4, new OpenOption[0]);){
-            ServerWorld.dumpEntities(bufferedWriter, this.globalEntities);
-        }
-        Path path5 = path.resolve("block_entities.csv");
-        try (BufferedWriter writer6 = Files.newBufferedWriter(path5, new OpenOption[0]);){
-            this.dumpBlockEntities(writer6);
+            this.dumpBlockEntities(bufferedWriter);
         }
     }
 

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Vector3f;
@@ -332,6 +333,10 @@ public enum Direction implements StringIdentifiable
         @Override
         public Iterator<Direction> iterator() {
             return Iterators.forArray(this.facingArray);
+        }
+
+        public Stream<Direction> method_29716() {
+            return Arrays.stream(this.facingArray);
         }
 
         @Override

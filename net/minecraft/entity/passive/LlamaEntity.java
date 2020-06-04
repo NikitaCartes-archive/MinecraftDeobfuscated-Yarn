@@ -45,6 +45,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
@@ -59,6 +60,7 @@ import org.jetbrains.annotations.Nullable;
 public class LlamaEntity
 extends AbstractDonkeyEntity
 implements RangedAttackMob {
+    private static final Ingredient field_25375 = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
     private static final TrackedData<Integer> ATTR_STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -177,6 +179,11 @@ implements RangedAttackMob {
     }
 
     @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return field_25375.test(stack);
+    }
+
+    @Override
     protected boolean receiveFood(PlayerEntity player, ItemStack item) {
         SoundEvent soundEvent;
         int i = 0;
@@ -222,7 +229,7 @@ implements RangedAttackMob {
 
     @Override
     protected boolean isImmobile() {
-        return this.getHealth() <= 0.0f || this.isEatingGrass();
+        return this.method_29504() || this.isEatingGrass();
     }
 
     @Override

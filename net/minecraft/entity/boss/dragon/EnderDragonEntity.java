@@ -129,7 +129,7 @@ implements Monster {
     }
 
     public double[] getSegmentProperties(int segmentNumber, float tickDelta) {
-        if (this.getHealth() <= 0.0f) {
+        if (this.method_29504()) {
             tickDelta = 0.0f;
         }
         tickDelta = 1.0f - tickDelta;
@@ -171,7 +171,7 @@ implements Monster {
             }
         }
         this.prevWingPosition = this.wingPosition;
-        if (this.getHealth() <= 0.0f) {
+        if (this.method_29504()) {
             f = (this.random.nextFloat() - 0.5f) * 8.0f;
             g = (this.random.nextFloat() - 0.5f) * 4.0f;
             float h = (this.random.nextFloat() - 0.5f) * 8.0f;
@@ -426,7 +426,7 @@ implements Monster {
         if (source.getAttacker() instanceof PlayerEntity || source.isExplosive()) {
             float f = this.getHealth();
             this.parentDamage(source, amount);
-            if (this.getHealth() <= 0.0f && !this.phaseManager.getCurrent().isSittingOrHovering()) {
+            if (this.method_29504() && !this.phaseManager.getCurrent().isSittingOrHovering()) {
                 this.setHealth(1.0f);
                 this.phaseManager.setPhase(PhaseType.DYING);
             }

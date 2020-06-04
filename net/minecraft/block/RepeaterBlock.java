@@ -81,9 +81,9 @@ extends AbstractRedstoneGateBlock {
             return;
         }
         Direction direction = state.get(FACING);
-        double d = (double)((float)pos.getX() + 0.5f) + (double)(random.nextFloat() - 0.5f) * 0.2;
-        double e = (double)((float)pos.getY() + 0.4f) + (double)(random.nextFloat() - 0.5f) * 0.2;
-        double f = (double)((float)pos.getZ() + 0.5f) + (double)(random.nextFloat() - 0.5f) * 0.2;
+        double d = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
+        double e = (double)pos.getY() + 0.4 + (random.nextDouble() - 0.5) * 0.2;
+        double f = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2;
         float g = -5.0f;
         if (random.nextBoolean()) {
             g = state.get(DELAY) * 2 - 1;

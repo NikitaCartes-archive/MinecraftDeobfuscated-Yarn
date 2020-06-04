@@ -5,6 +5,7 @@ package net.minecraft.client;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
+import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -13,6 +14,10 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.datafixers.util.Function4;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Lifecycle;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +34,7 @@ import java.util.Locale;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -42,6 +48,11 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_5352;
+import net.minecraft.class_5359;
+import net.minecraft.class_5363;
+import net.minecraft.class_5365;
+import net.minecraft.class_5382;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -56,7 +67,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DatapackFailureScreen;
@@ -68,6 +81,7 @@ import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.screen.SplashScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -77,6 +91,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
+import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -138,6 +153,7 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -158,6 +174,7 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -172,9 +189,11 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ServerResourceManager;
+import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.ItemTags;
@@ -207,11 +226,14 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.TickTimeTracker;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -351,7 +373,7 @@ WindowEventHandler {
         this.versionType = args.game.versionType;
         this.sessionPropertyMap = args.network.profileProperties;
         this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
-        this.resourcePackManager = new ResourcePackManager<ClientResourcePackProfile>(MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir));
+        this.resourcePackManager = new ResourcePackManager<ClientResourcePackProfile>(MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, class_5352.field_25347));
         this.netProxy = args.network.netProxy;
         this.sessionService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString()).createMinecraftSessionService();
         this.session = args.network.session;
@@ -709,7 +731,7 @@ WindowEventHandler {
         }
         if (screen == null && this.world == null) {
             screen = new TitleScreen();
-        } else if (screen == null && this.player.getHealth() <= 0.0f) {
+        } else if (screen == null && this.player.method_29504()) {
             if (this.player.showsDeathScreen()) {
                 screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
             } else {
@@ -779,6 +801,7 @@ WindowEventHandler {
             this.statusEffectSpriteManager.close();
             this.paintingManager.close();
             this.textureManager.close();
+            this.resourceManager.close();
             Util.shutdownServerWorkerExecutor();
         } catch (Throwable throwable) {
             LOGGER.error("Shutdown failure!", throwable);
@@ -876,14 +899,7 @@ WindowEventHandler {
         this.profiler.push("fpsUpdate");
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             currentFps = this.fpsCounter;
-            Object[] objectArray = new Object[6];
-            objectArray[0] = currentFps;
-            objectArray[1] = (double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : Integer.valueOf(this.options.maxFps);
-            objectArray[2] = this.options.enableVsync ? " vsync" : "";
-            Object object = objectArray[3] = this.options.fancyGraphics ? "" : " fast";
-            objectArray[4] = this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds");
-            objectArray[5] = this.options.biomeBlendRadius;
-            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d", objectArray);
+            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d", currentFps, (double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : Integer.valueOf(this.options.maxFps), this.options.enableVsync ? " vsync" : "", this.options.field_25444.toString(), this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.biomeBlendRadius);
             this.nextDebugInfoUpdateTime += 1000L;
             this.fpsCounter = 0;
             this.snooper.update();
@@ -1226,7 +1242,7 @@ WindowEventHandler {
             this.textureManager.tick();
         }
         if (this.currentScreen == null && this.player != null) {
-            if (this.player.getHealth() <= 0.0f && !(this.currentScreen instanceof DeathScreen)) {
+            if (this.player.method_29504() && !(this.currentScreen instanceof DeathScreen)) {
                 this.openScreen(null);
             } else if (this.player.isSleeping() && this.world != null) {
                 this.openScreen(new SleepingChatScreen());
@@ -1392,54 +1408,79 @@ WindowEventHandler {
         this.handleBlockBreaking(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
     }
 
-    public void startIntegratedServer(String name, @Nullable LevelInfo levelInfo) {
-        this.startIntegratedServer(name, levelInfo, false);
+    public static class_5359 method_29598(LevelStorage.Session session) {
+        MinecraftServer.convertLevel(session);
+        class_5359 lv = session.method_29585();
+        if (lv == null) {
+            throw new IllegalStateException("Failed to load data pack config");
+        }
+        return lv;
     }
 
-    public void startIntegratedServer(String name, @Nullable LevelInfo levelInfo, boolean safeMode) {
-        ServerResourceManager serverResourceManager;
-        String string;
+    public static SaveProperties method_29599(LevelStorage.Session session, DimensionTracker.Modifiable modifiable, ResourceManager resourceManager, class_5359 arg) {
+        class_5382<Tag> lv = class_5382.method_29753(NbtOps.INSTANCE, resourceManager, modifiable);
+        SaveProperties saveProperties = session.readLevelProperties(lv, arg);
+        if (saveProperties == null) {
+            throw new IllegalStateException("Failed to load world");
+        }
+        return saveProperties;
+    }
+
+    public void method_29606(String string) {
+        this.method_29610(string, DimensionTracker.create(), MinecraftClient::method_29598, MinecraftClient::method_29599, false, class_5366.field_25437);
+    }
+
+    public void method_29607(String string, LevelInfo levelInfo, DimensionTracker.Modifiable modifiable, GeneratorOptions generatorOptions) {
+        this.method_29610(string, modifiable, session -> levelInfo.method_29558(), (session, modifiable2, resourceManager, arg) -> {
+            class_5382<JsonElement> lv = class_5382.method_29753(JsonOps.INSTANCE, resourceManager, modifiable);
+            DataResult<SimpleRegistry<class_5363>> dataResult = lv.method_29755(generatorOptions.getDimensionMap(), Registry.field_25490, class_5363.field_25411);
+            SimpleRegistry<class_5363> simpleRegistry = dataResult.resultOrPartial(LOGGER::error).orElse(generatorOptions.getDimensionMap());
+            return new LevelProperties(levelInfo, generatorOptions.method_29573(simpleRegistry), dataResult.lifecycle());
+        }, false, class_5366.field_25436);
+    }
+
+    private void method_29610(String string, DimensionTracker.Modifiable modifiable, Function<LevelStorage.Session, class_5359> function, Function4<LevelStorage.Session, DimensionTracker.Modifiable, ResourceManager, class_5359, SaveProperties> function4, boolean bl, class_5366 arg) {
+        boolean bl3;
+        class_5367 lv;
         LevelStorage.Session session;
-        this.disconnect();
         try {
-            session = this.levelStorage.createSession(name);
+            session = this.levelStorage.createSession(string);
         } catch (IOException iOException) {
-            LOGGER.warn("Failed to read level {} data", (Object)name, (Object)iOException);
-            SystemToast.addWorldAccessFailureToast(this, name);
+            LOGGER.warn("Failed to read level {} data", (Object)string, (Object)iOException);
+            SystemToast.addWorldAccessFailureToast(this, string);
             this.openScreen(null);
             return;
         }
-        MinecraftServer.convertLevel(session);
-        SaveProperties saveProperties = session.readLevelProperties();
-        if (saveProperties == null) {
-            if (levelInfo == null) {
-                throw new IllegalStateException("Requested world creation without any settings");
-            }
-            saveProperties = new LevelProperties(levelInfo);
-            string = levelInfo.getLevelName();
-            session.method_27425(saveProperties);
-        } else {
-            string = saveProperties.getLevelName();
-        }
-        this.worldGenProgressTracker.set(null);
-        ResourcePackManager<ResourcePackProfile> resourcePackManager = MinecraftServer.createResourcePackManager(session.getDirectory(WorldSavePath.DATAPACKS), saveProperties, safeMode);
-        CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.method_29211(), true, 2, Util.getServerWorkerExecutor(), this);
-        this.runTasks(completableFuture::isDone);
         try {
-            serverResourceManager = completableFuture.get();
-            serverResourceManager.method_29475();
+            lv = this.method_29604(modifiable, function, function4, bl, session);
         } catch (Exception exception) {
             LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)exception);
-            this.openScreen(new DatapackFailureScreen(name, levelInfo));
+            this.openScreen(new DatapackFailureScreen(() -> this.method_29610(string, modifiable, function, function4, true, arg)));
             try {
                 session.close();
-                resourcePackManager.close();
             } catch (IOException iOException2) {
-                LOGGER.warn("Failed to unlock access to level {}", (Object)name, (Object)exception);
+                LOGGER.warn("Failed to unlock access to level {}", (Object)string, (Object)iOException2);
             }
             return;
         }
+        SaveProperties saveProperties = lv.method_29614();
+        boolean bl2 = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
+        boolean bl4 = bl3 = saveProperties.method_29588() != Lifecycle.stable();
+        if (arg != class_5366.field_25435 && (bl2 || bl3)) {
+            this.method_29601(arg, session, bl2, () -> this.method_29610(string, modifiable, function, function4, bl, class_5366.field_25435));
+            lv.close();
+            try {
+                session.close();
+            } catch (IOException iOException3) {
+                LOGGER.warn("Failed to unlock access to level {}", (Object)string, (Object)iOException3);
+            }
+            return;
+        }
+        this.disconnect();
+        this.worldGenProgressTracker.set(null);
         try {
+            session.method_27425(modifiable, saveProperties);
+            lv.method_29613().loadRegistryTags();
             YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
             MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
@@ -1447,19 +1488,18 @@ WindowEventHandler {
             SkullBlockEntity.setUserCache(userCache);
             SkullBlockEntity.setSessionService(minecraftSessionService);
             UserCache.setUseRemote(false);
-            this.server = new IntegratedServer(this, session, resourcePackManager, serverResourceManager, saveProperties, minecraftSessionService, gameProfileRepository, userCache, i -> {
+            this.server = MinecraftServer.method_29740(thread -> new IntegratedServer((Thread)thread, this, modifiable, session, lv.method_29612(), lv.method_29613(), saveProperties, minecraftSessionService, gameProfileRepository, userCache, i -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
                 worldGenerationProgressTracker.start();
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
                 return new QueueingWorldGenerationProgressListener(worldGenerationProgressTracker, this.renderTaskQueue::add);
-            });
-            this.server.start();
+            }));
             this.isIntegratedServerRunning = true;
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Starting integrated server");
             CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
-            crashReportSection.add("Level ID", name);
-            crashReportSection.add("Level Name", string);
+            crashReportSection.add("Level ID", string);
+            crashReportSection.add("Level Name", saveProperties.getLevelName());
             throw new CrashException(crashReport);
         }
         while (this.worldGenProgressTracker.get() == null) {
@@ -1487,6 +1527,50 @@ WindowEventHandler {
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
         clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
         this.connection = clientConnection;
+    }
+
+    private void method_29601(class_5366 arg, LevelStorage.Session session, boolean bl3, Runnable runnable) {
+        if (arg == class_5366.field_25437) {
+            TranslatableText text2;
+            TranslatableText text;
+            if (bl3) {
+                text = new TranslatableText("selectWorld.backupQuestion.customized");
+                text2 = new TranslatableText("selectWorld.backupWarning.customized");
+            } else {
+                text = new TranslatableText("selectWorld.backupQuestion.experimental");
+                text2 = new TranslatableText("selectWorld.backupWarning.experimental");
+            }
+            this.openScreen(new BackupPromptScreen(null, (bl, bl2) -> {
+                if (bl) {
+                    EditWorldScreen.backupLevel(session);
+                }
+                runnable.run();
+            }, text, text2, false));
+        } else {
+            this.openScreen(new ConfirmScreen(bl -> {
+                if (bl) {
+                    runnable.run();
+                } else {
+                    this.openScreen(null);
+                }
+            }, new TranslatableText("selectWorld.backupQuestion.experimental"), new TranslatableText("selectWorld.backupWarning.experimental"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
+        }
+    }
+
+    public class_5367 method_29604(DimensionTracker.Modifiable modifiable, Function<LevelStorage.Session, class_5359> function, Function4<LevelStorage.Session, DimensionTracker.Modifiable, ResourceManager, class_5359, SaveProperties> function4, boolean bl, LevelStorage.Session session) throws InterruptedException, ExecutionException {
+        class_5359 lv = function.apply(session);
+        ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), class_5352.field_25349));
+        try {
+            class_5359 lv2 = MinecraftServer.method_29736(resourcePackManager, lv, bl);
+            CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.method_29211(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this);
+            this.runTasks(completableFuture::isDone);
+            ServerResourceManager serverResourceManager = completableFuture.get();
+            SaveProperties saveProperties = function4.apply(session, modifiable, serverResourceManager.getResourceManager(), lv2);
+            return new class_5367(resourcePackManager, serverResourceManager, saveProperties);
+        } catch (InterruptedException | ExecutionException exception) {
+            resourcePackManager.close();
+            throw exception;
+        }
     }
 
     public void joinWorld(ClientWorld world) {
@@ -1594,7 +1678,11 @@ WindowEventHandler {
     }
 
     public static boolean isFancyGraphicsEnabled() {
-        return MinecraftClient.instance.options.fancyGraphics;
+        return MinecraftClient.instance.options.field_25444.method_29591() >= class_5365.field_25428.method_29591();
+    }
+
+    public static boolean method_29611() {
+        return MinecraftClient.instance.options.field_25444.method_29591() >= class_5365.field_25429.method_29591();
     }
 
     public static boolean isAmbientOcclusionEnabled() {
@@ -2076,7 +2164,7 @@ WindowEventHandler {
         return this.bufferBuilders;
     }
 
-    private static ClientResourcePackProfile createResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition) {
+    private static ClientResourcePackProfile createResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition, class_5352 arg) {
         int i = packResourceMetadata.getPackFormat();
         Supplier<ResourcePack> supplier2 = supplier;
         if (i <= 3) {
@@ -2085,7 +2173,7 @@ WindowEventHandler {
         if (i <= 4) {
             supplier2 = MinecraftClient.createV4ResourcePackFactory(supplier2);
         }
-        return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition);
+        return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, arg);
     }
 
     private static Supplier<ResourcePack> createV3ResoucePackFactory(Supplier<ResourcePack> supplier) {
@@ -2108,6 +2196,46 @@ WindowEventHandler {
         ALT_TEXT_RENDERER_ID = new Identifier("alt");
         COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
         memoryReservedForCrash = new byte[0xA00000];
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static final class class_5367
+    implements AutoCloseable {
+        private final ResourcePackManager<ResourcePackProfile> field_25439;
+        private final ServerResourceManager field_25440;
+        private final SaveProperties field_25441;
+
+        private class_5367(ResourcePackManager<ResourcePackProfile> resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties) {
+            this.field_25439 = resourcePackManager;
+            this.field_25440 = serverResourceManager;
+            this.field_25441 = saveProperties;
+        }
+
+        public ResourcePackManager<ResourcePackProfile> method_29612() {
+            return this.field_25439;
+        }
+
+        public ServerResourceManager method_29613() {
+            return this.field_25440;
+        }
+
+        public SaveProperties method_29614() {
+            return this.field_25441;
+        }
+
+        @Override
+        public void close() {
+            this.field_25439.close();
+            this.field_25440.close();
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static enum class_5366 {
+        field_25435,
+        field_25436,
+        field_25437;
+
     }
 }
 

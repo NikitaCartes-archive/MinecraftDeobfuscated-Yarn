@@ -3,23 +3,26 @@
  */
 package net.minecraft.world;
 
+import com.mojang.serialization.Lifecycle;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5359;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 import org.jetbrains.annotations.Nullable;
 
 public interface SaveProperties {
-    public Set<String> getDisabledDataPacks();
+    public class_5359 method_29589();
 
-    public Set<String> getEnabledDataPacks();
+    public void method_29590(class_5359 var1);
 
     public boolean isModded();
 
@@ -58,7 +61,7 @@ public interface SaveProperties {
     @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo();
 
-    public CompoundTag cloneWorldTag(@Nullable CompoundTag var1);
+    public CompoundTag cloneWorldTag(DimensionTracker var1, @Nullable CompoundTag var2);
 
     public boolean isHardcore();
 
@@ -89,5 +92,8 @@ public interface SaveProperties {
     public void method_29037(CompoundTag var1);
 
     public GeneratorOptions getGeneratorOptions();
+
+    @Environment(value=EnvType.CLIENT)
+    public Lifecycle method_29588();
 }
 

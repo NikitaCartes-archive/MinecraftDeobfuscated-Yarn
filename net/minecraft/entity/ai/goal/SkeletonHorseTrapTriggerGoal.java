@@ -14,7 +14,6 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
 
 public class SkeletonHorseTrapTriggerGoal
@@ -36,7 +35,10 @@ extends Goal {
         this.skeletonHorse.setTrapped(false);
         this.skeletonHorse.setTame(true);
         this.skeletonHorse.setBreedingAge(0);
-        ((ServerWorld)this.skeletonHorse.world).addLightning(new LightningEntity(this.skeletonHorse.world, this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ(), true));
+        LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.skeletonHorse.world);
+        lightningEntity.positAfterTeleport(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
+        lightningEntity.method_29498(true);
+        this.skeletonHorse.world.spawnEntity(lightningEntity);
         SkeletonEntity skeletonEntity = this.getSkeleton(localDifficulty, this.skeletonHorse);
         skeletonEntity.startRiding(this.skeletonHorse);
         for (int i = 0; i < 3; ++i) {

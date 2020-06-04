@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -116,24 +115,24 @@ public final class SpawnHelper {
             int o = MathHelper.ceil(world.random.nextFloat() * 4.0f);
             int p = 0;
             for (int q = 0; q < o; ++q) {
-                double d;
+                double f;
                 mutable.set(l += world.random.nextInt(6) - world.random.nextInt(6), i, m += world.random.nextInt(6) - world.random.nextInt(6));
-                float f = (float)l + 0.5f;
-                float g = (float)m + 0.5f;
-                PlayerEntity playerEntity = world.getClosestPlayer((double)f, (double)i, (double)g, -1.0, false);
-                if (playerEntity == null || !SpawnHelper.isAcceptableSpawnPosition(world, chunk, mutable, d = playerEntity.squaredDistanceTo(f, i, g))) continue;
+                double d = (double)l + 0.5;
+                double e = (double)m + 0.5;
+                PlayerEntity playerEntity = world.getClosestPlayer(d, (double)i, e, -1.0, false);
+                if (playerEntity == null || !SpawnHelper.isAcceptableSpawnPosition(world, chunk, mutable, f = playerEntity.squaredDistanceTo(d, i, e))) continue;
                 if (spawnEntry == null) {
                     spawnEntry = SpawnHelper.pickRandomSpawnEntry(world, structureAccessor, chunkGenerator, group, world.random, mutable);
                     if (spawnEntry == null) continue block0;
                     o = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
                 }
-                if (!SpawnHelper.canSpawn(world, group, structureAccessor, chunkGenerator, spawnEntry, mutable, d) || !checker.test(spawnEntry.type, mutable, chunk)) continue;
+                if (!SpawnHelper.canSpawn(world, group, structureAccessor, chunkGenerator, spawnEntry, mutable, f) || !checker.test(spawnEntry.type, mutable, chunk)) continue;
                 MobEntity mobEntity = SpawnHelper.createMob(world, spawnEntry.type);
                 if (mobEntity == null) {
                     return;
                 }
-                mobEntity.refreshPositionAndAngles(f, i, g, world.random.nextFloat() * 360.0f, 0.0f);
-                if (!SpawnHelper.isValidSpawn(world, mobEntity, d)) continue;
+                mobEntity.refreshPositionAndAngles(d, i, e, world.random.nextFloat() * 360.0f, 0.0f);
+                if (!SpawnHelper.isValidSpawn(world, mobEntity, f)) continue;
                 entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.NATURAL, entityData, null);
                 ++p;
                 world.spawnEntity(mobEntity);
@@ -150,7 +149,7 @@ public final class SpawnHelper {
         if (squaredDistance <= 576.0) {
             return false;
         }
-        if (world.getSpawnPos().isWithinDistance(new Vec3d((float)pos.getX() + 0.5f, pos.getY(), (float)pos.getZ() + 0.5f), 24.0)) {
+        if (world.getSpawnPos().isWithinDistance(new Vec3d((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5), 24.0)) {
             return false;
         }
         ChunkPos chunkPos = new ChunkPos(pos);
@@ -175,7 +174,7 @@ public final class SpawnHelper {
         if (!SpawnRestriction.canSpawn(entityType, world, SpawnReason.NATURAL, pos, world.random)) {
             return false;
         }
-        return world.doesNotCollide(entityType.createSimpleBoundingBox((float)pos.getX() + 0.5f, pos.getY(), (float)pos.getZ() + 0.5f));
+        return world.doesNotCollide(entityType.createSimpleBoundingBox((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5));
     }
 
     @Nullable
@@ -236,7 +235,7 @@ public final class SpawnHelper {
         if (state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE)) {
             return false;
         }
-        return !state.isOf(Blocks.WITHER_ROSE) || entityType == EntityType.WITHER_SKELETON;
+        return !entityType.method_29496(state);
     }
 
     public static boolean canSpawn(SpawnRestriction.Location location, WorldView world, BlockPos pos, @Nullable EntityType<?> entityType) {

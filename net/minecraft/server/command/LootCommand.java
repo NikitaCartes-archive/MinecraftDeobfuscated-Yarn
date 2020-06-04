@@ -241,7 +241,7 @@ public class LootCommand {
 
     private static int executeFish(CommandContext<ServerCommandSource> context, Identifier lootTable, BlockPos pos, ItemStack stack, Target constructor) throws CommandSyntaxException {
         ServerCommandSource serverCommandSource = context.getSource();
-        LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld()).parameter(LootContextParameters.POSITION, pos).parameter(LootContextParameters.TOOL, stack).build(LootContextTypes.FISHING);
+        LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld()).parameter(LootContextParameters.POSITION, pos).parameter(LootContextParameters.TOOL, stack).optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity()).build(LootContextTypes.FISHING);
         return LootCommand.getFeedbackMessageSingle(context, lootTable, lootContext, constructor);
     }
 

@@ -443,6 +443,10 @@ implements Drawable {
         return bl;
     }
 
+    private void method_29621(Entry<E> entry) {
+        ((Entry)entry).list = this;
+    }
+
     @Override
     @Nullable
     public /* synthetic */ Element getFocused() {
@@ -470,14 +474,14 @@ implements Drawable {
         @Override
         public E set(int i, E entry) {
             Entry entry2 = (Entry)this.entries.set(i, entry);
-            ((Entry)entry).list = EntryListWidget.this;
+            EntryListWidget.this.method_29621(entry);
             return entry2;
         }
 
         @Override
         public void add(int i, E entry) {
             this.entries.add(i, entry);
-            ((Entry)entry).list = EntryListWidget.this;
+            EntryListWidget.this.method_29621(entry);
         }
 
         @Override
@@ -510,7 +514,7 @@ implements Drawable {
     public static abstract class Entry<E extends Entry<E>>
     implements Element {
         @Deprecated
-        EntryListWidget<E> list;
+        private EntryListWidget<E> list;
 
         public abstract void render(MatrixStack var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, boolean var9, float var10);
 

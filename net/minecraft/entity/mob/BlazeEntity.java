@@ -105,11 +105,13 @@ extends HostileEntity {
     }
 
     @Override
+    public boolean method_29503() {
+        return true;
+    }
+
+    @Override
     protected void mobTick() {
         LivingEntity livingEntity;
-        if (this.isWet()) {
-            this.damage(DamageSource.DROWN, 1.0f);
-        }
         --this.eyeOffsetCooldown;
         if (this.eyeOffsetCooldown <= 0) {
             this.eyeOffsetCooldown = 100;

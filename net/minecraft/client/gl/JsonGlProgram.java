@@ -214,6 +214,7 @@ AutoCloseable {
         for (int i = 0; i < this.samplerShaderLocs.size(); ++i) {
             if (this.samplerBinds.get(this.samplerNames.get(i)) == null) continue;
             GlStateManager.activeTexture(33984 + i);
+            GlStateManager.disableTexture();
             GlStateManager.bindTexture(0);
         }
     }
@@ -242,7 +243,7 @@ AutoCloseable {
             }
             if (j == -1) continue;
             RenderSystem.bindTexture(j);
-            GlUniform.uniform1(GlUniform.getUniformLocation(this.programRef, this.samplerNames.get(i)), i);
+            GlUniform.uniform1(this.samplerShaderLocs.get(i), i);
         }
         for (GlUniform glUniform : this.uniformData) {
             glUniform.upload();

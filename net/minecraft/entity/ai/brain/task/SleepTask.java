@@ -18,7 +18,6 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.dynamic.GlobalPos;
-import net.minecraft.util.dynamic.Timestamp;
 import net.minecraft.util.math.BlockPos;
 
 public class SleepTask
@@ -40,8 +39,8 @@ extends Task<LivingEntity> {
         if (world.getRegistryKey() != globalPos.getDimension()) {
             return false;
         }
-        Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
-        if (optional.isPresent() && (l = world.getTime() - optional.get().getTime()) > 0L && l < 100L) {
+        Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
+        if (optional.isPresent() && (l = world.getTime() - optional.get()) > 0L && l < 100L) {
             return false;
         }
         BlockState blockState = world.getBlockState(globalPos.getPos());

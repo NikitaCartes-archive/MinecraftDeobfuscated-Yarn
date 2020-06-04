@@ -96,7 +96,7 @@ implements BlockEntityProvider {
             if (world.getBlockState(blockPos).isOf(this)) {
                 world.removeBlock(blockPos, false);
             }
-            world.createExplosion(null, DamageSource.netherBed(), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
+            world.createExplosion(null, DamageSource.netherBed(), null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
             return ActionResult.SUCCESS;
         }
         if (state.get(OCCUPIED).booleanValue()) {
@@ -272,10 +272,12 @@ implements BlockEntityProvider {
         if ((double)pos.getY() - d > 2.0) {
             return Optional.empty();
         }
-        float f = type.getWidth() / 2.0f;
         Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
-        if (world.doesNotCollide(new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)type.getHeight(), vec3d.z + (double)f))) {
-            return Optional.of(vec3d);
+        Box box = type.createSimpleBoundingBox(vec3d.x, vec3d.y, vec3d.z);
+        if (world.doesNotCollide(box)) {
+            if (world.method_29546(box.stretch(0.0, -0.2f, 0.0)).noneMatch(type::method_29496)) {
+                return Optional.of(vec3d);
+            }
         }
         return Optional.empty();
     }

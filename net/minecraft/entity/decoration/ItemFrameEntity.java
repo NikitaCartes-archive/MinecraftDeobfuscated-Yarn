@@ -27,6 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -335,15 +336,18 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public boolean interact(PlayerEntity player, Hand hand) {
+    public ActionResult interact(PlayerEntity player, Hand hand) {
         boolean bl2;
         ItemStack itemStack = player.getStackInHand(hand);
         boolean bl = !this.getHeldItemStack().isEmpty();
         boolean bl3 = bl2 = !itemStack.isEmpty();
-        if (this.world.isClient) {
-            return bl || bl2;
+        if (this.fixed) {
+            return ActionResult.PASS;
         }
-        if (!this.fixed && !bl) {
+        if (this.world.isClient) {
+            return bl || bl2 ? ActionResult.SUCCESS : ActionResult.PASS;
+        }
+        if (!bl) {
             if (bl2 && !this.removed) {
                 this.setHeldItemStack(itemStack);
                 if (!player.abilities.creativeMode) {
@@ -354,7 +358,7 @@ extends AbstractDecorationEntity {
             this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ROTATE_ITEM, 1.0f, 1.0f);
             this.setRotation(this.getRotation() + 1);
         }
-        return true;
+        return ActionResult.CONSUME;
     }
 
     public int getComparatorPower() {

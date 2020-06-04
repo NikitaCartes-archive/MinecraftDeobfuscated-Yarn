@@ -136,7 +136,7 @@ public class EnderDragonFight {
             this.playerUpdateTimer = 0;
         }
         if (!this.bossBar.getPlayers().isEmpty()) {
-            this.world.getChunkManager().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+            this.world.getChunkManager().addTicket(ChunkTicketType.field_17264, new ChunkPos(0, 0), 9, Unit.INSTANCE);
             boolean bl = this.loadChunks();
             if (this.doLegacyCheck && bl) {
                 this.convertFromLegacy();
@@ -160,7 +160,7 @@ public class EnderDragonFight {
                 }
             }
         } else {
-            this.world.getChunkManager().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+            this.world.getChunkManager().removeTicket(ChunkTicketType.field_17264, new ChunkPos(0, 0), 9, Unit.INSTANCE);
         }
     }
 

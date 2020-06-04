@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.AnimalModel;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.Hoglin;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
@@ -23,6 +24,7 @@ extends AnimalModel<T> {
     private final ModelPart field_22232;
     private final ModelPart field_22233;
     private final ModelPart field_22234;
+    private final ModelPart field_25484;
 
     public HoglinEntityModel() {
         super(true, 8.0f, 6.0f, 1.9f, 2.0f, 24.0f);
@@ -31,10 +33,10 @@ extends AnimalModel<T> {
         this.torso = new ModelPart(this);
         this.torso.setPivot(0.0f, 7.0f, 0.0f);
         this.torso.setTextureOffset(1, 1).addCuboid(-8.0f, -7.0f, -13.0f, 16.0f, 14.0f, 26.0f);
-        ModelPart modelPart = new ModelPart(this);
-        modelPart.setPivot(0.0f, -14.0f, -7.0f);
-        modelPart.setTextureOffset(90, 33).addCuboid(0.0f, 0.0f, -9.0f, 0.0f, 10.0f, 19.0f, 0.001f);
-        this.torso.addChild(modelPart);
+        this.field_25484 = new ModelPart(this);
+        this.field_25484.setPivot(0.0f, -14.0f, -5.0f);
+        this.field_25484.setTextureOffset(90, 33).addCuboid(0.0f, 0.0f, -9.0f, 0.0f, 10.0f, 19.0f, 0.001f);
+        this.torso.addChild(this.field_25484);
         this.head = new ModelPart(this);
         this.head.setPivot(0.0f, 2.0f, -12.0f);
         this.head.setTextureOffset(61, 1).addCuboid(-7.0f, -3.0f, -19.0f, 14.0f, 6.0f, 19.0f);
@@ -48,14 +50,14 @@ extends AnimalModel<T> {
         this.leftEar.setTextureOffset(1, 6).addCuboid(0.0f, -1.0f, -2.0f, 6.0f, 1.0f, 4.0f);
         this.leftEar.roll = 0.6981317f;
         this.head.addChild(this.leftEar);
+        ModelPart modelPart = new ModelPart(this);
+        modelPart.setPivot(-7.0f, 2.0f, -12.0f);
+        modelPart.setTextureOffset(1, 13).addCuboid(-1.0f, -11.0f, -1.0f, 2.0f, 11.0f, 2.0f);
+        this.head.addChild(modelPart);
         ModelPart modelPart2 = new ModelPart(this);
-        modelPart2.setPivot(-7.0f, 2.0f, -12.0f);
+        modelPart2.setPivot(7.0f, 2.0f, -12.0f);
         modelPart2.setTextureOffset(1, 13).addCuboid(-1.0f, -11.0f, -1.0f, 2.0f, 11.0f, 2.0f);
         this.head.addChild(modelPart2);
-        ModelPart modelPart3 = new ModelPart(this);
-        modelPart3.setPivot(7.0f, 2.0f, -12.0f);
-        modelPart3.setTextureOffset(1, 13).addCuboid(-1.0f, -11.0f, -1.0f, 2.0f, 11.0f, 2.0f);
-        this.head.addChild(modelPart3);
         this.head.pitch = 0.87266463f;
         int i = 14;
         int j = 11;
@@ -91,6 +93,13 @@ extends AnimalModel<T> {
         int k = ((Hoglin)mobEntity).getMovementCooldownTicks();
         float l = 1.0f - (float)MathHelper.abs(10 - 2 * k) / 10.0f;
         this.head.pitch = MathHelper.lerp(l, 0.87266463f, -0.34906584f);
+        if (((LivingEntity)mobEntity).isBaby()) {
+            this.head.pivotY = MathHelper.lerp(l, 2.0f, 5.0f);
+            this.field_25484.pivotZ = -3.0f;
+        } else {
+            this.head.pivotY = 2.0f;
+            this.field_25484.pivotZ = -7.0f;
+        }
         float m = 1.2f;
         this.field_22231.pitch = MathHelper.cos(f) * 1.2f * g;
         this.field_22233.pitch = this.field_22232.pitch = MathHelper.cos(f + (float)Math.PI) * 1.2f * g;

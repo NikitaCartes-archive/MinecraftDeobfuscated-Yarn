@@ -3,6 +3,9 @@
  */
 package net.minecraft.resource;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -26,9 +29,55 @@ public interface ResourceManager {
 
     public List<Resource> getAllResources(Identifier var1) throws IOException;
 
+    public Collection<Identifier> method_29489(Identifier var1, Predicate<String> var2);
+
     public Collection<Identifier> findResources(String var1, Predicate<String> var2);
 
     @Environment(value=EnvType.CLIENT)
     public Stream<ResourcePack> method_29213();
+
+    public static enum class_5353 implements ResourceManager
+    {
+        field_25351;
+
+
+        @Override
+        @Environment(value=EnvType.CLIENT)
+        public Set<String> getAllNamespaces() {
+            return ImmutableSet.of();
+        }
+
+        @Override
+        public Resource getResource(Identifier id) throws IOException {
+            throw new FileNotFoundException(id.toString());
+        }
+
+        @Override
+        @Environment(value=EnvType.CLIENT)
+        public boolean containsResource(Identifier id) {
+            return false;
+        }
+
+        @Override
+        public List<Resource> getAllResources(Identifier id) {
+            return ImmutableList.of();
+        }
+
+        @Override
+        public Collection<Identifier> method_29489(Identifier identifier, Predicate<String> predicate) {
+            return ImmutableSet.of();
+        }
+
+        @Override
+        public Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate) {
+            return ImmutableSet.of();
+        }
+
+        @Override
+        @Environment(value=EnvType.CLIENT)
+        public Stream<ResourcePack> method_29213() {
+            return Stream.of(new ResourcePack[0]);
+        }
+    }
 }
 

@@ -64,8 +64,8 @@ extends AbstractClientPlayerEntity {
         }
         this.prevStrideDistance = this.strideDistance;
         this.tickHandSwing();
-        float g = !this.onGround || this.getHealth() <= 0.0f ? 0.0f : Math.min(0.1f, MathHelper.sqrt(OtherClientPlayerEntity.squaredHorizontalLength(this.getVelocity())));
-        if (this.onGround || this.getHealth() <= 0.0f) {
+        float g = !this.onGround || this.method_29504() ? 0.0f : Math.min(0.1f, MathHelper.sqrt(OtherClientPlayerEntity.squaredHorizontalLength(this.getVelocity())));
+        if (this.onGround || this.method_29504()) {
             float h = 0.0f;
         } else {
             float h = (float)Math.atan(-this.getVelocity().y * (double)0.2f) * 15.0f;

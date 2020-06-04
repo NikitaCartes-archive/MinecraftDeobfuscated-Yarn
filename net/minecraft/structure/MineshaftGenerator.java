@@ -451,7 +451,7 @@ public class MineshaftGenerator {
             if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos.down()).isAir()) {
                 BlockState blockState = (BlockState)Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
                 this.addBlock(world, blockState, x, y, z, boundingBox);
-                ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(world.getWorld(), (float)blockPos.getX() + 0.5f, (float)blockPos.getY() + 0.5f, (float)blockPos.getZ() + 0.5f);
+                ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(world.getWorld(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
                 chestMinecartEntity.setLootTable(lootTableId, random.nextLong());
                 world.spawnEntity(chestMinecartEntity);
                 return true;

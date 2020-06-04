@@ -64,6 +64,7 @@ extends ExplosiveProjectileEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
+        boolean bl;
         super.onEntityHit(entityHitResult);
         if (this.world.isClient) {
             return;
@@ -72,7 +73,8 @@ extends ExplosiveProjectileEntity {
         Entity entity2 = this.getOwner();
         if (entity2 instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity2;
-            if (entity.damage(DamageSource.method_29238(this, livingEntity), 8.0f)) {
+            bl = entity.damage(DamageSource.method_29238(this, livingEntity), 8.0f);
+            if (bl) {
                 if (entity.isAlive()) {
                     this.dealDamage(livingEntity, entity);
                 } else {
@@ -80,9 +82,9 @@ extends ExplosiveProjectileEntity {
                 }
             }
         } else {
-            entity.damage(DamageSource.MAGIC, 5.0f);
+            bl = entity.damage(DamageSource.MAGIC, 5.0f);
         }
-        if (entity instanceof LivingEntity) {
+        if (bl && entity instanceof LivingEntity) {
             int i = 0;
             if (this.world.getDifficulty() == Difficulty.NORMAL) {
                 i = 10;

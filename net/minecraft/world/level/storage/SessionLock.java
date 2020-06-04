@@ -3,7 +3,9 @@
  */
 package net.minecraft.world.level.storage;
 
+import com.google.common.base.Charsets;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
@@ -18,6 +20,7 @@ public class SessionLock
 implements AutoCloseable {
     private final FileChannel channel;
     private final FileLock lock;
+    private static final ByteBuffer field_25353;
 
     public static SessionLock create(Path path) throws IOException {
         Path path2 = path.resolve("session.lock");
@@ -26,6 +29,8 @@ implements AutoCloseable {
         }
         FileChannel fileChannel = FileChannel.open(path2, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.DELETE_ON_CLOSE);
         try {
+            fileChannel.write(field_25353.duplicate());
+            fileChannel.force(true);
             FileLock fileLock = fileChannel.tryLock();
             if (fileLock == null) {
                 throw AlreadyLockedException.create(path2);
@@ -115,6 +120,13 @@ implements AutoCloseable {
          *     at java.base/java.lang.Thread.run(Thread.java:833)
          */
         throw new IllegalStateException("Decompilation failed");
+    }
+
+    static {
+        byte[] bs = "\u2603".getBytes(Charsets.UTF_8);
+        field_25353 = ByteBuffer.allocateDirect(bs.length);
+        field_25353.put(bs);
+        field_25353.flip();
     }
 
     public static class AlreadyLockedException

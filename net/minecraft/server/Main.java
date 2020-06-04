@@ -3,10 +3,12 @@
  */
 package net.minecraft.server;
 
+import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.serialization.Lifecycle;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.net.Proxy;
@@ -23,12 +25,20 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 import net.minecraft.Bootstrap;
+import net.minecraft.class_5352;
+import net.minecraft.class_5359;
+import net.minecraft.class_5382;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.Schemas;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ServerResourceManager;
+import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressLogger;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.dedicated.EulaReader;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
@@ -40,8 +50,12 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -69,10 +83,7 @@ public class Main {
         ArgumentAcceptingOptionSpec<String> optionSpec13 = optionParser.accepts("serverId").withRequiredArg();
         NonOptionArgumentSpec<String> optionSpec14 = optionParser.nonOptions();
         try {
-            boolean bl2;
             ServerResourceManager serverResourceManager;
-            boolean bl;
-            SaveProperties saveProperties;
             OptionSet optionSet = optionParser.parse(args);
             if (optionSet.has(optionSpec8)) {
                 optionParser.printHelpOn(System.err);
@@ -104,24 +115,14 @@ public class Main {
             LevelStorage levelStorage = LevelStorage.create(file.toPath());
             LevelStorage.Session session = levelStorage.createSession(string);
             MinecraftServer.convertLevel(session);
-            if (optionSet.has(optionSpec5)) {
-                Main.method_29173(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true);
-            }
-            if ((saveProperties = session.readLevelProperties()) == null) {
-                LevelInfo levelInfo;
-                if (optionSet.has(optionSpec3)) {
-                    levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-                } else {
-                    ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
-                    levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), optionSet.has(optionSpec4) ? serverPropertiesHandler.field_24623.withBonusChest() : serverPropertiesHandler.field_24623);
-                }
-                saveProperties = new LevelProperties(levelInfo);
-            }
-            if (bl = optionSet.has(optionSpec7)) {
+            class_5359 lv = session.method_29585();
+            boolean bl = optionSet.has(optionSpec7);
+            if (bl) {
                 LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
             }
-            ResourcePackManager<ResourcePackProfile> resourcePackManager = MinecraftServer.createResourcePackManager(session.getDirectory(WorldSavePath.DATAPACKS), saveProperties, bl);
-            CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.method_29211(), true, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, Util.getServerWorkerExecutor(), Runnable::run);
+            ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), class_5352.field_25349));
+            class_5359 lv2 = MinecraftServer.method_29736(resourcePackManager, lv == null ? class_5359.field_25393 : lv, bl);
+            CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.method_29211(), CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, Util.getServerWorkerExecutor(), Runnable::run);
             try {
                 serverResourceManager = completableFuture.get();
             } catch (Exception exception) {
@@ -129,56 +130,77 @@ public class Main {
                 resourcePackManager.close();
                 return;
             }
-            serverResourceManager.method_29475();
-            final MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer(session, resourcePackManager, serverResourceManager, saveProperties, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
-            minecraftDedicatedServer.setServerName(optionSet.valueOf(optionSpec9));
-            minecraftDedicatedServer.setServerPort(optionSet.valueOf(optionSpec12));
-            minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
-            minecraftDedicatedServer.setServerId(optionSet.valueOf(optionSpec13));
-            boolean bl3 = bl2 = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec14).contains("nogui");
-            if (bl2 && !GraphicsEnvironment.isHeadless()) {
-                minecraftDedicatedServer.createGui();
+            serverResourceManager.loadRegistryTags();
+            DimensionTracker.Modifiable modifiable = DimensionTracker.create();
+            class_5382<Tag> lv3 = class_5382.method_29753(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), modifiable);
+            SaveProperties saveProperties = session.readLevelProperties(lv3, lv2);
+            if (saveProperties == null) {
+                GeneratorOptions generatorOptions;
+                LevelInfo levelInfo;
+                if (optionSet.has(optionSpec3)) {
+                    levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
+                    generatorOptions = GeneratorOptions.DEMO_CONFIG;
+                } else {
+                    ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
+                    levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), lv2);
+                    generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.field_24623.withBonusChest() : serverPropertiesHandler.field_24623;
+                }
+                saveProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
             }
-            minecraftDedicatedServer.start();
-            Thread thread = new Thread("Server Shutdown Thread"){
+            if (optionSet.has(optionSpec5)) {
+                Main.method_29173(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions().method_29575());
+            }
+            session.method_27425(modifiable, saveProperties);
+            SaveProperties saveProperties2 = saveProperties;
+            final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.method_29740(thread -> {
+                boolean bl;
+                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)thread, modifiable, session, resourcePackManager, serverResourceManager, saveProperties2, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
+                minecraftDedicatedServer.setServerName((String)optionSet.valueOf(optionSpec9));
+                minecraftDedicatedServer.setServerPort((Integer)optionSet.valueOf(optionSpec12));
+                minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
+                minecraftDedicatedServer.setServerId((String)optionSet.valueOf(optionSpec13));
+                boolean bl2 = bl = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec14).contains("nogui");
+                if (bl && !GraphicsEnvironment.isHeadless()) {
+                    minecraftDedicatedServer.createGui();
+                }
+                return minecraftDedicatedServer;
+            });
+            Thread thread2 = new Thread("Server Shutdown Thread"){
 
                 @Override
                 public void run() {
                     minecraftDedicatedServer.stop(true);
                 }
             };
-            thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
-            Runtime.getRuntime().addShutdownHook(thread);
+            thread2.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
+            Runtime.getRuntime().addShutdownHook(thread2);
         } catch (Exception exception2) {
             LOGGER.fatal("Failed to start the minecraft server", (Throwable)exception2);
         }
     }
 
-    private static void method_29173(LevelStorage.Session session, DataFixer dataFixer, boolean bl, BooleanSupplier booleanSupplier) {
+    private static void method_29173(LevelStorage.Session session, DataFixer dataFixer, boolean bl, BooleanSupplier booleanSupplier, ImmutableSet<RegistryKey<World>> immutableSet) {
         LOGGER.info("Forcing world upgrade!");
-        SaveProperties saveProperties = session.readLevelProperties();
-        if (saveProperties != null) {
-            WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, saveProperties, bl);
-            Text text = null;
-            while (!worldUpdater.isDone()) {
-                int i;
-                Text text2 = worldUpdater.getStatus();
-                if (text != text2) {
-                    text = text2;
-                    LOGGER.info(worldUpdater.getStatus().getString());
-                }
-                if ((i = worldUpdater.getTotalChunkCount()) > 0) {
-                    int j = worldUpdater.getUpgradedChunkCount() + worldUpdater.getSkippedChunkCount();
-                    LOGGER.info("{}% completed ({} / {} chunks)...", (Object)MathHelper.floor((float)j / (float)i * 100.0f), (Object)j, (Object)i);
-                }
-                if (!booleanSupplier.getAsBoolean()) {
-                    worldUpdater.cancel();
-                    continue;
-                }
-                try {
-                    Thread.sleep(1000L);
-                } catch (InterruptedException interruptedException) {}
+        WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, immutableSet, bl);
+        Text text = null;
+        while (!worldUpdater.isDone()) {
+            int i;
+            Text text2 = worldUpdater.getStatus();
+            if (text != text2) {
+                text = text2;
+                LOGGER.info(worldUpdater.getStatus().getString());
             }
+            if ((i = worldUpdater.getTotalChunkCount()) > 0) {
+                int j = worldUpdater.getUpgradedChunkCount() + worldUpdater.getSkippedChunkCount();
+                LOGGER.info("{}% completed ({} / {} chunks)...", (Object)MathHelper.floor((float)j / (float)i * 100.0f), (Object)j, (Object)i);
+            }
+            if (!booleanSupplier.getAsBoolean()) {
+                worldUpdater.cancel();
+                continue;
+            }
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException interruptedException) {}
         }
     }
 }

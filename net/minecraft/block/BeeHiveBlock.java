@@ -101,7 +101,7 @@ extends BlockWithEntity {
             int i = list2.size();
             for (BeeEntity beeEntity : list) {
                 if (beeEntity.getTarget() != null) continue;
-                beeEntity.setBeeAttacker(list2.get(world.random.nextInt(i)));
+                beeEntity.setTarget(list2.get(world.random.nextInt(i)));
             }
         }
     }

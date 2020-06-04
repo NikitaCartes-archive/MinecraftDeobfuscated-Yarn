@@ -3,12 +3,14 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -20,12 +22,18 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class OptimizeWorldScreen
 extends Screen {
+    private static final Logger field_25482 = LogManager.getLogger();
     private static final Object2IntMap<RegistryKey<World>> DIMENSION_COLORS = Util.make(new Object2IntOpenCustomHashMap(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
         object2IntOpenCustomHashMap.put(World.OVERWORLD, -13408734);
         object2IntOpenCustomHashMap.put(World.NETHER, -10075085);
@@ -35,15 +43,30 @@ extends Screen {
     private final BooleanConsumer callback;
     private final WorldUpdater updater;
 
-    public static OptimizeWorldScreen method_27031(BooleanConsumer booleanConsumer, DataFixer dataFixer, LevelStorage.Session session, boolean bl) {
-        SaveProperties saveProperties = session.readLevelProperties();
-        return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties, bl);
+    /*
+     * Enabled aggressive block sorting
+     * Enabled unnecessary exception pruning
+     * Enabled aggressive exception aggregation
+     */
+    @Nullable
+    public static OptimizeWorldScreen method_27031(MinecraftClient minecraftClient, BooleanConsumer booleanConsumer, DataFixer dataFixer, LevelStorage.Session session, boolean bl) {
+        DimensionTracker.Modifiable modifiable = DimensionTracker.create();
+        try (MinecraftClient.class_5367 lv = minecraftClient.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::method_29599, false, session);){
+            SaveProperties saveProperties = lv.method_29614();
+            session.method_27425(modifiable, saveProperties);
+            ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().method_29575();
+            OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
+            return optimizeWorldScreen;
+        } catch (Exception exception) {
+            field_25482.warn("Failed to load datapacks, can't optimize world", (Throwable)exception);
+            return null;
+        }
     }
 
-    private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session session, SaveProperties saveProperties, boolean bl) {
-        super(new TranslatableText("optimizeWorld.title", saveProperties.getLevelName()));
+    private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session session, LevelInfo levelInfo, boolean bl, ImmutableSet<RegistryKey<World>> immutableSet) {
+        super(new TranslatableText("optimizeWorld.title", levelInfo.getLevelName()));
         this.callback = callback;
-        this.updater = new WorldUpdater(session, dataFixer, saveProperties, bl);
+        this.updater = new WorldUpdater(session, dataFixer, immutableSet, bl);
     }
 
     @Override

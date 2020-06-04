@@ -135,7 +135,7 @@ extends LandPathNodeMaker {
             }
             return pathNode;
         }
-        if (pathNode == null && maxYStep > 0 && pathNodeType != PathNodeType.FENCE && pathNodeType != PathNodeType.TRAPDOOR) {
+        if (pathNode == null && maxYStep > 0 && pathNodeType != PathNodeType.FENCE && pathNodeType != PathNodeType.UNPASSABLE_RAIL && pathNodeType != PathNodeType.TRAPDOOR) {
             pathNode = this.getPathNode(x, y + 1, z, maxYStep - 1, prevFeetY);
         }
         if (pathNodeType == PathNodeType.OPEN) {
@@ -180,7 +180,7 @@ extends LandPathNodeMaker {
     @Override
     protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
         if (type == PathNodeType.RAIL && !(world.getBlockState(pos).getBlock() instanceof AbstractRailBlock) && !(world.getBlockState(pos.down()).getBlock() instanceof AbstractRailBlock)) {
-            type = PathNodeType.FENCE;
+            type = PathNodeType.UNPASSABLE_RAIL;
         }
         if (type == PathNodeType.DOOR_OPEN || type == PathNodeType.DOOR_WOOD_CLOSED || type == PathNodeType.DOOR_IRON_CLOSED) {
             type = PathNodeType.BLOCKED;

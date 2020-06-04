@@ -16,6 +16,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -162,14 +163,14 @@ implements CommandOutput {
         return this.trackOutput;
     }
 
-    public boolean interact(PlayerEntity player) {
+    public ActionResult interact(PlayerEntity player) {
         if (!player.isCreativeLevelTwoOp()) {
-            return false;
+            return ActionResult.PASS;
         }
         if (player.getEntityWorld().isClient) {
             player.openCommandBlockMinecartScreen(this);
         }
-        return true;
+        return ActionResult.method_29236(player.world.isClient);
     }
 
     @Environment(value=EnvType.CLIENT)

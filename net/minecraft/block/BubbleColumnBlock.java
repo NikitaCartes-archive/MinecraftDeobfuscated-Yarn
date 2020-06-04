@@ -51,8 +51,8 @@ implements FluidDrainable {
             if (!world.isClient) {
                 ServerWorld serverWorld = (ServerWorld)world;
                 for (int i = 0; i < 2; ++i) {
-                    serverWorld.spawnParticles(ParticleTypes.SPLASH, (float)pos.getX() + world.random.nextFloat(), pos.getY() + 1, (float)pos.getZ() + world.random.nextFloat(), 1, 0.0, 0.0, 0.0, 1.0);
-                    serverWorld.spawnParticles(ParticleTypes.BUBBLE, (float)pos.getX() + world.random.nextFloat(), pos.getY() + 1, (float)pos.getZ() + world.random.nextFloat(), 1, 0.0, 0.01, 0.0, 0.2);
+                    serverWorld.spawnParticles(ParticleTypes.SPLASH, (double)pos.getX() + world.random.nextDouble(), pos.getY() + 1, (double)pos.getZ() + world.random.nextDouble(), 1, 0.0, 0.0, 0.0, 1.0);
+                    serverWorld.spawnParticles(ParticleTypes.BUBBLE, (double)pos.getX() + world.random.nextDouble(), pos.getY() + 1, (double)pos.getZ() + world.random.nextDouble(), 1, 0.0, 0.01, 0.0, 0.2);
                 }
             }
         } else {

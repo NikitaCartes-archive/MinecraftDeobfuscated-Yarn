@@ -4,10 +4,9 @@
 package net.minecraft.world.gen;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.kinds.Applicative;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -15,7 +14,6 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -26,10 +24,11 @@ import java.util.Random;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Identifier;
+import net.minecraft.class_5363;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
 import net.minecraft.world.dimension.DimensionType;
@@ -43,15 +42,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class GeneratorOptions {
-    public static final Codec<GeneratorOptions> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(GeneratorOptions::getSeed), ((MapCodec)Codec.BOOL.fieldOf("generate_features")).withDefault(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures), ((MapCodec)Codec.BOOL.fieldOf("bonus_chest")).withDefault(false).stable().forGetter(GeneratorOptions::hasBonusChest), ((MapCodec)Codec.unboundedMap(Identifier.field_25139.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue), Codec.mapPair(DimensionType.field_24756.fieldOf("type"), ChunkGenerator.field_24746.fieldOf("generator")).codec()).xmap(DimensionType::method_28524, Function.identity()).fieldOf("dimensions")).forGetter(GeneratorOptions::getDimensionMap), Codec.STRING.optionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)).apply((Applicative<GeneratorOptions, ?>)instance, instance.stable(GeneratorOptions::new))).comapFlatMap(GeneratorOptions::method_28610, Function.identity());
+    public static final Codec<GeneratorOptions> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(GeneratorOptions::getSeed), ((MapCodec)Codec.BOOL.fieldOf("generate_features")).withDefault(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures), ((MapCodec)Codec.BOOL.fieldOf("bonus_chest")).withDefault(false).stable().forGetter(GeneratorOptions::hasBonusChest), ((MapCodec)SimpleRegistry.method_29721(Registry.field_25490, Lifecycle.stable(), class_5363.field_25411).xmap(class_5363::method_29569, Function.identity()).fieldOf("dimensions")).forGetter(GeneratorOptions::getDimensionMap), Codec.STRING.optionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)).apply((Applicative<GeneratorOptions, ?>)instance, instance.stable(GeneratorOptions::new))).comapFlatMap(GeneratorOptions::method_28610, Function.identity());
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int DEMO_SEED = "North Carolina".hashCode();
     public static final GeneratorOptions DEMO_CONFIG = new GeneratorOptions(DEMO_SEED, true, true, GeneratorOptions.method_28608(DimensionType.method_28517(DEMO_SEED), GeneratorOptions.method_28604(DEMO_SEED)));
-    public static final GeneratorOptions FLAT_CONFIG = new GeneratorOptions(0L, false, false, GeneratorOptions.method_28608(DimensionType.method_28517(0L), new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig())));
     private final long seed;
     private final boolean generateStructures;
     private final boolean bonusChest;
-    private final LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> field_24827;
+    private final SimpleRegistry<class_5363> field_24827;
     private final Optional<String> legacyCustomOptions;
 
     private DataResult<GeneratorOptions> method_28610() {
@@ -62,18 +60,18 @@ public class GeneratorOptions {
     }
 
     private boolean method_28611() {
-        return DimensionType.method_28518(this.seed, this.field_24827);
+        return class_5363.method_29567(this.seed, this.field_24827);
     }
 
-    public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap) {
-        this(seed, generateStructures, bonusChest, linkedHashMap, Optional.empty());
+    public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<class_5363> simpleRegistry) {
+        this(seed, generateStructures, bonusChest, simpleRegistry, Optional.empty());
     }
 
-    private GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap, Optional<String> legacyCustomOptions) {
+    private GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<class_5363> simpleRegistry, Optional<String> legacyCustomOptions) {
         this.seed = seed;
         this.generateStructures = generateStructures;
         this.bonusChest = bonusChest;
-        this.field_24827 = linkedHashMap;
+        this.field_24827 = simpleRegistry;
         this.legacyCustomOptions = legacyCustomOptions;
     }
 
@@ -98,28 +96,35 @@ public class GeneratorOptions {
         return this.bonusChest;
     }
 
-    public static LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> method_28608(LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap, ChunkGenerator chunkGenerator) {
-        LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap2 = Maps.newLinkedHashMap();
-        Pair<DimensionType, ChunkGenerator> pair = linkedHashMap.get(DimensionType.OVERWORLD_REGISTRY_KEY);
-        DimensionType dimensionType = pair == null ? DimensionType.method_29294() : pair.getFirst();
-        linkedHashMap2.put(World.OVERWORLD, Pair.of(dimensionType, chunkGenerator));
-        for (Map.Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> entry : linkedHashMap.entrySet()) {
-            if (entry.getKey() == World.OVERWORLD) continue;
-            linkedHashMap2.put(entry.getKey(), entry.getValue());
+    public static SimpleRegistry<class_5363> method_28608(SimpleRegistry<class_5363> simpleRegistry, ChunkGenerator chunkGenerator) {
+        SimpleRegistry<class_5363> simpleRegistry2 = new SimpleRegistry<class_5363>(Registry.field_25490, Lifecycle.experimental());
+        class_5363 lv = simpleRegistry.get(class_5363.field_25412);
+        DimensionType dimensionType = lv == null ? DimensionType.method_29563() : lv.method_29570();
+        simpleRegistry2.add(class_5363.field_25412, new class_5363(() -> dimensionType, chunkGenerator));
+        for (Map.Entry<RegistryKey<class_5363>, class_5363> entry : simpleRegistry.method_29722()) {
+            RegistryKey<class_5363> registryKey = entry.getKey();
+            if (registryKey == class_5363.field_25412) continue;
+            simpleRegistry2.add(registryKey, entry.getValue());
+            if (!simpleRegistry.method_29723(registryKey)) continue;
+            simpleRegistry2.method_29725(registryKey);
         }
-        return linkedHashMap2;
+        return simpleRegistry2;
     }
 
-    public LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> getDimensionMap() {
+    public SimpleRegistry<class_5363> getDimensionMap() {
         return this.field_24827;
     }
 
     public ChunkGenerator getChunkGenerator() {
-        Pair<DimensionType, ChunkGenerator> pair = this.field_24827.get(DimensionType.OVERWORLD_REGISTRY_KEY);
-        if (pair == null) {
+        class_5363 lv = this.field_24827.get(class_5363.field_25412);
+        if (lv == null) {
             return GeneratorOptions.method_28604(new Random().nextLong());
         }
-        return pair.getSecond();
+        return lv.method_29571();
+    }
+
+    public ImmutableSet<RegistryKey<World>> method_29575() {
+        return this.getDimensionMap().method_29722().stream().map(entry -> RegistryKey.of(Registry.DIMENSION, ((RegistryKey)entry.getKey()).getValue())).collect(ImmutableSet.toImmutableSet());
     }
 
     public boolean isDebugWorld() {
@@ -149,6 +154,11 @@ public class GeneratorOptions {
         return new GeneratorOptions(this.seed, this.generateStructures, !this.bonusChest, this.field_24827);
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public GeneratorOptions method_29573(SimpleRegistry<class_5363> simpleRegistry) {
+        return new GeneratorOptions(this.seed, this.generateStructures, this.bonusChest, simpleRegistry);
+    }
+
     public static GeneratorOptions fromProperties(Properties properties) {
         String string2 = MoreObjects.firstNonNull((String)properties.get("generator-settings"), "");
         properties.put("generator-settings", string2);
@@ -171,34 +181,37 @@ public class GeneratorOptions {
                 l = string22.hashCode();
             }
         }
-        LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = DimensionType.method_28517(l);
+        SimpleRegistry<class_5363> simpleRegistry = DimensionType.method_28517(l);
         switch (string5) {
             case "flat": {
                 JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();
                 Dynamic<JsonObject> dynamic = new Dynamic<JsonObject>(JsonOps.INSTANCE, jsonObject);
-                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(linkedHashMap, new FlatChunkGenerator(FlatChunkGeneratorConfig.CODEC.parse(dynamic).resultOrPartial(LOGGER::error).orElseGet(FlatChunkGeneratorConfig::getDefaultConfig))));
+                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, new FlatChunkGenerator(FlatChunkGeneratorConfig.CODEC.parse(dynamic).resultOrPartial(LOGGER::error).orElseGet(FlatChunkGeneratorConfig::getDefaultConfig))));
             }
             case "debug_all_block_states": {
-                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(linkedHashMap, DebugChunkGenerator.INSTANCE));
+                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, DebugChunkGenerator.INSTANCE));
             }
         }
-        return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(linkedHashMap, GeneratorOptions.method_28604(l)));
+        return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, GeneratorOptions.method_28604(l)));
     }
 
     @Environment(value=EnvType.CLIENT)
     public GeneratorOptions withHardcore(boolean hardcore, OptionalLong seed) {
-        LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap;
+        SimpleRegistry<class_5363> simpleRegistry;
         long l = seed.orElse(this.seed);
         if (seed.isPresent()) {
-            linkedHashMap = Maps.newLinkedHashMap();
+            simpleRegistry = new SimpleRegistry(Registry.field_25490, Lifecycle.experimental());
             long m = seed.getAsLong();
-            for (Map.Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> entry : this.field_24827.entrySet()) {
-                linkedHashMap.put(entry.getKey(), Pair.of(entry.getValue().getFirst(), entry.getValue().getSecond().withSeed(m)));
+            for (Map.Entry<RegistryKey<class_5363>, class_5363> entry : this.field_24827.method_29722()) {
+                RegistryKey<class_5363> registryKey = entry.getKey();
+                simpleRegistry.add(registryKey, new class_5363(entry.getValue().method_29566(), entry.getValue().method_29571().withSeed(m)));
+                if (!this.field_24827.method_29723(registryKey)) continue;
+                simpleRegistry.method_29725(registryKey);
             }
         } else {
-            linkedHashMap = this.field_24827;
+            simpleRegistry = this.field_24827;
         }
-        GeneratorOptions generatorOptions = this.isDebugWorld() ? new GeneratorOptions(l, false, false, linkedHashMap) : new GeneratorOptions(l, this.shouldGenerateStructures(), this.hasBonusChest() && !hardcore, linkedHashMap);
+        GeneratorOptions generatorOptions = this.isDebugWorld() ? new GeneratorOptions(l, false, false, simpleRegistry) : new GeneratorOptions(l, this.shouldGenerateStructures(), this.hasBonusChest() && !hardcore, simpleRegistry);
         return generatorOptions;
     }
 }

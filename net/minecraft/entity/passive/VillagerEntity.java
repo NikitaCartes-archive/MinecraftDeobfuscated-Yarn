@@ -69,9 +69,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.dynamic.GlobalPos;
-import net.minecraft.util.dynamic.Timestamp;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -233,12 +233,12 @@ VillagerDataContainer {
     }
 
     @Override
-    public boolean interactMob(PlayerEntity player, Hand hand) {
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isSleeping()) {
             if (this.isBaby()) {
                 this.sayNo();
-                return super.interactMob(player, hand);
+                return ActionResult.method_29236(this.world.isClient);
             }
             boolean bl = this.getOffers().isEmpty();
             if (hand == Hand.MAIN_HAND) {
@@ -248,12 +248,12 @@ VillagerDataContainer {
                 player.incrementStat(Stats.TALKED_TO_VILLAGER);
             }
             if (bl) {
-                return super.interactMob(player, hand);
+                return ActionResult.method_29236(this.world.isClient);
             }
             if (!this.world.isClient && !this.offers.isEmpty()) {
                 this.beginTradeWith(player);
             }
-            return true;
+            return ActionResult.method_29236(this.world.isClient);
         }
         return super.interactMob(player, hand);
     }
@@ -649,9 +649,7 @@ VillagerDataContainer {
                 witchEntity.setCustomName(this.getCustomName());
                 witchEntity.setCustomNameVisible(this.isCustomNameVisible());
             }
-            if (this.getExperience() > 0) {
-                witchEntity.setPersistent();
-            }
+            witchEntity.setPersistent();
             this.world.spawnEntity(witchEntity);
             this.remove();
         } else {
@@ -668,7 +666,7 @@ VillagerDataContainer {
             if (!bl) {
                 return;
             }
-            this.method_27964(item);
+            this.method_29499(item);
             this.sendPickup(item, itemStack.getCount());
             ItemStack itemStack2 = simpleInventory.addStack(itemStack);
             if (itemStack2.isEmpty()) {
@@ -847,7 +845,7 @@ VillagerDataContainer {
     @Override
     public void sleep(BlockPos pos) {
         super.sleep(pos);
-        this.brain.remember(MemoryModuleType.LAST_SLEPT, Timestamp.of(this.world.getTime()));
+        this.brain.remember(MemoryModuleType.LAST_SLEPT, this.world.getTime());
         this.brain.forget(MemoryModuleType.WALK_TARGET);
         this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
     }
@@ -855,13 +853,13 @@ VillagerDataContainer {
     @Override
     public void wakeUp() {
         super.wakeUp();
-        this.brain.remember(MemoryModuleType.LAST_WOKEN, Timestamp.of(this.world.getTime()));
+        this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
     }
 
     private boolean hasRecentlyWorkedAndSlept(long worldTime) {
-        Optional<Timestamp> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
+        Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
         if (optional.isPresent()) {
-            return worldTime - optional.get().getTime() < 24000L;
+            return worldTime - optional.get() < 24000L;
         }
         return false;
     }

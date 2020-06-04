@@ -100,6 +100,10 @@ extends Item {
 
     private ItemStack getFilledStack(ItemStack stack, PlayerEntity player, Item filledBucket) {
         if (player.abilities.creativeMode) {
+            ItemStack itemStack = new ItemStack(filledBucket);
+            if (!player.inventory.contains(itemStack)) {
+                player.inventory.insertStack(itemStack);
+            }
             return stack;
         }
         stack.decrement(1);

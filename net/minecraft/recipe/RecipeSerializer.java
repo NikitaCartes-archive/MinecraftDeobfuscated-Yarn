@@ -4,6 +4,7 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
+import net.minecraft.class_5357;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.ArmorDyeRecipe;
 import net.minecraft.recipe.BannerDuplicateRecipe;
@@ -53,6 +54,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
     public static final CookingRecipeSerializer<SmokingRecipe> SMOKING = RecipeSerializer.register("smoking", new CookingRecipeSerializer<SmokingRecipe>(SmokingRecipe::new, 100));
     public static final CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = RecipeSerializer.register("campfire_cooking", new CookingRecipeSerializer<CampfireCookingRecipe>(CampfireCookingRecipe::new, 100));
     public static final RecipeSerializer<StonecuttingRecipe> STONECUTTING = RecipeSerializer.register("stonecutting", new CuttingRecipe.Serializer<StonecuttingRecipe>(StonecuttingRecipe::new));
+    public static final RecipeSerializer<class_5357> SMITHING = RecipeSerializer.register("smithing", new class_5357.class_5358());
 
     public T read(Identifier var1, JsonObject var2);
 

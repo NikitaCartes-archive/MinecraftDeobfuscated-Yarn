@@ -28,7 +28,7 @@ extends Task<E> {
 
     private boolean hasKilledHoglin(E piglin) {
         LivingEntity livingEntity = ((PiglinEntity)piglin).getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
-        return livingEntity.getType() == EntityType.HOGLIN && livingEntity.getHealth() <= 0.0f;
+        return livingEntity.getType() == EntityType.HOGLIN && livingEntity.method_29504();
     }
 }
 

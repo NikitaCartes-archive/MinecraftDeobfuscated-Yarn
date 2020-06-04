@@ -50,7 +50,6 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
@@ -63,6 +62,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -376,19 +376,18 @@ extends TameableEntity {
      * Enabled aggressive block sorting
      */
     @Override
-    public boolean interactMob(PlayerEntity player, Hand hand) {
-        boolean bl;
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ActionResult actionResult;
         ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
-        if (itemStack.getItem() instanceof SpawnEggItem) {
-            return super.interactMob(player, hand);
-        }
         if (this.world.isClient) {
-            if (this.isTamed()) {
-                if (this.isOwner(player)) return true;
+            if (this.isTamed() && this.isOwner(player)) {
+                return ActionResult.SUCCESS;
             }
-            if (this.isBreedingItem(itemStack)) return true;
-            return false;
+            if (this.isBreedingItem(itemStack) && (this.getHealth() < this.getMaxHealth() || !this.isTamed())) {
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS;
         }
         if (this.isTamed()) {
             if (this.isOwner(player)) {
@@ -400,20 +399,19 @@ extends TameableEntity {
                             itemStack.decrement(1);
                         }
                         this.setPersistent();
-                        return true;
+                        return ActionResult.CONSUME;
                     }
                 } else {
                     if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
                         this.eat(player, itemStack);
                         this.heal(item.getFoodComponent().getHunger());
-                        return true;
+                        return ActionResult.CONSUME;
                     }
-                    boolean bl2 = super.interactMob(player, hand);
-                    if (bl2) {
-                        if (!this.isBaby()) return bl2;
+                    ActionResult actionResult2 = super.interactMob(player, hand);
+                    if (!actionResult2.isAccepted() || this.isBaby()) {
+                        this.setSitting(!this.isSitting());
                     }
-                    this.setSitting(!this.isSitting());
-                    return bl2;
+                    return actionResult2;
                 }
             }
         } else if (this.isBreedingItem(itemStack)) {
@@ -426,11 +424,12 @@ extends TameableEntity {
                 this.world.sendEntityStatus(this, (byte)6);
             }
             this.setPersistent();
-            return true;
+            return ActionResult.CONSUME;
         }
-        if (!(bl = super.interactMob(player, hand))) return bl;
-        this.setPersistent();
-        return bl;
+        if ((actionResult = super.interactMob(player, hand)).isAccepted()) {
+            this.setPersistent();
+        }
+        return actionResult;
     }
 
     @Override
@@ -546,7 +545,7 @@ extends TameableEntity {
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world).parameter(LootContextParameters.POSITION, mutable).parameter(LootContextParameters.THIS_ENTITY, this.cat).random(random);
             List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
             for (ItemStack itemStack : list) {
-                this.cat.world.spawnEntity(new ItemEntity(this.cat.world, (float)mutable.getX() - MathHelper.sin(this.cat.bodyYaw * ((float)Math.PI / 180)), mutable.getY(), (float)mutable.getZ() + MathHelper.cos(this.cat.bodyYaw * ((float)Math.PI / 180)), itemStack));
+                this.cat.world.spawnEntity(new ItemEntity(this.cat.world, (double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * ((float)Math.PI / 180)), mutable.getY(), (double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * ((float)Math.PI / 180)), itemStack));
             }
         }
 

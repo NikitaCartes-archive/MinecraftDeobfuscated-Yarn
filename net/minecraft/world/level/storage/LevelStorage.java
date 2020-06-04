@@ -6,23 +6,17 @@ package net.minecraft.world.level.storage;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.stream.JsonWriter;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -49,6 +43,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_5315;
+import net.minecraft.class_5359;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.Schemas;
@@ -65,6 +60,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
@@ -81,7 +77,6 @@ public class LevelStorage {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder().appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD).appendLiteral('-').appendValue(ChronoField.MONTH_OF_YEAR, 2).appendLiteral('-').appendValue(ChronoField.DAY_OF_MONTH, 2).appendLiteral('_').appendValue(ChronoField.HOUR_OF_DAY, 2).appendLiteral('-').appendValue(ChronoField.MINUTE_OF_HOUR, 2).appendLiteral('-').appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter();
     private static final ImmutableList<String> field_25020 = ImmutableList.of("RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest");
-    private static final Gson field_25021 = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
     private final Path savesDirectory;
     private final Path backupsDirectory;
     private final DataFixer dataFixer;
@@ -111,6 +106,10 @@ public class LevelStorage {
         Dynamic<?> dynamic3 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic2, i, SharedConstants.getGameVersion().getWorldVersion());
         DataResult dataResult = GeneratorOptions.CODEC.parse(dynamic3);
         return Pair.of(dataResult.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error)).orElseGet(GeneratorOptions::getDefaultOptions), dataResult.lifecycle());
+    }
+
+    private static class_5359 method_29580(Dynamic<?> dynamic) {
+        return class_5359.field_25394.parse(dynamic).resultOrPartial(LOGGER::error).orElse(class_5359.field_25393);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -158,25 +157,40 @@ public class LevelStorage {
     }
 
     @Nullable
-    private static SaveProperties readLevelProperties(File file, DataFixer dataFixer) {
+    private static class_5359 method_29583(File file, DataFixer dataFixer) {
         try {
             CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
             CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-            CompoundTag compoundTag3 = compoundTag2.contains("Player", 10) ? compoundTag2.getCompound("Player") : null;
             compoundTag2.remove("Player");
             int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
-            Dynamic<Tag> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<CompoundTag>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion());
-            Pair<GeneratorOptions, Lifecycle> pair = LevelStorage.method_29010(dynamic, dataFixer, i);
-            class_5315 lv = class_5315.method_29023(dynamic);
-            LevelInfo levelInfo = LevelInfo.method_28383(dynamic, pair.getFirst());
-            return LevelProperties.method_29029(dynamic, dataFixer, i, compoundTag3, levelInfo, lv);
+            Dynamic<CompoundTag> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<CompoundTag>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion());
+            return dynamic.get("DataPacks").result().map(LevelStorage::method_29580).orElse(class_5359.field_25393);
         } catch (Exception exception) {
             LOGGER.error("Exception reading {}", (Object)file, (Object)exception);
             return null;
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
+    private static BiFunction<File, DataFixer, LevelProperties> readLevelProperties(DynamicOps<Tag> dynamicOps, class_5359 arg) {
+        return (file, dataFixer) -> {
+            try {
+                CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream((File)file));
+                CompoundTag compoundTag2 = compoundTag.getCompound("Data");
+                CompoundTag compoundTag3 = compoundTag2.contains("Player", 10) ? compoundTag2.getCompound("Player") : null;
+                compoundTag2.remove("Player");
+                int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
+                Dynamic<Tag> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<CompoundTag>(dynamicOps, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion());
+                Pair<GeneratorOptions, Lifecycle> pair = LevelStorage.method_29010(dynamic, dataFixer, i);
+                class_5315 lv = class_5315.method_29023(dynamic);
+                LevelInfo levelInfo = LevelInfo.method_28383(dynamic, arg);
+                return LevelProperties.method_29029(dynamic, dataFixer, i, compoundTag3, levelInfo, lv, pair.getFirst(), pair.getSecond());
+            } catch (Exception exception) {
+                LOGGER.error("Exception reading {}", file, (Object)exception);
+                return null;
+            }
+        };
+    }
+
     private BiFunction<File, DataFixer, LevelSummary> method_29014(File file, boolean bl) {
         return (file2, dataFixer) -> {
             try {
@@ -190,9 +204,9 @@ public class LevelStorage {
                 if (j == 19132 || j == 19133) {
                     boolean bl2 = j != this.getCurrentVersion();
                     File file3 = new File(file, "icon.png");
-                    Pair<GeneratorOptions, Lifecycle> pair = LevelStorage.method_29010(dynamic, dataFixer, i);
-                    LevelInfo levelInfo = LevelInfo.method_28383(dynamic, pair.getFirst());
-                    return new LevelSummary(levelInfo, lv, file.getName(), bl2, bl, file3, pair.getSecond());
+                    class_5359 lv2 = dynamic.get("DataPacks").result().map(LevelStorage::method_29580).orElse(class_5359.field_25393);
+                    LevelInfo levelInfo = LevelInfo.method_28383(dynamic, lv2);
+                    return new LevelSummary(levelInfo, lv, file.getName(), bl2, bl, file3);
                 }
                 return null;
             } catch (Exception exception) {
@@ -270,8 +284,8 @@ public class LevelStorage {
         }
 
         public boolean needsConversion() {
-            SaveProperties saveProperties = this.readLevelProperties();
-            return saveProperties != null && saveProperties.getVersion() != LevelStorage.this.getCurrentVersion();
+            LevelSummary levelSummary = this.method_29584();
+            return levelSummary != null && levelSummary.method_29586().method_29022() != LevelStorage.this.getCurrentVersion();
         }
 
         public boolean convert(ProgressListener progressListener) {
@@ -280,18 +294,30 @@ public class LevelStorage {
         }
 
         @Nullable
-        public SaveProperties readLevelProperties() {
+        public LevelSummary method_29584() {
             this.checkValid();
-            return (SaveProperties)LevelStorage.this.readLevelProperties(this.directory.toFile(), (file, dataFixer) -> LevelStorage.readLevelProperties(file, dataFixer));
+            return (LevelSummary)LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.this.method_29014(this.directory.toFile(), false));
         }
 
-        public void method_27425(SaveProperties saveProperties) {
-            this.method_27426(saveProperties, null);
+        @Nullable
+        public SaveProperties readLevelProperties(DynamicOps<Tag> dynamicOps, class_5359 arg) {
+            this.checkValid();
+            return (SaveProperties)LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.readLevelProperties(dynamicOps, arg));
         }
 
-        public void method_27426(SaveProperties saveProperties, @Nullable CompoundTag compoundTag) {
+        @Nullable
+        public class_5359 method_29585() {
+            this.checkValid();
+            return (class_5359)LevelStorage.this.readLevelProperties(this.directory.toFile(), (file, dataFixer) -> LevelStorage.method_29583(file, dataFixer));
+        }
+
+        public void method_27425(DimensionTracker dimensionTracker, SaveProperties saveProperties) {
+            this.method_27426(dimensionTracker, saveProperties, null);
+        }
+
+        public void method_27426(DimensionTracker dimensionTracker, SaveProperties saveProperties, @Nullable CompoundTag compoundTag) {
             File file = this.directory.toFile();
-            CompoundTag compoundTag2 = saveProperties.cloneWorldTag(compoundTag);
+            CompoundTag compoundTag2 = saveProperties.cloneWorldTag(dimensionTracker, compoundTag);
             CompoundTag compoundTag3 = new CompoundTag();
             compoundTag3.put("Data", compoundTag2);
             try {
@@ -416,26 +442,6 @@ public class LevelStorage {
                 });
             }
             return Files.size(path2);
-        }
-
-        @Environment(value=EnvType.CLIENT)
-        public DataResult<String> method_29019() {
-            this.checkValid();
-            File file = this.directory.toFile();
-            LevelSummary levelSummary = (LevelSummary)LevelStorage.this.readLevelProperties(file, LevelStorage.this.method_29014(file, false));
-            if (levelSummary == null) {
-                return DataResult.error("Could not parse level data!");
-            }
-            DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(JsonOps.INSTANCE, levelSummary.method_29021());
-            return dataResult.flatMap(jsonElement -> {
-                Path path = this.directory.resolve("worldgen_settings_export.json");
-                try (JsonWriter jsonWriter = field_25021.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8, new OpenOption[0]));){
-                    field_25021.toJson((JsonElement)jsonElement, jsonWriter);
-                } catch (JsonIOException | IOException exception) {
-                    return DataResult.error("Error writing file: " + exception.getMessage());
-                }
-                return DataResult.success(path.toString());
-            });
         }
 
         @Override

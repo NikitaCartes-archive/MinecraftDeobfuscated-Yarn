@@ -12,21 +12,16 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.world.level.LevelInfo;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class DatapackFailureScreen
 extends Screen {
-    private final String name;
     private final List<class_5348> wrappedText = Lists.newArrayList();
-    @Nullable
-    private final LevelInfo levelInfo;
+    private final Runnable field_25452;
 
-    public DatapackFailureScreen(String name, @Nullable LevelInfo levelInfo) {
+    public DatapackFailureScreen(Runnable runnable) {
         super(new TranslatableText("datapackFailure.title"));
-        this.name = name;
-        this.levelInfo = levelInfo;
+        this.field_25452 = runnable;
     }
 
     @Override
@@ -34,7 +29,7 @@ extends Screen {
         super.init();
         this.wrappedText.clear();
         this.wrappedText.addAll(this.textRenderer.wrapLines(this.getTitle(), this.width - 50));
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, new TranslatableText("datapackFailure.safeMode"), buttonWidget -> this.client.startIntegratedServer(this.name, this.levelInfo, true)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, new TranslatableText("datapackFailure.safeMode"), buttonWidget -> this.field_25452.run()));
         this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, new TranslatableText("gui.toTitle"), buttonWidget -> this.client.openScreen(null)));
     }
 

@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5352;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
@@ -27,20 +28,29 @@ extends ResourcePackProfile {
     @Nullable
     private Identifier iconId;
 
-    public ClientResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition) {
-        super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition);
-        NativeImage nativeImage = null;
-        try (InputStream inputStream = resourcePack.openRoot("pack.png");){
-            nativeImage = NativeImage.read(inputStream);
-        } catch (IOException | IllegalArgumentException exception) {
-            // empty catch block
-        }
+    public ClientResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition, class_5352 arg) {
+        super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition, arg);
+        this.icon = ClientResourcePackProfile.method_29713(resourcePack);
+    }
+
+    public ClientResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Text displayName, Text description, ResourcePackCompatibility compatibility, ResourcePackProfile.InsertionPosition insertionPosition, boolean pinned, class_5352 arg, @Nullable NativeImage nativeImage) {
+        super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned, arg);
         this.icon = nativeImage;
     }
 
-    public ClientResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Text displayName, Text description, ResourcePackCompatibility compatibility, ResourcePackProfile.InsertionPosition insertionPosition, boolean pinned, @Nullable NativeImage icon) {
-        super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned);
-        this.icon = icon;
+    /*
+     * Enabled aggressive block sorting
+     * Enabled unnecessary exception pruning
+     * Enabled aggressive exception aggregation
+     */
+    @Nullable
+    public static NativeImage method_29713(ResourcePack resourcePack) {
+        try (InputStream inputStream = resourcePack.openRoot("pack.png");){
+            NativeImage nativeImage = NativeImage.read(inputStream);
+            return nativeImage;
+        } catch (IOException | IllegalArgumentException exception) {
+            return null;
+        }
     }
 
     public void drawIcon(TextureManager manager) {

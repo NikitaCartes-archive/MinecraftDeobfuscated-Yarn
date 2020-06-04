@@ -18,8 +18,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.BlazeEntity;
-import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 public class PotionEntity
 extends ThrownItemEntity
 implements FlyingItemEntity {
-    public static final Predicate<LivingEntity> WATER_HURTS = PotionEntity::doesWaterHurt;
+    public static final Predicate<LivingEntity> WATER_HURTS = LivingEntity::method_29503;
 
     public PotionEntity(EntityType<? extends PotionEntity> entityType, World world) {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
@@ -119,7 +117,7 @@ implements FlyingItemEntity {
         if (!list.isEmpty()) {
             for (LivingEntity livingEntity : list) {
                 double d = this.squaredDistanceTo(livingEntity);
-                if (!(d < 16.0) || !PotionEntity.doesWaterHurt(livingEntity)) continue;
+                if (!(d < 16.0) || !livingEntity.method_29503()) continue;
                 livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0f);
             }
         }
@@ -184,10 +182,6 @@ implements FlyingItemEntity {
             CampfireBlock.extinguish(this.world, pos, blockState);
             this.world.setBlockState(pos, (BlockState)blockState.with(CampfireBlock.LIT, false));
         }
-    }
-
-    private static boolean doesWaterHurt(LivingEntity entityHit) {
-        return entityHit instanceof EndermanEntity || entityHit instanceof BlazeEntity;
     }
 }
 

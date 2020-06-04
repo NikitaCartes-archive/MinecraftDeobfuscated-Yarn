@@ -14,7 +14,13 @@ public interface SynchronousResourceReloadListener
 extends ResourceReloadListener {
     @Override
     default public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        return synchronizer.whenPrepared(Unit.INSTANCE).thenRunAsync(() -> this.apply(manager), applyExecutor);
+        return synchronizer.whenPrepared(Unit.INSTANCE).thenRunAsync(() -> {
+            applyProfiler.startTick();
+            applyProfiler.push("listener");
+            this.apply(manager);
+            applyProfiler.pop();
+            applyProfiler.endTick();
+        }, applyExecutor);
     }
 
     public void apply(ResourceManager var1);

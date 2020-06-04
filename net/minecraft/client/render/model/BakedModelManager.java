@@ -21,12 +21,14 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BakedModelManager
 extends SinglePreparationResourceReloadListener<ModelLoader>
 implements AutoCloseable {
     private Map<Identifier, BakedModel> models;
+    @Nullable
     private SpriteAtlasManager atlasManager;
     private final BlockModels blockModelCache;
     private final TextureManager textureManager;
@@ -99,7 +101,9 @@ implements AutoCloseable {
 
     @Override
     public void close() {
-        this.atlasManager.close();
+        if (this.atlasManager != null) {
+            this.atlasManager.close();
+        }
     }
 
     public void resetMipmapLevels(int i) {

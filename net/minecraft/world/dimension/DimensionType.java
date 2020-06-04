@@ -3,14 +3,9 @@
  */
 package net.minecraft.world.dimension;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -18,18 +13,17 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.function.Supplier;
+import net.minecraft.class_5363;
+import net.minecraft.class_5381;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeAccessType;
 import net.minecraft.world.biome.source.HorizontalVoronoiBiomeAccessType;
@@ -42,16 +36,19 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
 
 public class DimensionType {
-    public static final Codec<RegistryKey<DimensionType>> field_24751 = Identifier.field_25139.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION_TYPE_KEY), RegistryKey::getValue);
-    private static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.LONG.optionalFieldOf("fixed_time").xmap(optional -> optional.map(OptionalLong::of).orElseGet(OptionalLong::empty), optionalLong -> optionalLong.isPresent() ? Optional.of(optionalLong.getAsLong()) : Optional.empty()).forGetter(dimensionType -> dimensionType.fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::isUltrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::isNatural), ((MapCodec)Codec.BOOL.fieldOf("shrunk")).forGetter(DimensionType::isShrunk), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(dimensionType -> Float.valueOf(dimensionType.ambientLight))).apply((Applicative<DimensionType, ?>)instance, DimensionType::new));
+    private static final Codec<RegistryKey<DimensionType>> field_24751 = Identifier.field_25139.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION_TYPE_KEY), RegistryKey::getValue);
+    public static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.LONG.optionalFieldOf("fixed_time").xmap(optional -> optional.map(OptionalLong::of).orElseGet(OptionalLong::empty), optionalLong -> optionalLong.isPresent() ? Optional.of(optionalLong.getAsLong()) : Optional.empty()).forGetter(dimensionType -> dimensionType.fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::isUltrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::isNatural), ((MapCodec)Codec.BOOL.fieldOf("shrunk")).forGetter(DimensionType::isShrunk), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(dimensionType -> Float.valueOf(dimensionType.ambientLight))).apply((Applicative<DimensionType, ?>)instance, DimensionType::new));
     public static final float[] field_24752 = new float[]{1.0f, 0.75f, 0.5f, 0.25f, 0.0f, 0.25f, 0.5f, 0.75f};
     public static final RegistryKey<DimensionType> OVERWORLD_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld"));
     public static final RegistryKey<DimensionType> THE_NETHER_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_nether"));
     public static final RegistryKey<DimensionType> THE_END_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_end"));
-    private static final LinkedHashSet<RegistryKey<World>> DIMENSION_TYPES = Sets.newLinkedHashSet(ImmutableList.of(World.OVERWORLD, World.NETHER, World.END));
-    private static final Map<RegistryKey<DimensionType>, DimensionType> field_24759 = ImmutableMap.of(OVERWORLD_REGISTRY_KEY, DimensionType.method_29294(), THE_NETHER_REGISTRY_KEY, DimensionType.method_29295(), THE_END_REGISTRY_KEY, DimensionType.method_29296());
+    private static final DimensionType field_25407 = new DimensionType("", OptionalLong.empty(), true, false, false, true, false, false, HorizontalVoronoiBiomeAccessType.INSTANCE, Optional.of(OVERWORLD_REGISTRY_KEY), 0.0f);
+    private static final DimensionType _NETHER = new DimensionType("_nether", OptionalLong.of(18000L), false, true, true, false, true, false, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_NETHER_REGISTRY_KEY), 0.1f);
+    private static final DimensionType _END = new DimensionType("_end", OptionalLong.of(6000L), false, false, false, false, false, true, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_END_REGISTRY_KEY), 0.0f);
+    private static final Map<RegistryKey<DimensionType>, DimensionType> field_24759 = ImmutableMap.of(OVERWORLD_REGISTRY_KEY, DimensionType.method_29563(), THE_NETHER_REGISTRY_KEY, _NETHER, THE_END_REGISTRY_KEY, _END);
     private static final Codec<DimensionType> field_24760 = field_24751.flatXmap(registryKey -> Optional.ofNullable(field_24759.get(registryKey)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown builtin dimension: " + registryKey)), dimensionType -> dimensionType.field_24765.map(DataResult::success).orElseGet(() -> DataResult.error("Unknown builtin dimension: " + dimensionType))).stable();
-    public static final Codec<DimensionType> field_24756 = Codec.either(field_24760, CODEC).flatXmap(either -> either.map(dimensionType -> DataResult.success(dimensionType, Lifecycle.stable()), DataResult::success), dimensionType -> dimensionType.field_24765.isPresent() ? DataResult.success(Either.left(dimensionType), Lifecycle.stable()) : DataResult.success(Either.right(dimensionType)));
+    private static final Codec<DimensionType> field_25410 = Codec.either(field_24760, CODEC).flatXmap(either -> either.map(dimensionType -> DataResult.success(dimensionType, Lifecycle.stable()), DataResult::success), dimensionType -> dimensionType.field_24765.isPresent() ? DataResult.success(Either.left(dimensionType), Lifecycle.stable()) : DataResult.success(Either.right(dimensionType)));
+    public static final Codec<Supplier<DimensionType>> field_24756 = class_5381.method_29749(Registry.DIMENSION_TYPE_KEY, field_25410);
     private final String suffix;
     private final OptionalLong fixedTime;
     private final boolean hasSkyLight;
@@ -65,16 +62,8 @@ public class DimensionType {
     private final float ambientLight;
     private final transient float[] field_24767;
 
-    public static DimensionType method_29294() {
-        return new DimensionType("", OptionalLong.empty(), true, false, false, true, false, false, HorizontalVoronoiBiomeAccessType.INSTANCE, Optional.of(OVERWORLD_REGISTRY_KEY), 0.0f);
-    }
-
-    private static DimensionType method_29295() {
-        return new DimensionType("_nether", OptionalLong.of(18000L), false, true, true, false, true, false, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_NETHER_REGISTRY_KEY), 0.1f);
-    }
-
-    private static DimensionType method_29296() {
-        return new DimensionType("_end", OptionalLong.of(6000L), false, false, false, false, false, true, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_END_REGISTRY_KEY), 0.0f);
+    public static DimensionType method_29563() {
+        return field_25407;
     }
 
     protected DimensionType(OptionalLong fixedTime, boolean hasSkylight, boolean hasCeiling, boolean ultrawarm, boolean natural, boolean shrunk, float ambientLight) {
@@ -121,11 +110,10 @@ public class DimensionType {
         return World.CODEC.parse(dynamic);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static DimensionTracker.Modifiable addDefaults(DimensionTracker.Modifiable tracker) {
-        tracker.add(OVERWORLD_REGISTRY_KEY, DimensionType.method_29294());
-        tracker.add(THE_NETHER_REGISTRY_KEY, DimensionType.method_29295());
-        tracker.add(THE_END_REGISTRY_KEY, DimensionType.method_29296());
+        tracker.add(OVERWORLD_REGISTRY_KEY, DimensionType.method_29563());
+        tracker.add(THE_NETHER_REGISTRY_KEY, _NETHER);
+        tracker.add(THE_END_REGISTRY_KEY, _END);
         return tracker;
     }
 
@@ -137,50 +125,11 @@ public class DimensionType {
         return new SurfaceChunkGenerator(MultiNoiseBiomeSource.class_5305.field_24723.method_28469(l), l, ChunkGeneratorType.Preset.NETHER.getChunkGeneratorType());
     }
 
-    public static LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> method_28517(long l) {
-        LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = Maps.newLinkedHashMap();
-        linkedHashMap.put(World.NETHER, Pair.of(DimensionType.method_29295(), DimensionType.method_28535(l)));
-        linkedHashMap.put(World.END, Pair.of(DimensionType.method_29296(), DimensionType.method_28533(l)));
-        return linkedHashMap;
-    }
-
-    public static boolean method_28518(long l, LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap) {
-        ArrayList<Map.Entry<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>>> list = Lists.newArrayList(linkedHashMap.entrySet());
-        if (list.size() != 3) {
-            return false;
-        }
-        Map.Entry entry = (Map.Entry)list.get(0);
-        Map.Entry entry2 = (Map.Entry)list.get(1);
-        Map.Entry entry3 = (Map.Entry)list.get(2);
-        if (entry.getKey() != World.OVERWORLD || entry2.getKey() != World.NETHER || entry3.getKey() != World.END) {
-            return false;
-        }
-        if (!(((DimensionType)((Pair)entry.getValue()).getFirst()).isOverworld() && ((DimensionType)((Pair)entry2.getValue()).getFirst()).isNether() && ((DimensionType)((Pair)entry3.getValue()).getFirst()).isEnd())) {
-            return false;
-        }
-        if (!(((Pair)entry2.getValue()).getSecond() instanceof SurfaceChunkGenerator) || !(((Pair)entry3.getValue()).getSecond() instanceof SurfaceChunkGenerator)) {
-            return false;
-        }
-        SurfaceChunkGenerator surfaceChunkGenerator = (SurfaceChunkGenerator)((Pair)entry2.getValue()).getSecond();
-        SurfaceChunkGenerator surfaceChunkGenerator2 = (SurfaceChunkGenerator)((Pair)entry3.getValue()).getSecond();
-        if (!surfaceChunkGenerator.method_28548(l, ChunkGeneratorType.Preset.NETHER)) {
-            return false;
-        }
-        if (!surfaceChunkGenerator2.method_28548(l, ChunkGeneratorType.Preset.END)) {
-            return false;
-        }
-        if (!(surfaceChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
-            return false;
-        }
-        MultiNoiseBiomeSource multiNoiseBiomeSource = (MultiNoiseBiomeSource)surfaceChunkGenerator.getBiomeSource();
-        if (!multiNoiseBiomeSource.method_28462(l)) {
-            return false;
-        }
-        if (!(surfaceChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
-            return false;
-        }
-        TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)surfaceChunkGenerator2.getBiomeSource();
-        return theEndBiomeSource.method_28479(l);
+    public static SimpleRegistry<class_5363> method_28517(long l) {
+        SimpleRegistry<class_5363> simpleRegistry = new SimpleRegistry<class_5363>(Registry.field_25490, Lifecycle.experimental());
+        simpleRegistry.add(class_5363.field_25413, new class_5363(() -> _NETHER, DimensionType.method_28535(l)));
+        simpleRegistry.add(class_5363.field_25414, new class_5363(() -> _END, DimensionType.method_28533(l)));
+        return simpleRegistry;
     }
 
     public String getSuffix() {
@@ -252,20 +201,6 @@ public class DimensionType {
 
     public boolean isEnd() {
         return this.field_24765.equals(Optional.of(THE_END_REGISTRY_KEY));
-    }
-
-    public static LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> method_28524(Map<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> map) {
-        LinkedHashMap<RegistryKey<World>, Pair<DimensionType, ChunkGenerator>> linkedHashMap = Maps.newLinkedHashMap();
-        for (RegistryKey registryKey : DIMENSION_TYPES) {
-            Pair<DimensionType, ChunkGenerator> pair = map.get(registryKey);
-            if (pair == null) continue;
-            linkedHashMap.put(registryKey, pair);
-        }
-        for (Map.Entry entry : map.entrySet()) {
-            if (DIMENSION_TYPES.contains(entry.getKey())) continue;
-            linkedHashMap.put((RegistryKey<World>)entry.getKey(), (Pair<DimensionType, ChunkGenerator>)entry.getValue());
-        }
-        return linkedHashMap;
     }
 }
 

@@ -34,6 +34,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -85,15 +86,17 @@ RangedAttackMob {
     }
 
     @Override
+    public boolean method_29503() {
+        return true;
+    }
+
+    @Override
     public void tickMovement() {
         super.tickMovement();
         if (!this.world.isClient) {
             int i = MathHelper.floor(this.getX());
             int j = MathHelper.floor(this.getY());
             int k = MathHelper.floor(this.getZ());
-            if (this.isWet()) {
-                this.damage(DamageSource.DROWN, 1.0f);
-            }
             BlockPos blockPos = new BlockPos(i, 0, k);
             BlockPos blockPos2 = new BlockPos(i, j, k);
             if (this.world.getBiome(blockPos).getTemperature(blockPos2) > 1.0f) {
@@ -131,16 +134,16 @@ RangedAttackMob {
     }
 
     @Override
-    protected boolean interactMob(PlayerEntity player, Hand hand) {
+    protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
             this.sheared(SoundCategory.PLAYERS);
             if (!this.world.isClient) {
                 itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
-            return true;
+            return ActionResult.method_29236(this.world.isClient);
         }
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override

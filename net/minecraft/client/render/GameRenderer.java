@@ -293,7 +293,7 @@ AutoCloseable {
             d = this.client.options.fov;
             d *= (double)MathHelper.lerp(tickDelta, this.lastMovementFovMultiplier, this.movementFovMultiplier);
         }
-        if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).getHealth() <= 0.0f) {
+        if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).method_29504()) {
             float f = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + tickDelta, 20.0f);
             d /= (double)((1.0f - 500.0f / (f + 500.0f)) * 2.0f + 1.0f);
         }
@@ -308,7 +308,7 @@ AutoCloseable {
             float h;
             LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
             float g = (float)livingEntity.hurtTime - f;
-            if (livingEntity.getHealth() <= 0.0f) {
+            if (livingEntity.method_29504()) {
                 h = Math.min((float)livingEntity.deathTime + f, 20.0f);
                 matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(40.0f - 8000.0f / (h + 200.0f)));
             }

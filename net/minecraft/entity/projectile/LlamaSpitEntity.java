@@ -5,7 +5,7 @@ package net.minecraft.entity.projectile;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Material;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -61,7 +61,7 @@ extends ProjectileEntity {
         this.method_26962();
         float g = 0.99f;
         float h = 0.06f;
-        if (!this.world.containsBlockWithMaterial(this.getBoundingBox(), Material.AIR)) {
+        if (this.world.method_29546(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
             this.remove();
             return;
         }

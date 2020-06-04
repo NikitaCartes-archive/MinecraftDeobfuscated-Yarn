@@ -63,7 +63,7 @@ extends AbstractCriterion<Conditions> {
         }
 
         public static Conditions create(EntityPredicate.Builder builder) {
-            return new Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(builder.build()), EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY);
+            return new Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(builder.build()));
         }
 
         public boolean matches(LootContext lootContext, LootContext lootContext2, @Nullable LootContext lootContext3) {

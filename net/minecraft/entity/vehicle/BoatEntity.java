@@ -36,6 +36,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -654,14 +655,17 @@ extends Entity {
     }
 
     @Override
-    public boolean interact(PlayerEntity player, Hand hand) {
+    public ActionResult interact(PlayerEntity player, Hand hand) {
         if (player.shouldCancelInteraction()) {
-            return false;
+            return ActionResult.PASS;
         }
-        if (!this.world.isClient && this.ticksUnderwater < 60.0f) {
-            return player.startRiding(this);
+        if (this.ticksUnderwater < 60.0f) {
+            if (!this.world.isClient) {
+                return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
+            }
+            return ActionResult.SUCCESS;
         }
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override

@@ -33,6 +33,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,13 +48,13 @@ extends MinecraftServer {
     private LanServerPinger lanPinger;
     private UUID localPlayerUuid;
 
-    public IntegratedServer(MinecraftClient client, LevelStorage.Session session, ResourcePackManager<ResourcePackProfile> resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(session, saveProperties, resourcePackManager, client.getNetworkProxy(), client.getDataFixer(), serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
-        this.setServerName(client.getSession().getUsername());
-        this.setDemo(client.isDemo());
+    public IntegratedServer(Thread thread, MinecraftClient minecraftClient, DimensionTracker.Modifiable modifiable, LevelStorage.Session session, ResourcePackManager<ResourcePackProfile> resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(thread, modifiable, session, saveProperties, resourcePackManager, minecraftClient.getNetworkProxy(), minecraftClient.getDataFixer(), serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
+        this.setServerName(minecraftClient.getSession().getUsername());
+        this.setDemo(minecraftClient.isDemo());
         this.setWorldHeight(256);
         this.setPlayerManager(new IntegratedPlayerManager(this, this.dimensionTracker, this.field_24371));
-        this.client = client;
+        this.client = minecraftClient;
     }
 
     @Override

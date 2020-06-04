@@ -462,7 +462,7 @@ extends LivingEntity {
             this.flyingSpeed = (float)((double)this.flyingSpeed + 0.005999999865889549);
         }
         this.setMovementSpeed((float)entityAttributeInstance.getValue());
-        float f = !this.onGround || this.getHealth() <= 0.0f || this.isSwimming() ? 0.0f : Math.min(0.1f, MathHelper.sqrt(PlayerEntity.squaredHorizontalLength(this.getVelocity())));
+        float f = !this.onGround || this.method_29504() || this.isSwimming() ? 0.0f : Math.min(0.1f, MathHelper.sqrt(PlayerEntity.squaredHorizontalLength(this.getVelocity())));
         this.strideDistance += (f - this.strideDistance) * 0.4f;
         if (this.getHealth() > 0.0f && !this.isSpectator()) {
             Box box = this.hasVehicle() && !this.getVehicle().removed ? this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0) : this.getBoundingBox().expand(1.0, 0.5, 1.0);
@@ -730,7 +730,7 @@ extends LivingEntity {
             return false;
         }
         this.despawnCounter = 0;
-        if (this.getHealth() <= 0.0f) {
+        if (this.method_29504()) {
             return false;
         }
         this.dropShoulderEntities();
@@ -867,21 +867,23 @@ extends LivingEntity {
         }
         ItemStack itemStack = this.getStackInHand(hand);
         ItemStack itemStack2 = itemStack.copy();
-        if (entity.interact(this, hand)) {
+        ActionResult actionResult = entity.interact(this, hand);
+        if (actionResult.isAccepted()) {
             if (this.abilities.creativeMode && itemStack == this.getStackInHand(hand) && itemStack.getCount() < itemStack2.getCount()) {
                 itemStack.setCount(itemStack2.getCount());
             }
-            return ActionResult.SUCCESS;
+            return actionResult;
         }
         if (!itemStack.isEmpty() && entity instanceof LivingEntity) {
+            ActionResult actionResult2;
             if (this.abilities.creativeMode) {
                 itemStack = itemStack2;
             }
-            if (itemStack.useOnEntity(this, (LivingEntity)entity, hand)) {
+            if ((actionResult2 = itemStack.useOnEntity(this, (LivingEntity)entity, hand)).isAccepted()) {
                 if (itemStack.isEmpty() && !this.abilities.creativeMode) {
                     this.setStackInHand(hand, ItemStack.EMPTY);
                 }
-                return ActionResult.SUCCESS;
+                return actionResult2;
             }
         }
         return ActionResult.PASS;
@@ -1830,6 +1832,11 @@ extends LivingEntity {
             Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)this, stack);
         }
         return super.eatFood(world, stack);
+    }
+
+    @Override
+    protected boolean method_29500(BlockState blockState) {
+        return this.abilities.flying || super.method_29500(blockState);
     }
 
     public static enum SleepFailureReason {

@@ -33,7 +33,6 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
@@ -106,8 +105,6 @@ extends PacketListener {
     public void onEntitySpawn(EntitySpawnS2CPacket var1);
 
     public void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket var1);
-
-    public void onEntitySpawnGlobal(EntitySpawnGlobalS2CPacket var1);
 
     public void onMobSpawn(MobSpawnS2CPacket var1);
 

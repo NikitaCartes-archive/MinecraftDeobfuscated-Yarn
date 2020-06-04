@@ -27,10 +27,10 @@ implements ClientPlayerTickable {
     @Override
     public void tick() {
         World world = this.player.world;
-        BlockState blockState = world.getBlockState(this.player.getBoundingBox().expand(0.0, -0.4f, 0.0).contract(0.001), Blocks.BUBBLE_COLUMN);
-        if (blockState != null) {
-            if (!this.hasPlayedForCurrentColumn && !this.firstTick && blockState.isOf(Blocks.BUBBLE_COLUMN) && !this.player.isSpectator()) {
-                boolean bl = blockState.get(BubbleColumnBlock.DRAG);
+        BlockState blockState2 = world.method_29556(this.player.getBoundingBox().expand(0.0, -0.4f, 0.0).contract(0.001)).filter(blockState -> blockState.isOf(Blocks.BUBBLE_COLUMN)).findFirst().orElse(null);
+        if (blockState2 != null) {
+            if (!this.hasPlayedForCurrentColumn && !this.firstTick && blockState2.isOf(Blocks.BUBBLE_COLUMN) && !this.player.isSpectator()) {
+                boolean bl = blockState2.get(BubbleColumnBlock.DRAG);
                 if (bl) {
                     this.player.playSound(SoundEvents.BLOCK_BUBBLE_COLUMN_WHIRLPOOL_INSIDE, 1.0f, 1.0f);
                 } else {

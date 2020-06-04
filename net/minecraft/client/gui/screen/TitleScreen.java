@@ -40,8 +40,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.SaveProperties;
+import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -144,13 +146,13 @@ extends Screen {
     }
 
     private void initWidgetsDemo(int y, int spacingY) {
-        this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), buttonWidget -> this.client.startIntegratedServer("Demo_World", MinecraftServer.DEMO_LEVEL_INFO)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), buttonWidget -> this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, DimensionTracker.create(), GeneratorOptions.DEMO_CONFIG)));
         this.buttonResetDemo = this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.resetdemo"), buttonWidget -> {
             LevelStorage levelStorage = this.client.getLevelStorage();
             try (LevelStorage.Session session = levelStorage.createSession("Demo_World");){
-                SaveProperties saveProperties = session.readLevelProperties();
-                if (saveProperties != null) {
-                    this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", saveProperties.getLevelName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
+                LevelSummary levelSummary = session.method_29584();
+                if (levelSummary != null) {
+                    this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", levelSummary.getDisplayName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
                 }
             } catch (IOException iOException) {
                 SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
@@ -158,8 +160,8 @@ extends Screen {
             }
         }));
         try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World");){
-            SaveProperties saveProperties = session.readLevelProperties();
-            if (saveProperties == null) {
+            LevelSummary levelSummary = session.method_29584();
+            if (levelSummary == null) {
                 this.buttonResetDemo.active = false;
             }
         } catch (IOException iOException) {

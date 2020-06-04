@@ -14,7 +14,6 @@ import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -42,12 +41,6 @@ public class SummonCommand {
         }
         CompoundTag compoundTag = nbt.copy();
         compoundTag.putString("id", entity2.toString());
-        if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(entity2)) {
-            LightningEntity lightningEntity = new LightningEntity(source.getWorld(), pos.x, pos.y, pos.z, false);
-            source.getWorld().addLightning(lightningEntity);
-            source.sendFeedback(new TranslatableText("commands.summon.success", lightningEntity.getDisplayName()), true);
-            return 1;
-        }
         ServerWorld serverWorld = source.getWorld();
         Entity entity22 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entity -> {
             entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entity.yaw, entity.pitch);

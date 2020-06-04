@@ -88,23 +88,23 @@ implements SynchronousResourceReloadListener {
     }
 
     public void renderItem(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model) {
-        boolean bl2;
+        boolean bl;
         if (stack.isEmpty()) {
             return;
         }
         matrices.push();
-        boolean bl = renderMode == ModelTransformation.Mode.GUI;
-        boolean bl3 = bl2 = bl || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
-        if (stack.getItem() == Items.TRIDENT && bl2) {
+        boolean bl2 = bl = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
+        if (stack.getItem() == Items.TRIDENT && bl) {
             model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
         }
         model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
         matrices.translate(-0.5, -0.5, -0.5);
-        if (model.isBuiltin() || stack.getItem() == Items.TRIDENT && !bl2) {
-            BuiltinModelItemRenderer.INSTANCE.render(stack, matrices, vertexConsumers, light, overlay);
+        if (model.isBuiltin() || stack.getItem() == Items.TRIDENT && !bl) {
+            BuiltinModelItemRenderer.INSTANCE.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
         } else {
-            RenderLayer renderLayer = RenderLayers.getItemLayer(stack, renderMode != ModelTransformation.Mode.GROUND);
-            VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+            boolean bl22 = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND || renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND || renderMode == ModelTransformation.Mode.FIXED;
+            RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl22);
+            VertexConsumer vertexConsumer = bl22 ? ItemRenderer.method_29711(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint()) : ItemRenderer.getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
             this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
         }
         matrices.pop();
@@ -122,6 +122,13 @@ implements SynchronousResourceReloadListener {
             return VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer));
         }
         return vertexConsumers.getBuffer(layer);
+    }
+
+    public static VertexConsumer method_29711(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
+        if (bl2) {
+            return VertexConsumers.dual(vertexConsumerProvider.getBuffer(bl ? RenderLayer.method_29706() : RenderLayer.method_29707()), vertexConsumerProvider.getBuffer(renderLayer));
+        }
+        return vertexConsumerProvider.getBuffer(renderLayer);
     }
 
     private void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {

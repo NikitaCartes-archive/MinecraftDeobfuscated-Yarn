@@ -20,6 +20,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_5354;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.datafixer.NbtOps;
@@ -31,6 +32,7 @@ import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -137,7 +139,6 @@ public class ServerPlayerEntity
 extends PlayerEntity
 implements ScreenHandlerListener {
     private static final Logger LOGGER = LogManager.getLogger();
-    private String clientLanguage = "en_US";
     public ServerPlayNetworkHandler networkHandler;
     public final MinecraftServer server;
     public final ServerPlayerInteractionManager interactionManager;
@@ -468,6 +469,9 @@ implements ScreenHandlerListener {
             this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED));
         }
         this.dropShoulderEntities();
+        if (this.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+            this.method_29779();
+        }
         if (!this.isSpectator()) {
             this.drop(source);
         }
@@ -485,6 +489,11 @@ implements ScreenHandlerListener {
         this.extinguish();
         this.setFlag(0, false);
         this.getDamageTracker().update();
+    }
+
+    private void method_29779() {
+        Box box = new Box(this.getBlockPos()).expand(32.0, 10.0, 32.0);
+        this.world.getEntitiesIncludingUngeneratedChunks(MobEntity.class, box).stream().filter(mobEntity -> mobEntity instanceof class_5354).forEach(mobEntity -> ((class_5354)((Object)mobEntity)).method_29516(this));
     }
 
     @Override
@@ -1144,7 +1153,6 @@ implements ScreenHandlerListener {
     }
 
     public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
-        this.clientLanguage = clientSettingsC2SPacket.getLanguage();
         this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
         this.clientChatColorsEnabled = clientSettingsC2SPacket.hasChatColors();
         this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());

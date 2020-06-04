@@ -32,18 +32,9 @@ public abstract class ServerConfigList<K, V extends ServerConfigEntry<K>> {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final File file;
     private final Map<String, V> map = Maps.newHashMap();
-    private boolean enabled = true;
 
     public ServerConfigList(File file) {
         this.file = file;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public File getFile() {

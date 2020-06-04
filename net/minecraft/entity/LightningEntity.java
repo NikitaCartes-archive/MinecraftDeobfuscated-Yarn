@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -29,22 +29,20 @@ extends Entity {
     private int ambientTick;
     public long seed;
     private int remainingActions;
-    private final boolean cosmetic;
+    private boolean cosmetic;
     @Nullable
     private ServerPlayerEntity channeller;
 
-    public LightningEntity(World world, double x, double y, double z, boolean cosmetic) {
-        super(EntityType.LIGHTNING_BOLT, world);
+    public LightningEntity(EntityType<? extends LightningEntity> entityType, World world) {
+        super(entityType, world);
         this.ignoreCameraFrustum = true;
-        this.refreshPositionAndAngles(x, y, z, 0.0f, 0.0f);
         this.ambientTick = 2;
         this.seed = this.random.nextLong();
         this.remainingActions = this.random.nextInt(3) + 1;
-        this.cosmetic = cosmetic;
-        Difficulty difficulty = world.getDifficulty();
-        if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
-            this.spawnFire(4);
-        }
+    }
+
+    public void method_29498(boolean bl) {
+        this.cosmetic = bl;
     }
 
     @Override
@@ -60,6 +58,10 @@ extends Entity {
     public void tick() {
         super.tick();
         if (this.ambientTick == 2) {
+            Difficulty difficulty = this.world.getDifficulty();
+            if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
+                this.spawnFire(4);
+            }
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0f, 0.8f + this.random.nextFloat() * 0.2f);
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0f, 0.5f + this.random.nextFloat() * 0.2f);
         }
@@ -128,7 +130,7 @@ extends Entity {
 
     @Override
     public Packet<?> createSpawnPacket() {
-        return new EntitySpawnGlobalS2CPacket(this);
+        return new EntitySpawnS2CPacket(this);
     }
 }
 

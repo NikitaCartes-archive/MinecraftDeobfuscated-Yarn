@@ -87,7 +87,7 @@ implements ClientPlayerTickable {
                 double k = f - this.player.getZ();
                 double l = MathHelper.sqrt(g * g + h * h + k * k);
                 double m = l + biomeMoodSound.getExtraDistance();
-                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(biomeMoodSound.getEvent(), (float)(this.player.getX() + g / l * m), (float)(this.player.getEyeY() + h / l * m), (float)(this.player.getZ() + k / l * m));
+                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(biomeMoodSound.getEvent(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m);
                 this.soundManager.play(positionedSoundInstance);
                 this.moodPercentage = 0.0f;
             } else {

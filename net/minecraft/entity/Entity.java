@@ -506,8 +506,8 @@ CommandOutput {
         this.verticalCollision = movement.y != vec3d.y;
         this.onGround = this.verticalCollision && movement.y < 0.0;
         BlockPos blockPos = this.getLandingPos();
-        BlockState blockState = this.world.getBlockState(blockPos);
-        this.fall(vec3d.y, this.onGround, blockState, blockPos);
+        BlockState blockState2 = this.world.getBlockState(blockPos);
+        this.fall(vec3d.y, this.onGround, blockState2, blockPos);
         Vec3d vec3d2 = this.getVelocity();
         if (movement.x != vec3d.x) {
             this.setVelocity(0.0, vec3d2.y, vec3d2.z);
@@ -515,7 +515,7 @@ CommandOutput {
         if (movement.z != vec3d.z) {
             this.setVelocity(vec3d2.x, vec3d2.y, 0.0);
         }
-        Block block = blockState.getBlock();
+        Block block = blockState2.getBlock();
         if (movement.y != vec3d.y) {
             block.onEntityLand(this.world, this);
         }
@@ -531,7 +531,7 @@ CommandOutput {
             }
             this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d)) * 0.6);
             this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
-            if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
+            if (this.distanceTraveled > this.nextStepSoundDistance && !blockState2.isAir()) {
                 this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
                 if (this.isTouchingWater()) {
                     Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
@@ -543,9 +543,9 @@ CommandOutput {
                     }
                     this.playSwimSound(h);
                 } else {
-                    this.playStepSound(blockPos, blockState);
+                    this.playStepSound(blockPos, blockState2);
                 }
-            } else if (this.distanceTraveled > this.nextFlySoundDistance && this.hasWings() && blockState.isAir()) {
+            } else if (this.distanceTraveled > this.nextFlySoundDistance && this.hasWings() && blockState2.isAir()) {
                 this.nextFlySoundDistance = this.playFlySound(this.distanceTraveled);
             }
         }
@@ -560,7 +560,7 @@ CommandOutput {
         }
         float i = this.getVelocityMultiplier();
         this.setVelocity(this.getVelocity().multiply(i, 1.0, i));
-        if (!this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001)) && this.fireTicks <= 0) {
+        if (this.world.method_29556(this.getBoundingBox().contract(0.001)).noneMatch(blockState -> blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
             this.fireTicks = -this.getBurningDuration();
         }
         if (this.isWet() && this.isOnFire()) {
@@ -937,8 +937,8 @@ CommandOutput {
     }
 
     protected void onSwimmingStart() {
-        float k;
-        float j;
+        double e;
+        double d;
         Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
         float f = entity == this ? 0.2f : 0.9f;
         Vec3d vec3d = entity.getVelocity();
@@ -954,16 +954,16 @@ CommandOutput {
         float h = MathHelper.floor(this.getY());
         int i = 0;
         while ((float)i < 1.0f + this.dimensions.width * 20.0f) {
-            j = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
-            k = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
-            this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + (double)j, h + 1.0f, this.getZ() + (double)k, vec3d.x, vec3d.y - (double)(this.random.nextFloat() * 0.2f), vec3d.z);
+            d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+            e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+            this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + d, h + 1.0f, this.getZ() + e, vec3d.x, vec3d.y - this.random.nextDouble() * (double)0.2f, vec3d.z);
             ++i;
         }
         i = 0;
         while ((float)i < 1.0f + this.dimensions.width * 20.0f) {
-            j = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
-            k = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
-            this.world.addParticle(ParticleTypes.SPLASH, this.getX() + (double)j, h + 1.0f, this.getZ() + (double)k, vec3d.x, vec3d.y, vec3d.z);
+            d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+            e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
+            this.world.addParticle(ParticleTypes.SPLASH, this.getX() + d, h + 1.0f, this.getZ() + e, vec3d.x, vec3d.y, vec3d.z);
             ++i;
         }
     }
@@ -984,7 +984,7 @@ CommandOutput {
         BlockState blockState = this.world.getBlockState(blockPos);
         if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
             Vec3d vec3d = this.getVelocity();
-            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.dimensions.width, this.getY() + 0.1, this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.dimensions.width, vec3d.x * -4.0, 1.5, vec3d.z * -4.0);
+            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.getX() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width, this.getY() + 0.1, this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width, vec3d.x * -4.0, 1.5, vec3d.z * -4.0);
         }
     }
 
@@ -1040,6 +1040,10 @@ CommandOutput {
         this.pitch = MathHelper.clamp(pitch, -90.0f, 90.0f) % 360.0f;
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
+    }
+
+    public void method_29495(Vec3d vec3d) {
+        this.positAfterTeleport(vec3d.x, vec3d.y, vec3d.z);
     }
 
     public void positAfterTeleport(double x, double y, double z) {
@@ -1457,8 +1461,8 @@ CommandOutput {
      * @param player the player
      * @param hand the hand the player used to interact with this entity
      */
-    public boolean interact(PlayerEntity player, Hand hand) {
-        return false;
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        return ActionResult.PASS;
     }
 
     @Nullable
@@ -2134,7 +2138,7 @@ CommandOutput {
             return;
         }
         ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
-        ((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
+        ((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.field_19347, chunkPos, 0, this.getEntityId());
         this.world.getChunk(chunkPos.x, chunkPos.z);
         this.requestTeleport(destX, destY, destZ);
     }

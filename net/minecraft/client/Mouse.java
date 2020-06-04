@@ -3,6 +3,10 @@
  */
 package net.minecraft.client;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -12,6 +16,7 @@ import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.SmoothUtil;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFWDropCallback;
 
 @Environment(value=EnvType.CLIENT)
 public class Mouse {
@@ -147,8 +152,20 @@ public class Mouse {
         }
     }
 
+    private void method_29616(long l, List<Path> list) {
+        if (this.client.currentScreen != null) {
+            this.client.currentScreen.method_29638(list);
+        }
+    }
+
     public void setup(long l2) {
-        InputUtil.setMouseCallbacks(l2, (l, d, e) -> this.client.execute(() -> this.onCursorPos(l, d, e)), (l, i, j, k) -> this.client.execute(() -> this.onMouseButton(l, i, j, k)), (l, d, e) -> this.client.execute(() -> this.onMouseScroll(l, d, e)));
+        InputUtil.setMouseCallbacks(l2, (l, d, e) -> this.client.execute(() -> this.onCursorPos(l, d, e)), (l, i, j, k) -> this.client.execute(() -> this.onMouseButton(l, i, j, k)), (l, d, e) -> this.client.execute(() -> this.onMouseScroll(l, d, e)), (l, i, m) -> {
+            Path[] paths = new Path[i];
+            for (int j = 0; j < i; ++j) {
+                paths[j] = Paths.get(GLFWDropCallback.getName(m, j), new String[0]);
+            }
+            this.client.execute(() -> this.method_29616(l, Arrays.asList(paths)));
+        });
     }
 
     private void onCursorPos(long window, double x, double y) {

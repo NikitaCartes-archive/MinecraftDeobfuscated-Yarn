@@ -412,7 +412,7 @@ implements ResourcePack {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         this.parent.close();
     }
 

@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.class_5355;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.Durations;
@@ -42,6 +43,7 @@ import net.minecraft.util.math.IntRange;
 
 public class HoglinBrain {
     private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
+    private static final IntRange field_25383 = IntRange.between(5, 16);
 
     protected static Brain<?> create(Brain<HoglinEntity> brain) {
         HoglinBrain.addCoreTasks(brain);
@@ -59,7 +61,7 @@ public class HoglinBrain {
     }
 
     private static void addIdleTasks(Brain<HoglinEntity> brain) {
-        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new PacifyTask(MemoryModuleType.NEAREST_REPELLENT, 200), new BreedTask(EntityType.HOGLIN, 0.6f), GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, 1.0f, 8, true), new UpdateAttackTargetTask<HoglinEntity>(HoglinBrain::getNearestVisibleTargetablePlayer), new ConditionalTask<MobEntityWithAi>(HoglinEntity::isAdult, GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4f, 8, false)), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), HoglinBrain.makeRandomWalkTask()));
+        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new PacifyTask(MemoryModuleType.NEAREST_REPELLENT, 200), new BreedTask(EntityType.HOGLIN, 0.6f), GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, 1.0f, 8, true), new UpdateAttackTargetTask<HoglinEntity>(HoglinBrain::getNearestVisibleTargetablePlayer), new ConditionalTask<MobEntityWithAi>(HoglinEntity::isAdult, GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4f, 8, false)), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), new class_5355(field_25383, 0.6f), HoglinBrain.makeRandomWalkTask()));
     }
 
     private static void addFightTasks(Brain<HoglinEntity> brain) {
@@ -67,7 +69,7 @@ public class HoglinBrain {
     }
 
     private static void addAvoidTasks(Brain<HoglinEntity> brain) {
-        brain.setTaskList(Activity.AVOID, 10, ImmutableList.of(GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, 1.0f, 15, false), HoglinBrain.makeRandomWalkTask(), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), new ForgetTask<HoglinEntity>(HoglinBrain::method_25947, MemoryModuleType.AVOID_TARGET)), MemoryModuleType.AVOID_TARGET);
+        brain.setTaskList(Activity.AVOID, 10, ImmutableList.of(GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, 1.3f, 15, false), HoglinBrain.makeRandomWalkTask(), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), new ForgetTask<HoglinEntity>(HoglinBrain::method_25947, MemoryModuleType.AVOID_TARGET)), MemoryModuleType.AVOID_TARGET);
     }
 
     private static RandomTask<HoglinEntity> makeRandomWalkTask() {
@@ -111,6 +113,7 @@ public class HoglinBrain {
 
     private static void avoid(HoglinEntity hoglin, LivingEntity target) {
         hoglin.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+        hoglin.getBrain().forget(MemoryModuleType.WALK_TARGET);
         hoglin.getBrain().remember(MemoryModuleType.AVOID_TARGET, target, AVOID_MEMORY_DURATION.choose(hoglin.world.random));
     }
 
@@ -179,6 +182,9 @@ public class HoglinBrain {
     }
 
     private static void setAttackTargetIfCloser(HoglinEntity hoglin, LivingEntity targetCandidate) {
+        if (HoglinBrain.isNearPlayer(hoglin)) {
+            return;
+        }
         Optional<LivingEntity> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
         LivingEntity livingEntity = LookTargetUtil.getCloserEntity((LivingEntity)hoglin, optional, targetCandidate);
         HoglinBrain.setAttackTarget(hoglin, livingEntity);

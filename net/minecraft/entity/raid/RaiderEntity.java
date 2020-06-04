@@ -237,7 +237,7 @@ extends PatrolEntity {
             if (!itemStack2.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1f, 0.0f) < d) {
                 this.dropStack(itemStack2);
             }
-            this.method_27964(item);
+            this.method_29499(item);
             this.equipStack(equipmentSlot, itemStack);
             this.sendPickup(item, itemStack.getCount());
             item.remove();

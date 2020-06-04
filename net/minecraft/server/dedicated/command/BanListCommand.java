@@ -16,7 +16,7 @@ import net.minecraft.text.TranslatableText;
 
 public class BanListCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("banlist").requires(serverCommandSource -> (serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList().isEnabled() || serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled()) && serverCommandSource.hasPermissionLevel(3))).executes(commandContext -> {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("banlist").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).executes(commandContext -> {
             PlayerManager playerManager = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getPlayerManager();
             return BanListCommand.execute((ServerCommandSource)commandContext.getSource(), Lists.newArrayList(Iterables.concat(playerManager.getUserBanList().values(), playerManager.getIpBanList().values())));
         })).then(CommandManager.literal("ips").executes(commandContext -> BanListCommand.execute((ServerCommandSource)commandContext.getSource(), ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getPlayerManager().getIpBanList().values())))).then(CommandManager.literal("players").executes(commandContext -> BanListCommand.execute((ServerCommandSource)commandContext.getSource(), ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getPlayerManager().getUserBanList().values()))));

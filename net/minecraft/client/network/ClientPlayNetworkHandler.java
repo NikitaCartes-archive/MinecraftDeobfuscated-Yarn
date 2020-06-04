@@ -42,6 +42,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.class_5352;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
@@ -198,7 +199,6 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntitySpawnGlobalS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
@@ -450,8 +450,57 @@ implements ClientPlayPacketListener {
             if (entity2 != null) {
                 ((PersistentProjectileEntity)entity).setOwner(entity2);
             }
+        } else if (entityType == EntityType.SNOWBALL) {
+            entity = new SnowballEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.LLAMA_SPIT) {
+            entity = new LlamaSpitEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+        } else if (entityType == EntityType.ITEM_FRAME) {
+            entity = new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(packet.getEntityData()));
+        } else if (entityType == EntityType.LEASH_KNOT) {
+            entity = new LeashKnotEntity(this.world, new BlockPos(d, e, f));
+        } else if (entityType == EntityType.ENDER_PEARL) {
+            entity = new EnderPearlEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.EYE_OF_ENDER) {
+            entity = new EyeOfEnderEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.FIREWORK_ROCKET) {
+            entity = new FireworkRocketEntity(this.world, d, e, f, ItemStack.EMPTY);
+        } else if (entityType == EntityType.FIREBALL) {
+            entity = new FireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+        } else if (entityType == EntityType.DRAGON_FIREBALL) {
+            entity = new DragonFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+        } else if (entityType == EntityType.SMALL_FIREBALL) {
+            entity = new SmallFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+        } else if (entityType == EntityType.WITHER_SKULL) {
+            entity = new WitherSkullEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+        } else if (entityType == EntityType.SHULKER_BULLET) {
+            entity = new ShulkerBulletEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+        } else if (entityType == EntityType.EGG) {
+            entity = new EggEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.EVOKER_FANGS) {
+            entity = new EvokerFangsEntity(this.world, d, e, f, 0.0f, 0, null);
+        } else if (entityType == EntityType.POTION) {
+            entity = new PotionEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.EXPERIENCE_BOTTLE) {
+            entity = new ExperienceBottleEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.BOAT) {
+            entity = new BoatEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.TNT) {
+            entity = new TntEntity(this.world, d, e, f, null);
+        } else if (entityType == EntityType.ARMOR_STAND) {
+            entity = new ArmorStandEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.END_CRYSTAL) {
+            entity = new EndCrystalEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.ITEM) {
+            entity = new ItemEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.FALLING_BLOCK) {
+            entity = new FallingBlockEntity(this.world, d, e, f, Block.getStateFromRawId(packet.getEntityData()));
+        } else if (entityType == EntityType.AREA_EFFECT_CLOUD) {
+            entity = new AreaEffectCloudEntity(this.world, d, e, f);
+        } else if (entityType == EntityType.LIGHTNING_BOLT) {
+            entity = new LightningEntity((EntityType<? extends LightningEntity>)EntityType.LIGHTNING_BOLT, (World)this.world);
+            entity.positAfterTeleport(d, e, f);
         } else {
-            entity = entityType == EntityType.SNOWBALL ? new SnowballEntity(this.world, d, e, f) : (entityType == EntityType.LLAMA_SPIT ? new LlamaSpitEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.ITEM_FRAME ? new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(packet.getEntityData())) : (entityType == EntityType.LEASH_KNOT ? new LeashKnotEntity(this.world, new BlockPos(d, e, f)) : (entityType == EntityType.ENDER_PEARL ? new EnderPearlEntity(this.world, d, e, f) : (entityType == EntityType.EYE_OF_ENDER ? new EyeOfEnderEntity(this.world, d, e, f) : (entityType == EntityType.FIREWORK_ROCKET ? new FireworkRocketEntity(this.world, d, e, f, ItemStack.EMPTY) : (entityType == EntityType.FIREBALL ? new FireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.DRAGON_FIREBALL ? new DragonFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.SMALL_FIREBALL ? new SmallFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.WITHER_SKULL ? new WitherSkullEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.SHULKER_BULLET ? new ShulkerBulletEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.EGG ? new EggEntity(this.world, d, e, f) : (entityType == EntityType.EVOKER_FANGS ? new EvokerFangsEntity(this.world, d, e, f, 0.0f, 0, null) : (entityType == EntityType.POTION ? new PotionEntity(this.world, d, e, f) : (entityType == EntityType.EXPERIENCE_BOTTLE ? new ExperienceBottleEntity(this.world, d, e, f) : (entityType == EntityType.BOAT ? new BoatEntity(this.world, d, e, f) : (entityType == EntityType.TNT ? new TntEntity(this.world, d, e, f, null) : (entityType == EntityType.ARMOR_STAND ? new ArmorStandEntity(this.world, d, e, f) : (entityType == EntityType.END_CRYSTAL ? new EndCrystalEntity(this.world, d, e, f) : (entityType == EntityType.ITEM ? new ItemEntity(this.world, d, e, f) : (entityType == EntityType.FALLING_BLOCK ? new FallingBlockEntity(this.world, d, e, f, Block.getStateFromRawId(packet.getEntityData())) : (entityType == EntityType.AREA_EFFECT_CLOUD ? new AreaEffectCloudEntity(this.world, d, e, f) : null))))))))))))))))))))));
+            entity = null;
         }
         if (entity != null) {
             int i = packet.getId();
@@ -479,22 +528,6 @@ implements ClientPlayPacketListener {
         entity.pitch = 0.0f;
         entity.setEntityId(packet.getId());
         this.world.addEntity(packet.getId(), entity);
-    }
-
-    @Override
-    public void onEntitySpawnGlobal(EntitySpawnGlobalS2CPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        double d = packet.getX();
-        double e = packet.getY();
-        double f = packet.getZ();
-        if (packet.getEntityTypeId() == 1) {
-            LightningEntity lightningEntity = new LightningEntity(this.world, d, e, f, false);
-            lightningEntity.updateTrackedPosition(d, e, f);
-            lightningEntity.yaw = 0.0f;
-            lightningEntity.pitch = 0.0f;
-            lightningEntity.setEntityId(packet.getId());
-            this.world.addLightning(lightningEntity);
-        }
     }
 
     @Override
@@ -842,7 +875,7 @@ implements ClientPlayPacketListener {
             livingEntity.setVelocity((float)packet.getVelocityX() / 8000.0f, (float)packet.getVelocityY() / 8000.0f, (float)packet.getVelocityZ() / 8000.0f);
             this.world.addEntity(packet.getId(), livingEntity);
             if (livingEntity instanceof BeeEntity) {
-                boolean bl = ((BeeEntity)livingEntity).isAngry();
+                boolean bl = ((BeeEntity)livingEntity).method_29511();
                 AbstractBeeSoundInstance abstractBeeSoundInstance = bl ? new AggressiveBeeSoundInstance((BeeEntity)livingEntity) : new PassiveBeeSoundInstance((BeeEntity)livingEntity);
                 this.client.getSoundManager().playNextTick(abstractBeeSoundInstance);
             }
@@ -1353,7 +1386,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.tagManager = packet.getTagManager();
         if (!this.connection.isLocal()) {
-            this.tagManager.method_29226();
+            this.tagManager.apply();
         }
         this.client.getSearchableContainer(SearchManager.ITEM_TAG).reload();
     }
@@ -1509,7 +1542,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onPlaySoundId(PlaySoundIdS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.getSoundManager().play(new PositionedSoundInstance(packet.getSoundId(), packet.getCategory(), packet.getVolume(), packet.getPitch(), false, 0, SoundInstance.AttenuationType.LINEAR, (float)packet.getX(), (float)packet.getY(), (float)packet.getZ(), false));
+        this.client.getSoundManager().play(new PositionedSoundInstance(packet.getSoundId(), packet.getCategory(), packet.getVolume(), packet.getPitch(), false, 0, SoundInstance.AttenuationType.LINEAR, packet.getX(), packet.getY(), packet.getZ(), false));
     }
 
     @Override
@@ -1526,7 +1559,7 @@ implements ClientPlayPacketListener {
                 File file2 = new File(file, string3);
                 if (file2.isFile()) {
                     this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-                    CompletableFuture<Void> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2);
+                    CompletableFuture<Void> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2, class_5352.field_25349);
                     this.feedbackAfterDownload(completableFuture);
                     return;
                 }

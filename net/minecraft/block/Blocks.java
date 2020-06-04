@@ -252,7 +252,7 @@ public class Blocks {
     public static final Block GOLD_ORE = Blocks.register("gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).method_29292().strength(3.0f, 3.0f)));
     public static final Block IRON_ORE = Blocks.register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).method_29292().strength(3.0f, 3.0f)));
     public static final Block COAL_ORE = Blocks.register("coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).method_29292().strength(3.0f, 3.0f)));
-    public static final Block NETHER_GOLD_ORE = Blocks.register("nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).method_29292().strength(3.0f, 3.0f).sounds(BlockSoundGroup.NETHER_GOLD_ORE)));
+    public static final Block NETHER_GOLD_ORE = Blocks.register("nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).method_29292().strength(3.0f, 3.0f).sounds(BlockSoundGroup.NETHER_GOLD_ORE)));
     public static final Block OAK_LOG = Blocks.register("oak_log", Blocks.createLogBlock(MaterialColor.WOOD, MaterialColor.SPRUCE));
     public static final Block SPRUCE_LOG = Blocks.register("spruce_log", Blocks.createLogBlock(MaterialColor.SPRUCE, MaterialColor.BROWN));
     public static final Block BIRCH_LOG = Blocks.register("birch_log", Blocks.createLogBlock(MaterialColor.SAND, MaterialColor.QUARTZ));
@@ -955,7 +955,7 @@ public class Blocks {
     public static final Block NETHERITE_BLOCK = Blocks.register("netherite_block", new Block(AbstractBlock.Settings.of(Material.METAL, MaterialColor.BLACK).method_29292().strength(50.0f, 1200.0f).sounds(BlockSoundGroup.NETHERITE)));
     public static final Block ANCIENT_DEBRIS = Blocks.register("ancient_debris", new Block(AbstractBlock.Settings.of(Material.METAL, MaterialColor.BLACK).method_29292().strength(30.0f, 1200.0f).sounds(BlockSoundGroup.ANCIENT_DEBRIS)));
     public static final Block CRYING_OBSIDIAN = Blocks.register("crying_obsidian", new CryingObsidianBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).method_29292().strength(50.0f, 1200.0f).lightLevel(blockState -> 10)));
-    public static final Block RESPAWN_ANCHOR = Blocks.register("respawn_anchor", new RespawnAnchorBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).method_29292().strength(50.0f, 1200.0f).lightLevel(blockState -> RespawnAnchorBlock.getLightLevel(blockState, 15)).nonOpaque()));
+    public static final Block RESPAWN_ANCHOR = Blocks.register("respawn_anchor", new RespawnAnchorBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).method_29292().strength(50.0f, 1200.0f).lightLevel(blockState -> RespawnAnchorBlock.getLightLevel(blockState, 15))));
     public static final Block POTTED_CRIMSON_FUNGUS = Blocks.register("potted_crimson_fungus", new FlowerPotBlock(CRIMSON_FUNGUS, AbstractBlock.Settings.of(Material.SUPPORTED).breakInstantly().nonOpaque()));
     public static final Block POTTED_WARPED_FUNGUS = Blocks.register("potted_warped_fungus", new FlowerPotBlock(WARPED_FUNGUS, AbstractBlock.Settings.of(Material.SUPPORTED).breakInstantly().nonOpaque()));
     public static final Block POTTED_CRIMSON_ROOTS = Blocks.register("potted_crimson_roots", new FlowerPotBlock(CRIMSON_ROOTS, AbstractBlock.Settings.of(Material.SUPPORTED).breakInstantly().nonOpaque()));
