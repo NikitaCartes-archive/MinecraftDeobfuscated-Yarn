@@ -32,7 +32,7 @@ public class JukeboxBlock extends BlockWithEntity {
 			this.removeRecord(world, pos);
 			state = state.with(HAS_RECORD, Boolean.valueOf(false));
 			world.setBlockState(pos, state, 2);
-			return ActionResult.method_29236(world.isClient);
+			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}
@@ -69,10 +69,10 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			this.removeRecord(world, pos);
-			super.onStateReplaced(state, world, pos, newState, notify);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 

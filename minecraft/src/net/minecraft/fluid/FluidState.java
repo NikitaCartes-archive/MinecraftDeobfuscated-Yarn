@@ -21,10 +21,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public final class FluidState extends State<Fluid, FluidState> {
-	public static final Codec<FluidState> field_25018 = method_28494(Registry.FLUID, Fluid::getDefaultState).stable();
+	public static final Codec<FluidState> CODEC = createCodec(Registry.FLUID, Fluid::getDefaultState).stable();
 
-	public FluidState(Fluid fluid, ImmutableMap<Property<?>, Comparable<?>> immutableMap, MapCodec<FluidState> mapCodec) {
-		super(fluid, immutableMap, mapCodec);
+	public FluidState(Fluid fluid, ImmutableMap<Property<?>, Comparable<?>> propertiesMap, MapCodec<FluidState> mapCodec) {
+		super(fluid, propertiesMap, mapCodec);
 	}
 
 	public Fluid getFluid() {

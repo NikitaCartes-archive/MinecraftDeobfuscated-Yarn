@@ -20,10 +20,10 @@ public class DeepWarmOceanBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4445678).waterFogColor(270131).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24700);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24698);
+		this.addStructureFeature(DefaultBiomeFeatures.WARM_OCEAN_RUIN);
+		this.addStructureFeature(DefaultBiomeFeatures.MONUMENT);
 		DefaultBiomeFeatures.method_28441(this);
-		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

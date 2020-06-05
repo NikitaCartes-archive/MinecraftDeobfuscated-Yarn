@@ -109,7 +109,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 			this.body.roll = 0.0F;
 		}
 
-		if (!beeEntity.method_29511()) {
+		if (!beeEntity.hasAngerTime()) {
 			this.body.pitch = 0.0F;
 			this.body.yaw = 0.0F;
 			this.body.roll = 0.0F;

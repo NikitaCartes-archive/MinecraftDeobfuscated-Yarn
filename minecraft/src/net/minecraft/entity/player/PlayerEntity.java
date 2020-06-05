@@ -517,7 +517,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.setMovementSpeed((float)entityAttributeInstance.getValue());
 		float f;
-		if (this.onGround && !this.method_29504() && !this.isSwimming()) {
+		if (this.onGround && !this.isDead() && !this.isSwimming()) {
 			f = Math.min(0.1F, MathHelper.sqrt(squaredHorizontalLength(this.getVelocity())));
 		} else {
 			f = 0.0F;
@@ -619,7 +619,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	protected void dropInventory() {
 		super.dropInventory();
-		if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+		if (!this.world.getGameRules().getBoolean(GameRules.field_19389)) {
 			this.vanishCursedItems();
 			this.inventory.dropAll();
 		}
@@ -837,7 +837,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			return false;
 		} else {
 			this.despawnCounter = 0;
-			if (this.method_29504()) {
+			if (this.isDead()) {
 				return false;
 			} else {
 				this.dropShoulderEntities();
@@ -1657,7 +1657,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected int getCurrentExperience(PlayerEntity player) {
-		if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !this.isSpectator()) {
+		if (!this.world.getGameRules().getBoolean(GameRules.field_19389) && !this.isSpectator()) {
 			int i = this.experienceLevel * 7;
 			return i > 100 ? 100 : i;
 		} else {

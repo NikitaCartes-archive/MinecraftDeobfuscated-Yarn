@@ -26,7 +26,7 @@ public class LiteralText extends BaseText {
 		} else {
 			Language language = Language.getInstance();
 			if (this.field_25315 != language) {
-				this.field_25316 = language.method_29426(this.string, false);
+				this.field_25316 = language.reorder(this.string, false);
 				this.field_25315 = language;
 			}
 

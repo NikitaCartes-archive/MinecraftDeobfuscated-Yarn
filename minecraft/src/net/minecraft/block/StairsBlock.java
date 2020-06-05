@@ -140,9 +140,9 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
-			this.baseBlockState.onStateReplaced(world, pos, newState, notify);
+			this.baseBlockState.onStateReplaced(world, pos, newState, moved);
 		}
 	}
 

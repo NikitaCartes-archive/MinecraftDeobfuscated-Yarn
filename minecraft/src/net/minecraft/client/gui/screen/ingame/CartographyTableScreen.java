@@ -23,7 +23,7 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 
 	public CartographyTableScreen(CartographyTableScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
-		this.field_25268 -= 2;
+		this.titleY -= 2;
 	}
 
 	@Override

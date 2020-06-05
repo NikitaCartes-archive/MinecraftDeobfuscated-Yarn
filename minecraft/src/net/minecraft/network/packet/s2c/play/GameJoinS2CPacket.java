@@ -10,9 +10,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.dimension.DimensionType;
 
 public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -21,7 +21,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private boolean hardcore;
 	private GameMode gameMode;
 	private Set<RegistryKey<World>> field_25320;
-	private DimensionTracker.Modifiable dimensionTracker;
+	private RegistryTracker.Modifiable dimensionTracker;
 	private RegistryKey<DimensionType> field_25321;
 	private RegistryKey<World> dimensionId;
 	private int maxPlayers;
@@ -40,7 +40,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		long sha256Seed,
 		boolean hardcore,
 		Set<RegistryKey<World>> set,
-		DimensionTracker.Modifiable modifiable,
+		RegistryTracker.Modifiable modifiable,
 		RegistryKey<DimensionType> registryKey,
 		RegistryKey<World> registryKey2,
 		int i,
@@ -80,7 +80,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.field_25320.add(RegistryKey.of(Registry.DIMENSION, buf.readIdentifier()));
 		}
 
-		this.dimensionTracker = buf.decode(DimensionTracker.Modifiable.CODEC);
+		this.dimensionTracker = buf.decode(RegistryTracker.Modifiable.CODEC);
 		this.field_25321 = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, buf.readIdentifier());
 		this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
@@ -107,7 +107,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 			buf.writeIdentifier(registryKey.getValue());
 		}
 
-		buf.encode(DimensionTracker.Modifiable.CODEC, this.dimensionTracker);
+		buf.encode(RegistryTracker.Modifiable.CODEC, this.dimensionTracker);
 		buf.writeIdentifier(this.field_25321.getValue());
 		buf.writeIdentifier(this.dimensionId.getValue());
 		buf.writeLong(this.sha256Seed);
@@ -149,7 +149,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public DimensionTracker getDimension() {
+	public RegistryTracker getDimension() {
 		return this.dimensionTracker;
 	}
 

@@ -88,7 +88,7 @@ public class CowEntity extends AnimalEntity {
 				player.dropItem(new ItemStack(Items.MILK_BUCKET), false);
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

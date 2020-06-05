@@ -37,7 +37,7 @@ public class EntityShapeContext implements ShapeContext {
 			entity.isDescending(),
 			entity.getY(),
 			entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR,
-			entity instanceof LivingEntity ? ((LivingEntity)entity)::canWalkOnLava : fluid -> false
+			entity instanceof LivingEntity ? ((LivingEntity)entity)::canWalkOnFluid : fluid -> false
 		);
 	}
 

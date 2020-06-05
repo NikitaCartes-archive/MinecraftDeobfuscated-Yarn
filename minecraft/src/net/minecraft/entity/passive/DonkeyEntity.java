@@ -32,7 +32,7 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 
 	@Nullable
 	@Override
-	protected SoundEvent method_28368() {
+	protected SoundEvent getEatSound() {
 		return SoundEvents.ENTITY_DONKEY_EAT;
 	}
 

@@ -83,7 +83,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 					optional7 = Optional.of(playerEntity);
 				}
 			} else if (optional.isPresent() || !(livingEntity instanceof WitherSkeletonEntity) && !(livingEntity instanceof WitherEntity)) {
-				if (!optional5.isPresent() && PiglinBrain.method_29534(livingEntity.getType())) {
+				if (!optional5.isPresent() && PiglinBrain.isZombified(livingEntity.getType())) {
 					optional5 = Optional.of(livingEntity);
 				}
 			} else {

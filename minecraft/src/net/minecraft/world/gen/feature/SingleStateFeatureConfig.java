@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 
 public class SingleStateFeatureConfig implements FeatureConfig {
-	public static final Codec<SingleStateFeatureConfig> CODEC = BlockState.field_24734
+	public static final Codec<SingleStateFeatureConfig> CODEC = BlockState.CODEC
 		.fieldOf("state")
 		.<SingleStateFeatureConfig>xmap(SingleStateFeatureConfig::new, singleStateFeatureConfig -> singleStateFeatureConfig.state)
 		.codec();

@@ -32,7 +32,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -177,8 +177,8 @@ public class TitleScreen extends Screen {
 			)
 		);
 		boolean bl = this.client.isMultiplayerEnabled();
-		ButtonWidget.class_5316 lv = bl
-			? ButtonWidget.field_25035
+		ButtonWidget.TooltipSupplier tooltipSupplier = bl
+			? ButtonWidget.EMPTY
 			: (buttonWidget, matrixStack, i, j) -> {
 				if (!buttonWidget.active) {
 					this.renderTooltip(
@@ -189,9 +189,11 @@ public class TitleScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.multiplayer"), buttonWidget -> {
 			Screen screen = (Screen)(this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this));
 			this.client.openScreen(screen);
-		}, lv)).active = bl;
+		}, tooltipSupplier)).active = bl;
 		this.addButton(
-				new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, new TranslatableText("menu.online"), buttonWidget -> this.switchToRealms(), lv)
+				new ButtonWidget(
+					this.width / 2 - 100, y + spacingY * 2, 200, 20, new TranslatableText("menu.online"), buttonWidget -> this.switchToRealms(), tooltipSupplier
+				)
 			)
 			.active = bl;
 	}
@@ -204,7 +206,7 @@ public class TitleScreen extends Screen {
 				200,
 				20,
 				new TranslatableText("menu.playdemo"),
-				buttonWidget -> this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, DimensionTracker.create(), GeneratorOptions.DEMO_CONFIG)
+				buttonWidget -> this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, RegistryTracker.create(), GeneratorOptions.DEMO_CONFIG)
 			)
 		);
 		this.buttonResetDemo = this.addButton(

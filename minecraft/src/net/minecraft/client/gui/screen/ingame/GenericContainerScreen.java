@@ -21,7 +21,7 @@ public class GenericContainerScreen extends HandledScreen<GenericContainerScreen
 		int j = 114;
 		this.rows = handler.getRows();
 		this.backgroundHeight = 114 + this.rows * 18;
-		this.field_25270 = this.backgroundHeight - 94;
+		this.playerInventoryTitleY = this.backgroundHeight - 94;
 	}
 
 	@Override

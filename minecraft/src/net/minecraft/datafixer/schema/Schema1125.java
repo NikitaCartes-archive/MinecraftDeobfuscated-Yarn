@@ -36,7 +36,7 @@ public class Schema1125 extends IdentifierNormalizingSchema {
 					DSL.optionalFields("criteria", DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.string())))
 				)
 		);
-		schema.registerType(false, TypeReferences.BIOME, () -> DSL.constType(method_28295()));
-		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(method_28295()));
+		schema.registerType(false, TypeReferences.BIOME, () -> DSL.constType(getIdentifierType()));
+		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(getIdentifierType()));
 	}
 }

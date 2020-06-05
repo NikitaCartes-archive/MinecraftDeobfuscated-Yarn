@@ -319,7 +319,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				d *= (double)MathHelper.lerp(tickDelta, this.lastMovementFovMultiplier, this.movementFovMultiplier);
 			}
 
-			if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).method_29504()) {
+			if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isDead()) {
 				float f = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + tickDelta, 20.0F);
 				d /= (double)((1.0F - 500.0F / (f + 500.0F)) * 2.0F + 1.0F);
 			}
@@ -337,7 +337,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		if (this.client.getCameraEntity() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
 			float g = (float)livingEntity.hurtTime - f;
-			if (livingEntity.method_29504()) {
+			if (livingEntity.isDead()) {
 				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
 				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (h + 200.0F)));
 			}

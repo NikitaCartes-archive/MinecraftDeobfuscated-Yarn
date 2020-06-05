@@ -32,7 +32,7 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return this.getAttackTarget(entity).method_29504();
+		return this.getAttackTarget(entity).isDead();
 	}
 
 	@Override

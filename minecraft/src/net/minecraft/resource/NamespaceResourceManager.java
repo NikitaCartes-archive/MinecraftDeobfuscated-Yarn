@@ -120,9 +120,9 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	@Override
-	public Collection<Identifier> method_29489(Identifier identifier, Predicate<String> predicate) {
-		return (Collection<Identifier>)(Objects.equals(identifier.getNamespace(), this.namespace)
-			? this.findResources(identifier.getPath(), predicate)
+	public Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate) {
+		return (Collection<Identifier>)(Objects.equals(resourceType.getNamespace(), this.namespace)
+			? this.findResources(resourceType.getPath(), predicate)
 			: ImmutableSet.<Identifier>of());
 	}
 
@@ -140,7 +140,7 @@ public class NamespaceResourceManager implements ResourceManager {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Stream<ResourcePack> method_29213() {
+	public Stream<ResourcePack> streamResourcePacks() {
 		return this.packList.stream();
 	}
 

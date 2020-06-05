@@ -78,7 +78,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
 			BlockPos blockPos = pos.up();
 			if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
-				return ActionResult.method_29236(world.isClient);
+				return ActionResult.success(world.isClient);
 			} else if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {
@@ -94,7 +94,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 				return ActionResult.CONSUME;
 			}
 		} else {
-			return ActionResult.method_29236(world.isClient);
+			return ActionResult.success(world.isClient);
 		}
 	}
 

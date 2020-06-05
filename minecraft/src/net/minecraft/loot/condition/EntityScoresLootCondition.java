@@ -17,7 +17,7 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 
 public class EntityScoresLootCondition implements LootCondition {
 	private final Map<String, UniformLootTableRange> scores;
@@ -29,7 +29,7 @@ public class EntityScoresLootCondition implements LootCondition {
 	}
 
 	@Override
-	public LootConditionType method_29325() {
+	public LootConditionType getType() {
 		return LootConditionTypes.ENTITY_SCORES;
 	}
 
@@ -67,7 +67,7 @@ public class EntityScoresLootCondition implements LootCondition {
 		}
 	}
 
-	public static class Factory implements JsonSerializable<EntityScoresLootCondition> {
+	public static class Serializer implements JsonSerializer<EntityScoresLootCondition> {
 		public void toJson(JsonObject jsonObject, EntityScoresLootCondition entityScoresLootCondition, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject2 = new JsonObject();
 

@@ -27,10 +27,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
 	protected int backgroundWidth = 176;
 	protected int backgroundHeight = 166;
-	protected int field_25267;
-	protected int field_25268;
-	protected int field_25269;
-	protected int field_25270;
+	protected int titleX;
+	protected int titleY;
+	protected int playerInventoryTitleX;
+	protected int playerInventoryTitleY;
 	protected final T handler;
 	protected final PlayerInventory playerInventory;
 	protected int x;
@@ -63,10 +63,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		this.handler = handler;
 		this.playerInventory = inventory;
 		this.cancelNextRelease = true;
-		this.field_25267 = 8;
-		this.field_25268 = 6;
-		this.field_25269 = 8;
-		this.field_25270 = this.backgroundHeight - 94;
+		this.titleX = 8;
+		this.titleY = 6;
+		this.playerInventoryTitleX = 8;
+		this.playerInventoryTitleY = this.backgroundHeight - 94;
 	}
 
 	@Override
@@ -161,15 +161,15 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		RenderSystem.translatef(0.0F, 0.0F, 32.0F);
 		this.setZOffset(200);
 		this.itemRenderer.zOffset = 200.0F;
-		this.itemRenderer.renderGuiItem(stack, xPosition, yPosition);
+		this.itemRenderer.renderInGuiWithOverrides(stack, xPosition, yPosition);
 		this.itemRenderer.renderGuiItemOverlay(this.textRenderer, stack, xPosition, yPosition - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
 		this.setZOffset(0);
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.draw(matrices, this.title, (float)this.field_25267, (float)this.field_25268, 4210752);
-		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.field_25269, (float)this.field_25270, 4210752);
+		this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 4210752);
+		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 4210752);
 	}
 
 	protected abstract void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY);
@@ -223,7 +223,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			}
 
 			RenderSystem.enableDepthTest();
-			this.itemRenderer.method_27951(this.client.player, itemStack, i, j);
+			this.itemRenderer.renderInGuiWithOverrides(this.client.player, itemStack, i, j);
 			this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i, j, string);
 		}
 

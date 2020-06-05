@@ -21,7 +21,7 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.SET_NBT;
 	}
 
@@ -35,7 +35,7 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new SetNbtLootFunction(conditions, tag));
 	}
 
-	public static class Builder extends ConditionalLootFunction.Factory<SetNbtLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetNbtLootFunction> {
 		public void toJson(JsonObject jsonObject, SetNbtLootFunction setNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setNbtLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("tag", setNbtLootFunction.tag.toString());

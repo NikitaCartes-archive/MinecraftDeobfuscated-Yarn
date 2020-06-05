@@ -7,7 +7,7 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +20,7 @@ public class ReferenceLootCondition implements LootCondition {
 	}
 
 	@Override
-	public LootConditionType method_29325() {
+	public LootConditionType getType() {
 		return LootConditionTypes.REFERENCE;
 	}
 
@@ -56,7 +56,7 @@ public class ReferenceLootCondition implements LootCondition {
 		}
 	}
 
-	public static class Factory implements JsonSerializable<ReferenceLootCondition> {
+	public static class Serializer implements JsonSerializer<ReferenceLootCondition> {
 		public void toJson(JsonObject jsonObject, ReferenceLootCondition referenceLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("name", referenceLootCondition.id.toString());
 		}

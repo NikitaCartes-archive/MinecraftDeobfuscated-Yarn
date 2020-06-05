@@ -15,11 +15,11 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 		this.image = image;
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(() -> {
-				TextureUtil.method_24958(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+				TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
 				this.upload();
 			});
 		} else {
-			TextureUtil.method_24958(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+			TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
 			this.upload();
 		}
 	}
@@ -27,7 +27,7 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 	public NativeImageBackedTexture(int width, int height, boolean useStb) {
 		RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
 		this.image = new NativeImage(width, height, useStb);
-		TextureUtil.method_24958(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+		TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
 	}
 
 	@Override

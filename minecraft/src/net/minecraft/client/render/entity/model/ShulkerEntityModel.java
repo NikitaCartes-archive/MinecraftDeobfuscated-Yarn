@@ -15,7 +15,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 	private final ModelPart head;
 
 	public ShulkerEntityModel() {
-		super(RenderLayer::method_28116);
+		super(RenderLayer::getEntityCutoutNoCullZOffset);
 		this.bottomShell = new ModelPart(64, 64, 0, 28);
 		this.head = new ModelPart(64, 64, 0, 52);
 		this.topShell.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 12.0F, 16.0F);

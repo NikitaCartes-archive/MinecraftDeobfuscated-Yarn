@@ -16,7 +16,7 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 	public static final TrunkVineTreeDecorator field_24965 = new TrunkVineTreeDecorator();
 
 	@Override
-	protected TreeDecoratorType<?> method_28893() {
+	protected TreeDecoratorType<?> getType() {
 		return TreeDecoratorType.TRUNK_VINE;
 	}
 

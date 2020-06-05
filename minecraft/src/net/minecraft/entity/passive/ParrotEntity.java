@@ -267,7 +267,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 				}
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else if (itemStack.getItem() == COOKIE) {
 			if (!player.abilities.creativeMode) {
 				itemStack.decrement(1);
@@ -278,13 +278,13 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 				this.damage(DamageSource.player(player), Float.MAX_VALUE);
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
 			if (!this.world.isClient) {
 				this.setSitting(!this.isSitting());
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

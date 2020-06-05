@@ -22,9 +22,9 @@ public final class BambooJungleHillsBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.5F, 0.5F, 0.25F, 0.2F, 1.0F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24691);
+		this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_PYRAMID);
 		DefaultBiomeFeatures.method_28440(this);
-		this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

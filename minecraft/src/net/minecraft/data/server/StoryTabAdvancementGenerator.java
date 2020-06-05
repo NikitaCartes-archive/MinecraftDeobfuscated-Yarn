@@ -3,7 +3,7 @@ package net.minecraft.data.server;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.CuredZombieVillagerCriterion;
 import net.minecraft.advancement.criterion.EnchantedItemCriterion;
@@ -133,7 +133,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.criterion("iron_helmet", InventoryChangedCriterion.Conditions.items(Items.IRON_HELMET))
 			.criterion("iron_chestplate", InventoryChangedCriterion.Conditions.items(Items.IRON_CHESTPLATE))
 			.criterion("iron_leggings", InventoryChangedCriterion.Conditions.items(Items.IRON_LEGGINGS))
@@ -196,7 +196,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.criterion("diamond_helmet", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_HELMET))
 			.criterion("diamond_chestplate", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_CHESTPLATE))
 			.criterion("diamond_leggings", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_LEGGINGS))

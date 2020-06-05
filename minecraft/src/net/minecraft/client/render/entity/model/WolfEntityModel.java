@@ -67,7 +67,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 	}
 
 	public void animateModel(T wolfEntity, float f, float g, float h) {
-		if (wolfEntity.method_29511()) {
+		if (wolfEntity.hasAngerTime()) {
 			this.tail.yaw = 0.0F;
 		} else {
 			this.tail.yaw = MathHelper.cos(f * 0.6662F) * 1.4F * g;

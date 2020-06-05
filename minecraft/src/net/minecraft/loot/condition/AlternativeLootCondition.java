@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 
 public class AlternativeLootCondition implements LootCondition {
 	private final LootCondition[] terms;
@@ -21,7 +21,7 @@ public class AlternativeLootCondition implements LootCondition {
 	}
 
 	@Override
-	public LootConditionType method_29325() {
+	public LootConditionType getType() {
 		return LootConditionTypes.ALTERNATIVE;
 	}
 
@@ -63,7 +63,7 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 	}
 
-	public static class Factory implements JsonSerializable<AlternativeLootCondition> {
+	public static class Serializer implements JsonSerializer<AlternativeLootCondition> {
 		public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
 		}

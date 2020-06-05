@@ -22,7 +22,7 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.SET_DAMAGE;
 	}
 
@@ -42,7 +42,7 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new SetDamageLootFunction(conditions, durabilityRange));
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetDamageLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetDamageLootFunction> {
 		public void toJson(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setDamageLootFunction, jsonSerializationContext);
 			jsonObject.add("damage", jsonSerializationContext.serialize(setDamageLootFunction.durabilityRange));

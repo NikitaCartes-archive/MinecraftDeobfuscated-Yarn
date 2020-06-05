@@ -144,11 +144,11 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		int j = (this.height - this.backgroundHeight) / 2;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		this.itemRenderer.zOffset = 100.0F;
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), i + 41, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.EMERALD), i + 41, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
@@ -209,8 +209,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void renderToolTip(MatrixStack matrixStack, int i, int j) {
-			BeaconScreen.this.renderTooltip(matrixStack, ScreenTexts.CANCEL, i, j);
+		public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+			BeaconScreen.this.renderTooltip(matrices, ScreenTexts.CANCEL, mouseX, mouseY);
 		}
 	}
 
@@ -230,8 +230,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void renderToolTip(MatrixStack matrixStack, int i, int j) {
-			BeaconScreen.this.renderTooltip(matrixStack, ScreenTexts.DONE, i, j);
+		public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+			BeaconScreen.this.renderTooltip(matrices, ScreenTexts.DONE, mouseX, mouseY);
 		}
 	}
 
@@ -265,13 +265,13 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void renderToolTip(MatrixStack matrixStack, int i, int j) {
+		public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
 			MutableText mutableText = new TranslatableText(this.effect.getTranslationKey());
 			if (!this.primary && this.effect != StatusEffects.REGENERATION) {
 				mutableText.append(" II");
 			}
 
-			BeaconScreen.this.renderTooltip(matrixStack, mutableText, i, j);
+			BeaconScreen.this.renderTooltip(matrices, mutableText, mouseX, mouseY);
 		}
 
 		@Override

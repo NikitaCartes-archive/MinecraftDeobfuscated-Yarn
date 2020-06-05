@@ -94,13 +94,13 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	protected abstract void playDepressSound(WorldAccess world, BlockPos pos);
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (!notify && !state.isOf(newState.getBlock())) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!moved && !state.isOf(newState.getBlock())) {
 			if (this.getRedstoneOutput(state) > 0) {
 				this.updateNeighbors(world, pos);
 			}
 
-			super.onStateReplaced(state, world, pos, newState, notify);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 

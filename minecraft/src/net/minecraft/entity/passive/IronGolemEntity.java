@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5354;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,6 +29,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
@@ -52,7 +52,7 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class IronGolemEntity extends GolemEntity implements class_5354 {
+public class IronGolemEntity extends GolemEntity implements Angerable {
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private int attackTicksLeft;
 	private int lookingAtVillagerTicksLeft;
@@ -76,7 +76,7 @@ public class IronGolemEntity extends GolemEntity implements class_5354 {
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new TrackIronGolemTargetGoal(this));
 		this.targetSelector.add(2, new RevengeGoal(this));
-		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::method_29515));
+		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector
 			.add(
 				3,
@@ -143,7 +143,7 @@ public class IronGolemEntity extends GolemEntity implements class_5354 {
 		}
 
 		if (!this.world.isClient) {
-			this.method_29510();
+			this.tickAngerLogic();
 		}
 	}
 
@@ -160,38 +160,38 @@ public class IronGolemEntity extends GolemEntity implements class_5354 {
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		tag.putBoolean("PlayerCreated", this.isPlayerCreated());
-		this.method_29517(tag);
+		this.angerToTag(tag);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
-		this.method_29512(this.world, tag);
+		this.angerFromTag(this.world, tag);
 	}
 
 	@Override
-	public void method_29509() {
-		this.method_29514(field_25365.choose(this.random));
+	public void chooseRandomAngerTime() {
+		this.setAngerTime(field_25365.choose(this.random));
 	}
 
 	@Override
-	public void method_29514(int i) {
-		this.field_25366 = i;
+	public void setAngerTime(int ticks) {
+		this.field_25366 = ticks;
 	}
 
 	@Override
-	public int method_29507() {
+	public int getAngerTime() {
 		return this.field_25366;
 	}
 
 	@Override
-	public void method_29513(@Nullable UUID uUID) {
-		this.field_25367 = uUID;
+	public void setAngryAt(@Nullable UUID uuid) {
+		this.field_25367 = uuid;
 	}
 
 	@Override
-	public UUID method_29508() {
+	public UUID getAngryAt() {
 		return this.field_25367;
 	}
 
@@ -288,7 +288,7 @@ public class IronGolemEntity extends GolemEntity implements class_5354 {
 					itemStack.decrement(1);
 				}
 
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 		}
 	}

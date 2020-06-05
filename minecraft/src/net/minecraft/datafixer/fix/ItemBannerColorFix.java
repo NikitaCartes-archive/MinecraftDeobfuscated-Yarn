@@ -24,7 +24,7 @@ public class ItemBannerColorFix extends DataFix {
 	public TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
 		OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder(
-			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295())
+			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType())
 		);
 		OpticFinder<?> opticFinder2 = type.findField("tag");
 		OpticFinder<?> opticFinder3 = opticFinder2.type().findField("BlockEntityTag");

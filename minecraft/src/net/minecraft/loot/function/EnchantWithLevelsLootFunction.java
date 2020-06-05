@@ -23,7 +23,7 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.ENCHANT_WITH_LEVELS;
 	}
 
@@ -60,7 +60,7 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<EnchantWithLevelsLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<EnchantWithLevelsLootFunction> {
 		public void toJson(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
 			jsonObject.add("levels", LootTableRanges.toJson(enchantWithLevelsLootFunction.range, jsonSerializationContext));

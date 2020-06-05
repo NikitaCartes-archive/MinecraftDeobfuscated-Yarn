@@ -7,7 +7,7 @@ public abstract class MutableRegistry<T> extends Registry<T> {
 		super(registryKey, lifecycle);
 	}
 
-	public abstract <V extends T> V set(int rawId, RegistryKey<T> registryKey, V entry);
+	public abstract <V extends T> V set(int rawId, RegistryKey<T> key, V entry);
 
-	public abstract <V extends T> V add(RegistryKey<T> registryKey, V entry);
+	public abstract <V extends T> V add(RegistryKey<T> key, V entry);
 }

@@ -1,10 +1,10 @@
 package net.minecraft.loot.function;
 
-import net.minecraft.util.JsonSerializable;
 import net.minecraft.util.JsonSerializableType;
+import net.minecraft.util.JsonSerializer;
 
 public class LootFunctionType extends JsonSerializableType<LootFunction> {
-	public LootFunctionType(JsonSerializable<? extends LootFunction> jsonSerializable) {
-		super(jsonSerializable);
+	public LootFunctionType(JsonSerializer<? extends LootFunction> jsonSerializer) {
+		super(jsonSerializer);
 	}
 }

@@ -6,13 +6,13 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5352;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -31,9 +31,9 @@ public class ClientResourcePackProfile extends ResourcePackProfile {
 		ResourcePack resourcePack,
 		PackResourceMetadata packResourceMetadata,
 		ResourcePackProfile.InsertionPosition insertionPosition,
-		class_5352 arg
+		ResourcePackSource resourcePackSource
 	) {
-		super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition, arg);
+		super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
 		this.icon = method_29713(resourcePack);
 	}
 
@@ -46,10 +46,10 @@ public class ClientResourcePackProfile extends ResourcePackProfile {
 		ResourcePackCompatibility compatibility,
 		ResourcePackProfile.InsertionPosition insertionPosition,
 		boolean pinned,
-		class_5352 arg,
+		ResourcePackSource resourcePackSource,
 		@Nullable NativeImage nativeImage
 	) {
-		super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned, arg);
+		super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned, resourcePackSource);
 		this.icon = nativeImage;
 	}
 

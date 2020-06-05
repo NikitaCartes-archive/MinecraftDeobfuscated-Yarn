@@ -106,7 +106,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private long lastRestockTime;
 	private int restocksToday;
 	private long lastRestockCheckTime;
-	private boolean field_25167;
+	private boolean natural;
 	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
 		MemoryModuleType.HOME,
 		MemoryModuleType.JOB_SITE,
@@ -242,8 +242,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
 	}
 
-	public boolean method_29279() {
-		return this.field_25167;
+	public boolean isNatural() {
+		return this.natural;
 	}
 
 	@Override
@@ -251,8 +251,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.world.getProfiler().push("villagerBrain");
 		this.getBrain().tick((ServerWorld)this.world, this);
 		this.world.getProfiler().pop();
-		if (this.field_25167) {
-			this.field_25167 = false;
+		if (this.natural) {
+			this.natural = false;
 		}
 
 		if (!this.hasCustomer() && this.levelUpTimer > 0) {
@@ -304,7 +304,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			return super.interactMob(player, hand);
 		} else if (this.isBaby()) {
 			this.sayNo();
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			boolean bl = this.getOffers().isEmpty();
 			if (hand == Hand.MAIN_HAND) {
@@ -316,13 +316,13 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			}
 
 			if (bl) {
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			} else {
 				if (!this.world.isClient && !this.offers.isEmpty()) {
 					this.beginTradeWith(player);
 				}
 
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 		}
 	}
@@ -466,7 +466,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		tag.putLong("LastRestock", this.lastRestockTime);
 		tag.putLong("LastGossipDecay", this.lastGossipDecayTime);
 		tag.putInt("RestocksToday", this.restocksToday);
-		if (this.field_25167) {
+		if (this.natural) {
 			tag.putBoolean("AssignProfessionWhenSpawned", true);
 		}
 	}
@@ -502,7 +502,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 		this.restocksToday = tag.getInt("RestocksToday");
 		if (tag.contains("AssignProfessionWhenSpawned")) {
-			this.field_25167 = tag.getBoolean("AssignProfessionWhenSpawned");
+			this.natural = tag.getBoolean("AssignProfessionWhenSpawned");
 		}
 	}
 
@@ -718,7 +718,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		if (spawnReason == SpawnReason.STRUCTURE) {
-			this.field_25167 = true;
+			this.natural = true;
 		}
 
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);

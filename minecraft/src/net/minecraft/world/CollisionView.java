@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import net.minecraft.class_5329;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
@@ -59,6 +58,6 @@ public interface CollisionView extends BlockView {
 	}
 
 	default Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box) {
-		return StreamSupport.stream(new class_5329(this, entity, box), false);
+		return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box), false);
 	}
 }

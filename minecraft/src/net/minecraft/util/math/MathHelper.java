@@ -282,18 +282,22 @@ public class MathHelper {
 		return log2DeBruijn(i) - (isPowerOfTwo(i) ? 0 : 1);
 	}
 
-	public static int method_28139(int i, int j) {
-		if (j == 0) {
+	/**
+	 * Returns a value farther than or as far as {@code value} from zero that
+	 * is a multiple of {@code divisor}.
+	 */
+	public static int roundUpToMultiple(int value, int divisor) {
+		if (divisor == 0) {
 			return 0;
-		} else if (i == 0) {
-			return j;
+		} else if (value == 0) {
+			return divisor;
 		} else {
-			if (i < 0) {
-				j *= -1;
+			if (value < 0) {
+				divisor *= -1;
 			}
 
-			int k = i % j;
-			return k == 0 ? i : i + j - k;
+			int i = value % divisor;
+			return i == 0 ? value : value + divisor - i;
 		}
 	}
 

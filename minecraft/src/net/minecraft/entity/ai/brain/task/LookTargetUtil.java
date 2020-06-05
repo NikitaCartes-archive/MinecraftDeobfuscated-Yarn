@@ -26,9 +26,9 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 
 public class LookTargetUtil {
-	public static void lookAtAndWalkTowardsEachOther(LivingEntity first, LivingEntity second, float f) {
+	public static void lookAtAndWalkTowardsEachOther(LivingEntity first, LivingEntity second, float speed) {
 		lookAtEachOther(first, second);
-		walkTowardsEachOther(first, second, f);
+		walkTowardsEachOther(first, second, speed);
 	}
 
 	public static boolean canSee(Brain<?> brain, LivingEntity target) {
@@ -36,15 +36,11 @@ public class LookTargetUtil {
 	}
 
 	public static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryModuleType, EntityType<?> entityType) {
-		return method_24564(brain, memoryModuleType, livingEntity -> livingEntity.getType() == entityType);
+		return canSee(brain, memoryModuleType, livingEntity -> livingEntity.getType() == entityType);
 	}
 
-	private static boolean method_24564(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryModuleType, Predicate<LivingEntity> predicate) {
-		return brain.getOptionalMemory(memoryModuleType)
-			.filter(predicate)
-			.filter(LivingEntity::isAlive)
-			.filter(livingEntity -> canSee(brain, livingEntity))
-			.isPresent();
+	private static boolean canSee(Brain<?> brain, MemoryModuleType<? extends LivingEntity> memoryType, Predicate<LivingEntity> filter) {
+		return brain.getOptionalMemory(memoryType).filter(filter).filter(LivingEntity::isAlive).filter(livingEntity -> canSee(brain, livingEntity)).isPresent();
 	}
 
 	private static void lookAtEachOther(LivingEntity first, LivingEntity second) {
@@ -56,31 +52,31 @@ public class LookTargetUtil {
 		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 	}
 
-	private static void walkTowardsEachOther(LivingEntity first, LivingEntity second, float f) {
+	private static void walkTowardsEachOther(LivingEntity first, LivingEntity second, float speed) {
 		int i = 2;
-		walkTowards(first, second, f, 2);
-		walkTowards(second, first, f, 2);
+		walkTowards(first, second, speed, 2);
+		walkTowards(second, first, speed, 2);
 	}
 
-	public static void walkTowards(LivingEntity entity, Entity target, float f, int i) {
-		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), f, i);
+	public static void walkTowards(LivingEntity entity, Entity target, float speed, int completionRange) {
+		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), speed, completionRange);
 		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
-	public static void walkTowards(LivingEntity entity, BlockPos target, float f, int i) {
-		WalkTarget walkTarget = new WalkTarget(new BlockPosLookTarget(target), f, i);
+	public static void walkTowards(LivingEntity entity, BlockPos target, float speed, int completionRange) {
+		WalkTarget walkTarget = new WalkTarget(new BlockPosLookTarget(target), speed, completionRange);
 		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(target));
 		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
-	public static void give(LivingEntity entity, ItemStack stack, Vec3d vec3d) {
+	public static void give(LivingEntity entity, ItemStack stack, Vec3d targetLocation) {
 		double d = entity.getEyeY() - 0.3F;
 		ItemEntity itemEntity = new ItemEntity(entity.world, entity.getX(), d, entity.getZ(), stack);
 		float f = 0.3F;
-		Vec3d vec3d2 = vec3d.subtract(entity.getPos());
-		vec3d2 = vec3d2.normalize().multiply(0.3F);
-		itemEntity.setVelocity(vec3d2);
+		Vec3d vec3d = targetLocation.subtract(entity.getPos());
+		vec3d = vec3d.normalize().multiply(0.3F);
+		itemEntity.setVelocity(vec3d);
 		itemEntity.setToDefaultPickupDelay();
 		entity.world.spawnEntity(itemEntity);
 	}
@@ -147,15 +143,15 @@ public class LookTargetUtil {
 		return optional.map(uUID -> (LivingEntity)((ServerWorld)entity.world).getEntity(uUID));
 	}
 
-	public static Stream<VillagerEntity> method_29248(VillagerEntity villagerEntity, Predicate<VillagerEntity> predicate) {
-		return (Stream<VillagerEntity>)villagerEntity.getBrain()
+	public static Stream<VillagerEntity> streamSeenVillagers(VillagerEntity villager, Predicate<VillagerEntity> filter) {
+		return (Stream<VillagerEntity>)villager.getBrain()
 			.getOptionalMemory(MemoryModuleType.MOBS)
 			.map(
 				list -> list.stream()
-						.filter(livingEntity -> livingEntity instanceof VillagerEntity && livingEntity != villagerEntity)
+						.filter(livingEntity -> livingEntity instanceof VillagerEntity && livingEntity != villager)
 						.map(livingEntity -> (VillagerEntity)livingEntity)
 						.filter(LivingEntity::isAlive)
-						.filter(predicate)
+						.filter(filter)
 			)
 			.orElseGet(Stream::empty);
 	}

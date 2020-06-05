@@ -145,7 +145,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 				player.startRiding(this);
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {

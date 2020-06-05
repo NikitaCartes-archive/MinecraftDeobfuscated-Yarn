@@ -153,7 +153,7 @@ public class Advancement {
 		private AdvancementRewards rewards = AdvancementRewards.NONE;
 		private Map<String, AdvancementCriterion> criteria = Maps.newLinkedHashMap();
 		private String[][] requirements;
-		private CriteriaMerger merger = CriteriaMerger.AND;
+		private CriterionMerger merger = CriterionMerger.AND;
 
 		private Task(
 			@Nullable Identifier parentId,
@@ -239,7 +239,7 @@ public class Advancement {
 			}
 		}
 
-		public Advancement.Task criteriaMerger(CriteriaMerger merger) {
+		public Advancement.Task criteriaMerger(CriterionMerger merger) {
 			this.merger = merger;
 			return this;
 		}

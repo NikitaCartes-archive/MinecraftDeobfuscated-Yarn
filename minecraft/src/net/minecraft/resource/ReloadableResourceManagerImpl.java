@@ -85,9 +85,9 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public Collection<Identifier> method_29489(Identifier identifier, Predicate<String> predicate) {
-		ResourceManager resourceManager = (ResourceManager)this.namespaceManagers.get(identifier.getNamespace());
-		return (Collection<Identifier>)(resourceManager != null ? resourceManager.findResources(identifier.getPath(), predicate) : ImmutableSet.<Identifier>of());
+	public Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate) {
+		ResourceManager resourceManager = (ResourceManager)this.namespaceManagers.get(resourceType.getNamespace());
+		return (Collection<Identifier>)(resourceManager != null ? resourceManager.findResources(resourceType.getPath(), predicate) : ImmutableSet.<Identifier>of());
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Stream<ResourcePack> method_29213() {
+	public Stream<ResourcePack> streamResourcePacks() {
 		return this.field_25145.stream();
 	}
 

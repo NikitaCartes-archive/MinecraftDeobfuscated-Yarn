@@ -136,7 +136,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		if (!this.isBaby()) {
 			if (this.isTame() && player.shouldCancelInteraction()) {
 				this.openInventory(player);
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 
 			if (this.hasPassengers()) {
@@ -151,12 +151,12 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 					itemStack.decrement(1);
 				}
 
-				return bl ? ActionResult.method_29236(this.world.isClient) : ActionResult.CONSUME;
+				return bl ? ActionResult.success(this.world.isClient) : ActionResult.CONSUME;
 			}
 
 			if (!this.isTame()) {
 				this.playAngrySound();
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 
 			if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
@@ -167,12 +167,12 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				}
 
 				this.onChestedStatusChanged();
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 
 			if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
 				this.openInventory(player);
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 		}
 
@@ -180,7 +180,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			return super.interactMob(player, hand);
 		} else {
 			this.putPlayerOnBack(player);
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		}
 	}
 

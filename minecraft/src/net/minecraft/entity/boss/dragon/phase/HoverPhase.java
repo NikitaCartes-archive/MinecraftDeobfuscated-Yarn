@@ -5,7 +5,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class HoverPhase extends AbstractPhase {
-	private Vec3d field_7042;
+	private Vec3d target;
 
 	public HoverPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
@@ -13,8 +13,8 @@ public class HoverPhase extends AbstractPhase {
 
 	@Override
 	public void serverTick() {
-		if (this.field_7042 == null) {
-			this.field_7042 = this.dragon.getPos();
+		if (this.target == null) {
+			this.target = this.dragon.getPos();
 		}
 	}
 
@@ -25,7 +25,7 @@ public class HoverPhase extends AbstractPhase {
 
 	@Override
 	public void beginPhase() {
-		this.field_7042 = null;
+		this.target = null;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class HoverPhase extends AbstractPhase {
 	@Nullable
 	@Override
 	public Vec3d getTarget() {
-		return this.field_7042;
+		return this.target;
 	}
 
 	@Override

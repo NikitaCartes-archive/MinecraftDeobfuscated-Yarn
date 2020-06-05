@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 
 public class RandomChanceLootCondition implements LootCondition {
 	private final float chance;
@@ -15,7 +15,7 @@ public class RandomChanceLootCondition implements LootCondition {
 	}
 
 	@Override
-	public LootConditionType method_29325() {
+	public LootConditionType getType() {
 		return LootConditionTypes.RANDOM_CHANCE;
 	}
 
@@ -27,7 +27,7 @@ public class RandomChanceLootCondition implements LootCondition {
 		return () -> new RandomChanceLootCondition(chance);
 	}
 
-	public static class Factory implements JsonSerializable<RandomChanceLootCondition> {
+	public static class Serializer implements JsonSerializer<RandomChanceLootCondition> {
 		public void toJson(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("chance", randomChanceLootCondition.chance);
 		}

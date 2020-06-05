@@ -27,11 +27,11 @@ public class IntRange {
 		return this.min == this.max ? this.min : random.nextInt(this.max - this.min + 1) + this.min;
 	}
 
-	public int method_29492() {
+	public int getMin() {
 		return this.min;
 	}
 
-	public int method_29493() {
+	public int getMax() {
 		return this.max;
 	}
 

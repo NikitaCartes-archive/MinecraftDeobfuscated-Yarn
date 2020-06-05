@@ -28,10 +28,10 @@ public interface WorldProperties {
 
 	boolean isDifficultyLocked();
 
-	default void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add(
+	default void populateCrashReport(CrashReportSection reportSection) {
+		reportSection.add(
 			"Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.getSpawnX(), this.getSpawnY(), this.getSpawnZ()))
 		);
-		crashReportSection.add("Level time", (CrashCallable<String>)(() -> String.format("%d game time, %d day time", this.getTime(), this.getTimeOfDay())));
+		reportSection.add("Level time", (CrashCallable<String>)(() -> String.format("%d game time, %d day time", this.getTime(), this.getTimeOfDay())));
 	}
 }

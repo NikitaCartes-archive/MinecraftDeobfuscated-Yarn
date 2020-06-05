@@ -12,7 +12,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 
 public class RandomChanceWithLootingLootCondition implements LootCondition {
 	private final float chance;
@@ -24,7 +24,7 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 	}
 
 	@Override
-	public LootConditionType method_29325() {
+	public LootConditionType getType() {
 		return LootConditionTypes.RANDOM_CHANCE_WITH_LOOTING;
 	}
 
@@ -47,7 +47,7 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 		return () -> new RandomChanceWithLootingLootCondition(chance, lootingMultiplier);
 	}
 
-	public static class Factory implements JsonSerializable<RandomChanceWithLootingLootCondition> {
+	public static class Serializer implements JsonSerializer<RandomChanceWithLootingLootCondition> {
 		public void toJson(
 			JsonObject jsonObject, RandomChanceWithLootingLootCondition randomChanceWithLootingLootCondition, JsonSerializationContext jsonSerializationContext
 		) {

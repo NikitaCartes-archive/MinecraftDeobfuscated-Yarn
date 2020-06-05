@@ -66,7 +66,7 @@ public class HoeItem extends MiningToolItem {
 					}
 				}
 
-				return ActionResult.method_29236(world.isClient);
+				return ActionResult.success(world.isClient);
 			}
 		}
 

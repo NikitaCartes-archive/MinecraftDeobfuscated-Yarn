@@ -174,7 +174,7 @@ public class RealmsTextureManager {
 
 		RenderSystem.activeTexture(33984);
 		RenderSystem.bindTexture(i);
-		TextureUtil.method_24963(intBuffer, j, k);
+		TextureUtil.uploadImage(intBuffer, j, k);
 		textures.put(id, new RealmsTextureManager.RealmsTexture(image, i));
 		return i;
 	}

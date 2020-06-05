@@ -61,12 +61,12 @@ public class Framebuffer {
 		this.endRead();
 		this.endWrite();
 		if (this.depthAttachment > -1) {
-			TextureUtil.method_24957(this.depthAttachment);
+			TextureUtil.deleteId(this.depthAttachment);
 			this.depthAttachment = -1;
 		}
 
 		if (this.colorAttachment > -1) {
-			TextureUtil.method_24957(this.colorAttachment);
+			TextureUtil.deleteId(this.colorAttachment);
 			this.colorAttachment = -1;
 		}
 
@@ -107,9 +107,9 @@ public class Framebuffer {
 		this.textureWidth = width;
 		this.textureHeight = height;
 		this.fbo = GlStateManager.genFramebuffers();
-		this.colorAttachment = TextureUtil.method_24956();
+		this.colorAttachment = TextureUtil.generateId();
 		if (this.useDepthAttachment) {
-			this.depthAttachment = TextureUtil.method_24956();
+			this.depthAttachment = TextureUtil.generateId();
 			GlStateManager.bindTexture(this.depthAttachment);
 			GlStateManager.texParameter(3553, 10241, 9728);
 			GlStateManager.texParameter(3553, 10240, 9728);

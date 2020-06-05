@@ -22,10 +22,10 @@ public final class BeachBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.0F, -0.1F, 0.0F, 0.9935F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24688);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24704);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24695);
-		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.NORMAL_MINESHAFT);
+		this.addStructureFeature(DefaultBiomeFeatures.BURIED_TREASURE);
+		this.addStructureFeature(DefaultBiomeFeatures.BEACHED_SHIPWRECK);
+		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

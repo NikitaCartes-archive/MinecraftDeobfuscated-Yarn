@@ -26,10 +26,10 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.SaveProperties;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +46,7 @@ public class IntegratedServer extends MinecraftServer {
 	public IntegratedServer(
 		Thread thread,
 		MinecraftClient minecraftClient,
-		DimensionTracker.Modifiable modifiable,
+		RegistryTracker.Modifiable modifiable,
 		LevelStorage.Session session,
 		ResourcePackManager<ResourcePackProfile> resourcePackManager,
 		ServerResourceManager serverResourceManager,

@@ -131,7 +131,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	public static VertexConsumer method_27952(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
 		return bl2
 			? VertexConsumers.dual(
-				vertexConsumerProvider.getBuffer(bl ? RenderLayer.method_27948() : RenderLayer.method_27949()), vertexConsumerProvider.getBuffer(renderLayer)
+				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer)
 			)
 			: vertexConsumerProvider.getBuffer(renderLayer);
 	}
@@ -145,7 +145,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	public static VertexConsumer method_29711(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
 		return bl2
 			? VertexConsumers.dual(
-				vertexConsumerProvider.getBuffer(bl ? RenderLayer.method_29706() : RenderLayer.method_29707()), vertexConsumerProvider.getBuffer(renderLayer)
+				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getGlintDirect() : RenderLayer.getEntityGlintDirect()), vertexConsumerProvider.getBuffer(renderLayer)
 			)
 			: vertexConsumerProvider.getBuffer(renderLayer);
 	}
@@ -241,19 +241,31 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.popMatrix();
 	}
 
-	public void renderGuiItem(ItemStack stack, int x, int y) {
-		this.renderGuiItem(MinecraftClient.getInstance().player, stack, x, y);
+	/**
+	 * Renders an item in a GUI with the player as the attached entity
+	 * for calculating model overrides.
+	 */
+	public void renderInGuiWithOverrides(ItemStack stack, int x, int y) {
+		this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y);
 	}
 
-	public void method_27953(ItemStack itemStack, int i, int j) {
-		this.renderGuiItem(null, itemStack, i, j);
+	/**
+	 * Renders an item in a GUI without an attached entity.
+	 */
+	public void renderInGui(ItemStack stack, int x, int y) {
+		this.innerRenderInGui(null, stack, x, y);
 	}
 
-	public void method_27951(LivingEntity livingEntity, ItemStack itemStack, int i, int j) {
-		this.renderGuiItem(livingEntity, itemStack, i, j);
+	/**
+	 * Renders an item in a GUI with an attached entity.
+	 * 
+	 * <p>The entity is used to calculate model overrides for the item.
+	 */
+	public void renderInGuiWithOverrides(LivingEntity entity, ItemStack stack, int x, int y) {
+		this.innerRenderInGui(entity, stack, x, y);
 	}
 
-	private void renderGuiItem(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y) {
+	private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y) {
 		if (!itemStack.isEmpty()) {
 			this.zOffset += 50.0F;
 
@@ -273,28 +285,27 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public void renderGuiItemOverlay(TextRenderer fontRenderer, ItemStack stack, int x, int y) {
-		this.renderGuiItemOverlay(fontRenderer, stack, x, y, null);
+	/**
+	 * Renders the overlay for items in GUIs, including the damage bar and the item count.
+	 */
+	public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y) {
+		this.renderGuiItemOverlay(renderer, stack, x, y, null);
 	}
 
-	public void renderGuiItemOverlay(TextRenderer fontRenderer, ItemStack stack, int x, int y, @Nullable String amountText) {
+	/**
+	 * Renders the overlay for items in GUIs, including the damage bar and the item count.
+	 * 
+	 * @param countLabel a label for the stack; if null, the stack count is drawn instead
+	 */
+	public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, @Nullable String countLabel) {
 		if (!stack.isEmpty()) {
 			MatrixStack matrixStack = new MatrixStack();
-			if (stack.getCount() != 1 || amountText != null) {
-				String string = amountText == null ? String.valueOf(stack.getCount()) : amountText;
+			if (stack.getCount() != 1 || countLabel != null) {
+				String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
 				matrixStack.translate(0.0, 0.0, (double)(this.zOffset + 200.0F));
 				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-				fontRenderer.draw(
-					string,
-					(float)(x + 19 - 2 - fontRenderer.getWidth(string)),
-					(float)(y + 6 + 3),
-					16777215,
-					true,
-					matrixStack.peek().getModel(),
-					immediate,
-					false,
-					0,
-					15728880
+				renderer.draw(
+					string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 16777215, true, matrixStack.peek().getModel(), immediate, false, 0, 15728880
 				);
 				immediate.draw();
 			}

@@ -18,7 +18,7 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.LIMIT_COUNT;
 	}
 
@@ -33,7 +33,7 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 		return builder(conditions -> new LimitCountLootFunction(conditions, limit));
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<LimitCountLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<LimitCountLootFunction> {
 		public void toJson(JsonObject jsonObject, LimitCountLootFunction limitCountLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, limitCountLootFunction, jsonSerializationContext);
 			jsonObject.add("limit", jsonSerializationContext.serialize(limitCountLootFunction.limit));

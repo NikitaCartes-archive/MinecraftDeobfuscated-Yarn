@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -23,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
  * The namespace and path must contain only lowercase letters ([a-z]), digits ([0-9]), or the characters '_', '.', and '-'. The path can also contain the standard path separator '/'.
  */
 public class Identifier implements Comparable<Identifier> {
-	public static final Codec<Identifier> field_25139 = Codec.STRING.<Identifier>comapFlatMap(Identifier::method_29186, Identifier::toString).stable();
+	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::method_29186, Identifier::toString).stable();
 	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
 	protected final String namespace;
 	protected final String path;
@@ -176,7 +175,7 @@ public class Identifier implements Comparable<Identifier> {
 		return isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && isPathValid(strings[1]);
 	}
 
-	public static class Serializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {
+	public static class Serializer implements JsonDeserializer<Identifier>, com.google.gson.JsonSerializer<Identifier> {
 		public Identifier deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			return new Identifier(JsonHelper.asString(jsonElement, "location"));
 		}

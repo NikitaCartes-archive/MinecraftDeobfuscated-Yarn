@@ -7,7 +7,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextAware;
 
 public interface LootFunction extends LootContextAware, BiFunction<ItemStack, LootContext, ItemStack> {
-	LootFunctionType method_29321();
+	LootFunctionType getType();
 
 	static Consumer<ItemStack> apply(BiFunction<ItemStack, LootContext, ItemStack> itemApplier, Consumer<ItemStack> lootConsumer, LootContext context) {
 		return stack -> lootConsumer.accept(itemApplier.apply(stack, context));

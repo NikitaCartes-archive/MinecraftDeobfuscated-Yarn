@@ -17,7 +17,7 @@ public class HopperScreen extends HandledScreen<HopperScreenHandler> {
 		super(handler, inventory, title);
 		this.passEvents = false;
 		this.backgroundHeight = 133;
-		this.field_25270 = this.backgroundHeight - 94;
+		this.playerInventoryTitleY = this.backgroundHeight - 94;
 	}
 
 	@Override

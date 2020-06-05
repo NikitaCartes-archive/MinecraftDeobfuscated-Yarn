@@ -187,7 +187,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 				player.openCommandBlockMinecartScreen(this);
 			}
 
-			return ActionResult.method_29236(player.world.isClient);
+			return ActionResult.success(player.world.isClient);
 		}
 	}
 

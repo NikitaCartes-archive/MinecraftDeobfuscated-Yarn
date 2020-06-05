@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -13,6 +12,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
@@ -127,16 +127,16 @@ public abstract class DrawableHelper {
 		textRenderer.drawWithShadow(matrices, text, (float)(x - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
-	public void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, class_5348 arg, int x, int y, int color) {
-		textRenderer.drawWithShadow(matrices, arg, (float)(x - textRenderer.getWidth(arg) / 2), (float)y, color);
+	public void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, StringRenderable stringRenderable, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, stringRenderable, (float)(x - textRenderer.getWidth(stringRenderable) / 2), (float)y, color);
 	}
 
 	public void drawStringWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
-	public void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, class_5348 arg, int x, int y, int color) {
-		textRenderer.drawWithShadow(matrices, arg, (float)x, (float)y, color);
+	public void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, StringRenderable stringRenderable, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, stringRenderable, (float)x, (float)y, color);
 	}
 
 	public void method_29343(int i, int j, BiConsumer<Integer, Integer> biConsumer) {

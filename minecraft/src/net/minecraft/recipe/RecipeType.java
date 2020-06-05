@@ -1,7 +1,6 @@
 package net.minecraft.recipe;
 
 import java.util.Optional;
-import net.minecraft.class_5357;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -14,7 +13,7 @@ public interface RecipeType<T extends Recipe<?>> {
 	RecipeType<SmokingRecipe> SMOKING = register("smoking");
 	RecipeType<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking");
 	RecipeType<StonecuttingRecipe> STONECUTTING = register("stonecutting");
-	RecipeType<class_5357> SMITHING = register("smithing");
+	RecipeType<SmithingRecipe> SMITHING = register("smithing");
 
 	static <T extends Recipe<?>> RecipeType<T> register(String string) {
 		return Registry.register(Registry.RECIPE_TYPE, new Identifier(string), new RecipeType<T>() {

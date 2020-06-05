@@ -15,6 +15,6 @@ public class Schema1451v4 extends IdentifierNormalizingSchema {
 	@Override
 	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
 		super.registerTypes(schema, entityTypes, blockEntityTypes);
-		schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.constType(method_28295()));
+		schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.constType(getIdentifierType()));
 	}
 }

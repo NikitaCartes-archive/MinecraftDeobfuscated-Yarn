@@ -121,8 +121,8 @@ public abstract class LeafEntry extends LootPoolEntry {
 		LeafEntry build(int weight, int quality, LootCondition[] conditions, LootFunction[] functions);
 	}
 
-	public abstract static class Serializer<T extends LeafEntry> extends LootPoolEntry.class_5337<T> {
-		public void method_422(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
+	public abstract static class Serializer<T extends LeafEntry> extends LootPoolEntry.Serializer<T> {
+		public void addEntryFields(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
 			if (leafEntry.weight != 1) {
 				jsonObject.addProperty("weight", leafEntry.weight);
 			}

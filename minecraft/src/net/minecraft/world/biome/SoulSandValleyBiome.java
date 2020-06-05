@@ -48,10 +48,10 @@ public class SoulSandValleyBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 0.0F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24701);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24702);
-		this.addStructureFeature(DefaultBiomeFeatures.NETHER_CONFIGURED_RUINED_PORTAL);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24705);
+		this.addStructureFeature(DefaultBiomeFeatures.FORTRESS);
+		this.addStructureFeature(DefaultBiomeFeatures.NETHER_FOSSIL);
+		this.addStructureFeature(DefaultBiomeFeatures.NETHER_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.BASTION_REMNANT);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,

@@ -35,7 +35,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 				Entity entity2 = this.getOwner();
 				int i = entity.getFireTicks();
 				entity.setOnFireFor(5);
-				boolean bl = entity.damage(DamageSource.explosiveProjectile(this, entity2), 5.0F);
+				boolean bl = entity.damage(DamageSource.fireball(this, entity2), 5.0F);
 				if (!bl) {
 					entity.setFireTicks(i);
 				} else if (entity2 instanceof LivingEntity) {
@@ -50,7 +50,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 		super.onBlockHit(blockHitResult);
 		if (!this.world.isClient) {
 			Entity entity = this.getOwner();
-			if (entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+			if (entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
 				if (this.world.isAir(blockPos)) {
 					this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));

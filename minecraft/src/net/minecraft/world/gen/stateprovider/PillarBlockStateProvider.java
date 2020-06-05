@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public class PillarBlockStateProvider extends BlockStateProvider {
-	public static final Codec<PillarBlockStateProvider> field_24944 = BlockState.field_24734
+	public static final Codec<PillarBlockStateProvider> field_24944 = BlockState.CODEC
 		.fieldOf("state")
 		.xmap(AbstractBlock.AbstractBlockState::getBlock, Block::getDefaultState)
 		.<PillarBlockStateProvider>xmap(PillarBlockStateProvider::new, pillarBlockStateProvider -> pillarBlockStateProvider.block)

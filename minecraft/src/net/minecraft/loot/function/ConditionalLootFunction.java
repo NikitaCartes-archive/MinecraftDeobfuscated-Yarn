@@ -14,7 +14,7 @@ import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class ConditionalLootFunction implements LootFunction {
@@ -64,23 +64,6 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		}
 	}
 
-	public abstract static class Factory<T extends ConditionalLootFunction> implements JsonSerializable<T> {
-		public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
-			if (!ArrayUtils.isEmpty((Object[])conditionalLootFunction.conditions)) {
-				jsonObject.add("conditions", jsonSerializationContext.serialize(conditionalLootFunction.conditions));
-			}
-		}
-
-		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			LootCondition[] lootConditions = (LootCondition[])JsonHelper.deserialize(
-				jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class
-			);
-			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
-		}
-
-		public abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions);
-	}
-
 	static final class Joiner extends ConditionalLootFunction.Builder<ConditionalLootFunction.Joiner> {
 		private final Function<LootCondition[], LootFunction> joiner;
 
@@ -96,5 +79,22 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		public LootFunction build() {
 			return (LootFunction)this.joiner.apply(this.getConditions());
 		}
+	}
+
+	public abstract static class Serializer<T extends ConditionalLootFunction> implements JsonSerializer<T> {
+		public void toJson(JsonObject jsonObject, T conditionalLootFunction, JsonSerializationContext jsonSerializationContext) {
+			if (!ArrayUtils.isEmpty((Object[])conditionalLootFunction.conditions)) {
+				jsonObject.add("conditions", jsonSerializationContext.serialize(conditionalLootFunction.conditions));
+			}
+		}
+
+		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+			LootCondition[] lootConditions = (LootCondition[])JsonHelper.deserialize(
+				jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class
+			);
+			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+		}
+
+		public abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions);
 	}
 }

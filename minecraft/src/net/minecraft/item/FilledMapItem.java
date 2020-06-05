@@ -409,7 +409,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 				mapState.addBanner(context.getWorld(), context.getBlockPos());
 			}
 
-			return ActionResult.method_29236(context.world.isClient);
+			return ActionResult.success(context.world.isClient);
 		} else {
 			return super.useOnBlock(context);
 		}

@@ -188,8 +188,8 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (!notify && !state.isOf(newState.getBlock())) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!moved && !state.isOf(newState.getBlock())) {
 			boolean bl = state.get(ATTACHED);
 			boolean bl2 = state.get(POWERED);
 			if (bl || bl2) {
@@ -201,7 +201,7 @@ public class TripwireHookBlock extends Block {
 				world.updateNeighborsAlways(pos.offset(((Direction)state.get(FACING)).getOpposite()), this);
 			}
 
-			super.onStateReplaced(state, world, pos, newState, notify);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 

@@ -136,7 +136,7 @@ public class TextureManager implements ResourceReloadListener, TextureTickListen
 	public void destroyTexture(Identifier id) {
 		AbstractTexture abstractTexture = this.getTexture(id);
 		if (abstractTexture != null) {
-			TextureUtil.method_24957(abstractTexture.getGlId());
+			TextureUtil.deleteId(abstractTexture.getGlId());
 		}
 	}
 

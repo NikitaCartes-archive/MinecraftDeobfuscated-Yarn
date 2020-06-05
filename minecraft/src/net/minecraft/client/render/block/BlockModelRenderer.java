@@ -32,8 +32,8 @@ public class BlockModelRenderer {
 	private final BlockColors colorMap;
 	private static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BlockModelRenderer.BrightnessCache());
 
-	public BlockModelRenderer(BlockColors blockColors) {
-		this.colorMap = blockColors;
+	public BlockModelRenderer(BlockColors colorMap) {
+		this.colorMap = colorMap;
 	}
 
 	public boolean render(
@@ -547,7 +547,7 @@ public class BlockModelRenderer {
 			this.floatCache.clear();
 		}
 
-		public int getInt(BlockState blockState, BlockRenderView blockRenderView, BlockPos pos) {
+		public int getInt(BlockState state, BlockRenderView blockRenderView, BlockPos pos) {
 			long l = pos.asLong();
 			if (this.enabled) {
 				int i = this.intCache.get(l);
@@ -556,7 +556,7 @@ public class BlockModelRenderer {
 				}
 			}
 
-			int i = WorldRenderer.getLightmapCoordinates(blockRenderView, blockState, pos);
+			int i = WorldRenderer.getLightmapCoordinates(blockRenderView, state, pos);
 			if (this.enabled) {
 				if (this.intCache.size() == 100) {
 					this.intCache.removeFirstInt();
@@ -944,11 +944,11 @@ public class BlockModelRenderer {
 			translations[Direction.EAST.getId()] = EAST;
 		});
 
-		private Translation(int j, int k, int l, int m) {
-			this.firstCorner = j;
-			this.secondCorner = k;
-			this.thirdCorner = l;
-			this.fourthCorner = m;
+		private Translation(int firstCorner, int secondCorner, int thirdCorner, int fourthCorner) {
+			this.firstCorner = firstCorner;
+			this.secondCorner = secondCorner;
+			this.thirdCorner = thirdCorner;
+			this.fourthCorner = fourthCorner;
 		}
 
 		public static BlockModelRenderer.Translation getTranslations(Direction direction) {

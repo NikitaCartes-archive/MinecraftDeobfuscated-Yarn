@@ -46,7 +46,7 @@ public class InfestedBlock extends Block {
 	@Override
 	public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
 		super.onStacksDropped(state, world, pos, stack);
-		if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+		if (!world.isClient && world.getGameRules().getBoolean(GameRules.field_19392) && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
 			this.spawnSilverfish(world, pos);
 		}
 	}

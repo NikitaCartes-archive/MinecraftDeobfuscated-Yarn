@@ -402,7 +402,7 @@ public class RabbitEntity extends AnimalEntity {
 		@Override
 		public boolean canStart() {
 			if (this.cooldown <= 0) {
-				if (!this.rabbit.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+				if (!this.rabbit.world.getGameRules().getBoolean(GameRules.field_19388)) {
 					return false;
 				}
 

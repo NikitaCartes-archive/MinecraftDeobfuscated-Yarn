@@ -45,7 +45,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.EXPLORATION_MAP;
 	}
 
@@ -117,7 +117,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<ExplorationMapLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<ExplorationMapLootFunction> {
 		public void toJson(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);
 			if (!explorationMapLootFunction.destination.equals(ExplorationMapLootFunction.field_25032)) {
