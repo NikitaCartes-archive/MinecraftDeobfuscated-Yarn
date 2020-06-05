@@ -12,7 +12,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.class_5348;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
@@ -26,6 +25,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.util.SignType;
 
@@ -69,19 +69,19 @@ extends BlockEntityRenderer<SignBlockEntity> {
         matrixStack.scale(0.010416667f, -0.010416667f, 0.010416667f);
         int l = signBlockEntity.getTextColor().getSignColor();
         double d = 0.4;
-        int m = (int)((double)NativeImage.method_24033(l) * 0.4);
-        int n = (int)((double)NativeImage.method_24034(l) * 0.4);
-        int o = (int)((double)NativeImage.method_24035(l) * 0.4);
-        int p = NativeImage.method_24031(0, o, n, m);
+        int m = (int)((double)NativeImage.getRed(l) * 0.4);
+        int n = (int)((double)NativeImage.getGreen(l) * 0.4);
+        int o = (int)((double)NativeImage.getBlue(l) * 0.4);
+        int p = NativeImage.getAbgrColor(0, o, n, m);
         int q = 20;
         for (int r = 0; r < 4; ++r) {
-            class_5348 lv = signBlockEntity.getTextBeingEditedOnRow(r, arg -> {
-                List<class_5348> list = textRenderer.getTextHandler().wrapLines((class_5348)arg, 90, Style.EMPTY);
-                return list.isEmpty() ? class_5348.field_25310 : list.get(0);
+            StringRenderable stringRenderable2 = signBlockEntity.getTextBeingEditedOnRow(r, stringRenderable -> {
+                List<StringRenderable> list = textRenderer.getTextHandler().wrapLines((StringRenderable)stringRenderable, 90, Style.EMPTY);
+                return list.isEmpty() ? StringRenderable.EMPTY : list.get(0);
             });
-            if (lv == null) continue;
-            float s = -textRenderer.getWidth(lv) / 2;
-            textRenderer.draw(lv, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
+            if (stringRenderable2 == null) continue;
+            float s = -textRenderer.getWidth(stringRenderable2) / 2;
+            textRenderer.draw(stringRenderable2, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
         }
         matrixStack.pop();
     }

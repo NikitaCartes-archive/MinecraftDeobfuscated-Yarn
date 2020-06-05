@@ -25,7 +25,7 @@ extends HandledScreen<Generic3x3ContainerScreenHandler> {
     @Override
     protected void init() {
         super.init();
-        this.field_25267 = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
+        this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
     }
 
     @Override

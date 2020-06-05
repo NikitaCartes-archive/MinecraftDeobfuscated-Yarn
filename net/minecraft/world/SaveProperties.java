@@ -7,22 +7,22 @@ import com.mojang.serialization.Lifecycle;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5359;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 import org.jetbrains.annotations.Nullable;
 
 public interface SaveProperties {
-    public class_5359 method_29589();
+    public DataPackSettings method_29589();
 
-    public void method_29590(class_5359 var1);
+    public void method_29590(DataPackSettings var1);
 
     public boolean isModded();
 
@@ -30,10 +30,10 @@ public interface SaveProperties {
 
     public void addServerBrand(String var1, boolean var2);
 
-    default public void populateCrashReport(CrashReportSection crashReportSection) {
-        crashReportSection.add("Known server brands", () -> String.join((CharSequence)", ", this.getServerBrands()));
-        crashReportSection.add("Level was modded", () -> Boolean.toString(this.isModded()));
-        crashReportSection.add("Level storage version", () -> {
+    default public void populateCrashReport(CrashReportSection reportSection) {
+        reportSection.add("Known server brands", () -> String.join((CharSequence)", ", this.getServerBrands()));
+        reportSection.add("Level was modded", () -> Boolean.toString(this.isModded()));
+        reportSection.add("Level storage version", () -> {
             int i = this.getVersion();
             return String.format("0x%05X - %s", i, this.getFormatName(i));
         });
@@ -61,7 +61,7 @@ public interface SaveProperties {
     @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo();
 
-    public CompoundTag cloneWorldTag(DimensionTracker var1, @Nullable CompoundTag var2);
+    public CompoundTag cloneWorldTag(RegistryTracker var1, @Nullable CompoundTag var2);
 
     public boolean isHardcore();
 

@@ -139,11 +139,11 @@ implements Waterloggable {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
-        this.baseBlockState.onStateReplaced(world, pos, newState, notify);
+        this.baseBlockState.onStateReplaced(world, pos, newState, moved);
     }
 
     @Override

@@ -27,10 +27,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.class_5298;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.BlockStateFlattening;
 import net.minecraft.util.collection.Int2ObjectBiMap;
+import net.minecraft.util.math.WordPackedArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -813,11 +813,11 @@ extends DataFix {
             }
             dynamic = dynamic.set("Palette", dynamic.createList(this.paletteData.stream()));
             int i = Math.max(4, DataFixUtils.ceillog2(this.seenStates.size()));
-            class_5298 lv = new class_5298(i, 4096);
+            WordPackedArray wordPackedArray = new WordPackedArray(i, 4096);
             for (int j = 0; j < this.states.length; ++j) {
-                lv.method_28153(j, this.states[j]);
+                wordPackedArray.set(j, this.states[j]);
             }
-            dynamic = dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(lv.method_28151())));
+            dynamic = dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(wordPackedArray.getAlignedArray())));
             dynamic = dynamic.remove("Blocks");
             dynamic = dynamic.remove("Data");
             dynamic = dynamic.remove("Add");

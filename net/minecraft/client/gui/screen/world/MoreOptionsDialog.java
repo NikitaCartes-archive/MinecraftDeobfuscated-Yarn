@@ -22,9 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5317;
-import net.minecraft.class_5352;
-import net.minecraft.class_5382;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
@@ -38,9 +35,11 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.GeneratorType;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
@@ -50,7 +49,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -72,22 +72,22 @@ Drawable {
     private ButtonWidget mapTypeButton;
     private ButtonWidget customizeTypeButton;
     private ButtonWidget field_25048;
-    private DimensionTracker.Modifiable field_25483;
+    private RegistryTracker.Modifiable field_25483;
     private GeneratorOptions generatorOptions;
-    private Optional<class_5317> field_25049;
+    private Optional<GeneratorType> field_25049;
     private String seedText;
 
     public MoreOptionsDialog() {
-        this.field_25483 = DimensionTracker.create();
+        this.field_25483 = RegistryTracker.create();
         this.generatorOptions = GeneratorOptions.getDefaultOptions();
-        this.field_25049 = Optional.of(class_5317.field_25050);
+        this.field_25049 = Optional.of(GeneratorType.DEFAULT);
         this.seedText = "";
     }
 
-    public MoreOptionsDialog(DimensionTracker.Modifiable modifiable, GeneratorOptions generatorOptions) {
+    public MoreOptionsDialog(RegistryTracker.Modifiable modifiable, GeneratorOptions generatorOptions) {
         this.field_25483 = modifiable;
         this.generatorOptions = generatorOptions;
-        this.field_25049 = class_5317.method_29078(generatorOptions);
+        this.field_25049 = GeneratorType.method_29078(generatorOptions);
         this.seedText = Long.toString(generatorOptions.getSeed());
     }
 
@@ -120,13 +120,13 @@ Drawable {
         this.mapFeaturesButton.visible = false;
         this.mapTypeButton = parent.addButton(new ButtonWidget(j, 100, 150, 20, new TranslatableText("selectWorld.mapType"), buttonWidget -> {
             while (this.field_25049.isPresent()) {
-                int i = class_5317.field_25052.indexOf(this.field_25049.get()) + 1;
-                if (i >= class_5317.field_25052.size()) {
+                int i = GeneratorType.VALUES.indexOf(this.field_25049.get()) + 1;
+                if (i >= GeneratorType.VALUES.size()) {
                     i = 0;
                 }
-                class_5317 lv = class_5317.field_25052.get(i);
-                this.field_25049 = Optional.of(lv);
-                this.generatorOptions = lv.method_29077(this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
+                GeneratorType generatorType = GeneratorType.VALUES.get(i);
+                this.field_25049 = Optional.of(generatorType);
+                this.generatorOptions = generatorType.method_29077(this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
                 if (this.generatorOptions.isDebugWorld() && !Screen.hasShiftDown()) continue;
             }
             parent.setMoreOptionsOpen();
@@ -135,12 +135,12 @@ Drawable {
 
             @Override
             public Text getMessage() {
-                return super.getMessage().shallowCopy().append(" ").append(MoreOptionsDialog.this.field_25049.map(class_5317::method_29075).orElse(field_25047));
+                return super.getMessage().shallowCopy().append(" ").append(MoreOptionsDialog.this.field_25049.map(GeneratorType::getTranslationKey).orElse(field_25047));
             }
 
             @Override
             protected MutableText getNarrationMessage() {
-                if (Objects.equals(MoreOptionsDialog.this.field_25049, Optional.of(class_5317.field_25051))) {
+                if (Objects.equals(MoreOptionsDialog.this.field_25049, Optional.of(GeneratorType.AMPLIFIED))) {
                     return super.getNarrationMessage().append(". ").append(AMPLIFIED_INFO_TEXT);
                 }
                 return super.getNarrationMessage();
@@ -149,9 +149,9 @@ Drawable {
         this.mapTypeButton.visible = false;
         this.mapTypeButton.active = this.field_25049.isPresent();
         this.customizeTypeButton = parent.addButton(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), buttonWidget -> {
-            class_5317.class_5293 lv = class_5317.field_25053.get(this.field_25049);
-            if (lv != null) {
-                client.openScreen(lv.createEditScreen(parent, this.generatorOptions));
+            GeneratorType.ScreenProvider screenProvider = GeneratorType.field_25053.get(this.field_25049);
+            if (screenProvider != null) {
+                client.openScreen(screenProvider.createEditScreen(parent, this.generatorOptions));
             }
         }));
         this.customizeTypeButton.visible = false;
@@ -174,11 +174,11 @@ Drawable {
             if (string == null) {
                 return;
             }
-            DimensionTracker.Modifiable modifiable = DimensionTracker.create();
-            ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(parent.method_29693().toFile(), class_5352.field_25349));
+            RegistryTracker.Modifiable modifiable = RegistryTracker.create();
+            ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
             try {
-                MinecraftServer.method_29736(resourcePackManager, createWorldScreen.field_25479, false);
-                CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.method_29211(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), client);
+                MinecraftServer.loadDataPacks(resourcePackManager, createWorldScreen.field_25479, false);
+                CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), client);
                 client.runTasks(completableFuture::isDone);
                 serverResourceManager = completableFuture.get();
             } catch (InterruptedException | ExecutionException exception) {
@@ -189,11 +189,11 @@ Drawable {
                 resourcePackManager.close();
                 return;
             }
-            class_5382<JsonElement> lv = class_5382.method_29753(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), modifiable);
+            RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), modifiable);
             JsonParser jsonParser = new JsonParser();
             try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(string, new String[0]));){
                 JsonElement jsonElement = jsonParser.parse(bufferedReader);
-                dataResult = GeneratorOptions.CODEC.parse(lv, jsonElement);
+                dataResult = GeneratorOptions.CODEC.parse(registryOps, jsonElement);
             } catch (JsonIOException | JsonSyntaxException | IOException exception2) {
                 dataResult = DataResult.error("Failed to parse file: " + exception2.getMessage());
             }
@@ -224,10 +224,10 @@ Drawable {
         this.field_25048.visible = false;
     }
 
-    private void method_29073(DimensionTracker.Modifiable modifiable, GeneratorOptions generatorOptions) {
+    private void method_29073(RegistryTracker.Modifiable modifiable, GeneratorOptions generatorOptions) {
         this.field_25483 = modifiable;
         this.generatorOptions = generatorOptions;
-        this.field_25049 = class_5317.method_29078(generatorOptions);
+        this.field_25049 = GeneratorType.method_29078(generatorOptions);
         this.seedText = Long.toString(generatorOptions.getSeed());
         this.seedTextField.setText(this.seedText);
         this.mapTypeButton.active = this.field_25049.isPresent();
@@ -244,7 +244,7 @@ Drawable {
             this.textRenderer.drawWithShadow(matrices, I18n.translate("selectWorld.mapFeatures.info", new Object[0]), (float)(this.parentWidth / 2 - 150), 122.0f, -6250336);
         }
         this.seedTextField.render(matrices, mouseX, mouseY, delta);
-        if (this.field_25049.equals(Optional.of(class_5317.field_25051))) {
+        if (this.field_25049.equals(Optional.of(GeneratorType.AMPLIFIED))) {
             this.textRenderer.drawTrimmed(AMPLIFIED_INFO_TEXT, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, this.mapTypeButton.getWidth(), 0xA0A0A0);
         }
     }
@@ -282,13 +282,13 @@ Drawable {
         } else {
             this.mapFeaturesButton.visible = visible;
             this.bonusItemsButton.visible = visible;
-            this.customizeTypeButton.visible = visible && class_5317.field_25053.containsKey(this.field_25049);
+            this.customizeTypeButton.visible = visible && GeneratorType.field_25053.containsKey(this.field_25049);
             this.field_25048.visible = visible;
         }
         this.seedTextField.setVisible(visible);
     }
 
-    public DimensionTracker.Modifiable method_29700() {
+    public RegistryTracker.Modifiable method_29700() {
         return this.field_25483;
     }
 }

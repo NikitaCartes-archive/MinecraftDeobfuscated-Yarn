@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -15,6 +14,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -28,7 +28,7 @@ extends Screen {
     private static final Text checkMessage = new TranslatableText("multiplayerWarning.check");
     private static final Text proceedText = header.shallowCopy().append("\n").append(message);
     private CheckboxWidget checkbox;
-    private final List<class_5348> lines = Lists.newArrayList();
+    private final List<StringRenderable> lines = Lists.newArrayList();
 
     public MultiplayerWarningScreen(Screen parent) {
         super(NarratorManager.EMPTY);
@@ -63,8 +63,8 @@ extends Screen {
         this.renderBackgroundTexture(0);
         this.drawCenteredText(matrices, this.textRenderer, header, this.width / 2, 30, 0xFFFFFF);
         int i = 70;
-        for (class_5348 lv : this.lines) {
-            this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 0xFFFFFF);
+        for (StringRenderable stringRenderable : this.lines) {
+            this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 0xFFFFFF);
             i += this.textRenderer.fontHeight;
         }
         super.render(matrices, mouseX, mouseY, delta);

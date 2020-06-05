@@ -14,15 +14,15 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.WorldSaveHandler;
-import net.minecraft.world.dimension.DimensionTracker;
 
 @Environment(value=EnvType.CLIENT)
 public class IntegratedPlayerManager
 extends PlayerManager {
     private CompoundTag userData;
 
-    public IntegratedPlayerManager(IntegratedServer integratedServer, DimensionTracker.Modifiable modifiable, WorldSaveHandler worldSaveHandler) {
+    public IntegratedPlayerManager(IntegratedServer integratedServer, RegistryTracker.Modifiable modifiable, WorldSaveHandler worldSaveHandler) {
         super(integratedServer, modifiable, worldSaveHandler, 8);
         this.setViewDistance(10);
     }

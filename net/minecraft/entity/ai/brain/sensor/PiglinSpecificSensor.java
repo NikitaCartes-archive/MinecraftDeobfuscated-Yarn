@@ -84,7 +84,7 @@ extends Sensor<LivingEntity> {
                 optional = Optional.of((MobEntity)livingEntity);
                 continue;
             }
-            if (optional5.isPresent() || !PiglinBrain.method_29534(livingEntity.getType())) continue;
+            if (optional5.isPresent() || !PiglinBrain.isZombified(livingEntity.getType())) continue;
             optional5 = Optional.of(livingEntity);
         }
         List list4 = brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of());

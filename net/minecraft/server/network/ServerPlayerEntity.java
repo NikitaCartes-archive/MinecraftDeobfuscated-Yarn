@@ -20,7 +20,6 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.class_5354;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.datafixer.NbtOps;
@@ -31,6 +30,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -287,7 +287,7 @@ implements ScreenHandlerListener {
             tag2.putInt("SpawnY", this.spawnPointPosition.getY());
             tag2.putInt("SpawnZ", this.spawnPointPosition.getZ());
             tag2.putBoolean("SpawnForced", this.spawnPointSet);
-            Identifier.field_25139.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("SpawnDimension", (Tag)tag));
+            Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("SpawnDimension", (Tag)tag));
         }
     }
 
@@ -470,7 +470,7 @@ implements ScreenHandlerListener {
         }
         this.dropShoulderEntities();
         if (this.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
-            this.method_29779();
+            this.forgiveMobAnger();
         }
         if (!this.isSpectator()) {
             this.drop(source);
@@ -491,9 +491,9 @@ implements ScreenHandlerListener {
         this.getDamageTracker().update();
     }
 
-    private void method_29779() {
+    private void forgiveMobAnger() {
         Box box = new Box(this.getBlockPos()).expand(32.0, 10.0, 32.0);
-        this.world.getEntitiesIncludingUngeneratedChunks(MobEntity.class, box).stream().filter(mobEntity -> mobEntity instanceof class_5354).forEach(mobEntity -> ((class_5354)((Object)mobEntity)).method_29516(this));
+        this.world.getEntitiesIncludingUngeneratedChunks(MobEntity.class, box).stream().filter(mobEntity -> mobEntity instanceof Angerable).forEach(mobEntity -> ((Angerable)((Object)mobEntity)).forgive(this));
     }
 
     @Override
@@ -1022,7 +1022,7 @@ implements ScreenHandlerListener {
             this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
             this.lastNetherPortalDirectionVector = oldPlayer.lastNetherPortalDirectionVector;
             this.lastNetherPortalDirection = oldPlayer.lastNetherPortalDirection;
-        } else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
+        } else if (this.world.getGameRules().getBoolean(GameRules.field_19389) || oldPlayer.isSpectator()) {
             this.inventory.clone(oldPlayer.inventory);
             this.experienceLevel = oldPlayer.experienceLevel;
             this.totalExperience = oldPlayer.totalExperience;

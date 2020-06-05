@@ -161,7 +161,7 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    protected SoundEvent method_28368() {
+    protected SoundEvent getEatSound() {
         return SoundEvents.ENTITY_HORSE_EAT;
     }
 
@@ -183,7 +183,7 @@ extends HorseBaseEntity {
         if (!this.isBaby()) {
             if (this.isTame() && player.shouldCancelInteraction()) {
                 this.openInventory(player);
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             if (this.hasPassengers()) {
                 return super.interactMob(player, hand);
@@ -196,7 +196,7 @@ extends HorseBaseEntity {
                 if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
-                return bl ? ActionResult.method_29236(this.world.isClient) : ActionResult.CONSUME;
+                return bl ? ActionResult.success(this.world.isClient) : ActionResult.CONSUME;
             }
             ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
             if (actionResult.isAccepted()) {
@@ -204,19 +204,19 @@ extends HorseBaseEntity {
             }
             if (!this.isTame()) {
                 this.playAngrySound();
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             boolean bl = bl2 = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
             if (this.canEquip(itemStack) || bl2) {
                 this.openInventory(player);
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
         }
         if (this.isBaby()) {
             return super.interactMob(player, hand);
         }
         this.putPlayerOnBack(player);
-        return ActionResult.method_29236(this.world.isClient);
+        return ActionResult.success(this.world.isClient);
     }
 
     @Override

@@ -40,7 +40,7 @@ extends Item {
             if (!world.isClient) {
                 world.syncWorldEvent(2005, blockPos, 0);
             }
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         BlockState blockState = world.getBlockState(blockPos);
         boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
@@ -48,7 +48,7 @@ extends Item {
             if (!world.isClient) {
                 world.syncWorldEvent(2005, blockPos2, 0);
             }
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
     }

@@ -89,7 +89,7 @@ extends SpriteBillboardParticle {
                 return null;
             }
             BlockPos blockPos = new BlockPos(d, e, f);
-            int j = MinecraftClient.getInstance().getBlockColorMap().getColor(blockState, clientWorld, blockPos);
+            int j = MinecraftClient.getInstance().getBlockColors().getColor(blockState, clientWorld, blockPos);
             if (blockState.getBlock() instanceof FallingBlock) {
                 j = ((FallingBlock)blockState.getBlock()).getColor(blockState, clientWorld, blockPos);
             }

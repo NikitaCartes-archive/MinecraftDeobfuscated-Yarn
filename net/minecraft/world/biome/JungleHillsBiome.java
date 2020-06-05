@@ -15,9 +15,9 @@ public final class JungleHillsBiome
 extends Biome {
     public JungleHillsBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.JUNGLE).depth(0.45f).scale(0.3f).temperature(0.95f).downfall(0.9f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
-        this.addStructureFeature(DefaultBiomeFeatures.field_24691);
+        this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_PYRAMID);
         DefaultBiomeFeatures.method_28440(this);
-        this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

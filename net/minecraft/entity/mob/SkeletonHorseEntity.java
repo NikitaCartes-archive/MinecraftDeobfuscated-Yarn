@@ -178,7 +178,7 @@ extends HorseBaseEntity {
         }
         if (player.shouldCancelInteraction()) {
             this.openInventory(player);
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         if (this.hasPassengers()) {
             return super.interactMob(player, hand);
@@ -186,7 +186,7 @@ extends HorseBaseEntity {
         if (!itemStack.isEmpty()) {
             if (itemStack.getItem() == Items.SADDLE && !this.isSaddled()) {
                 this.openInventory(player);
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
             if (actionResult.isAccepted()) {
@@ -194,7 +194,7 @@ extends HorseBaseEntity {
             }
         }
         this.putPlayerOnBack(player);
-        return ActionResult.method_29236(this.world.isClient);
+        return ActionResult.success(this.world.isClient);
     }
 }
 

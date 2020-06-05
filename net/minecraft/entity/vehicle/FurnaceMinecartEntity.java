@@ -128,7 +128,7 @@ extends AbstractMinecartEntity {
             this.pushX = this.getX() - player.getX();
             this.pushZ = this.getZ() - player.getZ();
         }
-        return ActionResult.method_29236(this.world.isClient);
+        return ActionResult.success(this.world.isClient);
     }
 
     @Override

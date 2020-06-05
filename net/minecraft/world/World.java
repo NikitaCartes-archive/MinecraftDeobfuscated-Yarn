@@ -22,7 +22,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.class_5362;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -72,6 +71,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +80,7 @@ public abstract class World
 implements WorldAccess,
 AutoCloseable {
     protected static final Logger LOGGER = LogManager.getLogger();
-    public static final Codec<RegistryKey<World>> CODEC = Identifier.field_25139.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue);
+    public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue);
     public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.DIMENSION, new Identifier("overworld"));
     public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.DIMENSION, new Identifier("the_nether"));
     public static final RegistryKey<World> END = RegistryKey.of(Registry.DIMENSION, new Identifier("the_end"));
@@ -404,7 +404,7 @@ AutoCloseable {
 
     public abstract void playSoundFromEntity(@Nullable PlayerEntity var1, Entity var2, SoundEvent var3, SoundCategory var4, float var5, float var6);
 
-    public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float f, float g, boolean bl) {
+    public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean bl) {
     }
 
     @Override
@@ -421,9 +421,9 @@ AutoCloseable {
     public void addImportantParticle(ParticleEffect parameters, boolean alwaysSpawn, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
     }
 
-    public float getSkyAngleRadians(float f) {
-        float g = this.getSkyAngle(f);
-        return g * ((float)Math.PI * 2);
+    public float getSkyAngleRadians(float tickDelta) {
+        float f = this.getSkyAngle(tickDelta);
+        return f * ((float)Math.PI * 2);
     }
 
     public boolean addBlockEntity(BlockEntity blockEntity) {
@@ -512,9 +512,9 @@ AutoCloseable {
         profiler.pop();
     }
 
-    public void tickEntity(Consumer<Entity> consumer, Entity entity) {
+    public void tickEntity(Consumer<Entity> tickConsumer, Entity entity) {
         try {
-            consumer.accept(entity);
+            tickConsumer.accept(entity);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Ticking entity");
             CrashReportSection crashReportSection = crashReport.addElement("Entity being ticked");
@@ -531,8 +531,8 @@ AutoCloseable {
         return this.createExplosion(entity, null, null, x, y, z, power, createFire, destructionType);
     }
 
-    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable class_5362 arg, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
-        Explosion explosion = new Explosion(this, entity, damageSource, arg, d, e, f, g, bl, destructionType);
+    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior explosionBehavior, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
+        Explosion explosion = new Explosion(this, entity, damageSource, explosionBehavior, d, e, f, g, bl, destructionType);
         explosion.collectBlocksAndDamageEntities();
         explosion.affectWorld(true);
         return explosion;
@@ -857,8 +857,8 @@ AutoCloseable {
         return this.properties.getGameRules();
     }
 
-    public float getThunderGradient(float f) {
-        return MathHelper.lerp(f, this.thunderGradientPrev, this.thunderGradient) * this.getRainGradient(f);
+    public float getThunderGradient(float delta) {
+        return MathHelper.lerp(delta, this.thunderGradientPrev, this.thunderGradient) * this.getRainGradient(delta);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -867,8 +867,8 @@ AutoCloseable {
         this.thunderGradient = thunderGradient;
     }
 
-    public float getRainGradient(float f) {
-        return MathHelper.lerp(f, this.rainGradientPrev, this.rainGradient);
+    public float getRainGradient(float delta) {
+        return MathHelper.lerp(delta, this.rainGradientPrev, this.rainGradient);
     }
 
     @Environment(value=EnvType.CLIENT)

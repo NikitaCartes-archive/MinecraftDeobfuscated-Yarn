@@ -117,9 +117,9 @@ extends Block {
         world.syncWorldEvent(1034, pos, 0);
     }
 
-    private static boolean isSurroundedByAir(WorldView worldView, BlockPos pos, @Nullable Direction exceptDirection) {
+    private static boolean isSurroundedByAir(WorldView world, BlockPos pos, @Nullable Direction exceptDirection) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            if (direction == exceptDirection || worldView.isAir(pos.offset(direction))) continue;
+            if (direction == exceptDirection || world.isAir(pos.offset(direction))) continue;
             return false;
         }
         return true;

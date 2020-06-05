@@ -72,7 +72,7 @@ implements TextureTickListener {
         this.spritesToLoad.clear();
         this.spritesToLoad.addAll(data.spriteIds);
         LOGGER.info("Created: {}x{}x{} {}-atlas", (Object)data.width, (Object)data.height, (Object)data.field_21795, (Object)this.id);
-        TextureUtil.method_24959(this.getGlId(), data.field_21795, data.width, data.height);
+        TextureUtil.allocate(this.getGlId(), data.field_21795, data.width, data.height);
         this.clear();
         for (Sprite sprite : data.sprites) {
             this.sprites.put(sprite.getId(), sprite);

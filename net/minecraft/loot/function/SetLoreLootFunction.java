@@ -43,7 +43,7 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public LootFunctionType method_29321() {
+    public LootFunctionType getType() {
         return LootFunctionTypes.SET_LORE;
     }
 
@@ -96,8 +96,8 @@ extends ConditionalLootFunction {
         return null;
     }
 
-    public static class Factory
-    extends ConditionalLootFunction.Factory<SetLoreLootFunction> {
+    public static class Serializer
+    extends ConditionalLootFunction.Serializer<SetLoreLootFunction> {
         @Override
         public void toJson(JsonObject jsonObject, SetLoreLootFunction setLoreLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, setLoreLootFunction, jsonSerializationContext);

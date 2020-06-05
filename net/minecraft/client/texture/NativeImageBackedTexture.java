@@ -23,11 +23,11 @@ implements AutoCloseable {
         this.image = image;
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> {
-                TextureUtil.method_24958(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+                TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
                 this.upload();
             });
         } else {
-            TextureUtil.method_24958(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+            TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
             this.upload();
         }
     }
@@ -35,7 +35,7 @@ implements AutoCloseable {
     public NativeImageBackedTexture(int width, int height, boolean useStb) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
         this.image = new NativeImage(width, height, useStb);
-        TextureUtil.method_24958(this.getGlId(), this.image.getWidth(), this.image.getHeight());
+        TextureUtil.allocate(this.getGlId(), this.image.getWidth(), this.image.getHeight());
     }
 
     @Override

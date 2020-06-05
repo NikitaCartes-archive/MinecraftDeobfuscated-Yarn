@@ -75,7 +75,7 @@ extends Block {
                 }
                 world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
             }
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         return ActionResult.CONSUME;
     }

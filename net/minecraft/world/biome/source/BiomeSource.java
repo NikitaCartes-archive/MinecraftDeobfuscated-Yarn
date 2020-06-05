@@ -79,38 +79,38 @@ implements BiomeAccess.Storage {
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> list, Random random) {
-        return this.method_24385(x, y, z, radius, 1, list, random, false);
+    public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> biomes, Random random) {
+        return this.locateBiome(x, y, z, radius, 1, biomes, random, false);
     }
 
     @Nullable
-    public BlockPos method_24385(int i, int j, int k, int l, int m, List<Biome> list, Random random, boolean bl) {
-        int s;
-        int n = i >> 2;
-        int o = k >> 2;
-        int p = l >> 2;
-        int q = j >> 2;
+    public BlockPos locateBiome(int x, int y, int z, int radius, int i, List<Biome> biomes, Random random, boolean bl) {
+        int o;
+        int j = x >> 2;
+        int k = z >> 2;
+        int l = radius >> 2;
+        int m = y >> 2;
         BlockPos blockPos = null;
-        int r = 0;
-        for (int t = s = bl ? 0 : p; t <= p; t += m) {
-            for (int u = -t; u <= t; u += m) {
-                boolean bl2 = Math.abs(u) == t;
-                for (int v = -t; v <= t; v += m) {
-                    int x;
-                    int w;
+        int n = 0;
+        for (int p = o = bl ? 0 : l; p <= l; p += i) {
+            for (int q = -p; q <= p; q += i) {
+                boolean bl2 = Math.abs(q) == p;
+                for (int r = -p; r <= p; r += i) {
+                    int t;
+                    int s;
                     if (bl) {
                         boolean bl3;
-                        boolean bl4 = bl3 = Math.abs(v) == t;
+                        boolean bl4 = bl3 = Math.abs(r) == p;
                         if (!bl3 && !bl2) continue;
                     }
-                    if (!list.contains(this.getBiomeForNoiseGen(w = n + v, q, x = o + u))) continue;
-                    if (blockPos == null || random.nextInt(r + 1) == 0) {
-                        blockPos = new BlockPos(w << 2, j, x << 2);
+                    if (!biomes.contains(this.getBiomeForNoiseGen(s = j + r, m, t = k + q))) continue;
+                    if (blockPos == null || random.nextInt(n + 1) == 0) {
+                        blockPos = new BlockPos(s << 2, y, t << 2);
                         if (bl) {
                             return blockPos;
                         }
                     }
-                    ++r;
+                    ++n;
                 }
             }
         }

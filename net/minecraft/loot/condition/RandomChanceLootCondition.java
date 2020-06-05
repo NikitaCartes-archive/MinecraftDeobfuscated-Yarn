@@ -11,7 +11,7 @@ import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 
 public class RandomChanceLootCondition
 implements LootCondition {
@@ -22,7 +22,7 @@ implements LootCondition {
     }
 
     @Override
-    public LootConditionType method_29325() {
+    public LootConditionType getType() {
         return LootConditionTypes.RANDOM_CHANCE;
     }
 
@@ -40,8 +40,8 @@ implements LootCondition {
         return this.test((LootContext)context);
     }
 
-    public static class Factory
-    implements JsonSerializable<RandomChanceLootCondition> {
+    public static class Serializer
+    implements JsonSerializer<RandomChanceLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, RandomChanceLootCondition randomChanceLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("chance", Float.valueOf(randomChanceLootCondition.chance));
@@ -53,8 +53,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

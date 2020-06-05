@@ -25,15 +25,14 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 import net.minecraft.Bootstrap;
-import net.minecraft.class_5352;
-import net.minecraft.class_5359;
-import net.minecraft.class_5382;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
@@ -48,13 +47,14 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -115,14 +115,14 @@ public class Main {
             LevelStorage levelStorage = LevelStorage.create(file.toPath());
             LevelStorage.Session session = levelStorage.createSession(string);
             MinecraftServer.convertLevel(session);
-            class_5359 lv = session.method_29585();
+            DataPackSettings dataPackSettings = session.method_29585();
             boolean bl = optionSet.has(optionSpec7);
             if (bl) {
                 LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
             }
-            ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), class_5352.field_25349));
-            class_5359 lv2 = MinecraftServer.method_29736(resourcePackManager, lv == null ? class_5359.field_25393 : lv, bl);
-            CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.method_29211(), CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, Util.getServerWorkerExecutor(), Runnable::run);
+            ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
+            DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(resourcePackManager, dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings, bl);
+            CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, Util.getServerWorkerExecutor(), Runnable::run);
             try {
                 serverResourceManager = completableFuture.get();
             } catch (Exception exception) {
@@ -131,9 +131,9 @@ public class Main {
                 return;
             }
             serverResourceManager.loadRegistryTags();
-            DimensionTracker.Modifiable modifiable = DimensionTracker.create();
-            class_5382<Tag> lv3 = class_5382.method_29753(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), modifiable);
-            SaveProperties saveProperties = session.readLevelProperties(lv3, lv2);
+            RegistryTracker.Modifiable modifiable = RegistryTracker.create();
+            RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), modifiable);
+            SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
             if (saveProperties == null) {
                 GeneratorOptions generatorOptions;
                 LevelInfo levelInfo;
@@ -142,7 +142,7 @@ public class Main {
                     generatorOptions = GeneratorOptions.DEMO_CONFIG;
                 } else {
                     ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
-                    levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), lv2);
+                    levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), dataPackSettings2);
                     generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.field_24623.withBonusChest() : serverPropertiesHandler.field_24623;
                 }
                 saveProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
@@ -152,9 +152,9 @@ public class Main {
             }
             session.method_27425(modifiable, saveProperties);
             SaveProperties saveProperties2 = saveProperties;
-            final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.method_29740(thread -> {
+            final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(serverThread -> {
                 boolean bl;
-                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)thread, modifiable, session, resourcePackManager, serverResourceManager, saveProperties2, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
+                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)serverThread, modifiable, session, resourcePackManager, serverResourceManager, saveProperties2, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
                 minecraftDedicatedServer.setServerName((String)optionSet.valueOf(optionSpec9));
                 minecraftDedicatedServer.setServerPort((Integer)optionSet.valueOf(optionSpec12));
                 minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
@@ -165,15 +165,15 @@ public class Main {
                 }
                 return minecraftDedicatedServer;
             });
-            Thread thread2 = new Thread("Server Shutdown Thread"){
+            Thread thread = new Thread("Server Shutdown Thread"){
 
                 @Override
                 public void run() {
                     minecraftDedicatedServer.stop(true);
                 }
             };
-            thread2.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
-            Runtime.getRuntime().addShutdownHook(thread2);
+            thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
+            Runtime.getRuntime().addShutdownHook(thread);
         } catch (Exception exception2) {
             LOGGER.fatal("Failed to start the minecraft server", (Throwable)exception2);
         }

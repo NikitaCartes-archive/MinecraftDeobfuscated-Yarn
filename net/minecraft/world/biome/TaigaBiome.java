@@ -15,10 +15,10 @@ public final class TaigaBiome
 extends Biome {
     public TaigaBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.TAIGA).depth(0.2f).scale(0.2f).temperature(0.25f).downfall(0.8f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
-        this.addStructureFeature(DefaultBiomeFeatures.field_24710);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24687);
+        this.addStructureFeature(DefaultBiomeFeatures.TAIGA_VILLAGE);
+        this.addStructureFeature(DefaultBiomeFeatures.PILLAGER_OUTPOST);
         DefaultBiomeFeatures.method_28440(this);
-        this.addStructureFeature(DefaultBiomeFeatures.STANDARD_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

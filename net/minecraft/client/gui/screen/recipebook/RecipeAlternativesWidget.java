@@ -231,7 +231,7 @@ Element {
                 int k = (int)((float)(this.x + inputSlot.y) / 0.42f - 3.0f);
                 int l = (int)((float)(this.y + inputSlot.x) / 0.42f - 3.0f);
                 RenderSystem.scalef(0.42f, 0.42f, 1.0f);
-                RecipeAlternativesWidget.this.client.getItemRenderer().renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0f) % inputSlot.stacks.length], k, l);
+                RecipeAlternativesWidget.this.client.getItemRenderer().renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0f) % inputSlot.stacks.length], k, l);
                 RenderSystem.popMatrix();
             }
             RenderSystem.disableAlphaTest();

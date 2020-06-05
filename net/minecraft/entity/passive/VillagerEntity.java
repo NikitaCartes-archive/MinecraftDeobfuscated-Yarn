@@ -112,7 +112,7 @@ VillagerDataContainer {
     private long lastRestockTime;
     private int restocksToday;
     private long lastRestockCheckTime;
-    private boolean field_25167;
+    private boolean natural;
     private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.HOME, MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleType.MEETING_POINT, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.VISIBLE_VILLAGER_BABIES, MemoryModuleType.NEAREST_PLAYERS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.WALK_TARGET, new MemoryModuleType[]{MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.BREED_TARGET, MemoryModuleType.PATH, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.NEAREST_BED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_HOSTILE, MemoryModuleType.SECONDARY_JOB_SITE, MemoryModuleType.HIDING_PLACE, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.LAST_SLEPT, MemoryModuleType.LAST_WOKEN, MemoryModuleType.LAST_WORKED_AT_POI, MemoryModuleType.GOLEM_LAST_SEEN_TIME});
     private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.INTERACTABLE_DOORS, SensorType.NEAREST_BED, SensorType.HURT_BY, SensorType.VILLAGER_HOSTILES, SensorType.VILLAGER_BABIES, SensorType.SECONDARY_POIS, SensorType.GOLEM_LAST_SEEN);
     public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(MemoryModuleType.HOME, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.HOME, MemoryModuleType.JOB_SITE, (villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType, MemoryModuleType.POTENTIAL_JOB_SITE, (villagerEntity, pointOfInterestType) -> PointOfInterestType.IS_USED_BY_PROFESSION.test((PointOfInterestType)pointOfInterestType), MemoryModuleType.MEETING_POINT, (villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.MEETING);
@@ -186,8 +186,8 @@ VillagerDataContainer {
         return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
     }
 
-    public boolean method_29279() {
-        return this.field_25167;
+    public boolean isNatural() {
+        return this.natural;
     }
 
     @Override
@@ -196,8 +196,8 @@ VillagerDataContainer {
         this.world.getProfiler().push("villagerBrain");
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
-        if (this.field_25167) {
-            this.field_25167 = false;
+        if (this.natural) {
+            this.natural = false;
         }
         if (!this.hasCustomer() && this.levelUpTimer > 0) {
             --this.levelUpTimer;
@@ -238,7 +238,7 @@ VillagerDataContainer {
         if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isSleeping()) {
             if (this.isBaby()) {
                 this.sayNo();
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             boolean bl = this.getOffers().isEmpty();
             if (hand == Hand.MAIN_HAND) {
@@ -248,12 +248,12 @@ VillagerDataContainer {
                 player.incrementStat(Stats.TALKED_TO_VILLAGER);
             }
             if (bl) {
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             if (!this.world.isClient && !this.offers.isEmpty()) {
                 this.beginTradeWith(player);
             }
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         return super.interactMob(player, hand);
     }
@@ -388,7 +388,7 @@ VillagerDataContainer {
         tag2.putLong("LastRestock", this.lastRestockTime);
         tag2.putLong("LastGossipDecay", this.lastGossipDecayTime);
         tag2.putInt("RestocksToday", this.restocksToday);
-        if (this.field_25167) {
+        if (this.natural) {
             tag2.putBoolean("AssignProfessionWhenSpawned", true);
         }
     }
@@ -419,7 +419,7 @@ VillagerDataContainer {
         }
         this.restocksToday = tag.getInt("RestocksToday");
         if (tag.contains("AssignProfessionWhenSpawned")) {
-            this.field_25167 = tag.getBoolean("AssignProfessionWhenSpawned");
+            this.natural = tag.getBoolean("AssignProfessionWhenSpawned");
         }
     }
 
@@ -623,7 +623,7 @@ VillagerDataContainer {
             this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
         }
         if (spawnReason == SpawnReason.STRUCTURE) {
-            this.field_25167 = true;
+            this.natural = true;
         }
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }

@@ -172,7 +172,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
@@ -182,7 +182,7 @@ extends BlockWithEntity {
         if (state.get(POWERED).booleanValue()) {
             world.updateNeighborsAlways(pos.down(), this);
         }
-        super.onStateReplaced(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     private void dropBook(BlockState state, World world, BlockPos pos) {
@@ -235,7 +235,7 @@ extends BlockWithEntity {
             if (!world.isClient) {
                 this.openScreen(world, pos, player);
             }
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.isEmpty() || itemStack.getItem().isIn(ItemTags.LECTERN_BOOKS)) {

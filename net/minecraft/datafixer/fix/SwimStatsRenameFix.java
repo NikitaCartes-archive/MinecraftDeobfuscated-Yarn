@@ -24,7 +24,7 @@ extends DataFix {
         Type<?> type2 = this.getInputSchema().getType(TypeReferences.STATS);
         OpticFinder<?> opticFinder = type2.findField("stats");
         OpticFinder<?> opticFinder2 = opticFinder.type().findField("minecraft:custom");
-        OpticFinder<String> opticFinder3 = IdentifierNormalizingSchema.method_28295().finder();
+        OpticFinder<String> opticFinder3 = IdentifierNormalizingSchema.getIdentifierType().finder();
         return this.fixTypeEverywhereTyped("SwimStatsRenameFix", type2, type, (Typed<?> typed) -> typed.updateTyped(opticFinder, typed2 -> typed2.updateTyped(opticFinder2, typed -> typed.update(opticFinder3, string -> {
             if (string.equals("minecraft:swim_one_cm")) {
                 return "minecraft:walk_on_water_one_cm";

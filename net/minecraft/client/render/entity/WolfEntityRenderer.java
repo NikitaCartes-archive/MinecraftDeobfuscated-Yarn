@@ -49,7 +49,7 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         if (wolfEntity.isTamed()) {
             return TAMED_TEXTURE;
         }
-        if (wolfEntity.method_29511()) {
+        if (wolfEntity.hasAngerTime()) {
             return ANGRY_TEXTURE;
         }
         return WILD_TEXTURE;

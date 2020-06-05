@@ -100,10 +100,10 @@ implements ReloadableResourceManager {
     }
 
     @Override
-    public Collection<Identifier> method_29489(Identifier identifier, Predicate<String> predicate) {
-        ResourceManager resourceManager = this.namespaceManagers.get(identifier.getNamespace());
+    public Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate) {
+        ResourceManager resourceManager = this.namespaceManagers.get(resourceType.getNamespace());
         if (resourceManager != null) {
-            return resourceManager.findResources(identifier.getPath(), predicate);
+            return resourceManager.findResources(resourceType.getPath(), predicate);
         }
         return ImmutableSet.of();
     }
@@ -160,7 +160,7 @@ implements ReloadableResourceManager {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Stream<ResourcePack> method_29213() {
+    public Stream<ResourcePack> streamResourcePacks() {
         return this.field_25145.stream();
     }
 

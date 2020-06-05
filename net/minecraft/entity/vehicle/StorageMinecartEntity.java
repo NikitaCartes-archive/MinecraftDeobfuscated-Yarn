@@ -163,7 +163,7 @@ NamedScreenHandlerFactory {
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
         player.openHandledScreen(this);
-        return ActionResult.method_29236(this.world.isClient);
+        return ActionResult.success(this.world.isClient);
     }
 
     @Override

@@ -221,15 +221,15 @@ implements RangedAttackMob {
                 this.addTemper(j);
             }
         }
-        if (bl && !this.isSilent() && (soundEvent = this.method_28368()) != null) {
-            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), this.method_28368(), this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
+        if (bl && !this.isSilent() && (soundEvent = this.getEatSound()) != null) {
+            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(), this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
         }
         return bl;
     }
 
     @Override
     protected boolean isImmobile() {
-        return this.method_29504() || this.isEatingGrass();
+        return this.isDead() || this.isEatingGrass();
     }
 
     @Override
@@ -269,7 +269,7 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    protected SoundEvent method_28368() {
+    protected SoundEvent getEatSound() {
         return SoundEvents.ENTITY_LLAMA_EAT;
     }
 

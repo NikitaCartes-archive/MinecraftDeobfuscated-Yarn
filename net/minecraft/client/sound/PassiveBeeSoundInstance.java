@@ -26,7 +26,7 @@ extends AbstractBeeSoundInstance {
 
     @Override
     protected boolean shouldReplace() {
-        return this.bee.method_29511();
+        return this.bee.hasAngerTime();
     }
 }
 

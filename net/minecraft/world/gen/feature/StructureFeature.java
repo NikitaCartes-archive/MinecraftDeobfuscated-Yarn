@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import net.minecraft.class_5314;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.structure.StructureManager;
@@ -35,6 +34,7 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.feature.BastionRemnantFeature;
 import net.minecraft.world.gen.feature.BastionRemnantFeatureConfig;
 import net.minecraft.world.gen.feature.BuriedTreasureFeature;
@@ -159,8 +159,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     }
 
     @Nullable
-    public BlockPos locateStructure(WorldView worldView, StructureAccessor structureAccessor, BlockPos blockPos, int i, boolean skipExistingChunks, long l, class_5314 arg) {
-        int j = arg.method_28803();
+    public BlockPos locateStructure(WorldView worldView, StructureAccessor structureAccessor, BlockPos blockPos, int i, boolean skipExistingChunks, long l, StructureConfig structureConfig) {
+        int j = structureConfig.getSpacing();
         int k = blockPos.getX() >> 4;
         int m = blockPos.getZ() >> 4;
         ChunkRandom chunkRandom = new ChunkRandom();
@@ -173,7 +173,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     if (!bl && !bl2) continue;
                     int q = k + j * o;
                     int r = m + j * p;
-                    ChunkPos chunkPos = this.method_27218(arg, l, chunkRandom, q, r);
+                    ChunkPos chunkPos = this.method_27218(structureConfig, l, chunkRandom, q, r);
                     Chunk chunk = worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
                     StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), this, chunk);
                     if (structureStart != null && structureStart.hasChildren()) {
@@ -197,14 +197,14 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         return true;
     }
 
-    public final ChunkPos method_27218(class_5314 arg, long l, ChunkRandom chunkRandom, int i, int j) {
+    public final ChunkPos method_27218(StructureConfig structureConfig, long l, ChunkRandom chunkRandom, int i, int j) {
         int q;
         int p;
-        int k = arg.method_28803();
-        int m = arg.method_28806();
+        int k = structureConfig.getSpacing();
+        int m = structureConfig.getSeparation();
         int n = Math.floorDiv(i, k);
         int o = Math.floorDiv(j, k);
-        chunkRandom.setRegionSeed(l, n, o, arg.method_28808());
+        chunkRandom.setRegionSeed(l, n, o, structureConfig.getSalt());
         if (this.method_27219()) {
             p = chunkRandom.nextInt(k - m);
             q = chunkRandom.nextInt(k - m);
@@ -223,8 +223,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         return this.getStructureStartFactory().create(this, i, j, blockBox, k, l);
     }
 
-    public StructureStart<?> method_28657(ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long l, ChunkPos chunkPos, Biome biome, int i, ChunkRandom chunkRandom, class_5314 arg, C featureConfig) {
-        ChunkPos chunkPos2 = this.method_27218(arg, l, chunkRandom, chunkPos.x, chunkPos.z);
+    public StructureStart<?> method_28657(ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long l, ChunkPos chunkPos, Biome biome, int i, ChunkRandom chunkRandom, StructureConfig structureConfig, C featureConfig) {
+        ChunkPos chunkPos2 = this.method_27218(structureConfig, l, chunkRandom, chunkPos.x, chunkPos.z);
         if (chunkPos.x == chunkPos2.x && chunkPos.z == chunkPos2.z && this.shouldStartAt(chunkGenerator, biomeSource, l, chunkRandom, chunkPos.x, chunkPos.z, biome, chunkPos2, featureConfig)) {
             StructureStart<C> structureStart = this.method_28656(chunkPos.x, chunkPos.z, BlockBox.empty(), i, l);
             structureStart.init(chunkGenerator, structureManager, chunkPos.x, chunkPos.z, biome, featureConfig);

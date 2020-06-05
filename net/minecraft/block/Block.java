@@ -73,8 +73,8 @@ implements ItemConvertible {
         }
 
         @Override
-        public /* synthetic */ Object load(Object object) throws Exception {
-            return this.load((VoxelShape)object);
+        public /* synthetic */ Object load(Object shape) throws Exception {
+            return this.load((VoxelShape)shape);
         }
     });
     private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
@@ -271,7 +271,7 @@ implements ItemConvertible {
     }
 
     public static void dropStack(World world, BlockPos pos, ItemStack stack) {
-        if (world.isClient || stack.isEmpty() || !world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+        if (world.isClient || stack.isEmpty() || !world.getGameRules().getBoolean(GameRules.field_19392)) {
             return;
         }
         float f = 0.5f;
@@ -284,7 +284,7 @@ implements ItemConvertible {
     }
 
     protected void dropExperience(World world, BlockPos pos, int size) {
-        if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+        if (!world.isClient && world.getGameRules().getBoolean(GameRules.field_19392)) {
             while (size > 0) {
                 int i = ExperienceOrbEntity.roundToOrbSize(size);
                 size -= i;

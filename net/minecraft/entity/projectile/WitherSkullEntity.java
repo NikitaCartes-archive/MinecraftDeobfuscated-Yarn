@@ -73,7 +73,7 @@ extends ExplosiveProjectileEntity {
         Entity entity2 = this.getOwner();
         if (entity2 instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity2;
-            bl = entity.damage(DamageSource.method_29238(this, livingEntity), 8.0f);
+            bl = entity.damage(DamageSource.witherSkull(this, livingEntity), 8.0f);
             if (bl) {
                 if (entity.isAlive()) {
                     this.dealDamage(livingEntity, entity);
@@ -101,7 +101,7 @@ extends ExplosiveProjectileEntity {
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
         if (!this.world.isClient) {
-            Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
+            Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
             this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0f, false, destructionType);
             this.remove();
         }

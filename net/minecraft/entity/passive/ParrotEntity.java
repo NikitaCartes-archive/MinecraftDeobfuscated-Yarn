@@ -255,7 +255,7 @@ implements Flutterer {
                     this.world.sendEntityStatus(this, (byte)6);
                 }
             }
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         if (itemStack.getItem() == COOKIE) {
             if (!player.abilities.creativeMode) {
@@ -265,13 +265,13 @@ implements Flutterer {
             if (player.isCreative() || !this.isInvulnerable()) {
                 this.damage(DamageSource.player(player), Float.MAX_VALUE);
             }
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
             if (!this.world.isClient) {
                 this.setSitting(!this.isSitting());
             }
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         return super.interactMob(player, hand);
     }

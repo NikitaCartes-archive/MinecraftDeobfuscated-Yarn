@@ -38,7 +38,7 @@ extends MoveToTargetPosGoal {
 
     @Override
     public boolean canStart() {
-        if (!this.stepAndDestroyMob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+        if (!this.stepAndDestroyMob.world.getGameRules().getBoolean(GameRules.field_19388)) {
             return false;
         }
         if (this.cooldown > 0) {

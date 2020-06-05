@@ -104,7 +104,7 @@ implements Fertilizable {
             SweetBerryBushBlock.dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
             world.playSound(null, pos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
             world.setBlockState(pos, (BlockState)state.with(AGE, 1), 2);
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         return super.onUse(state, world, pos, player, hand, hit);
     }

@@ -191,7 +191,7 @@ Element {
         return this.active && this.visible && mouseX >= (double)this.x && mouseY >= (double)this.y && mouseX < (double)(this.x + this.width) && mouseY < (double)(this.y + this.height);
     }
 
-    public void renderToolTip(MatrixStack matrixStack, int i, int j) {
+    public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
     }
 
     public void playDownSound(SoundManager soundManager) {

@@ -161,7 +161,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
@@ -170,7 +170,7 @@ extends BlockWithEntity {
             ItemScatterer.spawn(world, pos, (Inventory)((HopperBlockEntity)blockEntity));
             world.updateComparators(pos, this);
         }
-        super.onStateReplaced(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override

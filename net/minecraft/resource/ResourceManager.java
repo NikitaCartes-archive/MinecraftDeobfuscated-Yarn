@@ -29,16 +29,16 @@ public interface ResourceManager {
 
     public List<Resource> getAllResources(Identifier var1) throws IOException;
 
-    public Collection<Identifier> method_29489(Identifier var1, Predicate<String> var2);
+    public Collection<Identifier> findResources(Identifier var1, Predicate<String> var2);
 
     public Collection<Identifier> findResources(String var1, Predicate<String> var2);
 
     @Environment(value=EnvType.CLIENT)
-    public Stream<ResourcePack> method_29213();
+    public Stream<ResourcePack> streamResourcePacks();
 
-    public static enum class_5353 implements ResourceManager
+    public static enum Empty implements ResourceManager
     {
-        field_25351;
+        INSTANCE;
 
 
         @Override
@@ -64,7 +64,7 @@ public interface ResourceManager {
         }
 
         @Override
-        public Collection<Identifier> method_29489(Identifier identifier, Predicate<String> predicate) {
+        public Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate) {
             return ImmutableSet.of();
         }
 
@@ -75,7 +75,7 @@ public interface ResourceManager {
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public Stream<ResourcePack> method_29213() {
+        public Stream<ResourcePack> streamResourcePacks() {
             return Stream.of(new ResourcePack[0]);
         }
     }

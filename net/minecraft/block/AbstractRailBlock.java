@@ -135,11 +135,11 @@ extends Block {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (moved) {
             return;
         }
-        super.onStateReplaced(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, moved);
         if (state.get(this.getShapeProperty()).isAscending()) {
             world.updateNeighborsAlways(pos.up(), this);
         }

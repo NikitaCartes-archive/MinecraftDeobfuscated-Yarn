@@ -155,7 +155,7 @@ extends DrawableHelper {
         this.scaledHeight = this.client.getWindow().getScaledHeight();
         TextRenderer textRenderer = this.getFontRenderer();
         RenderSystem.enableBlend();
-        if (MinecraftClient.isFancyGraphicsEnabled()) {
+        if (MinecraftClient.isFancyGraphicsOrBetter()) {
             this.renderVignetteOverlay(this.client.getCameraEntity());
         } else {
             RenderSystem.enableDepthTest();
@@ -944,7 +944,7 @@ extends DrawableHelper {
             RenderSystem.scalef(1.0f / h, (h + 1.0f) / 2.0f, 1.0f);
             RenderSystem.translatef(-(i + 8), -(j + 12), 0.0f);
         }
-        this.itemRenderer.method_27951(playerEntity, itemStack, i, j);
+        this.itemRenderer.renderInGuiWithOverrides(playerEntity, itemStack, i, j);
         if (g > 0.0f) {
             RenderSystem.popMatrix();
         }

@@ -129,7 +129,7 @@ implements Monster {
     }
 
     public double[] getSegmentProperties(int segmentNumber, float tickDelta) {
-        if (this.method_29504()) {
+        if (this.isDead()) {
             tickDelta = 0.0f;
         }
         tickDelta = 1.0f - tickDelta;
@@ -171,7 +171,7 @@ implements Monster {
             }
         }
         this.prevWingPosition = this.wingPosition;
-        if (this.method_29504()) {
+        if (this.isDead()) {
             f = (this.random.nextFloat() - 0.5f) * 8.0f;
             g = (this.random.nextFloat() - 0.5f) * 4.0f;
             float h = (this.random.nextFloat() - 0.5f) * 8.0f;
@@ -397,7 +397,7 @@ implements Monster {
                     BlockState blockState = this.world.getBlockState(blockPos);
                     Block block = blockState.getBlock();
                     if (blockState.isAir() || blockState.getMaterial() == Material.FIRE) continue;
-                    if (!this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) || BlockTags.DRAGON_IMMUNE.contains(block)) {
+                    if (!this.world.getGameRules().getBoolean(GameRules.field_19388) || BlockTags.DRAGON_IMMUNE.contains(block)) {
                         bl = true;
                         continue;
                     }
@@ -426,7 +426,7 @@ implements Monster {
         if (source.getAttacker() instanceof PlayerEntity || source.isExplosive()) {
             float f = this.getHealth();
             this.parentDamage(source, amount);
-            if (this.method_29504() && !this.phaseManager.getCurrent().isSittingOrHovering()) {
+            if (this.isDead() && !this.phaseManager.getCurrent().isSittingOrHovering()) {
                 this.setHealth(1.0f);
                 this.phaseManager.setPhase(PhaseType.DYING);
             }
@@ -474,7 +474,7 @@ implements Monster {
             float h = (this.random.nextFloat() - 0.5f) * 8.0f;
             this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX() + (double)f, this.getY() + 2.0 + (double)g, this.getZ() + (double)h, 0.0, 0.0, 0.0);
         }
-        boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT);
+        boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19391);
         int i = 500;
         if (this.fight != null && !this.fight.hasPreviouslyKilled()) {
             i = 12000;

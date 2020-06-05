@@ -58,7 +58,7 @@ public class GenerationStep {
         VEGETAL_DECORATION("vegetal_decoration"),
         TOP_LAYER_MODIFICATION("top_layer_modification");
 
-        public static final Codec<Feature> field_24771;
+        public static final Codec<Feature> CODEC;
         private static final Map<String, Feature> BY_NAME;
         private final String name;
 
@@ -80,7 +80,7 @@ public class GenerationStep {
         }
 
         static {
-            field_24771 = StringIdentifiable.method_28140(Feature::values, Feature::method_28547);
+            CODEC = StringIdentifiable.method_28140(Feature::values, Feature::method_28547);
             BY_NAME = Arrays.stream(Feature.values()).collect(Collectors.toMap(Feature::getName, feature -> feature));
         }
     }

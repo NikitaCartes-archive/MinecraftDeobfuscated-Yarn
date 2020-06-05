@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class HoverPhase
 extends AbstractPhase {
-    private Vec3d field_7042;
+    private Vec3d target;
 
     public HoverPhase(EnderDragonEntity enderDragonEntity) {
         super(enderDragonEntity);
@@ -19,8 +19,8 @@ extends AbstractPhase {
 
     @Override
     public void serverTick() {
-        if (this.field_7042 == null) {
-            this.field_7042 = this.dragon.getPos();
+        if (this.target == null) {
+            this.target = this.dragon.getPos();
         }
     }
 
@@ -31,7 +31,7 @@ extends AbstractPhase {
 
     @Override
     public void beginPhase() {
-        this.field_7042 = null;
+        this.target = null;
     }
 
     @Override
@@ -42,7 +42,7 @@ extends AbstractPhase {
     @Override
     @Nullable
     public Vec3d getTarget() {
-        return this.field_7042;
+        return this.target;
     }
 
     public PhaseType<HoverPhase> getType() {

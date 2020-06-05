@@ -11,9 +11,9 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5352;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -37,7 +37,7 @@ implements AutoCloseable {
     private final InsertionPosition position;
     private final boolean alwaysEnabled;
     private final boolean pinned;
-    private final class_5352 field_25346;
+    private final ResourcePackSource source;
 
     /*
      * Enabled aggressive block sorting
@@ -45,7 +45,7 @@ implements AutoCloseable {
      * Enabled aggressive exception aggregation
      */
     @Nullable
-    public static <T extends ResourcePackProfile> T of(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, class_5351<T> containerFactory, InsertionPosition insertionPosition, class_5352 arg) {
+    public static <T extends ResourcePackProfile> T of(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Factory<T> containerFactory, InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) {
         try (ResourcePack resourcePack = packFactory.get();){
             PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
             if (alwaysEnabled && packResourceMetadata == null) {
@@ -53,7 +53,7 @@ implements AutoCloseable {
                 packResourceMetadata = BROKEN_PACK_META;
             }
             if (packResourceMetadata != null) {
-                T t = containerFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition, arg);
+                T t = containerFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
                 return t;
             }
             LOGGER.warn("Couldn't find pack meta for pack {}", (Object)name);
@@ -64,7 +64,7 @@ implements AutoCloseable {
         return null;
     }
 
-    public ResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Text displayName, Text description, ResourcePackCompatibility compatibility, InsertionPosition direction, boolean pinned, class_5352 arg) {
+    public ResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Text displayName, Text description, ResourcePackCompatibility compatibility, InsertionPosition direction, boolean pinned, ResourcePackSource source) {
         this.name = name;
         this.packGetter = packFactory;
         this.displayName = displayName;
@@ -73,11 +73,11 @@ implements AutoCloseable {
         this.alwaysEnabled = alwaysEnabled;
         this.position = direction;
         this.pinned = pinned;
-        this.field_25346 = arg;
+        this.source = source;
     }
 
-    public ResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, ResourcePack pack, PackResourceMetadata metadata, InsertionPosition direction, class_5352 arg) {
-        this(name, alwaysEnabled, packFactory, new LiteralText(pack.getName()), metadata.getDescription(), ResourcePackCompatibility.from(metadata.getPackFormat()), direction, false, arg);
+    public ResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, ResourcePack pack, PackResourceMetadata metadata, InsertionPosition direction, ResourcePackSource source) {
+        this(name, alwaysEnabled, packFactory, new LiteralText(pack.getName()), metadata.getDescription(), ResourcePackCompatibility.from(metadata.getPackFormat()), direction, false, source);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -91,7 +91,7 @@ implements AutoCloseable {
     }
 
     public Text getInformationText(boolean enabled) {
-        return Texts.bracketed(this.field_25346.decorate(new LiteralText(this.name))).styled(style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED).withInsertion(StringArgumentType.escapeIfRequired(this.name)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description))));
+        return Texts.bracketed(this.source.decorate(new LiteralText(this.name))).styled(style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED).withInsertion(StringArgumentType.escapeIfRequired(this.name)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description))));
     }
 
     public ResourcePackCompatibility getCompatibility() {
@@ -119,8 +119,8 @@ implements AutoCloseable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public class_5352 method_29483() {
-        return this.field_25346;
+    public ResourcePackSource getSource() {
+        return this.source;
     }
 
     public boolean equals(Object o) {
@@ -172,9 +172,9 @@ implements AutoCloseable {
     }
 
     @FunctionalInterface
-    public static interface class_5351<T extends ResourcePackProfile> {
+    public static interface Factory<T extends ResourcePackProfile> {
         @Nullable
-        public T create(String var1, boolean var2, Supplier<ResourcePack> var3, ResourcePack var4, PackResourceMetadata var5, InsertionPosition var6, class_5352 var7);
+        public T create(String var1, boolean var2, Supplier<ResourcePack> var3, ResourcePack var4, PackResourceMetadata var5, InsertionPosition var6, ResourcePackSource var7);
     }
 }
 

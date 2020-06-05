@@ -26,21 +26,21 @@ implements AutoCloseable {
     private final Set<ResourcePackProvider> providers;
     private Map<String, T> profiles = ImmutableMap.of();
     private List<T> enabled = ImmutableList.of();
-    private final ResourcePackProfile.class_5351<T> profileFactory;
+    private final ResourcePackProfile.Factory<T> profileFactory;
 
-    public ResourcePackManager(ResourcePackProfile.class_5351<T> arg, ResourcePackProvider ... resourcePackProviders) {
-        this.profileFactory = arg;
-        this.providers = ImmutableSet.copyOf(resourcePackProviders);
+    public ResourcePackManager(ResourcePackProfile.Factory<T> profileFactory, ResourcePackProvider ... providers) {
+        this.profileFactory = profileFactory;
+        this.providers = ImmutableSet.copyOf(providers);
     }
 
     public void scanPacks() {
         List list = this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList());
         this.close();
-        this.profiles = this.method_29212();
-        this.enabled = this.method_29208(list);
+        this.profiles = this.providePackProfiles();
+        this.enabled = this.buildEnabledProfiles(list);
     }
 
-    private Map<String, T> method_29212() {
+    private Map<String, T> providePackProfiles() {
         TreeMap map = Maps.newTreeMap();
         for (ResourcePackProvider resourcePackProvider : this.providers) {
             resourcePackProvider.register(resourcePackProfile -> map.put(resourcePackProfile.getName(), resourcePackProfile), this.profileFactory);
@@ -49,11 +49,11 @@ implements AutoCloseable {
     }
 
     public void setEnabledProfiles(Collection<String> enabled) {
-        this.enabled = this.method_29208(enabled);
+        this.enabled = this.buildEnabledProfiles(enabled);
     }
 
-    private List<T> method_29208(Collection<String> collection) {
-        List list = this.method_29209(collection).collect(Collectors.toList());
+    private List<T> buildEnabledProfiles(Collection<String> enabledNames) {
+        List list = this.streamProfilesByName(enabledNames).collect(Collectors.toList());
         for (ResourcePackProfile resourcePackProfile : this.profiles.values()) {
             if (!resourcePackProfile.isAlwaysEnabled() || list.contains(resourcePackProfile)) continue;
             resourcePackProfile.getInitialPosition().insert(list, resourcePackProfile, Functions.identity(), false);
@@ -61,11 +61,11 @@ implements AutoCloseable {
         return ImmutableList.copyOf(list);
     }
 
-    private Stream<T> method_29209(Collection<String> collection) {
-        return collection.stream().map(this.profiles::get).filter(Objects::nonNull);
+    private Stream<T> streamProfilesByName(Collection<String> names) {
+        return names.stream().map(this.profiles::get).filter(Objects::nonNull);
     }
 
-    public Collection<String> method_29206() {
+    public Collection<String> getNames() {
         return this.profiles.keySet();
     }
 
@@ -73,7 +73,7 @@ implements AutoCloseable {
         return this.profiles.values();
     }
 
-    public Collection<String> method_29210() {
+    public Collection<String> getEnabledNames() {
         return this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableSet.toImmutableSet());
     }
 
@@ -91,11 +91,11 @@ implements AutoCloseable {
         this.profiles.values().forEach(ResourcePackProfile::close);
     }
 
-    public boolean method_29207(String string) {
-        return this.profiles.containsKey(string);
+    public boolean hasProfile(String name) {
+        return this.profiles.containsKey(name);
     }
 
-    public List<ResourcePack> method_29211() {
+    public List<ResourcePack> createResourcePacks() {
         return this.enabled.stream().map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList());
     }
 }

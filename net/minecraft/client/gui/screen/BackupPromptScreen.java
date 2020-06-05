@@ -7,12 +7,12 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ extends Screen {
     protected final Callback callback;
     private final Text subtitle;
     private final boolean showEraseCacheCheckbox;
-    private final List<class_5348> wrappedText = Lists.newArrayList();
+    private final List<StringRenderable> wrappedText = Lists.newArrayList();
     private CheckboxWidget eraseCacheCheckbox;
 
     public BackupPromptScreen(@Nullable Screen parent, Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
@@ -56,8 +56,8 @@ extends Screen {
         this.renderBackground(matrices);
         this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
         int i = 70;
-        for (class_5348 lv : this.wrappedText) {
-            this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 0xFFFFFF);
+        for (StringRenderable stringRenderable : this.wrappedText) {
+            this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 0xFFFFFF);
             i += this.textRenderer.fontHeight;
         }
         super.render(matrices, mouseX, mouseY, delta);

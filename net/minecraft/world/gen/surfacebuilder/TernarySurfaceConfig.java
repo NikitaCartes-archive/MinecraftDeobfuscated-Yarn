@@ -12,7 +12,7 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 
 public class TernarySurfaceConfig
 implements SurfaceConfig {
-    public static final Codec<TernarySurfaceConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.field_24734.fieldOf("top_material")).forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.topMaterial), ((MapCodec)BlockState.field_24734.fieldOf("under_material")).forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.underMaterial), ((MapCodec)BlockState.field_24734.fieldOf("underwater_material")).forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.underwaterMaterial)).apply((Applicative<TernarySurfaceConfig, ?>)instance, TernarySurfaceConfig::new));
+    public static final Codec<TernarySurfaceConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("top_material")).forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.topMaterial), ((MapCodec)BlockState.CODEC.fieldOf("under_material")).forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.underMaterial), ((MapCodec)BlockState.CODEC.fieldOf("underwater_material")).forGetter(ternarySurfaceConfig -> ternarySurfaceConfig.underwaterMaterial)).apply((Applicative<TernarySurfaceConfig, ?>)instance, TernarySurfaceConfig::new));
     private final BlockState topMaterial;
     private final BlockState underMaterial;
     private final BlockState underwaterMaterial;

@@ -13,7 +13,7 @@ import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 import org.jetbrains.annotations.Nullable;
 
 public class TimeCheckLootCondition
@@ -28,7 +28,7 @@ implements LootCondition {
     }
 
     @Override
-    public LootConditionType method_29325() {
+    public LootConditionType getType() {
         return LootConditionTypes.TIME_CHECK;
     }
 
@@ -47,8 +47,8 @@ implements LootCondition {
         return this.test((LootContext)context);
     }
 
-    public static class Factory
-    implements JsonSerializable<TimeCheckLootCondition> {
+    public static class Serializer
+    implements JsonSerializer<TimeCheckLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, TimeCheckLootCondition timeCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("period", timeCheckLootCondition.period);
@@ -63,8 +63,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 }

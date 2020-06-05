@@ -42,8 +42,8 @@ extends TorchBlock {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (moved) {
             return;
         }
         for (Direction direction : Direction.values()) {

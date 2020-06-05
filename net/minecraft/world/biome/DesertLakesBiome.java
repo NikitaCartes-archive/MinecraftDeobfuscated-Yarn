@@ -16,7 +16,7 @@ extends Biome {
     public DesertLakesBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.DESERT).depth(0.225f).scale(0.25f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent("desert"));
         DefaultBiomeFeatures.method_28440(this);
-        this.addStructureFeature(DefaultBiomeFeatures.DESERT_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.DESERT_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDesertLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

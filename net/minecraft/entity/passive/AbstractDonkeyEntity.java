@@ -135,7 +135,7 @@ extends HorseBaseEntity {
         if (!this.isBaby()) {
             if (this.isTame() && player.shouldCancelInteraction()) {
                 this.openInventory(player);
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             if (this.hasPassengers()) {
                 return super.interactMob(player, hand);
@@ -147,11 +147,11 @@ extends HorseBaseEntity {
                 if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
-                return bl ? ActionResult.method_29236(this.world.isClient) : ActionResult.CONSUME;
+                return bl ? ActionResult.success(this.world.isClient) : ActionResult.CONSUME;
             }
             if (!this.isTame()) {
                 this.playAngrySound();
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {
                 this.setHasChest(true);
@@ -160,18 +160,18 @@ extends HorseBaseEntity {
                     itemStack.decrement(1);
                 }
                 this.onChestedStatusChanged();
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
                 this.openInventory(player);
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
         }
         if (this.isBaby()) {
             return super.interactMob(player, hand);
         }
         this.putPlayerOnBack(player);
-        return ActionResult.method_29236(this.world.isClient);
+        return ActionResult.success(this.world.isClient);
     }
 
     protected void playAddChestSound() {

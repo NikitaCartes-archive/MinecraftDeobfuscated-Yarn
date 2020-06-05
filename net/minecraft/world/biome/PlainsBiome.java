@@ -16,10 +16,10 @@ public final class PlainsBiome
 extends Biome {
     protected PlainsBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.PLAINS).depth(0.125f).scale(0.05f).temperature(0.8f).downfall(0.4f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.0f, 1.0f))));
-        this.addStructureFeature(DefaultBiomeFeatures.field_24706);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24687);
+        this.addStructureFeature(DefaultBiomeFeatures.PLAINS_VILLAGE);
+        this.addStructureFeature(DefaultBiomeFeatures.PILLAGER_OUTPOST);
         DefaultBiomeFeatures.method_28440(this);
-        this.addStructureFeature(DefaultBiomeFeatures.STANDARD_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

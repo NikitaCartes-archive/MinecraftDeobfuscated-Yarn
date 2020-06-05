@@ -103,7 +103,7 @@ extends PersistentState {
 
     @Override
     public CompoundTag toTag(CompoundTag tag2) {
-        Identifier.field_25139.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(tag -> tag2.put("dimension", (Tag)tag));
+        Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(tag -> tag2.put("dimension", (Tag)tag));
         tag2.putInt("xCenter", this.xCenter);
         tag2.putInt("zCenter", this.zCenter);
         tag2.putByte("scale", this.scale);

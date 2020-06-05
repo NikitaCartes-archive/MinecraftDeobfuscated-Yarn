@@ -70,7 +70,7 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
             return RenderLayer.getEntityTranslucent(identifier, false);
         }
         if (bl) {
-            return RenderLayer.getCutoutNoCull(identifier, false);
+            return RenderLayer.getEntityCutoutNoCull(identifier, false);
         }
         return null;
     }

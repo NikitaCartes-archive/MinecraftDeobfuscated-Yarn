@@ -6,7 +6,6 @@ package net.minecraft.realms;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -15,6 +14,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ extends RealmsScreen {
     private final String title;
     private final Text reason;
     @Nullable
-    private List<class_5348> lines;
+    private List<StringRenderable> lines;
     private final Screen parent;
     private int textHeight;
 
@@ -60,8 +60,8 @@ extends RealmsScreen {
         this.drawCenteredString(matrices, this.textRenderer, this.title, this.width / 2, this.height / 2 - this.textHeight / 2 - this.textRenderer.fontHeight * 2, 0xAAAAAA);
         int i = this.height / 2 - this.textHeight / 2;
         if (this.lines != null) {
-            for (class_5348 lv : this.lines) {
-                this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 0xFFFFFF);
+            for (StringRenderable stringRenderable : this.lines) {
+                this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 0xFFFFFF);
                 i += this.textRenderer.fontHeight;
             }
         }

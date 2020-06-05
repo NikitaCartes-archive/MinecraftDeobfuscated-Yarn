@@ -69,9 +69,9 @@ extends LootPoolEntry {
     }
 
     public static abstract class Serializer<T extends LeafEntry>
-    extends LootPoolEntry.class_5337<T> {
+    extends LootPoolEntry.Serializer<T> {
         @Override
-        public void method_422(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
+        public void addEntryFields(JsonObject jsonObject, T leafEntry, JsonSerializationContext jsonSerializationContext) {
             if (((LeafEntry)leafEntry).weight != 1) {
                 jsonObject.addProperty("weight", ((LeafEntry)leafEntry).weight);
             }
@@ -94,8 +94,8 @@ extends LootPoolEntry {
         protected abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, int var3, int var4, LootCondition[] var5, LootFunction[] var6);
 
         @Override
-        public /* synthetic */ LootPoolEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ LootPoolEntry fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+            return this.fromJson(json, context, conditions);
         }
     }
 

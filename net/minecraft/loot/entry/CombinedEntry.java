@@ -47,11 +47,11 @@ extends LootPoolEntry {
         return this.predicate.expand(lootContext, consumer);
     }
 
-    public static <T extends CombinedEntry> LootPoolEntry.class_5337<T> createSerializer(final Factory<T> factory) {
-        return new LootPoolEntry.class_5337<T>(){
+    public static <T extends CombinedEntry> LootPoolEntry.Serializer<T> createSerializer(final Factory<T> factory) {
+        return new LootPoolEntry.Serializer<T>(){
 
             @Override
-            public void method_422(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
+            public void addEntryFields(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
                 jsonObject.add("children", jsonSerializationContext.serialize(((CombinedEntry)combinedEntry).children));
             }
 
@@ -62,8 +62,8 @@ extends LootPoolEntry {
             }
 
             @Override
-            public /* synthetic */ LootPoolEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-                return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+            public /* synthetic */ LootPoolEntry fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
+                return this.fromJson(json, context, conditions);
             }
         };
     }

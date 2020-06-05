@@ -33,11 +33,35 @@ public class GameRules {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<Key<?>, Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> Key.method_20772(key)));
     public static final Key<BooleanRule> DO_FIRE_TICK = GameRules.register("doFireTick", Category.UPDATES, BooleanRule.method_20755(true));
-    public static final Key<BooleanRule> MOB_GRIEFING = GameRules.register("mobGriefing", Category.MOBS, BooleanRule.method_20755(true));
-    public static final Key<BooleanRule> KEEP_INVENTORY = GameRules.register("keepInventory", Category.PLAYER, BooleanRule.method_20755(false));
-    public static final Key<BooleanRule> DO_MOB_SPAWNING = GameRules.register("doMobSpawning", Category.SPAWNING, BooleanRule.method_20755(true));
-    public static final Key<BooleanRule> DO_MOB_LOOT = GameRules.register("doMobLoot", Category.DROPS, BooleanRule.method_20755(true));
-    public static final Key<BooleanRule> DO_TILE_DROPS = GameRules.register("doTileDrops", Category.DROPS, BooleanRule.method_20755(true));
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether mobs can modify the world.
+     * 
+     * <p>Generally one is expected to test this rule before an entity modifies the world.
+     * 
+     * <p>In vanilla, this includes:
+     * <ul>
+     * <li>Whether creeper explosions destroy blocks
+     * <li>Whether a zombie can break down a door
+     * <li>Whether a wither killing an entity will place or drop a wither rose
+     * </ul>
+     */
+    public static final Key<BooleanRule> field_19388 = GameRules.register("mobGriefing", Category.MOBS, BooleanRule.method_20755(true));
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether player inventories should be persist through respawning.
+     */
+    public static final Key<BooleanRule> field_19389 = GameRules.register("keepInventory", Category.PLAYER, BooleanRule.method_20755(false));
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether mobs can spawn naturally.
+     */
+    public static final Key<BooleanRule> field_19390 = GameRules.register("doMobSpawning", Category.SPAWNING, BooleanRule.method_20755(true));
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether mobs should drop loot on death.
+     */
+    public static final Key<BooleanRule> field_19391 = GameRules.register("doMobLoot", Category.DROPS, BooleanRule.method_20755(true));
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether blocks should drop their items when broken.
+     */
+    public static final Key<BooleanRule> field_19392 = GameRules.register("doTileDrops", Category.DROPS, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> DO_ENTITY_DROPS = GameRules.register("doEntityDrops", Category.DROPS, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> COMMAND_BLOCK_OUTPUT = GameRules.register("commandBlockOutput", Category.CHAT, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> NATURAL_REGENERATION = GameRules.register("naturalRegeneration", Category.PLAYER, BooleanRule.method_20755(true));
@@ -46,7 +70,13 @@ public class GameRules {
     public static final Key<BooleanRule> SHOW_DEATH_MESSAGES = GameRules.register("showDeathMessages", Category.CHAT, BooleanRule.method_20755(true));
     public static final Key<IntRule> RANDOM_TICK_SPEED = GameRules.register("randomTickSpeed", Category.UPDATES, IntRule.method_20764(3));
     public static final Key<BooleanRule> SEND_COMMAND_FEEDBACK = GameRules.register("sendCommandFeedback", Category.CHAT, BooleanRule.method_20755(true));
-    public static final Key<BooleanRule> REDUCED_DEBUG_INFO = GameRules.register("reducedDebugInfo", Category.MISC, BooleanRule.method_20757(false, (server, rule) -> {
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether clients' {@linkplain net.minecraft.client.gui.hud.DebugHud debug HUD}s show reduced information.
+     * 
+     * <p>When the value of this rule is changed, all connected clients will be notified to update their display.
+     * In vanilla, this includes the visibility of coordinates on the clients' debug HUDs.
+     */
+    public static final Key<BooleanRule> field_19401 = GameRules.register("reducedDebugInfo", Category.MISC, BooleanRule.method_20757(false, (server, rule) -> {
         byte b = rule.get() ? (byte)22 : (byte)23;
         for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
             serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
@@ -55,14 +85,28 @@ public class GameRules {
     public static final Key<BooleanRule> SPECTATORS_GENERATE_CHUNKS = GameRules.register("spectatorsGenerateChunks", Category.PLAYER, BooleanRule.method_20755(true));
     public static final Key<IntRule> SPAWN_RADIUS = GameRules.register("spawnRadius", Category.PLAYER, IntRule.method_20764(10));
     public static final Key<BooleanRule> DISABLE_ELYTRA_MOVEMENT_CHECK = GameRules.register("disableElytraMovementCheck", Category.PLAYER, BooleanRule.method_20755(false));
-    public static final Key<IntRule> MAX_ENTITY_CRAMMING = GameRules.register("maxEntityCramming", Category.MOBS, IntRule.method_20764(24));
+    /**
+     * A {@linkplain GameRule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
+     */
+    public static final Key<IntRule> field_19405 = GameRules.register("maxEntityCramming", Category.MOBS, IntRule.method_20764(24));
     public static final Key<BooleanRule> DO_WEATHER_CYCLE = GameRules.register("doWeatherCycle", Category.UPDATES, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> DO_LIMITED_CRAFTING = GameRules.register("doLimitedCrafting", Category.PLAYER, BooleanRule.method_20755(false));
     public static final Key<IntRule> MAX_COMMAND_CHAIN_LENGTH = GameRules.register("maxCommandChainLength", Category.MISC, IntRule.method_20764(65536));
-    public static final Key<BooleanRule> ANNOUNCE_ADVANCEMENTS = GameRules.register("announceAdvancements", Category.CHAT, BooleanRule.method_20755(true));
-    public static final Key<BooleanRule> DISABLE_RAIDS = GameRules.register("disableRaids", Category.MOBS, BooleanRule.method_20755(false));
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether a player's advancements should be announced in chat.
+     */
+    public static final Key<BooleanRule> field_19409 = GameRules.register("announceAdvancements", Category.CHAT, BooleanRule.method_20755(true));
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether raids should occur.
+     * 
+     * <p>If this rule is set to {@code true} while raids are occurring, the raids will be stopped.
+     */
+    public static final Key<BooleanRule> field_19422 = GameRules.register("disableRaids", Category.MOBS, BooleanRule.method_20755(false));
     public static final Key<BooleanRule> DO_INSOMNIA = GameRules.register("doInsomnia", Category.SPAWNING, BooleanRule.method_20755(true));
-    public static final Key<BooleanRule> DO_IMMEDIATE_RESPAWN = GameRules.register("doImmediateRespawn", Category.PLAYER, BooleanRule.method_20757(false, (server, rule) -> {
+    /**
+     * A {@linkplain GameRule game rule} which regulates whether a player should immediately respawn upon death.
+     */
+    public static final Key<BooleanRule> field_20638 = GameRules.register("doImmediateRespawn", Category.PLAYER, BooleanRule.method_20757(false, (server, rule) -> {
         for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
             serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(11, rule.get() ? 1.0f : 0.0f));
         }
@@ -124,17 +168,17 @@ public class GameRules {
         Key<?> key2 = key;
         Type<?> type2 = type;
         consumer.accept(key2, type2);
-        type2.method_27336(consumer, key2);
+        type2.accept(consumer, key2);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setAllValues(GameRules gameRules, @Nullable MinecraftServer server) {
-        gameRules.rules.keySet().forEach(key -> this.setValue((Key)key, gameRules, server));
+    public void setAllValues(GameRules rules, @Nullable MinecraftServer server) {
+        rules.rules.keySet().forEach(key -> this.setValue((Key)key, rules, server));
     }
 
     @Environment(value=EnvType.CLIENT)
-    private <T extends Rule<T>> void setValue(Key<T> key, GameRules gameRules, @Nullable MinecraftServer server) {
-        T rule = gameRules.get(key);
+    private <T extends Rule<T>> void setValue(Key<T> key, GameRules rules, @Nullable MinecraftServer server) {
+        T rule = rules.get(key);
         ((Rule)this.get(key)).setValue(rule, server);
     }
 
@@ -364,13 +408,13 @@ public class GameRules {
         private final Supplier<ArgumentType<?>> argumentType;
         private final Function<Type<T>, T> ruleFactory;
         private final BiConsumer<MinecraftServer, T> changeCallback;
-        private final Acceptor<T> field_24104;
+        private final Acceptor<T> ruleAcceptor;
 
-        private Type(Supplier<ArgumentType<?>> argumentType, Function<Type<T>, T> ruleFactory, BiConsumer<MinecraftServer, T> changeCallback, Acceptor<T> acceptor) {
+        private Type(Supplier<ArgumentType<?>> argumentType, Function<Type<T>, T> ruleFactory, BiConsumer<MinecraftServer, T> changeCallback, Acceptor<T> ruleAcceptor) {
             this.argumentType = argumentType;
             this.ruleFactory = ruleFactory;
             this.changeCallback = changeCallback;
-            this.field_24104 = acceptor;
+            this.ruleAcceptor = ruleAcceptor;
         }
 
         public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String name) {
@@ -381,8 +425,8 @@ public class GameRules {
             return (T)((Rule)this.ruleFactory.apply(this));
         }
 
-        public void method_27336(TypeConsumer consumer, Key<T> key) {
-            this.field_24104.call(consumer, key, this);
+        public void accept(TypeConsumer consumer, Key<T> key) {
+            this.ruleAcceptor.call(consumer, key, this);
         }
     }
 

@@ -188,7 +188,7 @@ extends Screen {
         }
 
         private void renderIcon(ItemRenderer itemRenderer, int x, int y) {
-            itemRenderer.renderGuiItem(this.icon, x, y);
+            itemRenderer.renderInGuiWithOverrides(this.icon, x, y);
         }
 
         private Text getText() {

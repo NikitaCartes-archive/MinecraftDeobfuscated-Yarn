@@ -162,7 +162,7 @@ implements Font {
         @Nullable
         public Font load(ResourceManager manager) {
             try (Resource resource = manager.getResource(this.filename);){
-                NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
+                NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
                 int i = nativeImage.getWidth();
                 int j = nativeImage.getHeight();
                 int k = i / this.chars.get(0).length;

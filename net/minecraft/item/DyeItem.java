@@ -31,7 +31,7 @@ extends Item {
         if (entity instanceof SheepEntity && (sheepEntity = (SheepEntity)entity).isAlive() && !sheepEntity.isSheared() && sheepEntity.getColor() != this.color) {
             sheepEntity.setColor(this.color);
             stack.decrement(1);
-            return ActionResult.method_29236(user.world.isClient);
+            return ActionResult.success(user.world.isClient);
         }
         return ActionResult.PASS;
     }

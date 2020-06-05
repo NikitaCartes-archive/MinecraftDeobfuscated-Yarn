@@ -35,7 +35,7 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public LootFunctionType method_29321() {
+    public LootFunctionType getType() {
         return LootFunctionTypes.LOOTING_ENCHANT;
     }
 
@@ -69,8 +69,8 @@ extends ConditionalLootFunction {
         return new Builder(countRange);
     }
 
-    public static class Factory
-    extends ConditionalLootFunction.Factory<LootingEnchantLootFunction> {
+    public static class Serializer
+    extends ConditionalLootFunction.Serializer<LootingEnchantLootFunction> {
         @Override
         public void toJson(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);

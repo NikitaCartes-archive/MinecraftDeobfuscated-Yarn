@@ -32,9 +32,9 @@ public class BasaltDeltasBiome
 extends Biome {
     protected BasaltDeltasBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.BASALT_DELTAS, SurfaceBuilder.BASALT_DELTA_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.NETHER).depth(0.1f).scale(0.2f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(4341314).fogColor(6840176).particleConfig(new BiomeParticleConfig(ParticleTypes.WHITE_ASH, 0.118093334f)).loopSound(SoundEvents.AMBIENT_BASALT_DELTAS_LOOP).moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_BASALT_DELTAS_MOOD, 6000, 8, 2.0)).additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_BASALT_DELTAS_ADDITIONS, 0.0111)).music(MusicType.method_27283(SoundEvents.MUSIC_NETHER_BASALT_DELTAS)).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(-0.5f, 0.0f, 0.0f, 0.0f, 0.175f))));
-        this.addStructureFeature(DefaultBiomeFeatures.NETHER_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.NETHER_RUINED_PORTAL);
         this.addCarver(GenerationStep.Carver.AIR, BasaltDeltasBiome.configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2f)));
-        this.addStructureFeature(DefaultBiomeFeatures.field_24701);
+        this.addStructureFeature(DefaultBiomeFeatures.FORTRESS);
         this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.DELTA_FEATURE.configure(DefaultBiomeFeatures.DELTA_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(40))));
         this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.SPRING_FEATURE.configure(DefaultBiomeFeatures.LAVA_SPRING_CONFIG).createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(40, 8, 16, 256))));
         this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.BASALT_COLUMNS.configure(DefaultBiomeFeatures.BASALT_COLUMN_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(4))));

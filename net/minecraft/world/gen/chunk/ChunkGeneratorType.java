@@ -17,22 +17,22 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5308;
-import net.minecraft.class_5309;
-import net.minecraft.class_5310;
-import net.minecraft.class_5311;
-import net.minecraft.class_5314;
-import net.minecraft.class_5324;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.NumberCodecs;
+import net.minecraft.world.gen.chunk.NoiseConfig;
+import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
+import net.minecraft.world.gen.chunk.SlideConfig;
+import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorType {
-    public static final Codec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)class_5311.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorType::getConfig), ((MapCodec)class_5309.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorType::method_28559), ((MapCodec)BlockState.field_24734.fieldOf("default_block")).forGetter(ChunkGeneratorType::getDefaultBlock), ((MapCodec)BlockState.field_24734.fieldOf("default_fluid")).forGetter(ChunkGeneratorType::getDefaultFluid), ((MapCodec)class_5324.method_29229(-20, 276).fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorType::getBedrockCeilingY), ((MapCodec)class_5324.method_29229(-20, 276).fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorType::getBedrockFloorY), ((MapCodec)class_5324.method_29229(0, 255).fieldOf("sea_level")).forGetter(ChunkGeneratorType::method_28561), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorType::method_28562)).apply((Applicative<ChunkGeneratorType, ?>)instance, ChunkGeneratorType::new));
+    public static final Codec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorType::getConfig), ((MapCodec)NoiseConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorType::method_28559), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorType::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorType::getDefaultFluid), ((MapCodec)NumberCodecs.rangedInt(-20, 276).fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorType::getBedrockCeilingY), ((MapCodec)NumberCodecs.rangedInt(-20, 276).fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorType::getBedrockFloorY), ((MapCodec)NumberCodecs.rangedInt(0, 255).fieldOf("sea_level")).forGetter(ChunkGeneratorType::method_28561), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorType::method_28562)).apply((Applicative<ChunkGeneratorType, ?>)instance, ChunkGeneratorType::new));
     public static final Codec<ChunkGeneratorType> field_24781 = Codec.either(Preset.field_24788, field_24780).xmap(either -> either.map(Preset::getChunkGeneratorType, Function.identity()), chunkGeneratorType -> chunkGeneratorType.field_24787.map(Either::left).orElseGet(() -> Either.right(chunkGeneratorType)));
-    private final class_5311 config;
-    private final class_5309 field_24782;
+    private final StructuresConfig config;
+    private final NoiseConfig field_24782;
     private final BlockState defaultBlock;
     private final BlockState defaultFluid;
     private final int bedrockCeilingY;
@@ -41,13 +41,13 @@ public final class ChunkGeneratorType {
     private final boolean field_24786;
     private final Optional<Preset> field_24787;
 
-    private ChunkGeneratorType(class_5311 config, class_5309 arg, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int k, boolean bl) {
-        this(config, arg, defaultBlock, defaultFluid, i, j, k, bl, Optional.empty());
+    private ChunkGeneratorType(StructuresConfig config, NoiseConfig noiseConfig, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int k, boolean bl) {
+        this(config, noiseConfig, defaultBlock, defaultFluid, i, j, k, bl, Optional.empty());
     }
 
-    private ChunkGeneratorType(class_5311 config, class_5309 arg, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int k, boolean bl, Optional<Preset> optional) {
+    private ChunkGeneratorType(StructuresConfig config, NoiseConfig noiseConfig, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int k, boolean bl, Optional<Preset> optional) {
         this.config = config;
-        this.field_24782 = arg;
+        this.field_24782 = noiseConfig;
         this.defaultBlock = defaultBlock;
         this.defaultFluid = defaultFluid;
         this.bedrockCeilingY = i;
@@ -57,11 +57,11 @@ public final class ChunkGeneratorType {
         this.field_24787 = optional;
     }
 
-    public class_5311 getConfig() {
+    public StructuresConfig getConfig() {
         return this.config;
     }
 
-    public class_5309 method_28559() {
+    public NoiseConfig method_28559() {
         return this.field_24782;
     }
 
@@ -106,13 +106,13 @@ public final class ChunkGeneratorType {
 
     public static class Preset {
         private static final Map<Identifier, Preset> BY_ID = Maps.newHashMap();
-        public static final Codec<Preset> field_24788 = Identifier.field_25139.flatXmap(identifier -> Optional.ofNullable(BY_ID.get(identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + identifier)), preset -> DataResult.success(preset.id)).stable();
-        public static final Preset OVERWORLD = new Preset("overworld", preset -> Preset.createOverworldType(new class_5311(true), false, preset));
-        public static final Preset AMPLIFIED = new Preset("amplified", preset -> Preset.createOverworldType(new class_5311(true), true, preset));
-        public static final Preset NETHER = new Preset("nether", preset -> Preset.createCavesType(new class_5311(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), preset));
-        public static final Preset END = new Preset("end", preset -> Preset.createIslandsType(new class_5311(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), preset, true));
-        public static final Preset CAVES = new Preset("caves", preset -> Preset.createCavesType(new class_5311(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset));
-        public static final Preset FLOATING_ISLANDS = new Preset("floating_islands", preset -> Preset.createIslandsType(new class_5311(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset, false));
+        public static final Codec<Preset> field_24788 = Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(BY_ID.get(identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + identifier)), preset -> DataResult.success(preset.id)).stable();
+        public static final Preset OVERWORLD = new Preset("overworld", preset -> Preset.createOverworldType(new StructuresConfig(true), false, preset));
+        public static final Preset AMPLIFIED = new Preset("amplified", preset -> Preset.createOverworldType(new StructuresConfig(true), true, preset));
+        public static final Preset NETHER = new Preset("nether", preset -> Preset.createCavesType(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), preset));
+        public static final Preset END = new Preset("end", preset -> Preset.createIslandsType(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), preset, true));
+        public static final Preset CAVES = new Preset("caves", preset -> Preset.createCavesType(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset));
+        public static final Preset FLOATING_ISLANDS = new Preset("floating_islands", preset -> Preset.createIslandsType(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset, false));
         private final Text text;
         private final Identifier id;
         private final ChunkGeneratorType chunkGeneratorType;
@@ -128,19 +128,19 @@ public final class ChunkGeneratorType {
             return this.chunkGeneratorType;
         }
 
-        private static ChunkGeneratorType createIslandsType(class_5311 config, BlockState defaultBlock, BlockState defaultFluid, Preset preset, boolean bl) {
-            return new ChunkGeneratorType(config, new class_5309(128, new class_5308(2.0, 1.0, 80.0, 160.0), new class_5310(-3000, 64, -46), new class_5310(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, bl, false), defaultBlock, defaultFluid, -10, -10, 0, true, Optional.of(preset));
+        private static ChunkGeneratorType createIslandsType(StructuresConfig config, BlockState defaultBlock, BlockState defaultFluid, Preset preset, boolean bl) {
+            return new ChunkGeneratorType(config, new NoiseConfig(128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-3000, 64, -46), new SlideConfig(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, bl, false), defaultBlock, defaultFluid, -10, -10, 0, true, Optional.of(preset));
         }
 
-        private static ChunkGeneratorType createCavesType(class_5311 config, BlockState defaultBlock, BlockState defaultFluid, Preset preset) {
-            HashMap<StructureFeature<?>, class_5314> map = Maps.newHashMap(class_5311.field_24822);
-            map.put(StructureFeature.RUINED_PORTAL, new class_5314(25, 10, 34222645));
-            return new ChunkGeneratorType(new class_5311(Optional.ofNullable(config.method_28602()), map), new class_5309(128, new class_5308(1.0, 3.0, 80.0, 60.0), new class_5310(120, 3, 0), new class_5310(320, 4, -1), 1, 2, 0.0, 0.019921875, false, false, false, false), defaultBlock, defaultFluid, 0, 0, 32, true, Optional.of(preset));
+        private static ChunkGeneratorType createCavesType(StructuresConfig config, BlockState defaultBlock, BlockState defaultFluid, Preset preset) {
+            HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
+            map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
+            return new ChunkGeneratorType(new StructuresConfig(Optional.ofNullable(config.getStronghold()), map), new NoiseConfig(128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(120, 3, 0), new SlideConfig(320, 4, -1), 1, 2, 0.0, 0.019921875, false, false, false, false), defaultBlock, defaultFluid, 0, 0, 32, true, Optional.of(preset));
         }
 
-        private static ChunkGeneratorType createOverworldType(class_5311 arg, boolean bl, Preset preset) {
+        private static ChunkGeneratorType createOverworldType(StructuresConfig structuresConfig, boolean bl, Preset preset) {
             double d = 0.9999999814507745;
-            return new ChunkGeneratorType(arg, new class_5309(256, new class_5308(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new class_5310(-10, 3, 0), new class_5310(-30, 0, 0), 1, 2, 1.0, -0.46875, true, true, false, bl), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), -10, 0, 63, false, Optional.of(preset));
+            return new ChunkGeneratorType(structuresConfig, new NoiseConfig(256, new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new SlideConfig(-10, 3, 0), new SlideConfig(-30, 0, 0), 1, 2, 1.0, -0.46875, true, true, false, bl), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), -10, 0, 63, false, Optional.of(preset));
         }
     }
 }

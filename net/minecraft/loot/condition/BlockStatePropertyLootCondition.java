@@ -20,7 +20,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.registry.Registry;
 
 public class BlockStatePropertyLootCondition
@@ -34,7 +34,7 @@ implements LootCondition {
     }
 
     @Override
-    public LootConditionType method_29325() {
+    public LootConditionType getType() {
         return LootConditionTypes.BLOCK_STATE_PROPERTY;
     }
 
@@ -58,8 +58,8 @@ implements LootCondition {
         return this.test((LootContext)context);
     }
 
-    public static class Factory
-    implements JsonSerializable<BlockStatePropertyLootCondition> {
+    public static class Serializer
+    implements JsonSerializer<BlockStatePropertyLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, BlockStatePropertyLootCondition blockStatePropertyLootCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("block", Registry.BLOCK.getId(blockStatePropertyLootCondition.block).toString());
@@ -78,8 +78,8 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
     }
 

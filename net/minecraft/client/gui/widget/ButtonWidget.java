@@ -12,18 +12,18 @@ import net.minecraft.text.Text;
 @Environment(value=EnvType.CLIENT)
 public class ButtonWidget
 extends AbstractPressableButtonWidget {
-    public static final class_5316 field_25035 = (buttonWidget, matrixStack, i, j) -> {};
+    public static final TooltipSupplier EMPTY = (button, matrices, mouseX, mouseY) -> {};
     protected final PressAction onPress;
-    protected final class_5316 field_25036;
+    protected final TooltipSupplier tooltipSupplier;
 
     public ButtonWidget(int x, int y, int width, int height, Text message, PressAction onPress) {
-        this(x, y, width, height, message, onPress, field_25035);
+        this(x, y, width, height, message, onPress, EMPTY);
     }
 
-    public ButtonWidget(int i, int j, int k, int l, Text text, PressAction pressAction, class_5316 arg) {
+    public ButtonWidget(int i, int j, int k, int l, Text text, PressAction pressAction, TooltipSupplier tooltipSupplier) {
         super(i, j, k, l, text);
         this.onPress = pressAction;
-        this.field_25036 = arg;
+        this.tooltipSupplier = tooltipSupplier;
     }
 
     @Override
@@ -40,12 +40,12 @@ extends AbstractPressableButtonWidget {
     }
 
     @Override
-    public void renderToolTip(MatrixStack matrixStack, int i, int j) {
-        this.field_25036.onTooltip(this, matrixStack, i, j);
+    public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+        this.tooltipSupplier.onTooltip(this, matrices, mouseX, mouseY);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static interface class_5316 {
+    public static interface TooltipSupplier {
         public void onTooltip(ButtonWidget var1, MatrixStack var2, int var3, int var4);
     }
 

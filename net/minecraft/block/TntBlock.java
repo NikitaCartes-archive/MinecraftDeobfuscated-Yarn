@@ -101,7 +101,7 @@ extends Block {
                     itemStack.decrement(1);
                 }
             }
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         return super.onUse(state, world, pos, player, hand, hit);
     }

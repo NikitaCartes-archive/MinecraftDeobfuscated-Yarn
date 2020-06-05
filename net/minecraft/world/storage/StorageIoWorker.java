@@ -37,7 +37,7 @@ implements AutoCloseable {
 
     protected StorageIoWorker(File file, boolean bl, String string) {
         this.storage = new RegionBasedStorage(file, bl);
-        this.field_24468 = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(class_5276.values().length), Util.method_27958(), "IOWorker-" + string);
+        this.field_24468 = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(Priority.values().length), Util.method_27958(), "IOWorker-" + string);
     }
 
     public CompletableFuture<Void> setResult(ChunkPos pos, CompoundTag nbt) {
@@ -87,7 +87,7 @@ implements AutoCloseable {
     }
 
     private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> supplier) {
-        return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(class_5276.field_24469.ordinal(), () -> this.method_27939(messageListener, (Supplier)supplier)));
+        return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(Priority.HIGH.ordinal(), () -> this.method_27939(messageListener, (Supplier)supplier)));
     }
 
     private void writeResult() {
@@ -102,7 +102,7 @@ implements AutoCloseable {
     }
 
     private void method_27945() {
-        this.field_24468.send(new TaskQueue.PrioritizedTask(class_5276.field_24470.ordinal(), this::writeResult));
+        this.field_24468.send(new TaskQueue.PrioritizedTask(Priority.LOW.ordinal(), this::writeResult));
     }
 
     private void write(ChunkPos pos, Result result) {
@@ -120,7 +120,7 @@ implements AutoCloseable {
         if (!this.closed.compareAndSet(false, true)) {
             return;
         }
-        CompletableFuture completableFuture = this.field_24468.ask(messageListener -> new TaskQueue.PrioritizedTask(class_5276.field_24469.ordinal(), () -> messageListener.send(Unit.INSTANCE)));
+        CompletableFuture completableFuture = this.field_24468.ask(messageListener -> new TaskQueue.PrioritizedTask(Priority.HIGH.ordinal(), () -> messageListener.send(Unit.INSTANCE)));
         try {
             completableFuture.join();
         } catch (CompletionException completionException) {
@@ -155,9 +155,9 @@ implements AutoCloseable {
         }
     }
 
-    static enum class_5276 {
-        field_24469,
-        field_24470;
+    static enum Priority {
+        HIGH,
+        LOW;
 
     }
 }

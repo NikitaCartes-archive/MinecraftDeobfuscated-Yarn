@@ -99,13 +99,13 @@ extends AbstractTraderEntity {
                 player.incrementStat(Stats.TALKED_TO_VILLAGER);
             }
             if (this.getOffers().isEmpty()) {
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             if (!this.world.isClient) {
                 this.setCurrentCustomer(player);
                 this.sendOffers(player, this.getDisplayName(), 1);
             }
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         return super.interactMob(player, hand);
     }

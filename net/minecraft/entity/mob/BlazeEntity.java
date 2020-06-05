@@ -105,7 +105,7 @@ extends HostileEntity {
     }
 
     @Override
-    public boolean method_29503() {
+    public boolean hurtByWater() {
         return true;
     }
 

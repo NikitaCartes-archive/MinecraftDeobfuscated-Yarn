@@ -6,7 +6,7 @@ package net.minecraft.client.font;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Unit;
@@ -176,18 +176,17 @@ public class TextVisitFactory {
     }
 
     /**
-     * Visits the code points for every {@link Text#asString() partial string}
-     * of the texts in {@code text} and its siblings, applying the formatting
-     * codes within.
+     * Visits the code points for every literal string and the formatting codes
+     * supplied by the renderable.
      * 
      * <p>The visit is in forward direction.</p>
      * 
      * @return {@code true} if the full string was visited, or {@code false} indicating
      * the {@code visitor} terminated half-way
-     * @see Text#visit(Text.StyledVisitor, Style)
+     * @see StringRenderable#visit(StringRenderable.StyledVisitor, Style)
      */
-    public static boolean visitFormatted(class_5348 arg, Style style2, CharacterVisitor visitor) {
-        return !arg.visit((style, string) -> TextVisitFactory.visitFormatted(string, 0, style, visitor) ? Optional.empty() : VISIT_TERMINATED, style2).isPresent();
+    public static boolean visitFormatted(StringRenderable text, Style style2, CharacterVisitor visitor) {
+        return !text.visit((style, string) -> TextVisitFactory.visitFormatted(string, 0, style, visitor) ? Optional.empty() : VISIT_TERMINATED, style2).isPresent();
     }
 
     /**

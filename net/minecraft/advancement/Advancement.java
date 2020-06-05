@@ -20,7 +20,7 @@ import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -140,7 +140,7 @@ public class Advancement {
         private AdvancementRewards rewards = AdvancementRewards.NONE;
         private Map<String, AdvancementCriterion> criteria = Maps.newLinkedHashMap();
         private String[][] requirements;
-        private CriteriaMerger merger = CriteriaMerger.AND;
+        private CriterionMerger merger = CriterionMerger.AND;
 
         private Task(@Nullable Identifier parentId, @Nullable AdvancementDisplay display, AdvancementRewards rewards, Map<String, AdvancementCriterion> criteria, String[][] requirements) {
             this.parentId = parentId;
@@ -201,7 +201,7 @@ public class Advancement {
             return this;
         }
 
-        public Task criteriaMerger(CriteriaMerger merger) {
+        public Task criteriaMerger(CriterionMerger merger) {
             this.merger = merger;
             return this;
         }

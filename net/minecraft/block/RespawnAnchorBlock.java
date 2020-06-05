@@ -12,8 +12,6 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5360;
-import net.minecraft.class_5362;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
@@ -39,7 +37,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.explosion.DefaultExplosionBehavior;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class RespawnAnchorBlock
 extends Block {
@@ -61,7 +61,7 @@ extends Block {
             if (!player.abilities.creativeMode) {
                 itemStack.decrement(1);
             }
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         if (state.get(CHARGES) == 0) {
             return ActionResult.PASS;
@@ -76,21 +76,21 @@ extends Block {
             return RespawnAnchorBlock.canCharge(state) ? ActionResult.PASS : ActionResult.CONSUME;
         }
         if (!world.isClient) {
-            this.method_29561(state, world, pos);
+            this.explode(state, world, pos);
         }
-        return ActionResult.method_29236(world.isClient);
+        return ActionResult.success(world.isClient);
     }
 
-    private static boolean isChargeItem(ItemStack itemStack) {
-        return itemStack.getItem() == Items.GLOWSTONE;
+    private static boolean isChargeItem(ItemStack stack) {
+        return stack.getItem() == Items.GLOWSTONE;
     }
 
-    private static boolean canCharge(BlockState blockState) {
-        return blockState.get(CHARGES) < 4;
+    private static boolean canCharge(BlockState state) {
+        return state.get(CHARGES) < 4;
     }
 
-    private static boolean method_29560(BlockPos blockPos, World world) {
-        FluidState fluidState = world.getFluidState(blockPos);
+    private static boolean hasStillWater(BlockPos pos, World world) {
+        FluidState fluidState = world.getFluidState(pos);
         if (!fluidState.matches(FluidTags.WATER)) {
             return false;
         }
@@ -101,30 +101,30 @@ extends Block {
         if (f < 2.0f) {
             return false;
         }
-        FluidState fluidState2 = world.getFluidState(blockPos.down());
+        FluidState fluidState2 = world.getFluidState(pos.down());
         return !fluidState2.matches(FluidTags.WATER);
     }
 
-    private void method_29561(BlockState blockState, World world, final BlockPos blockPos2) {
-        world.removeBlock(blockPos2, false);
-        boolean bl = Direction.Type.HORIZONTAL.method_29716().map(blockPos2::offset).anyMatch(blockPos -> RespawnAnchorBlock.method_29560(blockPos, world));
-        final boolean bl2 = bl || world.getFluidState(blockPos2.up()).matches(FluidTags.WATER);
-        class_5362 lv = new class_5362(){
+    private void explode(BlockState state, World world, final BlockPos explodedPos) {
+        world.removeBlock(explodedPos, false);
+        boolean bl = Direction.Type.HORIZONTAL.stream().map(explodedPos::offset).anyMatch(blockPos -> RespawnAnchorBlock.hasStillWater(blockPos, world));
+        final boolean bl2 = bl || world.getFluidState(explodedPos.up()).matches(FluidTags.WATER);
+        ExplosionBehavior explosionBehavior = new ExplosionBehavior(){
 
             @Override
-            public Optional<Float> method_29555(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-                if (blockPos.equals(blockPos2) && bl2) {
+            public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
+                if (pos.equals(explodedPos) && bl2) {
                     return Optional.of(Float.valueOf(Blocks.WATER.getBlastResistance()));
                 }
-                return class_5360.field_25397.method_29555(explosion, blockView, blockPos, blockState, fluidState);
+                return DefaultExplosionBehavior.INSTANCE.getBlastResistance(explosion, world, pos, blockState, fluidState);
             }
 
             @Override
-            public boolean method_29554(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, float f) {
-                return class_5360.field_25397.method_29554(explosion, blockView, blockPos, blockState, f);
+            public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
+                return DefaultExplosionBehavior.INSTANCE.canDestroyBlock(explosion, world, pos, state, power);
             }
         };
-        world.createExplosion(null, DamageSource.netherBed(), lv, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
+        world.createExplosion(null, DamageSource.badRespawnPoint(), explosionBehavior, (double)explodedPos.getX() + 0.5, (double)explodedPos.getY() + 0.5, (double)explodedPos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
     }
 
     public static boolean isNether(World world) {

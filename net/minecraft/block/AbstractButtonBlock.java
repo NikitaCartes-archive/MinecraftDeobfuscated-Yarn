@@ -101,7 +101,7 @@ extends WallMountedBlock {
         }
         this.powerOn(state, world, pos);
         this.playClickSound(player, world, pos, true);
-        return ActionResult.method_29236(world.isClient);
+        return ActionResult.success(world.isClient);
     }
 
     public void powerOn(BlockState state, World world, BlockPos pos) {
@@ -117,14 +117,14 @@ extends WallMountedBlock {
     protected abstract SoundEvent getClickSound(boolean var1);
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (notify || state.isOf(newState.getBlock())) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (moved || state.isOf(newState.getBlock())) {
             return;
         }
         if (state.get(POWERED).booleanValue()) {
             this.updateNeighbors(state, world, pos);
         }
-        super.onStateReplaced(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override

@@ -173,11 +173,11 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (notify || state.isOf(newState.getBlock())) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (moved || state.isOf(newState.getBlock())) {
             return;
         }
-        super.onStateReplaced(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, moved);
         this.updateTarget(world, pos, state);
     }
 

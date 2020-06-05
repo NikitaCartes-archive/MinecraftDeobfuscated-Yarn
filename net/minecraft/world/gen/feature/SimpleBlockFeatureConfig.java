@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class SimpleBlockFeatureConfig
 implements FeatureConfig {
-    public static final Codec<SimpleBlockFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.field_24734.fieldOf("to_place")).forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.toPlace), ((MapCodec)BlockState.field_24734.listOf().fieldOf("place_on")).forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeOn), ((MapCodec)BlockState.field_24734.listOf().fieldOf("place_in")).forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeIn), ((MapCodec)BlockState.field_24734.listOf().fieldOf("place_under")).forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeUnder)).apply((Applicative<SimpleBlockFeatureConfig, ?>)instance, SimpleBlockFeatureConfig::new));
+    public static final Codec<SimpleBlockFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("to_place")).forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.toPlace), ((MapCodec)BlockState.CODEC.listOf().fieldOf("place_on")).forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeOn), ((MapCodec)BlockState.CODEC.listOf().fieldOf("place_in")).forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeIn), ((MapCodec)BlockState.CODEC.listOf().fieldOf("place_under")).forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeUnder)).apply((Applicative<SimpleBlockFeatureConfig, ?>)instance, SimpleBlockFeatureConfig::new));
     public final BlockState toPlace;
     public final List<BlockState> placeOn;
     public final List<BlockState> placeIn;

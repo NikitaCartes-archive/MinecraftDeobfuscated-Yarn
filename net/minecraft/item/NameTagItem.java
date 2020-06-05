@@ -27,7 +27,7 @@ extends Item {
                 }
                 stack.decrement(1);
             }
-            return ActionResult.method_29236(user.world.isClient);
+            return ActionResult.success(user.world.isClient);
         }
         return ActionResult.PASS;
     }

@@ -85,7 +85,7 @@ extends Item {
         BlockSoundGroup blockSoundGroup = blockState2.getSoundGroup();
         world.playSound(playerEntity, blockPos, this.getPlaceSound(blockState2), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0f) / 2.0f, blockSoundGroup.getPitch() * 0.8f);
         itemStack.decrement(1);
-        return ActionResult.method_29236(world.isClient);
+        return ActionResult.success(world.isClient);
     }
 
     protected SoundEvent getPlaceSound(BlockState state) {

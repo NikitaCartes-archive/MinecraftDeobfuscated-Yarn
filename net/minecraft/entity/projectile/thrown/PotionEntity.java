@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 public class PotionEntity
 extends ThrownItemEntity
 implements FlyingItemEntity {
-    public static final Predicate<LivingEntity> WATER_HURTS = LivingEntity::method_29503;
+    public static final Predicate<LivingEntity> WATER_HURTS = LivingEntity::hurtByWater;
 
     public PotionEntity(EntityType<? extends PotionEntity> entityType, World world) {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
@@ -117,7 +117,7 @@ implements FlyingItemEntity {
         if (!list.isEmpty()) {
             for (LivingEntity livingEntity : list) {
                 double d = this.squaredDistanceTo(livingEntity);
-                if (!(d < 16.0) || !livingEntity.method_29503()) continue;
+                if (!(d < 16.0) || !livingEntity.hurtByWater()) continue;
                 livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0f);
             }
         }

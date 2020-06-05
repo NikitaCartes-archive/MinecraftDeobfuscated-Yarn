@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -28,6 +27,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -42,7 +42,7 @@ extends Screen {
     private final Set<AbstractRuleWidget> invalidRuleWidgets = Sets.newHashSet();
     private ButtonWidget doneButton;
     @Nullable
-    private List<class_5348> tooltip;
+    private List<StringRenderable> tooltip;
     private final GameRules gameRules;
 
     public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
@@ -82,7 +82,7 @@ extends Screen {
         }
     }
 
-    private void setTooltipDescription(@Nullable List<class_5348> description) {
+    private void setTooltipDescription(@Nullable List<StringRenderable> description) {
         this.tooltip = description;
     }
 
@@ -137,7 +137,7 @@ extends Screen {
                         list = ImmutableList.of(text2, text3);
                         string3 = text3.getString();
                     }
-                    map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<class_5348>)((Object)list), string3, rule));
+                    map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<StringRenderable>)((Object)list), string3, rule));
                 }
             });
             map.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry2 -> {
@@ -163,7 +163,7 @@ extends Screen {
         private final TextFieldWidget valueWidget;
         private final List<? extends Element> children;
 
-        public IntRuleWidget(Text name, List<class_5348> description, String ruleName, GameRules.IntRule rule) {
+        public IntRuleWidget(Text name, List<StringRenderable> description, String ruleName, GameRules.IntRule rule) {
             super(description);
             this.name = name;
             this.valueWidget = new TextFieldWidget(((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer, 10, 5, 42, 20, name.shallowCopy().append("\n").append(ruleName).append("\n"));
@@ -197,7 +197,7 @@ extends Screen {
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
     static interface RuleWidgetFactory<T extends GameRules.Rule<T>> {
-        public AbstractRuleWidget create(Text var1, List<class_5348> var2, String var3, T var4);
+        public AbstractRuleWidget create(Text var1, List<StringRenderable> var2, String var3, T var4);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -206,7 +206,7 @@ extends Screen {
         private final ButtonWidget toggleButton;
         private final List<? extends Element> children;
 
-        public BooleanRuleWidget(Text name, List<class_5348> description, final String ruleName, GameRules.BooleanRule rule) {
+        public BooleanRuleWidget(Text name, List<StringRenderable> description, final String ruleName, GameRules.BooleanRule rule) {
             super(description);
             this.toggleButton = new ButtonWidget(10, 5, 220, 20, this.createBooleanRuleText(name, rule.get()), buttonWidget -> {
                 boolean bl = !rule.get();
@@ -264,9 +264,9 @@ extends Screen {
     public abstract class AbstractRuleWidget
     extends ElementListWidget.Entry<AbstractRuleWidget> {
         @Nullable
-        private final List<class_5348> description;
+        private final List<StringRenderable> description;
 
-        public AbstractRuleWidget(List<class_5348> description) {
+        public AbstractRuleWidget(List<StringRenderable> description) {
             this.description = description;
         }
     }

@@ -192,7 +192,7 @@ implements AutoCloseable {
     }
 
     public boolean isPixelTransparent(int frame, int x, int y) {
-        return (this.images[0].getPixelRgba(x + this.frameXs[frame] * this.info.width, y + this.frameYs[frame] * this.info.height) >> 24 & 0xFF) == 0;
+        return (this.images[0].getPixelColor(x + this.frameXs[frame] * this.info.width, y + this.frameYs[frame] * this.info.height) >> 24 & 0xFF) == 0;
     }
 
     public void upload() {
@@ -268,7 +268,7 @@ implements AutoCloseable {
                             int s = this.method_24129(d, q >> 16 & 0xFF, r >> 16 & 0xFF);
                             int t = this.method_24129(d, q >> 8 & 0xFF, r >> 8 & 0xFF);
                             int u = this.method_24129(d, q & 0xFF, r & 0xFF);
-                            this.images[l].setPixelRgba(p, o, q & 0xFF000000 | s << 16 | t << 8 | u);
+                            this.images[l].setPixelColor(p, o, q & 0xFF000000 | s << 16 | t << 8 | u);
                         }
                     }
                 }
@@ -277,7 +277,7 @@ implements AutoCloseable {
         }
 
         private int method_24130(int i, int j, int k, int l) {
-            return Sprite.this.images[j].getPixelRgba(k + (Sprite.this.frameXs[i] * Sprite.this.info.width >> j), l + (Sprite.this.frameYs[i] * Sprite.this.info.height >> j));
+            return Sprite.this.images[j].getPixelColor(k + (Sprite.this.frameXs[i] * Sprite.this.info.width >> j), l + (Sprite.this.frameYs[i] * Sprite.this.info.height >> j));
         }
 
         private int method_24129(double d, int i, int j) {

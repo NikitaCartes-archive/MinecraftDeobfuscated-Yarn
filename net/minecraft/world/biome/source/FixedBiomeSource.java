@@ -46,12 +46,12 @@ extends BiomeSource {
 
     @Override
     @Nullable
-    public BlockPos method_24385(int i, int j, int k, int l, int m, List<Biome> list, Random random, boolean bl) {
-        if (list.contains(this.biome)) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, int i, List<Biome> biomes, Random random, boolean bl) {
+        if (biomes.contains(this.biome)) {
             if (bl) {
-                return new BlockPos(i, j, k);
+                return new BlockPos(x, y, z);
             }
-            return new BlockPos(i - l + random.nextInt(l * 2 + 1), j, k - l + random.nextInt(l * 2 + 1));
+            return new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1));
         }
         return null;
     }

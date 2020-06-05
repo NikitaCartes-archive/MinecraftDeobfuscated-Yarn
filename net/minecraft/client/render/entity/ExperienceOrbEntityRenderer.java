@@ -24,7 +24,7 @@ import net.minecraft.util.math.Matrix4f;
 public class ExperienceOrbEntityRenderer
 extends EntityRenderer<ExperienceOrbEntity> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/experience_orb.png");
-    private static final RenderLayer LAYER = RenderLayer.method_29379(TEXTURE);
+    private static final RenderLayer LAYER = RenderLayer.getItemEntityTranslucentCull(TEXTURE);
 
     public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);

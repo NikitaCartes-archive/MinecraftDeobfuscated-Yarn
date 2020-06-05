@@ -459,7 +459,7 @@ extends AnimalEntity {
             if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isTouchingWater() || !pandaEntity.isIdle()) continue;
             pandaEntity.jump();
         }
-        if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+        if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
             this.dropItem(Items.SLIME_BALL);
         }
     }
@@ -551,7 +551,7 @@ extends AnimalEntity {
         }
         if (this.isLyingOnBack()) {
             this.setLyingOnBack(false);
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         if (this.isBreedingItem(itemStack)) {
             if (this.getTarget() != null) {

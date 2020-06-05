@@ -21,7 +21,7 @@ extends CombinedEntry {
     }
 
     @Override
-    public LootPoolEntryType method_29318() {
+    public LootPoolEntryType getType() {
         return LootPoolEntryTypes.ALTERNATIVES;
     }
 

@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class EmeraldOreFeatureConfig
 implements FeatureConfig {
-    public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.field_24734.fieldOf("target")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.target), ((MapCodec)BlockState.field_24734.fieldOf("state")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.state)).apply((Applicative<EmeraldOreFeatureConfig, ?>)instance, EmeraldOreFeatureConfig::new));
+    public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("target")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.target), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.state)).apply((Applicative<EmeraldOreFeatureConfig, ?>)instance, EmeraldOreFeatureConfig::new));
     public final BlockState target;
     public final BlockState state;
 

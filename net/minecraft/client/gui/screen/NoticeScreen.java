@@ -7,12 +7,12 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
@@ -20,7 +20,7 @@ public class NoticeScreen
 extends Screen {
     private final Runnable actionHandler;
     protected final Text notice;
-    private final List<class_5348> noticeLines = Lists.newArrayList();
+    private final List<StringRenderable> noticeLines = Lists.newArrayList();
     protected final Text buttonString;
     private int field_2347;
 
@@ -48,8 +48,8 @@ extends Screen {
         this.renderBackground(matrices);
         this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         int i = 90;
-        for (class_5348 lv : this.noticeLines) {
-            this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 0xFFFFFF);
+        for (StringRenderable stringRenderable : this.noticeLines) {
+            this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 0xFFFFFF);
             i += this.textRenderer.fontHeight;
         }
         super.render(matrices, mouseX, mouseY, delta);

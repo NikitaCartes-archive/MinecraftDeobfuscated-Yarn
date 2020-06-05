@@ -15,7 +15,7 @@ import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
 public class WeightedBlockStateProvider
 extends BlockStateProvider {
-    public static final Codec<WeightedBlockStateProvider> field_24946 = ((MapCodec)WeightedList.method_28338(BlockState.field_24734).comapFlatMap(WeightedBlockStateProvider::method_28868, weightedBlockStateProvider -> weightedBlockStateProvider.states).fieldOf("entries")).codec();
+    public static final Codec<WeightedBlockStateProvider> field_24946 = ((MapCodec)WeightedList.method_28338(BlockState.CODEC).comapFlatMap(WeightedBlockStateProvider::method_28868, weightedBlockStateProvider -> weightedBlockStateProvider.states).fieldOf("entries")).codec();
     private final WeightedList<BlockState> states;
 
     private static DataResult<WeightedBlockStateProvider> method_28868(WeightedList<BlockState> weightedList) {

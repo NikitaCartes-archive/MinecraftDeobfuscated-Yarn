@@ -4,7 +4,6 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
-import net.minecraft.class_5356;
 import net.minecraft.entity.ai.brain.sensor.DummySensor;
 import net.minecraft.entity.ai.brain.sensor.GolemLastSeenSensor;
 import net.minecraft.entity.ai.brain.sensor.HoglinSpecificSensor;
@@ -14,6 +13,7 @@ import net.minecraft.entity.ai.brain.sensor.NearestBedSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestItemsSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestLivingEntitiesSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestPlayersSensor;
+import net.minecraft.entity.ai.brain.sensor.NearestVisibleAdultSensor;
 import net.minecraft.entity.ai.brain.sensor.PiglinSpecificSensor;
 import net.minecraft.entity.ai.brain.sensor.SecondaryPointsOfInterestSensor;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -36,7 +36,7 @@ public class SensorType<U extends Sensor<?>> {
     public static final SensorType<GolemLastSeenSensor> GOLEM_LAST_SEEN = SensorType.register("golem_last_seen", GolemLastSeenSensor::new);
     public static final SensorType<PiglinSpecificSensor> PIGLIN_SPECIFIC_SENSOR = SensorType.register("piglin_specific_sensor", PiglinSpecificSensor::new);
     public static final SensorType<HoglinSpecificSensor> HOGLIN_SPECIFIC_SENSOR = SensorType.register("hoglin_specific_sensor", HoglinSpecificSensor::new);
-    public static final SensorType<class_5356> NEAREST_ADULT = SensorType.register("nearest_adult", class_5356::new);
+    public static final SensorType<NearestVisibleAdultSensor> NEAREST_ADULT = SensorType.register("nearest_adult", NearestVisibleAdultSensor::new);
     private final Supplier<U> factory;
 
     private SensorType(Supplier<U> supplier) {

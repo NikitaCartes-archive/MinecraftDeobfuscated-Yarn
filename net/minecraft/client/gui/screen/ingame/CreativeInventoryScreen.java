@@ -666,7 +666,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         int n2 = bl2 ? 1 : -1;
         RenderSystem.enableRescaleNormal();
         ItemStack itemStack = itemGroup.getIcon();
-        this.itemRenderer.renderGuiItem(itemStack, l += 6, m += 8 + n2);
+        this.itemRenderer.renderInGuiWithOverrides(itemStack, l += 6, m += 8 + n2);
         this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, l, m);
         this.itemRenderer.zOffset = 0.0f;
     }

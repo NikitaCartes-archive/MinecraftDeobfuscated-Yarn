@@ -29,7 +29,7 @@ extends TreeDecorator {
     }
 
     @Override
-    protected TreeDecoratorType<?> method_28893() {
+    protected TreeDecoratorType<?> getType() {
         return TreeDecoratorType.COCOA;
     }
 

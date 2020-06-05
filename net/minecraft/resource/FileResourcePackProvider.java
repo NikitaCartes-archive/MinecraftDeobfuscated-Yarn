@@ -7,11 +7,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import net.minecraft.class_5352;
 import net.minecraft.resource.DirectoryResourcePack;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ZipResourcePack;
 
 public class FileResourcePackProvider
@@ -22,15 +22,15 @@ implements ResourcePackProvider {
         return bl || bl2;
     };
     private final File packsFolder;
-    private final class_5352 field_25345;
+    private final ResourcePackSource field_25345;
 
-    public FileResourcePackProvider(File packsFolder, class_5352 arg) {
+    public FileResourcePackProvider(File packsFolder, ResourcePackSource resourcePackSource) {
         this.packsFolder = packsFolder;
-        this.field_25345 = arg;
+        this.field_25345 = resourcePackSource;
     }
 
     @Override
-    public <T extends ResourcePackProfile> void register(Consumer<T> consumer, ResourcePackProfile.class_5351<T> factory) {
+    public <T extends ResourcePackProfile> void register(Consumer<T> consumer, ResourcePackProfile.Factory<T> factory) {
         File[] files;
         if (!this.packsFolder.isDirectory()) {
             this.packsFolder.mkdirs();

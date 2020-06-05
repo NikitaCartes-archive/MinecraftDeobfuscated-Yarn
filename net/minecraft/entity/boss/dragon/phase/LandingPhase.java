@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class LandingPhase
 extends AbstractPhase {
-    private Vec3d field_7046;
+    private Vec3d target;
 
     public LandingPhase(EnderDragonEntity enderDragonEntity) {
         super(enderDragonEntity);
@@ -43,10 +43,10 @@ extends AbstractPhase {
 
     @Override
     public void serverTick() {
-        if (this.field_7046 == null) {
-            this.field_7046 = Vec3d.ofBottomCenter(this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
+        if (this.target == null) {
+            this.target = Vec3d.ofBottomCenter(this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
         }
-        if (this.field_7046.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ()) < 1.0) {
+        if (this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ()) < 1.0) {
             this.dragon.getPhaseManager().create(PhaseType.SITTING_FLAMING).method_6857();
             this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
         }
@@ -66,13 +66,13 @@ extends AbstractPhase {
 
     @Override
     public void beginPhase() {
-        this.field_7046 = null;
+        this.target = null;
     }
 
     @Override
     @Nullable
     public Vec3d getTarget() {
-        return this.field_7046;
+        return this.target;
     }
 
     public PhaseType<LandingPhase> getType() {

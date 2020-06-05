@@ -144,7 +144,7 @@ implements Fertilizable {
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+        if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.field_19388)) {
             world.breakBlock(pos, true, entity);
         }
         super.onEntityCollision(state, world, pos, entity);

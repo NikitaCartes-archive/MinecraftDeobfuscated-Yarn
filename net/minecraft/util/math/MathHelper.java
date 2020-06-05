@@ -296,21 +296,25 @@ public class MathHelper {
         return MathHelper.log2DeBruijn(i) - (MathHelper.isPowerOfTwo(i) ? 0 : 1);
     }
 
-    public static int method_28139(int i, int j) {
-        int k;
-        if (j == 0) {
+    /**
+     * Returns a value farther than or as far as {@code value} from zero that
+     * is a multiple of {@code divisor}.
+     */
+    public static int roundUpToMultiple(int value, int divisor) {
+        int i;
+        if (divisor == 0) {
             return 0;
         }
-        if (i == 0) {
-            return j;
+        if (value == 0) {
+            return divisor;
         }
-        if (i < 0) {
-            j *= -1;
+        if (value < 0) {
+            divisor *= -1;
         }
-        if ((k = i % j) == 0) {
-            return i;
+        if ((i = value % divisor) == 0) {
+            return value;
         }
-        return i + j - k;
+        return value + divisor - i;
     }
 
     @Environment(value=EnvType.CLIENT)

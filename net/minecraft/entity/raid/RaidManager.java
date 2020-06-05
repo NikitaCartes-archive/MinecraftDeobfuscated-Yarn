@@ -52,7 +52,7 @@ extends PersistentState {
         Iterator<Raid> iterator = this.raids.values().iterator();
         while (iterator.hasNext()) {
             Raid raid = iterator.next();
-            if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
+            if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
                 raid.invalidate();
             }
             if (raid.hasStopped()) {
@@ -81,7 +81,7 @@ extends PersistentState {
         if (player.isSpectator()) {
             return null;
         }
-        if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
+        if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
             return null;
         }
         DimensionType dimensionType = player.world.getDimension();

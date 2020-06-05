@@ -58,7 +58,7 @@ extends Item {
                 playerEntity.incrementStat(Stats.PLAY_RECORD);
             }
         }
-        return ActionResult.method_29236(world.isClient);
+        return ActionResult.success(world.isClient);
     }
 
     public int getComparatorOutput() {

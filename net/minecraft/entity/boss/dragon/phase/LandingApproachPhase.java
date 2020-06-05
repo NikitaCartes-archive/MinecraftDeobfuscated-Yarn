@@ -21,7 +21,7 @@ public class LandingApproachPhase
 extends AbstractPhase {
     private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(128.0);
     private Path field_7047;
-    private Vec3d field_7048;
+    private Vec3d target;
 
     public LandingApproachPhase(EnderDragonEntity enderDragonEntity) {
         super(enderDragonEntity);
@@ -34,13 +34,13 @@ extends AbstractPhase {
     @Override
     public void beginPhase() {
         this.field_7047 = null;
-        this.field_7048 = null;
+        this.target = null;
     }
 
     @Override
     public void serverTick() {
         double d;
-        double d2 = d = this.field_7048 == null ? 0.0 : this.field_7048.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+        double d2 = d = this.target == null ? 0.0 : this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
         if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
             this.method_6844();
         }
@@ -49,7 +49,7 @@ extends AbstractPhase {
     @Override
     @Nullable
     public Vec3d getTarget() {
-        return this.field_7048;
+        return this.target;
     }
 
     private void method_6844() {
@@ -85,7 +85,7 @@ extends AbstractPhase {
             double e = vec3i.getZ();
             while ((f = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0f)) < (double)vec3i.getY()) {
             }
-            this.field_7048 = new Vec3d(d, f, e);
+            this.target = new Vec3d(d, f, e);
         }
     }
 }

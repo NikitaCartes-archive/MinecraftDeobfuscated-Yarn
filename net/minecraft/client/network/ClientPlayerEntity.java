@@ -351,8 +351,8 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public boolean shouldGetSoulSpeedBoost() {
-        return !this.abilities.flying && super.shouldGetSoulSpeedBoost();
+    public boolean shouldDisplaySoulSpeedEffects() {
+        return !this.abilities.flying && super.shouldDisplaySoulSpeedEffects();
     }
 
     protected void startRidingJump() {

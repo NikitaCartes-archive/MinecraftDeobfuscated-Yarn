@@ -462,7 +462,7 @@ extends LivingEntity {
             this.flyingSpeed = (float)((double)this.flyingSpeed + 0.005999999865889549);
         }
         this.setMovementSpeed((float)entityAttributeInstance.getValue());
-        float f = !this.onGround || this.method_29504() || this.isSwimming() ? 0.0f : Math.min(0.1f, MathHelper.sqrt(PlayerEntity.squaredHorizontalLength(this.getVelocity())));
+        float f = !this.onGround || this.isDead() || this.isSwimming() ? 0.0f : Math.min(0.1f, MathHelper.sqrt(PlayerEntity.squaredHorizontalLength(this.getVelocity())));
         this.strideDistance += (f - this.strideDistance) * 0.4f;
         if (this.getHealth() > 0.0f && !this.isSpectator()) {
             Box box = this.hasVehicle() && !this.getVehicle().removed ? this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0) : this.getBoundingBox().expand(1.0, 0.5, 1.0);
@@ -530,7 +530,7 @@ extends LivingEntity {
     @Override
     protected void dropInventory() {
         super.dropInventory();
-        if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+        if (!this.world.getGameRules().getBoolean(GameRules.field_19389)) {
             this.vanishCursedItems();
             this.inventory.dropAll();
         }
@@ -730,7 +730,7 @@ extends LivingEntity {
             return false;
         }
         this.despawnCounter = 0;
-        if (this.method_29504()) {
+        if (this.isDead()) {
             return false;
         }
         this.dropShoulderEntities();
@@ -1488,7 +1488,7 @@ extends LivingEntity {
 
     @Override
     protected int getCurrentExperience(PlayerEntity player) {
-        if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || this.isSpectator()) {
+        if (this.world.getGameRules().getBoolean(GameRules.field_19389) || this.isSpectator()) {
             return 0;
         }
         int i = this.experienceLevel * 7;

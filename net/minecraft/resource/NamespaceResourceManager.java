@@ -118,9 +118,9 @@ implements ResourceManager {
     }
 
     @Override
-    public Collection<Identifier> method_29489(Identifier identifier, Predicate<String> predicate) {
-        if (Objects.equals(identifier.getNamespace(), this.namespace)) {
-            return this.findResources(identifier.getPath(), predicate);
+    public Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate) {
+        if (Objects.equals(resourceType.getNamespace(), this.namespace)) {
+            return this.findResources(resourceType.getPath(), predicate);
         }
         return ImmutableSet.of();
     }
@@ -137,7 +137,7 @@ implements ResourceManager {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Stream<ResourcePack> method_29213() {
+    public Stream<ResourcePack> streamResourcePacks() {
         return this.packList.stream();
     }
 

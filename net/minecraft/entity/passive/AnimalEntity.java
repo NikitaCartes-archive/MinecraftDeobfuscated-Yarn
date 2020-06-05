@@ -141,7 +141,7 @@ extends PassiveEntity {
             if (this.isBaby()) {
                 this.eat(player, itemStack);
                 this.growUp((int)((float)(-i / 20) * 0.1f), true);
-                return ActionResult.method_29236(this.world.isClient);
+                return ActionResult.success(this.world.isClient);
             }
             if (this.world.isClient) {
                 return ActionResult.CONSUME;
@@ -172,7 +172,7 @@ extends PassiveEntity {
         this.loveTicks = loveTicks;
     }
 
-    public int method_29270() {
+    public int getLoveTicks() {
         return this.loveTicks;
     }
 
@@ -227,7 +227,7 @@ extends PassiveEntity {
         passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
         world.spawnEntity(passiveEntity);
         world.sendEntityStatus(this, (byte)18);
-        if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+        if (world.getGameRules().getBoolean(GameRules.field_19391)) {
             world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
         }
     }

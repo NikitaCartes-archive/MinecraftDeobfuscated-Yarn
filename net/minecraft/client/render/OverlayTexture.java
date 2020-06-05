@@ -20,11 +20,11 @@ implements AutoCloseable {
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
                 if (i < 8) {
-                    nativeImage.setPixelRgba(j, i, -1308622593);
+                    nativeImage.setPixelColor(j, i, -1308622593);
                     continue;
                 }
                 int k = (int)((1.0f - (float)j / 15.0f * 0.75f) * 255.0f);
-                nativeImage.setPixelRgba(j, i, k << 24 | 0xFFFFFF);
+                nativeImage.setPixelColor(j, i, k << 24 | 0xFFFFFF);
             }
         }
         RenderSystem.activeTexture(33985);

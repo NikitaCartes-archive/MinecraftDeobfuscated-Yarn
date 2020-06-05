@@ -79,8 +79,8 @@ extends Block {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (notify || state.isOf(newState.getBlock())) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (moved || state.isOf(newState.getBlock())) {
             return;
         }
         this.update(world, pos, (BlockState)state.with(POWERED, true));

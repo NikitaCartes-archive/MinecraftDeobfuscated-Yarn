@@ -103,7 +103,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
@@ -111,7 +111,7 @@ implements Waterloggable {
         if (blockEntity instanceof CampfireBlockEntity) {
             ItemScatterer.spawn(world, pos, ((CampfireBlockEntity)blockEntity).getItemsBeingCooked());
         }
-        super.onStateReplaced(state, world, pos, newState, notify);
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
@@ -198,7 +198,7 @@ implements Waterloggable {
         if (!world.isClient && projectile.isOnFire()) {
             boolean bl;
             Entity entity = projectile.getOwner();
-            boolean bl2 = bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+            boolean bl2 = bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388);
             if (bl && !state.get(LIT).booleanValue() && !state.get(WATERLOGGED).booleanValue()) {
                 BlockPos blockPos = hit.getBlockPos();
                 world.setBlockState(blockPos, (BlockState)state.with(Properties.LIT, true), 11);

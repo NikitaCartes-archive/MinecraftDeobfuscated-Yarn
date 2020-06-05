@@ -11,13 +11,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementProgress;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.advancement.AdvancementObtainedStatus;
 import net.minecraft.client.gui.screen.advancement.AdvancementTab;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -32,9 +32,9 @@ extends DrawableHelper {
     private final AdvancementTab tab;
     private final Advancement advancement;
     private final AdvancementDisplay display;
-    private final class_5348 title;
+    private final StringRenderable title;
     private final int width;
-    private final List<class_5348> description;
+    private final List<StringRenderable> description;
     private final MinecraftClient client;
     private AdvancementWidget parent;
     private final List<AdvancementWidget> children = Lists.newArrayList();
@@ -55,22 +55,22 @@ extends DrawableHelper {
         int k = i > 1 ? client.textRenderer.getWidth("  ") + client.textRenderer.getWidth("0") * j * 2 + client.textRenderer.getWidth("/") : 0;
         int l = 29 + client.textRenderer.getWidth(this.title) + k;
         this.description = this.wrapDescription(display.getDescription().shallowCopy().formatted(display.getFrame().getTitleFormat()), l);
-        for (class_5348 lv : this.description) {
-            l = Math.max(l, client.textRenderer.getWidth(lv));
+        for (StringRenderable stringRenderable : this.description) {
+            l = Math.max(l, client.textRenderer.getWidth(stringRenderable));
         }
         this.width = l + 3 + 5;
     }
 
-    private static float method_27572(TextHandler textHandler, List<class_5348> list) {
+    private static float method_27572(TextHandler textHandler, List<StringRenderable> list) {
         return (float)list.stream().mapToDouble(textHandler::getWidth).max().orElse(0.0);
     }
 
-    private List<class_5348> wrapDescription(Text text, int width) {
+    private List<StringRenderable> wrapDescription(Text text, int width) {
         TextHandler textHandler = this.client.textRenderer.getTextHandler();
-        List<class_5348> list = null;
+        List<StringRenderable> list = null;
         float f = Float.MAX_VALUE;
         for (int i : field_24262) {
-            List<class_5348> list2 = textHandler.wrapLines(text, width - i, Style.EMPTY);
+            List<StringRenderable> list2 = textHandler.wrapLines(text, width - i, Style.EMPTY);
             float g = Math.abs(AdvancementWidget.method_27572(textHandler, list2) - (float)width);
             if (g <= 10.0f) {
                 return list2;
@@ -127,7 +127,7 @@ extends DrawableHelper {
             AdvancementObtainedStatus advancementObtainedStatus = f >= 1.0f ? AdvancementObtainedStatus.OBTAINED : AdvancementObtainedStatus.UNOBTAINED;
             this.client.getTextureManager().bindTexture(WIDGETS_TEX);
             this.drawTexture(matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
-            this.client.getItemRenderer().method_27953(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+            this.client.getItemRenderer().renderInGui(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
         }
         for (AdvancementWidget advancementWidget : this.children) {
             advancementWidget.renderWidgets(matrixStack, i, j);
@@ -209,7 +209,7 @@ extends DrawableHelper {
                 this.client.textRenderer.draw(matrixStack, this.description.get(r), (float)(p + 5), (float)(j + this.yPos + 9 + 17 + r * this.client.textRenderer.fontHeight), -5592406);
             }
         }
-        this.client.getItemRenderer().method_27953(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+        this.client.getItemRenderer().renderInGui(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
     }
 
     protected void method_2324(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o, int p, int q) {

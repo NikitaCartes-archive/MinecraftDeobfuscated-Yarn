@@ -12,7 +12,7 @@ public interface ChunkProvider {
     @Nullable
     public BlockView getChunk(int var1, int var2);
 
-    default public void onLightUpdate(LightType type, ChunkSectionPos chunkSectionPos) {
+    default public void onLightUpdate(LightType type, ChunkSectionPos pos) {
     }
 
     public BlockView getWorld();

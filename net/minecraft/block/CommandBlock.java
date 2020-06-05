@@ -121,7 +121,7 @@ extends BlockWithEntity {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof CommandBlockBlockEntity && player.isCreativeLevelTwoOp()) {
             player.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
     }

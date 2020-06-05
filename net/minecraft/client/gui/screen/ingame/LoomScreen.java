@@ -56,7 +56,7 @@ extends HandledScreen<LoomScreenHandler> {
         super(handler, inventory, title);
         this.bannerField = BannerBlockEntityRenderer.createBanner();
         handler.setInventoryChangeListener(this::onInventoryChanged);
-        this.field_25268 -= 2;
+        this.titleY -= 2;
     }
 
     @Override

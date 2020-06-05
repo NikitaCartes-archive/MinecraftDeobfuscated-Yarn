@@ -156,7 +156,7 @@ extends HostileEntity {
                 return false;
             }
             Random random = this.mob.getRandom();
-            if (this.mob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) && random.nextInt(10) == 0) {
+            if (this.mob.world.getGameRules().getBoolean(GameRules.field_19388) && random.nextInt(10) == 0) {
                 this.direction = Direction.random(random);
                 BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
                 BlockState blockState = this.mob.world.getBlockState(blockPos);
@@ -231,7 +231,7 @@ extends HostileEntity {
                             BlockState blockState = world.getBlockState(blockPos2);
                             Block block = blockState.getBlock();
                             if (block instanceof InfestedBlock) {
-                                if (world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+                                if (world.getGameRules().getBoolean(GameRules.field_19388)) {
                                     world.breakBlock(blockPos2, true, this.silverfish);
                                 } else {
                                     world.setBlockState(blockPos2, ((InfestedBlock)block).getRegularBlock().getDefaultState(), 3);

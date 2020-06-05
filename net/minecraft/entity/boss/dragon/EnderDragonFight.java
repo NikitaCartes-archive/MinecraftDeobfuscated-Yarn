@@ -415,7 +415,7 @@ public class EnderDragonFight {
         }
     }
 
-    private void respawnDragon(List<EndCrystalEntity> list) {
+    private void respawnDragon(List<EndCrystalEntity> crystals) {
         if (this.dragonKilled && this.dragonSpawnState == null) {
             BlockPattern.Result result = this.findEndPortal();
             while (result != null) {
@@ -433,7 +433,7 @@ public class EnderDragonFight {
             this.dragonSpawnState = EnderDragonSpawnState.START;
             this.spawnStateTimer = 0;
             this.generateEndPortal(false);
-            this.crystals = list;
+            this.crystals = crystals;
         }
     }
 

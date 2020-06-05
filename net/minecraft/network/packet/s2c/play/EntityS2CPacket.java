@@ -24,7 +24,7 @@ implements Packet<ClientPlayPacketListener> {
     protected byte pitch;
     protected boolean onGround;
     protected boolean rotate;
-    protected boolean field_20849;
+    protected boolean positionChanged;
 
     public static long encodePacketCoordinate(double coord) {
         return MathHelper.lfloor(coord * 4096.0);
@@ -96,8 +96,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_22826() {
-        return this.field_20849;
+    public boolean isPositionChanged() {
+        return this.positionChanged;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -111,12 +111,12 @@ implements Packet<ClientPlayPacketListener> {
             this.rotate = true;
         }
 
-        public Rotate(int i, byte b, byte c, boolean bl) {
-            super(i);
-            this.yaw = b;
-            this.pitch = c;
+        public Rotate(int entityId, byte yaw, byte pitch, boolean onGround) {
+            super(entityId);
+            this.yaw = yaw;
+            this.pitch = pitch;
             this.rotate = true;
-            this.onGround = bl;
+            this.onGround = onGround;
         }
 
         @Override
@@ -139,16 +139,16 @@ implements Packet<ClientPlayPacketListener> {
     public static class MoveRelative
     extends EntityS2CPacket {
         public MoveRelative() {
-            this.field_20849 = true;
+            this.positionChanged = true;
         }
 
-        public MoveRelative(int i, short s, short t, short u, boolean bl) {
-            super(i);
-            this.deltaX = s;
-            this.deltaY = t;
-            this.deltaZ = u;
-            this.onGround = bl;
-            this.field_20849 = true;
+        public MoveRelative(int entityId, short deltaX, short deltaY, short deltaZ, boolean onGround) {
+            super(entityId);
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
+            this.deltaZ = deltaZ;
+            this.onGround = onGround;
+            this.positionChanged = true;
         }
 
         @Override
@@ -174,19 +174,19 @@ implements Packet<ClientPlayPacketListener> {
     extends EntityS2CPacket {
         public RotateAndMoveRelative() {
             this.rotate = true;
-            this.field_20849 = true;
+            this.positionChanged = true;
         }
 
-        public RotateAndMoveRelative(int i, short s, short t, short u, byte b, byte c, boolean bl) {
-            super(i);
-            this.deltaX = s;
-            this.deltaY = t;
-            this.deltaZ = u;
-            this.yaw = b;
-            this.pitch = c;
-            this.onGround = bl;
+        public RotateAndMoveRelative(int entityId, short deltaX, short deltaY, short deltaZ, byte yaw, byte pitch, boolean onGround) {
+            super(entityId);
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
+            this.deltaZ = deltaZ;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.onGround = onGround;
             this.rotate = true;
-            this.field_20849 = true;
+            this.positionChanged = true;
         }
 
         @Override

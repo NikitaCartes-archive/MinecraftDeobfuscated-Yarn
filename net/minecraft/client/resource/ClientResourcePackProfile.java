@@ -8,13 +8,13 @@ import java.io.InputStream;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5352;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -28,13 +28,13 @@ extends ResourcePackProfile {
     @Nullable
     private Identifier iconId;
 
-    public ClientResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition, class_5352 arg) {
-        super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition, arg);
+    public ClientResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) {
+        super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
         this.icon = ClientResourcePackProfile.method_29713(resourcePack);
     }
 
-    public ClientResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Text displayName, Text description, ResourcePackCompatibility compatibility, ResourcePackProfile.InsertionPosition insertionPosition, boolean pinned, class_5352 arg, @Nullable NativeImage nativeImage) {
-        super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned, arg);
+    public ClientResourcePackProfile(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Text displayName, Text description, ResourcePackCompatibility compatibility, ResourcePackProfile.InsertionPosition insertionPosition, boolean pinned, ResourcePackSource resourcePackSource, @Nullable NativeImage nativeImage) {
+        super(name, alwaysEnabled, packFactory, displayName, description, compatibility, insertionPosition, pinned, resourcePackSource);
         this.icon = nativeImage;
     }
 

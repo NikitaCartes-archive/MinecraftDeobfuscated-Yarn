@@ -205,7 +205,7 @@ extends AnimalEntity {
 
     @Override
     protected boolean isImmobile() {
-        return this.method_29504();
+        return this.isDead();
     }
 
     private boolean canEat(ItemStack stack) {
@@ -531,11 +531,11 @@ extends AnimalEntity {
     }
 
     @Override
-    public void setTarget(@Nullable LivingEntity livingEntity) {
-        if (this.isAggressive() && livingEntity == null) {
+    public void setTarget(@Nullable LivingEntity target) {
+        if (this.isAggressive() && target == null) {
             this.setAggressive(false);
         }
-        super.setTarget(livingEntity);
+        super.setTarget(target);
     }
 
     @Override
@@ -917,7 +917,7 @@ extends AnimalEntity {
         }
 
         protected void eatSweetBerry() {
-            if (!FoxEntity.this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+            if (!FoxEntity.this.world.getGameRules().getBoolean(GameRules.field_19388)) {
                 return;
             }
             BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
@@ -1215,7 +1215,7 @@ extends AnimalEntity {
             foxEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0f, 0.0f);
             this.world.spawnEntity(foxEntity);
             this.world.sendEntityStatus(this.animal, (byte)18);
-            if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+            if (this.world.getGameRules().getBoolean(GameRules.field_19391)) {
                 this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));
             }
         }

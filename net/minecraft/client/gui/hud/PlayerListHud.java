@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -26,6 +25,7 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
@@ -96,25 +96,25 @@ extends DrawableHelper {
         int q = i / 2 - (p * l + (l - 1) * 5) / 2;
         int r = 10;
         int s = p * l + (l - 1) * 5;
-        List<class_5348> list2 = null;
+        List<StringRenderable> list2 = null;
         if (this.header != null) {
             list2 = this.client.textRenderer.wrapLines(this.header, i - 50);
-            for (class_5348 class_53482 : list2) {
-                s = Math.max(s, this.client.textRenderer.getWidth(class_53482));
+            for (StringRenderable stringRenderable : list2) {
+                s = Math.max(s, this.client.textRenderer.getWidth(stringRenderable));
             }
         }
-        List<class_5348> list3 = null;
+        List<StringRenderable> list3 = null;
         if (this.footer != null) {
             list3 = this.client.textRenderer.wrapLines(this.footer, i - 50);
-            for (class_5348 lv2 : list3) {
-                s = Math.max(s, this.client.textRenderer.getWidth(lv2));
+            for (StringRenderable stringRenderable2 : list3) {
+                s = Math.max(s, this.client.textRenderer.getWidth(stringRenderable2));
             }
         }
         if (list2 != null) {
             PlayerListHud.fill(matrixStack, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list2.size() * this.client.textRenderer.fontHeight, Integer.MIN_VALUE);
-            for (class_5348 lv2 : list2) {
-                t = this.client.textRenderer.getWidth(lv2);
-                this.client.textRenderer.drawWithShadow(matrixStack, lv2, (float)(i / 2 - t / 2), (float)r, -1);
+            for (StringRenderable stringRenderable2 : list2) {
+                t = this.client.textRenderer.getWidth(stringRenderable2);
+                this.client.textRenderer.drawWithShadow(matrixStack, stringRenderable2, (float)(i / 2 - t / 2), (float)r, -1);
                 r += this.client.textRenderer.fontHeight;
             }
             ++r;
@@ -158,9 +158,9 @@ extends DrawableHelper {
         }
         if (list3 != null) {
             PlayerListHud.fill(matrixStack, i / 2 - s / 2 - 1, (r += n * 9 + 1) - 1, i / 2 + s / 2 + 1, r + list3.size() * this.client.textRenderer.fontHeight, Integer.MIN_VALUE);
-            for (class_5348 lv3 : list3) {
-                w = this.client.textRenderer.getWidth(lv3);
-                this.client.textRenderer.drawWithShadow(matrixStack, lv3, (float)(i / 2 - w / 2), (float)r, -1);
+            for (StringRenderable stringRenderable3 : list3) {
+                w = this.client.textRenderer.getWidth(stringRenderable3);
+                this.client.textRenderer.drawWithShadow(matrixStack, stringRenderable3, (float)(i / 2 - w / 2), (float)r, -1);
                 r += this.client.textRenderer.fontHeight;
             }
         }

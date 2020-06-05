@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DyingPhase
 extends AbstractPhase {
-    private Vec3d field_7041;
+    private Vec3d target;
     private int ticks;
 
     public DyingPhase(EnderDragonEntity enderDragonEntity) {
@@ -36,11 +36,11 @@ extends AbstractPhase {
     public void serverTick() {
         double d;
         ++this.ticks;
-        if (this.field_7041 == null) {
+        if (this.target == null) {
             BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
-            this.field_7041 = Vec3d.ofBottomCenter(blockPos);
+            this.target = Vec3d.ofBottomCenter(blockPos);
         }
-        if ((d = this.field_7041.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ())) < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
+        if ((d = this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ())) < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
             this.dragon.setHealth(0.0f);
         } else {
             this.dragon.setHealth(1.0f);
@@ -49,7 +49,7 @@ extends AbstractPhase {
 
     @Override
     public void beginPhase() {
-        this.field_7041 = null;
+        this.target = null;
         this.ticks = 0;
     }
 
@@ -61,7 +61,7 @@ extends AbstractPhase {
     @Override
     @Nullable
     public Vec3d getTarget() {
-        return this.field_7041;
+        return this.target;
     }
 
     public PhaseType<DyingPhase> getType() {

@@ -20,7 +20,7 @@ extends CompositeEntityModel<T> {
     private final ModelPart head;
 
     public ShulkerEntityModel() {
-        super(RenderLayer::method_28116);
+        super(RenderLayer::getEntityCutoutNoCullZOffset);
         this.bottomShell = new ModelPart(64, 64, 0, 28);
         this.head = new ModelPart(64, 64, 0, 52);
         this.topShell.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f);

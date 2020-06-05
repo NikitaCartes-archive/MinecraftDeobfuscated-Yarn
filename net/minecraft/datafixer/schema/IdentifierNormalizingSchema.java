@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 
 public class IdentifierNormalizingSchema
 extends Schema {
-    public static final PrimitiveCodec<String> field_24652 = new PrimitiveCodec<String>(){
+    public static final PrimitiveCodec<String> CODEC = new PrimitiveCodec<String>(){
 
         @Override
         public <T> DataResult<String> read(DynamicOps<T> dynamicOps, T object) {
@@ -35,7 +35,7 @@ extends Schema {
             return this.write(dynamicOps, (String)object);
         }
     };
-    private static final Type<String> field_24653 = new Const.PrimitiveType<String>(field_24652);
+    private static final Type<String> IDENTIFIER_TYPE = new Const.PrimitiveType<String>(CODEC);
 
     public IdentifierNormalizingSchema(int versionKey, Schema parent) {
         super(versionKey, parent);
@@ -49,8 +49,8 @@ extends Schema {
         return id;
     }
 
-    public static Type<String> method_28295() {
-        return field_24653;
+    public static Type<String> getIdentifierType() {
+        return IDENTIFIER_TYPE;
     }
 
     @Override

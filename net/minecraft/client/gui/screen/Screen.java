@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -37,6 +36,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -129,22 +129,22 @@ Drawable {
         return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
     }
 
-    public void renderTooltip(MatrixStack matrices, class_5348 arg, int x, int y) {
-        this.renderTooltip(matrices, Arrays.asList(arg), x, y);
+    public void renderTooltip(MatrixStack matrices, StringRenderable stringRenderable, int x, int y) {
+        this.renderTooltip(matrices, Arrays.asList(stringRenderable), x, y);
     }
 
     /*
      * WARNING - void declaration
      */
-    public void renderTooltip(MatrixStack matrices, List<? extends class_5348> lines, int x, int y) {
+    public void renderTooltip(MatrixStack matrices, List<? extends StringRenderable> lines, int x, int y) {
         int n;
         int j;
         if (lines.isEmpty()) {
             return;
         }
         int i = 0;
-        for (class_5348 class_53482 : lines) {
-            j = this.textRenderer.getWidth(class_53482);
+        for (StringRenderable stringRenderable : lines) {
+            j = this.textRenderer.getWidth(stringRenderable);
             if (j <= i) continue;
             i = j;
         }
@@ -192,10 +192,10 @@ Drawable {
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         matrices.translate(0.0, 0.0, 400.0);
         for (int r = 0; r < lines.size(); ++r) {
-            class_5348 lv2 = lines.get(r);
-            if (lv2 != null) {
+            StringRenderable stringRenderable2 = lines.get(r);
+            if (stringRenderable2 != null) {
                 void var7_11;
-                this.textRenderer.draw(lv2, (float)k, (float)var7_11, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+                this.textRenderer.draw(stringRenderable2, (float)k, (float)var7_11, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
             }
             if (r == 0) {
                 var7_11 += 2;

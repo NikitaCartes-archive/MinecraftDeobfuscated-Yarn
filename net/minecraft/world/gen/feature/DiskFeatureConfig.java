@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class DiskFeatureConfig
 implements FeatureConfig {
-    public static final Codec<DiskFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.field_24734.fieldOf("state")).forGetter(diskFeatureConfig -> diskFeatureConfig.state), ((MapCodec)Codec.INT.fieldOf("radius")).withDefault(0).forGetter(diskFeatureConfig -> diskFeatureConfig.radius), ((MapCodec)Codec.INT.fieldOf("y_size")).withDefault(0).forGetter(diskFeatureConfig -> diskFeatureConfig.ySize), ((MapCodec)BlockState.field_24734.listOf().fieldOf("targets")).forGetter(diskFeatureConfig -> diskFeatureConfig.targets)).apply((Applicative<DiskFeatureConfig, ?>)instance, DiskFeatureConfig::new));
+    public static final Codec<DiskFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(diskFeatureConfig -> diskFeatureConfig.state), ((MapCodec)Codec.INT.fieldOf("radius")).withDefault(0).forGetter(diskFeatureConfig -> diskFeatureConfig.radius), ((MapCodec)Codec.INT.fieldOf("y_size")).withDefault(0).forGetter(diskFeatureConfig -> diskFeatureConfig.ySize), ((MapCodec)BlockState.CODEC.listOf().fieldOf("targets")).forGetter(diskFeatureConfig -> diskFeatureConfig.targets)).apply((Applicative<DiskFeatureConfig, ?>)instance, DiskFeatureConfig::new));
     public final BlockState state;
     public final int radius;
     public final int ySize;

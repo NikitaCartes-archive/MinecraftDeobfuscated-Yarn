@@ -4,7 +4,7 @@
 package net.minecraft.world.level;
 
 import com.mojang.serialization.Dynamic;
-import net.minecraft.class_5359;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -16,21 +16,21 @@ public final class LevelInfo {
     private final Difficulty difficulty;
     private final boolean hardcore;
     private final GameRules gameRules;
-    private final class_5359 field_25403;
+    private final DataPackSettings field_25403;
 
-    public LevelInfo(String name, GameMode gameMode, boolean bl, Difficulty difficulty, boolean bl2, GameRules gameRules, class_5359 arg) {
+    public LevelInfo(String name, GameMode gameMode, boolean bl, Difficulty difficulty, boolean bl2, GameRules gameRules, DataPackSettings dataPackSettings) {
         this.name = name;
         this.gameMode = gameMode;
         this.structures = bl;
         this.difficulty = difficulty;
         this.hardcore = bl2;
         this.gameRules = gameRules;
-        this.field_25403 = arg;
+        this.field_25403 = dataPackSettings;
     }
 
-    public static LevelInfo method_28383(Dynamic<?> dynamic, class_5359 arg) {
+    public static LevelInfo method_28383(Dynamic<?> dynamic, DataPackSettings dataPackSettings) {
         GameMode gameMode = GameMode.byId(dynamic.get("GameType").asInt(0));
-        return new LevelInfo(dynamic.get("LevelName").asString(""), gameMode, dynamic.get("hardcore").asBoolean(false), dynamic.get("Difficulty").asNumber().map(number -> Difficulty.byOrdinal(number.byteValue())).result().orElse(Difficulty.NORMAL), dynamic.get("allowCommands").asBoolean(gameMode == GameMode.CREATIVE), new GameRules(dynamic.get("GameRules")), arg);
+        return new LevelInfo(dynamic.get("LevelName").asString(""), gameMode, dynamic.get("hardcore").asBoolean(false), dynamic.get("Difficulty").asNumber().map(number -> Difficulty.byOrdinal(number.byteValue())).result().orElse(Difficulty.NORMAL), dynamic.get("allowCommands").asBoolean(gameMode == GameMode.CREATIVE), new GameRules(dynamic.get("GameRules")), dataPackSettings);
     }
 
     public String getLevelName() {
@@ -57,7 +57,7 @@ public final class LevelInfo {
         return this.gameRules;
     }
 
-    public class_5359 method_29558() {
+    public DataPackSettings method_29558() {
         return this.field_25403;
     }
 
@@ -69,8 +69,8 @@ public final class LevelInfo {
         return new LevelInfo(this.name, this.gameMode, this.structures, difficulty, this.hardcore, this.gameRules, this.field_25403);
     }
 
-    public LevelInfo method_29557(class_5359 arg) {
-        return new LevelInfo(this.name, this.gameMode, this.structures, this.difficulty, this.hardcore, this.gameRules, arg);
+    public LevelInfo method_29557(DataPackSettings dataPackSettings) {
+        return new LevelInfo(this.name, this.gameMode, this.structures, this.difficulty, this.hardcore, this.gameRules, dataPackSettings);
     }
 
     public LevelInfo method_28385() {

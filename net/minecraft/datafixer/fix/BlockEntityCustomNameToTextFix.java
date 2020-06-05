@@ -22,7 +22,7 @@ extends DataFix {
 
     @Override
     public TypeRewriteRule makeRule() {
-        OpticFinder<String> opticFinder = DSL.fieldFinder("id", IdentifierNormalizingSchema.method_28295());
+        OpticFinder<String> opticFinder = DSL.fieldFinder("id", IdentifierNormalizingSchema.getIdentifierType());
         return this.fixTypeEverywhereTyped("BlockEntityCustomNameToComponentFix", this.getInputSchema().getType(TypeReferences.BLOCK_ENTITY), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
             Optional optional = typed.getOptional(opticFinder);
             if (optional.isPresent() && Objects.equals(optional.get(), "minecraft:command_block")) {

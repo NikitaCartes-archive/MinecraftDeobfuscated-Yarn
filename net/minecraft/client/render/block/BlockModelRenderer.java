@@ -35,8 +35,8 @@ public class BlockModelRenderer {
     private final BlockColors colorMap;
     private static final ThreadLocal<BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BrightnessCache());
 
-    public BlockModelRenderer(BlockColors blockColors) {
-        this.colorMap = blockColors;
+    public BlockModelRenderer(BlockColors colorMap) {
+        this.colorMap = colorMap;
     }
 
     public boolean render(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrix, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
@@ -510,13 +510,13 @@ public class BlockModelRenderer {
             this.floatCache.clear();
         }
 
-        public int getInt(BlockState blockState, BlockRenderView blockRenderView, BlockPos pos) {
+        public int getInt(BlockState state, BlockRenderView blockRenderView, BlockPos pos) {
             int i;
             long l = pos.asLong();
             if (this.enabled && (i = this.intCache.get(l)) != Integer.MAX_VALUE) {
                 return i;
             }
-            i = WorldRenderer.getLightmapCoordinates(blockRenderView, blockState, pos);
+            i = WorldRenderer.getLightmapCoordinates(blockRenderView, state, pos);
             if (this.enabled) {
                 if (this.intCache.size() == 100) {
                     this.intCache.removeFirstInt();
@@ -558,11 +558,11 @@ public class BlockModelRenderer {
         private final int fourthCorner;
         private static final Translation[] VALUES;
 
-        private Translation(int j, int k, int l, int m) {
-            this.firstCorner = j;
-            this.secondCorner = k;
-            this.thirdCorner = l;
-            this.fourthCorner = m;
+        private Translation(int firstCorner, int secondCorner, int thirdCorner, int fourthCorner) {
+            this.firstCorner = firstCorner;
+            this.secondCorner = secondCorner;
+            this.thirdCorner = thirdCorner;
+            this.fourthCorner = fourthCorner;
         }
 
         public static Translation getTranslations(Direction direction) {

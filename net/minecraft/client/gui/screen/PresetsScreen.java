@@ -18,8 +18,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5311;
-import net.minecraft.class_5314;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.CustomizeFlatLevelScreen;
@@ -42,6 +40,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
+import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,7 +58,7 @@ extends Screen {
     private SuperflatPresetsListWidget listWidget;
     private ButtonWidget selectPresetButton;
     private TextFieldWidget customPresetField;
-    private class_5311 field_25044;
+    private StructuresConfig field_25044;
 
     public PresetsScreen(CustomizeFlatLevelScreen parent) {
         super(new TranslatableText("createWorld.customize.presets.title"));
@@ -113,12 +113,12 @@ extends Screen {
         return list;
     }
 
-    public static FlatChunkGeneratorConfig method_29060(String string, class_5311 arg) {
+    public static FlatChunkGeneratorConfig method_29060(String string, StructuresConfig structuresConfig) {
         Iterator<String> iterator = Splitter.on(';').split(string).iterator();
         if (!iterator.hasNext()) {
             return FlatChunkGeneratorConfig.getDefaultConfig();
         }
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(arg);
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
         List<FlatChunkGeneratorLayer> list = PresetsScreen.method_29058(iterator.next());
         if (list.isEmpty()) {
             return FlatChunkGeneratorConfig.getDefaultConfig();
@@ -219,12 +219,12 @@ extends Screen {
     }
 
     private static void addPreset(Text text, ItemConvertible icon, Biome biome, List<StructureFeature<?>> structures, boolean bl, boolean bl2, boolean bl3, FlatChunkGeneratorLayer ... flatChunkGeneratorLayers) {
-        HashMap<StructureFeature<?>, class_5314> map = Maps.newHashMap();
+        HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap();
         for (StructureFeature<?> structureFeature : structures) {
-            map.put(structureFeature, class_5311.field_24822.get(structureFeature));
+            map.put(structureFeature, StructuresConfig.DEFAULT_STRUCTURES.get(structureFeature));
         }
-        class_5311 lv = new class_5311(bl ? Optional.of(class_5311.field_24823) : Optional.empty(), map);
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(lv);
+        StructuresConfig structuresConfig = new StructuresConfig(bl ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
         if (bl2) {
             flatChunkGeneratorConfig.method_28911();
         }
@@ -236,7 +236,7 @@ extends Screen {
         }
         flatChunkGeneratorConfig.setBiome(biome);
         flatChunkGeneratorConfig.updateLayerBlocks();
-        presets.add(new SuperflatPreset(icon.asItem(), text, flatChunkGeneratorConfig.method_28912(lv)));
+        presets.add(new SuperflatPreset(icon.asItem(), text, flatChunkGeneratorConfig.method_28912(structuresConfig)));
     }
 
     static {

@@ -48,7 +48,7 @@ extends Item {
             world.playSound(null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75f, 0.8f);
         }
         itemStack.decrement(1);
-        return ActionResult.method_29236(world.isClient);
+        return ActionResult.success(world.isClient);
     }
 
     private void setRotations(ArmorStandEntity stand, Random random) {

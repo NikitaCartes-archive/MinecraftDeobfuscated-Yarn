@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.ingame.EnchantingPhrases;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.DiffuseLighting;
@@ -25,6 +24,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -146,12 +146,12 @@ extends HandledScreen<EnchantmentScreenHandler> {
             }
             String string = "" + r;
             int s = 86 - this.textRenderer.getWidth(string);
-            class_5348 lv = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
+            StringRenderable stringRenderable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
             int t = 6839882;
             if (!(n >= o + 1 && this.client.player.experienceLevel >= r || this.client.player.abilities.creativeMode)) {
                 this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
                 this.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 239, 16, 16);
-                this.textRenderer.drawTrimmed(lv, q, j + 16 + 19 * o, s, (t & 0xFEFEFE) >> 1);
+                this.textRenderer.drawTrimmed(stringRenderable, q, j + 16 + 19 * o, s, (t & 0xFEFEFE) >> 1);
                 t = 4226832;
             } else {
                 int u = mouseX - (i + 60);
@@ -163,7 +163,7 @@ extends HandledScreen<EnchantmentScreenHandler> {
                     this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 166, 108, 19);
                 }
                 this.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 223, 16, 16);
-                this.textRenderer.drawTrimmed(lv, q, j + 16 + 19 * o, s, t);
+                this.textRenderer.drawTrimmed(stringRenderable, q, j + 16 + 19 * o, s, t);
                 t = 8453920;
             }
             this.textRenderer.drawWithShadow(matrices, string, (float)(q + 86 - this.textRenderer.getWidth(string)), (float)(j + 16 + 19 * o + 7), t);

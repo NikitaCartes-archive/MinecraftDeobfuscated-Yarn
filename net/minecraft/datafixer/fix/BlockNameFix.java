@@ -28,7 +28,7 @@ extends DataFix {
     public TypeRewriteRule makeRule() {
         Type<Pair<String, String>> type2;
         Type<?> type = this.getInputSchema().getType(TypeReferences.BLOCK_NAME);
-        if (!Objects.equals(type, type2 = DSL.named(TypeReferences.BLOCK_NAME.typeName(), IdentifierNormalizingSchema.method_28295()))) {
+        if (!Objects.equals(type, type2 = DSL.named(TypeReferences.BLOCK_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType()))) {
             throw new IllegalStateException("block type is not what was expected.");
         }
         TypeRewriteRule typeRewriteRule = this.fixTypeEverywhere(this.name + " for block", type2, dynamicOps -> pair -> pair.mapSecond(this::rename));

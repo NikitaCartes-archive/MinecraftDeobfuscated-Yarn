@@ -42,7 +42,7 @@ implements Font {
             int j = i * 256;
             Identifier identifier = this.getImageId(j);
             try (Resource resource = this.resourceManager.getResource(identifier);
-                 NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());){
+                 NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());){
                 if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
                     for (int k = 0; k < 256; ++k) {
                         byte b = sizes[j + k];
@@ -101,7 +101,7 @@ implements Font {
     @Nullable
     private NativeImage getGlyphImage(Identifier glyphId) {
         try (Resource resource = this.resourceManager.getResource(glyphId);){
-            NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
+            NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
             return nativeImage;
         } catch (IOException iOException) {
             LOGGER.error("Couldn't load texture {}", (Object)glyphId, (Object)iOException);

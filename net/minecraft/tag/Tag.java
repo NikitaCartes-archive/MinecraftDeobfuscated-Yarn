@@ -38,7 +38,7 @@ import net.minecraft.util.JsonHelper;
  */
 public interface Tag<T> {
     public static <T> Codec<Tag<T>> method_28134(Supplier<TagContainer<T>> supplier) {
-        return Identifier.field_25139.flatXmap(identifier -> Optional.ofNullable(((TagContainer)supplier.get()).get((Identifier)identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown tag: " + identifier)), tag -> Optional.ofNullable(((TagContainer)supplier.get()).getId(tag)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown tag: " + tag)));
+        return Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(((TagContainer)supplier.get()).get((Identifier)identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown tag: " + identifier)), tag -> Optional.ofNullable(((TagContainer)supplier.get()).getId(tag)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown tag: " + tag)));
     }
 
     public boolean contains(T var1);

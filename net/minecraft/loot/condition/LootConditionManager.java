@@ -47,7 +47,7 @@ extends JsonDataLoader {
             try {
                 if (jsonElement.isJsonArray()) {
                     LootCondition[] lootConditions = GSON.fromJson((JsonElement)jsonElement, LootCondition[].class);
-                    builder.put(identifier, new class_5334(lootConditions));
+                    builder.put(identifier, new AndCondition(lootConditions));
                 } else {
                     LootCondition lootCondition = GSON.fromJson((JsonElement)jsonElement, LootCondition.class);
                     builder.put(identifier, lootCondition);
@@ -67,37 +67,37 @@ extends JsonDataLoader {
         return Collections.unmodifiableSet(this.conditions.keySet());
     }
 
-    static class class_5334
+    static class AndCondition
     implements LootCondition {
-        private final LootCondition[] field_25202;
-        private final Predicate<LootContext> field_25203;
+        private final LootCondition[] terms;
+        private final Predicate<LootContext> predicate;
 
-        private class_5334(LootCondition[] lootConditions) {
-            this.field_25202 = lootConditions;
-            this.field_25203 = LootConditionTypes.joinAnd(lootConditions);
+        private AndCondition(LootCondition[] elements) {
+            this.terms = elements;
+            this.predicate = LootConditionTypes.joinAnd(elements);
         }
 
         @Override
         public final boolean test(LootContext lootContext) {
-            return this.field_25203.test(lootContext);
+            return this.predicate.test(lootContext);
         }
 
         @Override
         public void validate(LootTableReporter reporter) {
             LootCondition.super.validate(reporter);
-            for (int i = 0; i < this.field_25202.length; ++i) {
-                this.field_25202[i].validate(reporter.makeChild(".term[" + i + "]"));
+            for (int i = 0; i < this.terms.length; ++i) {
+                this.terms[i].validate(reporter.makeChild(".term[" + i + "]"));
             }
         }
 
         @Override
-        public LootConditionType method_29325() {
+        public LootConditionType getType() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public /* synthetic */ boolean test(Object object) {
-            return this.test((LootContext)object);
+        public /* synthetic */ boolean test(Object context) {
+            return this.test((LootContext)context);
         }
     }
 }

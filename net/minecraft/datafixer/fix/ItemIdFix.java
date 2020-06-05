@@ -349,8 +349,8 @@ extends DataFix {
 
     @Override
     public TypeRewriteRule makeRule() {
-        Type<Either<Integer, Pair<String, String>>> type = DSL.or(DSL.intType(), DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295()));
-        Type<Pair<String, String>> type2 = DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295());
+        Type<Either<Integer, Pair<String, String>>> type = DSL.or(DSL.intType(), DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType()));
+        Type<Pair<String, String>> type2 = DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType());
         OpticFinder<Either<Integer, Pair<String, String>>> opticFinder = DSL.fieldFinder("id", type);
         return this.fixTypeEverywhereTyped("ItemIdFix", this.getInputSchema().getType(TypeReferences.ITEM_STACK), this.getOutputSchema().getType(TypeReferences.ITEM_STACK), (Typed<?> typed) -> typed.update(opticFinder, type2, either -> either.map(integer -> Pair.of(TypeReferences.ITEM_NAME.typeName(), ItemIdFix.fromId(integer)), pair -> pair)));
     }

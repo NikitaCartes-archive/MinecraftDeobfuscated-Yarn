@@ -58,7 +58,7 @@ implements SynchronousResourceReloadListener {
 
     @Override
     public void apply(ResourceManager manager) {
-        this.languageDefs = LanguageManager.method_29393(manager.method_29213());
+        this.languageDefs = LanguageManager.method_29393(manager.streamResourcePacks());
         LanguageDefinition languageDefinition = this.languageDefs.getOrDefault("en_us", field_25291);
         this.field_25292 = this.languageDefs.getOrDefault(this.currentLanguageCode, languageDefinition);
         ArrayList<LanguageDefinition> list = Lists.newArrayList(languageDefinition);
@@ -67,7 +67,7 @@ implements SynchronousResourceReloadListener {
         }
         TranslationStorage translationStorage = TranslationStorage.load(manager, list);
         I18n.method_29391(translationStorage);
-        Language.method_29427(translationStorage);
+        Language.setInstance(translationStorage);
     }
 
     public void setLanguage(LanguageDefinition languageDefinition) {

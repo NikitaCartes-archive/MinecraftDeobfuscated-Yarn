@@ -87,11 +87,11 @@ implements Waterloggable {
         EnderChestInventory enderChestInventory = player.getEnderChestInventory();
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (enderChestInventory == null || !(blockEntity instanceof EnderChestBlockEntity)) {
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         BlockPos blockPos = pos.up();
         if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         if (world.isClient) {
             return ActionResult.SUCCESS;

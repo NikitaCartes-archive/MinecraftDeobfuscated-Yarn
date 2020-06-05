@@ -49,7 +49,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -195,8 +195,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 if (this.level.isLocked()) {
                     DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                     if (bl) {
-                        MutableText lv = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-                        this.screen.setTooltip(this.client.textRenderer.wrapLines(lv, 175));
+                        MutableText stringRenderable = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+                        this.screen.setTooltip(this.client.textRenderer.wrapLines(stringRenderable, 175));
                     }
                 } else if (this.level.isDifferentVersion()) {
                     DrawableHelper.drawTexture(matrices, x, y, 32.0f, j, 32, 32, 256, 256);
@@ -314,11 +314,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         }
 
         public void recreate() {
-            DimensionTracker.Modifiable modifiable = DimensionTracker.create();
+            RegistryTracker.Modifiable modifiable = RegistryTracker.create();
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-                 MinecraftClient.class_5367 lv = this.client.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::method_29599, false, session);){
-                LevelInfo levelInfo = lv.method_29614().getLevelInfo();
-                GeneratorOptions generatorOptions = lv.method_29614().getGeneratorOptions();
+                 MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);){
+                LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
+                GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
                 Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
                 if (generatorOptions.isLegacyCustomizedType()) {
                     this.client.openScreen(new ConfirmScreen(bl -> this.client.openScreen(bl ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, modifiable) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
@@ -334,7 +334,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         private void start() {
             this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
             if (this.client.getLevelStorage().levelExists(this.level.getName())) {
-                this.client.method_29606(this.level.getName());
+                this.client.startIntegratedServer(this.level.getName());
             }
         }
 

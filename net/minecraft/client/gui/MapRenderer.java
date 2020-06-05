@@ -99,10 +99,10 @@ implements AutoCloseable {
                     int k = j + i * 128;
                     int l = this.mapState.colors[k] & 0xFF;
                     if (l / 4 == 0) {
-                        this.texture.getImage().setPixelRgba(j, i, 0);
+                        this.texture.getImage().setPixelColor(j, i, 0);
                         continue;
                     }
-                    this.texture.getImage().setPixelRgba(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
+                    this.texture.getImage().setPixelColor(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
                 }
             }
             this.texture.upload();

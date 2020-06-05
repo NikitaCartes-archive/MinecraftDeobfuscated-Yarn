@@ -38,7 +38,7 @@ extends AbstractDonkeyEntity {
 
     @Override
     @Nullable
-    protected SoundEvent method_28368() {
+    protected SoundEvent getEatSound() {
         return SoundEvents.ENTITY_MULE_EAT;
     }
 

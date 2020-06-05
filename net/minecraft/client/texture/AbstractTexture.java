@@ -40,7 +40,7 @@ public abstract class AbstractTexture {
     public int getGlId() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         if (this.glId == -1) {
-            this.glId = TextureUtil.method_24956();
+            this.glId = TextureUtil.generateId();
         }
         return this.glId;
     }
@@ -49,12 +49,12 @@ public abstract class AbstractTexture {
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> {
                 if (this.glId != -1) {
-                    TextureUtil.method_24957(this.glId);
+                    TextureUtil.deleteId(this.glId);
                     this.glId = -1;
                 }
             });
         } else if (this.glId != -1) {
-            TextureUtil.method_24957(this.glId);
+            TextureUtil.deleteId(this.glId);
             this.glId = -1;
         }
     }

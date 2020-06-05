@@ -20,7 +20,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.class_5363;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -72,6 +71,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -149,7 +149,7 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE_KEY = Registry.createRegistryKey("loot_condition_type");
     public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = Registry.createRegistryKey("dimension_type");
     public static final RegistryKey<Registry<World>> DIMENSION = Registry.createRegistryKey("dimension");
-    public static final RegistryKey<Registry<class_5363>> field_25490 = Registry.createRegistryKey("dimension");
+    public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_OPTIONS = Registry.createRegistryKey("dimension");
     public static final Registry<SoundEvent> SOUND_EVENT = Registry.create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
     public static final DefaultedRegistry<Fluid> FLUID = Registry.create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
     public static final Registry<StatusEffect> STATUS_EFFECT = Registry.create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
@@ -266,7 +266,7 @@ IndexedIterable<T> {
                 return DataResult.success(object, this.lifecycle);
             }).map((? super R object) -> Pair.of(object, dynamicOps.empty()));
         }
-        return Identifier.field_25139.decode(dynamicOps, object2).addLifecycle(this.lifecycle).flatMap((? super R pair) -> {
+        return Identifier.CODEC.decode(dynamicOps, object2).addLifecycle(this.lifecycle).flatMap((? super R pair) -> {
             if (!this.containsId((Identifier)pair.getFirst())) {
                 return DataResult.error("Unknown registry key: " + pair.getFirst());
             }

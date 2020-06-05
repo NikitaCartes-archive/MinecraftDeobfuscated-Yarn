@@ -93,7 +93,7 @@ extends AnimalEntity {
             } else if (!player.inventory.insertStack(new ItemStack(Items.MILK_BUCKET))) {
                 player.dropItem(new ItemStack(Items.MILK_BUCKET), false);
             }
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         return super.interactMob(player, hand);
     }

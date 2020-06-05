@@ -25,7 +25,7 @@ extends MobEntityRenderer<BeeEntity, BeeEntityModel<BeeEntity>> {
 
     @Override
     public Identifier getTexture(BeeEntity beeEntity) {
-        if (beeEntity.method_29511()) {
+        if (beeEntity.hasAngerTime()) {
             if (beeEntity.hasNectar()) {
                 return ANGRY_NECTAR_TEXTURE;
             }

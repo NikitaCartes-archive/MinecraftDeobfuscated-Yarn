@@ -39,7 +39,7 @@ extends ConditionalLootFunction {
     }
 
     @Override
-    public LootFunctionType method_29321() {
+    public LootFunctionType getType() {
         return LootFunctionTypes.APPLY_BONUS;
     }
 
@@ -81,8 +81,8 @@ extends ConditionalLootFunction {
         FACTORIES.put(UniformBonusCount.ID, UniformBonusCount::fromJson);
     }
 
-    public static class Factory
-    extends ConditionalLootFunction.Factory<ApplyBonusLootFunction> {
+    public static class Serializer
+    extends ConditionalLootFunction.Serializer<ApplyBonusLootFunction> {
         @Override
         public void toJson(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, applyBonusLootFunction, jsonSerializationContext);

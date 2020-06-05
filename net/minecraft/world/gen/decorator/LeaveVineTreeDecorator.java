@@ -23,7 +23,7 @@ extends TreeDecorator {
     public static final LeaveVineTreeDecorator field_24961 = new LeaveVineTreeDecorator();
 
     @Override
-    protected TreeDecoratorType<?> method_28893() {
+    protected TreeDecoratorType<?> getType() {
         return TreeDecoratorType.LEAVE_VINE;
     }
 

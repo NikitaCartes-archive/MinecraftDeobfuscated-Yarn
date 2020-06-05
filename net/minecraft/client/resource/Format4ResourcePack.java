@@ -111,7 +111,7 @@ implements ResourcePack {
                     int i = nativeImage.getWidth() / 256;
                     for (int j = 88 * i; j < 200 * i; ++j) {
                         for (int k = 56 * i; k < 112 * i; ++k) {
-                            nativeImage.setPixelRgba(k, j, 0);
+                            nativeImage.setPixelColor(k, j, 0);
                         }
                     }
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(nativeImage.getBytes());
@@ -155,9 +155,9 @@ implements ResourcePack {
                             int p = n / i;
                             for (int q = k * p; q < m * p; ++q) {
                                 for (int r = j * p; r < l * p; ++r) {
-                                    int s = NativeImage.method_24033(nativeImage2.getPixelRgba(r, q));
-                                    int t = nativeImage.getPixelRgba(r, q);
-                                    nativeImage3.setPixelRgba(r, q, NativeImage.method_24031(s, NativeImage.method_24035(t), NativeImage.method_24034(t), NativeImage.method_24033(t)));
+                                    int s = NativeImage.getRed(nativeImage2.getPixelColor(r, q));
+                                    int t = nativeImage.getPixelColor(r, q);
+                                    nativeImage3.setPixelColor(r, q, NativeImage.getAbgrColor(s, NativeImage.getBlue(t), NativeImage.getGreen(t), NativeImage.getRed(t)));
                                 }
                             }
                             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(nativeImage3.getBytes());
@@ -425,7 +425,7 @@ implements ResourcePack {
         j *= o;
         for (int p = 0; p < n; ++p) {
             for (int q = 0; q < m; ++q) {
-                target.setPixelRgba(k + q, l + p, source.getPixelRgba(i + (bl ? m - 1 - q : q), j + (bl2 ? n - 1 - p : p)));
+                target.setPixelColor(k + q, l + p, source.getPixelColor(i + (bl ? m - 1 - q : q), j + (bl2 ? n - 1 - p : p)));
             }
         }
     }

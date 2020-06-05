@@ -297,7 +297,7 @@ extends DataFix {
         Schema schema2 = this.getOutputSchema();
         Function<Typed, Typed> function = typed -> this.mergeIdAndData((Typed<?>)typed, "DisplayTile", "DisplayData", "DisplayState");
         Function<Typed, Typed> function2 = typed -> this.mergeIdAndData((Typed<?>)typed, "inTile", "inData", "inBlockState");
-        Type<Pair<Either<Pair<String, Either<Integer, String>>, Unit>, Dynamic<?>>> type = DSL.and(DSL.optional(DSL.field("inTile", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.method_28295())))), DSL.remainderType());
+        Type<Pair<Either<Pair<String, Either<Integer, String>>, Unit>, Dynamic<?>>> type = DSL.and(DSL.optional(DSL.field("inTile", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType())))), DSL.remainderType());
         Function<Typed, Typed> function3 = typed -> typed.update(type.finder(), DSL.remainderType(), Pair::getSecond);
         return this.fixTypeEverywhereTyped("EntityBlockStateFix", schema.getType(TypeReferences.ENTITY), schema2.getType(TypeReferences.ENTITY), (Typed<?> typed2) -> {
             typed2 = this.useFunction((Typed<?>)typed2, "minecraft:falling_block", this::method_15695);
@@ -324,7 +324,7 @@ extends DataFix {
     }
 
     private Typed<?> method_15695(Typed<?> typed) {
-        Type<Either<Pair<String, Either<Integer, String>>, Unit>> type = DSL.optional(DSL.field("Block", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.method_28295()))));
+        Type<Either<Pair<String, Either<Integer, String>>, Unit>> type = DSL.optional(DSL.field("Block", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType()))));
         Type<Either<Pair<String, Dynamic<?>>, Unit>> type2 = DSL.optional(DSL.field("BlockState", DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType())));
         Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
         return typed.update(type.finder(), type2, either -> {
@@ -338,7 +338,7 @@ extends DataFix {
     }
 
     private Typed<?> mergeIdAndData(Typed<?> typed, String oldIdKey, String oldDataKey, String newStateKey) {
-        Tag.TagType<Pair<String, Either<Integer, String>>> type = DSL.field(oldIdKey, DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.method_28295())));
+        Tag.TagType<Pair<String, Either<Integer, String>>> type = DSL.field(oldIdKey, DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType())));
         Tag.TagType<Pair<String, Dynamic<?>>> type2 = DSL.field(newStateKey, DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType()));
         Dynamic<?> dynamic = typed.getOrCreate(DSL.remainderFinder());
         return typed.update(type.finder(), type2, pair -> {

@@ -371,7 +371,7 @@ extends NetworkSyncedItem {
                 MapState mapState = FilledMapItem.getOrCreateMapState(context.getStack(), context.getWorld());
                 mapState.addBanner(context.getWorld(), context.getBlockPos());
             }
-            return ActionResult.method_29236(context.world.isClient);
+            return ActionResult.success(context.world.isClient);
         }
         return super.useOnBlock(context);
     }

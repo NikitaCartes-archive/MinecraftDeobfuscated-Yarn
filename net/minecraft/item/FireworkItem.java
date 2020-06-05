@@ -48,7 +48,7 @@ extends Item {
             world.spawnEntity(fireworkRocketEntity);
             itemStack.decrement(1);
         }
-        return ActionResult.method_29236(world.isClient);
+        return ActionResult.success(world.isClient);
     }
 
     @Override

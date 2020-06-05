@@ -32,17 +32,17 @@ extends Language {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Pattern field_25288 = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z])");
     private final Map<String, String> translations;
-    private final boolean field_25289;
+    private final boolean rightToLeft;
 
-    private TranslationStorage(Map<String, String> map, boolean bl) {
-        this.translations = map;
-        this.field_25289 = bl;
+    private TranslationStorage(Map<String, String> translations, boolean rightToLeft) {
+        this.translations = translations;
+        this.rightToLeft = rightToLeft;
     }
 
-    public static TranslationStorage load(ResourceManager resourceManager, List<LanguageDefinition> list) {
+    public static TranslationStorage load(ResourceManager resourceManager, List<LanguageDefinition> definitions) {
         HashMap<String, String> map = Maps.newHashMap();
         boolean bl = false;
-        for (LanguageDefinition languageDefinition : list) {
+        for (LanguageDefinition languageDefinition : definitions) {
             bl |= languageDefinition.isRightToLeft();
             String string = String.format("lang/%s.json", languageDefinition.getCode());
             for (String string2 : resourceManager.getAllNamespaces()) {
@@ -58,13 +58,13 @@ extends Language {
         return new TranslationStorage(ImmutableMap.copyOf(map), bl);
     }
 
-    private static void load(List<Resource> list, Map<String, String> map) {
-        for (Resource resource : list) {
+    private static void load(List<Resource> resources, Map<String, String> translationMap) {
+        for (Resource resource : resources) {
             try {
                 InputStream inputStream = resource.getInputStream();
                 Throwable throwable = null;
                 try {
-                    Language.method_29425(inputStream, map::put);
+                    Language.load(inputStream, translationMap::put);
                 } catch (Throwable throwable2) {
                     throwable = throwable2;
                     throw throwable2;
@@ -87,8 +87,8 @@ extends Language {
     }
 
     @Override
-    public String get(String string) {
-        return this.translations.getOrDefault(string, string);
+    public String get(String key) {
+        return this.translations.getOrDefault(key, key);
     }
 
     @Override
@@ -97,19 +97,19 @@ extends Language {
     }
 
     @Override
-    public boolean method_29428() {
-        return this.field_25289;
+    public boolean isRightToLeft() {
+        return this.rightToLeft;
     }
 
     @Override
-    public String method_29426(String string, boolean bl) {
-        if (!this.field_25289) {
+    public String reorder(String string, boolean allowTokens) {
+        if (!this.rightToLeft) {
             return string;
         }
-        if (bl && string.indexOf(37) != -1) {
+        if (allowTokens && string.indexOf(37) != -1) {
             string = TranslationStorage.method_29389(string);
         }
-        return this.method_29390(string);
+        return this.reorder(string);
     }
 
     public static String method_29389(String string) {
@@ -127,7 +127,7 @@ extends Language {
         return stringBuffer.toString();
     }
 
-    private String method_29390(String string) {
+    private String reorder(String string) {
         try {
             Bidi bidi = new Bidi(new ArabicShaping(8).shape(string), 127);
             bidi.setReorderingMode(0);

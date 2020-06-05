@@ -6,7 +6,6 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import java.util.UUID;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5354;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +21,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ZombifiedPiglinEntity
 extends ZombieEntity
-implements class_5354 {
+implements Angerable {
     private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
     private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION);
     private static final IntRange field_25382 = Durations.betweenSeconds(0, 2);
@@ -55,8 +55,8 @@ implements class_5354 {
     }
 
     @Override
-    public void method_29513(@Nullable UUID uUID) {
-        this.field_25381 = uUID;
+    public void setAngryAt(@Nullable UUID uuid) {
+        this.field_25381 = uuid;
     }
 
     @Override
@@ -64,7 +64,7 @@ implements class_5354 {
         this.goalSelector.add(2, new ZombieAttackGoal(this, 1.0, false));
         this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
         this.targetSelector.add(1, new RevengeGoal(this, new Class[0]).setGroupRevenge(new Class[0]));
-        this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::method_29515));
+        this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
     }
 
     public static DefaultAttributeContainer.Builder createZombifiedPiglinAttributes() {
@@ -80,7 +80,7 @@ implements class_5354 {
     protected void mobTick() {
         EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         LivingEntity livingEntity = this.getAttacker();
-        if (this.method_29511()) {
+        if (this.hasAngerTime()) {
             if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
                 entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
             }
@@ -93,7 +93,7 @@ implements class_5354 {
         } else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
             entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
         }
-        this.method_29510();
+        this.tickAngerLogic();
         super.mobTick();
     }
 
@@ -102,17 +102,17 @@ implements class_5354 {
     }
 
     @Override
-    public void setTarget(@Nullable LivingEntity livingEntity) {
-        if (this.getTarget() == null && livingEntity != null) {
+    public void setTarget(@Nullable LivingEntity target) {
+        if (this.getTarget() == null && target != null) {
             this.method_29533();
             this.angrySoundDelay = field_25382.choose(this.random);
         }
-        super.setTarget(livingEntity);
+        super.setTarget(target);
     }
 
     @Override
-    public void method_29509() {
-        this.method_29514(field_25379.choose(this.random));
+    public void chooseRandomAngerTime() {
+        this.setAngerTime(field_25379.choose(this.random));
     }
 
     public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -127,22 +127,22 @@ implements class_5354 {
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
-        this.method_29517(tag);
+        this.angerToTag(tag);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
-        this.method_29512(this.world, tag);
+        this.angerFromTag(this.world, tag);
     }
 
     @Override
-    public void method_29514(int i) {
-        this.field_25380 = i;
+    public void setAngerTime(int ticks) {
+        this.field_25380 = ticks;
     }
 
     @Override
-    public int method_29507() {
+    public int getAngerTime() {
         return this.field_25380;
     }
 
@@ -185,13 +185,13 @@ implements class_5354 {
     }
 
     @Override
-    public UUID method_29508() {
+    public UUID getAngryAt() {
         return this.field_25381;
     }
 
     @Override
     public boolean isAngryAt(PlayerEntity player) {
-        return this.method_29515(player);
+        return this.shouldAngerAt(player);
     }
 }
 

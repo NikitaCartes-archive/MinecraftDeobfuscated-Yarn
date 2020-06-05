@@ -118,7 +118,7 @@ extends AnimalModel<T> {
             this.body.yaw = 0.0f;
             this.body.roll = 0.0f;
         }
-        if (!beeEntity.method_29511()) {
+        if (!beeEntity.hasAngerTime()) {
             this.body.pitch = 0.0f;
             this.body.yaw = 0.0f;
             this.body.roll = 0.0f;

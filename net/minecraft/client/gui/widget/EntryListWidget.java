@@ -151,7 +151,7 @@ implements Drawable {
     protected void clickedHeader(int x, int y) {
     }
 
-    protected void renderHeader(MatrixStack matrixStack, int y, int i, Tessellator tessellator) {
+    protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
     }
 
     protected void renderBackground(MatrixStack matrixStack) {

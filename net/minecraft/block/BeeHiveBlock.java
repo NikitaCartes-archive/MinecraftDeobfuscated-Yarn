@@ -141,7 +141,7 @@ extends BlockWithEntity {
             } else {
                 this.takeHoney(world, state, pos);
             }
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         return super.onUse(state, world, pos, player2, hand, hit);
     }
@@ -235,7 +235,7 @@ extends BlockWithEntity {
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockEntity blockEntity;
-        if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
+        if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.field_19392) && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
             CompoundTag compoundTag;
             boolean bl;
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;

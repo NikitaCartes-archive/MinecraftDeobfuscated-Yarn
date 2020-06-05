@@ -42,7 +42,7 @@ extends AbstractFireballEntity {
             Entity entity2 = this.getOwner();
             int i = entity.getFireTicks();
             entity.setOnFireFor(5);
-            boolean bl = entity.damage(DamageSource.explosiveProjectile(this, entity2), 5.0f);
+            boolean bl = entity.damage(DamageSource.fireball(this, entity2), 5.0f);
             if (!bl) {
                 entity.setFireTicks(i);
             } else if (entity2 instanceof LivingEntity) {
@@ -60,7 +60,7 @@ extends AbstractFireballEntity {
             return;
         }
         Entity entity = this.getOwner();
-        if ((entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && this.world.isAir(blockPos = (blockHitResult2 = blockHitResult).getBlockPos().offset(blockHitResult2.getSide()))) {
+        if ((entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.field_19388)) && this.world.isAir(blockPos = (blockHitResult2 = blockHitResult).getBlockPos().offset(blockHitResult2.getSide()))) {
             this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
         }
     }

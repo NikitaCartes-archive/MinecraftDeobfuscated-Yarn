@@ -27,12 +27,12 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5365;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.AoOption;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.options.CloudRenderMode;
+import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.NarratorOption;
 import net.minecraft.client.options.Option;
@@ -67,7 +67,7 @@ public class GameOptions {
     public float entityDistanceScaling = 1.0f;
     public int maxFps = 120;
     public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
-    public class_5365 field_25444 = class_5365.field_25428;
+    public GraphicsMode graphicsMode = GraphicsMode.FANCY;
     public AoOption ao = AoOption.MAX;
     public List<String> resourcePacks = Lists.newArrayList();
     public List<String> incompatibleResourcePacks = Lists.newArrayList();
@@ -228,7 +228,7 @@ public class GameOptions {
             }
             CompoundTag compoundTag2 = this.update(compoundTag);
             if (!compoundTag2.contains("graphicsMode") && compoundTag2.contains("fancyGraphics")) {
-                this.field_25444 = "true".equals(compoundTag2.getString("fancyGraphics")) ? class_5365.field_25428 : class_5365.field_25427;
+                this.graphicsMode = "true".equals(compoundTag2.getString("fancyGraphics")) ? GraphicsMode.FANCY : GraphicsMode.FAST;
             }
             for (String string2 : compoundTag2.getKeys()) {
                 String string22 = compoundTag2.getString(string2);
@@ -321,7 +321,7 @@ public class GameOptions {
                         this.difficulty = Difficulty.byOrdinal(Integer.parseInt(string22));
                     }
                     if ("graphicsMode".equals(string2)) {
-                        this.field_25444 = class_5365.method_29592(Integer.parseInt(string22));
+                        this.graphicsMode = GraphicsMode.byId(Integer.parseInt(string22));
                     }
                     if ("tutorialStep".equals(string2)) {
                         this.tutorialStep = TutorialStep.byName(string22);
@@ -510,7 +510,7 @@ public class GameOptions {
             printWriter.println("particles:" + this.particles.getId());
             printWriter.println("maxFps:" + this.maxFps);
             printWriter.println("difficulty:" + this.difficulty.getId());
-            printWriter.println("graphicsMode:" + this.field_25444.method_29591());
+            printWriter.println("graphicsMode:" + this.graphicsMode.getId());
             printWriter.println("ao:" + this.ao.getValue());
             printWriter.println("biomeBlendRadius:" + this.biomeBlendRadius);
             switch (this.cloudRenderMode) {

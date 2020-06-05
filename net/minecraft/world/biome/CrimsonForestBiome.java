@@ -31,10 +31,10 @@ public class CrimsonForestBiome
 extends Biome {
     protected CrimsonForestBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.NETHER_FOREST, SurfaceBuilder.CRIMSON_NYLIUM_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.NETHER).depth(0.1f).scale(0.2f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(0x330303).particleConfig(new BiomeParticleConfig(ParticleTypes.CRIMSON_SPORE, 0.025f)).loopSound(SoundEvents.AMBIENT_CRIMSON_FOREST_LOOP).moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD, 6000, 8, 2.0)).additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_CRIMSON_FOREST_ADDITIONS, 0.0111)).music(MusicType.method_27283(SoundEvents.MUSIC_NETHER_CRIMSON_FOREST)).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.4f, 0.0f, 0.0f, 0.0f, 0.0f))));
-        this.addStructureFeature(DefaultBiomeFeatures.NETHER_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.NETHER_RUINED_PORTAL);
         this.addCarver(GenerationStep.Carver.AIR, CrimsonForestBiome.configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2f)));
-        this.addStructureFeature(DefaultBiomeFeatures.field_24701);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24705);
+        this.addStructureFeature(DefaultBiomeFeatures.FORTRESS);
+        this.addStructureFeature(DefaultBiomeFeatures.BASTION_REMNANT);
         this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.SPRING_FEATURE.configure(DefaultBiomeFeatures.LAVA_SPRING_CONFIG).createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(20, 8, 16, 256))));
         DefaultBiomeFeatures.addDefaultMushrooms(this);
         this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.SPRING_FEATURE.configure(DefaultBiomeFeatures.NETHER_SPRING_CONFIG).createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(8, 4, 8, 128))));

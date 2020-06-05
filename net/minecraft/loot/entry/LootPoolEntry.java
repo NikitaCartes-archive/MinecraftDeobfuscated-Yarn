@@ -18,7 +18,7 @@ import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.EntryCombiner;
 import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class LootPoolEntry
@@ -41,16 +41,16 @@ implements EntryCombiner {
         return this.conditionPredicate.test(context);
     }
 
-    public abstract LootPoolEntryType method_29318();
+    public abstract LootPoolEntryType getType();
 
-    public static abstract class class_5337<T extends LootPoolEntry>
-    implements JsonSerializable<T> {
+    public static abstract class Serializer<T extends LootPoolEntry>
+    implements JsonSerializer<T> {
         @Override
         public final void toJson(JsonObject jsonObject, T lootPoolEntry, JsonSerializationContext jsonSerializationContext) {
             if (!ArrayUtils.isEmpty(((LootPoolEntry)lootPoolEntry).conditions)) {
                 jsonObject.add("conditions", jsonSerializationContext.serialize(((LootPoolEntry)lootPoolEntry).conditions));
             }
-            this.method_422(jsonObject, lootPoolEntry, jsonSerializationContext);
+            this.addEntryFields(jsonObject, lootPoolEntry, jsonSerializationContext);
         }
 
         @Override
@@ -59,18 +59,18 @@ implements EntryCombiner {
             return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
 
-        public abstract void method_422(JsonObject var1, T var2, JsonSerializationContext var3);
+        public abstract void addEntryFields(JsonObject var1, T var2, JsonSerializationContext var3);
 
         public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootCondition[] var3);
 
         @Override
-        public /* synthetic */ Object fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            return this.fromJson(jsonObject, jsonDeserializationContext);
+        public /* synthetic */ Object fromJson(JsonObject json, JsonDeserializationContext context) {
+            return this.fromJson(json, context);
         }
 
         @Override
-        public /* synthetic */ void toJson(JsonObject jsonObject, Object object, JsonSerializationContext jsonSerializationContext) {
-            this.toJson(jsonObject, (T)((LootPoolEntry)object), jsonSerializationContext);
+        public /* synthetic */ void toJson(JsonObject json, Object object, JsonSerializationContext context) {
+            this.toJson(json, (T)((LootPoolEntry)object), context);
         }
     }
 

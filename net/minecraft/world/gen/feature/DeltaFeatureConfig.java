@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class DeltaFeatureConfig
 implements FeatureConfig {
-    public static final Codec<DeltaFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.field_24734.fieldOf("contents")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.contents), ((MapCodec)BlockState.field_24734.fieldOf("rim")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.rim), ((MapCodec)Codec.INT.fieldOf("minimum_radius")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.minRadius), ((MapCodec)Codec.INT.fieldOf("maximum_radius")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.maxRadius), ((MapCodec)Codec.INT.fieldOf("maximum_rim")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.maxRim)).apply((Applicative<DeltaFeatureConfig, ?>)instance, DeltaFeatureConfig::new));
+    public static final Codec<DeltaFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("contents")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.contents), ((MapCodec)BlockState.CODEC.fieldOf("rim")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.rim), ((MapCodec)Codec.INT.fieldOf("minimum_radius")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.minRadius), ((MapCodec)Codec.INT.fieldOf("maximum_radius")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.maxRadius), ((MapCodec)Codec.INT.fieldOf("maximum_rim")).forGetter(deltaFeatureConfig -> deltaFeatureConfig.maxRim)).apply((Applicative<DeltaFeatureConfig, ?>)instance, DeltaFeatureConfig::new));
     public final BlockState contents;
     public final BlockState rim;
     public final int minRadius;

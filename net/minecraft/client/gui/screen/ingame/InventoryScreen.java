@@ -41,7 +41,7 @@ implements RecipeBookProvider {
     public InventoryScreen(PlayerEntity player) {
         super(player.playerScreenHandler, player.inventory, new TranslatableText("container.crafting"));
         this.passEvents = true;
-        this.field_25267 = 97;
+        this.titleX = 97;
     }
 
     @Override
@@ -77,7 +77,7 @@ implements RecipeBookProvider {
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        this.textRenderer.draw(matrices, this.title, (float)this.field_25267, (float)this.field_25268, 0x404040);
+        this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 0x404040);
     }
 
     @Override

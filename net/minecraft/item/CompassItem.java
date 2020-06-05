@@ -87,7 +87,7 @@ implements Vanishable {
                     context.player.dropItem(itemStack, false);
                 }
             }
-            return ActionResult.method_29236(context.world.isClient);
+            return ActionResult.success(context.world.isClient);
         }
         return super.useOnBlock(context);
     }

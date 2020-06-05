@@ -13,7 +13,7 @@ import net.minecraft.loot.context.LootContextAware;
 public interface LootCondition
 extends LootContextAware,
 Predicate<LootContext> {
-    public LootConditionType method_29325();
+    public LootConditionType getType();
 
     @FunctionalInterface
     public static interface Builder {

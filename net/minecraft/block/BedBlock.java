@@ -96,7 +96,7 @@ implements BlockEntityProvider {
             if (world.getBlockState(blockPos).isOf(this)) {
                 world.removeBlock(blockPos, false);
             }
-            world.createExplosion(null, DamageSource.netherBed(), null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
+            world.createExplosion(null, DamageSource.badRespawnPoint(), null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
             return ActionResult.SUCCESS;
         }
         if (state.get(OCCUPIED).booleanValue()) {

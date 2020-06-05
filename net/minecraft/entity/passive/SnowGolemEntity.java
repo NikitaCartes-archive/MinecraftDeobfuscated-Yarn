@@ -86,7 +86,7 @@ RangedAttackMob {
     }
 
     @Override
-    public boolean method_29503() {
+    public boolean hurtByWater() {
         return true;
     }
 
@@ -102,7 +102,7 @@ RangedAttackMob {
             if (this.world.getBiome(blockPos).getTemperature(blockPos2) > 1.0f) {
                 this.damage(DamageSource.ON_FIRE, 1.0f);
             }
-            if (!this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+            if (!this.world.getGameRules().getBoolean(GameRules.field_19388)) {
                 return;
             }
             BlockState blockState = Blocks.SNOW.getDefaultState();
@@ -141,7 +141,7 @@ RangedAttackMob {
             if (!this.world.isClient) {
                 itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
-            return ActionResult.method_29236(this.world.isClient);
+            return ActionResult.success(this.world.isClient);
         }
         return ActionResult.PASS;
     }

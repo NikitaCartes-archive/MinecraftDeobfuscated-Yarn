@@ -23,7 +23,7 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295()));
+        OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType()));
         Type<?> type = this.getInputSchema().getTypeRaw(TypeReferences.ITEM_STACK);
         OpticFinder<?> opticFinder2 = DSL.fieldFinder("SaddleItem", type);
         Optional<Typed<?>> optional = inputType.getOptionalTyped(opticFinder2);

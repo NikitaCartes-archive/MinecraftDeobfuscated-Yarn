@@ -14,7 +14,7 @@ import net.minecraft.structure.rule.RuleTestType;
 
 public class RandomBlockStateMatchRuleTest
 extends RuleTest {
-    public static final Codec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.field_24734.fieldOf("block_state")).forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.blockState), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(randomBlockStateMatchRuleTest -> Float.valueOf(randomBlockStateMatchRuleTest.probability))).apply((Applicative<RandomBlockStateMatchRuleTest, ?>)instance, RandomBlockStateMatchRuleTest::new));
+    public static final Codec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("block_state")).forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.blockState), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(randomBlockStateMatchRuleTest -> Float.valueOf(randomBlockStateMatchRuleTest.probability))).apply((Applicative<RandomBlockStateMatchRuleTest, ?>)instance, RandomBlockStateMatchRuleTest::new));
     private final BlockState blockState;
     private final float probability;
 

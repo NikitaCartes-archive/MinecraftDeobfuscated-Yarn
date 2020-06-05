@@ -136,7 +136,7 @@ implements FeatureRendererContext<T, M> {
     protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl) {
         Identifier identifier = this.getTexture(entity);
         if (translucent) {
-            return RenderLayer.method_29379(identifier);
+            return RenderLayer.getItemEntityTranslucentCull(identifier);
         }
         if (showBody) {
             return ((Model)this.model).getLayer(identifier);

@@ -428,7 +428,7 @@ implements DynamicOps<Tag> {
 
     @Override
     public RecordBuilder<Tag> mapBuilder() {
-        return new class_5320();
+        return new MapBuilder();
     }
 
     @Override
@@ -586,9 +586,9 @@ implements DynamicOps<Tag> {
         return this.empty();
     }
 
-    class class_5320
+    class MapBuilder
     extends RecordBuilder.AbstractStringBuilder<Tag, CompoundTag> {
-        protected class_5320() {
+        protected MapBuilder() {
             super(NbtOps.this);
         }
 

@@ -96,14 +96,14 @@ implements Chunk {
     private final ChunkPos pos;
     private volatile boolean lightOn;
 
-    public WorldChunk(World world, ChunkPos chunkPos, BiomeArray biomeArray) {
-        this(world, chunkPos, biomeArray, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
+    public WorldChunk(World world, ChunkPos pos, BiomeArray biomes) {
+        this(world, pos, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
     }
 
-    public WorldChunk(World world, ChunkPos chunkPos, BiomeArray biomeArray, UpgradeData upgradeData, TickScheduler<Block> blockTickScheduler, TickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] chunkSections, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
+    public WorldChunk(World world, ChunkPos pos, BiomeArray biomes, UpgradeData upgradeData, TickScheduler<Block> blockTickScheduler, TickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sections, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
         this.entitySections = new TypeFilterableList[16];
         this.world = world;
-        this.pos = chunkPos;
+        this.pos = pos;
         this.upgradeData = upgradeData;
         for (Heightmap.Type type : Heightmap.Type.values()) {
             if (!ChunkStatus.FULL.getHeightmapTypes().contains(type)) continue;
@@ -112,16 +112,16 @@ implements Chunk {
         for (int i = 0; i < this.entitySections.length; ++i) {
             this.entitySections[i] = new TypeFilterableList<Entity>(Entity.class);
         }
-        this.biomeArray = biomeArray;
+        this.biomeArray = biomes;
         this.blockTickScheduler = blockTickScheduler;
         this.fluidTickScheduler = fluidTickScheduler;
         this.inhabitedTime = inhabitedTime;
         this.loadToWorldConsumer = loadToWorldConsumer;
-        if (chunkSections != null) {
-            if (this.sections.length == chunkSections.length) {
-                System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
+        if (sections != null) {
+            if (this.sections.length == sections.length) {
+                System.arraycopy(sections, 0, this.sections, 0, this.sections.length);
             } else {
-                LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", (Object)chunkSections.length, (Object)this.sections.length);
+                LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", (Object)sections.length, (Object)this.sections.length);
             }
         }
     }
@@ -310,14 +310,14 @@ implements Chunk {
         this.remove(entity, entity.chunkY);
     }
 
-    public void remove(Entity entity, int i) {
-        if (i < 0) {
-            i = 0;
+    public void remove(Entity entity, int section) {
+        if (section < 0) {
+            section = 0;
         }
-        if (i >= this.entitySections.length) {
-            i = this.entitySections.length - 1;
+        if (section >= this.entitySections.length) {
+            section = this.entitySections.length - 1;
         }
-        this.entitySections[i].remove(entity);
+        this.entitySections[section].remove(entity);
     }
 
     @Override
@@ -481,8 +481,8 @@ implements Chunk {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void loadFromPacket(@Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int i) {
-        boolean bl = biomeArray != null;
+    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int i) {
+        boolean bl = biomes != null;
         Predicate<BlockPos> predicate = bl ? blockPos -> true : blockPos -> (i & 1 << (blockPos.getY() >> 4)) != 0;
         Sets.newHashSet(this.blockEntities.keySet()).stream().filter(predicate).forEach(this.world::removeBlockEntity);
         for (int j = 0; j < this.sections.length; ++j) {
@@ -495,15 +495,15 @@ implements Chunk {
             if (chunkSection == EMPTY_SECTION) {
                 this.sections[j] = chunkSection = new ChunkSection(j << 4);
             }
-            chunkSection.fromPacket(packetByteBuf);
+            chunkSection.fromPacket(buf);
         }
-        if (biomeArray != null) {
-            this.biomeArray = biomeArray;
+        if (biomes != null) {
+            this.biomeArray = biomes;
         }
         for (Heightmap.Type type : Heightmap.Type.values()) {
             String string = type.getName();
-            if (!compoundTag.contains(string, 12)) continue;
-            this.setHeightmap(type, compoundTag.getLongArray(string));
+            if (!tag.contains(string, 12)) continue;
+            this.setHeightmap(type, tag.getLongArray(string));
         }
         for (BlockEntity blockEntity : this.blockEntities.values()) {
             blockEntity.resetBlock();

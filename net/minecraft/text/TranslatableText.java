@@ -12,12 +12,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.ParsableText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -29,13 +29,13 @@ public class TranslatableText
 extends BaseText
 implements ParsableText {
     private static final Object[] EMPTY_ARGUMENTS = new Object[0];
-    private static final class_5348 LITERAL_PERCENT_SIGN = class_5348.method_29430("%");
-    private static final class_5348 NULL_ARGUMENT = class_5348.method_29430("null");
+    private static final StringRenderable LITERAL_PERCENT_SIGN = StringRenderable.plain("%");
+    private static final StringRenderable NULL_ARGUMENT = StringRenderable.plain("null");
     private final String key;
     private final Object[] args;
     @Nullable
-    private Language field_25317;
-    private final List<class_5348> translations = Lists.newArrayList();
+    private Language languageCache;
+    private final List<StringRenderable> translations = Lists.newArrayList();
     private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
     public TranslatableText(String key) {
@@ -50,17 +50,17 @@ implements ParsableText {
 
     private void updateTranslations() {
         Language language = Language.getInstance();
-        if (language == this.field_25317) {
+        if (language == this.languageCache) {
             return;
         }
-        this.field_25317 = language;
+        this.languageCache = language;
         this.translations.clear();
         String string = language.get(this.key);
         try {
-            this.setTranslation(language.method_29426(string, true), language);
+            this.setTranslation(language.reorder(string, true), language);
         } catch (TranslationException translationException) {
             this.translations.clear();
-            this.translations.add(class_5348.method_29430(string));
+            this.translations.add(StringRenderable.plain(string));
         }
     }
 
@@ -78,7 +78,7 @@ implements ParsableText {
                     if (string.indexOf(37) != -1) {
                         throw new IllegalArgumentException();
                     }
-                    this.translations.add(class_5348.method_29430(string));
+                    this.translations.add(StringRenderable.plain(string));
                 }
                 string = matcher.group(2);
                 String string2 = translation.substring(k, l);
@@ -101,14 +101,14 @@ implements ParsableText {
                 if (string4.indexOf(37) != -1) {
                     throw new IllegalArgumentException();
                 }
-                this.translations.add(class_5348.method_29430(string4));
+                this.translations.add(StringRenderable.plain(string4));
             }
         } catch (IllegalArgumentException illegalArgumentException) {
             throw new TranslationException(this, (Throwable)illegalArgumentException);
         }
     }
 
-    private class_5348 method_29434(int i, Language language) {
+    private StringRenderable method_29434(int i, Language language) {
         if (i >= this.args.length) {
             throw new TranslationException(this, i);
         }
@@ -116,7 +116,7 @@ implements ParsableText {
         if (object instanceof Text) {
             return (Text)object;
         }
-        return object == null ? NULL_ARGUMENT : class_5348.method_29430(language.method_29426(object.toString(), false));
+        return object == null ? NULL_ARGUMENT : StringRenderable.plain(language.reorder(object.toString(), false));
     }
 
     @Override
@@ -126,10 +126,10 @@ implements ParsableText {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public <T> Optional<T> visitSelf(class_5348.StyledVisitor<T> visitor, Style style) {
+    public <T> Optional<T> visitSelf(StringRenderable.StyledVisitor<T> visitor, Style style) {
         this.updateTranslations();
-        for (class_5348 lv : this.translations) {
-            Optional<T> optional = lv.visit(visitor, style);
+        for (StringRenderable stringRenderable : this.translations) {
+            Optional<T> optional = stringRenderable.visit(visitor, style);
             if (!optional.isPresent()) continue;
             return optional;
         }
@@ -137,10 +137,10 @@ implements ParsableText {
     }
 
     @Override
-    public <T> Optional<T> visitSelf(class_5348.Visitor<T> visitor) {
+    public <T> Optional<T> visitSelf(StringRenderable.Visitor<T> visitor) {
         this.updateTranslations();
-        for (class_5348 lv : this.translations) {
-            Optional<T> optional = lv.visit(visitor);
+        for (StringRenderable stringRenderable : this.translations) {
+            Optional<T> optional = stringRenderable.visit(visitor);
             if (!optional.isPresent()) continue;
             return optional;
         }

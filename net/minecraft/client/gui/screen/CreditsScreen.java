@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
@@ -26,6 +25,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.Resource;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -44,7 +44,7 @@ extends Screen {
     private final boolean endCredits;
     private final Runnable finishAction;
     private float time;
-    private List<class_5348> credits;
+    private List<StringRenderable> credits;
     private IntSet field_24261;
     private int creditsHeight;
     private float speed = 0.5f;
@@ -109,11 +109,11 @@ extends Screen {
                         string = string2 + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
                     }
                     this.credits.addAll(this.client.textRenderer.getTextHandler().wrapLines(string, 274, Style.EMPTY));
-                    this.credits.add(class_5348.field_25310);
+                    this.credits.add(StringRenderable.EMPTY);
                 }
                 inputStream.close();
                 for (j = 0; j < 8; ++j) {
-                    this.credits.add(class_5348.field_25310);
+                    this.credits.add(StringRenderable.EMPTY);
                 }
             }
             inputStream = this.client.getResourceManager().getResource(new Identifier("texts/credits.txt")).getInputStream();
@@ -127,14 +127,14 @@ extends Screen {
                 } else {
                     bl = false;
                 }
-                List<class_5348> list = this.client.textRenderer.getTextHandler().wrapLines(string4, 274, Style.EMPTY);
-                for (class_5348 lv : list) {
+                List<StringRenderable> list = this.client.textRenderer.getTextHandler().wrapLines(string4, 274, Style.EMPTY);
+                for (StringRenderable stringRenderable : list) {
                     if (bl) {
                         this.field_24261.add(this.credits.size());
                     }
-                    this.credits.add(lv);
+                    this.credits.add(stringRenderable);
                 }
-                this.credits.add(class_5348.field_25310);
+                this.credits.add(StringRenderable.EMPTY);
             }
             inputStream.close();
             this.creditsHeight = this.credits.size() * 12;
@@ -203,12 +203,12 @@ extends Screen {
                 RenderSystem.translatef(0.0f, -g, 0.0f);
             }
             if ((float)l + f + 12.0f + 8.0f > 0.0f && (float)l + f < (float)this.height) {
-                class_5348 lv = this.credits.get(m);
+                StringRenderable stringRenderable = this.credits.get(m);
                 if (this.field_24261.contains(m)) {
-                    this.textRenderer.drawWithShadow(matrices, lv, (float)(j + (274 - this.textRenderer.getWidth(lv)) / 2), (float)l, 0xFFFFFF);
+                    this.textRenderer.drawWithShadow(matrices, stringRenderable, (float)(j + (274 - this.textRenderer.getWidth(stringRenderable)) / 2), (float)l, 0xFFFFFF);
                 } else {
                     this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0f));
-                    this.textRenderer.drawWithShadow(matrices, lv, (float)j, (float)l, 0xFFFFFF);
+                    this.textRenderer.drawWithShadow(matrices, stringRenderable, (float)j, (float)l, 0xFFFFFF);
                 }
             }
             l += 12;

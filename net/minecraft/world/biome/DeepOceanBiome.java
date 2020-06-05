@@ -20,10 +20,10 @@ public final class DeepOceanBiome
 extends Biome {
     public DeepOceanBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.OCEAN).depth(-1.8f).scale(0.1f).temperature(0.5f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
-        this.addStructureFeature(DefaultBiomeFeatures.field_24698);
+        this.addStructureFeature(DefaultBiomeFeatures.MONUMENT);
         DefaultBiomeFeatures.method_28441(this);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24699);
-        this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
+        this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
         DefaultBiomeFeatures.addOceanCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

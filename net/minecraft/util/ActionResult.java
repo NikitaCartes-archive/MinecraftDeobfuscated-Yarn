@@ -41,8 +41,8 @@ public enum ActionResult {
         return this == SUCCESS;
     }
 
-    public static ActionResult method_29236(boolean bl) {
-        return bl ? SUCCESS : CONSUME;
+    public static ActionResult success(boolean swingHand) {
+        return swingHand ? SUCCESS : CONSUME;
     }
 }
 

@@ -23,7 +23,6 @@ import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5377;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -33,6 +32,7 @@ import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonFactory;
 import net.minecraft.data.server.recipe.ShapelessRecipeJsonFactory;
 import net.minecraft.data.server.recipe.SingleItemRecipeJsonFactory;
+import net.minecraft.data.server.recipe.SmithingRecipeJsonFactory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
@@ -955,7 +955,7 @@ implements DataProvider {
     }
 
     private static void method_29728(Consumer<RecipeJsonProvider> consumer, Item item, Item item2) {
-        class_5377.method_29729(Ingredient.ofItems(item), Ingredient.ofItems(Items.NETHERITE_INGOT), item2).method_29730("has_netherite_ingot", RecipesProvider.conditionsFromItem(Items.NETHERITE_INGOT)).method_29731(consumer, Registry.ITEM.getId(item2.asItem()).getPath() + "_smithing");
+        SmithingRecipeJsonFactory.create(Ingredient.ofItems(item), Ingredient.ofItems(Items.NETHERITE_INGOT), item2).criterion("has_netherite_ingot", RecipesProvider.conditionsFromItem(Items.NETHERITE_INGOT)).offerTo(consumer, Registry.ITEM.getId(item2.asItem()).getPath() + "_smithing");
     }
 
     private static void method_24475(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, Tag<Item> tag) {

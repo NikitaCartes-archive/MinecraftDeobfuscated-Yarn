@@ -126,7 +126,7 @@ extends HorizontalFacingBlock {
             world.setBlockState(pos, state, 10);
         }
         world.syncWorldEvent(player, state.get(OPEN) != false ? 1008 : 1014, pos, 0);
-        return ActionResult.method_29236(world.isClient);
+        return ActionResult.success(world.isClient);
     }
 
     @Override

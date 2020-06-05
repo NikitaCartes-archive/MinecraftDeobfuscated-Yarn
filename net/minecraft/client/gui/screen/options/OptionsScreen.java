@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
 import net.minecraft.client.gui.screen.options.LanguageOptionsScreen;
 import net.minecraft.client.gui.screen.options.SkinOptionsScreen;
 import net.minecraft.client.gui.screen.options.SoundOptionsScreen;
-import net.minecraft.client.gui.screen.resourcepack.ResourcePackOptionsScreen;
+import net.minecraft.client.gui.screen.pack.ResourcePackScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
@@ -82,7 +82,7 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 72 - 6, 150, 20, new TranslatableText("options.controls"), buttonWidget -> this.client.openScreen(new ControlsOptionsScreen(this, this.settings))));
         this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20, new TranslatableText("options.language"), buttonWidget -> this.client.openScreen(new LanguageOptionsScreen((Screen)this, this.settings, this.client.getLanguageManager()))));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 96 - 6, 150, 20, new TranslatableText("options.chat.title"), buttonWidget -> this.client.openScreen(new ChatOptionsScreen(this, this.settings))));
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, new TranslatableText("options.resourcepack"), buttonWidget -> this.client.openScreen(new ResourcePackOptionsScreen((Screen)this, this.settings, this.client.getResourcePackManager(), this.client::reloadResources))));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, new TranslatableText("options.resourcepack"), buttonWidget -> this.client.openScreen(new ResourcePackScreen((Screen)this, this.settings, this.client.getResourcePackManager(), this.client::reloadResources))));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20, new TranslatableText("options.accessibility.title"), buttonWidget -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.settings))));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
     }

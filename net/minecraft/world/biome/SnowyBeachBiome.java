@@ -15,10 +15,10 @@ public final class SnowyBeachBiome
 extends Biome {
     public SnowyBeachBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG).precipitation(Biome.Precipitation.SNOW).category(Biome.Category.BEACH).depth(0.0f).scale(0.025f).temperature(0.05f).downfall(0.3f).effects(new BiomeEffects.Builder().waterColor(4020182).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
-        this.addStructureFeature(DefaultBiomeFeatures.field_24688);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24704);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24695);
-        this.addStructureFeature(DefaultBiomeFeatures.STANDARD_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.NORMAL_MINESHAFT);
+        this.addStructureFeature(DefaultBiomeFeatures.BURIED_TREASURE);
+        this.addStructureFeature(DefaultBiomeFeatures.BEACHED_SHIPWRECK);
+        this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);

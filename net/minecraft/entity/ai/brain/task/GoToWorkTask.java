@@ -24,7 +24,7 @@ extends Task<VillagerEntity> {
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         BlockPos blockPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get().getPos();
-        return blockPos.isWithinDistance(villagerEntity.getPos(), 2.0) || villagerEntity.method_29279();
+        return blockPos.isWithinDistance(villagerEntity.getPos(), 2.0) || villagerEntity.isNatural();
     }
 
     @Override

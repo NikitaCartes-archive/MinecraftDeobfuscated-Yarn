@@ -98,7 +98,7 @@ extends Block {
 
     @Override
     public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-        if (!world.isClient && world.random.nextFloat() < distance - 0.5f && entity instanceof LivingEntity && (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512f) {
+        if (!world.isClient && world.random.nextFloat() < distance - 0.5f && entity instanceof LivingEntity && (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388)) && entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512f) {
             FarmlandBlock.setToDirt(world.getBlockState(pos), world, pos);
         }
         super.onLandedUpon(world, pos, entity, distance);
@@ -113,9 +113,9 @@ extends Block {
         return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
     }
 
-    private static boolean isWaterNearby(WorldView worldView, BlockPos pos) {
+    private static boolean isWaterNearby(WorldView world, BlockPos pos) {
         for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
-            if (!worldView.getFluidState(blockPos).matches(FluidTags.WATER)) continue;
+            if (!world.getFluidState(blockPos).matches(FluidTags.WATER)) continue;
             return true;
         }
         return false;

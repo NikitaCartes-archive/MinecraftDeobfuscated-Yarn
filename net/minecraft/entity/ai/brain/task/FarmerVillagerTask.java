@@ -43,7 +43,7 @@ extends Task<VillagerEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-        if (!serverWorld.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+        if (!serverWorld.getGameRules().getBoolean(GameRules.field_19388)) {
             return false;
         }
         if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {

@@ -4,7 +4,6 @@
 package net.minecraft.loot.function;
 
 import java.util.function.BiFunction;
-import net.minecraft.class_5330;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
@@ -31,39 +30,40 @@ import net.minecraft.loot.function.SetNameLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
+import net.minecraft.util.JsonSerializing;
 import net.minecraft.util.registry.Registry;
 
 public class LootFunctionTypes {
     public static final BiFunction<ItemStack, LootContext, ItemStack> NOOP = (stack, context) -> stack;
-    public static final LootFunctionType SET_COUNT = LootFunctionTypes.register("set_count", new SetCountLootFunction.Factory());
-    public static final LootFunctionType ENCHANT_WITH_LEVELS = LootFunctionTypes.register("enchant_with_levels", new EnchantWithLevelsLootFunction.Factory());
-    public static final LootFunctionType ENCHANT_RANDOMLY = LootFunctionTypes.register("enchant_randomly", new EnchantRandomlyLootFunction.Factory());
-    public static final LootFunctionType SET_NBT = LootFunctionTypes.register("set_nbt", new SetNbtLootFunction.Builder());
-    public static final LootFunctionType FURNACE_SMELT = LootFunctionTypes.register("furnace_smelt", new FurnaceSmeltLootFunction.class_5340());
-    public static final LootFunctionType LOOTING_ENCHANT = LootFunctionTypes.register("looting_enchant", new LootingEnchantLootFunction.Factory());
-    public static final LootFunctionType SET_DAMAGE = LootFunctionTypes.register("set_damage", new SetDamageLootFunction.Factory());
-    public static final LootFunctionType SET_ATTRIBUTES = LootFunctionTypes.register("set_attributes", new SetAttributesLootFunction.Factory());
-    public static final LootFunctionType SET_NAME = LootFunctionTypes.register("set_name", new SetNameLootFunction.Factory());
-    public static final LootFunctionType EXPLORATION_MAP = LootFunctionTypes.register("exploration_map", new ExplorationMapLootFunction.Factory());
-    public static final LootFunctionType SET_STEW_EFFECT = LootFunctionTypes.register("set_stew_effect", new SetStewEffectLootFunction.Factory());
-    public static final LootFunctionType COPY_NAME = LootFunctionTypes.register("copy_name", new CopyNameLootFunction.Factory());
-    public static final LootFunctionType SET_CONTENTS = LootFunctionTypes.register("set_contents", new SetContentsLootFunction.Factory());
-    public static final LootFunctionType LIMIT_COUNT = LootFunctionTypes.register("limit_count", new LimitCountLootFunction.Factory());
-    public static final LootFunctionType APPLY_BONUS = LootFunctionTypes.register("apply_bonus", new ApplyBonusLootFunction.Factory());
-    public static final LootFunctionType SET_LOOT_TABLE = LootFunctionTypes.register("set_loot_table", new SetLootTableLootFunction.Factory());
-    public static final LootFunctionType EXPLOSION_DECAY = LootFunctionTypes.register("explosion_decay", new ExplosionDecayLootFunction.Factory());
-    public static final LootFunctionType SET_LORE = LootFunctionTypes.register("set_lore", new SetLoreLootFunction.Factory());
-    public static final LootFunctionType FILL_PLAYER_HEAD = LootFunctionTypes.register("fill_player_head", new FillPlayerHeadLootFunction.Factory());
-    public static final LootFunctionType COPY_NBT = LootFunctionTypes.register("copy_nbt", new CopyNbtLootFunction.Factory());
-    public static final LootFunctionType COPY_STATE = LootFunctionTypes.register("copy_state", new CopyStateFunction.Factory());
+    public static final LootFunctionType SET_COUNT = LootFunctionTypes.register("set_count", new SetCountLootFunction.Serializer());
+    public static final LootFunctionType ENCHANT_WITH_LEVELS = LootFunctionTypes.register("enchant_with_levels", new EnchantWithLevelsLootFunction.Serializer());
+    public static final LootFunctionType ENCHANT_RANDOMLY = LootFunctionTypes.register("enchant_randomly", new EnchantRandomlyLootFunction.Serializer());
+    public static final LootFunctionType SET_NBT = LootFunctionTypes.register("set_nbt", new SetNbtLootFunction.Serializer());
+    public static final LootFunctionType FURNACE_SMELT = LootFunctionTypes.register("furnace_smelt", new FurnaceSmeltLootFunction.Serializer());
+    public static final LootFunctionType LOOTING_ENCHANT = LootFunctionTypes.register("looting_enchant", new LootingEnchantLootFunction.Serializer());
+    public static final LootFunctionType SET_DAMAGE = LootFunctionTypes.register("set_damage", new SetDamageLootFunction.Serializer());
+    public static final LootFunctionType SET_ATTRIBUTES = LootFunctionTypes.register("set_attributes", new SetAttributesLootFunction.Serializer());
+    public static final LootFunctionType SET_NAME = LootFunctionTypes.register("set_name", new SetNameLootFunction.Serializer());
+    public static final LootFunctionType EXPLORATION_MAP = LootFunctionTypes.register("exploration_map", new ExplorationMapLootFunction.Serializer());
+    public static final LootFunctionType SET_STEW_EFFECT = LootFunctionTypes.register("set_stew_effect", new SetStewEffectLootFunction.Serializer());
+    public static final LootFunctionType COPY_NAME = LootFunctionTypes.register("copy_name", new CopyNameLootFunction.Serializer());
+    public static final LootFunctionType SET_CONTENTS = LootFunctionTypes.register("set_contents", new SetContentsLootFunction.Serializer());
+    public static final LootFunctionType LIMIT_COUNT = LootFunctionTypes.register("limit_count", new LimitCountLootFunction.Serializer());
+    public static final LootFunctionType APPLY_BONUS = LootFunctionTypes.register("apply_bonus", new ApplyBonusLootFunction.Serializer());
+    public static final LootFunctionType SET_LOOT_TABLE = LootFunctionTypes.register("set_loot_table", new SetLootTableLootFunction.Serializer());
+    public static final LootFunctionType EXPLOSION_DECAY = LootFunctionTypes.register("explosion_decay", new ExplosionDecayLootFunction.Serializer());
+    public static final LootFunctionType SET_LORE = LootFunctionTypes.register("set_lore", new SetLoreLootFunction.Serializer());
+    public static final LootFunctionType FILL_PLAYER_HEAD = LootFunctionTypes.register("fill_player_head", new FillPlayerHeadLootFunction.Serializer());
+    public static final LootFunctionType COPY_NBT = LootFunctionTypes.register("copy_nbt", new CopyNbtLootFunction.Serializer());
+    public static final LootFunctionType COPY_STATE = LootFunctionTypes.register("copy_state", new CopyStateFunction.Serializer());
 
-    private static LootFunctionType register(String id, JsonSerializable<? extends LootFunction> jsonSerializable) {
-        return Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializable));
+    private static LootFunctionType register(String id, JsonSerializer<? extends LootFunction> jsonSerializer) {
+        return Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializer));
     }
 
-    public static Object method_29322() {
-        return class_5330.method_29306(Registry.LOOT_FUNCTION_TYPE, "function", "function", LootFunction::method_29321).method_29307();
+    public static Object createGsonSerializer() {
+        return JsonSerializing.createTypeHandler(Registry.LOOT_FUNCTION_TYPE, "function", "function", LootFunction::getType).createGsonSerializer();
     }
 
     public static BiFunction<ItemStack, LootContext, ItemStack> join(BiFunction<ItemStack, LootContext, ItemStack>[] lootFunctions) {

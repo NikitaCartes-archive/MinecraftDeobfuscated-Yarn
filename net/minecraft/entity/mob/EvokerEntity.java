@@ -153,11 +153,11 @@ extends SpellcastingIllagerEntity {
 
     public class WololoGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
-        private final TargetPredicate purpleSheepPredicate;
+        private final TargetPredicate convertibleSheepPredicate;
 
         public WololoGoal() {
             super(EvokerEntity.this);
-            this.purpleSheepPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
+            this.convertibleSheepPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
         }
 
         @Override
@@ -171,10 +171,10 @@ extends SpellcastingIllagerEntity {
             if (EvokerEntity.this.age < this.startTime) {
                 return false;
             }
-            if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+            if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.field_19388)) {
                 return false;
             }
-            List<SheepEntity> list = EvokerEntity.this.world.getTargets(SheepEntity.class, this.purpleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+            List<SheepEntity> list = EvokerEntity.this.world.getTargets(SheepEntity.class, this.convertibleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
             if (list.isEmpty()) {
                 return false;
             }

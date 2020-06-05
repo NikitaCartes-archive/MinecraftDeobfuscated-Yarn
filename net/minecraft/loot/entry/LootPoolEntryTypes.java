@@ -3,7 +3,6 @@
  */
 package net.minecraft.loot.entry;
 
-import net.minecraft.class_5330;
 import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.CombinedEntry;
 import net.minecraft.loot.entry.DynamicEntry;
@@ -16,7 +15,8 @@ import net.minecraft.loot.entry.LootTableEntry;
 import net.minecraft.loot.entry.SequenceEntry;
 import net.minecraft.loot.entry.TagEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
+import net.minecraft.util.JsonSerializing;
 import net.minecraft.util.registry.Registry;
 
 public class LootPoolEntryTypes {
@@ -29,12 +29,12 @@ public class LootPoolEntryTypes {
     public static final LootPoolEntryType SEQUENCE = LootPoolEntryTypes.register("sequence", CombinedEntry.createSerializer(GroupEntry::new));
     public static final LootPoolEntryType GROUP = LootPoolEntryTypes.register("group", CombinedEntry.createSerializer(SequenceEntry::new));
 
-    private static LootPoolEntryType register(String id, JsonSerializable<? extends LootPoolEntry> jsonSerializable) {
-        return Registry.register(Registry.LOOT_POOL_ENTRY_TYPE, new Identifier(id), new LootPoolEntryType(jsonSerializable));
+    private static LootPoolEntryType register(String id, JsonSerializer<? extends LootPoolEntry> jsonSerializer) {
+        return Registry.register(Registry.LOOT_POOL_ENTRY_TYPE, new Identifier(id), new LootPoolEntryType(jsonSerializer));
     }
 
-    public static Object method_29316() {
-        return class_5330.method_29306(Registry.LOOT_POOL_ENTRY_TYPE, "entry", "type", LootPoolEntry::method_29318).method_29307();
+    public static Object createGsonSerializer() {
+        return JsonSerializing.createTypeHandler(Registry.LOOT_POOL_ENTRY_TYPE, "entry", "type", LootPoolEntry::getType).createGsonSerializer();
     }
 }
 

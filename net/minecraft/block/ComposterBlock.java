@@ -201,11 +201,11 @@ implements InventoryProvider {
                     itemStack.decrement(1);
                 }
             }
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         if (i == 8) {
             ComposterBlock.emptyFullComposter(state, world, pos);
-            return ActionResult.method_29236(world.isClient);
+            return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
     }

@@ -16,12 +16,12 @@ public final class DesertBiome
 extends Biome {
     public DesertBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.DESERT).depth(0.125f).scale(0.05f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.5f, -0.5f, 0.0f, 0.0f, 1.0f))));
-        this.addStructureFeature(DefaultBiomeFeatures.field_24707);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24687);
-        this.addStructureFeature(DefaultBiomeFeatures.field_24692);
+        this.addStructureFeature(DefaultBiomeFeatures.DESERT_VILLAGE);
+        this.addStructureFeature(DefaultBiomeFeatures.PILLAGER_OUTPOST);
+        this.addStructureFeature(DefaultBiomeFeatures.DESERT_PYRAMID);
         DefaultBiomeFeatures.addFossils(this);
         DefaultBiomeFeatures.method_28440(this);
-        this.addStructureFeature(DefaultBiomeFeatures.DESERT_CONFIGURED_RUINED_PORTAL);
+        this.addStructureFeature(DefaultBiomeFeatures.DESERT_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDesertLakes(this);
         DefaultBiomeFeatures.addDungeons(this);
