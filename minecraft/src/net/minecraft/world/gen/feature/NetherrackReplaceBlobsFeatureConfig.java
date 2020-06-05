@@ -9,8 +9,8 @@ import net.minecraft.util.math.Vec3i;
 public class NetherrackReplaceBlobsFeatureConfig implements FeatureConfig {
 	public static final Codec<NetherrackReplaceBlobsFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.field_24734.fieldOf("target").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.target),
-					BlockState.field_24734.fieldOf("state").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.state),
+					BlockState.CODEC.fieldOf("target").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.target),
+					BlockState.CODEC.fieldOf("state").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.state),
 					Vec3i.field_25123.fieldOf("minimum_reach").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.minReachPos),
 					Vec3i.field_25123.fieldOf("maximum_reach").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.maxReachPos)
 				)

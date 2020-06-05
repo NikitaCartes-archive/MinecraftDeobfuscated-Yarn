@@ -142,7 +142,7 @@ public class InGameHud extends DrawableHelper {
 		this.scaledHeight = this.client.getWindow().getScaledHeight();
 		TextRenderer textRenderer = this.getFontRenderer();
 		RenderSystem.enableBlend();
-		if (MinecraftClient.isFancyGraphicsEnabled()) {
+		if (MinecraftClient.isFancyGraphicsOrBetter()) {
 			this.renderVignetteOverlay(this.client.getCameraEntity());
 		} else {
 			RenderSystem.enableDepthTest();
@@ -1024,7 +1024,7 @@ public class InGameHud extends DrawableHelper {
 				RenderSystem.translatef((float)(-(i + 8)), (float)(-(j + 12)), 0.0F);
 			}
 
-			this.itemRenderer.method_27951(playerEntity, itemStack, i, j);
+			this.itemRenderer.renderInGuiWithOverrides(playerEntity, itemStack, i, j);
 			if (g > 0.0F) {
 				RenderSystem.popMatrix();
 			}

@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5352;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerBlockEntity;
@@ -255,6 +254,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.realms.DisconnectedRealmsScreen;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -290,6 +290,7 @@ import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -298,7 +299,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
@@ -325,7 +325,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID sessionId = UUID.randomUUID();
 	private Set<RegistryKey<World>> field_25273;
-	private DimensionTracker dimensionTracker = DimensionTracker.create();
+	private RegistryTracker dimensionTracker = RegistryTracker.create();
 
 	public ClientPlayNetworkHandler(MinecraftClient minecraftClient, Screen screen, ClientConnection connection, GameProfile profile) {
 		this.client = minecraftClient;
@@ -365,7 +365,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.dimensionTracker = packet.getDimension();
 		RegistryKey<DimensionType> registryKey = packet.method_29444();
 		RegistryKey<World> registryKey2 = packet.getDimensionId();
-		DimensionType dimensionType = this.dimensionTracker.getRegistry().get(registryKey);
+		DimensionType dimensionType = this.dimensionTracker.getDimensionTypeRegistry().get(registryKey);
 		this.chunkLoadDistance = packet.getChunkLoadDistance();
 		boolean bl = packet.isDebugWorld();
 		boolean bl2 = packet.isFlatWorld();
@@ -619,7 +619,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		Entity entity = packet.getEntity(this.world);
 		if (entity != null) {
 			if (!entity.isLogicalSideForUpdatingMovement()) {
-				if (packet.method_22826()) {
+				if (packet.isPositionChanged()) {
 					entity.trackedX = entity.trackedX + (long)packet.getDeltaXShort();
 					entity.trackedY = entity.trackedY + (long)packet.getDeltaYShort();
 					entity.trackedZ = entity.trackedZ + (long)packet.getDeltaZShort();
@@ -927,7 +927,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			);
 			this.world.addEntity(packet.getId(), livingEntity);
 			if (livingEntity instanceof BeeEntity) {
-				boolean bl = ((BeeEntity)livingEntity).method_29511();
+				boolean bl = ((BeeEntity)livingEntity).hasAngerTime();
 				AbstractBeeSoundInstance abstractBeeSoundInstance;
 				if (bl) {
 					abstractBeeSoundInstance = new AggressiveBeeSoundInstance((BeeEntity)livingEntity);
@@ -1036,7 +1036,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		RegistryKey<DimensionType> registryKey = packet.method_29445();
 		RegistryKey<World> registryKey2 = packet.getDimension();
-		DimensionType dimensionType = this.dimensionTracker.getRegistry().get(registryKey);
+		DimensionType dimensionType = this.dimensionTracker.getDimensionTypeRegistry().get(registryKey);
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getEntityId();
 		this.positionLookSetup = false;
@@ -1507,7 +1507,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon()
 				);
 				statusEffectInstance.setPermanent(packet.isPermanent());
-				((LivingEntity)entity).method_26082(statusEffectInstance);
+				((LivingEntity)entity).applyStatusEffect(statusEffectInstance);
 			}
 		}
 	}
@@ -1704,7 +1704,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					File file2 = new File(file, string3);
 					if (file2.isFile()) {
 						this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-						CompletableFuture<?> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2, class_5352.field_25349);
+						CompletableFuture<?> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2, ResourcePackSource.PACK_SOURCE_WORLD);
 						this.feedbackAfterDownload(completableFuture);
 						return;
 					}
@@ -1842,7 +1842,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				this.client.debugRenderer.caveDebugRenderer.method_3704(blockPos2, list, list2);
 			} else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
-				DimensionType dimensionType = this.dimensionTracker.getRegistry().get(packetByteBuf.readIdentifier());
+				DimensionType dimensionType = this.dimensionTracker.getDimensionTypeRegistry().get(packetByteBuf.readIdentifier());
 				BlockBox blockBox = new BlockBox(
 					packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()
 				);
@@ -2333,7 +2333,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		return this.field_25273;
 	}
 
-	public DimensionTracker method_29091() {
+	public RegistryTracker method_29091() {
 		return this.dimensionTracker;
 	}
 }

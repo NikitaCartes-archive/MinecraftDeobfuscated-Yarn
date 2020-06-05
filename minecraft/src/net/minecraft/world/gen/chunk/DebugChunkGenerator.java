@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5311;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +35,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
 
 	private DebugChunkGenerator() {
-		super(new FixedBiomeSource(Biomes.PLAINS), new class_5311(false));
+		super(new FixedBiomeSource(Biomes.PLAINS), new StructuresConfig(false));
 	}
 
 	@Override

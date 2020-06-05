@@ -228,7 +228,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	private void playEatingAnimation() {
 		this.setEating();
 		if (!this.isSilent()) {
-			SoundEvent soundEvent = this.method_28368();
+			SoundEvent soundEvent = this.getEatSound();
 			if (soundEvent != null) {
 				this.world
 					.playSound(
@@ -308,7 +308,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Nullable
-	protected SoundEvent method_28368() {
+	protected SoundEvent getEatSound() {
 		return null;
 	}
 

@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5354;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -36,6 +35,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -58,7 +58,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class WolfEntity extends TameableEntity implements class_5354 {
+public class WolfEntity extends TameableEntity implements Angerable {
 	private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> field_25373 = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -96,7 +96,7 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 		this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
 		this.targetSelector.add(2, new AttackWithOwnerGoal(this));
 		this.targetSelector.add(3, new RevengeGoal(this).setGroupRevenge());
-		this.targetSelector.add(4, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::method_29515));
+		this.targetSelector.add(4, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector.add(5, new FollowTargetIfTamedGoal(this, AnimalEntity.class, false, FOLLOW_TAMED_PREDICATE));
 		this.targetSelector.add(6, new FollowTargetIfTamedGoal(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 		this.targetSelector.add(7, new FollowTargetGoal(this, AbstractSkeletonEntity.class, false));
@@ -126,7 +126,7 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
-		this.method_29517(tag);
+		this.angerToTag(tag);
 	}
 
 	@Override
@@ -136,12 +136,12 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 			this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
 		}
 
-		this.method_29512(this.world, tag);
+		this.angerFromTag(this.world, tag);
 	}
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		if (this.method_29511()) {
+		if (this.hasAngerTime()) {
 			return SoundEvents.ENTITY_WOLF_GROWL;
 		} else if (this.random.nextInt(3) == 0) {
 			return this.isTamed() && this.getHealth() < 10.0F ? SoundEvents.ENTITY_WOLF_WHINE : SoundEvents.ENTITY_WOLF_PANT;
@@ -176,7 +176,7 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 		}
 
 		if (!this.world.isClient) {
-			this.method_29510();
+			this.tickAngerLogic();
 		}
 	}
 
@@ -328,7 +328,7 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (this.world.isClient) {
-			boolean bl = this.isOwner(player) || this.isTamed() || item == Items.BONE && !this.isTamed() && !this.method_29511();
+			boolean bl = this.isOwner(player) || this.isTamed() || item == Items.BONE && !this.isTamed() && !this.hasAngerTime();
 			return bl ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
 			if (this.isTamed()) {
@@ -363,7 +363,7 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 
 					return ActionResult.SUCCESS;
 				}
-			} else if (item == Items.BONE && !this.method_29511()) {
+			} else if (item == Items.BONE && !this.hasAngerTime()) {
 				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -399,7 +399,7 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 
 	@Environment(EnvType.CLIENT)
 	public float getTailAngle() {
-		if (this.method_29511()) {
+		if (this.hasAngerTime()) {
 			return 1.5393804F;
 		} else {
 			return this.isTamed() ? (0.55F - (this.getMaxHealth() - this.getHealth()) * 0.02F) * (float) Math.PI : (float) (Math.PI / 5);
@@ -418,29 +418,29 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 	}
 
 	@Override
-	public int method_29507() {
+	public int getAngerTime() {
 		return this.dataTracker.get(field_25373);
 	}
 
 	@Override
-	public void method_29514(int i) {
-		this.dataTracker.set(field_25373, i);
+	public void setAngerTime(int ticks) {
+		this.dataTracker.set(field_25373, ticks);
 	}
 
 	@Override
-	public void method_29509() {
-		this.method_29514(field_25371.choose(this.random));
+	public void chooseRandomAngerTime() {
+		this.setAngerTime(field_25371.choose(this.random));
 	}
 
 	@Nullable
 	@Override
-	public UUID method_29508() {
+	public UUID getAngryAt() {
 		return this.field_25372;
 	}
 
 	@Override
-	public void method_29513(@Nullable UUID uUID) {
-		this.field_25372 = uUID;
+	public void setAngryAt(@Nullable UUID uuid) {
+		this.field_25372 = uuid;
 	}
 
 	public DyeColor getCollarColor() {
@@ -506,7 +506,7 @@ public class WolfEntity extends TameableEntity implements class_5354 {
 
 	@Override
 	public boolean canBeLeashedBy(PlayerEntity player) {
-		return !this.method_29511() && super.canBeLeashedBy(player);
+		return !this.hasAngerTime() && super.canBeLeashedBy(player);
 	}
 
 	class AvoidLlamaGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

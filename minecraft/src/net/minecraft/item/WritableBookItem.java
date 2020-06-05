@@ -25,7 +25,7 @@ public class WritableBookItem extends Item {
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.isOf(Blocks.LECTERN)) {
-			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.method_29236(world.isClient) : ActionResult.PASS;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.success(world.isClient) : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}

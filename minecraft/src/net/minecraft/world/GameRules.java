@@ -31,15 +31,39 @@ public class GameRules {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<GameRules.Key<?>, GameRules.Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> key.name));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_FIRE_TICK = register("doFireTick", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true));
-	public static final GameRules.Key<GameRules.BooleanRule> MOB_GRIEFING = register("mobGriefing", GameRules.Category.MOBS, GameRules.BooleanRule.create(true));
-	public static final GameRules.Key<GameRules.BooleanRule> KEEP_INVENTORY = register(
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether mobs can modify the world.
+	 * 
+	 * <p>Generally one is expected to test this rule before an entity modifies the world.
+	 * 
+	 * <p>In vanilla, this includes:
+	 * <ul>
+	 * <li>Whether creeper explosions destroy blocks
+	 * <li>Whether a zombie can break down a door
+	 * <li>Whether a wither killing an entity will place or drop a wither rose
+	 * </ul>
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_19388 = register("mobGriefing", GameRules.Category.MOBS, GameRules.BooleanRule.create(true));
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether player inventories should be persist through respawning.
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_19389 = register(
 		"keepInventory", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_SPAWNING = register(
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether mobs can spawn naturally.
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_19390 = register(
 		"doMobSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_LOOT = register("doMobLoot", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
-	public static final GameRules.Key<GameRules.BooleanRule> DO_TILE_DROPS = register("doTileDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether mobs should drop loot on death.
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_19391 = register("doMobLoot", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether blocks should drop their items when broken.
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_19392 = register("doTileDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_ENTITY_DROPS = register(
 		"doEntityDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true)
 	);
@@ -62,7 +86,13 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.BooleanRule> SEND_COMMAND_FEEDBACK = register(
 		"sendCommandFeedback", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> REDUCED_DEBUG_INFO = register(
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether clients' {@linkplain net.minecraft.client.gui.hud.DebugHud debug HUD}s show reduced information.
+	 * 
+	 * <p>When the value of this rule is changed, all connected clients will be notified to update their display.
+	 * In vanilla, this includes the visibility of coordinates on the clients' debug HUDs.
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_19401 = register(
 		"reducedDebugInfo", GameRules.Category.MISC, GameRules.BooleanRule.create(false, (server, rule) -> {
 			byte b = (byte)(rule.get() ? 22 : 23);
 
@@ -78,7 +108,10 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_ELYTRA_MOVEMENT_CHECK = register(
 		"disableElytraMovementCheck", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
-	public static final GameRules.Key<GameRules.IntRule> MAX_ENTITY_CRAMMING = register("maxEntityCramming", GameRules.Category.MOBS, GameRules.IntRule.create(24));
+	/**
+	 * A {@linkplain GameRule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
+	 */
+	public static final GameRules.Key<GameRules.IntRule> field_19405 = register("maxEntityCramming", GameRules.Category.MOBS, GameRules.IntRule.create(24));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_WEATHER_CYCLE = register(
 		"doWeatherCycle", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true)
 	);
@@ -88,12 +121,23 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register(
 		"maxCommandChainLength", GameRules.Category.MISC, GameRules.IntRule.create(65536)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> ANNOUNCE_ADVANCEMENTS = register(
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether a player's advancements should be announced in chat.
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_19409 = register(
 		"announceAdvancements", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
-	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_RAIDS = register("disableRaids", GameRules.Category.MOBS, GameRules.BooleanRule.create(false));
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether raids should occur.
+	 * 
+	 * <p>If this rule is set to {@code true} while raids are occurring, the raids will be stopped.
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_19422 = register("disableRaids", GameRules.Category.MOBS, GameRules.BooleanRule.create(false));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_INSOMNIA = register("doInsomnia", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true));
-	public static final GameRules.Key<GameRules.BooleanRule> DO_IMMEDIATE_RESPAWN = register(
+	/**
+	 * A {@linkplain GameRule game rule} which regulates whether a player should immediately respawn upon death.
+	 */
+	public static final GameRules.Key<GameRules.BooleanRule> field_20638 = register(
 		"doImmediateRespawn", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false, (server, rule) -> {
 			for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
 				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(11, rule.get() ? 1.0F : 0.0F));
@@ -173,17 +217,17 @@ public class GameRules {
 
 	private static <T extends GameRules.Rule<T>> void accept(GameRules.TypeConsumer consumer, GameRules.Key<?> key, GameRules.Type<?> type) {
 		consumer.accept(key, type);
-		type.method_27336(consumer, key);
+		type.accept(consumer, key);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setAllValues(GameRules gameRules, @Nullable MinecraftServer server) {
-		gameRules.rules.keySet().forEach(key -> this.setValue(key, gameRules, server));
+	public void setAllValues(GameRules rules, @Nullable MinecraftServer server) {
+		rules.rules.keySet().forEach(key -> this.setValue(key, rules, server));
 	}
 
 	@Environment(EnvType.CLIENT)
-	private <T extends GameRules.Rule<T>> void setValue(GameRules.Key<T> key, GameRules gameRules, @Nullable MinecraftServer server) {
-		T rule = gameRules.get(key);
+	private <T extends GameRules.Rule<T>> void setValue(GameRules.Key<T> key, GameRules rules, @Nullable MinecraftServer server) {
+		T rule = rules.get(key);
 		this.<T>get(key).setValue(rule, server);
 	}
 
@@ -443,18 +487,18 @@ public class GameRules {
 		private final Supplier<ArgumentType<?>> argumentType;
 		private final Function<GameRules.Type<T>, T> ruleFactory;
 		private final BiConsumer<MinecraftServer, T> changeCallback;
-		private final GameRules.Acceptor<T> field_24104;
+		private final GameRules.Acceptor<T> ruleAcceptor;
 
 		private Type(
 			Supplier<ArgumentType<?>> argumentType,
 			Function<GameRules.Type<T>, T> ruleFactory,
 			BiConsumer<MinecraftServer, T> changeCallback,
-			GameRules.Acceptor<T> acceptor
+			GameRules.Acceptor<T> ruleAcceptor
 		) {
 			this.argumentType = argumentType;
 			this.ruleFactory = ruleFactory;
 			this.changeCallback = changeCallback;
-			this.field_24104 = acceptor;
+			this.ruleAcceptor = ruleAcceptor;
 		}
 
 		public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String name) {
@@ -465,8 +509,8 @@ public class GameRules {
 			return (T)this.ruleFactory.apply(this);
 		}
 
-		public void method_27336(GameRules.TypeConsumer consumer, GameRules.Key<T> key) {
-			this.field_24104.call(consumer, key, this);
+		public void accept(GameRules.TypeConsumer consumer, GameRules.Key<T> key) {
+			this.ruleAcceptor.call(consumer, key, this);
 		}
 	}
 

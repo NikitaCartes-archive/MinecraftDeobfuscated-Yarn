@@ -39,9 +39,9 @@ public abstract class CombinedEntry extends LootPoolEntry {
 		return !this.test(lootContext) ? false : this.predicate.expand(lootContext, consumer);
 	}
 
-	public static <T extends CombinedEntry> LootPoolEntry.class_5337<T> createSerializer(CombinedEntry.Factory<T> factory) {
-		return new LootPoolEntry.class_5337<T>() {
-			public void method_422(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
+	public static <T extends CombinedEntry> LootPoolEntry.Serializer<T> createSerializer(CombinedEntry.Factory<T> factory) {
+		return new LootPoolEntry.Serializer<T>() {
+			public void addEntryFields(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
 				jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.children));
 			}
 

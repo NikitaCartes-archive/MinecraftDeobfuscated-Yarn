@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5365;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -231,28 +230,28 @@ public abstract class Option {
 	);
 	public static final CyclingOption GRAPHICS = new CyclingOption(
 		"options.graphics",
-		(gameOptions, integer) -> {
-			gameOptions.field_25444 = gameOptions.field_25444.method_29595();
-			if (gameOptions.field_25444 == class_5365.field_25429 && !GlStateManager.supportsGl30()) {
-				gameOptions.field_25444 = class_5365.field_25427;
+		(options, count) -> {
+			options.graphicsMode = options.graphicsMode.next();
+			if (options.graphicsMode == GraphicsMode.FABULOUS && !GlStateManager.supportsGl30()) {
+				options.graphicsMode = GraphicsMode.FAST;
 			}
 
 			MinecraftClient.getInstance().worldRenderer.reload();
 		},
-		(gameOptions, cyclingOption) -> {
-			switch (gameOptions.field_25444) {
-				case field_25427:
+		(options, cyclingOption) -> {
+			switch (options.graphicsMode) {
+				case FAST:
 					cyclingOption.method_29618("options.graphics.fast.tooltip");
 					break;
-				case field_25428:
+				case FANCY:
 					cyclingOption.method_29618("options.graphics.fancy.tooltip");
 					break;
-				case field_25429:
+				case FABULOUS:
 					cyclingOption.method_29618("options.graphics.fabulous.tooltip");
 			}
 
-			TranslatableText translatableText = new TranslatableText(gameOptions.field_25444.method_29593());
-			return gameOptions.field_25444 == class_5365.field_25429
+			TranslatableText translatableText = new TranslatableText(options.graphicsMode.getTranslationKey());
+			return options.graphicsMode == GraphicsMode.FABULOUS
 				? cyclingOption.getDisplayPrefix().append(new LiteralText("").append(translatableText).formatted(Formatting.ITALIC))
 				: cyclingOption.getDisplayPrefix().append(translatableText);
 		}
@@ -296,8 +295,8 @@ public abstract class Option {
 	);
 	public static final CyclingOption CLOUDS = new CyclingOption("options.renderClouds", (gameOptions, integer) -> {
 		gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer);
-		if (MinecraftClient.method_29611()) {
-			MinecraftClient.getInstance().worldRenderer.method_29364().clear(MinecraftClient.IS_SYSTEM_MAC);
+		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
+			MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer().clear(MinecraftClient.IS_SYSTEM_MAC);
 		}
 	}, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
 	public static final CyclingOption TEXT_BACKGROUND = new CyclingOption(

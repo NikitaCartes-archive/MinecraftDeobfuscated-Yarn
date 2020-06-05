@@ -3,7 +3,6 @@ package net.minecraft.client.render.block.entity;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +20,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Direction;
@@ -63,20 +63,20 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		matrixStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
 		int l = signBlockEntity.getTextColor().getSignColor();
 		double d = 0.4;
-		int m = (int)((double)NativeImage.method_24033(l) * 0.4);
-		int n = (int)((double)NativeImage.method_24034(l) * 0.4);
-		int o = (int)((double)NativeImage.method_24035(l) * 0.4);
-		int p = NativeImage.method_24031(0, o, n, m);
+		int m = (int)((double)NativeImage.getRed(l) * 0.4);
+		int n = (int)((double)NativeImage.getGreen(l) * 0.4);
+		int o = (int)((double)NativeImage.getBlue(l) * 0.4);
+		int p = NativeImage.getAbgrColor(0, o, n, m);
 		int q = 20;
 
 		for (int r = 0; r < 4; r++) {
-			class_5348 lv = signBlockEntity.getTextBeingEditedOnRow(r, arg -> {
-				List<class_5348> list = textRenderer.getTextHandler().wrapLines(arg, 90, Style.EMPTY);
-				return list.isEmpty() ? class_5348.field_25310 : (class_5348)list.get(0);
+			StringRenderable stringRenderable = signBlockEntity.getTextBeingEditedOnRow(r, stringRenderablex -> {
+				List<StringRenderable> list = textRenderer.getTextHandler().wrapLines(stringRenderablex, 90, Style.EMPTY);
+				return list.isEmpty() ? StringRenderable.EMPTY : (StringRenderable)list.get(0);
 			});
-			if (lv != null) {
-				float s = (float)(-textRenderer.getWidth(lv) / 2);
-				textRenderer.draw(lv, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
+			if (stringRenderable != null) {
+				float s = (float)(-textRenderer.getWidth(stringRenderable) / 2);
+				textRenderer.draw(stringRenderable, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
 			}
 		}
 

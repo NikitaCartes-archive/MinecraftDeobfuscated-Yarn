@@ -19,11 +19,11 @@ public enum NarratorOption {
 		.sorted(Comparator.comparingInt(NarratorOption::getId))
 		.toArray(NarratorOption[]::new);
 	private final int id;
-	private final Text field_24212;
+	private final Text translationKey;
 
 	private NarratorOption(int id, String translationKey) {
 		this.id = id;
-		this.field_24212 = new TranslatableText(translationKey);
+		this.translationKey = new TranslatableText(translationKey);
 	}
 
 	public int getId() {
@@ -31,7 +31,7 @@ public enum NarratorOption {
 	}
 
 	public Text getTranslationKey() {
-		return this.field_24212;
+		return this.translationKey;
 	}
 
 	public static NarratorOption byId(int id) {

@@ -33,7 +33,7 @@ import net.minecraft.util.JsonHelper;
  */
 public interface Tag<T> {
 	static <T> Codec<Tag<T>> method_28134(Supplier<TagContainer<T>> supplier) {
-		return Identifier.field_25139
+		return Identifier.CODEC
 			.flatXmap(
 				identifier -> (DataResult)Optional.ofNullable(((TagContainer)supplier.get()).get(identifier))
 						.map(DataResult::success)

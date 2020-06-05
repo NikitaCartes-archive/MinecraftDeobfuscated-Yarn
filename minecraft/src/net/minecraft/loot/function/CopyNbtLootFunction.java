@@ -42,7 +42,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.COPY_NBT;
 	}
 
@@ -97,28 +97,6 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		@Override
 		public LootFunction build() {
 			return new CopyNbtLootFunction(this.getConditions(), this.source, this.operations);
-		}
-	}
-
-	public static class Factory extends ConditionalLootFunction.Factory<CopyNbtLootFunction> {
-		public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
-			super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
-			JsonArray jsonArray = new JsonArray();
-			copyNbtLootFunction.operations.stream().map(CopyNbtLootFunction.Operation::toJson).forEach(jsonArray::add);
-			jsonObject.add("ops", jsonArray);
-		}
-
-		public CopyNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			CopyNbtLootFunction.Source source = CopyNbtLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
-			List<CopyNbtLootFunction.Operation> list = Lists.<CopyNbtLootFunction.Operation>newArrayList();
-
-			for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "ops")) {
-				JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "op");
-				list.add(CopyNbtLootFunction.Operation.fromJson(jsonObject2));
-			}
-
-			return new CopyNbtLootFunction(lootConditions, source, list);
 		}
 	}
 
@@ -213,6 +191,28 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			}
 
 			throw new IllegalArgumentException("Invalid merge strategy" + name);
+		}
+	}
+
+	public static class Serializer extends ConditionalLootFunction.Serializer<CopyNbtLootFunction> {
+		public void toJson(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
+			super.toJson(jsonObject, copyNbtLootFunction, jsonSerializationContext);
+			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
+			JsonArray jsonArray = new JsonArray();
+			copyNbtLootFunction.operations.stream().map(CopyNbtLootFunction.Operation::toJson).forEach(jsonArray::add);
+			jsonObject.add("ops", jsonArray);
+		}
+
+		public CopyNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+			CopyNbtLootFunction.Source source = CopyNbtLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
+			List<CopyNbtLootFunction.Operation> list = Lists.<CopyNbtLootFunction.Operation>newArrayList();
+
+			for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "ops")) {
+				JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "op");
+				list.add(CopyNbtLootFunction.Operation.fromJson(jsonObject2));
+			}
+
+			return new CopyNbtLootFunction(lootConditions, source, list);
 		}
 	}
 

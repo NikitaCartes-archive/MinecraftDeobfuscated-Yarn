@@ -27,7 +27,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.SET_CONTENTS;
 	}
 
@@ -77,7 +77,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetContentsLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetContentsLootFunction> {
 		public void toJson(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setContentsLootFunction, jsonSerializationContext);
 			jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));

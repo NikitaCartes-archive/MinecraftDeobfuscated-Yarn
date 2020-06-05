@@ -175,7 +175,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 								}
 							}
 
-							this.method_29562(bee.ticksInHive, beeEntity);
+							this.ageBee(bee.ticksInHive, beeEntity);
 							if (list != null) {
 								list.add(beeEntity);
 							}
@@ -198,16 +198,16 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	private void method_29562(int i, BeeEntity beeEntity) {
-		int j = beeEntity.getBreedingAge();
-		if (j < 0) {
-			beeEntity.setBreedingAge(Math.min(0, j + i));
-		} else if (j > 0) {
-			beeEntity.setBreedingAge(Math.max(0, j - i));
+	private void ageBee(int ticks, BeeEntity bee) {
+		int i = bee.getBreedingAge();
+		if (i < 0) {
+			bee.setBreedingAge(Math.min(0, i + ticks));
+		} else if (i > 0) {
+			bee.setBreedingAge(Math.max(0, i - ticks));
 		}
 
-		beeEntity.setLoveTicks(Math.max(0, beeEntity.method_29270() - i));
-		beeEntity.resetPollinationTicks();
+		bee.setLoveTicks(Math.max(0, bee.getLoveTicks() - ticks));
+		bee.resetPollinationTicks();
 	}
 
 	private boolean hasFlowerPos() {

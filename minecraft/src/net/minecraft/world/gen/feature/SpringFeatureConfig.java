@@ -12,7 +12,7 @@ import net.minecraft.util.registry.Registry;
 public class SpringFeatureConfig implements FeatureConfig {
 	public static final Codec<SpringFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					FluidState.field_25018.fieldOf("state").forGetter(springFeatureConfig -> springFeatureConfig.state),
+					FluidState.CODEC.fieldOf("state").forGetter(springFeatureConfig -> springFeatureConfig.state),
 					Codec.BOOL.fieldOf("requires_block_below").withDefault(true).forGetter(springFeatureConfig -> springFeatureConfig.requiresBlockBelow),
 					Codec.INT.fieldOf("rock_count").withDefault(4).forGetter(springFeatureConfig -> springFeatureConfig.rockCount),
 					Codec.INT.fieldOf("hole_count").withDefault(1).forGetter(springFeatureConfig -> springFeatureConfig.holeCount),

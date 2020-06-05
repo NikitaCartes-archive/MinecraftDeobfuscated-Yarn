@@ -26,7 +26,7 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.FILL_PLAYER_HEAD;
 	}
 
@@ -48,7 +48,7 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<FillPlayerHeadLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<FillPlayerHeadLootFunction> {
 		public void toJson(JsonObject jsonObject, FillPlayerHeadLootFunction fillPlayerHeadLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, fillPlayerHeadLootFunction, jsonSerializationContext);
 			jsonObject.add("entity", jsonSerializationContext.serialize(fillPlayerHeadLootFunction.entity));

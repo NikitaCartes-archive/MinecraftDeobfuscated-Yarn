@@ -53,7 +53,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = MathHelper.floor(this.entity.getY());
 		BlockState blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)i, this.entity.getZ()));
-		if (!this.entity.canWalkOnLava(blockState.getFluidState().getFluid())) {
+		if (!this.entity.canWalkOnFluid(blockState.getFluidState().getFluid())) {
 			if (this.canSwim() && this.entity.isTouchingWater()) {
 				while (true) {
 					if (blockState.getBlock() != Blocks.WATER && blockState.getFluidState() != Fluids.WATER.getStill(false)) {
@@ -81,7 +81,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				i = blockPos.up().getY();
 			}
 		} else {
-			while (this.entity.canWalkOnLava(blockState.getFluidState().getFluid())) {
+			while (this.entity.canWalkOnFluid(blockState.getFluidState().getFluid())) {
 				blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ()));
 			}
 

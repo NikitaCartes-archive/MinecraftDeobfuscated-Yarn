@@ -8,20 +8,20 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5359;
-import net.minecraft.class_5368;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.pack.DataPackScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ServerResourceManager;
@@ -33,10 +33,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -59,7 +59,7 @@ public class CreateWorldScreen extends Screen {
 	private boolean tweakedCheats;
 	public boolean hardcore;
 	private boolean creatingLevel;
-	protected class_5359 field_25479 = class_5359.field_25393;
+	protected DataPackSettings field_25479 = DataPackSettings.SAFE_MODE;
 	@Nullable
 	private Path field_25477;
 	private boolean moreOptionsOpen;
@@ -77,7 +77,7 @@ public class CreateWorldScreen extends Screen {
 	public final MoreOptionsDialog moreOptionsDialog;
 
 	public CreateWorldScreen(
-		@Nullable Screen screen, LevelInfo levelInfo, GeneratorOptions generatorOptions, @Nullable Path path, DimensionTracker.Modifiable modifiable
+		@Nullable Screen screen, LevelInfo levelInfo, GeneratorOptions generatorOptions, @Nullable Path path, RegistryTracker.Modifiable modifiable
 	) {
 		this(screen, new MoreOptionsDialog(modifiable, generatorOptions));
 		this.levelName = levelInfo.getLevelName();
@@ -271,7 +271,9 @@ public class CreateWorldScreen extends Screen {
 				if (generatorOptions.isDebugWorld()) {
 					GameRules gameRules = new GameRules();
 					gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
-					levelInfo = new LevelInfo(this.levelNameField.getText().trim(), GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, class_5359.field_25393);
+					levelInfo = new LevelInfo(
+						this.levelNameField.getText().trim(), GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, DataPackSettings.SAFE_MODE
+					);
 				} else {
 					levelInfo = new LevelInfo(
 						this.levelNameField.getText().trim(),
@@ -429,14 +431,14 @@ public class CreateWorldScreen extends Screen {
 	private void method_29694() {
 		Path path = this.method_29693();
 		if (path != null) {
-			this.client.openScreen(new class_5368(this, this.field_25479, this::method_29682, path.toFile()));
+			this.client.openScreen(new DataPackScreen(this, this.field_25479, this::method_29682, path.toFile()));
 		}
 	}
 
-	private void method_29682(class_5359 arg, ResourcePackManager<ResourcePackProfile> resourcePackManager) {
+	private void method_29682(DataPackSettings dataPackSettings, ResourcePackManager<ResourcePackProfile> resourcePackManager) {
 		this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
 		ServerResourceManager.reload(
-				resourcePackManager.method_29211(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this.client
+				resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this.client
 			)
 			.handle(
 				(serverResourceManager, throwable) -> {
@@ -451,7 +453,7 @@ public class CreateWorldScreen extends Screen {
 													if (bl) {
 														this.method_29694();
 													} else {
-														this.field_25479 = class_5359.field_25393;
+														this.field_25479 = DataPackSettings.SAFE_MODE;
 														this.client.openScreen(this);
 													}
 												},
@@ -464,7 +466,7 @@ public class CreateWorldScreen extends Screen {
 							);
 					} else {
 						this.client.send(() -> {
-							this.field_25479 = arg;
+							this.field_25479 = dataPackSettings;
 							this.client.openScreen(this);
 						});
 					}
@@ -517,7 +519,7 @@ public class CreateWorldScreen extends Screen {
 			Util.method_29775(path, path2, path3);
 		} catch (IOException var4) {
 			field_25480.warn("Failed to copy datapack file from {} to {}", path3, path2);
-			throw new CreateWorldScreen.class_5376(var4);
+			throw new CreateWorldScreen.WorldCreationException(var4);
 		}
 	}
 
@@ -547,7 +549,7 @@ public class CreateWorldScreen extends Screen {
 						}
 					}
 				}
-			} catch (CreateWorldScreen.class_5376 | IOException var33) {
+			} catch (CreateWorldScreen.WorldCreationException | IOException var33) {
 				field_25480.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
 				SystemToast.method_29627(this.client, this.saveDirectoryName);
 				this.client.openScreen(this.parent);
@@ -577,7 +579,7 @@ public class CreateWorldScreen extends Screen {
 							path3 = Files.createTempDirectory("mcworld-");
 						} catch (IOException var5) {
 							field_25480.warn("Failed to create temporary dir");
-							throw new CreateWorldScreen.class_5376(var5);
+							throw new CreateWorldScreen.WorldCreationException(var5);
 						}
 
 						mutableObject.setValue(path3);
@@ -601,7 +603,7 @@ public class CreateWorldScreen extends Screen {
 					}
 				}
 			}
-		} catch (CreateWorldScreen.class_5376 | IOException var16) {
+		} catch (CreateWorldScreen.WorldCreationException | IOException var16) {
 			field_25480.warn("Failed to copy datapacks from world {}", path, var16);
 			SystemToast.method_29627(minecraftClient, path.toString());
 			return null;
@@ -627,8 +629,8 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_5376 extends RuntimeException {
-		public class_5376(Throwable throwable) {
+	static class WorldCreationException extends RuntimeException {
+		public WorldCreationException(Throwable throwable) {
 			super(throwable);
 		}
 	}

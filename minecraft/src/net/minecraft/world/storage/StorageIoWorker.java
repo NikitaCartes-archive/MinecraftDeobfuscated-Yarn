@@ -31,7 +31,7 @@ public class StorageIoWorker implements AutoCloseable {
 
 	protected StorageIoWorker(File file, boolean bl, String string) {
 		this.storage = new RegionBasedStorage(file, bl);
-		this.field_24468 = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.class_5276.values().length), Util.method_27958(), "IOWorker-" + string);
+		this.field_24468 = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.method_27958(), "IOWorker-" + string);
 	}
 
 	public CompletableFuture<Void> setResult(ChunkPos pos, CompoundTag nbt) {
@@ -89,7 +89,7 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> supplier) {
-		return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.class_5276.field_24469.ordinal(), () -> {
+		return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.HIGH.ordinal(), () -> {
 				if (!this.closed.get()) {
 					messageListener.send(supplier.get());
 				}
@@ -109,7 +109,7 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	private void method_27945() {
-		this.field_24468.send(new TaskQueue.PrioritizedTask(StorageIoWorker.class_5276.field_24470.ordinal(), this::writeResult));
+		this.field_24468.send(new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.LOW.ordinal(), this::writeResult));
 	}
 
 	private void write(ChunkPos pos, StorageIoWorker.Result result) {
@@ -125,7 +125,7 @@ public class StorageIoWorker implements AutoCloseable {
 	public void close() throws IOException {
 		if (this.closed.compareAndSet(false, true)) {
 			CompletableFuture<Unit> completableFuture = this.field_24468
-				.ask(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.class_5276.field_24469.ordinal(), () -> messageListener.send(Unit.INSTANCE)));
+				.ask(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.HIGH.ordinal(), () -> messageListener.send(Unit.INSTANCE)));
 
 			try {
 				completableFuture.join();
@@ -149,6 +149,11 @@ public class StorageIoWorker implements AutoCloseable {
 		}
 	}
 
+	static enum Priority {
+		HIGH,
+		LOW;
+	}
+
 	static class Result {
 		private CompoundTag nbt;
 		private final CompletableFuture<Void> future = new CompletableFuture();
@@ -156,10 +161,5 @@ public class StorageIoWorker implements AutoCloseable {
 		public Result(CompoundTag compoundTag) {
 			this.nbt = compoundTag;
 		}
-	}
-
-	static enum class_5276 {
-		field_24469,
-		field_24470;
 	}
 }

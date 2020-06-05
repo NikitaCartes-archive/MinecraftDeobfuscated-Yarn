@@ -57,7 +57,7 @@ public abstract class RenderLayer extends RenderPhase {
 		"translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, createTranslucentPhaseData()
 	);
 	private static final RenderLayer TRANSLUCENT_MOVING_BLOCK = of(
-		"translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, true, method_29381()
+		"translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, true, getItemPhaseData()
 	);
 	private static final RenderLayer TRANSLUCENT_NO_CRUMBLING = of(
 		"translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, false, true, createTranslucentPhaseData()
@@ -82,7 +82,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(field_25485)
+			.transparency(GLINT_GUI_TRANSPARENCY)
 			.texturing(GLINT_TEXTURING)
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
@@ -97,7 +97,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(field_25485)
+			.transparency(GLINT_GUI_TRANSPARENCY)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
@@ -126,7 +126,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(field_25485)
+			.transparency(GLINT_GUI_TRANSPARENCY)
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
@@ -154,7 +154,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(field_25485)
+			.transparency(GLINT_GUI_TRANSPARENCY)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
@@ -212,7 +212,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return TRANSLUCENT;
 	}
 
-	private static RenderLayer.MultiPhaseParameters method_29381() {
+	private static RenderLayer.MultiPhaseParameters getItemPhaseData() {
 		return RenderLayer.MultiPhaseParameters.builder()
 			.shadeModel(SMOOTH_SHADE_MODEL)
 			.lightmap(ENABLE_LIGHTMAP)
@@ -221,7 +221,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.build(true);
 	}
 
-	public static RenderLayer method_29380() {
+	public static RenderLayer getTranslucentMovingBlock() {
 		return TRANSLUCENT_MOVING_BLOCK;
 	}
 
@@ -266,7 +266,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return of("entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, false, multiPhaseParameters);
 	}
 
-	public static RenderLayer getCutoutNoCull(Identifier texture, boolean affectsOutline) {
+	public static RenderLayer getEntityCutoutNoCull(Identifier texture, boolean affectsOutline) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
 			.texture(new RenderPhase.Texture(texture, false, false))
 			.transparency(NO_TRANSPARENCY)
@@ -280,12 +280,12 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getEntityCutoutNoCull(Identifier texture) {
-		return getCutoutNoCull(texture, true);
+		return getEntityCutoutNoCull(texture, true);
 	}
 
-	public static RenderLayer method_28115(Identifier identifier, boolean bl) {
+	public static RenderLayer getEntityCutoutNoCullZOffset(Identifier texture, boolean affectsOutline) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-			.texture(new RenderPhase.Texture(identifier, false, false))
+			.texture(new RenderPhase.Texture(texture, false, false))
 			.transparency(NO_TRANSPARENCY)
 			.diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
 			.alpha(ONE_TENTH_ALPHA)
@@ -293,17 +293,17 @@ public abstract class RenderLayer extends RenderPhase {
 			.lightmap(ENABLE_LIGHTMAP)
 			.overlay(ENABLE_OVERLAY_COLOR)
 			.layering(VIEW_OFFSET_Z_LAYERING)
-			.build(bl);
+			.build(affectsOutline);
 		return of("entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, false, multiPhaseParameters);
 	}
 
-	public static RenderLayer method_28116(Identifier identifier) {
-		return method_28115(identifier, true);
+	public static RenderLayer getEntityCutoutNoCullZOffset(Identifier texture) {
+		return getEntityCutoutNoCullZOffset(texture, true);
 	}
 
-	public static RenderLayer method_29379(Identifier identifier) {
+	public static RenderLayer getItemEntityTranslucentCull(Identifier texture) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-			.texture(new RenderPhase.Texture(identifier, false, false))
+			.texture(new RenderPhase.Texture(texture, false, false))
 			.transparency(ITEM_TRANSPARENCY)
 			.diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
 			.alpha(ONE_TENTH_ALPHA)
@@ -410,7 +410,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getEntityAlpha(Identifier texture, float alpha) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-			.transparency(field_25486)
+			.transparency(DRAGON_EXPLOSION_TRANSPARENCY)
 			.texture(new RenderPhase.Texture(texture, false, false))
 			.alpha(new RenderPhase.Alpha(alpha))
 			.cull(DISABLE_CULLING)
@@ -483,11 +483,11 @@ public abstract class RenderLayer extends RenderPhase {
 		);
 	}
 
-	public static RenderLayer method_27948() {
+	public static RenderLayer getArmorGlint() {
 		return ARMOR_GLINT;
 	}
 
-	public static RenderLayer method_27949() {
+	public static RenderLayer getArmorEntityGlint() {
 		return ARMOR_ENTITY_GLINT;
 	}
 
@@ -495,7 +495,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return GLINT;
 	}
 
-	public static RenderLayer method_29706() {
+	public static RenderLayer getGlintDirect() {
 		return GLINT_DIRECT;
 	}
 
@@ -503,7 +503,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return ENTITY_GLINT;
 	}
 
-	public static RenderLayer method_29707() {
+	public static RenderLayer getEntityGlintDirect() {
 		return ENTITY_GLINT_DIRECT;
 	}
 

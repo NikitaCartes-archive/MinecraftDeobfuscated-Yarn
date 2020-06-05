@@ -33,7 +33,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.SET_NAME;
 	}
 
@@ -70,7 +70,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 		return stack;
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetNameLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetNameLootFunction> {
 		public void toJson(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setNameLootFunction, jsonSerializationContext);
 			if (setNameLootFunction.name != null) {

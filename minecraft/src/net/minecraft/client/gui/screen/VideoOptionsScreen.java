@@ -7,7 +7,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonListWidget;
@@ -17,12 +16,13 @@ import net.minecraft.client.options.FullScreenOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class VideoOptionsScreen extends GameOptionsScreen {
 	@Nullable
-	private List<class_5348> field_25453;
+	private List<StringRenderable> field_25453;
 	private ButtonListWidget list;
 	private static final Option[] OPTIONS = new Option[]{
 		Option.GRAPHICS,
@@ -109,8 +109,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		if (optional.isPresent() && optional.get() instanceof OptionButtonWidget) {
 			Optional<TranslatableText> optional2 = ((OptionButtonWidget)optional.get()).method_29623().method_29619();
 			if (optional2.isPresent()) {
-				Builder<class_5348> builder = ImmutableList.builder();
-				this.textRenderer.wrapLines((class_5348)optional2.get(), 200).forEach(builder::add);
+				Builder<StringRenderable> builder = ImmutableList.builder();
+				this.textRenderer.wrapLines((StringRenderable)optional2.get(), 200).forEach(builder::add);
 				this.field_25453 = builder.build();
 			}
 		}

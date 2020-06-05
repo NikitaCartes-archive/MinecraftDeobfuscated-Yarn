@@ -8,10 +8,10 @@ import net.minecraft.block.Blocks;
 public class HugeFungusFeatureConfig implements FeatureConfig {
 	public static final Codec<HugeFungusFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.field_24734.fieldOf("valid_base_block").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.validBaseBlock),
-					BlockState.field_24734.fieldOf("stem_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.stemState),
-					BlockState.field_24734.fieldOf("hat_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.hatState),
-					BlockState.field_24734.fieldOf("decor_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.decorationState),
+					BlockState.CODEC.fieldOf("valid_base_block").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.validBaseBlock),
+					BlockState.CODEC.fieldOf("stem_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.stemState),
+					BlockState.CODEC.fieldOf("hat_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.hatState),
+					BlockState.CODEC.fieldOf("decor_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.decorationState),
 					Codec.BOOL.fieldOf("planted").withDefault(false).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.planted)
 				)
 				.apply(instance, HugeFungusFeatureConfig::new)

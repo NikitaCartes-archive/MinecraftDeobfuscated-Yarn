@@ -359,11 +359,11 @@ public class NbtOps implements DynamicOps<Tag> {
 
 	@Override
 	public RecordBuilder<Tag> mapBuilder() {
-		return new NbtOps.class_5320();
+		return new NbtOps.MapBuilder();
 	}
 
-	class class_5320 extends AbstractStringBuilder<Tag, CompoundTag> {
-		protected class_5320() {
+	class MapBuilder extends AbstractStringBuilder<Tag, CompoundTag> {
+		protected MapBuilder() {
 			super(NbtOps.this);
 		}
 

@@ -16,15 +16,15 @@ public class LootGsons {
 			.registerTypeAdapter(UniformLootTableRange.class, new UniformLootTableRange.Serializer())
 			.registerTypeAdapter(BinomialLootTableRange.class, new BinomialLootTableRange.Serializer())
 			.registerTypeAdapter(ConstantLootTableRange.class, new ConstantLootTableRange.Serializer())
-			.registerTypeHierarchyAdapter(LootCondition.class, LootConditionTypes.method_29326())
+			.registerTypeHierarchyAdapter(LootCondition.class, LootConditionTypes.createGsonSerializer())
 			.registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer());
 	}
 
 	public static GsonBuilder getFunctionGsonBuilder() {
 		return getConditionGsonBuilder()
 			.registerTypeAdapter(BoundedIntUnaryOperator.class, new BoundedIntUnaryOperator.Serializer())
-			.registerTypeHierarchyAdapter(LootPoolEntry.class, LootPoolEntryTypes.method_29316())
-			.registerTypeHierarchyAdapter(LootFunction.class, LootFunctionTypes.method_29322());
+			.registerTypeHierarchyAdapter(LootPoolEntry.class, LootPoolEntryTypes.createGsonSerializer())
+			.registerTypeHierarchyAdapter(LootFunction.class, LootFunctionTypes.createGsonSerializer());
 	}
 
 	public static GsonBuilder getTableGsonBuilder() {

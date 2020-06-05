@@ -19,7 +19,7 @@ public class SaddleItem extends Item {
 			if (!saddleable.isSaddled() && saddleable.canBeSaddled()) {
 				saddleable.saddle(SoundCategory.NEUTRAL);
 				stack.decrement(1);
-				return ActionResult.method_29236(user.world.isClient);
+				return ActionResult.success(user.world.isClient);
 			}
 		}
 

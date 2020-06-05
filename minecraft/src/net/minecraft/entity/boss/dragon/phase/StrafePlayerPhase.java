@@ -16,7 +16,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private int field_7060;
 	private Path field_7059;
-	private Vec3d field_7057;
+	private Vec3d target;
 	private LivingEntity field_7062;
 	private boolean field_7058;
 
@@ -37,10 +37,10 @@ public class StrafePlayerPhase extends AbstractPhase {
 				double g = e - this.dragon.getZ();
 				double h = (double)MathHelper.sqrt(f * f + g * g);
 				double i = Math.min(0.4F + h / 80.0 - 1.0, 10.0);
-				this.field_7057 = new Vec3d(d, this.field_7062.getY() + i, e);
+				this.target = new Vec3d(d, this.field_7062.getY() + i, e);
 			}
 
-			double d = this.field_7057 == null ? 0.0 : this.field_7057.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+			double d = this.target == null ? 0.0 : this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 			if (d < 100.0 || d > 22500.0) {
 				this.method_6860();
 			}
@@ -138,14 +138,14 @@ public class StrafePlayerPhase extends AbstractPhase {
 				f = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0F);
 			} while (f < (double)vec3i.getY());
 
-			this.field_7057 = new Vec3d(d, f, e);
+			this.target = new Vec3d(d, f, e);
 		}
 	}
 
 	@Override
 	public void beginPhase() {
 		this.field_7060 = 0;
-		this.field_7057 = null;
+		this.target = null;
 		this.field_7059 = null;
 		this.field_7062 = null;
 	}
@@ -172,7 +172,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 	@Nullable
 	@Override
 	public Vec3d getTarget() {
-		return this.field_7057;
+		return this.target;
 	}
 
 	@Override

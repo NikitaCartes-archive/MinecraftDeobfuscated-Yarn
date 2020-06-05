@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
@@ -41,7 +40,7 @@ import net.minecraft.util.Util;
  * 
  * @see MutableText
  */
-public interface Text extends Message, class_5348 {
+public interface Text extends Message, StringRenderable {
 	/**
 	 * Returns the style of this text.
 	 */
@@ -78,7 +77,7 @@ public interface Text extends Message, class_5348 {
 		this.visit(string -> {
 			int j = length - stringBuilder.length();
 			if (j <= 0) {
-				return field_25309;
+				return TERMINATE_VISIT;
 			} else {
 				stringBuilder.append(string.length() <= j ? string : string.substring(0, j));
 				return Optional.empty();
@@ -106,7 +105,7 @@ public interface Text extends Message, class_5348 {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	default <T> Optional<T> visit(class_5348.StyledVisitor<T> styledVisitor, Style style) {
+	default <T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style) {
 		Style style2 = this.getStyle().withParent(style);
 		Optional<T> optional = this.visitSelf(styledVisitor, style2);
 		if (optional.isPresent()) {
@@ -124,7 +123,7 @@ public interface Text extends Message, class_5348 {
 	}
 
 	@Override
-	default <T> Optional<T> visit(class_5348.Visitor<T> visitor) {
+	default <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
 		Optional<T> optional = this.visitSelf(visitor);
 		if (optional.isPresent()) {
 			return optional;
@@ -150,7 +149,7 @@ public interface Text extends Message, class_5348 {
 	 * @param style the current style
 	 */
 	@Environment(EnvType.CLIENT)
-	default <T> Optional<T> visitSelf(class_5348.StyledVisitor<T> visitor, Style style) {
+	default <T> Optional<T> visitSelf(StringRenderable.StyledVisitor<T> visitor, Style style) {
 		return visitor.accept(style, this.asString());
 	}
 
@@ -162,7 +161,7 @@ public interface Text extends Message, class_5348 {
 	 * 
 	 * @param visitor the visitor
 	 */
-	default <T> Optional<T> visitSelf(class_5348.Visitor<T> visitor) {
+	default <T> Optional<T> visitSelf(StringRenderable.Visitor<T> visitor) {
 		return visitor.accept(this.asString());
 	}
 

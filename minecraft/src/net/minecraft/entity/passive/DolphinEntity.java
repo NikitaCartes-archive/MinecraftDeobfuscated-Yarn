@@ -333,7 +333,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				itemStack.decrement(1);
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

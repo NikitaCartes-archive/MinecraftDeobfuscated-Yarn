@@ -5,10 +5,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -19,7 +19,7 @@ public class BackupPromptScreen extends Screen {
 	protected final BackupPromptScreen.Callback callback;
 	private final Text subtitle;
 	private final boolean showEraseCacheCheckbox;
-	private final List<class_5348> wrappedText = Lists.<class_5348>newArrayList();
+	private final List<StringRenderable> wrappedText = Lists.<StringRenderable>newArrayList();
 	private CheckboxWidget eraseCacheCheckbox;
 
 	public BackupPromptScreen(@Nullable Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
@@ -69,8 +69,8 @@ public class BackupPromptScreen extends Screen {
 		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
 		int i = 70;
 
-		for (class_5348 lv : this.wrappedText) {
-			this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 16777215);
+		for (StringRenderable stringRenderable : this.wrappedText) {
+			this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 16777215);
 			i += 9;
 		}
 

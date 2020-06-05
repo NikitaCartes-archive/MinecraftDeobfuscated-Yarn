@@ -8,10 +8,10 @@ import net.minecraft.block.BlockState;
 public class DiskFeatureConfig implements FeatureConfig {
 	public static final Codec<DiskFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.field_24734.fieldOf("state").forGetter(diskFeatureConfig -> diskFeatureConfig.state),
+					BlockState.CODEC.fieldOf("state").forGetter(diskFeatureConfig -> diskFeatureConfig.state),
 					Codec.INT.fieldOf("radius").withDefault(0).forGetter(diskFeatureConfig -> diskFeatureConfig.radius),
 					Codec.INT.fieldOf("y_size").withDefault(0).forGetter(diskFeatureConfig -> diskFeatureConfig.ySize),
-					BlockState.field_24734.listOf().fieldOf("targets").forGetter(diskFeatureConfig -> diskFeatureConfig.targets)
+					BlockState.CODEC.listOf().fieldOf("targets").forGetter(diskFeatureConfig -> diskFeatureConfig.targets)
 				)
 				.apply(instance, DiskFeatureConfig::new)
 	);

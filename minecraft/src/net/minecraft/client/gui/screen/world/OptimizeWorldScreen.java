@@ -18,9 +18,9 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
@@ -45,10 +45,12 @@ public class OptimizeWorldScreen extends Screen {
 	public static OptimizeWorldScreen method_27031(
 		MinecraftClient minecraftClient, BooleanConsumer booleanConsumer, DataFixer dataFixer, LevelStorage.Session session, boolean bl
 	) {
-		DimensionTracker.Modifiable modifiable = DimensionTracker.create();
+		RegistryTracker.Modifiable modifiable = RegistryTracker.create();
 
-		try (MinecraftClient.class_5367 lv = minecraftClient.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::method_29599, false, session)) {
-			SaveProperties saveProperties = lv.method_29614();
+		try (MinecraftClient.IntegratedResourceManager integratedResourceManager = minecraftClient.method_29604(
+				modifiable, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session
+			)) {
+			SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
 			session.method_27425(modifiable, saveProperties);
 			ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().method_29575();
 			return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);

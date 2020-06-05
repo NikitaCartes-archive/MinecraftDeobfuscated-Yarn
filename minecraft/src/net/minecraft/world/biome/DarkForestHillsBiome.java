@@ -28,9 +28,9 @@ public final class DarkForestHillsBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent("dark_forest")
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24690);
+		this.addStructureFeature(DefaultBiomeFeatures.MANSION);
 		DefaultBiomeFeatures.method_28440(this);
-		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

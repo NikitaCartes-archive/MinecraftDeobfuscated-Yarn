@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.ChanneledLightningCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
@@ -127,7 +127,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false,
 				false
 			)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.criterion("killed_something", OnKilledCriterion.Conditions.createPlayerKilledEntity())
 			.criterion("killed_by_something", OnKilledCriterion.Conditions.createEntityKilledPlayer())
 			.build(consumer, "adventure/root");
@@ -185,7 +185,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.build(consumer, "adventure/kill_a_mob");
 		this.requireListedMobsKilled(Advancement.Task.create())
 			.parent(advancement4)

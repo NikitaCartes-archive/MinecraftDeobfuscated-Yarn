@@ -66,7 +66,7 @@ public class RecipeBookGhostSlots {
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
 			ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
-			itemRenderer.method_27953(itemStack, l, m);
+			itemRenderer.renderInGui(itemStack, l, m);
 			RenderSystem.depthFunc(516);
 			DrawableHelper.fill(matrixStack, l, m, l + 16, m + 16, 822083583);
 			RenderSystem.depthFunc(515);

@@ -22,12 +22,12 @@ public final class DesertBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.5F, -0.5F, 0.0F, 0.0F, 1.0F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24707);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24687);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24692);
+		this.addStructureFeature(DefaultBiomeFeatures.DESERT_VILLAGE);
+		this.addStructureFeature(DefaultBiomeFeatures.PILLAGER_OUTPOST);
+		this.addStructureFeature(DefaultBiomeFeatures.DESERT_PYRAMID);
 		DefaultBiomeFeatures.addFossils(this);
 		DefaultBiomeFeatures.method_28440(this);
-		this.addStructureFeature(DefaultBiomeFeatures.DESERT_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.DESERT_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDesertLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

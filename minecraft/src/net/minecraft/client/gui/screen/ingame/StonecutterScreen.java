@@ -26,7 +26,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	public StonecutterScreen(StonecutterScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
 		handler.setContentsChangedListener(this::onInventoryChange);
-		this.field_25268--;
+		this.titleY--;
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 			int k = x + j % 4 * 16;
 			int l = j / 4;
 			int m = y + l * 18 + 2;
-			this.client.getItemRenderer().renderGuiItem(((StonecuttingRecipe)list.get(i)).getOutput(), k, m);
+			this.client.getItemRenderer().renderInGuiWithOverrides(((StonecuttingRecipe)list.get(i)).getOutput(), k, m);
 		}
 	}
 

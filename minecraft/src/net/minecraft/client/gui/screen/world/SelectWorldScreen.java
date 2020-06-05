@@ -3,18 +3,18 @@ package net.minecraft.client.gui.screen.world;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SelectWorldScreen extends Screen {
 	protected final Screen parent;
-	private List<class_5348> tooltipText;
+	private List<StringRenderable> tooltipText;
 	private ButtonWidget deleteButton;
 	private ButtonWidget selectButton;
 	private ButtonWidget editButton;
@@ -127,7 +127,7 @@ public class SelectWorldScreen extends Screen {
 		}
 	}
 
-	public void setTooltip(List<class_5348> list) {
+	public void setTooltip(List<StringRenderable> list) {
 		this.tooltipText = list;
 	}
 

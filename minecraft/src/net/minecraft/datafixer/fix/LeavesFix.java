@@ -31,8 +31,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.class_5298;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.util.math.WordPackedArray;
 
 public class LeavesFix extends DataFix {
 	private static final int[][] field_5687 = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
@@ -284,17 +284,17 @@ public class LeavesFix extends DataFix {
 			}
 
 			int m = this.leafStates.get(l);
-			if (1 << this.blockStateMap.method_28154() <= m) {
-				class_5298 lv = new class_5298(this.blockStateMap.method_28154() + 1, 4096);
+			if (1 << this.blockStateMap.getUnitSize() <= m) {
+				WordPackedArray wordPackedArray = new WordPackedArray(this.blockStateMap.getUnitSize() + 1, 4096);
 
 				for (int n = 0; n < 4096; n++) {
-					lv.method_28153(n, this.blockStateMap.method_28152(n));
+					wordPackedArray.set(n, this.blockStateMap.get(n));
 				}
 
-				this.blockStateMap = lv;
+				this.blockStateMap = wordPackedArray;
 			}
 
-			this.blockStateMap.method_28153(i, m);
+			this.blockStateMap.set(i, m);
 		}
 	}
 
@@ -304,7 +304,7 @@ public class LeavesFix extends DataFix {
 		protected final List<Dynamic<?>> properties;
 		protected final int field_5694;
 		@Nullable
-		protected class_5298 blockStateMap;
+		protected WordPackedArray blockStateMap;
 
 		public ListFixer(Typed<?> typed, Schema schema) {
 			if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.field_5695)) {
@@ -324,14 +324,14 @@ public class LeavesFix extends DataFix {
 			} else {
 				long[] ls = dynamic.get("BlockStates").asLongStream().toArray();
 				int i = Math.max(4, DataFixUtils.ceillog2(this.properties.size()));
-				this.blockStateMap = new class_5298(i, 4096, ls);
+				this.blockStateMap = new WordPackedArray(i, 4096, ls);
 			}
 		}
 
 		public Typed<?> method_5083(Typed<?> typed) {
 			return this.isFixed()
 				? typed
-				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.blockStateMap.method_28151()))))
+				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.blockStateMap.getAlignedArray()))))
 					.set(
 						this.field_5693,
 						(List<Pair<String, Dynamic<?>>>)this.properties
@@ -346,7 +346,7 @@ public class LeavesFix extends DataFix {
 		}
 
 		public int needsFix(int i) {
-			return this.blockStateMap.method_28152(i);
+			return this.blockStateMap.get(i);
 		}
 
 		protected int computeFlags(String leafBlockName, boolean persistent, int i) {

@@ -33,7 +33,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.SET_STEW_EFFECT;
 	}
 
@@ -78,7 +78,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetStewEffectLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetStewEffectLootFunction> {
 		public void toJson(JsonObject jsonObject, SetStewEffectLootFunction setStewEffectLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setStewEffectLootFunction, jsonSerializationContext);
 			if (!setStewEffectLootFunction.effects.isEmpty()) {

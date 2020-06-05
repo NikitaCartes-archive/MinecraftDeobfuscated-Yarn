@@ -469,7 +469,7 @@ public class EnderDragonFight {
 		}
 	}
 
-	private void respawnDragon(List<EndCrystalEntity> list) {
+	private void respawnDragon(List<EndCrystalEntity> crystals) {
 		if (this.dragonKilled && this.dragonSpawnState == null) {
 			for (BlockPattern.Result result = this.findEndPortal(); result != null; result = this.findEndPortal()) {
 				for (int i = 0; i < this.endPortalPattern.getWidth(); i++) {
@@ -487,7 +487,7 @@ public class EnderDragonFight {
 			this.dragonSpawnState = EnderDragonSpawnState.START;
 			this.spawnStateTimer = 0;
 			this.generateEndPortal(false);
-			this.crystals = list;
+			this.crystals = crystals;
 		}
 	}
 

@@ -18,11 +18,11 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 		instance -> instance.group(
 					BlockStateProvider.CODEC.fieldOf("state_provider").forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.stateProvider),
 					BlockPlacer.field_24865.fieldOf("block_placer").forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.blockPlacer),
-					BlockState.field_24734
+					BlockState.CODEC
 						.listOf()
 						.fieldOf("whitelist")
 						.forGetter(randomPatchFeatureConfig -> (List)randomPatchFeatureConfig.whitelist.stream().map(Block::getDefaultState).collect(Collectors.toList())),
-					BlockState.field_24734.listOf().fieldOf("blacklist").forGetter(randomPatchFeatureConfig -> ImmutableList.copyOf(randomPatchFeatureConfig.blacklist)),
+					BlockState.CODEC.listOf().fieldOf("blacklist").forGetter(randomPatchFeatureConfig -> ImmutableList.copyOf(randomPatchFeatureConfig.blacklist)),
 					Codec.INT.fieldOf("tries").withDefault(128).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.tries),
 					Codec.INT.fieldOf("xspread").withDefault(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadX),
 					Codec.INT.fieldOf("yspread").withDefault(3).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadY),

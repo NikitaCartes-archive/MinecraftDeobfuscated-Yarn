@@ -7,7 +7,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.registry.Registry;
 
 public class BlockState extends AbstractBlock.AbstractBlockState {
-	public static final Codec<BlockState> field_24734 = method_28494(Registry.BLOCK, Block::getDefaultState).stable();
+	public static final Codec<BlockState> CODEC = createCodec(Registry.BLOCK, Block::getDefaultState).stable();
 
 	public BlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> immutableMap, MapCodec<BlockState> mapCodec) {
 		super(block, immutableMap, mapCodec);

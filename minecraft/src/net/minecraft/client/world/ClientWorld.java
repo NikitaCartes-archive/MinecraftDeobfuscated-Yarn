@@ -108,7 +108,7 @@ public class ClientWorld extends World {
 		this.clientWorldProperties = properties;
 		this.netHandler = clientPlayNetworkHandler;
 		this.worldRenderer = worldRenderer;
-		this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.method_29091().getRegistry().getKey(dimensionType));
+		this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.method_29091().getDimensionTypeRegistry().getKey(dimensionType));
 		this.setSpawnPos(new BlockPos(8, 64, 8));
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
@@ -118,15 +118,15 @@ public class ClientWorld extends World {
 		return this.skyProperties;
 	}
 
-	public void tick(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier shouldKeepTicking) {
 		this.getWorldBorder().tick();
-		this.method_29090();
+		this.tickTime();
 		this.getProfiler().push("blocks");
-		this.chunkManager.tick(booleanSupplier);
+		this.chunkManager.tick(shouldKeepTicking);
 		this.getProfiler().pop();
 	}
 
-	private void method_29090() {
+	private void tickTime() {
 		this.method_29089(this.properties.getTime() + 1L);
 		if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
 			this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
@@ -288,8 +288,8 @@ public class ClientWorld extends World {
 		this.getChunkManager().getChunk(MathHelper.floor(entity.getX() / 16.0), MathHelper.floor(entity.getZ() / 16.0), ChunkStatus.FULL, true).addEntity(entity);
 	}
 
-	public void removeEntity(int i) {
-		Entity entity = this.regularEntities.remove(i);
+	public void removeEntity(int entityId) {
+		Entity entity = this.regularEntities.remove(entityId);
 		if (entity != null) {
 			entity.remove();
 			this.finishRemovingEntity(entity);
@@ -322,8 +322,8 @@ public class ClientWorld extends World {
 		return this.regularEntities.get(id);
 	}
 
-	public void setBlockStateWithoutNeighborUpdates(BlockPos blockPos, BlockState blockState) {
-		this.setBlockState(blockPos, blockState, 19);
+	public void setBlockStateWithoutNeighborUpdates(BlockPos pos, BlockState state) {
+		this.setBlockState(pos, state, 19);
 	}
 
 	@Override
@@ -331,8 +331,8 @@ public class ClientWorld extends World {
 		this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
 	}
 
-	public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int i) {
-		int j = 32;
+	public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int zCenter) {
+		int i = 32;
 		Random random = new Random();
 		boolean bl = false;
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.CREATIVE) {
@@ -346,9 +346,9 @@ public class ClientWorld extends World {
 
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int k = 0; k < 667; k++) {
-			this.randomBlockDisplayTick(xCenter, yCenter, i, 16, random, bl, mutable);
-			this.randomBlockDisplayTick(xCenter, yCenter, i, 32, random, bl, mutable);
+		for (int j = 0; j < 667; j++) {
+			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 16, random, bl, mutable);
+			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 32, random, bl, mutable);
 		}
 	}
 
@@ -477,9 +477,9 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float f, float g, boolean bl) {
+	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean bl) {
 		double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
-		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, f, g, x, y, z);
+		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, volume, pitch, x, y, z);
 		if (bl && d > 100.0) {
 			double e = Math.sqrt(d) / 40.0;
 			this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));
@@ -861,8 +861,8 @@ public class ClientWorld extends World {
 			this.time = difficulty;
 		}
 
-		public void setTimeOfDay(long l) {
-			this.timeOfDay = l;
+		public void setTimeOfDay(long time) {
+			this.timeOfDay = time;
 		}
 
 		@Override
@@ -908,8 +908,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void populateCrashReport(CrashReportSection crashReportSection) {
-			MutableWorldProperties.super.populateCrashReport(crashReportSection);
+		public void populateCrashReport(CrashReportSection reportSection) {
+			MutableWorldProperties.super.populateCrashReport(reportSection);
 		}
 
 		public void setDifficulty(Difficulty difficulty) {

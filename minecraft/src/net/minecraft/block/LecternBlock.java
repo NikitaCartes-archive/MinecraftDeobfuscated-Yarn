@@ -182,7 +182,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			if ((Boolean)state.get(HAS_BOOK)) {
 				this.dropBook(state, world, pos);
@@ -192,7 +192,7 @@ public class LecternBlock extends BlockWithEntity {
 				world.updateNeighborsAlways(pos.down(), this);
 			}
 
-			super.onStateReplaced(state, world, pos, newState, notify);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 
@@ -252,7 +252,7 @@ public class LecternBlock extends BlockWithEntity {
 				this.openScreen(world, pos, player);
 			}
 
-			return ActionResult.method_29236(world.isClient);
+			return ActionResult.success(world.isClient);
 		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
 			return !itemStack.isEmpty() && !itemStack.getItem().isIn(ItemTags.LECTERN_BOOKS) ? ActionResult.CONSUME : ActionResult.PASS;

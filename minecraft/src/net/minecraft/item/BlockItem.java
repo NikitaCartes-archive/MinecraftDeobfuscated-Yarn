@@ -80,7 +80,7 @@ public class BlockItem extends Item {
 						blockSoundGroup.getPitch() * 0.8F
 					);
 					itemStack.decrement(1);
-					return ActionResult.method_29236(world.isClient);
+					return ActionResult.success(world.isClient);
 				}
 			}
 		}

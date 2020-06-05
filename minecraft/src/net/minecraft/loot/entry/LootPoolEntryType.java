@@ -1,10 +1,10 @@
 package net.minecraft.loot.entry;
 
-import net.minecraft.util.JsonSerializable;
 import net.minecraft.util.JsonSerializableType;
+import net.minecraft.util.JsonSerializer;
 
 public class LootPoolEntryType extends JsonSerializableType<LootPoolEntry> {
-	public LootPoolEntryType(JsonSerializable<? extends LootPoolEntry> jsonSerializable) {
-		super(jsonSerializable);
+	public LootPoolEntryType(JsonSerializer<? extends LootPoolEntry> jsonSerializer) {
+		super(jsonSerializer);
 	}
 }

@@ -26,13 +26,14 @@ public class DatapackCommand {
 		object -> new TranslatableText("commands.datapack.disable.failed", object)
 	);
 	private static final SuggestionProvider<ServerCommandSource> ENABLED_CONTAINERS_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-			commandContext.getSource().getMinecraftServer().getDataPackManager().method_29210().stream().map(StringArgumentType::escapeIfRequired), suggestionsBuilder
+			commandContext.getSource().getMinecraftServer().getDataPackManager().getEnabledNames().stream().map(StringArgumentType::escapeIfRequired),
+			suggestionsBuilder
 		);
 	private static final SuggestionProvider<ServerCommandSource> DISABLED_CONTAINERS_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
 		ResourcePackManager<?> resourcePackManager = commandContext.getSource().getMinecraftServer().getDataPackManager();
-		Collection<String> collection = resourcePackManager.method_29210();
+		Collection<String> collection = resourcePackManager.getEnabledNames();
 		return CommandSource.suggestMatching(
-			resourcePackManager.method_29206().stream().filter(string -> !collection.contains(string)).map(StringArgumentType::escapeIfRequired), suggestionsBuilder
+			resourcePackManager.getNames().stream().filter(string -> !collection.contains(string)).map(StringArgumentType::escapeIfRequired), suggestionsBuilder
 		);
 	};
 

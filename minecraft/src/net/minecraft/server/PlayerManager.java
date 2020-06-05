@@ -72,6 +72,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -80,7 +81,6 @@ import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -103,14 +103,14 @@ public abstract class PlayerManager {
 	private final Map<UUID, PlayerAdvancementTracker> advancementTrackers = Maps.<UUID, PlayerAdvancementTracker>newHashMap();
 	private final WorldSaveHandler saveHandler;
 	private boolean whitelistEnabled;
-	private final DimensionTracker.Modifiable field_24626;
+	private final RegistryTracker.Modifiable field_24626;
 	protected final int maxPlayers;
 	private int viewDistance;
 	private GameMode gameMode;
 	private boolean cheatsAllowed;
 	private int latencyUpdateTimer;
 
-	public PlayerManager(MinecraftServer server, DimensionTracker.Modifiable modifiable, WorldSaveHandler worldSaveHandler, int i) {
+	public PlayerManager(MinecraftServer server, RegistryTracker.Modifiable modifiable, WorldSaveHandler worldSaveHandler, int i) {
 		this.server = server;
 		this.field_24626 = modifiable;
 		this.maxPlayers = i;
@@ -130,7 +130,15 @@ public abstract class PlayerManager {
 				.orElse(World.OVERWORLD)
 			: World.OVERWORLD;
 		ServerWorld serverWorld = this.server.getWorld(registryKey);
-		player.setWorld(serverWorld);
+		ServerWorld serverWorld2;
+		if (serverWorld == null) {
+			LOGGER.warn("Unknown respawn dimension {}, defaulting to overworld", registryKey);
+			serverWorld2 = this.server.getWorld(World.OVERWORLD);
+		} else {
+			serverWorld2 = serverWorld;
+		}
+
+		player.setWorld(serverWorld2);
 		player.interactionManager.setWorld((ServerWorld)player.world);
 		String string2 = "local";
 		if (connection.getAddress() != null) {
@@ -146,28 +154,28 @@ public abstract class PlayerManager {
 			player.getY(),
 			player.getZ()
 		);
-		WorldProperties worldProperties = serverWorld.getLevelProperties();
-		this.setGameMode(player, null, serverWorld);
+		WorldProperties worldProperties = serverWorld2.getLevelProperties();
+		this.setGameMode(player, null, serverWorld2);
 		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player);
-		GameRules gameRules = serverWorld.getGameRules();
-		boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
-		boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
+		GameRules gameRules = serverWorld2.getGameRules();
+		boolean bl = gameRules.getBoolean(GameRules.field_20638);
+		boolean bl2 = gameRules.getBoolean(GameRules.field_19401);
 		serverPlayNetworkHandler.sendPacket(
 			new GameJoinS2CPacket(
 				player.getEntityId(),
 				player.interactionManager.getGameMode(),
-				BiomeAccess.hashSeed(serverWorld.getSeed()),
+				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				worldProperties.isHardcore(),
 				this.server.getWorldRegistryKeys(),
 				this.field_24626,
-				serverWorld.getDimensionRegistryKey(),
-				serverWorld.getRegistryKey(),
+				serverWorld2.getDimensionRegistryKey(),
+				serverWorld2.getRegistryKey(),
 				this.getMaxPlayerCount(),
 				this.viewDistance,
 				bl2,
 				!bl,
-				serverWorld.isDebugWorld(),
-				serverWorld.method_28125()
+				serverWorld2.isDebugWorld(),
+				serverWorld2.method_28125()
 			)
 		);
 		serverPlayNetworkHandler.sendPacket(
@@ -181,7 +189,7 @@ public abstract class PlayerManager {
 		this.sendCommandTree(player);
 		player.getStatHandler().updateStatSet();
 		player.getRecipeBook().sendInitRecipesPacket(player);
-		this.sendScoreboard(serverWorld.getScoreboard(), player);
+		this.sendScoreboard(serverWorld2.getScoreboard(), player);
 		this.server.forcePlayerSampleUpdate();
 		MutableText mutableText;
 		if (player.getGameProfile().getName().equalsIgnoreCase(string)) {
@@ -200,9 +208,9 @@ public abstract class PlayerManager {
 			player.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, (ServerPlayerEntity)this.players.get(i)));
 		}
 
-		serverWorld.onPlayerConnected(player);
+		serverWorld2.onPlayerConnected(player);
 		this.server.getBossBarManager().onPlayerConnect(player);
-		this.sendWorldInfo(player, serverWorld);
+		this.sendWorldInfo(player, serverWorld2);
 		if (!this.server.getResourcePackUrl().isEmpty()) {
 			player.sendResourcePackUrl(this.server.getResourcePackUrl(), this.server.getResourcePackHash());
 		}
@@ -214,7 +222,7 @@ public abstract class PlayerManager {
 		if (compoundTag != null && compoundTag.contains("RootVehicle", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("RootVehicle");
 			Entity entity = EntityType.loadEntityWithPassengers(
-				compoundTag2.getCompound("Entity"), serverWorld, entityx -> !serverWorld.tryLoadEntity(entityx) ? null : entityx
+				compoundTag2.getCompound("Entity"), serverWorld2, entityx -> !serverWorld2.tryLoadEntity(entityx) ? null : entityx
 			);
 			if (entity != null) {
 				UUID uUID;
@@ -237,10 +245,10 @@ public abstract class PlayerManager {
 
 				if (!player.hasVehicle()) {
 					LOGGER.warn("Couldn't reattach entity to player");
-					serverWorld.removeEntity(entity);
+					serverWorld2.removeEntity(entity);
 
 					for (Entity entity2x : entity.getPassengersDeep()) {
-						serverWorld.removeEntity(entity2x);
+						serverWorld2.removeEntity(entity2x);
 					}
 				}
 			}

@@ -48,9 +48,9 @@ public class BasaltDeltasBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(-0.5F, 0.0F, 0.0F, 0.0F, 0.175F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.NETHER_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.NETHER_RUINED_PORTAL);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
-		this.addStructureFeature(DefaultBiomeFeatures.field_24701);
+		this.addStructureFeature(DefaultBiomeFeatures.FORTRESS);
 		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
 			Feature.DELTA_FEATURE.configure(DefaultBiomeFeatures.DELTA_CONFIG).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(40)))

@@ -307,24 +307,24 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderHeader(MatrixStack matrixStack, int y, int i, Tessellator tessellator) {
+		protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
 			if (!this.client.mouse.wasLeftButtonClicked()) {
 				this.selectedHeaderColumn = -1;
 			}
 
-			for (int j = 0; j < this.HEADER_ICON_SPRITE_INDICES.length; j++) {
-				StatsScreen.this.renderIcon(matrixStack, y + StatsScreen.this.getColumnX(j) - 18, i + 1, 0, this.selectedHeaderColumn == j ? 0 : 18);
+			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
+				StatsScreen.this.renderIcon(matrices, x + StatsScreen.this.getColumnX(i) - 18, y + 1, 0, this.selectedHeaderColumn == i ? 0 : 18);
 			}
 
 			if (this.selectedStatType != null) {
-				int j = StatsScreen.this.getColumnX(this.getHeaderIndex(this.selectedStatType)) - 36;
-				int k = this.field_18760 == 1 ? 2 : 1;
-				StatsScreen.this.renderIcon(matrixStack, y + j, i + 1, 18 * k, 0);
+				int i = StatsScreen.this.getColumnX(this.getHeaderIndex(this.selectedStatType)) - 36;
+				int j = this.field_18760 == 1 ? 2 : 1;
+				StatsScreen.this.renderIcon(matrices, x + i, y + 1, 18 * j, 0);
 			}
 
-			for (int j = 0; j < this.HEADER_ICON_SPRITE_INDICES.length; j++) {
-				int k = this.selectedHeaderColumn == j ? 1 : 0;
-				StatsScreen.this.renderIcon(matrixStack, y + StatsScreen.this.getColumnX(j) - 18 + k, i + 1 + k, 18 * this.HEADER_ICON_SPRITE_INDICES[j], 18);
+			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
+				int j = this.selectedHeaderColumn == i ? 1 : 0;
+				StatsScreen.this.renderIcon(matrices, x + StatsScreen.this.getColumnX(i) - 18 + j, y + 1 + j, 18 * this.HEADER_ICON_SPRITE_INDICES[i], 18);
 			}
 		}
 

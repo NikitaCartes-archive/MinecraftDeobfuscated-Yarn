@@ -223,7 +223,7 @@ public class Schema705 extends IdentifierNormalizingSchema {
 	@Override
 	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
 		super.registerTypes(schema, entityTypes, blockEntityTypes);
-		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", method_28295(), entityTypes));
+		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", getIdentifierType(), entityTypes));
 		schema.registerType(
 			true,
 			TypeReferences.ITEM_STACK,

@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 public class RandomBlockStateMatchRuleTest extends RuleTest {
 	public static final Codec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.field_24734.fieldOf("block_state").forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.blockState),
+					BlockState.CODEC.fieldOf("block_state").forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.blockState),
 					Codec.FLOAT.fieldOf("probability").forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.probability)
 				)
 				.apply(instance, RandomBlockStateMatchRuleTest::new)

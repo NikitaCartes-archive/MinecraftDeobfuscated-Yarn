@@ -204,7 +204,7 @@ public class LocationPredicate {
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));
 			NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject2.get("z"));
 			RegistryKey<World> registryKey = jsonObject.has("dimension")
-				? (RegistryKey)Identifier.field_25139
+				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("dimension"))
 					.resultOrPartial(field_24732::error)
 					.map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier))

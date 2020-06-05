@@ -85,7 +85,7 @@ public class FarmlandBlock extends Block {
 		if (!world.isClient
 			&& world.random.nextFloat() < distance - 0.5F
 			&& entity instanceof LivingEntity
-			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING))
+			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
 			setToDirt(world.getBlockState(pos), world, pos);
 		}
@@ -102,9 +102,9 @@ public class FarmlandBlock extends Block {
 		return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
 	}
 
-	private static boolean isWaterNearby(WorldView worldView, BlockPos pos) {
+	private static boolean isWaterNearby(WorldView world, BlockPos pos) {
 		for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
-			if (worldView.getFluidState(blockPos).matches(FluidTags.WATER)) {
+			if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
 				return true;
 			}
 		}

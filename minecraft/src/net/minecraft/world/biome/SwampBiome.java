@@ -27,9 +27,9 @@ public final class SwampBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(6388580).waterFogColor(2302743).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24696);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24688);
-		this.addStructureFeature(DefaultBiomeFeatures.SWAMP_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.SWAMP_HUT);
+		this.addStructureFeature(DefaultBiomeFeatures.NORMAL_MINESHAFT);
+		this.addStructureFeature(DefaultBiomeFeatures.SWAMP_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addFossils(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

@@ -231,7 +231,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.defaultAlphaFunc();
 			int l = 5;
-			if (MinecraftClient.isFancyGraphicsEnabled()) {
+			if (MinecraftClient.isFancyGraphicsOrBetter()) {
 				l = 10;
 			}
 
@@ -370,7 +370,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public void method_22713(Camera camera) {
-		float f = this.client.world.getRainGradient(1.0F) / (MinecraftClient.isFancyGraphicsEnabled() ? 1.0F : 2.0F);
+		float f = this.client.world.getRainGradient(1.0F) / (MinecraftClient.isFancyGraphicsOrBetter() ? 1.0F : 2.0F);
 		if (!(f <= 0.0F)) {
 			Random random = new Random((long)this.ticks * 312987231L);
 			WorldView worldView = this.client.world;
@@ -437,7 +437,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		RenderSystem.texParameter(3553, 10243, 10497);
 		RenderSystem.bindTexture(0);
 		this.loadEntityOutlineShader();
-		if (MinecraftClient.method_29611()) {
+		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			this.loadTransparencyShader();
 		}
 	}
@@ -465,7 +465,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	private void loadTransparencyShader() {
-		this.method_29701();
+		this.resetTransparencyShader();
 		Identifier identifier = new Identifier("shaders/post/transparency.json");
 
 		try {
@@ -484,16 +484,16 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			this.cloudsFramebuffer = framebuffer5;
 		} catch (IOException var8) {
 			GameOptions gameOptions = MinecraftClient.getInstance().options;
-			gameOptions.field_25444 = gameOptions.field_25444.method_29596();
-			throw new WorldRenderer.class_5347("Failed to load shader: " + identifier, var8);
+			gameOptions.graphicsMode = gameOptions.graphicsMode.previous();
+			throw new WorldRenderer.ShaderException("Failed to load shader: " + identifier, var8);
 		} catch (JsonSyntaxException var9) {
 			GameOptions gameOptionsx = MinecraftClient.getInstance().options;
-			gameOptionsx.field_25444 = gameOptionsx.field_25444.method_29596();
-			throw new WorldRenderer.class_5347("Failed to parse shader: " + identifier, var9);
+			gameOptionsx.graphicsMode = gameOptionsx.graphicsMode.previous();
+			throw new WorldRenderer.ShaderException("Failed to parse shader: " + identifier, var9);
 		}
 	}
 
-	private void method_29701() {
+	private void resetTransparencyShader() {
 		if (this.transparencyShader != null) {
 			this.transparencyShader.close();
 			this.translucentFramebuffer.delete();
@@ -661,10 +661,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 
 	public void reload() {
 		if (this.world != null) {
-			if (MinecraftClient.method_29611()) {
+			if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 				this.loadTransparencyShader();
 			} else {
-				this.method_29701();
+				this.resetTransparencyShader();
 			}
 
 			this.world.reloadColor();
@@ -676,7 +676,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 
 			this.needsTerrainUpdate = true;
 			this.cloudsDirty = true;
-			RenderLayers.setFancyGraphics(MinecraftClient.isFancyGraphicsEnabled());
+			RenderLayers.setFancyGraphicsOrBetter(MinecraftClient.isFancyGraphicsOrBetter());
 			this.renderDistance = this.client.options.viewDistance;
 			if (this.chunks != null) {
 				this.chunks.clear();
@@ -1145,8 +1145,8 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		immediate.draw(TexturedRenderLayers.getEntityTranslucentCull());
 		immediate.draw(TexturedRenderLayers.getBannerPatterns());
 		immediate.draw(TexturedRenderLayers.getShieldPatterns());
-		immediate.draw(RenderLayer.method_27948());
-		immediate.draw(RenderLayer.method_27949());
+		immediate.draw(RenderLayer.getArmorGlint());
+		immediate.draw(RenderLayer.getArmorEntityGlint());
 		immediate.draw(RenderLayer.getGlint());
 		immediate.draw(RenderLayer.getEntityGlint());
 		immediate.draw(RenderLayer.getWaterMask());
@@ -2808,12 +2808,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	@Nullable
-	public Framebuffer method_29360() {
+	public Framebuffer getTranslucentFramebuffer() {
 		return this.translucentFramebuffer;
 	}
 
 	@Nullable
-	public Framebuffer method_29361() {
+	public Framebuffer getEntityFramebuffer() {
 		return this.entityFramebuffer;
 	}
 
@@ -2823,12 +2823,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	@Nullable
-	public Framebuffer method_29363() {
+	public Framebuffer getWeatherFramebuffer() {
 		return this.weatherFramebuffer;
 	}
 
 	@Nullable
-	public Framebuffer method_29364() {
+	public Framebuffer getCloudsFramebuffer() {
 		return this.cloudsFramebuffer;
 	}
 
@@ -2855,8 +2855,8 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_5347 extends RuntimeException {
-		public class_5347(String string, Throwable throwable) {
+	public static class ShaderException extends RuntimeException {
+		public ShaderException(String string, Throwable throwable) {
 			super(string, throwable);
 		}
 	}

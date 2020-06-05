@@ -26,7 +26,7 @@ public class BlockStateParticleEffect implements ParticleEffect {
 	private final BlockState blockState;
 
 	public static Codec<BlockStateParticleEffect> method_29128(ParticleType<BlockStateParticleEffect> particleType) {
-		return BlockState.field_24734
+		return BlockState.CODEC
 			.xmap(blockState -> new BlockStateParticleEffect(particleType, blockState), blockStateParticleEffect -> blockStateParticleEffect.blockState);
 	}
 

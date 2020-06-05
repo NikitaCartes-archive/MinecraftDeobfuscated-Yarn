@@ -23,7 +23,7 @@ public class ItemEntry extends LeafEntry {
 	}
 
 	@Override
-	public LootPoolEntryType method_29318() {
+	public LootPoolEntryType getType() {
 		return LootPoolEntryTypes.ITEM;
 	}
 
@@ -37,8 +37,8 @@ public class ItemEntry extends LeafEntry {
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<ItemEntry> {
-		public void method_442(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
-			super.method_422(jsonObject, itemEntry, jsonSerializationContext);
+		public void addEntryFields(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
+			super.addEntryFields(jsonObject, itemEntry, jsonSerializationContext);
 			Identifier identifier = Registry.ITEM.getId(itemEntry.item);
 			if (identifier == null) {
 				throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);

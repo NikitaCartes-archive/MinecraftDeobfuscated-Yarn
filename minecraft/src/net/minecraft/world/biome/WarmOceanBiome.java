@@ -31,9 +31,9 @@ public class WarmOceanBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.0F, -0.25F, 0.0F, 1.0F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24700);
+		this.addStructureFeature(DefaultBiomeFeatures.WARM_OCEAN_RUIN);
 		DefaultBiomeFeatures.method_28441(this);
-		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

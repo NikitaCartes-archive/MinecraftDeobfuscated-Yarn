@@ -26,7 +26,7 @@ public class DyeItem extends Item {
 			if (sheepEntity.isAlive() && !sheepEntity.isSheared() && sheepEntity.getColor() != this.color) {
 				sheepEntity.setColor(this.color);
 				stack.decrement(1);
-				return ActionResult.method_29236(user.world.isClient);
+				return ActionResult.success(user.world.isClient);
 			}
 		}
 

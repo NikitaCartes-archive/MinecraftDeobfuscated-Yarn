@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.EndPortalFeature;
 public class TakeoffPhase extends AbstractPhase {
 	private boolean field_7056;
 	private Path field_7054;
-	private Vec3d field_7055;
+	private Vec3d target;
 
 	public TakeoffPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
@@ -35,7 +35,7 @@ public class TakeoffPhase extends AbstractPhase {
 	public void beginPhase() {
 		this.field_7056 = true;
 		this.field_7054 = null;
-		this.field_7055 = null;
+		this.target = null;
 	}
 
 	private void method_6858() {
@@ -69,7 +69,7 @@ public class TakeoffPhase extends AbstractPhase {
 					d = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0F);
 				} while (d < (double)vec3i.getY());
 
-				this.field_7055 = new Vec3d((double)vec3i.getX(), d, (double)vec3i.getZ());
+				this.target = new Vec3d((double)vec3i.getX(), d, (double)vec3i.getZ());
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public class TakeoffPhase extends AbstractPhase {
 	@Nullable
 	@Override
 	public Vec3d getTarget() {
-		return this.field_7055;
+		return this.target;
 	}
 
 	@Override

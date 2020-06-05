@@ -735,7 +735,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		m += 8 + (bl2 ? 1 : -1);
 		RenderSystem.enableRescaleNormal();
 		ItemStack itemStack = itemGroup.getIcon();
-		this.itemRenderer.renderGuiItem(itemStack, l, m);
+		this.itemRenderer.renderInGuiWithOverrides(itemStack, l, m);
 		this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, l, m);
 		this.itemRenderer.zOffset = 0.0F;
 	}

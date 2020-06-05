@@ -6,11 +6,11 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -18,8 +18,8 @@ import net.minecraft.text.TranslatableText;
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
 	private final SystemToast.Type type;
-	private class_5348 title;
-	private List<class_5348> field_25037;
+	private StringRenderable title;
+	private List<StringRenderable> field_25037;
 	private long startTime;
 	private boolean justUpdated;
 	private final int field_25038;
@@ -30,19 +30,19 @@ public class SystemToast implements Toast {
 
 	public static SystemToast method_29047(MinecraftClient minecraftClient, SystemToast.Type type, Text text, Text text2) {
 		TextRenderer textRenderer = minecraftClient.textRenderer;
-		List<class_5348> list = textRenderer.getTextHandler().wrapLines(text2, 200, Style.EMPTY);
+		List<StringRenderable> list = textRenderer.getTextHandler().wrapLines(text2, 200, Style.EMPTY);
 		int i = Math.max(200, list.stream().mapToInt(textRenderer::getWidth).max().orElse(200));
 		return new SystemToast(type, text, list, i + 30);
 	}
 
-	private SystemToast(SystemToast.Type type, Text text, List<class_5348> list, int i) {
+	private SystemToast(SystemToast.Type type, Text text, List<StringRenderable> list, int i) {
 		this.type = type;
 		this.title = text;
 		this.field_25037 = list;
 		this.field_25038 = i;
 	}
 
-	private static ImmutableList<class_5348> method_29626(@Nullable Text text) {
+	private static ImmutableList<StringRenderable> method_29626(@Nullable Text text) {
 		return text == null ? ImmutableList.of() : ImmutableList.of(text);
 	}
 
@@ -83,7 +83,7 @@ public class SystemToast implements Toast {
 			manager.getGame().textRenderer.draw(matrices, this.title, 18.0F, 7.0F, -256);
 
 			for (int k = 0; k < this.field_25037.size(); k++) {
-				manager.getGame().textRenderer.draw(matrices, (class_5348)this.field_25037.get(k), 18.0F, (float)(18 + k * 12), -1);
+				manager.getGame().textRenderer.draw(matrices, (StringRenderable)this.field_25037.get(k), 18.0F, (float)(18 + k * 12), -1);
 			}
 		}
 

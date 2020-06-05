@@ -15,8 +15,8 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 
 	public SmithingScreen(SmithingScreenHandler handler, PlayerInventory playerInventory, Text title) {
 		super(handler, playerInventory, title, TEXTURE);
-		this.field_25267 = 60;
-		this.field_25268 = 18;
+		this.titleX = 60;
+		this.titleY = 18;
 	}
 
 	@Override

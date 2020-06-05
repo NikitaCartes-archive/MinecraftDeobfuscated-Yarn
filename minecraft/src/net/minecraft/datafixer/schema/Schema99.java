@@ -282,7 +282,7 @@ public class Schema99 extends Schema {
 		schema.registerType(
 			true, TypeReferences.ENTITY_TREE, () -> DSL.optionalFields("Riding", TypeReferences.ENTITY_TREE.in(schema), TypeReferences.ENTITY.in(schema))
 		);
-		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(IdentifierNormalizingSchema.method_28295()));
+		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(IdentifierNormalizingSchema.getIdentifierType()));
 		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), entityTypes));
 		schema.registerType(
 			true,
@@ -308,8 +308,10 @@ public class Schema99 extends Schema {
 				)
 		);
 		schema.registerType(false, TypeReferences.OPTIONS, DSL::remainder);
-		schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.or(DSL.constType(DSL.intType()), DSL.constType(IdentifierNormalizingSchema.method_28295())));
-		schema.registerType(false, TypeReferences.ITEM_NAME, () -> DSL.constType(IdentifierNormalizingSchema.method_28295()));
+		schema.registerType(
+			false, TypeReferences.BLOCK_NAME, () -> DSL.or(DSL.constType(DSL.intType()), DSL.constType(IdentifierNormalizingSchema.getIdentifierType()))
+		);
+		schema.registerType(false, TypeReferences.ITEM_NAME, () -> DSL.constType(IdentifierNormalizingSchema.getIdentifierType()));
 		schema.registerType(false, TypeReferences.STATS, DSL::remainder);
 		schema.registerType(
 			false,

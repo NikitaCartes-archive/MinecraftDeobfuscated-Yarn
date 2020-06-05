@@ -90,7 +90,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 				world.createExplosion(
 					null,
-					DamageSource.netherBed(),
+					DamageSource.badRespawnPoint(),
 					null,
 					(double)pos.getX() + 0.5,
 					(double)pos.getY() + 0.5,

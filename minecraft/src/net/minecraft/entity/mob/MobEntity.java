@@ -500,7 +500,7 @@ public abstract class MobEntity extends LivingEntity {
 	public void tickMovement() {
 		super.tickMovement();
 		this.world.getProfiler().push("looting");
-		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 			for (ItemEntity itemEntity : this.world.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0))) {
 				if (!itemEntity.removed && !itemEntity.getStack().isEmpty() && !itemEntity.cannotPickup() && this.canGather(itemEntity.getStack())) {
 					this.loot(itemEntity);
@@ -1035,7 +1035,7 @@ public abstract class MobEntity extends LivingEntity {
 			return ActionResult.PASS;
 		} else if (this.getHoldingEntity() == player) {
 			this.detachLeash(true, !player.abilities.creativeMode);
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			ActionResult actionResult = this.method_29506(player, hand);
 			if (actionResult.isAccepted()) {
@@ -1052,7 +1052,7 @@ public abstract class MobEntity extends LivingEntity {
 		if (itemStack.getItem() == Items.LEAD && this.canBeLeashedBy(playerEntity)) {
 			this.attachLeash(playerEntity, true);
 			itemStack.decrement(1);
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			if (itemStack.getItem() == Items.NAME_TAG) {
 				ActionResult actionResult = itemStack.useOnEntity(playerEntity, this, hand);

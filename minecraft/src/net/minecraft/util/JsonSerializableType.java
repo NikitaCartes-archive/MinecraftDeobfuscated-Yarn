@@ -1,13 +1,13 @@
 package net.minecraft.util;
 
 public class JsonSerializableType<T> {
-	private final JsonSerializable<? extends T> jsonSerializer;
+	private final JsonSerializer<? extends T> jsonSerializer;
 
-	public JsonSerializableType(JsonSerializable<? extends T> jsonSerializable) {
-		this.jsonSerializer = jsonSerializable;
+	public JsonSerializableType(JsonSerializer<? extends T> jsonSerializer) {
+		this.jsonSerializer = jsonSerializer;
 	}
 
-	public JsonSerializable<? extends T> getJsonSerializer() {
+	public JsonSerializer<? extends T> getJsonSerializer() {
 		return this.jsonSerializer;
 	}
 }

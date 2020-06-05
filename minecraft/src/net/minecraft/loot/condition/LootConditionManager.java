@@ -40,7 +40,7 @@ public class LootConditionManager extends JsonDataLoader {
 			try {
 				if (jsonElement.isJsonArray()) {
 					LootCondition[] lootConditions = GSON.fromJson(jsonElement, LootCondition[].class);
-					builder.put(identifier, new LootConditionManager.class_5334(lootConditions));
+					builder.put(identifier, new LootConditionManager.AndCondition(lootConditions));
 				} else {
 					LootCondition lootCondition = GSON.fromJson(jsonElement, LootCondition.class);
 					builder.put(identifier, lootCondition);
@@ -60,30 +60,30 @@ public class LootConditionManager extends JsonDataLoader {
 		return Collections.unmodifiableSet(this.conditions.keySet());
 	}
 
-	static class class_5334 implements LootCondition {
-		private final LootCondition[] field_25202;
-		private final Predicate<LootContext> field_25203;
+	static class AndCondition implements LootCondition {
+		private final LootCondition[] terms;
+		private final Predicate<LootContext> predicate;
 
-		private class_5334(LootCondition[] lootConditions) {
-			this.field_25202 = lootConditions;
-			this.field_25203 = LootConditionTypes.joinAnd(lootConditions);
+		private AndCondition(LootCondition[] elements) {
+			this.terms = elements;
+			this.predicate = LootConditionTypes.joinAnd(elements);
 		}
 
 		public final boolean test(LootContext lootContext) {
-			return this.field_25203.test(lootContext);
+			return this.predicate.test(lootContext);
 		}
 
 		@Override
 		public void validate(LootTableReporter reporter) {
 			LootCondition.super.validate(reporter);
 
-			for (int i = 0; i < this.field_25202.length; i++) {
-				this.field_25202[i].validate(reporter.makeChild(".term[" + i + "]"));
+			for (int i = 0; i < this.terms.length; i++) {
+				this.terms[i].validate(reporter.makeChild(".term[" + i + "]"));
 			}
 		}
 
 		@Override
-		public LootConditionType method_29325() {
+		public LootConditionType getType() {
 			throw new UnsupportedOperationException();
 		}
 	}

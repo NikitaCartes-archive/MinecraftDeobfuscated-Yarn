@@ -48,7 +48,7 @@ public class DebugStickItem extends Item {
 			this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, context.getStack());
 		}
 
-		return ActionResult.method_29236(world.isClient);
+		return ActionResult.success(world.isClient);
 	}
 
 	private void use(PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos, boolean update, ItemStack stack) {

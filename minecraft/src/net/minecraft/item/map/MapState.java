@@ -117,10 +117,7 @@ public class MapState extends PersistentState {
 
 	@Override
 	public CompoundTag toTag(CompoundTag tag) {
-		Identifier.field_25139
-			.encodeStart(NbtOps.INSTANCE, this.dimension.getValue())
-			.resultOrPartial(field_25019::error)
-			.ifPresent(tagx -> tag.put("dimension", tagx));
+		Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(tagx -> tag.put("dimension", tagx));
 		tag.putInt("xCenter", this.xCenter);
 		tag.putInt("zCenter", this.zCenter);
 		tag.putByte("scale", this.scale);

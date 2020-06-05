@@ -64,7 +64,7 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void remove(Entity entity, int i) {
+	public void remove(Entity entity, int section) {
 	}
 
 	@Nullable

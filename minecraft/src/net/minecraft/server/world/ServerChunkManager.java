@@ -357,7 +357,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.lastMobSpawningTime = l;
 		WorldProperties worldProperties = this.world.getLevelProperties();
 		boolean bl = this.world.isDebugWorld();
-		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
+		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.field_19390);
 		if (!bl) {
 			this.world.getProfiler().push("pollingChunks");
 			int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
@@ -447,11 +447,11 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void onLightUpdate(LightType type, ChunkSectionPos chunkSectionPos) {
+	public void onLightUpdate(LightType type, ChunkSectionPos pos) {
 		this.mainThreadExecutor.execute(() -> {
-			ChunkHolder chunkHolder = this.getChunkHolder(chunkSectionPos.toChunkPos().toLong());
+			ChunkHolder chunkHolder = this.getChunkHolder(pos.toChunkPos().toLong());
 			if (chunkHolder != null) {
-				chunkHolder.markForLightUpdate(type, chunkSectionPos.getSectionY());
+				chunkHolder.markForLightUpdate(type, pos.getSectionY());
 			}
 		});
 	}

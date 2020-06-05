@@ -66,7 +66,7 @@ public class FlowerPotBlock extends Block {
 				world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
 			}
 
-			return ActionResult.method_29236(world.isClient);
+			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.CONSUME;
 		}

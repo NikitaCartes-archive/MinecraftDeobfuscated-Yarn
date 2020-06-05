@@ -11,11 +11,11 @@ public class LanguageDefinition implements Language, Comparable<LanguageDefiniti
 	private final String region;
 	private final boolean rightToLeft;
 
-	public LanguageDefinition(String code, String name, String region, boolean bl) {
+	public LanguageDefinition(String code, String name, String region, boolean rightToLeft) {
 		this.code = code;
 		this.name = name;
 		this.region = region;
-		this.rightToLeft = bl;
+		this.rightToLeft = rightToLeft;
 	}
 
 	@Override

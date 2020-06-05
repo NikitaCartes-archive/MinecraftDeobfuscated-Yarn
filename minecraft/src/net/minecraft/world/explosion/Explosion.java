@@ -14,9 +14,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5360;
-import net.minecraft.class_5361;
-import net.minecraft.class_5362;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -58,7 +55,7 @@ public class Explosion {
 	private final Entity entity;
 	private final float power;
 	private final DamageSource damageSource;
-	private final class_5362 field_25400;
+	private final ExplosionBehavior behavior;
 	private final List<BlockPos> affectedBlocks = Lists.<BlockPos>newArrayList();
 	private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.<PlayerEntity, Vec3d>newHashMap();
 
@@ -92,7 +89,7 @@ public class Explosion {
 		World world,
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
-		@Nullable class_5362 arg,
+		@Nullable ExplosionBehavior explosionBehavior,
 		double d,
 		double e,
 		double f,
@@ -109,11 +106,11 @@ public class Explosion {
 		this.createFire = bl;
 		this.destructionType = destructionType;
 		this.damageSource = damageSource == null ? DamageSource.explosion(this) : damageSource;
-		this.field_25400 = arg == null ? this.method_29553(entity) : arg;
+		this.behavior = explosionBehavior == null ? this.chooseBehavior(entity) : explosionBehavior;
 	}
 
-	private class_5362 method_29553(@Nullable Entity entity) {
-		return (class_5362)(entity == null ? class_5360.field_25397 : new class_5361(entity));
+	private ExplosionBehavior chooseBehavior(@Nullable Entity entity) {
+		return (ExplosionBehavior)(entity == null ? DefaultExplosionBehavior.INSTANCE : new EntityExplosionBehavior(entity));
 	}
 
 	public static float getExposure(Vec3d source, Entity entity) {
@@ -174,12 +171,12 @@ public class Explosion {
 							BlockPos blockPos = new BlockPos(m, n, o);
 							BlockState blockState = this.world.getBlockState(blockPos);
 							FluidState fluidState = this.world.getFluidState(blockPos);
-							Optional<Float> optional = this.field_25400.method_29555(this, this.world, blockPos, blockState, fluidState);
+							Optional<Float> optional = this.behavior.getBlastResistance(this, this.world, blockPos, blockState, fluidState);
 							if (optional.isPresent()) {
 								h -= (optional.get() + 0.3F) * 0.3F;
 							}
 
-							if (h > 0.0F && this.field_25400.method_29554(this, this.world, blockPos, blockState, h)) {
+							if (h > 0.0F && this.behavior.canDestroyBlock(this, this.world, blockPos, blockState, h)) {
 								set.add(blockPos);
 							}
 

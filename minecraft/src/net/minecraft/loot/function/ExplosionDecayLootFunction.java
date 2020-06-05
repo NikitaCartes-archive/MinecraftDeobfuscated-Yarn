@@ -14,7 +14,7 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.EXPLOSION_DECAY;
 	}
 
@@ -43,7 +43,7 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 		return builder(ExplosionDecayLootFunction::new);
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<ExplosionDecayLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<ExplosionDecayLootFunction> {
 		public ExplosionDecayLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			return new ExplosionDecayLootFunction(lootConditions);
 		}

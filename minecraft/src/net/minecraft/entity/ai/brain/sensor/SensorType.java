@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
-import net.minecraft.class_5356;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -19,7 +18,7 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<GolemLastSeenSensor> GOLEM_LAST_SEEN = register("golem_last_seen", GolemLastSeenSensor::new);
 	public static final SensorType<PiglinSpecificSensor> PIGLIN_SPECIFIC_SENSOR = register("piglin_specific_sensor", PiglinSpecificSensor::new);
 	public static final SensorType<HoglinSpecificSensor> HOGLIN_SPECIFIC_SENSOR = register("hoglin_specific_sensor", HoglinSpecificSensor::new);
-	public static final SensorType<class_5356> NEAREST_ADULT = register("nearest_adult", class_5356::new);
+	public static final SensorType<NearestVisibleAdultSensor> NEAREST_ADULT = register("nearest_adult", NearestVisibleAdultSensor::new);
 	private final Supplier<U> factory;
 
 	private SensorType(Supplier<U> supplier) {

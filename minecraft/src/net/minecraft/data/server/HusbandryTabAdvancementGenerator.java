@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.BeeNestDestroyedCriterion;
 import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
@@ -123,7 +123,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.criterion("wheat", PlacedBlockCriterion.Conditions.block(Blocks.WHEAT))
 			.criterion("pumpkin_stem", PlacedBlockCriterion.Conditions.block(Blocks.PUMPKIN_STEM))
 			.criterion("melon_stem", PlacedBlockCriterion.Conditions.block(Blocks.MELON_STEM))
@@ -142,7 +142,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.criterion("bred", BredAnimalsCriterion.Conditions.any())
 			.build(consumer, "husbandry/breed_an_animal");
 		this.requireFoodItemsEaten(Advancement.Task.create())
@@ -204,7 +204,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.build(consumer, "husbandry/bred_all_animals");
 		Advancement advancement5 = this.requireListedFishCaught(Advancement.Task.create())
 			.parent(advancement)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.display(
 				Items.FISHING_ROD,
 				new TranslatableText("advancements.husbandry.fishy_business.title"),
@@ -218,7 +218,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.build(consumer, "husbandry/fishy_business");
 		this.requireListedFishBucketsFilled(Advancement.Task.create())
 			.parent(advancement5)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.display(
 				Items.PUFFERFISH_BUCKET,
 				new TranslatableText("advancements.husbandry.tactical_fishing.title"),

@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5365;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.ClientResourcePackProfile;
@@ -55,7 +54,7 @@ public class GameOptions {
 	public float entityDistanceScaling = 1.0F;
 	public int maxFps = 120;
 	public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
-	public class_5365 field_25444 = class_5365.field_25428;
+	public GraphicsMode graphicsMode = GraphicsMode.FANCY;
 	public AoOption ao = AoOption.MAX;
 	public List<String> resourcePacks = Lists.<String>newArrayList();
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
@@ -259,9 +258,9 @@ public class GameOptions {
 			CompoundTag compoundTag2 = this.update(compoundTag);
 			if (!compoundTag2.contains("graphicsMode") && compoundTag2.contains("fancyGraphics")) {
 				if ("true".equals(compoundTag2.getString("fancyGraphics"))) {
-					this.field_25444 = class_5365.field_25428;
+					this.graphicsMode = GraphicsMode.FANCY;
 				} else {
-					this.field_25444 = class_5365.field_25427;
+					this.graphicsMode = GraphicsMode.FAST;
 				}
 			}
 
@@ -385,7 +384,7 @@ public class GameOptions {
 					}
 
 					if ("graphicsMode".equals(string)) {
-						this.field_25444 = class_5365.method_29592(Integer.parseInt(string2));
+						this.graphicsMode = GraphicsMode.byId(Integer.parseInt(string2));
 					}
 
 					if ("tutorialStep".equals(string)) {
@@ -624,7 +623,7 @@ public class GameOptions {
 				printWriter.println("particles:" + this.particles.getId());
 				printWriter.println("maxFps:" + this.maxFps);
 				printWriter.println("difficulty:" + this.difficulty.getId());
-				printWriter.println("graphicsMode:" + this.field_25444.method_29591());
+				printWriter.println("graphicsMode:" + this.graphicsMode.getId());
 				printWriter.println("ao:" + this.ao.getValue());
 				printWriter.println("biomeBlendRadius:" + this.biomeBlendRadius);
 				switch (this.cloudRenderMode) {

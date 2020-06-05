@@ -32,7 +32,7 @@ public class VillagerTradeFix extends ChoiceFix {
 			OpticFinder<?> opticFinder5 = type2.findField("buyB");
 			OpticFinder<?> opticFinder6 = type2.findField("sell");
 			OpticFinder<Pair<String, String>> opticFinder7 = DSL.fieldFinder(
-				"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295())
+				"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType())
 			);
 			Function<Typed<?>, Typed<?>> function = typed -> this.fixPumpkinTrade(opticFinder7, typed);
 			return inputType.updateTyped(

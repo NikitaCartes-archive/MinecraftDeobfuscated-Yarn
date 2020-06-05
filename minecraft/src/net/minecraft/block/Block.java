@@ -283,7 +283,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public static void dropStack(World world, BlockPos pos, ItemStack stack) {
-		if (!world.isClient && !stack.isEmpty() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+		if (!world.isClient && !stack.isEmpty() && world.getGameRules().getBoolean(GameRules.field_19392)) {
 			float f = 0.5F;
 			double d = (double)(world.random.nextFloat() * 0.5F) + 0.25;
 			double e = (double)(world.random.nextFloat() * 0.5F) + 0.25;
@@ -295,7 +295,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	protected void dropExperience(World world, BlockPos pos, int size) {
-		if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+		if (!world.isClient && world.getGameRules().getBoolean(GameRules.field_19392)) {
 			while (size > 0) {
 				int i = ExperienceOrbEntity.roundToOrbSize(size);
 				size -= i;

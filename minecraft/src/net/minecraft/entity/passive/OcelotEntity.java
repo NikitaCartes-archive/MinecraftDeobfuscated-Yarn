@@ -187,7 +187,7 @@ public class OcelotEntity extends AnimalEntity {
 				}
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

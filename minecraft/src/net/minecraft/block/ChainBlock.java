@@ -17,11 +17,11 @@ import net.minecraft.world.WorldAccess;
 
 public class ChainBlock extends Block implements Waterloggable {
 	public static final VoxelShape SHAPE = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
-	public static final BooleanProperty field_24411 = Properties.WATERLOGGED;
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
 	public ChainBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(field_24411, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 
 	@Override
@@ -34,12 +34,12 @@ public class ChainBlock extends Block implements Waterloggable {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		boolean bl = fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
-		return super.getPlacementState(ctx).with(field_24411, Boolean.valueOf(bl));
+		return super.getPlacementState(ctx).with(WATERLOGGED, Boolean.valueOf(bl));
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		if ((Boolean)state.get(field_24411)) {
+		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
@@ -48,12 +48,12 @@ public class ChainBlock extends Block implements Waterloggable {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(field_24411);
+		builder.add(WATERLOGGED);
 	}
 
 	@Override
 	public FluidState getFluidState(BlockState state) {
-		return state.get(field_24411) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
 	@Override

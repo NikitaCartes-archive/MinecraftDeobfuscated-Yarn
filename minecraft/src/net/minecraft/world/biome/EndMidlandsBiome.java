@@ -22,7 +22,7 @@ public class EndMidlandsBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24703);
+		this.addStructureFeature(DefaultBiomeFeatures.END_CITY);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

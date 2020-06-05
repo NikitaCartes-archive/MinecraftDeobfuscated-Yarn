@@ -57,7 +57,7 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 	}
 
 	protected void updateColor(@Nullable BlockPos blockPos) {
-		int i = MinecraftClient.getInstance().getBlockColorMap().getColor(this.blockState, this.world, blockPos, 0);
+		int i = MinecraftClient.getInstance().getBlockColors().getColor(this.blockState, this.world, blockPos, 0);
 		this.colorRed *= (float)(i >> 16 & 0xFF) / 255.0F;
 		this.colorGreen *= (float)(i >> 8 & 0xFF) / 255.0F;
 		this.colorBlue *= (float)(i & 0xFF) / 255.0F;

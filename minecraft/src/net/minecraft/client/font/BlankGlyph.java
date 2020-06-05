@@ -9,11 +9,11 @@ import net.minecraft.util.Util;
 public enum BlankGlyph implements RenderableGlyph {
 	INSTANCE;
 
-	private static final NativeImage IMAGE = Util.make(new NativeImage(NativeImage.Format.RGBA, 5, 8, false), nativeImage -> {
+	private static final NativeImage IMAGE = Util.make(new NativeImage(NativeImage.Format.ABGR, 5, 8, false), nativeImage -> {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 5; j++) {
 				boolean bl = j == 0 || j + 1 == 5 || i == 0 || i + 1 == 8;
-				nativeImage.setPixelRgba(j, i, bl ? -1 : 0);
+				nativeImage.setPixelColor(j, i, bl ? -1 : 0);
 			}
 		}
 

@@ -128,7 +128,7 @@ public abstract class AbstractBlock {
 	 * Called in {@link net.minecraft.world.chunk.WorldChunk#setBlockState(BlockPos, BlockState, boolean)} if {@code newState} is different from {@code state}. Vanilla blocks perform removal cleanups here.
 	 */
 	@Deprecated
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (this.hasBlockEntity() && !state.isOf(newState.getBlock())) {
 			world.removeBlockEntity(pos);
 		}
@@ -590,8 +590,8 @@ public abstract class AbstractBlock {
 			this.getBlock().onBlockAdded(this.asBlockState(), world, pos, state, notify);
 		}
 
-		public void onStateReplaced(World world, BlockPos pos, BlockState state, boolean notify) {
-			this.getBlock().onStateReplaced(this.asBlockState(), world, pos, state, notify);
+		public void onStateReplaced(World world, BlockPos pos, BlockState state, boolean moved) {
+			this.getBlock().onStateReplaced(this.asBlockState(), world, pos, state, moved);
 		}
 
 		public void scheduledTick(ServerWorld world, BlockPos pos, Random random) {
@@ -938,7 +938,7 @@ public abstract class AbstractBlock {
 			return this;
 		}
 
-		public AbstractBlock.Settings method_29292() {
+		public AbstractBlock.Settings requiresTool() {
 			this.toolRequired = true;
 			return this;
 		}

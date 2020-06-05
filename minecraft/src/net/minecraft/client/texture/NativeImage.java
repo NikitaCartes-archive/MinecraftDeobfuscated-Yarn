@@ -47,7 +47,7 @@ public final class NativeImage implements AutoCloseable {
 	private final long sizeBytes;
 
 	public NativeImage(int width, int height, boolean useStb) {
-		this(NativeImage.Format.RGBA, width, height, useStb);
+		this(NativeImage.Format.ABGR, width, height, useStb);
 	}
 
 	public NativeImage(NativeImage.Format format, int width, int height, boolean useStb) {
@@ -77,7 +77,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public static NativeImage read(InputStream inputStream) throws IOException {
-		return read(NativeImage.Format.RGBA, inputStream);
+		return read(NativeImage.Format.ABGR, inputStream);
 	}
 
 	public static NativeImage read(@Nullable NativeImage.Format format, InputStream inputStream) throws IOException {
@@ -97,7 +97,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public static NativeImage read(ByteBuffer byteBuffer) throws IOException {
-		return read(NativeImage.Format.RGBA, byteBuffer);
+		return read(NativeImage.Format.ABGR, byteBuffer);
 	}
 
 	public static NativeImage read(@Nullable NativeImage.Format format, ByteBuffer byteBuffer) throws IOException {
@@ -177,8 +177,14 @@ public final class NativeImage implements AutoCloseable {
 		return this.format;
 	}
 
-	public int getPixelRgba(int x, int y) {
-		if (this.format != NativeImage.Format.RGBA) {
+	/**
+	 * Gets the color of a pixel on this native image.
+	 * The color returned by this method will be in a ABGR format.
+	 * 
+	 * <p>This is only supported when this native image's format is {@link NativeImage#Format#AGBR ABGR}.
+	 */
+	public int getPixelColor(int x, int y) {
+		if (this.format != NativeImage.Format.ABGR) {
 			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (x <= this.width && y <= this.height) {
 			this.checkAllocated();
@@ -189,8 +195,14 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void setPixelRgba(int x, int y, int color) {
-		if (this.format != NativeImage.Format.RGBA) {
+	/**
+	 * Sets the color of a pixel on this native image.
+	 * The color to be set using this method should be in a ABGR format.
+	 * 
+	 * <p>This is only supported when this native image's format is {@link NativeImage#Format#ABGR ABGR}
+	 */
+	public void setPixelColor(int x, int y, int color) {
+		if (this.format != NativeImage.Format.ABGR) {
 			throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", this.format));
 		} else if (x <= this.width && y <= this.height) {
 			this.checkAllocated();
@@ -214,7 +226,7 @@ public final class NativeImage implements AutoCloseable {
 
 	@Deprecated
 	public int[] makePixelArray() {
-		if (this.format != NativeImage.Format.RGBA) {
+		if (this.format != NativeImage.Format.ABGR) {
 			throw new UnsupportedOperationException("can only call makePixelArray for RGBA images.");
 		} else {
 			this.checkAllocated();
@@ -222,11 +234,11 @@ public final class NativeImage implements AutoCloseable {
 
 			for (int i = 0; i < this.getHeight(); i++) {
 				for (int j = 0; j < this.getWidth(); j++) {
-					int k = this.getPixelRgba(j, i);
-					int l = method_24030(k);
-					int m = method_24035(k);
-					int n = method_24034(k);
-					int o = method_24033(k);
+					int k = this.getPixelColor(j, i);
+					int l = getAlpha(k);
+					int m = getBlue(k);
+					int n = getGreen(k);
+					int o = getRed(k);
 					int p = l << 24 | o << 16 | n << 8 | m;
 					is[j + i * this.getWidth()] = p;
 				}
@@ -306,7 +318,7 @@ public final class NativeImage implements AutoCloseable {
 		if (removeAlpha && this.format.hasAlphaChannel()) {
 			for (int i = 0; i < this.getHeight(); i++) {
 				for (int j = 0; j < this.getWidth(); j++) {
-					this.setPixelRgba(j, i, this.getPixelRgba(j, i) | 255 << this.format.getAlphaChannelOffset());
+					this.setPixelColor(j, i, this.getPixelColor(j, i) | 255 << this.format.getAlphaChannelOffset());
 				}
 			}
 		}
@@ -471,7 +483,7 @@ public final class NativeImage implements AutoCloseable {
 	public void fillRect(int x, int y, int width, int height, int color) {
 		for (int i = y; i < y + height; i++) {
 			for (int j = x; j < x + width; j++) {
-				this.setPixelRgba(j, i, color);
+				this.setPixelColor(j, i, color);
 			}
 		}
 	}
@@ -481,8 +493,8 @@ public final class NativeImage implements AutoCloseable {
 			for (int j = 0; j < width; j++) {
 				int k = flipX ? width - 1 - j : j;
 				int l = flipY ? height - 1 - i : i;
-				int m = this.getPixelRgba(x + j, y + i);
-				this.setPixelRgba(x + translateX + k, y + translateY + l, m);
+				int m = this.getPixelColor(x + j, y + i);
+				this.setPixelColor(x + translateX + k, y + translateY + l, m);
 			}
 		}
 	}
@@ -543,30 +555,33 @@ public final class NativeImage implements AutoCloseable {
 		return var5;
 	}
 
-	public static int method_24030(int i) {
-		return i >> 24 & 0xFF;
+	public static int getAlpha(int color) {
+		return color >> 24 & 0xFF;
 	}
 
-	public static int method_24033(int i) {
-		return i >> 0 & 0xFF;
+	public static int getRed(int color) {
+		return color >> 0 & 0xFF;
 	}
 
-	public static int method_24034(int i) {
-		return i >> 8 & 0xFF;
+	public static int getGreen(int color) {
+		return color >> 8 & 0xFF;
 	}
 
-	public static int method_24035(int i) {
-		return i >> 16 & 0xFF;
+	public static int getBlue(int color) {
+		return color >> 16 & 0xFF;
 	}
 
-	public static int method_24031(int i, int j, int k, int l) {
-		return (i & 0xFF) << 24 | (j & 0xFF) << 16 | (k & 0xFF) << 8 | (l & 0xFF) << 0;
+	/**
+	 * The resulting color of this operation is stored as least to most significant bits.
+	 */
+	public static int getAbgrColor(int alpha, int blue, int green, int red) {
+		return (alpha & 0xFF) << 24 | (blue & 0xFF) << 16 | (green & 0xFF) << 8 | (red & 0xFF) << 0;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Format {
-		RGBA(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
-		RGB(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
+		ABGR(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
+		BGR(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
 		LUMINANCE_ALPHA(2, 6410, false, false, false, true, true, 255, 255, 255, 0, 8, true),
 		LUMINANCE(1, 6409, false, false, false, true, false, 0, 0, 0, 0, 255, true);
 
@@ -659,18 +674,18 @@ public final class NativeImage implements AutoCloseable {
 				case 2:
 					return LUMINANCE_ALPHA;
 				case 3:
-					return RGB;
+					return BGR;
 				case 4:
 				default:
-					return RGBA;
+					return ABGR;
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum GLFormat {
-		RGBA(6408),
-		RGB(6407),
+		ABGR(6408),
+		BGR(6407),
 		LUMINANCE_ALPHA(6410),
 		LUMINANCE(6409),
 		INTENSITY(32841);

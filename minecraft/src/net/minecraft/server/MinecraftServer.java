@@ -54,8 +54,6 @@ import javax.imageio.ImageIO;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5359;
-import net.minecraft.class_5363;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
@@ -65,6 +63,7 @@ import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ServerResourceManager;
@@ -109,6 +108,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.TickTimeTracker;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
@@ -129,7 +129,7 @@ import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.CatSpawner;
 import net.minecraft.world.gen.GeneratorOptions;
@@ -152,7 +152,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
-		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), class_5359.field_25393
+		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackSettings.SAFE_MODE
 	);
 	protected final LevelStorage.Session session;
 	protected final WorldSaveHandler field_24371;
@@ -167,7 +167,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final DataFixer dataFixer;
 	private String serverIp;
 	private int serverPort = -1;
-	protected final DimensionTracker.Modifiable dimensionTracker;
+	protected final RegistryTracker.Modifiable dimensionTracker;
 	private final Map<RegistryKey<World>, ServerWorld> worlds = Maps.<RegistryKey<World>, ServerWorld>newLinkedHashMap();
 	private PlayerManager playerManager;
 	private volatile boolean running = true;
@@ -220,11 +220,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final StructureManager structureManager;
 	protected final SaveProperties saveProperties;
 
-	public static <S extends MinecraftServer> S method_29740(Function<Thread, S> function) {
+	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
 		AtomicReference<S> atomicReference = new AtomicReference();
 		Thread thread = new Thread(() -> ((MinecraftServer)atomicReference.get()).method_29741(), "Server thread");
 		thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable));
-		S minecraftServer = (S)function.apply(thread);
+		S minecraftServer = (S)serverFactory.apply(thread);
 		atomicReference.set(minecraftServer);
 		thread.start();
 		return minecraftServer;
@@ -232,7 +232,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public MinecraftServer(
 		Thread thread,
-		DimensionTracker.Modifiable modifiable,
+		RegistryTracker.Modifiable modifiable,
 		LevelStorage.Session session,
 		SaveProperties saveProperties,
 		ResourcePackManager<ResourcePackProfile> resourcePackManager,
@@ -328,16 +328,16 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		List<Spawner> list = ImmutableList.of(
 			new PhantomSpawner(), new PillagerSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties)
 		);
-		SimpleRegistry<class_5363> simpleRegistry = generatorOptions.getDimensionMap();
-		class_5363 lv = simpleRegistry.get(class_5363.field_25412);
+		SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensionMap();
+		DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
 		ChunkGenerator chunkGenerator;
 		DimensionType dimensionType;
-		if (lv == null) {
-			dimensionType = DimensionType.method_29563();
-			chunkGenerator = GeneratorOptions.method_28604(new Random().nextLong());
+		if (dimensionOptions == null) {
+			dimensionType = DimensionType.getOverworldDimensionType();
+			chunkGenerator = GeneratorOptions.createOverworldGenerator(new Random().nextLong());
 		} else {
-			dimensionType = lv.method_29570();
-			chunkGenerator = lv.method_29571();
+			dimensionType = dimensionOptions.getDimensionType();
+			chunkGenerator = dimensionOptions.getChunkGenerator();
 		}
 
 		ServerWorld serverWorld = new ServerWorld(
@@ -387,16 +387,16 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.getBossBarManager().fromTag(this.saveProperties.getCustomBossEvents());
 		}
 
-		for (Entry<RegistryKey<class_5363>, class_5363> entry : simpleRegistry.method_29722()) {
-			RegistryKey<class_5363> registryKey = (RegistryKey<class_5363>)entry.getKey();
-			if (registryKey != class_5363.field_25412) {
+		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
+			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
+			if (registryKey != DimensionOptions.OVERWORLD) {
 				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.DIMENSION, registryKey.getValue());
-				DimensionType dimensionType2 = ((class_5363)entry.getValue()).method_29570();
+				DimensionType dimensionType2 = ((DimensionOptions)entry.getValue()).getDimensionType();
 				RegistryKey<DimensionType> registryKey3 = (RegistryKey<DimensionType>)this.dimensionTracker
-					.getRegistry()
+					.getDimensionTypeRegistry()
 					.getKey(dimensionType2)
 					.orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType2));
-				ChunkGenerator chunkGenerator2 = ((class_5363)entry.getValue()).method_29571();
+				ChunkGenerator chunkGenerator2 = ((DimensionOptions)entry.getValue()).getChunkGenerator();
 				UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
 				ServerWorld serverWorld2 = new ServerWorld(
 					this,
@@ -1338,16 +1338,16 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return completableFuture;
 	}
 
-	public static class_5359 method_29736(ResourcePackManager<ResourcePackProfile> resourcePackManager, class_5359 arg, boolean bl) {
+	public static DataPackSettings loadDataPacks(ResourcePackManager<ResourcePackProfile> resourcePackManager, DataPackSettings dataPackSettings, boolean safemode) {
 		resourcePackManager.scanPacks();
-		if (bl) {
+		if (safemode) {
 			resourcePackManager.setEnabledProfiles(Collections.singleton("vanilla"));
-			return new class_5359(ImmutableList.of("vanilla"), ImmutableList.of());
+			return new DataPackSettings(ImmutableList.of("vanilla"), ImmutableList.of());
 		} else {
 			Set<String> set = Sets.<String>newLinkedHashSet();
 
-			for (String string : arg.method_29547()) {
-				if (resourcePackManager.method_29207(string)) {
+			for (String string : dataPackSettings.getEnabled()) {
+				if (resourcePackManager.hasProfile(string)) {
 					set.add(string);
 				} else {
 					LOGGER.warn("Missing data pack {}", string);
@@ -1356,7 +1356,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			for (ResourcePackProfile resourcePackProfile : resourcePackManager.getProfiles()) {
 				String string2 = resourcePackProfile.getName();
-				if (!arg.method_29550().contains(string2) && !set.contains(string2)) {
+				if (!dataPackSettings.getDisabled().contains(string2) && !set.contains(string2)) {
 					LOGGER.info("Found new data pack {}, loading it automatically", string2);
 					set.add(string2);
 				}
@@ -1372,14 +1372,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	private static class_5359 method_29735(ResourcePackManager<?> resourcePackManager) {
-		Collection<String> collection = resourcePackManager.method_29210();
+	private static DataPackSettings method_29735(ResourcePackManager<?> resourcePackManager) {
+		Collection<String> collection = resourcePackManager.getEnabledNames();
 		List<String> list = ImmutableList.copyOf(collection);
-		List<String> list2 = (List<String>)resourcePackManager.method_29206()
+		List<String> list2 = (List<String>)resourcePackManager.getNames()
 			.stream()
 			.filter(string -> !collection.contains(string))
 			.collect(ImmutableList.toImmutableList());
-		return new class_5359(list, list2);
+		return new DataPackSettings(list, list2);
 	}
 
 	public void kickNonWhitelistedPlayers(ServerCommandSource source) {

@@ -13,9 +13,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5315;
-import net.minecraft.class_5359;
-import net.minecraft.class_5384;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
@@ -23,18 +20,21 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.level.storage.SaveVersionInfo;
 import net.minecraft.world.timer.Timer;
 import net.minecraft.world.timer.TimerCallbackSerializer;
 import org.apache.logging.log4j.LogManager;
@@ -175,7 +175,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		int i,
 		@Nullable CompoundTag compoundTag,
 		LevelInfo levelInfo,
-		class_5315 arg,
+		SaveVersionInfo saveVersionInfo,
 		GeneratorOptions generatorOptions,
 		Lifecycle lifecycle
 	) {
@@ -194,7 +194,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			dynamic.get("SpawnZ").asInt(0),
 			l,
 			dynamic.get("DayTime").asLong(l),
-			arg.method_29022(),
+			saveVersionInfo.getLevelFormatVersion(),
 			dynamic.get("clearWeatherTime").asInt(0),
 			dynamic.get("rainTime").asInt(0),
 			dynamic.get("raining").asBoolean(false),
@@ -220,18 +220,18 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public CompoundTag cloneWorldTag(DimensionTracker dimensionTracker, @Nullable CompoundTag compoundTag) {
+	public CompoundTag cloneWorldTag(RegistryTracker registryTracker, @Nullable CompoundTag compoundTag) {
 		this.loadPlayerData();
 		if (compoundTag == null) {
 			compoundTag = this.playerData;
 		}
 
 		CompoundTag compoundTag2 = new CompoundTag();
-		this.updateProperties(dimensionTracker, compoundTag2, compoundTag);
+		this.updateProperties(registryTracker, compoundTag2, compoundTag);
 		return compoundTag2;
 	}
 
-	private void updateProperties(DimensionTracker dimensionTracker, CompoundTag compoundTag, @Nullable CompoundTag compoundTag2) {
+	private void updateProperties(RegistryTracker registryTracker, CompoundTag compoundTag, @Nullable CompoundTag compoundTag2) {
 		ListTag listTag = new ListTag();
 		this.serverBrands.stream().map(StringTag::of).forEach(listTag::add);
 		compoundTag.put("ServerBrands", listTag);
@@ -242,9 +242,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		compoundTag3.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
 		compoundTag.put("Version", compoundTag3);
 		compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		class_5384<Tag> lv = class_5384.method_29771(NbtOps.INSTANCE, dimensionTracker);
+		RegistryReadingOps<Tag> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, registryTracker);
 		GeneratorOptions.CODEC
-			.encodeStart(lv, this.field_25425)
+			.encodeStart(registryReadingOps, this.field_25425)
 			.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error))
 			.ifPresent(tag -> compoundTag.put("WorldGenSettings", tag));
 		compoundTag.putInt("GameType", this.field_25030.getGameMode().getId());
@@ -273,7 +273,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			compoundTag.put("Player", compoundTag2);
 		}
 
-		class_5359.field_25394.encodeStart(NbtOps.INSTANCE, this.field_25030.method_29558()).result().ifPresent(tag -> compoundTag.put("DataPacks", tag));
+		DataPackSettings.CODEC.encodeStart(NbtOps.INSTANCE, this.field_25030.method_29558()).result().ifPresent(tag -> compoundTag.put("DataPacks", tag));
 		if (this.customBossEvents != null) {
 			compoundTag.put("CustomBossEvents", this.customBossEvents);
 		}
@@ -494,9 +494,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection crashReportSection) {
-		ServerWorldProperties.super.populateCrashReport(crashReportSection);
-		SaveProperties.super.populateCrashReport(crashReportSection);
+	public void populateCrashReport(CrashReportSection reportSection) {
+		ServerWorldProperties.super.populateCrashReport(reportSection);
+		SaveProperties.super.populateCrashReport(reportSection);
 	}
 
 	@Override
@@ -521,13 +521,13 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public class_5359 method_29589() {
+	public DataPackSettings method_29589() {
 		return this.field_25030.method_29558();
 	}
 
 	@Override
-	public void method_29590(class_5359 arg) {
-		this.field_25030 = this.field_25030.method_29557(arg);
+	public void method_29590(DataPackSettings dataPackSettings) {
+		this.field_25030 = this.field_25030.method_29557(dataPackSettings);
 	}
 
 	@Nullable

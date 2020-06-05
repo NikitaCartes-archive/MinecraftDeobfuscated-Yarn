@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5309;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
@@ -100,25 +99,25 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 		super(biomeSource, biomeSource2, chunkGeneratorType.getConfig(), l);
 		this.field_24778 = l;
 		this.field_24774 = chunkGeneratorType;
-		class_5309 lv = chunkGeneratorType.method_28559();
-		this.field_24779 = lv.method_28581();
-		this.verticalNoiseResolution = lv.method_28587() * 4;
-		this.horizontalNoiseResolution = lv.method_28586() * 4;
+		NoiseConfig noiseConfig = chunkGeneratorType.method_28559();
+		this.field_24779 = noiseConfig.getHeight();
+		this.verticalNoiseResolution = noiseConfig.getSizeVertical() * 4;
+		this.horizontalNoiseResolution = noiseConfig.getSizeHorizontal() * 4;
 		this.defaultBlock = chunkGeneratorType.getDefaultBlock();
 		this.defaultFluid = chunkGeneratorType.getDefaultFluid();
 		this.noiseSizeX = 16 / this.horizontalNoiseResolution;
-		this.noiseSizeY = lv.method_28581() / this.verticalNoiseResolution;
+		this.noiseSizeY = noiseConfig.getHeight() / this.verticalNoiseResolution;
 		this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
 		this.random = new ChunkRandom(l);
 		this.lowerInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.upperInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.interpolationNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-7, 0));
-		this.surfaceDepthNoise = (NoiseSampler)(lv.method_28590()
+		this.surfaceDepthNoise = (NoiseSampler)(noiseConfig.hasSimplexSurfaceNoise()
 			? new OctaveSimplexNoiseSampler(this.random, IntStream.rangeClosed(-3, 0))
 			: new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-3, 0)));
 		this.random.consume(2620);
 		this.field_24776 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
-		if (lv.method_28592()) {
+		if (noiseConfig.hasIslandNoiseOverride()) {
 			ChunkRandom chunkRandom = new ChunkRandom(l);
 			chunkRandom.consume(17292);
 			this.field_24777 = new SimplexNoiseSampler(chunkRandom);
@@ -191,7 +190,7 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 	}
 
 	private void sampleNoiseColumn(double[] buffer, int x, int z) {
-		class_5309 lv = this.field_24774.method_28559();
+		NoiseConfig noiseConfig = this.field_24774.method_28559();
 		double d;
 		double e;
 		if (this.field_24777 != null) {
@@ -216,7 +215,7 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 					float o = biome.getScale();
 					float p;
 					float q;
-					if (lv.method_28593() && n > 0.0F) {
+					if (noiseConfig.isAmplified() && n > 0.0F) {
 						p = 1.0F + n * 2.0F;
 						q = 1.0F + o * 4.0F;
 					} else {
@@ -240,19 +239,19 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 			e = 96.0 / w;
 		}
 
-		double y = 684.412 * lv.method_28583().method_28576();
-		double aa = 684.412 * lv.method_28583().method_28578();
-		double ab = y / lv.method_28583().method_28579();
-		double ac = aa / lv.method_28583().method_28580();
-		double v = (double)lv.method_28584().method_28594();
-		double w = (double)lv.method_28584().method_28596();
-		double ad = (double)lv.method_28584().method_28597();
-		double ae = (double)lv.method_28585().method_28594();
-		double af = (double)lv.method_28585().method_28596();
-		double ag = (double)lv.method_28585().method_28597();
-		double ah = lv.method_28591() ? this.method_28553(x, z) : 0.0;
-		double ai = lv.method_28588();
-		double aj = lv.method_28589();
+		double y = 684.412 * noiseConfig.getSampling().getXZScale();
+		double aa = 684.412 * noiseConfig.getSampling().getYScale();
+		double ab = y / noiseConfig.getSampling().getXZFactor();
+		double ac = aa / noiseConfig.getSampling().getYFactor();
+		double v = (double)noiseConfig.getTopSlide().getTarget();
+		double w = (double)noiseConfig.getTopSlide().getSize();
+		double ad = (double)noiseConfig.getTopSlide().getOffset();
+		double ae = (double)noiseConfig.getBottomSlide().getTarget();
+		double af = (double)noiseConfig.getBottomSlide().getSize();
+		double ag = (double)noiseConfig.getBottomSlide().getOffset();
+		double ah = noiseConfig.hasRandomDensityOffset() ? this.method_28553(x, z) : 0.0;
+		double ai = noiseConfig.getDensityFactor();
+		double aj = noiseConfig.getDensityOffset();
 
 		for (int ak = 0; ak <= this.noiseSizeY; ak++) {
 			double al = this.sampleNoise(x, ak, z, y, aa, ab, ac);

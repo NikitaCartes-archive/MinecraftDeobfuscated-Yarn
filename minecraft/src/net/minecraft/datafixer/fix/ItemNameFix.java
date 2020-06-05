@@ -21,7 +21,7 @@ public abstract class ItemNameFix extends DataFix {
 
 	@Override
 	public TypeRewriteRule makeRule() {
-		Type<Pair<String, String>> type = DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295());
+		Type<Pair<String, String>> type = DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType());
 		if (!Objects.equals(this.getInputSchema().getType(TypeReferences.ITEM_NAME), type)) {
 			throw new IllegalStateException("item name type is not what was expected.");
 		} else {

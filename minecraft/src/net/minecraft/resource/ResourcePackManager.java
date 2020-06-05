@@ -18,21 +18,21 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 	private final Set<ResourcePackProvider> providers;
 	private Map<String, T> profiles = ImmutableMap.of();
 	private List<T> enabled = ImmutableList.of();
-	private final ResourcePackProfile.class_5351<T> profileFactory;
+	private final ResourcePackProfile.Factory<T> profileFactory;
 
-	public ResourcePackManager(ResourcePackProfile.class_5351<T> arg, ResourcePackProvider... resourcePackProviders) {
-		this.profileFactory = arg;
-		this.providers = ImmutableSet.copyOf(resourcePackProviders);
+	public ResourcePackManager(ResourcePackProfile.Factory<T> profileFactory, ResourcePackProvider... providers) {
+		this.profileFactory = profileFactory;
+		this.providers = ImmutableSet.copyOf(providers);
 	}
 
 	public void scanPacks() {
 		List<String> list = (List<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList());
 		this.close();
-		this.profiles = this.method_29212();
-		this.enabled = this.method_29208(list);
+		this.profiles = this.providePackProfiles();
+		this.enabled = this.buildEnabledProfiles(list);
 	}
 
-	private Map<String, T> method_29212() {
+	private Map<String, T> providePackProfiles() {
 		Map<String, T> map = Maps.newTreeMap();
 
 		for (ResourcePackProvider resourcePackProvider : this.providers) {
@@ -45,11 +45,11 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 	}
 
 	public void setEnabledProfiles(Collection<String> enabled) {
-		this.enabled = this.method_29208(enabled);
+		this.enabled = this.buildEnabledProfiles(enabled);
 	}
 
-	private List<T> method_29208(Collection<String> collection) {
-		List<T> list = (List<T>)this.method_29209(collection).collect(Collectors.toList());
+	private List<T> buildEnabledProfiles(Collection<String> enabledNames) {
+		List<T> list = (List<T>)this.streamProfilesByName(enabledNames).collect(Collectors.toList());
 
 		for (T resourcePackProfile : this.profiles.values()) {
 			if (resourcePackProfile.isAlwaysEnabled() && !list.contains(resourcePackProfile)) {
@@ -60,11 +60,11 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		return ImmutableList.copyOf(list);
 	}
 
-	private Stream<T> method_29209(Collection<String> collection) {
-		return collection.stream().map(this.profiles::get).filter(Objects::nonNull);
+	private Stream<T> streamProfilesByName(Collection<String> names) {
+		return names.stream().map(this.profiles::get).filter(Objects::nonNull);
 	}
 
-	public Collection<String> method_29206() {
+	public Collection<String> getNames() {
 		return this.profiles.keySet();
 	}
 
@@ -72,7 +72,7 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		return this.profiles.values();
 	}
 
-	public Collection<String> method_29210() {
+	public Collection<String> getEnabledNames() {
 		return (Collection<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableSet.toImmutableSet());
 	}
 
@@ -89,11 +89,11 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		this.profiles.values().forEach(ResourcePackProfile::close);
 	}
 
-	public boolean method_29207(String string) {
-		return this.profiles.containsKey(string);
+	public boolean hasProfile(String name) {
+		return this.profiles.containsKey(name);
 	}
 
-	public List<ResourcePack> method_29211() {
+	public List<ResourcePack> createResourcePacks() {
 		return (List<ResourcePack>)this.enabled.stream().map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList());
 	}
 }

@@ -139,67 +139,67 @@ public class DefaultBiomeFeatures {
 	private static final BlockState NETHER_WART_BLOCK = Blocks.NETHER_WART_BLOCK.getDefaultState();
 	private static final BlockState CRIMSON_STEM = Blocks.CRIMSON_STEM.getDefaultState();
 	private static final BlockState SHROOMLIGHT = Blocks.SHROOMLIGHT.getDefaultState();
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24687 = StructureFeature.PILLAGER_OUTPOST
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> PILLAGER_OUTPOST = StructureFeature.PILLAGER_OUTPOST
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<MineshaftFeatureConfig, ? extends StructureFeature<MineshaftFeatureConfig>> field_24688 = StructureFeature.MINESHAFT
+	public static final ConfiguredStructureFeature<MineshaftFeatureConfig, ? extends StructureFeature<MineshaftFeatureConfig>> NORMAL_MINESHAFT = StructureFeature.MINESHAFT
 		.configure(new MineshaftFeatureConfig(0.004F, MineshaftFeature.Type.NORMAL));
-	public static final ConfiguredStructureFeature<MineshaftFeatureConfig, ? extends StructureFeature<MineshaftFeatureConfig>> field_24689 = StructureFeature.MINESHAFT
+	public static final ConfiguredStructureFeature<MineshaftFeatureConfig, ? extends StructureFeature<MineshaftFeatureConfig>> MESA_MINESHAFT = StructureFeature.MINESHAFT
 		.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.MESA));
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24690 = StructureFeature.MANSION
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> MANSION = StructureFeature.MANSION
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24691 = StructureFeature.JUNGLE_PYRAMID
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> JUNGLE_PYRAMID = StructureFeature.JUNGLE_PYRAMID
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24692 = StructureFeature.DESERT_PYRAMID
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> DESERT_PYRAMID = StructureFeature.DESERT_PYRAMID
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24693 = StructureFeature.IGLOO
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> IGLOO = StructureFeature.IGLOO
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<ShipwreckFeatureConfig, ? extends StructureFeature<ShipwreckFeatureConfig>> field_24694 = StructureFeature.SHIPWRECK
+	public static final ConfiguredStructureFeature<ShipwreckFeatureConfig, ? extends StructureFeature<ShipwreckFeatureConfig>> SUNKEN_SHIPWRECK = StructureFeature.SHIPWRECK
 		.configure(new ShipwreckFeatureConfig(false));
-	public static final ConfiguredStructureFeature<ShipwreckFeatureConfig, ? extends StructureFeature<ShipwreckFeatureConfig>> field_24695 = StructureFeature.SHIPWRECK
+	public static final ConfiguredStructureFeature<ShipwreckFeatureConfig, ? extends StructureFeature<ShipwreckFeatureConfig>> BEACHED_SHIPWRECK = StructureFeature.SHIPWRECK
 		.configure(new ShipwreckFeatureConfig(true));
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24696 = StructureFeature.SWAMP_HUT
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> SWAMP_HUT = StructureFeature.SWAMP_HUT
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24697 = StructureFeature.STRONGHOLD
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> STRONGHOLD = StructureFeature.STRONGHOLD
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24698 = StructureFeature.MONUMENT
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> MONUMENT = StructureFeature.MONUMENT
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<OceanRuinFeatureConfig, ? extends StructureFeature<OceanRuinFeatureConfig>> field_24699 = StructureFeature.OCEAN_RUIN
+	public static final ConfiguredStructureFeature<OceanRuinFeatureConfig, ? extends StructureFeature<OceanRuinFeatureConfig>> COLD_OCEAN_RUIN = StructureFeature.OCEAN_RUIN
 		.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
-	public static final ConfiguredStructureFeature<OceanRuinFeatureConfig, ? extends StructureFeature<OceanRuinFeatureConfig>> field_24700 = StructureFeature.OCEAN_RUIN
+	public static final ConfiguredStructureFeature<OceanRuinFeatureConfig, ? extends StructureFeature<OceanRuinFeatureConfig>> WARM_OCEAN_RUIN = StructureFeature.OCEAN_RUIN
 		.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3F, 0.9F));
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24701 = StructureFeature.FORTRESS
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> FORTRESS = StructureFeature.FORTRESS
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24702 = StructureFeature.NETHER_FOSSIL
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> NETHER_FOSSIL = StructureFeature.NETHER_FOSSIL
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> field_24703 = StructureFeature.END_CITY
+	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> END_CITY = StructureFeature.END_CITY
 		.configure(DefaultFeatureConfig.INSTANCE);
-	public static final ConfiguredStructureFeature<BuriedTreasureFeatureConfig, ? extends StructureFeature<BuriedTreasureFeatureConfig>> field_24704 = StructureFeature.BURIED_TREASURE
+	public static final ConfiguredStructureFeature<BuriedTreasureFeatureConfig, ? extends StructureFeature<BuriedTreasureFeatureConfig>> BURIED_TREASURE = StructureFeature.BURIED_TREASURE
 		.configure(new BuriedTreasureFeatureConfig(0.01F));
-	public static final ConfiguredStructureFeature<BastionRemnantFeatureConfig, ? extends StructureFeature<BastionRemnantFeatureConfig>> field_24705 = StructureFeature.BASTION_REMNANT
+	public static final ConfiguredStructureFeature<BastionRemnantFeatureConfig, ? extends StructureFeature<BastionRemnantFeatureConfig>> BASTION_REMNANT = StructureFeature.BASTION_REMNANT
 		.configure(new BastionRemnantFeatureConfig(BastionRemnantGenerator.START_POOLS_TO_SIZES));
-	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> field_24706 = StructureFeature.VILLAGE
+	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> PLAINS_VILLAGE = StructureFeature.VILLAGE
 		.configure(new StructurePoolFeatureConfig(new Identifier("village/plains/town_centers"), 6));
-	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> field_24707 = StructureFeature.VILLAGE
+	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> DESERT_VILLAGE = StructureFeature.VILLAGE
 		.configure(new StructurePoolFeatureConfig(new Identifier("village/desert/town_centers"), 6));
-	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> field_24708 = StructureFeature.VILLAGE
+	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> SAVANNA_VILLAGE = StructureFeature.VILLAGE
 		.configure(new StructurePoolFeatureConfig(new Identifier("village/savanna/town_centers"), 6));
-	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> field_24709 = StructureFeature.VILLAGE
+	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> SNOWY_VILLAGE = StructureFeature.VILLAGE
 		.configure(new StructurePoolFeatureConfig(new Identifier("village/snowy/town_centers"), 6));
-	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> field_24710 = StructureFeature.VILLAGE
+	public static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> TAIGA_VILLAGE = StructureFeature.VILLAGE
 		.configure(new StructurePoolFeatureConfig(new Identifier("village/taiga/town_centers"), 6));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> STANDARD_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> STANDARD_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> DESERT_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> DESERT_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.DESERT));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> JUNGLE_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> JUNGLE_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.JUNGLE));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> SWAMP_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> SWAMP_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.SWAMP));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> MOUNTAIN_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> MOUNTAIN_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.MOUNTAIN));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> OCEAN_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> OCEAN_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.OCEAN));
-	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> NETHER_CONFIGURED_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
+	public static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> NETHER_RUINED_PORTAL = StructureFeature.RUINED_PORTAL
 		.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER));
 	public static final TreeFeatureConfig OAK_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(OAK_LOG),
@@ -572,18 +572,18 @@ public class DefaultBiomeFeatures {
 	);
 
 	public static void method_28437(Biome biome) {
-		biome.addStructureFeature(field_24689);
-		biome.addStructureFeature(field_24697);
+		biome.addStructureFeature(MESA_MINESHAFT);
+		biome.addStructureFeature(STRONGHOLD);
 	}
 
 	public static void method_28440(Biome biome) {
-		biome.addStructureFeature(field_24688);
-		biome.addStructureFeature(field_24697);
+		biome.addStructureFeature(NORMAL_MINESHAFT);
+		biome.addStructureFeature(STRONGHOLD);
 	}
 
 	public static void method_28441(Biome biome) {
-		biome.addStructureFeature(field_24688);
-		biome.addStructureFeature(field_24694);
+		biome.addStructureFeature(NORMAL_MINESHAFT);
+		biome.addStructureFeature(SUNKEN_SHIPWRECK);
 	}
 
 	public static void addLandCarvers(Biome biome) {

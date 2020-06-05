@@ -72,49 +72,49 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 	}
 
 	@Nullable
-	public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> list, Random random) {
-		return this.method_24385(x, y, z, radius, 1, list, random, false);
+	public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> biomes, Random random) {
+		return this.locateBiome(x, y, z, radius, 1, biomes, random, false);
 	}
 
 	@Nullable
-	public BlockPos method_24385(int i, int j, int k, int l, int m, List<Biome> list, Random random, boolean bl) {
-		int n = i >> 2;
-		int o = k >> 2;
-		int p = l >> 2;
-		int q = j >> 2;
+	public BlockPos locateBiome(int x, int y, int z, int radius, int i, List<Biome> biomes, Random random, boolean bl) {
+		int j = x >> 2;
+		int k = z >> 2;
+		int l = radius >> 2;
+		int m = y >> 2;
 		BlockPos blockPos = null;
-		int r = 0;
-		int s = bl ? 0 : p;
-		int t = s;
+		int n = 0;
+		int o = bl ? 0 : l;
+		int p = o;
 
-		while (t <= p) {
-			for (int u = -t; u <= t; u += m) {
-				boolean bl2 = Math.abs(u) == t;
+		while (p <= l) {
+			for (int q = -p; q <= p; q += i) {
+				boolean bl2 = Math.abs(q) == p;
 
-				for (int v = -t; v <= t; v += m) {
+				for (int r = -p; r <= p; r += i) {
 					if (bl) {
-						boolean bl3 = Math.abs(v) == t;
+						boolean bl3 = Math.abs(r) == p;
 						if (!bl3 && !bl2) {
 							continue;
 						}
 					}
 
-					int w = n + v;
-					int x = o + u;
-					if (list.contains(this.getBiomeForNoiseGen(w, q, x))) {
-						if (blockPos == null || random.nextInt(r + 1) == 0) {
-							blockPos = new BlockPos(w << 2, j, x << 2);
+					int s = j + r;
+					int t = k + q;
+					if (biomes.contains(this.getBiomeForNoiseGen(s, m, t))) {
+						if (blockPos == null || random.nextInt(n + 1) == 0) {
+							blockPos = new BlockPos(s << 2, y, t << 2);
 							if (bl) {
 								return blockPos;
 							}
 						}
 
-						r++;
+						n++;
 					}
 				}
 			}
 
-			t += m;
+			p += i;
 		}
 
 		return blockPos;

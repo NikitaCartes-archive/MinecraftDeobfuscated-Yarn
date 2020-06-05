@@ -17,10 +17,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.class_5380;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Int2ObjectBiMap;
+import net.minecraft.util.dynamic.RegistryCodec;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +30,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	protected final Int2ObjectBiMap<T> indexedEntries = new Int2ObjectBiMap<>(256);
 	protected final BiMap<Identifier, T> entriesById = HashBiMap.create();
 	private final BiMap<RegistryKey<T>, T> entriesByKey = HashBiMap.create();
-	private final Set<RegistryKey<T>> field_25489 = Sets.newIdentityHashSet();
+	private final Set<RegistryKey<T>> loadedKeys = Sets.newIdentityHashSet();
 	protected Object[] randomEntries;
 	private int nextId;
 
@@ -39,17 +39,17 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public <V extends T> V set(int rawId, RegistryKey<T> registryKey, V entry) {
+	public <V extends T> V set(int rawId, RegistryKey<T> key, V entry) {
 		this.indexedEntries.put((T)entry, rawId);
-		Validate.notNull(registryKey);
+		Validate.notNull(key);
 		Validate.notNull(entry);
 		this.randomEntries = null;
-		if (this.entriesByKey.containsKey(registryKey)) {
-			LOGGER.debug("Adding duplicate key '{}' to registry", registryKey);
+		if (this.entriesByKey.containsKey(key)) {
+			LOGGER.debug("Adding duplicate key '{}' to registry", key);
 		}
 
-		this.entriesById.put(registryKey.getValue(), (T)entry);
-		this.entriesByKey.put(registryKey, (T)entry);
+		this.entriesById.put(key.getValue(), (T)entry);
+		this.entriesByKey.put(key, (T)entry);
 		if (this.nextId <= rawId) {
 			this.nextId = rawId + 1;
 		}
@@ -58,8 +58,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public <V extends T> V add(RegistryKey<T> registryKey, V entry) {
-		return this.set(this.nextId, registryKey, entry);
+	public <V extends T> V add(RegistryKey<T> key, V entry) {
+		return this.set(this.nextId, key, entry);
 	}
 
 	@Nullable
@@ -80,8 +80,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 	@Nullable
 	@Override
-	public T get(@Nullable RegistryKey<T> registryKey) {
-		return (T)this.entriesByKey.get(registryKey);
+	public T get(@Nullable RegistryKey<T> key) {
+		return (T)this.entriesByKey.get(key);
 	}
 
 	@Nullable
@@ -110,7 +110,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return Collections.unmodifiableSet(this.entriesById.keySet());
 	}
 
-	public Set<Entry<RegistryKey<T>, T>> method_29722() {
+	public Set<Entry<RegistryKey<T>, T>> getEntries() {
 		return Collections.unmodifiableMap(this.entriesByKey).entrySet();
 	}
 
@@ -138,16 +138,29 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return this.indexedEntries.containsId(id);
 	}
 
-	public boolean method_29723(RegistryKey<T> registryKey) {
-		return this.field_25489.contains(registryKey);
+	/**
+	 * Returns whether an element corresponding to the key is loaded externally,
+	 * such as from a decoder.
+	 * 
+	 * <p>When an element is loaded externally, it will be encoded when the
+	 * registry is encoded.</p>
+	 */
+	public boolean isLoaded(RegistryKey<T> key) {
+		return this.loadedKeys.contains(key);
 	}
 
-	public void method_29725(RegistryKey<T> registryKey) {
-		this.field_25489.add(registryKey);
+	/**
+	 * Marks an element corresponding to the key as loaded from a decoder.
+	 * 
+	 * <p>This will make the element being written by the encoder when the
+	 * registry is encoded.</p>
+	 */
+	public void markLoaded(RegistryKey<T> key) {
+		this.loadedKeys.add(key);
 	}
 
 	public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
-		return Codec.mapPair(Identifier.field_25139.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("key"), codec.fieldOf("element"))
+		return Codec.mapPair(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("key"), codec.fieldOf("element"))
 			.codec()
 			.listOf()
 			.xmap(list -> {
@@ -169,21 +182,21 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 			});
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> method_29721(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
-		return class_5380.method_29745(registryKey, lifecycle, codec);
+	public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> elementCodec) {
+		return RegistryCodec.of(registryRef, lifecycle, elementCodec);
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> method_29724(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
-		return Codec.unboundedMap(Identifier.field_25139.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue), codec).xmap(map -> {
-			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
-			map.forEach((registryKeyxx, object) -> {
-				simpleRegistry.set(simpleRegistry.nextId, registryKeyxx, object);
-				simpleRegistry.method_29725(registryKeyxx);
+	public static <T> Codec<SimpleRegistry<T>> createEmptyCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> elementCodec) {
+		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue), elementCodec).xmap(map -> {
+			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryRef, lifecycle);
+			map.forEach((registryKeyx, object) -> {
+				simpleRegistry.set(simpleRegistry.nextId, registryKeyx, object);
+				simpleRegistry.markLoaded(registryKeyx);
 			});
 			return simpleRegistry;
 		}, simpleRegistry -> {
 			Builder<RegistryKey<T>, T> builder = ImmutableMap.builder();
-			simpleRegistry.entriesByKey.entrySet().stream().filter(entry -> simpleRegistry.method_29723((RegistryKey<T>)entry.getKey())).forEach(builder::put);
+			simpleRegistry.entriesByKey.entrySet().stream().filter(entry -> simpleRegistry.isLoaded((RegistryKey<T>)entry.getKey())).forEach(builder::put);
 			return builder.build();
 		});
 	}

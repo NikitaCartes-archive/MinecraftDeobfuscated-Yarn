@@ -7,8 +7,8 @@ import net.minecraft.block.BlockState;
 public class EmeraldOreFeatureConfig implements FeatureConfig {
 	public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.field_24734.fieldOf("target").forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.target),
-					BlockState.field_24734.fieldOf("state").forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.state)
+					BlockState.CODEC.fieldOf("target").forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.target),
+					BlockState.CODEC.fieldOf("state").forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.state)
 				)
 				.apply(instance, EmeraldOreFeatureConfig::new)
 	);

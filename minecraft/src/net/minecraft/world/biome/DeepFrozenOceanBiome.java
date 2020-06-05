@@ -26,10 +26,10 @@ public class DeepFrozenOceanBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24699);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24698);
+		this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
+		this.addStructureFeature(DefaultBiomeFeatures.MONUMENT);
 		DefaultBiomeFeatures.method_28441(this);
-		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addIcebergs(this);

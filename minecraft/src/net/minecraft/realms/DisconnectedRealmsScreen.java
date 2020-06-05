@@ -4,13 +4,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -18,7 +18,7 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 	private final String title;
 	private final Text reason;
 	@Nullable
-	private List<class_5348> lines;
+	private List<StringRenderable> lines;
 	private final Screen parent;
 	private int textHeight;
 
@@ -59,8 +59,8 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 		this.drawCenteredString(matrices, this.textRenderer, this.title, this.width / 2, this.height / 2 - this.textHeight / 2 - 9 * 2, 11184810);
 		int i = this.height / 2 - this.textHeight / 2;
 		if (this.lines != null) {
-			for (class_5348 lv : this.lines) {
-				this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 16777215);
+			for (StringRenderable stringRenderable : this.lines) {
+				this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 16777215);
 				i += 9;
 			}
 		}

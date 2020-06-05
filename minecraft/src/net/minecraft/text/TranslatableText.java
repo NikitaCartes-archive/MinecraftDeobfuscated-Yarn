@@ -10,20 +10,19 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Language;
 
 public class TranslatableText extends BaseText implements ParsableText {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
-	private static final class_5348 LITERAL_PERCENT_SIGN = class_5348.method_29430("%");
-	private static final class_5348 NULL_ARGUMENT = class_5348.method_29430("null");
+	private static final StringRenderable LITERAL_PERCENT_SIGN = StringRenderable.plain("%");
+	private static final StringRenderable NULL_ARGUMENT = StringRenderable.plain("null");
 	private final String key;
 	private final Object[] args;
 	@Nullable
-	private Language field_25317;
-	private final List<class_5348> translations = Lists.<class_5348>newArrayList();
+	private Language languageCache;
+	private final List<StringRenderable> translations = Lists.<StringRenderable>newArrayList();
 	private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
 	public TranslatableText(String key) {
@@ -38,16 +37,16 @@ public class TranslatableText extends BaseText implements ParsableText {
 
 	private void updateTranslations() {
 		Language language = Language.getInstance();
-		if (language != this.field_25317) {
-			this.field_25317 = language;
+		if (language != this.languageCache) {
+			this.languageCache = language;
 			this.translations.clear();
 			String string = language.get(this.key);
 
 			try {
-				this.setTranslation(language.method_29426(string, true), language);
+				this.setTranslation(language.reorder(string, true), language);
 			} catch (TranslationException var4) {
 				this.translations.clear();
-				this.translations.add(class_5348.method_29430(string));
+				this.translations.add(StringRenderable.plain(string));
 			}
 		}
 	}
@@ -68,7 +67,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 						throw new IllegalArgumentException();
 					}
 
-					this.translations.add(class_5348.method_29430(string));
+					this.translations.add(StringRenderable.plain(string));
 				}
 
 				String string = matcher.group(2);
@@ -96,14 +95,14 @@ public class TranslatableText extends BaseText implements ParsableText {
 					throw new IllegalArgumentException();
 				}
 
-				this.translations.add(class_5348.method_29430(string4));
+				this.translations.add(StringRenderable.plain(string4));
 			}
 		} catch (IllegalArgumentException var12) {
 			throw new TranslationException(this, var12);
 		}
 	}
 
-	private class_5348 method_29434(int i, Language language) {
+	private StringRenderable method_29434(int i, Language language) {
 		if (i >= this.args.length) {
 			throw new TranslationException(this, i);
 		} else {
@@ -111,7 +110,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 			if (object instanceof Text) {
 				return (Text)object;
 			} else {
-				return object == null ? NULL_ARGUMENT : class_5348.method_29430(language.method_29426(object.toString(), false));
+				return object == null ? NULL_ARGUMENT : StringRenderable.plain(language.reorder(object.toString(), false));
 			}
 		}
 	}
@@ -122,11 +121,11 @@ public class TranslatableText extends BaseText implements ParsableText {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public <T> Optional<T> visitSelf(class_5348.StyledVisitor<T> visitor, Style style) {
+	public <T> Optional<T> visitSelf(StringRenderable.StyledVisitor<T> visitor, Style style) {
 		this.updateTranslations();
 
-		for (class_5348 lv : this.translations) {
-			Optional<T> optional = lv.visit(visitor, style);
+		for (StringRenderable stringRenderable : this.translations) {
+			Optional<T> optional = stringRenderable.visit(visitor, style);
 			if (optional.isPresent()) {
 				return optional;
 			}
@@ -136,11 +135,11 @@ public class TranslatableText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public <T> Optional<T> visitSelf(class_5348.Visitor<T> visitor) {
+	public <T> Optional<T> visitSelf(StringRenderable.Visitor<T> visitor) {
 		this.updateTranslations();
 
-		for (class_5348 lv : this.translations) {
-			Optional<T> optional = lv.visit(visitor);
+		for (StringRenderable stringRenderable : this.translations) {
+			Optional<T> optional = stringRenderable.visit(visitor);
 			if (optional.isPresent()) {
 				return optional;
 			}

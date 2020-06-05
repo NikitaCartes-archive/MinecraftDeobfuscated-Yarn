@@ -40,7 +40,7 @@ public class UnicodeTextureFont implements Font {
 				Resource resource = this.resourceManager.getResource(identifier);
 				Throwable var8 = null;
 
-				try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream())) {
+				try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream())) {
 					if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
 						for (int k = 0; k < 256; k++) {
 							byte b = sizes[j + k];
@@ -123,7 +123,7 @@ public class UnicodeTextureFont implements Font {
 
 			NativeImage var4;
 			try {
-				var4 = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
+				var4 = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
 			} catch (Throwable var14) {
 				var3 = var14;
 				throw var14;

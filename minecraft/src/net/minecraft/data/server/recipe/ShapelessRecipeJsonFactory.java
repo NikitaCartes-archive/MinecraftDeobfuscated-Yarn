@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
@@ -99,7 +99,7 @@ public class ShapelessRecipeJsonFactory {
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
-			.criteriaMerger(CriteriaMerger.OR);
+			.criteriaMerger(CriterionMerger.OR);
 		exporter.accept(
 			new ShapelessRecipeJsonFactory.ShapelessRecipeJsonProvider(
 				recipeId,

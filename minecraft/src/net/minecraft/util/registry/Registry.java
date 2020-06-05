@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5363;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -66,6 +65,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -139,7 +139,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE_KEY = createRegistryKey("loot_condition_type");
 	public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = createRegistryKey("dimension_type");
 	public static final RegistryKey<Registry<World>> DIMENSION = createRegistryKey("dimension");
-	public static final RegistryKey<Registry<class_5363>> field_25490 = createRegistryKey("dimension");
+	public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_OPTIONS = createRegistryKey("dimension");
 	public static final Registry<SoundEvent> SOUND_EVENT = create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
 	public static final DefaultedRegistry<Fluid> FLUID = create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
 	public static final Registry<StatusEffect> STATUS_EFFECT = create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
@@ -265,7 +265,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 					return DataResult.success(objectx, this.lifecycle);
 				}
 			}).map(objectx -> Pair.of(objectx, dynamicOps.empty()))
-			: Identifier.field_25139
+			: Identifier.CODEC
 				.decode(dynamicOps, object)
 				.addLifecycle(this.lifecycle)
 				.flatMap(
@@ -300,7 +300,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public abstract int getRawId(@Nullable T entry);
 
 	@Nullable
-	public abstract T get(@Nullable RegistryKey<T> registryKey);
+	public abstract T get(@Nullable RegistryKey<T> key);
 
 	@Nullable
 	public abstract T get(@Nullable Identifier id);

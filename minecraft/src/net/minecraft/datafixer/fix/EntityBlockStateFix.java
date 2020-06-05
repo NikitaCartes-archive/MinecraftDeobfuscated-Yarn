@@ -292,7 +292,7 @@ public class EntityBlockStateFix extends DataFix {
 		Function<Typed<?>, Typed<?>> function = typed -> this.mergeIdAndData(typed, "DisplayTile", "DisplayData", "DisplayState");
 		Function<Typed<?>, Typed<?>> function2 = typed -> this.mergeIdAndData(typed, "inTile", "inData", "inBlockState");
 		Type<Pair<Either<Pair<String, Either<Integer, String>>, Unit>, Dynamic<?>>> type = DSL.and(
-			DSL.optional(DSL.field("inTile", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.method_28295())))),
+			DSL.optional(DSL.field("inTile", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType())))),
 			DSL.remainderType()
 		);
 		Function<Typed<?>, Typed<?>> function3 = typed -> typed.update(type.finder(), DSL.remainderType(), Pair::getSecond);
@@ -321,7 +321,7 @@ public class EntityBlockStateFix extends DataFix {
 
 	private Typed<?> method_15695(Typed<?> typed) {
 		Type<Either<Pair<String, Either<Integer, String>>, Unit>> type = DSL.optional(
-			DSL.field("Block", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.method_28295())))
+			DSL.field("Block", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType())))
 		);
 		Type<Either<Pair<String, Dynamic<?>>, Unit>> type2 = DSL.optional(
 			DSL.field("BlockState", DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType()))
@@ -339,7 +339,7 @@ public class EntityBlockStateFix extends DataFix {
 
 	private Typed<?> mergeIdAndData(Typed<?> typed, String oldIdKey, String oldDataKey, String newStateKey) {
 		Type<Pair<String, Either<Integer, String>>> type = DSL.field(
-			oldIdKey, DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.method_28295()))
+			oldIdKey, DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType()))
 		);
 		Type<Pair<String, Dynamic<?>>> type2 = DSL.field(newStateKey, DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType()));
 		Dynamic<?> dynamic = typed.getOrCreate(DSL.remainderFinder());

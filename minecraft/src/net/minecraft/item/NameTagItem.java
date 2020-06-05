@@ -23,7 +23,7 @@ public class NameTagItem extends Item {
 				stack.decrement(1);
 			}
 
-			return ActionResult.method_29236(user.world.isClient);
+			return ActionResult.success(user.world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}

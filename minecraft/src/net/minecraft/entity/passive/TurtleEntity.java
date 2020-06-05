@@ -302,7 +302,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Override
 	protected void onGrowUp() {
 		super.onGrowUp();
-		if (!this.isBaby() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+		if (!this.isBaby() && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
 			this.dropItem(Items.SCUTE, 1);
 		}
 	}
@@ -531,7 +531,7 @@ public class TurtleEntity extends AnimalEntity {
 			this.animal.resetLoveTicks();
 			this.mate.resetLoveTicks();
 			Random random = this.animal.getRandom();
-			if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+			if (this.world.getGameRules().getBoolean(GameRules.field_19391)) {
 				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), random.nextInt(7) + 1));
 			}
 		}

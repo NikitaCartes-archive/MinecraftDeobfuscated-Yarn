@@ -21,7 +21,7 @@ public final class SnowyTaigaMountainsBiome extends Biome {
 				.parent("snowy_taiga")
 		);
 		DefaultBiomeFeatures.method_28440(this);
-		this.addStructureFeature(DefaultBiomeFeatures.MOUNTAIN_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.MOUNTAIN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

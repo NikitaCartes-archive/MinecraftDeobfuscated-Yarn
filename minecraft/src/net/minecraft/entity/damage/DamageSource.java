@@ -74,14 +74,14 @@ public class DamageSource {
 		return new ProjectileDamageSource("fireworks", firework, attacker).setExplosive();
 	}
 
-	public static DamageSource explosiveProjectile(AbstractFireballEntity abstractFireballEntity, @Nullable Entity attacker) {
+	public static DamageSource fireball(AbstractFireballEntity fireball, @Nullable Entity attacker) {
 		return attacker == null
-			? new ProjectileDamageSource("onFire", abstractFireballEntity, abstractFireballEntity).setFire().setProjectile()
-			: new ProjectileDamageSource("fireball", abstractFireballEntity, attacker).setFire().setProjectile();
+			? new ProjectileDamageSource("onFire", fireball, fireball).setFire().setProjectile()
+			: new ProjectileDamageSource("fireball", fireball, attacker).setFire().setProjectile();
 	}
 
-	public static DamageSource method_29238(WitherSkullEntity witherSkullEntity, Entity entity) {
-		return new ProjectileDamageSource("witherSkull", witherSkullEntity, entity).setProjectile();
+	public static DamageSource witherSkull(WitherSkullEntity witherSkull, Entity attacker) {
+		return new ProjectileDamageSource("witherSkull", witherSkull, attacker).setProjectile();
 	}
 
 	public static DamageSource thrownProjectile(Entity projectile, @Nullable Entity attacker) {
@@ -106,8 +106,8 @@ public class DamageSource {
 			: new DamageSource("explosion").setScaledWithDifficulty().setExplosive();
 	}
 
-	public static DamageSource netherBed() {
-		return new NetherBedDamageSource();
+	public static DamageSource badRespawnPoint() {
+		return new BadRespawnPointDamageSource();
 	}
 
 	public String toString() {

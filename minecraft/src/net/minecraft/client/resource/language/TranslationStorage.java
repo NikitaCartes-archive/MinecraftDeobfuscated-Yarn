@@ -26,18 +26,18 @@ public class TranslationStorage extends Language {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern field_25288 = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z])");
 	private final Map<String, String> translations;
-	private final boolean field_25289;
+	private final boolean rightToLeft;
 
-	private TranslationStorage(Map<String, String> map, boolean bl) {
-		this.translations = map;
-		this.field_25289 = bl;
+	private TranslationStorage(Map<String, String> translations, boolean rightToLeft) {
+		this.translations = translations;
+		this.rightToLeft = rightToLeft;
 	}
 
-	public static TranslationStorage load(ResourceManager resourceManager, List<LanguageDefinition> list) {
+	public static TranslationStorage load(ResourceManager resourceManager, List<LanguageDefinition> definitions) {
 		Map<String, String> map = Maps.<String, String>newHashMap();
 		boolean bl = false;
 
-		for (LanguageDefinition languageDefinition : list) {
+		for (LanguageDefinition languageDefinition : definitions) {
 			bl |= languageDefinition.isRightToLeft();
 			String string = String.format("lang/%s.json", languageDefinition.getCode());
 
@@ -55,14 +55,14 @@ public class TranslationStorage extends Language {
 		return new TranslationStorage(ImmutableMap.copyOf(map), bl);
 	}
 
-	private static void load(List<Resource> list, Map<String, String> map) {
-		for (Resource resource : list) {
+	private static void load(List<Resource> resources, Map<String, String> translationMap) {
+		for (Resource resource : resources) {
 			try {
 				InputStream inputStream = resource.getInputStream();
 				Throwable var5 = null;
 
 				try {
-					Language.method_29425(inputStream, map::put);
+					Language.load(inputStream, translationMap::put);
 				} catch (Throwable var15) {
 					var5 = var15;
 					throw var15;
@@ -86,8 +86,8 @@ public class TranslationStorage extends Language {
 	}
 
 	@Override
-	public String get(String string) {
-		return (String)this.translations.getOrDefault(string, string);
+	public String get(String key) {
+		return (String)this.translations.getOrDefault(key, key);
 	}
 
 	@Override
@@ -96,20 +96,20 @@ public class TranslationStorage extends Language {
 	}
 
 	@Override
-	public boolean method_29428() {
-		return this.field_25289;
+	public boolean isRightToLeft() {
+		return this.rightToLeft;
 	}
 
 	@Override
-	public String method_29426(String string, boolean bl) {
-		if (!this.field_25289) {
+	public String reorder(String string, boolean allowTokens) {
+		if (!this.rightToLeft) {
 			return string;
 		} else {
-			if (bl && string.indexOf(37) != -1) {
+			if (allowTokens && string.indexOf(37) != -1) {
 				string = method_29389(string);
 			}
 
-			return this.method_29390(string);
+			return this.reorder(string);
 		}
 	}
 
@@ -130,7 +130,7 @@ public class TranslationStorage extends Language {
 		return stringBuffer.toString();
 	}
 
-	private String method_29390(String string) {
+	private String reorder(String string) {
 		try {
 			Bidi bidi = new Bidi(new ArabicShaping(8).shape(string), 127);
 			bidi.setReorderingMode(0);

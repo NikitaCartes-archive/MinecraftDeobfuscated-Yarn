@@ -242,7 +242,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 				RenderSystem.scalef(0.42F, 0.42F, 1.0F);
 				RecipeAlternativesWidget.this.client
 					.getItemRenderer()
-					.renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], k, l);
+					.renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], k, l);
 				RenderSystem.popMatrix();
 			}
 

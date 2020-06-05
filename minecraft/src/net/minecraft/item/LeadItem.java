@@ -26,7 +26,7 @@ public class LeadItem extends Item {
 				attachHeldMobsToBlock(playerEntity, world, blockPos);
 			}
 
-			return ActionResult.method_29236(world.isClient);
+			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}

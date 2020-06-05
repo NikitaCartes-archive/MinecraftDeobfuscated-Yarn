@@ -20,9 +20,9 @@ public final class DesertHillsBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24692);
+		this.addStructureFeature(DefaultBiomeFeatures.DESERT_PYRAMID);
 		DefaultBiomeFeatures.method_28440(this);
-		this.addStructureFeature(DefaultBiomeFeatures.DESERT_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.DESERT_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDesertLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

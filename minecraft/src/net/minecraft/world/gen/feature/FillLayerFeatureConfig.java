@@ -8,7 +8,7 @@ public class FillLayerFeatureConfig implements FeatureConfig {
 	public static final Codec<FillLayerFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.INT.fieldOf("height").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.height),
-					BlockState.field_24734.fieldOf("state").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.state)
+					BlockState.CODEC.fieldOf("state").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.state)
 				)
 				.apply(instance, FillLayerFeatureConfig::new)
 	);

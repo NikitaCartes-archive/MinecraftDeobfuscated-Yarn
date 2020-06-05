@@ -82,36 +82,36 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
-		if (!this.chunks.isInRadius(i, j)) {
-			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", i, j);
+	public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int i, boolean bl) {
+		if (!this.chunks.isInRadius(x, z)) {
+			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", x, z);
 			return null;
 		} else {
-			int l = this.chunks.getIndex(i, j);
-			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
-			if (!bl && positionEquals(worldChunk, i, j)) {
-				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
+			int j = this.chunks.getIndex(x, z);
+			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(j);
+			if (!bl && positionEquals(worldChunk, x, z)) {
+				worldChunk.loadFromPacket(biomes, buf, tag, i);
 			} else {
-				if (biomeArray == null) {
-					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", i, j);
+				if (biomes == null) {
+					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", x, z);
 					return null;
 				}
 
-				worldChunk = new WorldChunk(this.world, new ChunkPos(i, j), biomeArray);
-				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
-				this.chunks.set(l, worldChunk);
+				worldChunk = new WorldChunk(this.world, new ChunkPos(x, z), biomes);
+				worldChunk.loadFromPacket(biomes, buf, tag, i);
+				this.chunks.set(j, worldChunk);
 			}
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();
-			lightingProvider.setLightEnabled(new ChunkPos(i, j), true);
+			lightingProvider.setLightEnabled(new ChunkPos(x, z), true);
 
-			for (int m = 0; m < chunkSections.length; m++) {
-				ChunkSection chunkSection = chunkSections[m];
-				lightingProvider.updateSectionStatus(ChunkSectionPos.from(i, m, j), ChunkSection.isEmpty(chunkSection));
+			for (int k = 0; k < chunkSections.length; k++) {
+				ChunkSection chunkSection = chunkSections[k];
+				lightingProvider.updateSectionStatus(ChunkSectionPos.from(x, k, z), ChunkSection.isEmpty(chunkSection));
 			}
 
-			this.world.resetChunkColor(i, j);
+			this.world.resetChunkColor(x, z);
 			return worldChunk;
 		}
 	}
@@ -160,8 +160,8 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void onLightUpdate(LightType type, ChunkSectionPos chunkSectionPos) {
-		MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionY(), chunkSectionPos.getSectionZ());
+	public void onLightUpdate(LightType type, ChunkSectionPos pos) {
+		MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(pos.getSectionX(), pos.getSectionY(), pos.getSectionZ());
 	}
 
 	@Override

@@ -47,10 +47,10 @@ public class CrimsonForestBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.4F, 0.0F, 0.0F, 0.0F, 0.0F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.NETHER_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.NETHER_RUINED_PORTAL);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
-		this.addStructureFeature(DefaultBiomeFeatures.field_24701);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24705);
+		this.addStructureFeature(DefaultBiomeFeatures.FORTRESS);
+		this.addStructureFeature(DefaultBiomeFeatures.BASTION_REMNANT);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.SPRING_FEATURE

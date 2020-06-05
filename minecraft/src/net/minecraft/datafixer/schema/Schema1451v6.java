@@ -40,7 +40,7 @@ public class Schema1451v6 extends IdentifierNormalizingSchema {
 							"minecraft:killed_by",
 							DSL.compoundList(TypeReferences.ENTITY_NAME.in(schema), DSL.constType(DSL.intType())),
 							"minecraft:custom",
-							DSL.compoundList(DSL.constType(method_28295()), DSL.constType(DSL.intType()))
+							DSL.compoundList(DSL.constType(getIdentifierType()), DSL.constType(DSL.intType()))
 						)
 					)
 				)

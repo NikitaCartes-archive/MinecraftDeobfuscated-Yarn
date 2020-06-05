@@ -6,7 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 
 public class SimpleBlockStateProvider extends BlockStateProvider {
-	public static final Codec<SimpleBlockStateProvider> field_24945 = BlockState.field_24734
+	public static final Codec<SimpleBlockStateProvider> field_24945 = BlockState.CODEC
 		.fieldOf("state")
 		.<SimpleBlockStateProvider>xmap(SimpleBlockStateProvider::new, simpleBlockStateProvider -> simpleBlockStateProvider.state)
 		.codec();

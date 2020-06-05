@@ -127,7 +127,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				String string = this.languageDefinition.toString();
 				LanguageOptionsScreen.this.textRenderer
-					.method_29342(
+					.drawWithShadow(
 						matrices,
 						string,
 						(float)(LanguageSelectionListWidget.this.width / 2 - LanguageOptionsScreen.this.textRenderer.getWidth(string) / 2),

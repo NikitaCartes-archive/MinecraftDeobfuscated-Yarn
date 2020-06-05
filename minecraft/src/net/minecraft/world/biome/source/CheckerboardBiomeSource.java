@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5324;
+import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
@@ -14,7 +14,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	public static final Codec<CheckerboardBiomeSource> field_24715 = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Registry.BIOME.listOf().fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
-					class_5324.method_29229(0, 62).fieldOf("scale").withDefault(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)
+					NumberCodecs.rangedInt(0, 62).fieldOf("scale").withDefault(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)
 				)
 				.apply(instance, CheckerboardBiomeSource::new)
 	);

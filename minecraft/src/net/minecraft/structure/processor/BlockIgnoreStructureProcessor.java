@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public class BlockIgnoreStructureProcessor extends StructureProcessor {
-	public static final Codec<BlockIgnoreStructureProcessor> field_24998 = BlockState.field_24734
+	public static final Codec<BlockIgnoreStructureProcessor> field_24998 = BlockState.CODEC
 		.xmap(AbstractBlock.AbstractBlockState::getBlock, Block::getDefaultState)
 		.listOf()
 		.fieldOf("blocks")

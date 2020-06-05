@@ -148,7 +148,7 @@ public class Schema704 extends Schema {
 	@Override
 	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
 		super.registerTypes(schema, entityTypes, blockEntityTypes);
-		schema.registerType(false, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", IdentifierNormalizingSchema.method_28295(), blockEntityTypes));
+		schema.registerType(false, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", IdentifierNormalizingSchema.getIdentifierType(), blockEntityTypes));
 		schema.registerType(
 			true,
 			TypeReferences.ITEM_STACK,

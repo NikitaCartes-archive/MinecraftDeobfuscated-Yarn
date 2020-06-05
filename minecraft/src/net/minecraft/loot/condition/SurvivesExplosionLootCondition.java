@@ -9,7 +9,7 @@ import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 
 public class SurvivesExplosionLootCondition implements LootCondition {
 	private static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
@@ -18,7 +18,7 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 	}
 
 	@Override
-	public LootConditionType method_29325() {
+	public LootConditionType getType() {
 		return LootConditionTypes.SURVIVES_EXPLOSION;
 	}
 
@@ -42,7 +42,7 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 		return () -> INSTANCE;
 	}
 
-	public static class Factory implements JsonSerializable<SurvivesExplosionLootCondition> {
+	public static class Serializer implements JsonSerializer<SurvivesExplosionLootCondition> {
 		public void toJson(JsonObject jsonObject, SurvivesExplosionLootCondition survivesExplosionLootCondition, JsonSerializationContext jsonSerializationContext) {
 		}
 

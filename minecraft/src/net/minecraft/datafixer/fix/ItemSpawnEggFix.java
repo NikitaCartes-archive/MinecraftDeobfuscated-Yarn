@@ -95,7 +95,7 @@ public class ItemSpawnEggFix extends DataFix {
 		Schema schema = this.getInputSchema();
 		Type<?> type = schema.getType(TypeReferences.ITEM_STACK);
 		OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder(
-			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.method_28295())
+			"id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType())
 		);
 		OpticFinder<String> opticFinder2 = DSL.fieldFinder("id", DSL.string());
 		OpticFinder<?> opticFinder3 = type.findField("tag");

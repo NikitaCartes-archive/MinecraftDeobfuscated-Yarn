@@ -23,7 +23,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.SET_LOOT_TABLE;
 	}
 
@@ -58,7 +58,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetLootTableLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetLootTableLootFunction> {
 		public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("name", setLootTableLootFunction.id.toString());

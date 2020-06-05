@@ -26,8 +26,8 @@ public class ColdOceanBiome extends Biome {
 				.parent(null)
 		);
 		DefaultBiomeFeatures.method_28441(this);
-		this.addStructureFeature(DefaultBiomeFeatures.field_24699);
-		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
+		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

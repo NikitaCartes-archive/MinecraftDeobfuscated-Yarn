@@ -15,7 +15,7 @@ public class ForgetAngryAtTargetTask<E extends MobEntity> extends Task<E> {
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
 		LookTargetUtil.getEntity(mobEntity, MemoryModuleType.ANGRY_AT).ifPresent(livingEntity -> {
-			if (livingEntity.method_29504() && (livingEntity.getType() != EntityType.PLAYER || serverWorld.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS))) {
+			if (livingEntity.isDead() && (livingEntity.getType() != EntityType.PLAYER || serverWorld.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS))) {
 				mobEntity.getBrain().forget(MemoryModuleType.ANGRY_AT);
 			}
 		});

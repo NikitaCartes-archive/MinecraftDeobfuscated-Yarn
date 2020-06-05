@@ -105,14 +105,14 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof CampfireBlockEntity) {
 				ItemScatterer.spawn(world, pos, ((CampfireBlockEntity)blockEntity).getItemsBeingCooked());
 			}
 
-			super.onStateReplaced(state, world, pos, newState, notify);
+			super.onStateReplaced(state, world, pos, newState, moved);
 		}
 	}
 
@@ -224,7 +224,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		if (!world.isClient && projectile.isOnFire()) {
 			Entity entity = projectile.getOwner();
-			boolean bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+			boolean bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388);
 			if (bl && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
 				BlockPos blockPos = hit.getBlockPos();
 				world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), 11);

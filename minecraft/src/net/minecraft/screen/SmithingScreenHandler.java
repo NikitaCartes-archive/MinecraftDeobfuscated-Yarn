@@ -3,20 +3,20 @@ package net.minecraft.screen;
 import java.util.List;
 import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
-import net.minecraft.class_5357;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.SmithingRecipe;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SmithingScreenHandler extends ForgingScreenHandler {
 	private final World field_25385;
 	@Nullable
-	private class_5357 field_25386;
+	private SmithingRecipe field_25386;
 
 	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory) {
 		this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
@@ -53,11 +53,11 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	public void updateResult() {
-		List<class_5357> list = this.field_25385.getRecipeManager().getAllMatches(RecipeType.SMITHING, this.input, this.field_25385);
+		List<SmithingRecipe> list = this.field_25385.getRecipeManager().getAllMatches(RecipeType.SMITHING, this.input, this.field_25385);
 		if (list.isEmpty()) {
 			this.output.setStack(0, ItemStack.EMPTY);
 		} else {
-			this.field_25386 = (class_5357)list.get(0);
+			this.field_25386 = (SmithingRecipe)list.get(0);
 			ItemStack itemStack = this.field_25386.craft(this.input);
 			this.output.setStack(0, itemStack);
 		}

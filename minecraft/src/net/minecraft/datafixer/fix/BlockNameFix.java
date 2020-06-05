@@ -23,7 +23,7 @@ public abstract class BlockNameFix extends DataFix {
 	@Override
 	public TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.BLOCK_NAME);
-		Type<Pair<String, String>> type2 = DSL.named(TypeReferences.BLOCK_NAME.typeName(), IdentifierNormalizingSchema.method_28295());
+		Type<Pair<String, String>> type2 = DSL.named(TypeReferences.BLOCK_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType());
 		if (!Objects.equals(type, type2)) {
 			throw new IllegalStateException("block type is not what was expected.");
 		} else {

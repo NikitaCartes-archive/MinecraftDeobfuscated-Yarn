@@ -22,6 +22,6 @@ public class HuntFinishTask<E extends PiglinEntity> extends Task<E> {
 
 	private boolean hasKilledHoglin(E piglin) {
 		LivingEntity livingEntity = (LivingEntity)piglin.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
-		return livingEntity.getType() == EntityType.HOGLIN && livingEntity.method_29504();
+		return livingEntity.getType() == EntityType.HOGLIN && livingEntity.isDead();
 	}
 }

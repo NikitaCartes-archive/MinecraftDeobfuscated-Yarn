@@ -30,7 +30,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SinglePoolElement extends StructurePoolElement {
-	private static final Codec<Either<Identifier, Structure>> field_24951 = Codec.of(SinglePoolElement::method_28877, Identifier.field_25139.map(Either::left));
+	private static final Codec<Either<Identifier, Structure>> field_24951 = Codec.of(SinglePoolElement::method_28877, Identifier.CODEC.map(Either::left));
 	public static final Codec<SinglePoolElement> field_24952 = RecordCodecBuilder.create(
 		instance -> instance.group(method_28882(), method_28880(), method_28883()).apply(instance, SinglePoolElement::new)
 	);
@@ -41,7 +41,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		Optional<Identifier> optional = either.left();
 		return !optional.isPresent()
 			? DataResult.error("Can not serialize a runtime pool element")
-			: Identifier.field_25139.encode((Identifier)optional.get(), dynamicOps, object);
+			: Identifier.CODEC.encode((Identifier)optional.get(), dynamicOps, object);
 	}
 
 	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, List<StructureProcessor>> method_28880() {

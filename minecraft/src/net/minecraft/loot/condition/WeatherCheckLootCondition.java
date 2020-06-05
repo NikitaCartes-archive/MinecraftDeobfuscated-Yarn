@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 
 public class WeatherCheckLootCondition implements LootCondition {
 	@Nullable
@@ -21,7 +21,7 @@ public class WeatherCheckLootCondition implements LootCondition {
 	}
 
 	@Override
-	public LootConditionType method_29325() {
+	public LootConditionType getType() {
 		return LootConditionTypes.WEATHER_CHECK;
 	}
 
@@ -30,7 +30,7 @@ public class WeatherCheckLootCondition implements LootCondition {
 		return this.raining != null && this.raining != serverWorld.isRaining() ? false : this.thundering == null || this.thundering == serverWorld.isThundering();
 	}
 
-	public static class Factory implements JsonSerializable<WeatherCheckLootCondition> {
+	public static class Serializer implements JsonSerializer<WeatherCheckLootCondition> {
 		public void toJson(JsonObject jsonObject, WeatherCheckLootCondition weatherCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("raining", weatherCheckLootCondition.raining);
 			jsonObject.addProperty("thundering", weatherCheckLootCondition.thundering);

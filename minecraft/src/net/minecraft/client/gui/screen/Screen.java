@@ -14,7 +14,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -33,6 +32,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -122,16 +122,16 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
 	}
 
-	public void renderTooltip(MatrixStack matrices, class_5348 arg, int x, int y) {
-		this.renderTooltip(matrices, Arrays.asList(arg), x, y);
+	public void renderTooltip(MatrixStack matrices, StringRenderable stringRenderable, int x, int y) {
+		this.renderTooltip(matrices, Arrays.asList(stringRenderable), x, y);
 	}
 
-	public void renderTooltip(MatrixStack matrices, List<? extends class_5348> lines, int x, int y) {
+	public void renderTooltip(MatrixStack matrices, List<? extends StringRenderable> lines, int x, int y) {
 		if (!lines.isEmpty()) {
 			int i = 0;
 
-			for (class_5348 lv : lines) {
-				int j = this.textRenderer.getWidth(lv);
+			for (StringRenderable stringRenderable : lines) {
+				int j = this.textRenderer.getWidth(stringRenderable);
 				if (j > i) {
 					i = j;
 				}
@@ -184,9 +184,9 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 			matrices.translate(0.0, 0.0, 400.0);
 
 			for (int r = 0; r < lines.size(); r++) {
-				class_5348 lv2 = (class_5348)lines.get(r);
-				if (lv2 != null) {
-					this.textRenderer.draw(lv2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
+				StringRenderable stringRenderable2 = (StringRenderable)lines.get(r);
+				if (stringRenderable2 != null) {
+					this.textRenderer.draw(stringRenderable2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
 				}
 
 				if (r == 0) {

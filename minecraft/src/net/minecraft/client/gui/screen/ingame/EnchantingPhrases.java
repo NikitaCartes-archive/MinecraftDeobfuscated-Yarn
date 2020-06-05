@@ -3,9 +3,9 @@ package net.minecraft.client.gui.screen.ingame;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -88,7 +88,7 @@ public class EnchantingPhrases {
 		return INSTANCE;
 	}
 
-	public class_5348 generatePhrase(TextRenderer fontRenderer, int width) {
+	public StringRenderable generatePhrase(TextRenderer fontRenderer, int width) {
 		StringBuilder stringBuilder = new StringBuilder();
 		int i = this.random.nextInt(2) + 3;
 

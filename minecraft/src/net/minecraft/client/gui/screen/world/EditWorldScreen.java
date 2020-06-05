@@ -19,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5384;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -34,8 +33,9 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -124,13 +124,13 @@ public class EditWorldScreen extends Screen {
 				20,
 				new TranslatableText("selectWorld.edit.export_worldgen_settings"),
 				buttonWidgetx -> {
-					DimensionTracker.Modifiable modifiable = DimensionTracker.create();
+					RegistryTracker.Modifiable modifiable = RegistryTracker.create();
 
 					DataResult<String> dataResult2;
-					try (MinecraftClient.class_5367 lv = this.client
-							.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::method_29599, false, this.field_23777)) {
-						DynamicOps<JsonElement> dynamicOps = class_5384.method_29771(JsonOps.INSTANCE, modifiable);
-						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, lv.method_29614().getGeneratorOptions());
+					try (MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client
+							.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, this.field_23777)) {
+						DynamicOps<JsonElement> dynamicOps = RegistryReadingOps.of(JsonOps.INSTANCE, modifiable);
+						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, integratedResourceManager.getSaveProperties().getGeneratorOptions());
 						dataResult2 = dataResult.flatMap(jsonElement -> {
 							Path path = this.field_23777.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
 
@@ -215,6 +215,30 @@ public class EditWorldScreen extends Screen {
 			SystemToast.addWorldAccessFailureToast(this.client, this.field_23777.getDirectoryName());
 			this.callback.accept(true);
 		}
+	}
+
+	public static boolean method_29784(LevelStorage levelStorage, String string) {
+		LevelStorage.Session session;
+		try {
+			session = levelStorage.createSession(string);
+		} catch (IOException var13) {
+			field_23776.warn("Failed to read level {} data", string, var13);
+			SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), string);
+			return false;
+		}
+
+		boolean iOException;
+		try {
+			iOException = backupLevel(session);
+		} finally {
+			try {
+				session.close();
+			} catch (IOException var11) {
+				field_23776.warn("Failed to unlock access to level {}", string, var11);
+			}
+		}
+
+		return iOException;
 	}
 
 	public static boolean backupLevel(LevelStorage.Session session) {

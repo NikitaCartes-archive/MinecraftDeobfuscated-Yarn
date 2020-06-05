@@ -34,7 +34,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5362;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -125,6 +124,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -334,7 +334,7 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		}
 
 		this.calculateAmbientDarkness();
-		this.method_29203();
+		this.tickTime();
 		profiler.swap("chunkSource");
 		this.getChunkManager().tick(shouldKeepTicking);
 		profiler.swap("tickPending");
@@ -417,7 +417,7 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		profiler.pop();
 	}
 
-	protected void method_29203() {
+	protected void tickTime() {
 		if (this.field_25143) {
 			long l = this.properties.getTime() + 1L;
 			this.field_24456.method_29034(l);
@@ -454,7 +454,7 @@ public class ServerWorld extends World implements ServerWorldAccess {
 			BlockPos blockPos = this.getSurface(this.getRandomPosInChunk(i, 0, j, 15));
 			if (this.hasRain(blockPos)) {
 				LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
-				boolean bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
+				boolean bl2 = this.getGameRules().getBoolean(GameRules.field_19390) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
 				if (bl2) {
 					SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
 					skeletonHorseEntity.setTrapped(true);
@@ -984,7 +984,7 @@ public class ServerWorld extends World implements ServerWorldAccess {
 	public Explosion createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
-		@Nullable class_5362 arg,
+		@Nullable ExplosionBehavior explosionBehavior,
 		double d,
 		double e,
 		double f,
@@ -992,7 +992,7 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		boolean bl,
 		Explosion.DestructionType destructionType
 	) {
-		Explosion explosion = new Explosion(this, entity, damageSource, arg, d, e, f, g, bl, destructionType);
+		Explosion explosion = new Explosion(this, entity, damageSource, explosionBehavior, d, e, f, g, bl, destructionType);
 		explosion.collectBlocksAndDamageEntities();
 		explosion.affectWorld(false);
 		if (destructionType == Explosion.DestructionType.NONE) {
@@ -1109,18 +1109,18 @@ public class ServerWorld extends World implements ServerWorldAccess {
 	}
 
 	@Nullable
-	public BlockPos locateStructure(StructureFeature<?> structureFeature, BlockPos blockPos, int i, boolean bl) {
+	public BlockPos locateStructure(StructureFeature<?> feature, BlockPos pos, int radius, boolean skipExistingChunks) {
 		return !this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()
 			? null
-			: this.getChunkManager().getChunkGenerator().locateStructure(this, structureFeature, blockPos, i, bl);
+			: this.getChunkManager().getChunkGenerator().locateStructure(this, feature, pos, radius, skipExistingChunks);
 	}
 
 	@Nullable
-	public BlockPos locateBiome(Biome biome, BlockPos blockPos, int i, int j) {
+	public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int i) {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
-			.method_24385(blockPos.getX(), blockPos.getY(), blockPos.getZ(), i, j, ImmutableList.of(biome), this.random, true);
+			.locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, i, ImmutableList.of(biome), this.random, true);
 	}
 
 	@Override
@@ -1158,12 +1158,12 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		return this.getServer().getWorld(World.OVERWORLD).getPersistentStateManager().<IdCountsState>getOrCreate(IdCountsState::new, "idcounts").getNextMapId();
 	}
 
-	public void setSpawnPos(BlockPos blockPos) {
+	public void setSpawnPos(BlockPos pos) {
 		ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
-		this.properties.setSpawnPos(blockPos);
+		this.properties.setSpawnPos(pos);
 		this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
-		this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
-		this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(blockPos));
+		this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
+		this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos));
 	}
 
 	public BlockPos getSpawnPos() {

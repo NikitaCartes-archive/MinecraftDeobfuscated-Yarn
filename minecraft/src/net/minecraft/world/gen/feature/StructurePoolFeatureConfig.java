@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 public class StructurePoolFeatureConfig implements FeatureConfig {
 	public static final Codec<StructurePoolFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Identifier.field_25139.fieldOf("start_pool").forGetter(StructurePoolFeatureConfig::getStartPool),
+					Identifier.CODEC.fieldOf("start_pool").forGetter(StructurePoolFeatureConfig::getStartPool),
 					Codec.INT.fieldOf("size").forGetter(StructurePoolFeatureConfig::getSize)
 				)
 				.apply(instance, StructurePoolFeatureConfig::new)

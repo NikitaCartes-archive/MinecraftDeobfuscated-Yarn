@@ -34,7 +34,7 @@ public class FlintAndSteelItem extends Item {
 				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 			}
 
-			return ActionResult.method_29236(worldAccess.isClient());
+			return ActionResult.success(worldAccess.isClient());
 		} else {
 			BlockPos blockPos2 = blockPos.offset(context.getSide());
 			if (canIgnite(worldAccess.getBlockState(blockPos2), worldAccess, blockPos2)) {
@@ -47,7 +47,7 @@ public class FlintAndSteelItem extends Item {
 					itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 				}
 
-				return ActionResult.method_29236(worldAccess.isClient());
+				return ActionResult.success(worldAccess.isClient());
 			} else {
 				return ActionResult.FAIL;
 			}

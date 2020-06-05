@@ -156,7 +156,7 @@ public class HorseEntity extends HorseBaseEntity {
 
 	@Nullable
 	@Override
-	protected SoundEvent method_28368() {
+	protected SoundEvent getEatSound() {
 		return SoundEvents.ENTITY_HORSE_EAT;
 	}
 
@@ -178,7 +178,7 @@ public class HorseEntity extends HorseBaseEntity {
 		if (!this.isBaby()) {
 			if (this.isTame() && player.shouldCancelInteraction()) {
 				this.openInventory(player);
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 
 			if (this.hasPassengers()) {
@@ -193,7 +193,7 @@ public class HorseEntity extends HorseBaseEntity {
 					itemStack.decrement(1);
 				}
 
-				return bl ? ActionResult.method_29236(this.world.isClient) : ActionResult.CONSUME;
+				return bl ? ActionResult.success(this.world.isClient) : ActionResult.CONSUME;
 			}
 
 			ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
@@ -203,13 +203,13 @@ public class HorseEntity extends HorseBaseEntity {
 
 			if (!this.isTame()) {
 				this.playAngrySound();
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 
 			boolean bl2 = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
 			if (this.canEquip(itemStack) || bl2) {
 				this.openInventory(player);
-				return ActionResult.method_29236(this.world.isClient);
+				return ActionResult.success(this.world.isClient);
 			}
 		}
 
@@ -217,7 +217,7 @@ public class HorseEntity extends HorseBaseEntity {
 			return super.interactMob(player, hand);
 		} else {
 			this.putPlayerOnBack(player);
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		}
 	}
 

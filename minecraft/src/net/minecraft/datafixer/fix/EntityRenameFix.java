@@ -23,7 +23,7 @@ public abstract class EntityRenameFix extends DataFix {
 	public TypeRewriteRule makeRule() {
 		TaggedChoiceType<String> taggedChoiceType = (TaggedChoiceType<String>)this.getInputSchema().findChoiceType(TypeReferences.ENTITY);
 		TaggedChoiceType<String> taggedChoiceType2 = (TaggedChoiceType<String>)this.getOutputSchema().findChoiceType(TypeReferences.ENTITY);
-		Type<Pair<String, String>> type = DSL.named(TypeReferences.ENTITY_NAME.typeName(), IdentifierNormalizingSchema.method_28295());
+		Type<Pair<String, String>> type = DSL.named(TypeReferences.ENTITY_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType());
 		if (!Objects.equals(this.getOutputSchema().getType(TypeReferences.ENTITY_NAME), type)) {
 			throw new IllegalStateException("Entity name type is not what was expected.");
 		} else {

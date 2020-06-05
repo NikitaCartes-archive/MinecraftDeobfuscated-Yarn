@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -40,13 +39,14 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -217,8 +217,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				if (this.level.isLocked()) {
 					DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 					if (bl) {
-						class_5348 lv = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-						this.screen.setTooltip(this.client.textRenderer.wrapLines(lv, 175));
+						StringRenderable stringRenderable = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+						this.screen.setTooltip(this.client.textRenderer.wrapLines(stringRenderable, 175));
 					}
 				} else if (this.level.isDifferentVersion()) {
 					DrawableHelper.drawTexture(matrices, x, y, 32.0F, (float)j, 32, 32, 256, 256);
@@ -379,14 +379,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		public void recreate() {
-			DimensionTracker.Modifiable modifiable = DimensionTracker.create();
+			RegistryTracker.Modifiable modifiable = RegistryTracker.create();
 
 			try (
 				LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-				MinecraftClient.class_5367 lv = this.client.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::method_29599, false, session);
+				MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client
+					.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);
 			) {
-				LevelInfo levelInfo = lv.method_29614().getLevelInfo();
-				GeneratorOptions generatorOptions = lv.method_29614().getGeneratorOptions();
+				LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
+				GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
 				Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
 				if (generatorOptions.isLegacyCustomizedType()) {
 					this.client
@@ -418,7 +419,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private void start() {
 			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
-				this.client.method_29606(this.level.getName());
+				this.client.startIntegratedServer(this.level.getName());
 			}
 		}
 

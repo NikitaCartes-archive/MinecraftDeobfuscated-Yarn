@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5352;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -34,16 +33,16 @@ public class ResourcePackProfile implements AutoCloseable {
 	private final ResourcePackProfile.InsertionPosition position;
 	private final boolean alwaysEnabled;
 	private final boolean pinned;
-	private final class_5352 field_25346;
+	private final ResourcePackSource source;
 
 	@Nullable
 	public static <T extends ResourcePackProfile> T of(
 		String name,
 		boolean alwaysEnabled,
 		Supplier<ResourcePack> packFactory,
-		ResourcePackProfile.class_5351<T> containerFactory,
+		ResourcePackProfile.Factory<T> containerFactory,
 		ResourcePackProfile.InsertionPosition insertionPosition,
-		class_5352 arg
+		ResourcePackSource resourcePackSource
 	) {
 		try (ResourcePack resourcePack = (ResourcePack)packFactory.get()) {
 			PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
@@ -55,7 +54,7 @@ public class ResourcePackProfile implements AutoCloseable {
 			}
 
 			if (packResourceMetadata != null) {
-				return containerFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition, arg);
+				return containerFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
 			}
 
 			LOGGER.warn("Couldn't find pack meta for pack {}", name);
@@ -75,7 +74,7 @@ public class ResourcePackProfile implements AutoCloseable {
 		ResourcePackCompatibility compatibility,
 		ResourcePackProfile.InsertionPosition direction,
 		boolean pinned,
-		class_5352 arg
+		ResourcePackSource source
 	) {
 		this.name = name;
 		this.packGetter = packFactory;
@@ -85,7 +84,7 @@ public class ResourcePackProfile implements AutoCloseable {
 		this.alwaysEnabled = alwaysEnabled;
 		this.position = direction;
 		this.pinned = pinned;
-		this.field_25346 = arg;
+		this.source = source;
 	}
 
 	public ResourcePackProfile(
@@ -95,7 +94,7 @@ public class ResourcePackProfile implements AutoCloseable {
 		ResourcePack pack,
 		PackResourceMetadata metadata,
 		ResourcePackProfile.InsertionPosition direction,
-		class_5352 arg
+		ResourcePackSource source
 	) {
 		this(
 			name,
@@ -106,7 +105,7 @@ public class ResourcePackProfile implements AutoCloseable {
 			ResourcePackCompatibility.from(metadata.getPackFormat()),
 			direction,
 			false,
-			arg
+			source
 		);
 	}
 
@@ -121,7 +120,7 @@ public class ResourcePackProfile implements AutoCloseable {
 	}
 
 	public Text getInformationText(boolean enabled) {
-		return Texts.bracketed(this.field_25346.decorate(new LiteralText(this.name)))
+		return Texts.bracketed(this.source.decorate(new LiteralText(this.name)))
 			.styled(
 				style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED)
 						.withInsertion(StringArgumentType.escapeIfRequired(this.name))
@@ -154,8 +153,8 @@ public class ResourcePackProfile implements AutoCloseable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class_5352 method_29483() {
-		return this.field_25346;
+	public ResourcePackSource getSource() {
+		return this.source;
 	}
 
 	public boolean equals(Object o) {
@@ -174,6 +173,20 @@ public class ResourcePackProfile implements AutoCloseable {
 	}
 
 	public void close() {
+	}
+
+	@FunctionalInterface
+	public interface Factory<T extends ResourcePackProfile> {
+		@Nullable
+		T create(
+			String name,
+			boolean alwaysEnabled,
+			Supplier<ResourcePack> packFactory,
+			ResourcePack pack,
+			PackResourceMetadata metadata,
+			ResourcePackProfile.InsertionPosition initialPosition,
+			ResourcePackSource source
+		);
 	}
 
 	public static enum InsertionPosition {
@@ -210,19 +223,5 @@ public class ResourcePackProfile implements AutoCloseable {
 		public ResourcePackProfile.InsertionPosition inverse() {
 			return this == TOP ? BOTTOM : TOP;
 		}
-	}
-
-	@FunctionalInterface
-	public interface class_5351<T extends ResourcePackProfile> {
-		@Nullable
-		T create(
-			String string,
-			boolean bl,
-			Supplier<ResourcePack> supplier,
-			ResourcePack resourcePack,
-			PackResourceMetadata packResourceMetadata,
-			ResourcePackProfile.InsertionPosition insertionPosition,
-			class_5352 arg
-		);
 	}
 }

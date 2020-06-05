@@ -39,9 +39,9 @@ public class RecipeToast implements Toast {
 			ItemStack itemStack = recipe.getRecipeKindIcon();
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(0.6F, 0.6F, 1.0F);
-			manager.getGame().getItemRenderer().method_27953(itemStack, 3, 3);
+			manager.getGame().getItemRenderer().renderInGui(itemStack, 3, 3);
 			RenderSystem.popMatrix();
-			manager.getGame().getItemRenderer().method_27953(recipe.getOutput(), 8, 8);
+			manager.getGame().getItemRenderer().renderInGui(recipe.getOutput(), 8, 8);
 			return startTime - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		}
 	}

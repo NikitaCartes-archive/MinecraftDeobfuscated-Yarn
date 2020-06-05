@@ -9,13 +9,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -150,22 +150,22 @@ public class ChatHud extends DrawableHelper {
 		LOGGER.info("[CHAT] {}", message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
 	}
 
-	private void addMessage(class_5348 arg, int messageId, int timestamp, boolean bl) {
+	private void addMessage(StringRenderable stringRenderable, int messageId, int timestamp, boolean bl) {
 		if (messageId != 0) {
 			this.removeMessage(messageId);
 		}
 
 		int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
-		List<class_5348> list = ChatMessages.breakRenderedChatMessageLines(arg, i, this.client.textRenderer);
+		List<StringRenderable> list = ChatMessages.breakRenderedChatMessageLines(stringRenderable, i, this.client.textRenderer);
 		boolean bl2 = this.isChatFocused();
 
-		for (class_5348 lv : list) {
+		for (StringRenderable stringRenderable2 : list) {
 			if (bl2 && this.scrolledLines > 0) {
 				this.hasUnreadNewMessages = true;
 				this.scroll(1.0);
 			}
 
-			this.visibleMessages.add(0, new ChatHudLine(timestamp, lv, messageId));
+			this.visibleMessages.add(0, new ChatHudLine(timestamp, stringRenderable2, messageId));
 		}
 
 		while (this.visibleMessages.size() > 100) {
@@ -173,7 +173,7 @@ public class ChatHud extends DrawableHelper {
 		}
 
 		if (!bl) {
-			this.messages.add(0, new ChatHudLine(timestamp, arg, messageId));
+			this.messages.add(0, new ChatHudLine(timestamp, stringRenderable, messageId));
 
 			while (this.messages.size() > 100) {
 				this.messages.remove(this.messages.size() - 1);

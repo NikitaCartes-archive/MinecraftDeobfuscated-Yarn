@@ -78,7 +78,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	@Override
-	public boolean method_29503() {
+	public boolean hurtByWater() {
 		return true;
 	}
 
@@ -93,7 +93,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 				this.damage(DamageSource.ON_FIRE, 1.0F);
 			}
 
-			if (!this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+			if (!this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 				return;
 			}
 
@@ -140,7 +140,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}

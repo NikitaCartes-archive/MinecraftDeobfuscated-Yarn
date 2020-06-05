@@ -12,7 +12,7 @@ import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class LootPoolEntry implements EntryCombiner {
@@ -34,7 +34,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 		return this.conditionPredicate.test(context);
 	}
 
-	public abstract LootPoolEntryType method_29318();
+	public abstract LootPoolEntryType getType();
 
 	public abstract static class Builder<T extends LootPoolEntry.Builder<T>> implements LootConditionConsumingBuilder<T> {
 		private final List<LootCondition> conditions = Lists.<LootCondition>newArrayList();
@@ -61,13 +61,13 @@ public abstract class LootPoolEntry implements EntryCombiner {
 		public abstract LootPoolEntry build();
 	}
 
-	public abstract static class class_5337<T extends LootPoolEntry> implements JsonSerializable<T> {
+	public abstract static class Serializer<T extends LootPoolEntry> implements JsonSerializer<T> {
 		public final void toJson(JsonObject jsonObject, T lootPoolEntry, JsonSerializationContext jsonSerializationContext) {
 			if (!ArrayUtils.isEmpty((Object[])lootPoolEntry.conditions)) {
 				jsonObject.add("conditions", jsonSerializationContext.serialize(lootPoolEntry.conditions));
 			}
 
-			this.method_422(jsonObject, lootPoolEntry, jsonSerializationContext);
+			this.addEntryFields(jsonObject, lootPoolEntry, jsonSerializationContext);
 		}
 
 		public final T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -75,8 +75,8 @@ public abstract class LootPoolEntry implements EntryCombiner {
 			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
 		}
 
-		public abstract void method_422(JsonObject jsonObject, T lootPoolEntry, JsonSerializationContext jsonSerializationContext);
+		public abstract void addEntryFields(JsonObject json, T entry, JsonSerializationContext context);
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
+		public abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions);
 	}
 }

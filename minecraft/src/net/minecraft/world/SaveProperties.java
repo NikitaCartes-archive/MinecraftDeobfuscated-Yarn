@@ -5,19 +5,19 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5359;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.world.dimension.DimensionTracker;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 
 public interface SaveProperties {
-	class_5359 method_29589();
+	DataPackSettings method_29589();
 
-	void method_29590(class_5359 arg);
+	void method_29590(DataPackSettings dataPackSettings);
 
 	boolean isModded();
 
@@ -25,10 +25,10 @@ public interface SaveProperties {
 
 	void addServerBrand(String brand, boolean modded);
 
-	default void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.getServerBrands())));
-		crashReportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.isModded())));
-		crashReportSection.add("Level storage version", (CrashCallable<String>)(() -> {
+	default void populateCrashReport(CrashReportSection reportSection) {
+		reportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.getServerBrands())));
+		reportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.isModded())));
+		reportSection.add("Level storage version", (CrashCallable<String>)(() -> {
 			int i = this.getVersion();
 			return String.format("0x%05X - %s", i, this.getFormatName(i));
 		}));
@@ -55,7 +55,7 @@ public interface SaveProperties {
 	@Environment(EnvType.CLIENT)
 	LevelInfo getLevelInfo();
 
-	CompoundTag cloneWorldTag(DimensionTracker dimensionTracker, @Nullable CompoundTag compoundTag);
+	CompoundTag cloneWorldTag(RegistryTracker registryTracker, @Nullable CompoundTag compoundTag);
 
 	boolean isHardcore();
 

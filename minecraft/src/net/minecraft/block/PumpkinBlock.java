@@ -41,7 +41,7 @@ public class PumpkinBlock extends GourdBlock {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
-			return ActionResult.method_29236(world.isClient);
+			return ActionResult.success(world.isClient);
 		} else {
 			return super.onUse(state, world, pos, player, hand, hit);
 		}

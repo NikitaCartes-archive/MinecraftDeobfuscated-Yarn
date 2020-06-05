@@ -12,7 +12,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
@@ -230,7 +229,7 @@ public class UserCache {
 		}
 	}
 
-	class JsonConverter implements JsonDeserializer<UserCache.Entry>, JsonSerializer<UserCache.Entry> {
+	class JsonConverter implements JsonDeserializer<UserCache.Entry>, com.google.gson.JsonSerializer<UserCache.Entry> {
 		private JsonConverter() {
 		}
 

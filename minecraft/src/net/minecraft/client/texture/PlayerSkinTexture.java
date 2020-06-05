@@ -56,7 +56,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 	}
 
 	private void uploadTexture(NativeImage image) {
-		TextureUtil.method_24958(this.getGlId(), image.getWidth(), image.getHeight());
+		TextureUtil.allocate(this.getGlId(), image.getWidth(), image.getHeight());
 		image.upload(0, 0, 0, true);
 	}
 
@@ -176,7 +176,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private static void stripColor(NativeImage image, int x, int y, int width, int height) {
 		for (int i = x; i < width; i++) {
 			for (int j = y; j < height; j++) {
-				int k = image.getPixelRgba(i, j);
+				int k = image.getPixelColor(i, j);
 				if ((k >> 24 & 0xFF) < 128) {
 					return;
 				}
@@ -185,7 +185,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 
 		for (int i = x; i < width; i++) {
 			for (int jx = y; jx < height; jx++) {
-				image.setPixelRgba(i, jx, image.getPixelRgba(i, jx) & 16777215);
+				image.setPixelColor(i, jx, image.getPixelColor(i, jx) & 16777215);
 			}
 		}
 	}
@@ -193,7 +193,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private static void stripAlpha(NativeImage image, int x, int y, int width, int height) {
 		for (int i = x; i < width; i++) {
 			for (int j = y; j < height; j++) {
-				image.setPixelRgba(i, j, image.getPixelRgba(i, j) | 0xFF000000);
+				image.setPixelColor(i, j, image.getPixelColor(i, j) | 0xFF000000);
 			}
 		}
 	}

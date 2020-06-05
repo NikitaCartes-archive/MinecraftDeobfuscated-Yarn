@@ -19,15 +19,14 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.minecraft.Bootstrap;
-import net.minecraft.class_5352;
-import net.minecraft.class_5359;
-import net.minecraft.class_5382;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.command.CommandManager;
@@ -40,13 +39,14 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionTracker;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -110,7 +110,7 @@ public class Main {
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
 			MinecraftServer.convertLevel(session);
-			class_5359 lv = session.method_29585();
+			DataPackSettings dataPackSettings = session.method_29585();
 			boolean bl = optionSet.has(optionSpec7);
 			if (bl) {
 				LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
@@ -119,11 +119,13 @@ public class Main {
 			ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<>(
 				ResourcePackProfile::new,
 				new VanillaDataPackProvider(),
-				new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), class_5352.field_25349)
+				new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 			);
-			class_5359 lv2 = MinecraftServer.method_29736(resourcePackManager, lv == null ? class_5359.field_25393 : lv, bl);
+			DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(
+				resourcePackManager, dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings, bl
+			);
 			CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
-				resourcePackManager.method_29211(),
+				resourcePackManager.createResourcePacks(),
 				CommandManager.RegistrationEnvironment.DEDICATED,
 				serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel,
 				Util.getServerWorkerExecutor(),
@@ -142,9 +144,9 @@ public class Main {
 			}
 
 			serverResourceManager.loadRegistryTags();
-			DimensionTracker.Modifiable modifiable = DimensionTracker.create();
-			class_5382<Tag> lv3 = class_5382.method_29753(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), modifiable);
-			SaveProperties saveProperties = session.readLevelProperties(lv3, lv2);
+			RegistryTracker.Modifiable modifiable = RegistryTracker.create();
+			RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), modifiable);
+			SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
 			if (saveProperties == null) {
 				LevelInfo levelInfo;
 				GeneratorOptions generatorOptions;
@@ -160,7 +162,7 @@ public class Main {
 						serverPropertiesHandler.difficulty,
 						false,
 						new GameRules(),
-						lv2
+						dataPackSettings2
 					);
 					generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.field_24623.withBonusChest() : serverPropertiesHandler.field_24623;
 				}
@@ -174,10 +176,10 @@ public class Main {
 
 			session.method_27425(modifiable, saveProperties);
 			SaveProperties saveProperties2 = saveProperties;
-			final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.method_29740(
-				threadx -> {
+			final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(
+				serverThread -> {
 					MinecraftDedicatedServer minecraftDedicatedServerx = new MinecraftDedicatedServer(
-						threadx,
+						serverThread,
 						modifiable,
 						session,
 						resourcePackManager,

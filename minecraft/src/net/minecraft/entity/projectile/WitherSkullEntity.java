@@ -63,7 +63,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 			boolean bl;
 			if (entity2 instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity)entity2;
-				bl = entity.damage(DamageSource.method_29238(this, livingEntity), 8.0F);
+				bl = entity.damage(DamageSource.witherSkull(this, livingEntity), 8.0F);
 				if (bl) {
 					if (entity.isAlive()) {
 						this.dealDamage(livingEntity, entity);
@@ -94,7 +94,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
 				? Explosion.DestructionType.DESTROY
 				: Explosion.DestructionType.NONE;
 			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, destructionType);

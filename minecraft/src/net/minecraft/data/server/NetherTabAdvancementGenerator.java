@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.BrewedPotionCriterion;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.ConstructBeaconCriterion;
@@ -448,7 +448,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criteriaMerger(CriteriaMerger.OR)
+			.criteriaMerger(CriterionMerger.OR)
 			.criterion("loot_bastion_other", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_other")))
 			.criterion("loot_bastion_treasure", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_treasure")))
 			.criterion("loot_bastion_hoglin_stable", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_hoglin_stable")))

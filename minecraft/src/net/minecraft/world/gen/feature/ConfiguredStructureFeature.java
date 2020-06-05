@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_5314;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.ChunkPos;
@@ -10,6 +9,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.StructureConfig;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
 	public static final Codec<ConfiguredStructureFeature<?, ?>> field_24834 = Registry.STRUCTURE_FEATURE
@@ -23,8 +23,16 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 	}
 
 	public StructureStart<?> method_28622(
-		ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long l, ChunkPos chunkPos, Biome biome, int i, class_5314 arg
+		ChunkGenerator chunkGenerator,
+		BiomeSource biomeSource,
+		StructureManager structureManager,
+		long l,
+		ChunkPos chunkPos,
+		Biome biome,
+		int i,
+		StructureConfig structureConfig
 	) {
-		return this.field_24835.method_28657(chunkGenerator, biomeSource, structureManager, l, chunkPos, biome, i, new ChunkRandom(), arg, this.field_24836);
+		return this.field_24835
+			.method_28657(chunkGenerator, biomeSource, structureManager, l, chunkPos, biome, i, new ChunkRandom(), structureConfig, this.field_24836);
 	}
 }

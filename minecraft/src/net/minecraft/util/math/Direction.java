@@ -427,7 +427,7 @@ public enum Direction implements StringIdentifiable {
 			return Iterators.forArray(this.facingArray);
 		}
 
-		public Stream<Direction> method_29716() {
+		public Stream<Direction> stream() {
 			return Arrays.stream(this.facingArray);
 		}
 	}

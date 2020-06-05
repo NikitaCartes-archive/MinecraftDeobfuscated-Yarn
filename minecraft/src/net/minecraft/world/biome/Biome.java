@@ -92,7 +92,7 @@ public class Biome {
 						.fieldOf("carvers")
 						.forGetter(biome -> biome.carvers),
 					Codec.simpleMap(
-							GenerationStep.Feature.field_24771,
+							GenerationStep.Feature.CODEC,
 							ConfiguredFeature.CODEC.listOf().promotePartial(Util.method_29188("Feature: ", LOGGER::error)),
 							StringIdentifiable.method_28142(GenerationStep.Feature.values())
 						)

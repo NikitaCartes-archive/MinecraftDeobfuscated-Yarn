@@ -27,8 +27,8 @@ public class StructurePool {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Codec<StructurePool> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Identifier.field_25139.fieldOf("name").forGetter(StructurePool::getId),
-					Identifier.field_25139.fieldOf("fallback").forGetter(StructurePool::getTerminatorsId),
+					Identifier.CODEC.fieldOf("name").forGetter(StructurePool::getId),
+					Identifier.CODEC.fieldOf("fallback").forGetter(StructurePool::getTerminatorsId),
 					Codec.mapPair(StructurePoolElement.field_24953.fieldOf("element"), Codec.INT.fieldOf("weight"))
 						.codec()
 						.listOf()

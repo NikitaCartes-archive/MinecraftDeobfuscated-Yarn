@@ -161,7 +161,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 			}
 
 			this.remove();
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

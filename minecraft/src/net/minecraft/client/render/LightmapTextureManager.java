@@ -31,7 +31,7 @@ public class LightmapTextureManager implements AutoCloseable {
 
 		for (int i = 0; i < 16; i++) {
 			for (int j = 0; j < 16; j++) {
-				this.image.setPixelRgba(j, i, -1);
+				this.image.setPixelColor(j, i, -1);
 			}
 		}
 
@@ -145,7 +145,7 @@ public class LightmapTextureManager implements AutoCloseable {
 						int u = (int)vector3f2.getX();
 						int v = (int)vector3f2.getY();
 						int w = (int)vector3f2.getZ();
-						this.image.setPixelRgba(l, k, 0xFF000000 | w << 16 | v << 8 | u);
+						this.image.setPixelColor(l, k, 0xFF000000 | w << 16 | v << 8 | u);
 					}
 				}
 

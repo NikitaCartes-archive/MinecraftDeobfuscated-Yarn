@@ -25,7 +25,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_GRASS_HIT,
 		SoundEvents.BLOCK_GRASS_FALL
 	);
-	public static final BlockSoundGroup field_25183 = new BlockSoundGroup(
+	public static final BlockSoundGroup LILY_PAD = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_GRASS_BREAK,
@@ -247,7 +247,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_WEEPING_VINES_HIT,
 		SoundEvents.BLOCK_WEEPING_VINES_FALL
 	);
-	public static final BlockSoundGroup field_23082 = new BlockSoundGroup(
+	public static final BlockSoundGroup WEEPING_VINES_LOW_PITCH = new BlockSoundGroup(
 		1.0F,
 		0.5F,
 		SoundEvents.BLOCK_WEEPING_VINES_BREAK,

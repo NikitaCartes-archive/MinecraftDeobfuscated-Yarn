@@ -23,7 +23,7 @@ public class BiomeRenameFix extends DataFix {
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		Type<Pair<String, String>> type = DSL.named(TypeReferences.BIOME.typeName(), IdentifierNormalizingSchema.method_28295());
+		Type<Pair<String, String>> type = DSL.named(TypeReferences.BIOME.typeName(), IdentifierNormalizingSchema.getIdentifierType());
 		if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.BIOME))) {
 			throw new IllegalStateException("Biome type is not what was expected.");
 		} else {

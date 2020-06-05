@@ -31,11 +31,11 @@ public class StateManager<O, S extends State<O, S>> {
 	private final ImmutableSortedMap<String, Property<?>> properties;
 	private final ImmutableList<S> states;
 
-	protected StateManager(Function<O, S> function, O object, StateManager.Factory<O, S> factory, Map<String, Property<?>> map) {
-		this.owner = object;
-		this.properties = ImmutableSortedMap.copyOf(map);
-		MapCodec<S> mapCodec = new StateManager.class_5306<>(this.properties, () -> (State)function.apply(object));
-		Map<Map<Property<?>, Comparable<?>>, S> map2 = Maps.<Map<Property<?>, Comparable<?>>, S>newLinkedHashMap();
+	protected StateManager(Function<O, S> ownerToStateFunction, O owner, StateManager.Factory<O, S> factory, Map<String, Property<?>> propertiesMap) {
+		this.owner = owner;
+		this.properties = ImmutableSortedMap.copyOf(propertiesMap);
+		MapCodec<S> mapCodec = new StateManager.PropertiesCodec<>(this.properties, () -> (State)ownerToStateFunction.apply(owner));
+		Map<Map<Property<?>, Comparable<?>>, S> map = Maps.<Map<Property<?>, Comparable<?>>, S>newLinkedHashMap();
 		List<S> list = Lists.<S>newArrayList();
 		Stream<List<Pair<Property<?>, Comparable<?>>>> stream = Stream.of(Collections.emptyList());
 
@@ -51,14 +51,14 @@ public class StateManager<O, S extends State<O, S>> {
 			list2 -> {
 				ImmutableMap<Property<?>, Comparable<?>> immutableMap = (ImmutableMap<Property<?>, Comparable<?>>)list2.stream()
 					.collect(ImmutableMap.toImmutableMap(Pair::getFirst, Pair::getSecond));
-				S statex = factory.create(object, immutableMap, mapCodec);
-				map2.put(immutableMap, statex);
+				S statex = factory.create(owner, immutableMap, mapCodec);
+				map.put(immutableMap, statex);
 				list.add(statex);
 			}
 		);
 
 		for (S state : list) {
-			state.createWithTable(map2);
+			state.createWithTable(map);
 		}
 
 		this.states = ImmutableList.copyOf(list);
@@ -132,8 +132,8 @@ public class StateManager<O, S extends State<O, S>> {
 			}
 		}
 
-		public StateManager<O, S> build(Function<O, S> function, StateManager.Factory<O, S> factory) {
-			return new StateManager<>(function, this.owner, factory, this.namedProperties);
+		public StateManager<O, S> build(Function<O, S> ownerToStateFunction, StateManager.Factory<O, S> factory) {
+			return new StateManager<>(ownerToStateFunction, this.owner, factory, this.namedProperties);
 		}
 	}
 
@@ -141,11 +141,11 @@ public class StateManager<O, S extends State<O, S>> {
 		S create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> mapCodec);
 	}
 
-	static class class_5306<S extends State<?, S>> extends MapCodec<S> {
+	static class PropertiesCodec<S extends State<?, S>> extends MapCodec<S> {
 		private final Map<String, Property<?>> field_24735;
 		private final Supplier<S> field_24736;
 
-		public class_5306(Map<String, Property<?>> map, Supplier<S> supplier) {
+		public PropertiesCodec(Map<String, Property<?>> map, Supplier<S> supplier) {
 			this.field_24735 = map;
 			this.field_24736 = supplier;
 		}

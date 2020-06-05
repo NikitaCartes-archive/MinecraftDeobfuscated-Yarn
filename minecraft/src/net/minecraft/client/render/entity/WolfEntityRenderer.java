@@ -41,7 +41,7 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 		if (wolfEntity.isTamed()) {
 			return TAMED_TEXTURE;
 		} else {
-			return wolfEntity.method_29511() ? ANGRY_TEXTURE : WILD_TEXTURE;
+			return wolfEntity.hasAngerTime() ? ANGRY_TEXTURE : WILD_TEXTURE;
 		}
 	}
 }

@@ -24,9 +24,9 @@ public class ReloadCommand {
 	private static Collection<String> method_29478(ResourcePackManager<?> resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
 		resourcePackManager.scanPacks();
 		Collection<String> collection2 = Lists.<String>newArrayList(collection);
-		Collection<String> collection3 = saveProperties.method_29589().method_29550();
+		Collection<String> collection3 = saveProperties.method_29589().getDisabled();
 
-		for (String string : resourcePackManager.method_29206()) {
+		for (String string : resourcePackManager.getNames()) {
 			if (!collection3.contains(string) && !collection2.contains(string)) {
 				collection2.add(string);
 			}
@@ -41,7 +41,7 @@ public class ReloadCommand {
 			MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 			ResourcePackManager<?> resourcePackManager = minecraftServer.getDataPackManager();
 			SaveProperties saveProperties = minecraftServer.getSaveProperties();
-			Collection<String> collection = resourcePackManager.method_29210();
+			Collection<String> collection = resourcePackManager.getEnabledNames();
 			Collection<String> collection2 = method_29478(resourcePackManager, saveProperties, collection);
 			serverCommandSource.sendFeedback(new TranslatableText("commands.reload.success"), true);
 			method_29480(collection2, serverCommandSource);

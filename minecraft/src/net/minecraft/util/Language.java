@@ -21,11 +21,11 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class Language {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Gson field_25307 = new Gson();
+	private static final Gson GSON = new Gson();
 	private static final Pattern TOKEN_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d.]*[df]");
-	private static volatile Language INSTANCE = method_29429();
+	private static volatile Language instance = create();
 
-	private static Language method_29429() {
+	private static Language create() {
 		Builder<String, String> builder = ImmutableMap.builder();
 		BiConsumer<String, String> biConsumer = builder::put;
 
@@ -34,7 +34,7 @@ public abstract class Language {
 			Throwable var3 = null;
 
 			try {
-				method_29425(inputStream, biConsumer);
+				load(inputStream, biConsumer);
 			} catch (Throwable var13) {
 				var3 = var13;
 				throw var13;
@@ -58,8 +58,8 @@ public abstract class Language {
 		final Map<String, String> map = builder.build();
 		return new Language() {
 			@Override
-			public String get(String string) {
-				return (String)map.getOrDefault(string, string);
+			public String get(String key) {
+				return (String)map.getOrDefault(key, key);
 			}
 
 			@Override
@@ -69,41 +69,41 @@ public abstract class Language {
 
 			@Environment(EnvType.CLIENT)
 			@Override
-			public boolean method_29428() {
+			public boolean isRightToLeft() {
 				return false;
 			}
 
 			@Override
-			public String method_29426(String string, boolean bl) {
+			public String reorder(String string, boolean allowTokens) {
 				return string;
 			}
 		};
 	}
 
-	public static void method_29425(InputStream inputStream, BiConsumer<String, String> biConsumer) {
-		JsonObject jsonObject = field_25307.fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonObject.class);
+	public static void load(InputStream inputStream, BiConsumer<String, String> entryConsumer) {
+		JsonObject jsonObject = GSON.fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), JsonObject.class);
 
 		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 			String string = TOKEN_PATTERN.matcher(JsonHelper.asString((JsonElement)entry.getValue(), (String)entry.getKey())).replaceAll("%$1s");
-			biConsumer.accept(entry.getKey(), string);
+			entryConsumer.accept(entry.getKey(), string);
 		}
 	}
 
 	public static Language getInstance() {
-		return INSTANCE;
+		return instance;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_29427(Language language) {
-		INSTANCE = language;
+	public static void setInstance(Language language) {
+		instance = language;
 	}
 
-	public abstract String get(String string);
+	public abstract String get(String key);
 
 	public abstract boolean hasTranslation(String key);
 
 	@Environment(EnvType.CLIENT)
-	public abstract boolean method_29428();
+	public abstract boolean isRightToLeft();
 
-	public abstract String method_29426(String string, boolean bl);
+	public abstract String reorder(String string, boolean allowTokens);
 }

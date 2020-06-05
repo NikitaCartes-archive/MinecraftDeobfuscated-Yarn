@@ -34,7 +34,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public LootFunctionType method_29321() {
+	public LootFunctionType getType() {
 		return LootFunctionTypes.SET_ATTRIBUTES;
 	}
 
@@ -179,7 +179,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static class Factory extends ConditionalLootFunction.Factory<SetAttributesLootFunction> {
+	public static class Serializer extends ConditionalLootFunction.Serializer<SetAttributesLootFunction> {
 		public void toJson(JsonObject jsonObject, SetAttributesLootFunction setAttributesLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setAttributesLootFunction, jsonSerializationContext);
 			JsonArray jsonArray = new JsonArray();

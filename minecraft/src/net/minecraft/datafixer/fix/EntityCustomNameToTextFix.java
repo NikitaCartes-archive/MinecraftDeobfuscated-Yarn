@@ -20,7 +20,7 @@ public class EntityCustomNameToTextFix extends DataFix {
 
 	@Override
 	public TypeRewriteRule makeRule() {
-		OpticFinder<String> opticFinder = DSL.fieldFinder("id", IdentifierNormalizingSchema.method_28295());
+		OpticFinder<String> opticFinder = DSL.fieldFinder("id", IdentifierNormalizingSchema.getIdentifierType());
 		return this.fixTypeEverywhereTyped(
 			"EntityCustomNameToComponentFix", this.getInputSchema().getType(TypeReferences.ENTITY), typed -> typed.update(DSL.remainderFinder(), dynamic -> {
 					Optional<String> optional = typed.getOptional(opticFinder);

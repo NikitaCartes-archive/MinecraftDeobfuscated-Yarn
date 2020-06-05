@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_5354;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -56,7 +55,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class EndermanEntity extends HostileEntity implements class_5354 {
+public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
 		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.15F, EntityAttributeModifier.Operation.ADDITION
@@ -90,7 +89,7 @@ public class EndermanEntity extends HostileEntity implements class_5354 {
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.goalSelector.add(10, new EndermanEntity.PlaceBlockGoal(this));
 		this.goalSelector.add(11, new EndermanEntity.PickUpBlockGoal(this));
-		this.targetSelector.add(1, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::method_29515));
+		this.targetSelector.add(1, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector.add(2, new EndermanEntity.TeleportTowardsPlayerGoal(this));
 		this.targetSelector.add(3, new RevengeGoal(this));
 		this.targetSelector.add(4, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
@@ -105,10 +104,10 @@ public class EndermanEntity extends HostileEntity implements class_5354 {
 	}
 
 	@Override
-	public void setTarget(@Nullable LivingEntity livingEntity) {
-		super.setTarget(livingEntity);
+	public void setTarget(@Nullable LivingEntity target) {
+		super.setTarget(target);
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-		if (livingEntity == null) {
+		if (target == null) {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
 			this.dataTracker.set(PROVOKED, false);
@@ -131,27 +130,27 @@ public class EndermanEntity extends HostileEntity implements class_5354 {
 	}
 
 	@Override
-	public void method_29509() {
-		this.method_29514(field_25378.choose(this.random));
+	public void chooseRandomAngerTime() {
+		this.setAngerTime(field_25378.choose(this.random));
 	}
 
 	@Override
-	public void method_29514(int i) {
-		this.field_25376 = i;
+	public void setAngerTime(int ticks) {
+		this.field_25376 = ticks;
 	}
 
 	@Override
-	public int method_29507() {
+	public int getAngerTime() {
 		return this.field_25376;
 	}
 
 	@Override
-	public void method_29513(@Nullable UUID uUID) {
-		this.field_25377 = uUID;
+	public void setAngryAt(@Nullable UUID uuid) {
+		this.field_25377 = uuid;
 	}
 
 	@Override
-	public UUID method_29508() {
+	public UUID getAngryAt() {
 		return this.field_25377;
 	}
 
@@ -181,7 +180,7 @@ public class EndermanEntity extends HostileEntity implements class_5354 {
 			tag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
 		}
 
-		this.method_29517(tag);
+		this.angerToTag(tag);
 	}
 
 	@Override
@@ -196,7 +195,7 @@ public class EndermanEntity extends HostileEntity implements class_5354 {
 		}
 
 		this.setCarriedBlock(blockState);
-		this.method_29512(this.world, tag);
+		this.angerFromTag(this.world, tag);
 	}
 
 	private boolean isPlayerStaring(PlayerEntity player) {
@@ -237,14 +236,14 @@ public class EndermanEntity extends HostileEntity implements class_5354 {
 
 		this.jumping = false;
 		if (!this.world.isClient) {
-			this.method_29510();
+			this.tickAngerLogic();
 		}
 
 		super.tickMovement();
 	}
 
 	@Override
-	public boolean method_29503() {
+	public boolean hurtByWater() {
 		return true;
 	}
 
@@ -420,7 +419,7 @@ public class EndermanEntity extends HostileEntity implements class_5354 {
 			if (this.enderman.getCarriedBlock() != null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(20) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.field_19388) ? false : this.enderman.getRandom().nextInt(20) == 0;
 			}
 		}
 
@@ -459,7 +458,7 @@ public class EndermanEntity extends HostileEntity implements class_5354 {
 			if (this.enderman.getCarriedBlock() == null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(2000) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.field_19388) ? false : this.enderman.getRandom().nextInt(2000) == 0;
 			}
 		}
 

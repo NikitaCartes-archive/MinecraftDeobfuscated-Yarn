@@ -84,7 +84,7 @@ public class CompassItem extends Item implements Vanishable {
 				}
 			}
 
-			return ActionResult.method_29236(context.world.isClient);
+			return ActionResult.success(context.world.isClient);
 		}
 	}
 

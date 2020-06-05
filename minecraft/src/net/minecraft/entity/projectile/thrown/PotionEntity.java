@@ -37,7 +37,7 @@ import net.minecraft.world.World;
 		itf = FlyingItemEntity.class
 	)})
 public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
-	public static final Predicate<LivingEntity> WATER_HURTS = LivingEntity::method_29503;
+	public static final Predicate<LivingEntity> WATER_HURTS = LivingEntity::hurtByWater;
 
 	public PotionEntity(EntityType<? extends PotionEntity> entityType, World world) {
 		super(entityType, world);
@@ -113,7 +113,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		if (!list.isEmpty()) {
 			for (LivingEntity livingEntity : list) {
 				double d = this.squaredDistanceTo(livingEntity);
-				if (d < 16.0 && livingEntity.method_29503()) {
+				if (d < 16.0 && livingEntity.hurtByWater()) {
 					livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0F);
 				}
 			}

@@ -8,8 +8,8 @@ import net.minecraft.block.BlockState;
 public class DeltaFeatureConfig implements FeatureConfig {
 	public static final Codec<DeltaFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.field_24734.fieldOf("contents").forGetter(deltaFeatureConfig -> deltaFeatureConfig.contents),
-					BlockState.field_24734.fieldOf("rim").forGetter(deltaFeatureConfig -> deltaFeatureConfig.rim),
+					BlockState.CODEC.fieldOf("contents").forGetter(deltaFeatureConfig -> deltaFeatureConfig.contents),
+					BlockState.CODEC.fieldOf("rim").forGetter(deltaFeatureConfig -> deltaFeatureConfig.rim),
 					Codec.INT.fieldOf("minimum_radius").forGetter(deltaFeatureConfig -> deltaFeatureConfig.minRadius),
 					Codec.INT.fieldOf("maximum_radius").forGetter(deltaFeatureConfig -> deltaFeatureConfig.maxRadius),
 					Codec.INT.fieldOf("maximum_rim").forGetter(deltaFeatureConfig -> deltaFeatureConfig.maxRim)

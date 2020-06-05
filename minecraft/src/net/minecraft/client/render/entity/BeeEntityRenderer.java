@@ -18,7 +18,7 @@ public class BeeEntityRenderer extends MobEntityRenderer<BeeEntity, BeeEntityMod
 	}
 
 	public Identifier getTexture(BeeEntity beeEntity) {
-		if (beeEntity.method_29511()) {
+		if (beeEntity.hasAngerTime()) {
 			return beeEntity.hasNectar() ? ANGRY_NECTAR_TEXTURE : ANGRY_TEXTURE;
 		} else {
 			return beeEntity.hasNectar() ? NECTAR_TEXTURE : PASSIVE_TEXTURE;

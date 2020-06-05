@@ -8,7 +8,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -23,6 +22,7 @@ import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -39,14 +39,14 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public class_5348 getPageUnchecked(int index) {
-			return class_5348.field_25310;
+		public StringRenderable getPageUnchecked(int index) {
+			return StringRenderable.EMPTY;
 		}
 	};
 	public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
 	private BookScreen.Contents contents;
 	private int pageIndex;
-	private List<class_5348> cachedPage = Collections.emptyList();
+	private List<StringRenderable> cachedPage = Collections.emptyList();
 	private int cachedPageIndex = -1;
 	private PageTurnWidget nextPageButton;
 	private PageTurnWidget previousPageButton;
@@ -160,8 +160,8 @@ public class BookScreen extends Screen {
 		this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
-			class_5348 lv = this.contents.getPage(this.pageIndex);
-			this.cachedPage = this.textRenderer.getTextHandler().wrapLines(lv, 114, Style.EMPTY);
+			StringRenderable stringRenderable = this.contents.getPage(this.pageIndex);
+			this.cachedPage = this.textRenderer.getTextHandler().wrapLines(stringRenderable, 114, Style.EMPTY);
 		}
 
 		this.cachedPageIndex = this.pageIndex;
@@ -170,8 +170,8 @@ public class BookScreen extends Screen {
 		int l = Math.min(128 / 9, this.cachedPage.size());
 
 		for (int m = 0; m < l; m++) {
-			class_5348 lv2 = (class_5348)this.cachedPage.get(m);
-			this.textRenderer.draw(matrices, lv2, (float)(i + 36), (float)(32 + m * 9), 0);
+			StringRenderable stringRenderable2 = (StringRenderable)this.cachedPage.get(m);
+			this.textRenderer.draw(matrices, stringRenderable2, (float)(i + 36), (float)(32 + m * 9), 0);
 		}
 
 		Style style = this.getTextAt((double)mouseX, (double)mouseY);
@@ -234,8 +234,8 @@ public class BookScreen extends Screen {
 				if (i <= 114 && j < 9 * k + k) {
 					int l = j / 9;
 					if (l >= 0 && l < this.cachedPage.size()) {
-						class_5348 lv = (class_5348)this.cachedPage.get(l);
-						return this.client.textRenderer.getTextHandler().trimToWidth(lv, i);
+						StringRenderable stringRenderable = (StringRenderable)this.cachedPage.get(l);
+						return this.client.textRenderer.getTextHandler().trimToWidth(stringRenderable, i);
 					} else {
 						return null;
 					}
@@ -263,10 +263,10 @@ public class BookScreen extends Screen {
 	public interface Contents {
 		int getPageCount();
 
-		class_5348 getPageUnchecked(int index);
+		StringRenderable getPageUnchecked(int index);
 
-		default class_5348 getPage(int index) {
-			return index >= 0 && index < this.getPageCount() ? this.getPageUnchecked(index) : class_5348.field_25310;
+		default StringRenderable getPage(int index) {
+			return index >= 0 && index < this.getPageCount() ? this.getPageUnchecked(index) : StringRenderable.EMPTY;
 		}
 
 		static BookScreen.Contents create(ItemStack stack) {
@@ -298,8 +298,8 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public class_5348 getPageUnchecked(int index) {
-			return class_5348.method_29430((String)this.pages.get(index));
+		public StringRenderable getPageUnchecked(int index) {
+			return StringRenderable.plain((String)this.pages.get(index));
 		}
 	}
 
@@ -324,18 +324,18 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public class_5348 getPageUnchecked(int index) {
+		public StringRenderable getPageUnchecked(int index) {
 			String string = (String)this.pages.get(index);
 
 			try {
-				class_5348 lv = Text.Serializer.fromJson(string);
-				if (lv != null) {
-					return lv;
+				StringRenderable stringRenderable = Text.Serializer.fromJson(string);
+				if (stringRenderable != null) {
+					return stringRenderable;
 				}
 			} catch (Exception var4) {
 			}
 
-			return class_5348.method_29430(string);
+			return StringRenderable.plain(string);
 		}
 	}
 }

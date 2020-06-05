@@ -266,12 +266,12 @@ public class RenderLayers {
 		hashMap.put(Fluids.FLOWING_WATER, renderLayer);
 		hashMap.put(Fluids.WATER, renderLayer);
 	});
-	private static boolean fancyGraphics;
+	private static boolean fancyGraphicsOrBetter;
 
 	public static RenderLayer getBlockLayer(BlockState state) {
 		Block block = state.getBlock();
 		if (block instanceof LeavesBlock) {
-			return fancyGraphics ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
+			return fancyGraphicsOrBetter ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
 		} else {
 			RenderLayer renderLayer = (RenderLayer)BLOCKS.get(block);
 			return renderLayer != null ? renderLayer : RenderLayer.getSolid();
@@ -281,11 +281,11 @@ public class RenderLayers {
 	public static RenderLayer method_29359(BlockState blockState) {
 		Block block = blockState.getBlock();
 		if (block instanceof LeavesBlock) {
-			return fancyGraphics ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
+			return fancyGraphicsOrBetter ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
 		} else {
 			RenderLayer renderLayer = (RenderLayer)BLOCKS.get(block);
 			if (renderLayer != null) {
-				return renderLayer == RenderLayer.getTranslucent() ? RenderLayer.method_29380() : renderLayer;
+				return renderLayer == RenderLayer.getTranslucent() ? RenderLayer.getTranslucentMovingBlock() : renderLayer;
 			} else {
 				return RenderLayer.getSolid();
 			}
@@ -316,7 +316,7 @@ public class RenderLayers {
 		return renderLayer != null ? renderLayer : RenderLayer.getSolid();
 	}
 
-	public static void setFancyGraphics(boolean fancyGraphics) {
-		RenderLayers.fancyGraphics = fancyGraphics;
+	public static void setFancyGraphicsOrBetter(boolean fancyGraphicsOrBetter) {
+		RenderLayers.fancyGraphicsOrBetter = fancyGraphicsOrBetter;
 	}
 }

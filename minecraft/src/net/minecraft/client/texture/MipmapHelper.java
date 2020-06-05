@@ -21,7 +21,7 @@ public class MipmapHelper {
 			label51:
 			for (int i = 0; i < image.getWidth(); i++) {
 				for (int j = 0; j < image.getHeight(); j++) {
-					if (image.getPixelRgba(i, j) >> 24 == 0) {
+					if (image.getPixelColor(i, j) >> 24 == 0) {
 						bl = true;
 						break label51;
 					}
@@ -36,14 +36,14 @@ public class MipmapHelper {
 
 				for (int m = 0; m < k; m++) {
 					for (int n = 0; n < l; n++) {
-						nativeImage2.setPixelRgba(
+						nativeImage2.setPixelColor(
 							m,
 							n,
 							blend(
-								nativeImage.getPixelRgba(m * 2 + 0, n * 2 + 0),
-								nativeImage.getPixelRgba(m * 2 + 1, n * 2 + 0),
-								nativeImage.getPixelRgba(m * 2 + 0, n * 2 + 1),
-								nativeImage.getPixelRgba(m * 2 + 1, n * 2 + 1),
+								nativeImage.getPixelColor(m * 2 + 0, n * 2 + 0),
+								nativeImage.getPixelColor(m * 2 + 1, n * 2 + 0),
+								nativeImage.getPixelColor(m * 2 + 0, n * 2 + 1),
+								nativeImage.getPixelColor(m * 2 + 1, n * 2 + 1),
 								bl
 							)
 						);

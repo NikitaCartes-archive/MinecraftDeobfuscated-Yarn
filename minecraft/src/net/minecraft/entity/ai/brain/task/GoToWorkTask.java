@@ -18,7 +18,7 @@ public class GoToWorkTask extends Task<VillagerEntity> {
 
 	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		BlockPos blockPos = ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos();
-		return blockPos.isWithinDistance(villagerEntity.getPos(), 2.0) || villagerEntity.method_29279();
+		return blockPos.isWithinDistance(villagerEntity.getPos(), 2.0) || villagerEntity.isNatural();
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {

@@ -8,10 +8,10 @@ import net.minecraft.block.BlockState;
 public class SimpleBlockFeatureConfig implements FeatureConfig {
 	public static final Codec<SimpleBlockFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.field_24734.fieldOf("to_place").forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.toPlace),
-					BlockState.field_24734.listOf().fieldOf("place_on").forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeOn),
-					BlockState.field_24734.listOf().fieldOf("place_in").forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeIn),
-					BlockState.field_24734.listOf().fieldOf("place_under").forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeUnder)
+					BlockState.CODEC.fieldOf("to_place").forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.toPlace),
+					BlockState.CODEC.listOf().fieldOf("place_on").forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeOn),
+					BlockState.CODEC.listOf().fieldOf("place_in").forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeIn),
+					BlockState.CODEC.listOf().fieldOf("place_under").forGetter(simpleBlockFeatureConfig -> simpleBlockFeatureConfig.placeUnder)
 				)
 				.apply(instance, SimpleBlockFeatureConfig::new)
 	);

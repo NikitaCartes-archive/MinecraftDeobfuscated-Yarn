@@ -10,7 +10,6 @@ import java.util.OptionalInt;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_5354;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -28,6 +27,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -287,7 +287,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			tag.putInt("SpawnY", this.spawnPointPosition.getY());
 			tag.putInt("SpawnZ", this.spawnPointPosition.getZ());
 			tag.putBoolean("SpawnForced", this.spawnPointSet);
-			Identifier.field_25139
+			Identifier.CODEC
 				.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue())
 				.resultOrPartial(LOGGER::error)
 				.ifPresent(tagx -> tag.put("SpawnDimension", tagx));
@@ -501,7 +501,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 		this.dropShoulderEntities();
 		if (this.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
-			this.method_29779();
+			this.forgiveMobAnger();
 		}
 
 		if (!this.isSpectator()) {
@@ -525,13 +525,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.getDamageTracker().update();
 	}
 
-	private void method_29779() {
+	private void forgiveMobAnger() {
 		Box box = new Box(this.getBlockPos()).expand(32.0, 10.0, 32.0);
 		this.world
 			.getEntitiesIncludingUngeneratedChunks(MobEntity.class, box)
 			.stream()
-			.filter(mobEntity -> mobEntity instanceof class_5354)
-			.forEach(mobEntity -> ((class_5354)mobEntity).method_29516(this));
+			.filter(mobEntity -> mobEntity instanceof Angerable)
+			.forEach(mobEntity -> ((Angerable)mobEntity).forgive(this));
 	}
 
 	@Override
@@ -1097,7 +1097,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
 			this.lastNetherPortalDirectionVector = oldPlayer.lastNetherPortalDirectionVector;
 			this.lastNetherPortalDirection = oldPlayer.lastNetherPortalDirection;
-		} else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
+		} else if (this.world.getGameRules().getBoolean(GameRules.field_19389) || oldPlayer.isSpectator()) {
 			this.inventory.clone(oldPlayer.inventory);
 			this.experienceLevel = oldPlayer.experienceLevel;
 			this.totalExperience = oldPlayer.totalExperience;

@@ -8,7 +8,7 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.JsonSerializable;
+import net.minecraft.util.JsonSerializer;
 
 public class InvertedLootCondition implements LootCondition {
 	private final LootCondition term;
@@ -18,7 +18,7 @@ public class InvertedLootCondition implements LootCondition {
 	}
 
 	@Override
-	public LootConditionType method_29325() {
+	public LootConditionType getType() {
 		return LootConditionTypes.INVERTED;
 	}
 
@@ -42,7 +42,7 @@ public class InvertedLootCondition implements LootCondition {
 		return () -> invertedLootCondition;
 	}
 
-	public static class Factory implements JsonSerializable<InvertedLootCondition> {
+	public static class Serializer implements JsonSerializer<InvertedLootCondition> {
 		public void toJson(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("term", jsonSerializationContext.serialize(invertedLootCondition.term));
 		}

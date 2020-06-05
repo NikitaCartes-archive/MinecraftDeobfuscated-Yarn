@@ -216,7 +216,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		if (bl && !this.isSilent()) {
-			SoundEvent soundEvent = this.method_28368();
+			SoundEvent soundEvent = this.getEatSound();
 			if (soundEvent != null) {
 				this.world
 					.playSound(
@@ -224,7 +224,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 						this.getX(),
 						this.getY(),
 						this.getZ(),
-						this.method_28368(),
+						this.getEatSound(),
 						this.getSoundCategory(),
 						1.0F,
 						1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
@@ -237,7 +237,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	protected boolean isImmobile() {
-		return this.method_29504() || this.isEatingGrass();
+		return this.isDead() || this.isEatingGrass();
 	}
 
 	@Nullable
@@ -280,7 +280,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Nullable
 	@Override
-	protected SoundEvent method_28368() {
+	protected SoundEvent getEatSound() {
 		return SoundEvents.ENTITY_LLAMA_EAT;
 	}
 

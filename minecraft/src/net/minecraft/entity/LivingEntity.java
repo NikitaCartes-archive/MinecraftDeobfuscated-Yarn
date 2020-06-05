@@ -135,7 +135,7 @@ public abstract class LivingEntity extends Entity {
 	public Hand preferredHand;
 	public int handSwingTicks;
 	public int stuckArrowTimer;
-	public int field_20347;
+	public int stuckStingerTimer;
 	public int hurtTime;
 	public int maxHurtTime;
 	public float knockbackVelocity;
@@ -191,7 +191,7 @@ public abstract class LivingEntity extends Entity {
 	protected int itemUseTimeLeft;
 	protected int roll;
 	private BlockPos lastBlockPos;
-	private Optional<BlockPos> field_22418 = Optional.empty();
+	private Optional<BlockPos> climbingPos = Optional.empty();
 	private DamageSource lastDamageSource;
 	private long lastDamageTime;
 	protected int pushCooldown;
@@ -262,8 +262,8 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		if (!this.world.isClient && onGround && this.fallDistance > 0.0F) {
-			this.method_29501();
-			this.method_29502();
+			this.removeSoulSpeedBoost();
+			this.addSoulSpeedBoostIfNeeded();
 		}
 
 		if (!this.world.isClient && this.fallDistance > 3.0F && onGround) {
@@ -295,8 +295,8 @@ public abstract class LivingEntity extends Entity {
 			this.getSleepingPosition().ifPresent(this::setPositionInBed);
 		}
 
-		if (this.shouldGetSoulSpeedBoost()) {
-			this.applySoulSpeedClientEffects();
+		if (this.shouldDisplaySoulSpeedEffects()) {
+			this.displaySoulSpeedEffects();
 		}
 
 		super.baseTick();
@@ -368,7 +368,7 @@ public abstract class LivingEntity extends Entity {
 			this.timeUntilRegen--;
 		}
 
-		if (this.method_29504()) {
+		if (this.isDead()) {
 			this.updatePostDeath();
 		}
 
@@ -399,7 +399,7 @@ public abstract class LivingEntity extends Entity {
 		this.world.getProfiler().pop();
 	}
 
-	public boolean shouldGetSoulSpeedBoost() {
+	public boolean shouldDisplaySoulSpeedEffects() {
 		return this.age % 5 == 0
 			&& this.getVelocity().x != 0.0
 			&& this.getVelocity().z != 0.0
@@ -408,7 +408,7 @@ public abstract class LivingEntity extends Entity {
 			&& this.isOnSoulSpeedBlock();
 	}
 
-	protected void applySoulSpeedClientEffects() {
+	protected void displaySoulSpeedEffects() {
 		Vec3d vec3d = this.getVelocity();
 		this.world
 			.addParticle(
@@ -437,7 +437,7 @@ public abstract class LivingEntity extends Entity {
 		return !blockState.isAir() || this.isFallFlying();
 	}
 
-	protected void method_29501() {
+	protected void removeSoulSpeedBoost() {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (entityAttributeInstance != null) {
 			if (entityAttributeInstance.getModifier(SOUL_SPEED_BOOST_ID) != null) {
@@ -446,7 +446,7 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	protected void method_29502() {
+	protected void addSoulSpeedBoostIfNeeded() {
 		if (!this.getLandingBlockState().isAir()) {
 			int i = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this);
 			if (i > 0 && this.isOnSoulSpeedBlock()) {
@@ -475,10 +475,10 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		if (this.method_29500(this.getLandingBlockState())) {
-			this.method_29501();
+			this.removeSoulSpeedBoost();
 		}
 
-		this.method_29502();
+		this.addSoulSpeedBoostIfNeeded();
 	}
 
 	public boolean isBaby() {
@@ -546,8 +546,8 @@ public abstract class LivingEntity extends Entity {
 		return this.lastAttackedTime;
 	}
 
-	public void method_29505(@Nullable PlayerEntity playerEntity) {
-		this.attackingPlayer = playerEntity;
+	public void setAttacking(@Nullable PlayerEntity attacking) {
+		this.attackingPlayer = attacking;
 		this.playerHitTimer = this.age;
 	}
 
@@ -858,13 +858,13 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_26082(StatusEffectInstance statusEffectInstance) {
-		if (this.canHaveStatusEffect(statusEffectInstance)) {
-			StatusEffectInstance statusEffectInstance2 = (StatusEffectInstance)this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
-			if (statusEffectInstance2 == null) {
-				this.onStatusEffectApplied(statusEffectInstance);
+	public void applyStatusEffect(StatusEffectInstance effect) {
+		if (this.canHaveStatusEffect(effect)) {
+			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)this.activeStatusEffects.put(effect.getEffectType(), effect);
+			if (statusEffectInstance == null) {
+				this.onStatusEffectApplied(effect);
 			} else {
-				this.onStatusEffectUpgraded(statusEffectInstance, true);
+				this.onStatusEffectUpgraded(effect, true);
 			}
 		}
 	}
@@ -940,7 +940,7 @@ public abstract class LivingEntity extends Entity {
 		this.dataTracker.set(HEALTH, MathHelper.clamp(health, 0.0F, this.getMaxHealth()));
 	}
 
-	public boolean method_29504() {
+	public boolean isDead() {
 		return this.getHealth() <= 0.0F;
 	}
 
@@ -950,7 +950,7 @@ public abstract class LivingEntity extends Entity {
 			return false;
 		} else if (this.world.isClient) {
 			return false;
-		} else if (this.method_29504()) {
+		} else if (this.isDead()) {
 			return false;
 		} else if (source.isFire() && this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 			return false;
@@ -1064,7 +1064,7 @@ public abstract class LivingEntity extends Entity {
 				}
 			}
 
-			if (this.method_29504()) {
+			if (this.isDead()) {
 				if (!this.tryUseTotem(source)) {
 					SoundEvent soundEvent = this.getDeathSound();
 					if (bl2 && soundEvent != null) {
@@ -1233,7 +1233,7 @@ public abstract class LivingEntity extends Entity {
 		if (!this.world.isClient) {
 			boolean bl = false;
 			if (adversary instanceof WitherEntity) {
-				if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+				if (this.world.getGameRules().getBoolean(GameRules.field_19388)) {
 					BlockPos blockPos = this.getBlockPos();
 					BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
 					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -1260,7 +1260,7 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		boolean bl = this.playerHitTimer > 0;
-		if (this.shouldDropLoot() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+		if (this.shouldDropLoot() && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
 			this.dropLoot(source, bl);
 			this.dropEquipment(source, i, bl);
 		}
@@ -1274,7 +1274,7 @@ public abstract class LivingEntity extends Entity {
 
 	protected void dropXp() {
 		if (!this.world.isClient
-			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.field_19391))) {
 			int i = this.getCurrentExperience(this.attackingPlayer);
 
 			while (i > 0) {
@@ -1350,12 +1350,12 @@ public abstract class LivingEntity extends Entity {
 	public void setOnGround(boolean onGround) {
 		super.setOnGround(onGround);
 		if (onGround) {
-			this.field_22418 = Optional.empty();
+			this.climbingPos = Optional.empty();
 		}
 	}
 
-	public Optional<BlockPos> method_24832() {
-		return this.field_22418;
+	public Optional<BlockPos> getClimbingPos() {
+		return this.climbingPos;
 	}
 
 	public boolean isClimbing() {
@@ -1366,10 +1366,10 @@ public abstract class LivingEntity extends Entity {
 			BlockState blockState = this.getBlockState();
 			Block block = blockState.getBlock();
 			if (block.isIn(BlockTags.CLIMBABLE)) {
-				this.field_22418 = Optional.of(blockPos);
+				this.climbingPos = Optional.of(blockPos);
 				return true;
 			} else if (block instanceof TrapdoorBlock && this.canEnterTrapdoor(blockPos, blockState)) {
-				this.field_22418 = Optional.of(blockPos);
+				this.climbingPos = Optional.of(blockPos);
 				return true;
 			} else {
 				return false;
@@ -1847,7 +1847,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected boolean isImmobile() {
-		return this.method_29504();
+		return this.isDead();
 	}
 
 	@Override
@@ -1907,7 +1907,7 @@ public abstract class LivingEntity extends Entity {
 		return 0.8F;
 	}
 
-	public boolean canWalkOnLava(Fluid fluid) {
+	public boolean canWalkOnFluid(Fluid fluid) {
 		return false;
 	}
 
@@ -1921,7 +1921,7 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			FluidState fluidState = this.world.getFluidState(this.getBlockPos());
-			if (this.isTouchingWater() && (!(this instanceof PlayerEntity) || !((PlayerEntity)this).abilities.flying) && !this.canWalkOnLava(fluidState.getFluid())) {
+			if (this.isTouchingWater() && (!(this instanceof PlayerEntity) || !((PlayerEntity)this).abilities.flying) && !this.canWalkOnFluid(fluidState.getFluid())) {
 				double e = this.getY();
 				float f = this.isSprinting() ? 0.9F : this.getBaseMovementSpeedMultiplier();
 				float g = 0.02F;
@@ -1956,7 +1956,7 @@ public abstract class LivingEntity extends Entity {
 				if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + 0.6F - this.getY() + e, vec3d2.z)) {
 					this.setVelocity(vec3d2.x, 0.3F, vec3d2.z);
 				}
-			} else if (this.isInLava() && (!(this instanceof PlayerEntity) || !((PlayerEntity)this).abilities.flying) && !this.canWalkOnLava(fluidState.getFluid())) {
+			} else if (this.isInLava() && (!(this instanceof PlayerEntity) || !((PlayerEntity)this).abilities.flying) && !this.canWalkOnFluid(fluidState.getFluid())) {
 				double ex = this.getY();
 				this.updateVelocity(0.02F, movementInput);
 				this.move(MovementType.SELF, this.getVelocity());
@@ -2133,12 +2133,12 @@ public abstract class LivingEntity extends Entity {
 
 			int j = this.getStingerCount();
 			if (j > 0) {
-				if (this.field_20347 <= 0) {
-					this.field_20347 = 20 * (30 - j);
+				if (this.stuckStingerTimer <= 0) {
+					this.stuckStingerTimer = 20 * (30 - j);
 				}
 
-				this.field_20347--;
-				if (this.field_20347 <= 0) {
+				this.stuckStingerTimer--;
+				if (this.stuckStingerTimer <= 0) {
 					this.setStingerCount(j - 1);
 				}
 			}
@@ -2392,12 +2392,12 @@ public abstract class LivingEntity extends Entity {
 
 		this.tickCramming();
 		this.world.getProfiler().pop();
-		if (!this.world.isClient && this.method_29503() && this.isWet()) {
+		if (!this.world.isClient && this.hurtByWater() && this.isWet()) {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 	}
 
-	public boolean method_29503() {
+	public boolean hurtByWater() {
 		return false;
 	}
 
@@ -2428,7 +2428,7 @@ public abstract class LivingEntity extends Entity {
 	protected void tickCramming() {
 		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
 		if (!list.isEmpty()) {
-			int i = this.world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
+			int i = this.world.getGameRules().getInt(GameRules.field_19405);
 			if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
 				int j = 0;
 
@@ -2896,8 +2896,8 @@ public abstract class LivingEntity extends Entity {
 		return ImmutableList.of(EntityPose.STANDING);
 	}
 
-	public Box getBoundingBox(EntityPose entityPose) {
-		EntityDimensions entityDimensions = this.getDimensions(entityPose);
+	public Box getBoundingBox(EntityPose pose) {
+		EntityDimensions entityDimensions = this.getDimensions(pose);
 		return new Box(
 			(double)(-entityDimensions.width / 2.0F),
 			0.0,

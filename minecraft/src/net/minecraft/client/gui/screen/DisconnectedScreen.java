@@ -4,9 +4,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -14,7 +14,7 @@ import net.minecraft.text.TranslatableText;
 public class DisconnectedScreen extends Screen {
 	private final Text reason;
 	@Nullable
-	private List<class_5348> reasonFormatted;
+	private List<StringRenderable> reasonFormatted;
 	private final Screen parent;
 	private int reasonHeight;
 
@@ -51,8 +51,8 @@ public class DisconnectedScreen extends Screen {
 		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
 		int i = this.height / 2 - this.reasonHeight / 2;
 		if (this.reasonFormatted != null) {
-			for (class_5348 lv : this.reasonFormatted) {
-				this.drawCenteredText(matrices, this.textRenderer, lv, this.width / 2, i, 16777215);
+			for (StringRenderable stringRenderable : this.reasonFormatted) {
+				this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 16777215);
 				i += 9;
 			}
 		}

@@ -10,8 +10,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5311;
-import net.minecraft.class_5313;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -50,25 +48,25 @@ public abstract class ChunkGenerator {
 	public static final Codec<ChunkGenerator> field_24746 = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::method_28506, Function.identity());
 	protected final BiomeSource biomeSource;
 	protected final BiomeSource field_24747;
-	private final class_5311 config;
+	private final StructuresConfig config;
 	private final long field_24748;
 	private final List<ChunkPos> field_24749 = Lists.<ChunkPos>newArrayList();
 
-	public ChunkGenerator(BiomeSource biomeSource, class_5311 arg) {
-		this(biomeSource, biomeSource, arg, 0L);
+	public ChunkGenerator(BiomeSource biomeSource, StructuresConfig structuresConfig) {
+		this(biomeSource, biomeSource, structuresConfig, 0L);
 	}
 
-	public ChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, class_5311 arg, long l) {
+	public ChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, StructuresConfig structuresConfig, long l) {
 		this.biomeSource = biomeSource;
 		this.field_24747 = biomeSource2;
-		this.config = arg;
+		this.config = structuresConfig;
 		this.field_24748 = l;
 	}
 
 	private void method_28509() {
 		if (this.field_24749.isEmpty()) {
-			class_5313 lv = this.config.method_28602();
-			if (lv != null && lv.method_28802() != 0) {
+			StrongholdConfig strongholdConfig = this.config.getStronghold();
+			if (strongholdConfig != null && strongholdConfig.getCount() != 0) {
 				List<Biome> list = Lists.<Biome>newArrayList();
 
 				for (Biome biome : this.biomeSource.method_28443()) {
@@ -77,9 +75,9 @@ public abstract class ChunkGenerator {
 					}
 				}
 
-				int i = lv.method_28799();
-				int j = lv.method_28802();
-				int k = lv.method_28801();
+				int i = strongholdConfig.getDistance();
+				int j = strongholdConfig.getCount();
+				int k = strongholdConfig.getSpread();
 				Random random = new Random();
 				random.setSeed(this.field_24748);
 				double d = random.nextDouble() * Math.PI * 2.0;
@@ -148,10 +146,10 @@ public abstract class ChunkGenerator {
 	}
 
 	@Nullable
-	public BlockPos locateStructure(ServerWorld serverWorld, StructureFeature<?> structureFeature, BlockPos center, int radius, boolean skipExistingChunks) {
-		if (!this.biomeSource.hasStructureFeature(structureFeature)) {
+	public BlockPos locateStructure(ServerWorld world, StructureFeature<?> feature, BlockPos center, int radius, boolean skipExistingChunks) {
+		if (!this.biomeSource.hasStructureFeature(feature)) {
 			return null;
-		} else if (structureFeature == StructureFeature.STRONGHOLD) {
+		} else if (feature == StructureFeature.STRONGHOLD) {
 			this.method_28509();
 			BlockPos blockPos = null;
 			double d = Double.MAX_VALUE;
@@ -171,9 +169,7 @@ public abstract class ChunkGenerator {
 
 			return blockPos;
 		} else {
-			return structureFeature.locateStructure(
-				serverWorld, serverWorld.getStructureAccessor(), center, radius, skipExistingChunks, serverWorld.getSeed(), this.config.method_28600(structureFeature)
-			);
+			return feature.locateStructure(world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), this.config.method_28600(feature));
 		}
 	}
 
@@ -203,7 +199,7 @@ public abstract class ChunkGenerator {
 	public void populateEntities(ChunkRegion region) {
 	}
 
-	public class_5311 getConfig() {
+	public StructuresConfig getConfig() {
 		return this.config;
 	}
 
@@ -226,7 +222,7 @@ public abstract class ChunkGenerator {
 	public void setStructureStarts(StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long l) {
 		ChunkPos chunkPos = chunk.getPos();
 		Biome biome = this.biomeSource.getBiomeForNoiseGen((chunkPos.x << 2) + 2, 0, (chunkPos.z << 2) + 2);
-		this.method_28508(DefaultBiomeFeatures.field_24697, structureAccessor, chunk, structureManager, l, chunkPos, biome);
+		this.method_28508(DefaultBiomeFeatures.STRONGHOLD, structureAccessor, chunk, structureManager, l, chunkPos, biome);
 
 		for (ConfiguredStructureFeature<?, ?> configuredStructureFeature : biome.method_28413()) {
 			this.method_28508(configuredStructureFeature, structureAccessor, chunk, structureManager, l, chunkPos, biome);

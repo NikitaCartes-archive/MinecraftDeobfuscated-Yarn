@@ -9,29 +9,24 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import net.minecraft.class_5308;
-import net.minecraft.class_5309;
-import net.minecraft.class_5310;
-import net.minecraft.class_5311;
-import net.minecraft.class_5314;
-import net.minecraft.class_5324;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorType {
 	public static final Codec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.create(
 		instance -> instance.group(
-					class_5311.CODEC.fieldOf("structures").forGetter(ChunkGeneratorType::getConfig),
-					class_5309.CODEC.fieldOf("noise").forGetter(ChunkGeneratorType::method_28559),
-					BlockState.field_24734.fieldOf("default_block").forGetter(ChunkGeneratorType::getDefaultBlock),
-					BlockState.field_24734.fieldOf("default_fluid").forGetter(ChunkGeneratorType::getDefaultFluid),
-					class_5324.method_29229(-20, 276).fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorType::getBedrockCeilingY),
-					class_5324.method_29229(-20, 276).fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorType::getBedrockFloorY),
-					class_5324.method_29229(0, 255).fieldOf("sea_level").forGetter(ChunkGeneratorType::method_28561),
+					StructuresConfig.CODEC.fieldOf("structures").forGetter(ChunkGeneratorType::getConfig),
+					NoiseConfig.CODEC.fieldOf("noise").forGetter(ChunkGeneratorType::method_28559),
+					BlockState.CODEC.fieldOf("default_block").forGetter(ChunkGeneratorType::getDefaultBlock),
+					BlockState.CODEC.fieldOf("default_fluid").forGetter(ChunkGeneratorType::getDefaultFluid),
+					NumberCodecs.rangedInt(-20, 276).fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorType::getBedrockCeilingY),
+					NumberCodecs.rangedInt(-20, 276).fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorType::getBedrockFloorY),
+					NumberCodecs.rangedInt(0, 255).fieldOf("sea_level").forGetter(ChunkGeneratorType::method_28561),
 					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorType::method_28562)
 				)
 				.apply(instance, ChunkGeneratorType::new)
@@ -41,8 +36,8 @@ public final class ChunkGeneratorType {
 			either -> either.map(ChunkGeneratorType.Preset::getChunkGeneratorType, Function.identity()),
 			chunkGeneratorType -> (Either)chunkGeneratorType.field_24787.map(Either::left).orElseGet(() -> Either.right(chunkGeneratorType))
 		);
-	private final class_5311 config;
-	private final class_5309 field_24782;
+	private final StructuresConfig config;
+	private final NoiseConfig field_24782;
 	private final BlockState defaultBlock;
 	private final BlockState defaultFluid;
 	private final int bedrockCeilingY;
@@ -51,13 +46,13 @@ public final class ChunkGeneratorType {
 	private final boolean field_24786;
 	private final Optional<ChunkGeneratorType.Preset> field_24787;
 
-	private ChunkGeneratorType(class_5311 config, class_5309 arg, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int k, boolean bl) {
-		this(config, arg, defaultBlock, defaultFluid, i, j, k, bl, Optional.empty());
+	private ChunkGeneratorType(StructuresConfig config, NoiseConfig noiseConfig, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int k, boolean bl) {
+		this(config, noiseConfig, defaultBlock, defaultFluid, i, j, k, bl, Optional.empty());
 	}
 
 	private ChunkGeneratorType(
-		class_5311 config,
-		class_5309 arg,
+		StructuresConfig config,
+		NoiseConfig noiseConfig,
 		BlockState defaultBlock,
 		BlockState defaultFluid,
 		int i,
@@ -67,7 +62,7 @@ public final class ChunkGeneratorType {
 		Optional<ChunkGeneratorType.Preset> optional
 	) {
 		this.config = config;
-		this.field_24782 = arg;
+		this.field_24782 = noiseConfig;
 		this.defaultBlock = defaultBlock;
 		this.defaultFluid = defaultFluid;
 		this.bedrockCeilingY = i;
@@ -77,11 +72,11 @@ public final class ChunkGeneratorType {
 		this.field_24787 = optional;
 	}
 
-	public class_5311 getConfig() {
+	public StructuresConfig getConfig() {
 		return this.config;
 	}
 
-	public class_5309 method_28559() {
+	public NoiseConfig method_28559() {
 		return this.field_24782;
 	}
 
@@ -126,7 +121,7 @@ public final class ChunkGeneratorType {
 
 	public static class Preset {
 		private static final Map<Identifier, ChunkGeneratorType.Preset> BY_ID = Maps.<Identifier, ChunkGeneratorType.Preset>newHashMap();
-		public static final Codec<ChunkGeneratorType.Preset> field_24788 = Identifier.field_25139
+		public static final Codec<ChunkGeneratorType.Preset> field_24788 = Identifier.CODEC
 			.<ChunkGeneratorType.Preset>flatXmap(
 				identifier -> (DataResult)Optional.ofNullable(BY_ID.get(identifier))
 						.map(DataResult::success)
@@ -135,22 +130,22 @@ public final class ChunkGeneratorType {
 			)
 			.stable();
 		public static final ChunkGeneratorType.Preset OVERWORLD = new ChunkGeneratorType.Preset(
-			"overworld", preset -> createOverworldType(new class_5311(true), false, preset)
+			"overworld", preset -> createOverworldType(new StructuresConfig(true), false, preset)
 		);
 		public static final ChunkGeneratorType.Preset AMPLIFIED = new ChunkGeneratorType.Preset(
-			"amplified", preset -> createOverworldType(new class_5311(true), true, preset)
+			"amplified", preset -> createOverworldType(new StructuresConfig(true), true, preset)
 		);
 		public static final ChunkGeneratorType.Preset NETHER = new ChunkGeneratorType.Preset(
-			"nether", preset -> createCavesType(new class_5311(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), preset)
+			"nether", preset -> createCavesType(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), preset)
 		);
 		public static final ChunkGeneratorType.Preset END = new ChunkGeneratorType.Preset(
-			"end", preset -> createIslandsType(new class_5311(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), preset, true)
+			"end", preset -> createIslandsType(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), preset, true)
 		);
 		public static final ChunkGeneratorType.Preset CAVES = new ChunkGeneratorType.Preset(
-			"caves", preset -> createCavesType(new class_5311(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset)
+			"caves", preset -> createCavesType(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset)
 		);
 		public static final ChunkGeneratorType.Preset FLOATING_ISLANDS = new ChunkGeneratorType.Preset(
-			"floating_islands", preset -> createIslandsType(new class_5311(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset, false)
+			"floating_islands", preset -> createIslandsType(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset, false)
 		);
 		private final Text text;
 		private final Identifier id;
@@ -168,12 +163,12 @@ public final class ChunkGeneratorType {
 		}
 
 		private static ChunkGeneratorType createIslandsType(
-			class_5311 config, BlockState defaultBlock, BlockState defaultFluid, ChunkGeneratorType.Preset preset, boolean bl
+			StructuresConfig config, BlockState defaultBlock, BlockState defaultFluid, ChunkGeneratorType.Preset preset, boolean bl
 		) {
 			return new ChunkGeneratorType(
 				config,
-				new class_5309(
-					128, new class_5308(2.0, 1.0, 80.0, 160.0), new class_5310(-3000, 64, -46), new class_5310(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, bl, false
+				new NoiseConfig(
+					128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-3000, 64, -46), new SlideConfig(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, bl, false
 				),
 				defaultBlock,
 				defaultFluid,
@@ -185,13 +180,24 @@ public final class ChunkGeneratorType {
 			);
 		}
 
-		private static ChunkGeneratorType createCavesType(class_5311 config, BlockState defaultBlock, BlockState defaultFluid, ChunkGeneratorType.Preset preset) {
-			Map<StructureFeature<?>, class_5314> map = Maps.<StructureFeature<?>, class_5314>newHashMap(class_5311.field_24822);
-			map.put(StructureFeature.RUINED_PORTAL, new class_5314(25, 10, 34222645));
+		private static ChunkGeneratorType createCavesType(StructuresConfig config, BlockState defaultBlock, BlockState defaultFluid, ChunkGeneratorType.Preset preset) {
+			Map<StructureFeature<?>, StructureConfig> map = Maps.<StructureFeature<?>, StructureConfig>newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
+			map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
 			return new ChunkGeneratorType(
-				new class_5311(Optional.ofNullable(config.method_28602()), map),
-				new class_5309(
-					128, new class_5308(1.0, 3.0, 80.0, 60.0), new class_5310(120, 3, 0), new class_5310(320, 4, -1), 1, 2, 0.0, 0.019921875, false, false, false, false
+				new StructuresConfig(Optional.ofNullable(config.getStronghold()), map),
+				new NoiseConfig(
+					128,
+					new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0),
+					new SlideConfig(120, 3, 0),
+					new SlideConfig(320, 4, -1),
+					1,
+					2,
+					0.0,
+					0.019921875,
+					false,
+					false,
+					false,
+					false
 				),
 				defaultBlock,
 				defaultFluid,
@@ -203,15 +209,15 @@ public final class ChunkGeneratorType {
 			);
 		}
 
-		private static ChunkGeneratorType createOverworldType(class_5311 arg, boolean bl, ChunkGeneratorType.Preset preset) {
+		private static ChunkGeneratorType createOverworldType(StructuresConfig structuresConfig, boolean bl, ChunkGeneratorType.Preset preset) {
 			double d = 0.9999999814507745;
 			return new ChunkGeneratorType(
-				arg,
-				new class_5309(
+				structuresConfig,
+				new NoiseConfig(
 					256,
-					new class_5308(0.9999999814507745, 0.9999999814507745, 80.0, 160.0),
-					new class_5310(-10, 3, 0),
-					new class_5310(-30, 0, 0),
+					new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0),
+					new SlideConfig(-10, 3, 0),
+					new SlideConfig(-30, 0, 0),
 					1,
 					2,
 					1.0,

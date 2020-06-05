@@ -21,7 +21,7 @@ public final class DesertLakesBiome extends Biome {
 				.parent("desert")
 		);
 		DefaultBiomeFeatures.method_28440(this);
-		this.addStructureFeature(DefaultBiomeFeatures.DESERT_CONFIGURED_RUINED_PORTAL);
+		this.addStructureFeature(DefaultBiomeFeatures.DESERT_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDesertLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);

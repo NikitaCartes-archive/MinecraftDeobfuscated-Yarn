@@ -32,8 +32,8 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 	private final Random random = new Random();
 	private final BlockColors blockColors;
 
-	public BlockRenderManager(BlockModels blockModels, BlockColors blockColors) {
-		this.models = blockModels;
+	public BlockRenderManager(BlockModels models, BlockColors blockColors) {
+		this.models = models;
 		this.blockColors = blockColors;
 		this.blockModelRenderer = new BlockModelRenderer(this.blockColors);
 		this.fluidRenderer = new FluidRenderer();
@@ -68,13 +68,13 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public boolean renderFluid(BlockPos blockPos, BlockRenderView blockRenderView, VertexConsumer vertexConsumer, FluidState fluidState) {
+	public boolean renderFluid(BlockPos pos, BlockRenderView blockRenderView, VertexConsumer vertexConsumer, FluidState fluidState) {
 		try {
-			return this.fluidRenderer.render(blockRenderView, blockPos, vertexConsumer, fluidState);
+			return this.fluidRenderer.render(blockRenderView, pos, vertexConsumer, fluidState);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Tesselating liquid in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
-			CrashReportSection.addBlockInfo(crashReportSection, blockPos, null);
+			CrashReportSection.addBlockInfo(crashReportSection, pos, null);
 			throw new CrashException(crashReport);
 		}
 	}
@@ -87,7 +87,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		return this.models.getModel(state);
 	}
 
-	public void renderBlockAsEntity(BlockState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumer, int light, int overlay) {
+	public void renderBlockAsEntity(BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumer, int light, int overlay) {
 		BlockRenderType blockRenderType = state.getRenderType();
 		if (blockRenderType != BlockRenderType.INVISIBLE) {
 			switch (blockRenderType) {
@@ -98,10 +98,10 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 					float g = (float)(i >> 8 & 0xFF) / 255.0F;
 					float h = (float)(i & 0xFF) / 255.0F;
 					this.blockModelRenderer
-						.render(matrixStack.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state, false)), state, bakedModel, f, g, h, light, overlay);
+						.render(matrices.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state, false)), state, bakedModel, f, g, h, light, overlay);
 					break;
 				case ENTITYBLOCK_ANIMATED:
-					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.NONE, matrixStack, vertexConsumer, light, overlay);
+					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.NONE, matrices, vertexConsumer, light, overlay);
 			}
 		}
 	}

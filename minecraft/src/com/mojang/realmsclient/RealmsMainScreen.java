@@ -32,7 +32,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
@@ -49,6 +48,7 @@ import net.minecraft.realms.RealmsObjectSelectionList;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -762,7 +762,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		int k = this.popupX0();
 		int l = this.popupY0();
 		Text text = new TranslatableText("mco.selectServer.popup");
-		List<class_5348> list = this.textRenderer.wrapLines(text, 100);
+		List<StringRenderable> list = this.textRenderer.wrapLines(text, 100);
 		if (!this.showingPopup) {
 			this.carouselIndex = 0;
 			this.carouselTick = 0;
@@ -808,10 +808,10 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		int o = 0;
 
-		for (class_5348 lv : list) {
+		for (StringRenderable stringRenderable : list) {
 			o++;
 			int p = l + 10 * o - 3;
-			this.textRenderer.draw(matrixStack, lv, (float)(this.width / 2 + 52), (float)p, 5000268);
+			this.textRenderer.draw(matrixStack, stringRenderable, (float)(this.width / 2 + 52), (float)p, 5000268);
 		}
 	}
 

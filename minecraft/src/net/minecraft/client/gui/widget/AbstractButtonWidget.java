@@ -208,7 +208,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			&& mouseY < (double)(this.y + this.height);
 	}
 
-	public void renderToolTip(MatrixStack matrixStack, int i, int j) {
+	public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
 	}
 
 	public void playDownSound(SoundManager soundManager) {

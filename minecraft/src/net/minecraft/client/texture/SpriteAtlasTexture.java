@@ -58,7 +58,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		this.spritesToLoad.clear();
 		this.spritesToLoad.addAll(data.spriteIds);
 		LOGGER.info("Created: {}x{}x{} {}-atlas", data.width, data.height, data.field_21795, this.id);
-		TextureUtil.method_24959(this.getGlId(), data.field_21795, data.width, data.height);
+		TextureUtil.allocate(this.getGlId(), data.field_21795, data.width, data.height);
 		this.clear();
 
 		for (Sprite sprite : data.sprites) {

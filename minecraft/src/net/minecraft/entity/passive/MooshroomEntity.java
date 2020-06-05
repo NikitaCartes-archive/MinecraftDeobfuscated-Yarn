@@ -105,14 +105,14 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 			}
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
 			this.sheared(SoundCategory.PLAYERS);
 			if (!this.world.isClient) {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
 			if (this.stewEffect != null) {
 				for (int i = 0; i < 2; i++) {
@@ -151,7 +151,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 				this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}

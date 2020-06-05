@@ -12,12 +12,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.function.Supplier;
-import net.minecraft.class_5363;
-import net.minecraft.class_5381;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeAccessType;
@@ -30,7 +30,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
 
 public class DimensionType {
-	private static final Codec<RegistryKey<DimensionType>> field_24751 = Identifier.field_25139
+	private static final Codec<RegistryKey<DimensionType>> REGISTRY_KEY_CODEC = Identifier.CODEC
 		.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION_TYPE_KEY), RegistryKey::getValue);
 	public static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
@@ -54,19 +54,19 @@ public class DimensionType {
 	public static final RegistryKey<DimensionType> OVERWORLD_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld"));
 	public static final RegistryKey<DimensionType> THE_NETHER_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_nether"));
 	public static final RegistryKey<DimensionType> THE_END_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_end"));
-	private static final DimensionType field_25407 = new DimensionType(
+	private static final DimensionType OVERWORLD = new DimensionType(
 		"", OptionalLong.empty(), true, false, false, true, false, false, HorizontalVoronoiBiomeAccessType.INSTANCE, Optional.of(OVERWORLD_REGISTRY_KEY), 0.0F
 	);
-	private static final DimensionType _NETHER = new DimensionType(
+	private static final DimensionType THE_NETHER = new DimensionType(
 		"_nether", OptionalLong.of(18000L), false, true, true, false, true, false, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_NETHER_REGISTRY_KEY), 0.1F
 	);
-	private static final DimensionType _END = new DimensionType(
+	private static final DimensionType THE_END = new DimensionType(
 		"_end", OptionalLong.of(6000L), false, false, false, false, false, true, VoronoiBiomeAccessType.INSTANCE, Optional.of(THE_END_REGISTRY_KEY), 0.0F
 	);
 	private static final Map<RegistryKey<DimensionType>, DimensionType> field_24759 = ImmutableMap.of(
-		OVERWORLD_REGISTRY_KEY, method_29563(), THE_NETHER_REGISTRY_KEY, _NETHER, THE_END_REGISTRY_KEY, _END
+		OVERWORLD_REGISTRY_KEY, getOverworldDimensionType(), THE_NETHER_REGISTRY_KEY, THE_NETHER, THE_END_REGISTRY_KEY, THE_END
 	);
-	private static final Codec<DimensionType> field_24760 = field_24751.<DimensionType>flatXmap(
+	private static final Codec<DimensionType> field_24760 = REGISTRY_KEY_CODEC.<DimensionType>flatXmap(
 			registryKey -> (DataResult)Optional.ofNullable(field_24759.get(registryKey))
 					.map(DataResult::success)
 					.orElseGet(() -> DataResult.error("Unknown builtin dimension: " + registryKey)),
@@ -82,7 +82,7 @@ public class DimensionType {
 					? DataResult.success(Either.left(dimensionType), Lifecycle.stable())
 					: DataResult.success(Either.right(dimensionType))
 		);
-	public static final Codec<Supplier<DimensionType>> field_24756 = class_5381.method_29749(Registry.DIMENSION_TYPE_KEY, field_25410);
+	public static final Codec<Supplier<DimensionType>> field_24756 = RegistryElementCodec.of(Registry.DIMENSION_TYPE_KEY, field_25410);
 	private final String suffix;
 	private final OptionalLong fixedTime;
 	private final boolean hasSkyLight;
@@ -96,8 +96,8 @@ public class DimensionType {
 	private final float ambientLight;
 	private final transient float[] field_24767;
 
-	public static DimensionType method_29563() {
-		return field_25407;
+	public static DimensionType getOverworldDimensionType() {
+		return OVERWORLD;
 	}
 
 	protected DimensionType(
@@ -157,25 +157,27 @@ public class DimensionType {
 		}
 	}
 
-	public static DimensionTracker.Modifiable addDefaults(DimensionTracker.Modifiable tracker) {
-		tracker.add(OVERWORLD_REGISTRY_KEY, method_29563());
-		tracker.add(THE_NETHER_REGISTRY_KEY, _NETHER);
-		tracker.add(THE_END_REGISTRY_KEY, _END);
-		return tracker;
+	public static RegistryTracker.Modifiable addRegistryDefaults(RegistryTracker.Modifiable registryTracker) {
+		registryTracker.addDimensionType(OVERWORLD_REGISTRY_KEY, getOverworldDimensionType());
+		registryTracker.addDimensionType(THE_NETHER_REGISTRY_KEY, THE_NETHER);
+		registryTracker.addDimensionType(THE_END_REGISTRY_KEY, THE_END);
+		return registryTracker;
 	}
 
-	private static ChunkGenerator method_28533(long l) {
-		return new SurfaceChunkGenerator(new TheEndBiomeSource(l), l, ChunkGeneratorType.Preset.END.getChunkGeneratorType());
+	private static ChunkGenerator createEndGenerator(long seed) {
+		return new SurfaceChunkGenerator(new TheEndBiomeSource(seed), seed, ChunkGeneratorType.Preset.END.getChunkGeneratorType());
 	}
 
-	private static ChunkGenerator method_28535(long l) {
-		return new SurfaceChunkGenerator(MultiNoiseBiomeSource.class_5305.field_24723.method_28469(l), l, ChunkGeneratorType.Preset.NETHER.getChunkGeneratorType());
+	private static ChunkGenerator createNetherGenerator(long seed) {
+		return new SurfaceChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, ChunkGeneratorType.Preset.NETHER.getChunkGeneratorType());
 	}
 
-	public static SimpleRegistry<class_5363> method_28517(long l) {
-		SimpleRegistry<class_5363> simpleRegistry = new SimpleRegistry<>(Registry.field_25490, Lifecycle.experimental());
-		simpleRegistry.add(class_5363.field_25413, new class_5363(() -> _NETHER, method_28535(l)));
-		simpleRegistry.add(class_5363.field_25414, new class_5363(() -> _END, method_28533(l)));
+	public static SimpleRegistry<DimensionOptions> method_28517(long seed) {
+		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
+		simpleRegistry.add(DimensionOptions.NETHER, new DimensionOptions(() -> THE_NETHER, createNetherGenerator(seed)));
+		simpleRegistry.add(DimensionOptions.END, new DimensionOptions(() -> THE_END, createEndGenerator(seed)));
+		simpleRegistry.markLoaded(DimensionOptions.NETHER);
+		simpleRegistry.markLoaded(DimensionOptions.END);
 		return simpleRegistry;
 	}
 
@@ -183,15 +185,15 @@ public class DimensionType {
 		return this.suffix;
 	}
 
-	public static File getSaveDirectory(RegistryKey<World> registryKey, File root) {
-		if (registryKey == World.OVERWORLD) {
+	public static File getSaveDirectory(RegistryKey<World> worldRef, File root) {
+		if (worldRef == World.OVERWORLD) {
 			return root;
-		} else if (registryKey == World.END) {
+		} else if (worldRef == World.END) {
 			return new File(root, "DIM1");
 		} else {
-			return registryKey == World.NETHER
+			return worldRef == World.NETHER
 				? new File(root, "DIM-1")
-				: new File(root, "dimensions/" + registryKey.getValue().getNamespace() + "/" + registryKey.getValue().getPath());
+				: new File(root, "dimensions/" + worldRef.getValue().getNamespace() + "/" + worldRef.getValue().getPath());
 		}
 	}
 

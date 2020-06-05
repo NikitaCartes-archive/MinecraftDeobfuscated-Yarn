@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5348;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -15,6 +14,7 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -91,11 +91,11 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
 		int k = 4;
 		if (this.results.hasSingleOutput() && this.getResults().size() > 1) {
-			minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k + 1, this.y + k + 1);
+			minecraftClient.getItemRenderer().renderInGuiWithOverrides(itemStack, this.x + k + 1, this.y + k + 1);
 			k--;
 		}
 
-		minecraftClient.getItemRenderer().method_27953(itemStack, this.x + k, this.y + k);
+		minecraftClient.getItemRenderer().renderInGui(itemStack, this.x + k, this.y + k);
 		if (bl) {
 			RenderSystem.popMatrix();
 		}
@@ -119,9 +119,9 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		return (Recipe<?>)list.get(this.currentResultIndex);
 	}
 
-	public List<class_5348> getTooltip(Screen screen) {
+	public List<StringRenderable> getTooltip(Screen screen) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
-		List<class_5348> list = Lists.<class_5348>newArrayList(screen.getTooltipFromItem(itemStack));
+		List<StringRenderable> list = Lists.<StringRenderable>newArrayList(screen.getTooltipFromItem(itemStack));
 		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
 			list.add(new TranslatableText("gui.recipebook.moreRecipes"));
 		}

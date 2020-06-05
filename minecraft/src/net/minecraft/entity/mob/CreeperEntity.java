@@ -222,7 +222,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
-			return ActionResult.method_29236(this.world.isClient);
+			return ActionResult.success(this.world.isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -230,7 +230,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 	private void explode() {
 		if (!this.world.isClient) {
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
 				? Explosion.DestructionType.DESTROY
 				: Explosion.DestructionType.NONE;
 			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;
