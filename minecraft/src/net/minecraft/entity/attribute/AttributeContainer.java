@@ -120,7 +120,7 @@ public class AttributeContainer {
 		for (int i = 0; i < tag.size(); i++) {
 			CompoundTag compoundTag = tag.getCompound(i);
 			String string = compoundTag.getString("Name");
-			Util.ifPresentOrElse(Registry.ATTRIBUTES.getOrEmpty(Identifier.tryParse(string)), entityAttribute -> {
+			Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), entityAttribute -> {
 				EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(entityAttribute);
 				if (entityAttributeInstance != null) {
 					entityAttributeInstance.fromTag(compoundTag);

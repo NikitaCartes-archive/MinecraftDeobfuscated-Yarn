@@ -53,13 +53,13 @@ public class ChunkHolder {
 	private final short[] blockUpdatePositions = new short[64];
 	private int blockUpdateCount;
 	private int sectionsNeedingUpdateMask;
+	private boolean field_25344;
 	private int blockLightUpdateBits;
 	private int skyLightUpdateBits;
 	private final LightingProvider lightingProvider;
 	private final ChunkHolder.LevelUpdateListener levelUpdateListener;
 	private final ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider;
 	private boolean ticking;
-	private boolean field_25344;
 
 	public ChunkHolder(
 		ChunkPos pos,
@@ -141,7 +141,7 @@ public class ChunkHolder {
 		return this.future;
 	}
 
-	public void markForBlockUpdate(ServerChunkManager serverChunkManager, int i, int j, int k) {
+	public void markForBlockUpdate(int i, int j, int k) {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
 			this.sectionsNeedingUpdateMask |= 1 << (j >> 4);
@@ -155,9 +155,6 @@ public class ChunkHolder {
 				}
 
 				this.blockUpdatePositions[this.blockUpdateCount++] = s;
-				if (this.blockUpdateCount == 64) {
-					serverChunkManager.method_29482(this.pos.x, this.pos.z);
-				}
 			}
 		}
 	}
@@ -177,10 +174,18 @@ public class ChunkHolder {
 	public void flushUpdates(WorldChunk worldChunk) {
 		if (this.blockUpdateCount != 0 || this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
 			World world = worldChunk.getWorld();
-			if ((this.field_25344 || this.blockUpdateCount == 64) && (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0)) {
+			if (this.blockUpdateCount == 64) {
+				this.field_25344 = true;
+			}
+
+			boolean bl = !this.field_25344;
+			this.field_25344 = this.field_25344 && this.lightingProvider.hasUpdates();
+			if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
 				this.sendPacketToPlayersWatching(
-					new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits), false
+					new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, bl), bl
 				);
+				this.skyLightUpdateBits = 0;
+				this.blockLightUpdateBits = 0;
 			}
 
 			if (this.blockUpdateCount == 1) {
@@ -210,9 +215,6 @@ public class ChunkHolder {
 
 			this.blockUpdateCount = 0;
 			this.sectionsNeedingUpdateMask = 0;
-			this.field_25344 = false;
-			this.skyLightUpdateBits = 0;
-			this.blockLightUpdateBits = 0;
 		}
 	}
 
@@ -382,10 +384,6 @@ public class ChunkHolder {
 		}
 
 		this.updateFuture(CompletableFuture.completedFuture(Either.left(readOnlyChunk.getWrappedChunk())));
-	}
-
-	public void method_29481() {
-		this.field_25344 = true;
 	}
 
 	public static enum LevelType {

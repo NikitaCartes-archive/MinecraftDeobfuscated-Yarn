@@ -61,10 +61,21 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 			);
 		}
 
+		public static BredAnimalsCriterion.Conditions method_29918(
+			EntityPredicate entityPredicate, EntityPredicate entityPredicate2, EntityPredicate entityPredicate3
+		) {
+			return new BredAnimalsCriterion.Conditions(
+				EntityPredicate.Extended.EMPTY,
+				EntityPredicate.Extended.ofLegacy(entityPredicate),
+				EntityPredicate.Extended.ofLegacy(entityPredicate2),
+				EntityPredicate.Extended.ofLegacy(entityPredicate3)
+			);
+		}
+
 		public boolean matches(LootContext lootContext, LootContext lootContext2, @Nullable LootContext lootContext3) {
-			return lootContext3 != null && !this.child.test(lootContext3)
-				? false
-				: this.parent.test(lootContext) && this.partner.test(lootContext2) || this.parent.test(lootContext2) && this.partner.test(lootContext);
+			return this.child == EntityPredicate.Extended.EMPTY || lootContext3 != null && this.child.test(lootContext3)
+				? this.parent.test(lootContext) && this.partner.test(lootContext2) || this.parent.test(lootContext2) && this.partner.test(lootContext)
+				: false;
 		}
 
 		@Override

@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -36,7 +37,7 @@ public class EndPortalBlock extends BlockWithEntity {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!world.isClient
+		if (world instanceof ServerWorld
 			&& !entity.hasVehicle()
 			&& !entity.hasPassengers()
 			&& entity.canUsePortals()
@@ -45,8 +46,13 @@ public class EndPortalBlock extends BlockWithEntity {
 				state.getOutlineShape(world, pos),
 				BooleanBiFunction.AND
 			)) {
-			RegistryKey<World> registryKey = world.getDimension().isEnd() ? World.OVERWORLD : World.END;
-			entity.changeDimension(registryKey);
+			RegistryKey<World> registryKey = world.getRegistryKey() == World.END ? World.OVERWORLD : World.END;
+			ServerWorld serverWorld = ((ServerWorld)world).getServer().getWorld(registryKey);
+			if (serverWorld == null) {
+				return;
+			}
+
+			entity.changeDimension(serverWorld);
 		}
 	}
 

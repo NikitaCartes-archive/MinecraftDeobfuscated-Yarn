@@ -136,5 +136,9 @@ public class ModelTransformation {
 		GUI,
 		GROUND,
 		FIXED;
+
+		public boolean method_29998() {
+			return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
+		}
 	}
 }

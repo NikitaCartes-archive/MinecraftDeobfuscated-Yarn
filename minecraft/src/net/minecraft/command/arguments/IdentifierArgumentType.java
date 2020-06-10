@@ -62,7 +62,7 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 
 	public static EntityAttribute method_27575(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		Identifier identifier = commandContext.getArgument(string, Identifier.class);
-		return (EntityAttribute)Registry.ATTRIBUTES.getOrEmpty(identifier).orElseThrow(() -> field_24267.create(identifier));
+		return (EntityAttribute)Registry.ATTRIBUTE.getOrEmpty(identifier).orElseThrow(() -> field_24267.create(identifier));
 	}
 
 	public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {

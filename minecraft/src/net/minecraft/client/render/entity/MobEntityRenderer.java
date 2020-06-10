@@ -15,6 +15,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
 @Environment(EnvType.CLIENT)
@@ -64,12 +65,13 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 			- 0.25;
 		double m = MathHelper.lerp((double)f, entity.prevZ, entity.getZ()) - h * 0.7 + g * 0.5 * j;
 		double n = (double)(MathHelper.lerp(f, mobEntity.bodyYaw, mobEntity.prevBodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
-		g = Math.cos(n) * (double)mobEntity.getWidth() * 0.4;
-		h = Math.sin(n) * (double)mobEntity.getWidth() * 0.4;
+		Vec3d vec3d = mobEntity.method_29919();
+		g = Math.cos(n) * vec3d.z + Math.sin(n) * vec3d.x;
+		h = Math.sin(n) * vec3d.z - Math.cos(n) * vec3d.x;
 		double o = MathHelper.lerp((double)f, mobEntity.prevX, mobEntity.getX()) + g;
-		double p = MathHelper.lerp((double)f, mobEntity.prevY, mobEntity.getY());
+		double p = MathHelper.lerp((double)f, mobEntity.prevY, mobEntity.getY()) + vec3d.y;
 		double q = MathHelper.lerp((double)f, mobEntity.prevZ, mobEntity.getZ()) + h;
-		matrixStack.translate(g, -(1.6 - (double)mobEntity.getHeight()) * 0.5, h);
+		matrixStack.translate(g, vec3d.y, h);
 		float r = (float)(k - o);
 		float s = (float)(l - p);
 		float t = (float)(m - q);
@@ -119,7 +121,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 
 		float s = (float)m / (float)l;
 		float t = f * s;
-		float u = g * (s * s + s) * 0.5F + ((float)l - (float)m) / ((float)l * 0.75F) + 0.125F;
+		float u = g > 0.0F ? g * s * s : g - g * (1.0F - s) * (1.0F - s);
 		float v = h * s;
 		if (!bl) {
 			vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0F).light(i).next();

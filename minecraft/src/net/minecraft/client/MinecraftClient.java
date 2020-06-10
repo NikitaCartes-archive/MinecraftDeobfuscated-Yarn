@@ -225,6 +225,7 @@ import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.GeneratorOptions;
@@ -1514,7 +1515,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		while (this.options.keySwapHands.wasPressed()) {
 			if (!this.player.isSpectator()) {
-				this.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, Direction.DOWN));
+				this.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ORIGIN, Direction.DOWN));
 			}
 		}
 
@@ -1771,6 +1772,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							runnable.run();
 						} else {
 							this.openScreen(null);
+
+							try (LevelStorage.Session session = this.levelStorage.createSession(string)) {
+								session.deleteSessionLock();
+							} catch (IOException var17) {
+								SystemToast.addWorldDeleteFailureToast(this, string);
+								LOGGER.error("Failed to delete world {}", string, var17);
+							}
 						}
 					},
 					new TranslatableText("selectWorld.backupQuestion.experimental"),
@@ -1870,10 +1878,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private void reset(Screen screen) {
 		this.profiler.push("forcedTick");
-		this.musicTracker.stop();
 		this.soundManager.stopAll();
 		this.cameraEntity = null;
 		this.connection = null;
+		this.openScreen(screen);
+		this.render(false);
+		this.profiler.pop();
+	}
+
+	public void method_29970(Screen screen) {
+		this.profiler.push("forcedTick");
 		this.openScreen(screen);
 		this.render(false);
 		this.profiler.pop();
@@ -2249,7 +2263,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (this.currentScreen instanceof CreditsScreen) {
 			return MusicType.CREDITS;
 		} else if (this.player != null) {
-			if (this.player.world.getDimension().isEnd()) {
+			if (this.player.world.getRegistryKey() == World.END) {
 				return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicType.DRAGON : MusicType.END;
 			} else {
 				Biome.Category category = this.player.world.getBiome(this.player.getBlockPos()).getCategory();

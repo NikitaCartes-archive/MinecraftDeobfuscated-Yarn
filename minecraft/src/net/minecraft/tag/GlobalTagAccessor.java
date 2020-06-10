@@ -44,13 +44,17 @@ public class GlobalTagAccessor<T> {
 		return this.currentContainer;
 	}
 
+	public List<GlobalTagAccessor.CachedTag<T>> method_29902() {
+		return this.tags;
+	}
+
 	public Set<Identifier> method_29224(TagContainer<T> tagContainer) {
 		Set<Identifier> set = (Set<Identifier>)this.tags.stream().map(GlobalTagAccessor.CachedTag::getId).collect(Collectors.toSet());
 		ImmutableSet<Identifier> immutableSet = ImmutableSet.copyOf(tagContainer.getKeys());
 		return Sets.<Identifier>difference(set, immutableSet);
 	}
 
-	static class CachedTag<T> implements Tag.Identified<T> {
+	public static class CachedTag<T> implements Tag.Identified<T> {
 		@Nullable
 		private Tag<T> currentTag;
 		protected final Identifier id;

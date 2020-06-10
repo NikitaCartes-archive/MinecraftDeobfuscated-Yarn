@@ -3,12 +3,14 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.Box;
+import net.minecraft.world.GameRules;
 
 public class RevengeGoal extends TrackTargetGoal {
 	private static final TargetPredicate VALID_AVOIDABLES_PREDICATE = new TargetPredicate().includeHidden().ignoreDistanceScalingFactor();
@@ -28,13 +30,17 @@ public class RevengeGoal extends TrackTargetGoal {
 		int i = this.mob.getLastAttackedTime();
 		LivingEntity livingEntity = this.mob.getAttacker();
 		if (i != this.lastAttackedTime && livingEntity != null) {
-			for (Class<?> class_ : this.noRevengeTypes) {
-				if (class_.isAssignableFrom(livingEntity.getClass())) {
-					return false;
+			if (livingEntity.getType() == EntityType.PLAYER && this.mob.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
+				return false;
+			} else {
+				for (Class<?> class_ : this.noRevengeTypes) {
+					if (class_.isAssignableFrom(livingEntity.getClass())) {
+						return false;
+					}
 				}
-			}
 
-			return this.canTrack(livingEntity, VALID_AVOIDABLES_PREDICATE);
+				return this.canTrack(livingEntity, VALID_AVOIDABLES_PREDICATE);
+			}
 		} else {
 			return false;
 		}
@@ -61,22 +67,18 @@ public class RevengeGoal extends TrackTargetGoal {
 
 	protected void callSameTypeForRevenge() {
 		double d = this.getFollowRange();
-		List<MobEntity> list = this.mob
-			.world
-			.getEntitiesIncludingUngeneratedChunks(
-				this.mob.getClass(),
-				new Box(this.mob.getX(), this.mob.getY(), this.mob.getZ(), this.mob.getX() + 1.0, this.mob.getY() + 1.0, this.mob.getZ() + 1.0).expand(d, 10.0, d)
-			);
-		Iterator var4 = list.iterator();
+		Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0, d);
+		List<MobEntity> list = this.mob.world.getEntitiesIncludingUngeneratedChunks(this.mob.getClass(), box);
+		Iterator var5 = list.iterator();
 
 		while (true) {
 			MobEntity mobEntity;
 			while (true) {
-				if (!var4.hasNext()) {
+				if (!var5.hasNext()) {
 					return;
 				}
 
-				mobEntity = (MobEntity)var4.next();
+				mobEntity = (MobEntity)var5.next();
 				if (this.mob != mobEntity
 					&& mobEntity.getTarget() == null
 					&& (!(this.mob instanceof TameableEntity) || ((TameableEntity)this.mob).getOwner() == ((TameableEntity)mobEntity).getOwner())

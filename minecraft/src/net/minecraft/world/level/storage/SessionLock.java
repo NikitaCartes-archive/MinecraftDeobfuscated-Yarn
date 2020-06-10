@@ -25,7 +25,7 @@ public class SessionLock implements AutoCloseable {
 			Files.createDirectories(path);
 		}
 
-		FileChannel fileChannel = FileChannel.open(path2, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.DELETE_ON_CLOSE);
+		FileChannel fileChannel = FileChannel.open(path2, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 
 		try {
 			fileChannel.write(field_25353.duplicate());

@@ -24,8 +24,11 @@ public class DyeItem extends Item {
 		if (entity instanceof SheepEntity) {
 			SheepEntity sheepEntity = (SheepEntity)entity;
 			if (sheepEntity.isAlive() && !sheepEntity.isSheared() && sheepEntity.getColor() != this.color) {
-				sheepEntity.setColor(this.color);
-				stack.decrement(1);
+				if (!user.world.isClient) {
+					sheepEntity.setColor(this.color);
+					stack.decrement(1);
+				}
+
 				return ActionResult.success(user.world.isClient);
 			}
 		}

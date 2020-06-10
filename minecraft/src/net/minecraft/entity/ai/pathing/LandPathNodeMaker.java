@@ -514,6 +514,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						if (method_27138(blockState)) {
 							return PathNodeType.DANGER_FIRE;
 						}
+
+						if (blockView.getFluidState(mutable).matches(FluidTags.WATER)) {
+							return PathNodeType.WATER_BORDER;
+						}
 					}
 				}
 			}

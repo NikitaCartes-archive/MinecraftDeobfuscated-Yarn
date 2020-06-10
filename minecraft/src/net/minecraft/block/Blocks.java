@@ -730,13 +730,7 @@ public class Blocks {
 	public static final Block NETHER_PORTAL = register(
 		"nether_portal",
 		new NetherPortalBlock(
-			AbstractBlock.Settings.of(Material.PORTAL)
-				.noCollision()
-				.ticksRandomly()
-				.strength(-1.0F)
-				.sounds(BlockSoundGroup.GLASS)
-				.lightLevel(state -> 11)
-				.dropsNothing()
+			AbstractBlock.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0F).sounds(BlockSoundGroup.GLASS).lightLevel(state -> 11)
 		)
 	);
 	public static final Block CARVED_PUMPKIN = register(

@@ -78,20 +78,8 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		if (direction == null) {
 			matrixStack.translate(0.5, 0.0, 0.5);
 		} else {
-			switch (direction) {
-				case NORTH:
-					matrixStack.translate(0.5, 0.25, 0.74F);
-					break;
-				case SOUTH:
-					matrixStack.translate(0.5, 0.25, 0.26F);
-					break;
-				case WEST:
-					matrixStack.translate(0.74F, 0.25, 0.5);
-					break;
-				case EAST:
-				default:
-					matrixStack.translate(0.26F, 0.25, 0.5);
-			}
+			float h = 0.25F;
+			matrixStack.translate((double)(0.5F - (float)direction.getOffsetX() * 0.25F), 0.25, (double)(0.5F - (float)direction.getOffsetZ() * 0.25F));
 		}
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);

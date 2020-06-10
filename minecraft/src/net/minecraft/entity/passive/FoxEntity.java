@@ -688,6 +688,12 @@ public class FoxEntity extends AnimalEntity {
 		return true;
 	}
 
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.55F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
+
 	class AttackGoal extends MeleeAttackGoal {
 		public AttackGoal(double speed, boolean pauseWhenIdle) {
 			super(FoxEntity.this, speed, pauseWhenIdle);

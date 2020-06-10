@@ -46,8 +46,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public class TradeOffers {
 	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(
 		Maps.<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>>newHashMap(),
-		hashMap -> {
-			hashMap.put(
+		map -> {
+			map.put(
 				VillagerProfession.FARMER,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -84,7 +84,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.FISHERMAN,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -128,7 +128,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.SHEPHERD,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -234,7 +234,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.FLETCHER,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -261,7 +261,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.LIBRARIAN,
 				copyToFastUtilMap(
 					ImmutableMap.<Integer, TradeOffers.Factory[]>builder()
@@ -302,7 +302,7 @@ public class TradeOffers {
 						.build()
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.CARTOGRAPHER,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -343,7 +343,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.CLERIC,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -372,7 +372,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.ARMORER,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -412,7 +412,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.WEAPONSMITH,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -437,7 +437,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.TOOLSMITH,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -472,7 +472,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.BUTCHER,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -500,7 +500,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.LEATHERWORKER,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -531,7 +531,7 @@ public class TradeOffers {
 					)
 				)
 			);
-			hashMap.put(
+			map.put(
 				VillagerProfession.MASON,
 				copyToFastUtilMap(
 					ImmutableMap.of(
@@ -672,8 +672,8 @@ public class TradeOffers {
 		)
 	);
 
-	private static Int2ObjectMap<TradeOffers.Factory[]> copyToFastUtilMap(ImmutableMap<Integer, TradeOffers.Factory[]> immutableMap) {
-		return new Int2ObjectOpenHashMap<>(immutableMap);
+	private static Int2ObjectMap<TradeOffers.Factory[]> copyToFastUtilMap(ImmutableMap<Integer, TradeOffers.Factory[]> map) {
+		return new Int2ObjectOpenHashMap<>(map);
 	}
 
 	static class BuyForOneEmeraldFactory implements TradeOffers.Factory {
@@ -683,8 +683,8 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public BuyForOneEmeraldFactory(ItemConvertible itemConvertible, int price, int maxUses, int experience) {
-			this.buy = itemConvertible.asItem();
+		public BuyForOneEmeraldFactory(ItemConvertible item, int price, int maxUses, int experience) {
+			this.buy = item.asItem();
 			this.price = price;
 			this.maxUses = maxUses;
 			this.experience = experience;
@@ -724,7 +724,15 @@ public class TradeOffers {
 		}
 	}
 
+	/**
+	 * A factory to create trade offers.
+	 */
 	public interface Factory {
+		/**
+		 * Creates a trade offer.
+		 * 
+		 * @return a new trade offer, or {@code null} if none should be created
+		 */
 		@Nullable
 		TradeOffer create(Entity entity, Random random);
 	}
@@ -739,12 +747,12 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public ProcessItemFactory(ItemConvertible itemConvertible, int secondCount, Item sellItem, int sellCount, int maxUses, int experience) {
-			this(itemConvertible, secondCount, 1, sellItem, sellCount, maxUses, experience);
+		public ProcessItemFactory(ItemConvertible item, int secondCount, Item sellItem, int sellCount, int maxUses, int experience) {
+			this(item, secondCount, 1, sellItem, sellCount, maxUses, experience);
 		}
 
-		public ProcessItemFactory(ItemConvertible itemConvertible, int secondCount, int price, Item sellItem, int sellCount, int maxUses, int experience) {
-			this.secondBuy = new ItemStack(itemConvertible);
+		public ProcessItemFactory(ItemConvertible item, int secondCount, int price, Item sellItem, int sellCount, int maxUses, int experience) {
+			this.secondBuy = new ItemStack(item);
 			this.secondCount = secondCount;
 			this.price = price;
 			this.sell = new ItemStack(sellItem);
@@ -848,24 +856,24 @@ public class TradeOffers {
 		private final int experience;
 		private final float multiplier;
 
-		public SellItemFactory(Block block, int i, int j, int k, int l) {
-			this(new ItemStack(block), i, j, k, l);
+		public SellItemFactory(Block block, int price, int count, int maxUses, int experience) {
+			this(new ItemStack(block), price, count, maxUses, experience);
 		}
 
-		public SellItemFactory(Item item, int i, int j, int k) {
-			this(new ItemStack(item), i, j, 12, k);
+		public SellItemFactory(Item item, int price, int count, int experience) {
+			this(new ItemStack(item), price, count, 12, experience);
 		}
 
-		public SellItemFactory(Item item, int i, int j, int k, int l) {
-			this(new ItemStack(item), i, j, k, l);
+		public SellItemFactory(Item item, int price, int count, int maxUses, int experience) {
+			this(new ItemStack(item), price, count, maxUses, experience);
 		}
 
-		public SellItemFactory(ItemStack itemStack, int i, int j, int k, int l) {
-			this(itemStack, i, j, k, l, 0.05F);
+		public SellItemFactory(ItemStack stack, int price, int count, int maxUses, int experience) {
+			this(stack, price, count, maxUses, experience, 0.05F);
 		}
 
-		public SellItemFactory(ItemStack itemStack, int price, int count, int maxUses, int experience, float multiplier) {
-			this.sell = itemStack;
+		public SellItemFactory(ItemStack stack, int price, int count, int maxUses, int experience, float multiplier) {
+			this.sell = stack;
 			this.price = price;
 			this.count = count;
 			this.maxUses = maxUses;
@@ -888,9 +896,9 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 
-		public SellMapFactory(int price, StructureFeature<?> structureFeature, MapIcon.Type iconType, int maxUses, int experience) {
+		public SellMapFactory(int price, StructureFeature<?> feature, MapIcon.Type iconType, int maxUses, int experience) {
 			this.price = price;
-			this.structure = structureFeature;
+			this.structure = feature;
 			this.iconType = iconType;
 			this.maxUses = maxUses;
 			this.experience = experience;
@@ -957,8 +965,8 @@ public class TradeOffers {
 		final int experience;
 		private final float multiplier;
 
-		public SellSuspiciousStewFactory(StatusEffect statusEffect, int duration, int experience) {
-			this.effect = statusEffect;
+		public SellSuspiciousStewFactory(StatusEffect effect, int duration, int experience) {
+			this.effect = effect;
 			this.duration = duration;
 			this.experience = experience;
 			this.multiplier = 0.05F;
@@ -979,13 +987,13 @@ public class TradeOffers {
 		private final int maxUses;
 		private final int experience;
 
-		public TypeAwareBuyForOneEmeraldFactory(int i, int j, int experience, Map<VillagerType, Item> map) {
+		public TypeAwareBuyForOneEmeraldFactory(int count, int maxUses, int experience, Map<VillagerType, Item> map) {
 			Registry.VILLAGER_TYPE.stream().filter(villagerType -> !map.containsKey(villagerType)).findAny().ifPresent(villagerType -> {
 				throw new IllegalStateException("Missing trade for villager type: " + Registry.VILLAGER_TYPE.getId(villagerType));
 			});
 			this.map = map;
-			this.count = i;
-			this.maxUses = j;
+			this.count = count;
+			this.maxUses = maxUses;
 			this.experience = experience;
 		}
 

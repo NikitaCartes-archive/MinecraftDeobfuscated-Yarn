@@ -89,7 +89,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 					)
 				);
 				player.incrementStat(Stats.OPEN_ENDERCHEST);
-				PiglinBrain.onGoldBlockBroken(player);
+				PiglinBrain.onGoldBlockBroken(player, true);
 				return ActionResult.CONSUME;
 			}
 		} else {

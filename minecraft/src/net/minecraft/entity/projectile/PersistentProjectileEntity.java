@@ -354,7 +354,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 				this.onHit(livingEntity);
 				if (entity2 != null && livingEntity != entity2 && livingEntity instanceof PlayerEntity && entity2 instanceof ServerPlayerEntity && !this.isSilent()) {
-					((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(6, 0.0F));
+					((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25651, 0.0F));
 				}
 
 				if (!entity.isAlive() && this.piercingKilledEntities != null) {

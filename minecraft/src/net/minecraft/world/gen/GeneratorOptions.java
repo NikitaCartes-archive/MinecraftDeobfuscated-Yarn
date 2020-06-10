@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.JsonHelper;
@@ -107,10 +108,16 @@ public class GeneratorOptions {
 	}
 
 	public static SimpleRegistry<DimensionOptions> method_28608(SimpleRegistry<DimensionOptions> simpleRegistry, ChunkGenerator chunkGenerator) {
-		SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
 		DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
-		DimensionType dimensionType = dimensionOptions == null ? DimensionType.getOverworldDimensionType() : dimensionOptions.getDimensionType();
-		simpleRegistry2.add(DimensionOptions.OVERWORLD, new DimensionOptions(() -> dimensionType, chunkGenerator));
+		Supplier<DimensionType> supplier = () -> dimensionOptions == null ? DimensionType.getOverworldDimensionType() : dimensionOptions.getDimensionType();
+		return method_29962(simpleRegistry, supplier, chunkGenerator);
+	}
+
+	public static SimpleRegistry<DimensionOptions> method_29962(
+		SimpleRegistry<DimensionOptions> simpleRegistry, Supplier<DimensionType> supplier, ChunkGenerator chunkGenerator
+	) {
+		SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
+		simpleRegistry2.add(DimensionOptions.OVERWORLD, new DimensionOptions(supplier, chunkGenerator));
 		simpleRegistry2.markLoaded(DimensionOptions.OVERWORLD);
 
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {

@@ -50,7 +50,7 @@ public class PresetsScreen extends Screen {
 	private PresetsScreen.SuperflatPresetsListWidget listWidget;
 	private ButtonWidget selectPresetButton;
 	private TextFieldWidget customPresetField;
-	private StructuresConfig field_25044;
+	private FlatChunkGeneratorConfig field_25044;
 
 	public PresetsScreen(CustomizeFlatLevelScreen parent) {
 		super(new TranslatableText("createWorld.customize.presets.title"));
@@ -112,18 +112,16 @@ public class PresetsScreen extends Screen {
 		return list;
 	}
 
-	public static FlatChunkGeneratorConfig method_29060(String string, StructuresConfig structuresConfig) {
+	public static FlatChunkGeneratorConfig method_29060(String string, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		Iterator<String> iterator = Splitter.on(';').split(string).iterator();
 		if (!iterator.hasNext()) {
 			return FlatChunkGeneratorConfig.getDefaultConfig();
 		} else {
-			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
 			List<FlatChunkGeneratorLayer> list = method_29058((String)iterator.next());
 			if (list.isEmpty()) {
 				return FlatChunkGeneratorConfig.getDefaultConfig();
 			} else {
-				flatChunkGeneratorConfig.getLayers().addAll(list);
-				flatChunkGeneratorConfig.updateLayerBlocks();
+				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getConfig());
 				Biome biome = Biomes.PLAINS;
 				if (iterator.hasNext()) {
 					try {
@@ -134,8 +132,8 @@ public class PresetsScreen extends Screen {
 					}
 				}
 
-				flatChunkGeneratorConfig.setBiome(biome);
-				return flatChunkGeneratorConfig;
+				flatChunkGeneratorConfig2.setBiome(biome);
+				return flatChunkGeneratorConfig2;
 			}
 		}
 	}
@@ -164,7 +162,7 @@ public class PresetsScreen extends Screen {
 		this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
 		this.customPresetField.setMaxLength(1230);
 		this.customPresetField.setText(method_29062(this.parent.method_29055()));
-		this.field_25044 = this.parent.method_29055().getConfig();
+		this.field_25044 = this.parent.method_29055();
 		this.children.add(this.customPresetField);
 		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget();
 		this.children.add(this.listWidget);
@@ -277,15 +275,7 @@ public class PresetsScreen extends Screen {
 			new TranslatableText("createWorld.customize.preset.tunnelers_dream"),
 			Blocks.STONE,
 			Biomes.MOUNTAINS,
-			Arrays.asList(
-				StructureFeature.SWAMP_HUT,
-				StructureFeature.DESERT_PYRAMID,
-				StructureFeature.JUNGLE_PYRAMID,
-				StructureFeature.IGLOO,
-				StructureFeature.OCEAN_RUIN,
-				StructureFeature.SHIPWRECK,
-				StructureFeature.MINESHAFT
-			),
+			Arrays.asList(StructureFeature.MINESHAFT),
 			true,
 			true,
 			false,
@@ -298,15 +288,7 @@ public class PresetsScreen extends Screen {
 			new TranslatableText("createWorld.customize.preset.water_world"),
 			Items.WATER_BUCKET,
 			Biomes.DEEP_OCEAN,
-			Arrays.asList(
-				StructureFeature.SWAMP_HUT,
-				StructureFeature.DESERT_PYRAMID,
-				StructureFeature.JUNGLE_PYRAMID,
-				StructureFeature.IGLOO,
-				StructureFeature.OCEAN_RUIN,
-				StructureFeature.SHIPWRECK,
-				StructureFeature.MONUMENT
-			),
+			Arrays.asList(StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK, StructureFeature.MONUMENT),
 			false,
 			false,
 			false,
@@ -320,18 +302,7 @@ public class PresetsScreen extends Screen {
 			new TranslatableText("createWorld.customize.preset.overworld"),
 			Blocks.GRASS,
 			Biomes.PLAINS,
-			Arrays.asList(
-				StructureFeature.VILLAGE,
-				StructureFeature.SWAMP_HUT,
-				StructureFeature.DESERT_PYRAMID,
-				StructureFeature.JUNGLE_PYRAMID,
-				StructureFeature.IGLOO,
-				StructureFeature.OCEAN_RUIN,
-				StructureFeature.SHIPWRECK,
-				StructureFeature.MINESHAFT,
-				StructureFeature.PILLAGER_OUTPOST,
-				StructureFeature.RUINED_PORTAL
-			),
+			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.MINESHAFT, StructureFeature.PILLAGER_OUTPOST, StructureFeature.RUINED_PORTAL),
 			true,
 			true,
 			true,
@@ -344,15 +315,7 @@ public class PresetsScreen extends Screen {
 			new TranslatableText("createWorld.customize.preset.snowy_kingdom"),
 			Blocks.SNOW,
 			Biomes.SNOWY_TUNDRA,
-			Arrays.asList(
-				StructureFeature.VILLAGE,
-				StructureFeature.SWAMP_HUT,
-				StructureFeature.DESERT_PYRAMID,
-				StructureFeature.JUNGLE_PYRAMID,
-				StructureFeature.IGLOO,
-				StructureFeature.OCEAN_RUIN,
-				StructureFeature.SHIPWRECK
-			),
+			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.IGLOO),
 			false,
 			false,
 			false,
@@ -366,15 +329,7 @@ public class PresetsScreen extends Screen {
 			new TranslatableText("createWorld.customize.preset.bottomless_pit"),
 			Items.FEATHER,
 			Biomes.PLAINS,
-			Arrays.asList(
-				StructureFeature.VILLAGE,
-				StructureFeature.SWAMP_HUT,
-				StructureFeature.DESERT_PYRAMID,
-				StructureFeature.JUNGLE_PYRAMID,
-				StructureFeature.IGLOO,
-				StructureFeature.OCEAN_RUIN,
-				StructureFeature.SHIPWRECK
-			),
+			Arrays.asList(StructureFeature.VILLAGE),
 			false,
 			false,
 			false,
@@ -386,16 +341,7 @@ public class PresetsScreen extends Screen {
 			new TranslatableText("createWorld.customize.preset.desert"),
 			Blocks.SAND,
 			Biomes.DESERT,
-			Arrays.asList(
-				StructureFeature.VILLAGE,
-				StructureFeature.SWAMP_HUT,
-				StructureFeature.DESERT_PYRAMID,
-				StructureFeature.JUNGLE_PYRAMID,
-				StructureFeature.IGLOO,
-				StructureFeature.OCEAN_RUIN,
-				StructureFeature.SHIPWRECK,
-				StructureFeature.MINESHAFT
-			),
+			Arrays.asList(StructureFeature.VILLAGE, StructureFeature.DESERT_PYRAMID, StructureFeature.MINESHAFT),
 			true,
 			true,
 			false,
@@ -517,7 +463,7 @@ public class PresetsScreen extends Screen {
 					.get(SuperflatPresetsListWidget.this.children().indexOf(this));
 				PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(superflatPreset.field_25045));
 				PresetsScreen.this.customPresetField.setCursorToStart();
-				PresetsScreen.this.field_25044 = superflatPreset.field_25045.getConfig();
+				PresetsScreen.this.field_25044 = superflatPreset.field_25045;
 			}
 
 			private void method_2200(MatrixStack matrixStack, int i, int j, Item item) {

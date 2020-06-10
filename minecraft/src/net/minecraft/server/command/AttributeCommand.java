@@ -23,7 +23,7 @@ import net.minecraft.util.registry.Registry;
 
 public class AttributeCommand {
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
-			Registry.ATTRIBUTES.getIds(), suggestionsBuilder
+			Registry.ATTRIBUTE.getIds(), suggestionsBuilder
 		);
 	private static final DynamicCommandExceptionType ENTITY_FAILED_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("commands.attribute.failed.entity", object)

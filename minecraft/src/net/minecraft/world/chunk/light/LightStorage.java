@@ -31,6 +31,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 	protected final LongSet field_15802 = new LongOpenHashSet();
 	protected final LongSet dirtySections = new LongOpenHashSet();
 	protected final Long2ObjectMap<ChunkNibbleArray> lightArraysToAdd = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>());
+	private final LongSet field_25621 = new LongOpenHashSet();
 	private final LongSet field_19342 = new LongOpenHashSet();
 	private final LongSet lightArraysToRemove = new LongOpenHashSet();
 	protected volatile boolean hasLightUpdates;
@@ -185,13 +186,13 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 		return this.hasLightUpdates;
 	}
 
-	protected void updateLightArrays(ChunkLightProvider<M, ?> lightProvider, boolean doSkylight, boolean skipEdgeLightPropagation) {
+	protected void updateLightArrays(ChunkLightProvider<M, ?> chunkLightProvider, boolean doSkylight, boolean skipEdgeLightPropagation) {
 		if (this.hasLightUpdates() || !this.lightArraysToAdd.isEmpty()) {
 			LongIterator objectIterator = this.lightArraysToRemove.iterator();
 
 			while (objectIterator.hasNext()) {
 				long l = (Long)objectIterator.next();
-				this.removeChunkData(lightProvider, l);
+				this.removeChunkData(chunkLightProvider, l);
 				ChunkNibbleArray chunkNibbleArray = this.lightArraysToAdd.remove(l);
 				ChunkNibbleArray chunkNibbleArray2 = this.lightArrays.removeChunk(l);
 				if (this.field_19342.contains(ChunkSectionPos.withZeroZ(l))) {
@@ -219,7 +220,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 				if (this.hasLight(m)) {
 					ChunkNibbleArray chunkNibbleArray2 = (ChunkNibbleArray)entry.getValue();
 					if (this.lightArrays.get(m) != chunkNibbleArray2) {
-						this.removeChunkData(lightProvider, m);
+						this.removeChunkData(chunkLightProvider, m);
 						this.lightArrays.put(m, chunkNibbleArray2);
 						this.field_15802.add(m);
 					}
@@ -232,54 +233,18 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 
 				while (objectIterator.hasNext()) {
 					long l = (Long)objectIterator.next();
-					if (this.hasLight(l)) {
-						int i = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l));
-						int j = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l));
-						int k = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l));
+					this.method_29967(chunkLightProvider, l);
+				}
+			} else {
+				objectIterator = this.field_25621.iterator();
 
-						for (Direction direction : DIRECTIONS) {
-							long n = ChunkSectionPos.offset(l, direction);
-							if (!this.lightArraysToAdd.containsKey(n) && this.hasLight(n)) {
-								for (int o = 0; o < 16; o++) {
-									for (int p = 0; p < 16; p++) {
-										long q;
-										long r;
-										switch (direction) {
-											case DOWN:
-												q = BlockPos.asLong(i + p, j, k + o);
-												r = BlockPos.asLong(i + p, j - 1, k + o);
-												break;
-											case UP:
-												q = BlockPos.asLong(i + p, j + 16 - 1, k + o);
-												r = BlockPos.asLong(i + p, j + 16, k + o);
-												break;
-											case NORTH:
-												q = BlockPos.asLong(i + o, j + p, k);
-												r = BlockPos.asLong(i + o, j + p, k - 1);
-												break;
-											case SOUTH:
-												q = BlockPos.asLong(i + o, j + p, k + 16 - 1);
-												r = BlockPos.asLong(i + o, j + p, k + 16);
-												break;
-											case WEST:
-												q = BlockPos.asLong(i, j + o, k + p);
-												r = BlockPos.asLong(i - 1, j + o, k + p);
-												break;
-											default:
-												q = BlockPos.asLong(i + 16 - 1, j + o, k + p);
-												r = BlockPos.asLong(i + 16, j + o, k + p);
-										}
-
-										lightProvider.updateLevel(q, r, lightProvider.getPropagatedLevel(q, r, lightProvider.getLevel(q)), false);
-										lightProvider.updateLevel(r, q, lightProvider.getPropagatedLevel(r, q, lightProvider.getLevel(r)), false);
-									}
-								}
-							}
-						}
-					}
+				while (objectIterator.hasNext()) {
+					long l = (Long)objectIterator.next();
+					this.method_29967(chunkLightProvider, l);
 				}
 			}
 
+			this.field_25621.clear();
 			ObjectIterator<Entry<ChunkNibbleArray>> objectIteratorx = this.lightArraysToAdd.long2ObjectEntrySet().iterator();
 
 			while (objectIteratorx.hasNext()) {
@@ -287,6 +252,54 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 				long m = entryx.getLongKey();
 				if (this.hasLight(m)) {
 					objectIteratorx.remove();
+				}
+			}
+		}
+	}
+
+	private void method_29967(ChunkLightProvider<M, ?> chunkLightProvider, long l) {
+		if (this.hasLight(l)) {
+			int i = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l));
+			int j = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l));
+			int k = ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l));
+
+			for (Direction direction : DIRECTIONS) {
+				long m = ChunkSectionPos.offset(l, direction);
+				if (!this.lightArraysToAdd.containsKey(m) && this.hasLight(m)) {
+					for (int n = 0; n < 16; n++) {
+						for (int o = 0; o < 16; o++) {
+							long p;
+							long q;
+							switch (direction) {
+								case DOWN:
+									p = BlockPos.asLong(i + o, j, k + n);
+									q = BlockPos.asLong(i + o, j - 1, k + n);
+									break;
+								case UP:
+									p = BlockPos.asLong(i + o, j + 16 - 1, k + n);
+									q = BlockPos.asLong(i + o, j + 16, k + n);
+									break;
+								case NORTH:
+									p = BlockPos.asLong(i + n, j + o, k);
+									q = BlockPos.asLong(i + n, j + o, k - 1);
+									break;
+								case SOUTH:
+									p = BlockPos.asLong(i + n, j + o, k + 16 - 1);
+									q = BlockPos.asLong(i + n, j + o, k + 16);
+									break;
+								case WEST:
+									p = BlockPos.asLong(i, j + n, k + o);
+									q = BlockPos.asLong(i - 1, j + n, k + o);
+									break;
+								default:
+									p = BlockPos.asLong(i + 16 - 1, j + n, k + o);
+									q = BlockPos.asLong(i + 16, j + n, k + o);
+							}
+
+							chunkLightProvider.updateLevel(p, q, chunkLightProvider.getPropagatedLevel(p, q, chunkLightProvider.getLevel(p)), false);
+							chunkLightProvider.updateLevel(q, p, chunkLightProvider.getPropagatedLevel(q, p, chunkLightProvider.getLevel(q)), false);
+						}
+					}
 				}
 			}
 		}
@@ -309,9 +322,12 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 		}
 	}
 
-	protected void setLightArray(long pos, @Nullable ChunkNibbleArray array) {
+	protected void setLightArray(long pos, @Nullable ChunkNibbleArray array, boolean bl) {
 		if (array != null) {
 			this.lightArraysToAdd.put(pos, array);
+			if (!bl) {
+				this.field_25621.add(pos);
+			}
 		} else {
 			this.lightArraysToAdd.remove(pos);
 		}

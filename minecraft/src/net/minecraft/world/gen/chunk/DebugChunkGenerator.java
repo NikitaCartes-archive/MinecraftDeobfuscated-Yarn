@@ -1,6 +1,9 @@
 package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Encoder;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -25,7 +28,9 @@ import net.minecraft.world.gen.StructureAccessor;
 
 public class DebugChunkGenerator extends ChunkGenerator {
 	public static final DebugChunkGenerator INSTANCE = new DebugChunkGenerator();
-	public static final Codec<DebugChunkGenerator> field_24768 = Codec.<DebugChunkGenerator>unit((Supplier<DebugChunkGenerator>)(() -> INSTANCE)).stable();
+	public static final Codec<DebugChunkGenerator> field_24768 = MapCodec.of(Encoder.empty(), Decoder.unit((Supplier<DebugChunkGenerator>)(() -> INSTANCE)))
+		.stable()
+		.codec();
 	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
 		.flatMap(block -> block.getStateManager().getStates().stream())
 		.collect(Collectors.toList());

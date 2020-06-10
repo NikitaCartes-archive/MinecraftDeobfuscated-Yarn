@@ -611,12 +611,14 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
 			this.brain.getOptionalMemory(memoryModuleType).ifPresent(globalPos -> {
 				ServerWorld serverWorld = minecraftServer.getWorld(globalPos.getDimension());
-				PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-				Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(globalPos.getPos());
-				BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = (BiPredicate<VillagerEntity, PointOfInterestType>)POINTS_OF_INTEREST.get(memoryModuleType);
-				if (optional.isPresent() && biPredicate.test(this, optional.get())) {
-					pointOfInterestStorage.releaseTicket(globalPos.getPos());
-					DebugInfoSender.sendPointOfInterest(serverWorld, globalPos.getPos());
+				if (serverWorld != null) {
+					PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
+					Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(globalPos.getPos());
+					BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = (BiPredicate<VillagerEntity, PointOfInterestType>)POINTS_OF_INTEREST.get(memoryModuleType);
+					if (optional.isPresent() && biPredicate.test(this, optional.get())) {
+						pointOfInterestStorage.releaseTicket(globalPos.getPos());
+						DebugInfoSender.sendPointOfInterest(serverWorld, globalPos.getPos());
+					}
 				}
 			});
 		}

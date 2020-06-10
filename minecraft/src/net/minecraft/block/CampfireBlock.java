@@ -74,21 +74,19 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if ((Boolean)state.get(LIT)) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (blockEntity instanceof CampfireBlockEntity) {
-				CampfireBlockEntity campfireBlockEntity = (CampfireBlockEntity)blockEntity;
-				ItemStack itemStack = player.getStackInHand(hand);
-				Optional<CampfireCookingRecipe> optional = campfireBlockEntity.getRecipeFor(itemStack);
-				if (optional.isPresent()) {
-					if (!world.isClient
-						&& campfireBlockEntity.addItem(player.abilities.creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime())) {
-						player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
-						return ActionResult.SUCCESS;
-					}
-
-					return ActionResult.CONSUME;
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if (blockEntity instanceof CampfireBlockEntity) {
+			CampfireBlockEntity campfireBlockEntity = (CampfireBlockEntity)blockEntity;
+			ItemStack itemStack = player.getStackInHand(hand);
+			Optional<CampfireCookingRecipe> optional = campfireBlockEntity.getRecipeFor(itemStack);
+			if (optional.isPresent()) {
+				if (!world.isClient
+					&& campfireBlockEntity.addItem(player.abilities.creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime())) {
+					player.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
+					return ActionResult.SUCCESS;
 				}
+
+				return ActionResult.CONSUME;
 			}
 		}
 

@@ -120,7 +120,7 @@ public class FireBlock extends AbstractFireBlock {
 			}
 
 			BlockState blockState = world.getBlockState(pos.down());
-			boolean bl = world.getDimension().isEnd() && blockState.isOf(Blocks.BEDROCK) || blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.MAGMA_BLOCK);
+			boolean bl = blockState.isIn(world.getDimension().getInfiniburnBlocks());
 			int i = (Integer)state.get(AGE);
 			if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
 				world.removeBlock(pos, false);

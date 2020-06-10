@@ -174,7 +174,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	public static boolean canSpawn(EntityType<TurtleEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return pos.getY() < world.getSeaLevel() + 4 && world.getBlockState(pos.down()).isOf(Blocks.SAND) && world.getBaseLightLevel(pos, 0) > 8;
+		return pos.getY() < world.getSeaLevel() + 4 && TurtleEggBlock.isSand(world, pos) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	@Override
@@ -284,7 +284,7 @@ public class TurtleEntity extends AnimalEntity {
 		if (!this.isLandBound() && world.getFluidState(pos).matches(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return world.getBlockState(pos.down()).isOf(Blocks.SAND) ? 10.0F : world.getBrightness(pos) - 0.5F;
+			return TurtleEggBlock.isSand(world, pos) ? 10.0F : world.getBrightness(pos) - 0.5F;
 		}
 	}
 
@@ -293,7 +293,7 @@ public class TurtleEntity extends AnimalEntity {
 		super.tickMovement();
 		if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0) {
 			BlockPos blockPos = this.getBlockPos();
-			if (this.world.getBlockState(blockPos.down()).isOf(Blocks.SAND)) {
+			if (TurtleEggBlock.isSand(this.world, blockPos)) {
 				this.world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
 			}
 		}
@@ -498,7 +498,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
-			return !world.isAir(pos.up()) ? false : world.getBlockState(pos).isOf(Blocks.SAND);
+			return !world.isAir(pos.up()) ? false : TurtleEggBlock.method_29952(world, pos);
 		}
 	}
 

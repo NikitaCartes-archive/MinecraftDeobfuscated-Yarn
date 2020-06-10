@@ -4,6 +4,8 @@ import com.google.common.collect.Sets;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -37,6 +39,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -80,8 +83,14 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
 	}
 
-	public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return world.getBlockState(pos.up()).isAir();
+	public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess worldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random) {
+		BlockPos.Mutable mutable = blockPos.mutableCopy();
+
+		do {
+			mutable.move(Direction.UP);
+		} while (worldAccess.getFluidState(mutable).matches(FluidTags.LAVA));
+
+		return worldAccess.getBlockState(mutable).isAir();
 	}
 
 	@Override
@@ -298,7 +307,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		BlockState blockState = this.world.getBlockState(this.getBlockPos());
 		BlockState blockState2 = this.getLandingBlockState();
-		boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS);
+		boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
 		this.setCold(!bl);
 		super.tick();
 		this.updateFloating();
@@ -418,17 +427,25 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		}
 	}
 
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
+
 	@Nullable
 	@Override
 	public EntityData initialize(
 		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
+		EntityData entityData2 = null;
 		StriderEntity.StriderData.RiderType riderType;
 		if (entityData instanceof StriderEntity.StriderData) {
 			riderType = ((StriderEntity.StriderData)entityData).type;
 		} else if (!this.isBaby()) {
 			if (this.random.nextInt(30) == 0) {
 				riderType = StriderEntity.StriderData.RiderType.PIGLIN_RIDER;
+				entityData2 = new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false);
 			} else if (this.random.nextInt(10) == 0) {
 				riderType = StriderEntity.StriderData.RiderType.BABY_RIDER;
 			} else {
@@ -458,7 +475,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		if (mobEntity != null) {
 			mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-			mobEntity.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
+			mobEntity.initialize(world, difficulty, SpawnReason.JOCKEY, entityData2, null);
 			mobEntity.startRiding(this, true);
 			world.spawnEntity(mobEntity);
 		}

@@ -127,7 +127,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 						GeneratorType generatorType = (GeneratorType)GeneratorType.VALUES.get(ix);
 						this.field_25049 = Optional.of(generatorType);
 						this.generatorOptions = generatorType.method_29077(
-							this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest()
+							this.field_25483, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest()
 						);
 						if (!this.generatorOptions.isDebugWorld() || Screen.hasShiftDown()) {
 							break;

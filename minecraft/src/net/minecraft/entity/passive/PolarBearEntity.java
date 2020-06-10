@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5398;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -35,6 +36,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -83,6 +85,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		this.targetSelector.add(2, new PolarBearEntity.FollowPlayersGoal());
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector.add(4, new FollowTargetGoal(this, FoxEntity.class, 10, true, true, null));
+		this.targetSelector.add(5, new class_5398<>(this, false));
 	}
 
 	public static DefaultAttributeContainer.Builder createPolarBearAttributes() {
@@ -103,7 +106,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		this.angerFromTag(this.world, tag);
+		this.angerFromTag((ServerWorld)this.world, tag);
 	}
 
 	@Override
@@ -191,7 +194,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		}
 
 		if (!this.world.isClient) {
-			this.tickAngerLogic();
+			this.tickAngerLogic((ServerWorld)this.world, true);
 		}
 	}
 

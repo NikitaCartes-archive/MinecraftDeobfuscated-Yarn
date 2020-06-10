@@ -113,6 +113,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
+			.target(field_25643)
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
@@ -141,6 +142,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
+			.target(field_25643)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
@@ -165,8 +167,14 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		false,
 		true,
-		RenderLayer.MultiPhaseParameters.builder().writeMaskState(ALL_MASK).transparency(LIGHTNING_TRANSPARENCY).shadeModel(SMOOTH_SHADE_MODEL).build(false)
+		RenderLayer.MultiPhaseParameters.builder()
+			.writeMaskState(ALL_MASK)
+			.transparency(LIGHTNING_TRANSPARENCY)
+			.target(WEATHER_TARGET)
+			.shadeModel(SMOOTH_SHADE_MODEL)
+			.build(false)
 	);
+	private static final RenderLayer TRIPWIRE = of("tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, method_29996());
 	public static final RenderLayer.MultiPhase LINES = of(
 		"lines",
 		VertexFormats.POSITION_COLOR,
@@ -175,7 +183,8 @@ public abstract class RenderLayer extends RenderPhase {
 		RenderLayer.MultiPhaseParameters.builder()
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
 			.layering(VIEW_OFFSET_Z_LAYERING)
-			.transparency(ITEM_TRANSPARENCY)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.target(field_25643)
 			.writeMaskState(ALL_MASK)
 			.build(false)
 	);
@@ -217,7 +226,8 @@ public abstract class RenderLayer extends RenderPhase {
 			.shadeModel(SMOOTH_SHADE_MODEL)
 			.lightmap(ENABLE_LIGHTMAP)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
-			.transparency(ITEM_TRANSPARENCY)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.target(field_25643)
 			.build(true);
 	}
 
@@ -304,7 +314,8 @@ public abstract class RenderLayer extends RenderPhase {
 	public static RenderLayer getItemEntityTranslucentCull(Identifier texture) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
 			.texture(new RenderPhase.Texture(texture, false, false))
-			.transparency(ITEM_TRANSPARENCY)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.target(field_25643)
 			.diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
 			.alpha(ONE_TENTH_ALPHA)
 			.lightmap(ENABLE_LIGHTMAP)
@@ -410,7 +421,6 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getEntityAlpha(Identifier texture, float alpha) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-			.transparency(DRAGON_EXPLOSION_TRANSPARENCY)
 			.texture(new RenderPhase.Texture(texture, false, false))
 			.alpha(new RenderPhase.Alpha(alpha))
 			.cull(DISABLE_CULLING)
@@ -566,6 +576,20 @@ public abstract class RenderLayer extends RenderPhase {
 		return LIGHTNING;
 	}
 
+	private static RenderLayer.MultiPhaseParameters method_29996() {
+		return RenderLayer.MultiPhaseParameters.builder()
+			.shadeModel(SMOOTH_SHADE_MODEL)
+			.lightmap(ENABLE_LIGHTMAP)
+			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.target(WEATHER_TARGET)
+			.build(true);
+	}
+
+	public static RenderLayer method_29997() {
+		return TRIPWIRE;
+	}
+
 	public static RenderLayer getEndPortal(int layer) {
 		RenderPhase.Transparency transparency;
 		RenderPhase.Texture texture;
@@ -653,7 +677,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static List<RenderLayer> getBlockLayers() {
-		return ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent());
+		return ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), method_29997());
 	}
 
 	public int getExpectedBufferSize() {

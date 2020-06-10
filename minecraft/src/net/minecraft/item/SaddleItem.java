@@ -17,8 +17,11 @@ public class SaddleItem extends Item {
 		if (entity instanceof Saddleable && entity.isAlive()) {
 			Saddleable saddleable = (Saddleable)entity;
 			if (!saddleable.isSaddled() && saddleable.canBeSaddled()) {
-				saddleable.saddle(SoundCategory.NEUTRAL);
-				stack.decrement(1);
+				if (!user.world.isClient) {
+					saddleable.saddle(SoundCategory.NEUTRAL);
+					stack.decrement(1);
+				}
+
 				return ActionResult.success(user.world.isClient);
 			}
 		}

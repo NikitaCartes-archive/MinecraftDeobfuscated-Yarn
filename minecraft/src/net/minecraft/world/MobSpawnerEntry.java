@@ -20,16 +20,16 @@ public class MobSpawnerEntry extends WeightedPicker.Entry {
 	public MobSpawnerEntry(int weight, CompoundTag entityTag) {
 		super(weight);
 		this.entityTag = entityTag;
+		Identifier identifier = Identifier.tryParse(entityTag.getString("id"));
+		if (identifier != null) {
+			entityTag.putString("id", identifier.toString());
+		} else {
+			entityTag.putString("id", "minecraft:pig");
+		}
 	}
 
 	public CompoundTag serialize() {
 		CompoundTag compoundTag = new CompoundTag();
-		if (!this.entityTag.contains("id", 8)) {
-			this.entityTag.putString("id", "minecraft:pig");
-		} else if (!this.entityTag.getString("id").contains(":")) {
-			this.entityTag.putString("id", new Identifier(this.entityTag.getString("id")).toString());
-		}
-
 		compoundTag.put("Entity", this.entityTag);
 		compoundTag.putInt("Weight", this.weight);
 		return compoundTag;

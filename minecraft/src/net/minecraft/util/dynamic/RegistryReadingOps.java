@@ -1,8 +1,9 @@
 package net.minecraft.util.dynamic;
 
-import com.mojang.serialization.Codec;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.MutableRegistry;
@@ -35,15 +36,21 @@ public class RegistryReadingOps<T> extends ForwardingDynamicOps<T> {
 	 * 
 	 * @see RegistryOps#decodeOrId(Object, RegistryKey, Codec)
 	 */
-	protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<Registry<E>> registryReference, Codec<E> codec) {
+	protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<Registry<E>> registryReference, MapCodec<E> mapCodec) {
 		Optional<MutableRegistry<E>> optional = this.tracker.get(registryReference);
 		if (optional.isPresent()) {
-			Optional<RegistryKey<E>> optional2 = ((MutableRegistry)optional.get()).getKey(input);
+			MutableRegistry<E> mutableRegistry = (MutableRegistry<E>)optional.get();
+			Optional<RegistryKey<E>> optional2 = mutableRegistry.getKey(input);
 			if (optional2.isPresent()) {
-				return Identifier.CODEC.encode(((RegistryKey)optional2.get()).getValue(), this.delegate, prefix);
+				RegistryKey<E> registryKey = (RegistryKey<E>)optional2.get();
+				if (mutableRegistry.isLoaded(registryKey)) {
+					return NumberCodecs.method_29906(registryReference, mapCodec).codec().encode(Pair.of(registryKey, input), this.delegate, prefix);
+				}
+
+				return Identifier.CODEC.encode(registryKey.getValue(), this.delegate, prefix);
 			}
 		}
 
-		return codec.encode(input, this.delegate, prefix);
+		return mapCodec.codec().encode(input, this.delegate, prefix);
 	}
 }

@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.class_5398;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -23,9 +24,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.IntRange;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -43,6 +46,8 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final IntRange field_25379 = Durations.betweenSeconds(20, 39);
 	private int field_25380;
 	private UUID field_25381;
+	private static final IntRange field_25609 = Durations.betweenSeconds(4, 6);
+	private int field_25608;
 
 	public ZombifiedPiglinEntity(EntityType<? extends ZombifiedPiglinEntity> entityType, World world) {
 		super(entityType, world);
@@ -60,6 +65,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+		this.targetSelector.add(3, new class_5398<>(this, true));
 	}
 
 	public static DefaultAttributeContainer.Builder createZombifiedPiglinAttributes() {
@@ -77,7 +83,6 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	protected void mobTick() {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-		LivingEntity livingEntity = this.getAttacker();
 		if (this.hasAngerTime()) {
 			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
 				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
@@ -93,8 +98,36 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
 		}
 
-		this.tickAngerLogic();
+		this.tickAngerLogic((ServerWorld)this.world, true);
+		if (this.getTarget() != null) {
+			this.method_29941();
+		}
+
 		super.mobTick();
+	}
+
+	private void method_29941() {
+		if (this.field_25608 > 0) {
+			this.field_25608--;
+		} else {
+			if (this.getVisibilityCache().canSee(this.getTarget())) {
+				this.method_29942();
+			}
+
+			this.field_25608 = field_25609.choose(this.random);
+		}
+	}
+
+	private void method_29942() {
+		double d = this.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
+		Box box = Box.method_29968(this.getPos()).expand(d, 10.0, d);
+		this.world
+			.getEntitiesIncludingUngeneratedChunks(ZombifiedPiglinEntity.class, box)
+			.stream()
+			.filter(zombifiedPiglinEntity -> zombifiedPiglinEntity != this)
+			.filter(zombifiedPiglinEntity -> zombifiedPiglinEntity.getTarget() == null)
+			.filter(zombifiedPiglinEntity -> !zombifiedPiglinEntity.isTeammate(this.getTarget()))
+			.forEach(zombifiedPiglinEntity -> zombifiedPiglinEntity.setTarget(this.getTarget()));
 	}
 
 	private void method_29533() {
@@ -106,9 +139,15 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 		if (this.getTarget() == null && target != null) {
 			this.method_29533();
 			this.angrySoundDelay = field_25382.choose(this.random);
+			this.field_25608 = field_25609.choose(this.random);
 		}
 
 		super.setTarget(target);
+	}
+
+	@Override
+	protected boolean shouldAlwaysDropXp() {
+		return this.getTarget() != null;
 	}
 
 	@Override
@@ -134,7 +173,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		this.angerFromTag(this.world, tag);
+		this.angerFromTag((ServerWorld)this.world, tag);
 	}
 
 	@Override

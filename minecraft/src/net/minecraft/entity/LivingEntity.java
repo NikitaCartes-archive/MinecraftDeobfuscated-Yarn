@@ -489,6 +489,10 @@ public abstract class LivingEntity extends Entity {
 		return this.isBaby() ? 0.5F : 1.0F;
 	}
 
+	protected boolean method_29920() {
+		return true;
+	}
+
 	@Override
 	public boolean canBeRiddenInWater() {
 		return false;
@@ -1003,7 +1007,7 @@ public abstract class LivingEntity extends Entity {
 
 			this.knockbackVelocity = 0.0F;
 			Entity entity2 = source.getAttacker();
-			if (entity2 != null && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity2)) {
+			if (entity2 != null) {
 				if (entity2 instanceof LivingEntity) {
 					this.setAttacker((LivingEntity)entity2);
 				}
@@ -1921,7 +1925,7 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			FluidState fluidState = this.world.getFluidState(this.getBlockPos());
-			if (this.isTouchingWater() && (!(this instanceof PlayerEntity) || !((PlayerEntity)this).abilities.flying) && !this.canWalkOnFluid(fluidState.getFluid())) {
+			if (this.isTouchingWater() && this.method_29920() && !this.canWalkOnFluid(fluidState.getFluid())) {
 				double e = this.getY();
 				float f = this.isSprinting() ? 0.9F : this.getBaseMovementSpeedMultiplier();
 				float g = 0.02F;
@@ -1956,7 +1960,7 @@ public abstract class LivingEntity extends Entity {
 				if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + 0.6F - this.getY() + e, vec3d2.z)) {
 					this.setVelocity(vec3d2.x, 0.3F, vec3d2.z);
 				}
-			} else if (this.isInLava() && (!(this instanceof PlayerEntity) || !((PlayerEntity)this).abilities.flying) && !this.canWalkOnFluid(fluidState.getFluid())) {
+			} else if (this.isInLava() && this.method_29920() && !this.canWalkOnFluid(fluidState.getFluid())) {
 				double ex = this.getY();
 				this.updateVelocity(0.02F, movementInput);
 				this.move(MovementType.SELF, this.getVelocity());
@@ -2358,7 +2362,7 @@ public abstract class LivingEntity extends Entity {
 
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("jump");
-		if (this.jumping) {
+		if (this.jumping && this.method_29920()) {
 			double k = this.getFluidHeight(FluidTags.WATER);
 			boolean bl = this.isTouchingWater() && k > 0.0;
 			double l = this.method_29241();

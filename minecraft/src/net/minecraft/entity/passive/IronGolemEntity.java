@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5398;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -41,6 +42,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -48,6 +50,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -82,6 +85,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 				3,
 				new FollowTargetGoal(this, MobEntity.class, 5, false, false, livingEntity -> livingEntity instanceof Monster && !(livingEntity instanceof CreeperEntity))
 			);
+		this.targetSelector.add(4, new class_5398<>(this, false));
 	}
 
 	@Override
@@ -143,7 +147,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		}
 
 		if (!this.world.isClient) {
-			this.tickAngerLogic();
+			this.tickAngerLogic((ServerWorld)this.world, true);
 		}
 	}
 
@@ -167,7 +171,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
-		this.angerFromTag(this.world, tag);
+		this.angerFromTag((ServerWorld)this.world, tag);
 	}
 
 	@Override
@@ -340,6 +344,12 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState(), EntityType.IRON_GOLEM)
 				&& world.intersectsEntities(this);
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.875F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 
 	public static enum Crack {

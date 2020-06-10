@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5398;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -47,6 +48,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -100,6 +102,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		this.targetSelector.add(5, new FollowTargetIfTamedGoal(this, AnimalEntity.class, false, FOLLOW_TAMED_PREDICATE));
 		this.targetSelector.add(6, new FollowTargetIfTamedGoal(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 		this.targetSelector.add(7, new FollowTargetGoal(this, AbstractSkeletonEntity.class, false));
+		this.targetSelector.add(8, new class_5398<>(this, true));
 	}
 
 	public static DefaultAttributeContainer.Builder createWolfAttributes() {
@@ -136,7 +139,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
 		}
 
-		this.angerFromTag(this.world, tag);
+		this.angerFromTag((ServerWorld)this.world, tag);
 	}
 
 	@Override
@@ -176,7 +179,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		}
 
 		if (!this.world.isClient) {
-			this.tickAngerLogic();
+			this.tickAngerLogic((ServerWorld)this.world, true);
 		}
 	}
 
@@ -507,6 +510,12 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	@Override
 	public boolean canBeLeashedBy(PlayerEntity player) {
 		return !this.hasAngerTime() && super.canBeLeashedBy(player);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 
 	class AvoidLlamaGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

@@ -97,13 +97,13 @@ public class LightingProvider implements LightingView {
 		return "n/a";
 	}
 
-	public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles) {
+	public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				this.blockLightProvider.setLightArray(pos.asLong(), nibbles);
+				this.blockLightProvider.setLightArray(pos.asLong(), nibbles, bl);
 			}
 		} else if (this.skyLightProvider != null) {
-			this.skyLightProvider.setLightArray(pos.asLong(), nibbles);
+			this.skyLightProvider.setLightArray(pos.asLong(), nibbles, bl);
 		}
 	}
 

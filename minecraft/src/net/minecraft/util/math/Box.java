@@ -41,6 +41,10 @@ public class Box {
 		);
 	}
 
+	public static Box method_29968(Vec3d vec3d) {
+		return new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1.0, vec3d.y + 1.0, vec3d.z + 1.0);
+	}
+
 	public double getMin(Direction.Axis axis) {
 		return axis.choose(this.minX, this.minY, this.minZ);
 	}

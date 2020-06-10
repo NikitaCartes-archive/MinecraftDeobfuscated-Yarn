@@ -44,6 +44,6 @@ public class EntityAttributes {
 	);
 
 	private static EntityAttribute register(String id, EntityAttribute attribute) {
-		return Registry.register(Registry.ATTRIBUTES, id, attribute);
+		return Registry.register(Registry.ATTRIBUTE, id, attribute);
 	}
 }

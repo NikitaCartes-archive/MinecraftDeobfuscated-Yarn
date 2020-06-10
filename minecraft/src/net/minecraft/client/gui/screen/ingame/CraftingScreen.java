@@ -81,6 +81,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.recipeBook.mouseClicked(mouseX, mouseY, button)) {
+			this.setFocused(this.recipeBook);
 			return true;
 		} else {
 			return this.isNarrow && this.recipeBook.isOpen() ? true : super.mouseClicked(mouseX, mouseY, button);

@@ -124,7 +124,9 @@ public class BuiltinModelItemRenderer {
 				this.modelShield.method_23775().render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
 					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListTag(stack));
-					BannerBlockEntityRenderer.renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.modelShield.method_23774(), spriteIdentifier, false, list);
+					BannerBlockEntityRenderer.renderCanvas(
+						matrixStack, vertexConsumerProvider, i, j, this.modelShield.method_23774(), spriteIdentifier, false, list, stack.hasEnchantmentGlint()
+					);
 				} else {
 					this.modelShield.method_23774().render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 				}
@@ -133,20 +135,9 @@ public class BuiltinModelItemRenderer {
 			} else if (item == Items.TRIDENT) {
 				matrixStack.push();
 				matrixStack.scale(1.0F, -1.0F, -1.0F);
-				VertexConsumer vertexConsumer2;
-				if (mode != ModelTransformation.Mode.GUI
-					&& mode != ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND
-					&& mode != ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND
-					&& mode != ModelTransformation.Mode.FIXED) {
-					vertexConsumer2 = ItemRenderer.getArmorVertexConsumer(
-						vertexConsumerProvider, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasEnchantmentGlint()
-					);
-				} else {
-					vertexConsumer2 = ItemRenderer.method_29711(
-						vertexConsumerProvider, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasEnchantmentGlint()
-					);
-				}
-
+				VertexConsumer vertexConsumer2 = ItemRenderer.method_29711(
+					vertexConsumerProvider, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasEnchantmentGlint()
+				);
 				this.modelTrident.render(matrixStack, vertexConsumer2, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 				matrixStack.pop();
 			}

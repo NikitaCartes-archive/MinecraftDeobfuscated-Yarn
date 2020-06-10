@@ -1006,14 +1006,19 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void stopRiding() {
-		super.stopRiding();
+	public void method_29239() {
+		super.method_29239();
 		this.ridingCooldown = 0;
 	}
 
 	@Override
 	protected boolean isImmobile() {
 		return super.isImmobile() || this.isSleeping();
+	}
+
+	@Override
+	public boolean method_29920() {
+		return !this.abilities.flying;
 	}
 
 	@Override
@@ -1318,7 +1323,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 
 			return optional;
-		} else if (block instanceof BedBlock && BedBlock.isOverworld(world, pos)) {
+		} else if (block instanceof BedBlock && BedBlock.isOverworld(world)) {
 			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, 0);
 		} else if (!bl) {
 			return Optional.empty();

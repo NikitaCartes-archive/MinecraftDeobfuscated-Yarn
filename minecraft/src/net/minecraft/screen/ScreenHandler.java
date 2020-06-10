@@ -335,7 +335,7 @@ public abstract class ScreenHandler {
 					slot3.markDirty();
 				}
 			}
-		} else if (actionType == SlotActionType.SWAP && clickData >= 0 && clickData < 9) {
+		} else if (actionType == SlotActionType.SWAP) {
 			Slot slot3 = (Slot)this.slots.get(slotId);
 			ItemStack itemStack3x = playerInventory.getStack(clickData);
 			ItemStack itemStack2x = slot3.getStack();

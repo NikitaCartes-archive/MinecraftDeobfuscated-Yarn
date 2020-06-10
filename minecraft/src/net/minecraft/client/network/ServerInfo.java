@@ -23,6 +23,7 @@ public class ServerInfo {
 	public boolean online;
 	public List<Text> playerListSummary = Collections.emptyList();
 	private ServerInfo.ResourcePackState resourcePackState = ServerInfo.ResourcePackState.PROMPT;
+	@Nullable
 	private String icon;
 	private boolean local;
 

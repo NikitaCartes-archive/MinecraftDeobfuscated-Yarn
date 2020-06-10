@@ -2,10 +2,12 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import it.unimi.dsi.fastutil.longs.Long2LongMap;
-import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
@@ -22,8 +24,7 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 	private final MemoryModuleType<GlobalPos> targetMemoryModuleType;
 	private final boolean onlyRunIfChild;
 	private long positionExpireTimeLimit;
-	private final Long2LongMap foundPositionsToExpiry = new Long2LongOpenHashMap();
-	private int tries;
+	private final Long2ObjectMap<FindPointOfInterestTask.class_5397> foundPositionsToExpiry = new Long2ObjectOpenHashMap<>();
 
 	public FindPointOfInterestTask(
 		PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl
@@ -51,37 +52,80 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-		return this.onlyRunIfChild && mobEntityWithAi.isBaby() ? false : serverWorld.getTime() - this.positionExpireTimeLimit >= 20L;
+		if (this.onlyRunIfChild && mobEntityWithAi.isBaby()) {
+			return false;
+		} else if (this.positionExpireTimeLimit == 0L) {
+			this.positionExpireTimeLimit = mobEntityWithAi.world.getTime() + (long)serverWorld.random.nextInt(20);
+			return false;
+		} else {
+			return serverWorld.getTime() >= this.positionExpireTimeLimit;
+		}
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-		this.tries = 0;
-		this.positionExpireTimeLimit = serverWorld.getTime() + (long)serverWorld.getRandom().nextInt(20);
+		this.positionExpireTimeLimit = l + 20L + (long)serverWorld.getRandom().nextInt(20);
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-		Predicate<BlockPos> predicate = blockPosx -> {
-			long lx = blockPosx.asLong();
-			if (this.foundPositionsToExpiry.containsKey(lx)) {
-				return false;
-			} else if (++this.tries >= 5) {
+		this.foundPositionsToExpiry.long2ObjectEntrySet().removeIf(entry -> !((FindPointOfInterestTask.class_5397)entry.getValue()).method_29927(l));
+		Predicate<BlockPos> predicate = blockPos -> {
+			FindPointOfInterestTask.class_5397 lv = this.foundPositionsToExpiry.get(blockPos.asLong());
+			if (lv == null) {
+				return true;
+			} else if (!lv.method_29928(l)) {
 				return false;
 			} else {
-				this.foundPositionsToExpiry.put(lx, this.positionExpireTimeLimit + 40L);
+				lv.method_29926(l);
 				return true;
 			}
 		};
-		Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
-			this.poiType.getCompletionCondition(), predicate, mobEntityWithAi.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE
-		);
-		Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, this.poiType.getSearchDistance());
+		Set<BlockPos> set = (Set<BlockPos>)pointOfInterestStorage.getPositions(
+				this.poiType.getCompletionCondition(), predicate, mobEntityWithAi.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE
+			)
+			.limit(5L)
+			.collect(Collectors.toSet());
+		Path path = mobEntityWithAi.getNavigation().method_29934(set, this.poiType.getSearchDistance());
 		if (path != null && path.reachesTarget()) {
 			BlockPos blockPos = path.getTarget();
 			pointOfInterestStorage.getType(blockPos).ifPresent(pointOfInterestType -> {
-				pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos), blockPos, 1);
+				pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2x -> blockPos2x.equals(blockPos), blockPos, 1);
 				mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getRegistryKey(), blockPos));
+				this.foundPositionsToExpiry.clear();
 				DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
 			});
-		} else if (this.tries < 5) {
-			this.foundPositionsToExpiry.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.positionExpireTimeLimit);
+		} else {
+			for (BlockPos blockPos2 : set) {
+				this.foundPositionsToExpiry.computeIfAbsent(blockPos2.asLong(), m -> new FindPointOfInterestTask.class_5397(mobEntityWithAi.world.random, l));
+			}
+		}
+	}
+
+	static class class_5397 {
+		private final Random field_25600;
+		private long field_25601;
+		private long field_25602;
+		private int field_25603;
+
+		class_5397(Random random, long l) {
+			this.field_25600 = random;
+			this.method_29926(l);
+		}
+
+		public void method_29926(long l) {
+			this.field_25601 = l;
+			int i = this.field_25603 + this.field_25600.nextInt(40) + 40;
+			this.field_25603 = Math.min(i, 400);
+			this.field_25602 = l + (long)this.field_25603;
+		}
+
+		public boolean method_29927(long l) {
+			return l - this.field_25601 < 400L;
+		}
+
+		public boolean method_29928(long l) {
+			return l >= this.field_25602;
+		}
+
+		public String toString() {
+			return "RetryMarker{, previousAttemptAt=" + this.field_25601 + ", nextScheduledAttemptAt=" + this.field_25602 + ", currentDelay=" + this.field_25603 + '}';
 		}
 	}
 }

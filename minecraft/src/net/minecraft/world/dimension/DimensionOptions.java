@@ -3,8 +3,8 @@ package net.minecraft.world.dimension;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,7 +21,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
 
 public final class DimensionOptions {
-	public static final Codec<DimensionOptions> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<DimensionOptions> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					DimensionType.field_24756.fieldOf("type").forGetter(DimensionOptions::getDimensionTypeSupplier),
 					ChunkGenerator.field_24746.fieldOf("generator").forGetter(DimensionOptions::getChunkGenerator)
@@ -90,9 +90,12 @@ public final class DimensionOptions {
 			Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry3 = (Entry<RegistryKey<DimensionOptions>, DimensionOptions>)list.get(2);
 			if (entry.getKey() != OVERWORLD || entry2.getKey() != NETHER || entry3.getKey() != END) {
 				return false;
-			} else if (!((DimensionOptions)entry.getValue()).getDimensionType().isOverworld()
-				|| !((DimensionOptions)entry2.getValue()).getDimensionType().isNether()
-				|| !((DimensionOptions)entry3.getValue()).getDimensionType().isEnd()) {
+			} else if (((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD
+				&& ((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD_CAVES) {
+				return false;
+			} else if (((DimensionOptions)entry2.getValue()).getDimensionType() != DimensionType.THE_NETHER) {
+				return false;
+			} else if (((DimensionOptions)entry3.getValue()).getDimensionType() != DimensionType.THE_END) {
 				return false;
 			} else if (((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof SurfaceChunkGenerator
 				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof SurfaceChunkGenerator) {

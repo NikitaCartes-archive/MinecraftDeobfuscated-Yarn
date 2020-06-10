@@ -1073,6 +1073,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			);
 		clientPlayerEntity2.setEntityId(i);
 		this.client.player = clientPlayerEntity2;
+		if (registryKey2 != clientPlayerEntity.world.getRegistryKey()) {
+			this.client.getMusicTracker().stop();
+		}
+
 		this.client.cameraEntity = clientPlayerEntity2;
 		clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getAllEntries());
 		if (packet.shouldKeepPlayerAttributes()) {
@@ -1268,32 +1272,30 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onGameStateChange(GameStateChangeS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		int i = packet.getReason();
+		GameStateChangeS2CPacket.class_5402 lv = packet.getReason();
 		float f = packet.getValue();
-		int j = MathHelper.floor(f + 0.5F);
-		if (i >= 0 && i < GameStateChangeS2CPacket.REASON_MESSAGES.length && GameStateChangeS2CPacket.REASON_MESSAGES[i] != null) {
-			playerEntity.sendMessage(new TranslatableText(GameStateChangeS2CPacket.REASON_MESSAGES[i]), false);
-		}
-
-		if (i == 1) {
+		int i = MathHelper.floor(f + 0.5F);
+		if (lv == GameStateChangeS2CPacket.field_25645) {
+			playerEntity.sendMessage(new TranslatableText("block.minecraft.spawn.not_valid"), false);
+		} else if (lv == GameStateChangeS2CPacket.field_25646) {
 			this.world.getLevelProperties().setRaining(true);
 			this.world.setRainGradient(0.0F);
-		} else if (i == 2) {
+		} else if (lv == GameStateChangeS2CPacket.field_25647) {
 			this.world.getLevelProperties().setRaining(false);
 			this.world.setRainGradient(1.0F);
-		} else if (i == 3) {
-			this.client.interactionManager.setGameMode(GameMode.byId(j));
-		} else if (i == 4) {
-			if (j == 0) {
+		} else if (lv == GameStateChangeS2CPacket.field_25648) {
+			this.client.interactionManager.setGameMode(GameMode.byId(i));
+		} else if (lv == GameStateChangeS2CPacket.field_25649) {
+			if (i == 0) {
 				this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
 				this.client.openScreen(new DownloadingTerrainScreen());
-			} else if (j == 1) {
+			} else if (i == 1) {
 				this.client
 					.openScreen(
 						new CreditsScreen(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN)))
 					);
 			}
-		} else if (i == 5) {
+		} else if (lv == GameStateChangeS2CPacket.field_25650) {
 			GameOptions gameOptions = this.client.options;
 			if (f == 0.0F) {
 				this.client.openScreen(new DemoScreen());
@@ -1317,29 +1319,29 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else if (f == 104.0F) {
 				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getBoundKeyLocalizedText()));
 			}
-		} else if (i == 6) {
+		} else if (lv == GameStateChangeS2CPacket.field_25651) {
 			this.world
 				.playSound(
 					playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18F, 0.45F
 				);
-		} else if (i == 7) {
+		} else if (lv == GameStateChangeS2CPacket.field_25652) {
 			this.world.setRainGradient(f);
-		} else if (i == 8) {
+		} else if (lv == GameStateChangeS2CPacket.field_25653) {
 			this.world.setThunderGradient(f);
-		} else if (i == 9) {
+		} else if (lv == GameStateChangeS2CPacket.field_25654) {
 			this.world
 				.playSound(
 					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PUFFER_FISH_STING, SoundCategory.NEUTRAL, 1.0F, 1.0F
 				);
-		} else if (i == 10) {
+		} else if (lv == GameStateChangeS2CPacket.field_25655) {
 			this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 0.0, 0.0, 0.0);
-			if (j == 1) {
+			if (i == 1) {
 				this.world
 					.playSound(
 						playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0F, 1.0F
 					);
 			}
-		} else if (i == 11) {
+		} else if (lv == GameStateChangeS2CPacket.field_25656) {
 			this.client.player.setShowsDeathScreen(f == 0.0F);
 		}
 	}
@@ -2186,7 +2188,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				for (EntityAttributesS2CPacket.Entry entry : packet.getEntries()) {
 					EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(entry.getId());
 					if (entityAttributeInstance == null) {
-						LOGGER.warn("Entity {} does not have attribute {}", entity, Registry.ATTRIBUTES.getId(entry.getId()));
+						LOGGER.warn("Entity {} does not have attribute {}", entity, Registry.ATTRIBUTE.getId(entry.getId()));
 					} else {
 						entityAttributeInstance.setBaseValue(entry.getBaseValue());
 						entityAttributeInstance.clearModifiers();
@@ -2223,11 +2225,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int k = packet.getSkyLightMask();
 		int l = packet.getFilledSkyLightMask();
 		Iterator<byte[]> iterator = packet.getSkyLightUpdates().iterator();
-		this.updateLighting(i, j, lightingProvider, LightType.SKY, k, l, iterator);
+		this.updateLighting(i, j, lightingProvider, LightType.SKY, k, l, iterator, packet.method_30006());
 		int m = packet.getBlockLightMask();
 		int n = packet.getFilledBlockLightMask();
 		Iterator<byte[]> iterator2 = packet.getBlockLightUpdates().iterator();
-		this.updateLighting(i, j, lightingProvider, LightType.BLOCK, m, n, iterator2);
+		this.updateLighting(i, j, lightingProvider, LightType.BLOCK, m, n, iterator2, packet.method_30006());
 	}
 
 	@Override
@@ -2262,14 +2264,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.interactionManager.processPlayerActionResponse(this.world, packet.getBlockPos(), packet.getBlockState(), packet.getAction(), packet.isApproved());
 	}
 
-	private void updateLighting(int chunkX, int chunkZ, LightingProvider provider, LightType type, int mask, int filledMask, Iterator<byte[]> updates) {
+	private void updateLighting(int chunkX, int chunkZ, LightingProvider provider, LightType type, int mask, int filledMask, Iterator<byte[]> updates, boolean bl) {
 		for (int i = 0; i < 18; i++) {
 			int j = -1 + i;
-			boolean bl = (mask & 1 << i) != 0;
-			boolean bl2 = (filledMask & 1 << i) != 0;
-			if (bl || bl2) {
+			boolean bl2 = (mask & 1 << i) != 0;
+			boolean bl3 = (filledMask & 1 << i) != 0;
+			if (bl2 || bl3) {
 				provider.queueData(
-					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl ? new ChunkNibbleArray((byte[])((byte[])updates.next()).clone()) : new ChunkNibbleArray()
+					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl2 ? new ChunkNibbleArray((byte[])((byte[])updates.next()).clone()) : new ChunkNibbleArray(), bl
 				);
 				this.world.scheduleBlockRenders(chunkX, j, chunkZ);
 			}

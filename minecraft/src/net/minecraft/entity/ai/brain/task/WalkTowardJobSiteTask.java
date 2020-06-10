@@ -41,12 +41,15 @@ public class WalkTowardJobSiteTask extends Task<VillagerEntity> {
 		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		optional.ifPresent(globalPos -> {
 			BlockPos blockPos = globalPos.getPos();
-			PointOfInterestStorage pointOfInterestStorage = serverWorld.getServer().getWorld(globalPos.getDimension()).getPointOfInterestStorage();
-			if (pointOfInterestStorage.test(blockPos, pointOfInterestType -> true)) {
-				pointOfInterestStorage.releaseTicket(blockPos);
-			}
+			ServerWorld serverWorld2 = serverWorld.getServer().getWorld(globalPos.getDimension());
+			if (serverWorld2 != null) {
+				PointOfInterestStorage pointOfInterestStorage = serverWorld2.getPointOfInterestStorage();
+				if (pointOfInterestStorage.test(blockPos, pointOfInterestType -> true)) {
+					pointOfInterestStorage.releaseTicket(blockPos);
+				}
 
-			DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
+				DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
+			}
 		});
 		villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
 	}

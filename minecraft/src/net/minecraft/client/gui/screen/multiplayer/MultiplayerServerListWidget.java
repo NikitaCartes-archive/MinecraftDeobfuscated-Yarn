@@ -7,8 +7,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -233,7 +235,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				this.server.playerCountLabel = LiteralText.EMPTY;
 				MultiplayerServerListWidget.SERVER_PINGER_THREAD_POOL.submit(() -> {
 					try {
-						this.screen.getServerListPinger().add(this.server);
+						this.screen.getServerListPinger().add(this.server, () -> this.client.execute(this::method_29978));
 					} catch (UnknownHostException var2) {
 						this.server.ping = -1L;
 						this.server.label = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
@@ -301,10 +303,14 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
 			DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256, 256);
-			if (this.server.getIcon() != null && !this.server.getIcon().equals(this.iconUri)) {
-				this.iconUri = this.server.getIcon();
-				this.updateIcon();
-				this.screen.getServerList().saveFile();
+			String string = this.server.getIcon();
+			if (!Objects.equals(string, this.iconUri)) {
+				if (this.method_29979(string)) {
+					this.iconUri = string;
+				} else {
+					this.server.setIcon(null);
+					this.method_29978();
+				}
 			}
 
 			if (this.icon != null) {
@@ -353,6 +359,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 		}
 
+		public void method_29978() {
+			this.screen.getServerList().saveFile();
+		}
+
 		protected void draw(MatrixStack matrixStack, int i, int j, Identifier identifier) {
 			this.client.getTextureManager().bindTexture(identifier);
 			RenderSystem.enableBlend();
@@ -364,8 +374,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			return true;
 		}
 
-		private void updateIcon() {
-			String string = this.server.getIcon();
+		private boolean method_29979(@Nullable String string) {
 			if (string == null) {
 				this.client.getTextureManager().destroyTexture(this.iconTextureId);
 				if (this.icon != null && this.icon.getImage() != null) {
@@ -388,9 +397,11 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 					this.client.getTextureManager().registerTexture(this.iconTextureId, this.icon);
 				} catch (Throwable var3) {
 					MultiplayerServerListWidget.LOGGER.error("Invalid icon for server {} ({})", this.server.name, this.server.address, var3);
-					this.server.setIcon(null);
+					return false;
 				}
 			}
+
+			return true;
 		}
 
 		@Override

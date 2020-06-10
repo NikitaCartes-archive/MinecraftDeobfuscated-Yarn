@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import net.minecraft.class_5399;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -115,7 +116,8 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 			.setPosition(center)
 			.addProcessor(blockIgnoreStructureProcessor)
 			.addProcessor(new RuleStructureProcessor(list))
-			.addProcessor(new BlockAgeStructureProcessor(this.properties.mossiness));
+			.addProcessor(new BlockAgeStructureProcessor(this.properties.mossiness))
+			.addProcessor(new class_5399());
 		if (this.properties.replaceWithBlackstone) {
 			structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);
 		}

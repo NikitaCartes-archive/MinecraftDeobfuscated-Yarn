@@ -80,7 +80,7 @@ public class RaidManager extends PersistentState {
 			return null;
 		} else {
 			DimensionType dimensionType = player.world.getDimension();
-			if (dimensionType.isNether()) {
+			if (!dimensionType.hasRaids()) {
 				return null;
 			} else {
 				BlockPos blockPos = player.getBlockPos();

@@ -435,4 +435,10 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	public boolean isInAir() {
 		return !this.onGround;
 	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.5F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
 }

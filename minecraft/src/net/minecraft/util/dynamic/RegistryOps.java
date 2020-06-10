@@ -7,11 +7,11 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -55,18 +55,23 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	 * 
 	 * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, Codec)
 	 */
-	protected <E> DataResult<Pair<Supplier<E>, T>> decodeOrId(T input, RegistryKey<Registry<E>> registryRef, Codec<E> elementCodec) {
-		DataResult<Pair<Identifier, T>> dataResult = Identifier.CODEC.decode(this.delegate, input);
-		if (!dataResult.result().isPresent()) {
-			return elementCodec.decode(this.delegate, input).map(pairx -> pairx.mapFirst(object -> () -> object));
+	protected <E> DataResult<Pair<Supplier<E>, T>> decodeOrId(T object, RegistryKey<Registry<E>> registryKey, MapCodec<E> mapCodec) {
+		Optional<MutableRegistry<E>> optional = this.registryTracker.get(registryKey);
+		if (!optional.isPresent()) {
+			return DataResult.error("Unknown registry: " + registryKey);
 		} else {
-			Optional<MutableRegistry<E>> optional = this.registryTracker.get(registryRef);
-			if (!optional.isPresent()) {
-				return DataResult.error("Unknown registry: " + registryRef);
+			MutableRegistry<E> mutableRegistry = (MutableRegistry<E>)optional.get();
+			DataResult<Pair<Identifier, T>> dataResult = Identifier.CODEC.decode(this.delegate, object);
+			if (!dataResult.result().isPresent()) {
+				return NumberCodecs.method_29906(registryKey, mapCodec).codec().decode(this.delegate, object).map(pairx -> pairx.mapFirst(pairxx -> {
+						mutableRegistry.add((RegistryKey<E>)pairxx.getFirst(), pairxx.getSecond());
+						mutableRegistry.markLoaded((RegistryKey<E>)pairxx.getFirst());
+						return pairxx::getSecond;
+					}));
 			} else {
 				Pair<Identifier, T> pair = (Pair<Identifier, T>)dataResult.result().get();
 				Identifier identifier = pair.getFirst();
-				return this.readSupplier(registryRef, (MutableRegistry<E>)optional.get(), elementCodec, identifier).map(supplier -> Pair.of(supplier, pair.getSecond()));
+				return this.readSupplier(registryKey, mutableRegistry, mapCodec, identifier).map(supplier -> Pair.of(supplier, pair.getSecond()));
 			}
 		}
 	}
@@ -74,7 +79,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	/**
 	 * Loads elements into a registry just loaded from a decoder.
 	 */
-	public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<Registry<E>> registryRef, Codec<E> elementCodec) {
+	public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<Registry<E>> registryRef, MapCodec<E> mapCodec) {
 		Identifier identifier = registryRef.getValue();
 		Collection<Identifier> collection = this.resourceManager.findResources(identifier, stringx -> stringx.endsWith(".json"));
 		DataResult<SimpleRegistry<E>> dataResult = DataResult.success(registry, Lifecycle.stable());
@@ -94,9 +99,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 					String string3 = string2.substring(0, i);
 					String string4 = string2.substring(i + 1);
 					Identifier identifier3 = new Identifier(string3, string4);
-					dataResult = dataResult.flatMap(
-						simpleRegistry -> this.readSupplier(registryRef, simpleRegistry, elementCodec, identifier3).map(supplier -> simpleRegistry)
-					);
+					dataResult = dataResult.flatMap(simpleRegistry -> this.readSupplier(registryRef, simpleRegistry, mapCodec, identifier3).map(supplier -> simpleRegistry));
 				}
 			}
 		}
@@ -109,9 +112,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	 * 
 	 * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.</p>
 	 */
-	private <E> DataResult<Supplier<E>> readSupplier(
-		RegistryKey<Registry<E>> registryRef, MutableRegistry<E> registry, Codec<E> elementCodec, Identifier elementId
-	) {
+	private <E> DataResult<Supplier<E>> readSupplier(RegistryKey<Registry<E>> registryRef, MutableRegistry<E> registry, MapCodec<E> mapCodec, Identifier elementId) {
 		RegistryKey<E> registryKey = RegistryKey.of(registryRef, elementId);
 		E object = registry.get(registryKey);
 		if (object != null) {
@@ -131,7 +132,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 					}
 				});
 				valueHolder.values.put(registryKey, DataResult.success(supplier));
-				DataResult<E> dataResult2 = this.readElement(registryRef, registryKey, elementCodec);
+				DataResult<E> dataResult2 = this.readElement(registryRef, registryKey, mapCodec);
 				dataResult2.result().ifPresent(objectx -> registry.add(registryKey, objectx));
 				DataResult<Supplier<E>> dataResult3 = dataResult2.map(objectx -> () -> objectx);
 				valueHolder.values.put(registryKey, dataResult3);
@@ -143,7 +144,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	/**
 	 * Reads the actual element.
 	 */
-	private <E> DataResult<E> readElement(RegistryKey<Registry<E>> registryRef, RegistryKey<E> elementRef, Codec<E> elementCodec) {
+	private <E> DataResult<E> readElement(RegistryKey<Registry<E>> registryRef, RegistryKey<E> elementRef, MapCodec<E> mapCodec) {
 		Identifier identifier = new Identifier(
 			registryRef.getValue().getNamespace(),
 			registryRef.getValue().getPath() + "/" + elementRef.getValue().getNamespace() + "/" + elementRef.getValue().getPath() + ".json"
@@ -161,7 +162,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 				try {
 					JsonParser jsonParser = new JsonParser();
 					JsonElement jsonElement = jsonParser.parse(reader);
-					var11 = elementCodec.parse(new RegistryOps<>(JsonOps.INSTANCE, this.resourceManager, this.registryTracker), jsonElement);
+					var11 = mapCodec.codec().parse(new RegistryOps<>(JsonOps.INSTANCE, this.resourceManager, this.registryTracker), jsonElement);
 				} catch (Throwable var36) {
 					var8 = var36;
 					throw var36;

@@ -37,6 +37,7 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
@@ -115,7 +116,7 @@ public class GameOptions {
 	public final KeyBinding keySneak = new StickyKeyBinding("key.sneak", 340, "key.categories.movement", () -> this.sneakToggled);
 	public final KeyBinding keySprint = new StickyKeyBinding("key.sprint", 341, "key.categories.movement", () -> this.sprintToggled);
 	public final KeyBinding keyInventory = new KeyBinding("key.inventory", 69, "key.categories.inventory");
-	public final KeyBinding keySwapHands = new KeyBinding("key.swapHands", 70, "key.categories.inventory");
+	public final KeyBinding keySwapHands = new KeyBinding("key.swapOffhand", 70, "key.categories.inventory");
 	public final KeyBinding keyDrop = new KeyBinding("key.drop", 81, "key.categories.inventory");
 	public final KeyBinding keyUse = new KeyBinding("key.use", InputUtil.Type.MOUSE, 1, "key.categories.gameplay");
 	public final KeyBinding keyAttack = new KeyBinding("key.attack", InputUtil.Type.MOUSE, 0, "key.categories.gameplay");
@@ -187,6 +188,7 @@ public class GameOptions {
 	public ParticlesOption particles = ParticlesOption.ALL;
 	public NarratorOption narrator = NarratorOption.OFF;
 	public String language = "en_us";
+	public boolean field_25623;
 
 	public GameOptions(MinecraftClient client, File optionsFile) {
 		this.client = client;
@@ -198,6 +200,7 @@ public class GameOptions {
 		}
 
 		this.viewDistance = client.is64Bit() ? 12 : 8;
+		this.field_25623 = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
 		this.load();
 	}
 
@@ -541,6 +544,10 @@ public class GameOptions {
 						this.skipMultiplayerWarning = "true".equals(string2);
 					}
 
+					if ("syncChunkWrites".equals(string)) {
+						this.field_25623 = "true".equals(string2);
+					}
+
 					for (KeyBinding keyBinding : this.keysAll) {
 						if (string.equals("key_" + keyBinding.getTranslationKey())) {
 							keyBinding.setBoundKey(InputUtil.fromTranslationKey(string2));
@@ -671,6 +678,7 @@ public class GameOptions {
 				printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
 				printWriter.println("skipMultiplayerWarning:" + this.skipMultiplayerWarning);
+				printWriter.println("syncChunkWrites:" + this.field_25623);
 
 				for (KeyBinding keyBinding : this.keysAll) {
 					printWriter.println("key_" + keyBinding.getTranslationKey() + ":" + keyBinding.getBoundKeyTranslationKey());

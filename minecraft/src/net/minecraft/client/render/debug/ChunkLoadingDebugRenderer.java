@@ -112,17 +112,21 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			this.clientStates = builder.build();
 			this.serverStates = integratedServer.submit(() -> {
 				ServerWorld serverWorld = integratedServer.getWorld(registryKey);
-				Builder<ChunkPos, String> builderx = ImmutableMap.builder();
-				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
+				if (serverWorld == null) {
+					return ImmutableMap.of();
+				} else {
+					Builder<ChunkPos, String> builderx = ImmutableMap.builder();
+					ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 
-				for (int kx = i - 12; kx <= i + 12; kx++) {
-					for (int lx = j - 12; lx <= j + 12; lx++) {
-						ChunkPos chunkPosx = new ChunkPos(kx, lx);
-						builderx.put(chunkPosx, "Server: " + serverChunkManager.method_23273(chunkPosx));
+					for (int kx = i - 12; kx <= i + 12; kx++) {
+						for (int lx = j - 12; lx <= j + 12; lx++) {
+							ChunkPos chunkPosx = new ChunkPos(kx, lx);
+							builderx.put(chunkPosx, "Server: " + serverChunkManager.method_23273(chunkPosx));
+						}
 					}
-				}
 
-				return builderx.build();
+					return builderx.build();
+				}
 			});
 		}
 	}

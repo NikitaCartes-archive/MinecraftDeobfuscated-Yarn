@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieEntityModel;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.Identifier;
@@ -13,7 +13,7 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 
 	protected ZombieBaseEntityRenderer(EntityRenderDispatcher dispatcher, M zombieEntityModel, M zombieEntityModel2, M zombieEntityModel3) {
 		super(dispatcher, zombieEntityModel, 0.5F);
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, zombieEntityModel2, zombieEntityModel3));
+		this.addFeature(new ArmorFeatureRenderer<>(this, zombieEntityModel2, zombieEntityModel3));
 	}
 
 	public Identifier getTexture(ZombieEntity zombieEntity) {

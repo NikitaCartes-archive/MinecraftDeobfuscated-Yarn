@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5398;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -112,6 +113,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.lookControl = new BeeEntity.BeeLookControl(this);
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER_BORDER, 16.0F);
 		this.setPathfindingPenalty(PathNodeType.COCOA, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.FENCE, -1.0F);
 	}
@@ -147,6 +149,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.goalSelector.add(9, new SwimGoal(this));
 		this.targetSelector.add(1, new BeeEntity.BeeRevengeGoal(this).setGroupRevenge(new Class[0]));
 		this.targetSelector.add(2, new BeeEntity.BeeFollowTargetGoal(this));
+		this.targetSelector.add(3, new class_5398<>(this, true));
 	}
 
 	@Override
@@ -186,7 +189,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.ticksSincePollination = tag.getInt("TicksSincePollination");
 		this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
 		this.cropsGrownSincePollination = tag.getInt("CropsGrownSincePollination");
-		this.angerFromTag(this.world, tag);
+		this.angerFromTag((ServerWorld)this.world, tag);
 	}
 
 	@Override
@@ -209,7 +212,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			}
 
 			this.setHasStung(true);
-			this.setTarget(null);
+			this.method_29922();
 			this.playSound(SoundEvents.ENTITY_BEE_STING, 1.0F, 1.0F);
 		}
 
@@ -278,7 +281,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	private boolean canEnterHive() {
-		if (this.cannotEnterHiveTicks <= 0 && !this.pollinateGoal.isRunning() && !this.hasStung()) {
+		if (this.cannotEnterHiveTicks <= 0 && !this.pollinateGoal.isRunning() && !this.hasStung() && this.getTarget() == null) {
 			boolean bl = this.failedPollinatingTooLong() || this.world.isRaining() || this.world.isNight() || this.hasNectar();
 			return bl && !this.isHiveNearFire();
 		} else {
@@ -324,9 +327,12 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			}
 		}
 
-		this.tickAngerLogic();
 		if (!this.hasNectar()) {
 			this.ticksSincePollination++;
+		}
+
+		if (!this.world.isClient) {
+			this.tickAngerLogic((ServerWorld)this.world, false);
 		}
 	}
 
@@ -592,6 +598,12 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.setVelocity(this.getVelocity().add(0.0, 0.01, 0.0));
 	}
 
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.5F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.2F));
+	}
+
 	private boolean isWithinDistance(BlockPos pos, int distance) {
 		return pos.isWithinDistance(this.getBlockPos(), (double)distance);
 	}
@@ -644,6 +656,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	class BeeRevengeGoal extends RevengeGoal {
 		BeeRevengeGoal(BeeEntity bee) {
 			super(bee);
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			return BeeEntity.this.hasAngerTime() && super.shouldContinue();
 		}
 
 		@Override

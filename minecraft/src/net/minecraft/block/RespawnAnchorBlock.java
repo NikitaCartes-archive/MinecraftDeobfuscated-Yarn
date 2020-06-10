@@ -140,7 +140,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	public static boolean isNether(World world) {
-		return world.getDimension().isNether();
+		return world.getDimension().isRespawnAnchorWorking();
 	}
 
 	public static void charge(World world, BlockPos pos, BlockState state) {
@@ -210,11 +210,6 @@ public class RespawnAnchorBlock extends Block {
 		}
 
 		return Optional.empty();
-	}
-
-	@Override
-	public boolean hasSidedTransparency(BlockState state) {
-		return true;
 	}
 
 	@Override

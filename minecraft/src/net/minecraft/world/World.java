@@ -144,16 +144,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return null;
 	}
 
-	public BlockState getTopNonAirState(BlockPos pos) {
-		BlockPos blockPos = new BlockPos(pos.getX(), this.getSeaLevel(), pos.getZ());
-
-		while (!this.isAir(blockPos.up())) {
-			blockPos = blockPos.up();
-		}
-
-		return this.getBlockState(blockPos);
-	}
-
 	public static boolean method_24794(BlockPos blockPos) {
 		return !isHeightInvalid(blockPos) && isValid(blockPos);
 	}
@@ -428,11 +418,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public boolean isDay() {
-		return this.getDimension().isOverworld() && this.ambientDarkness < 4;
+		return !this.getDimension().hasFixedTime() && this.ambientDarkness < 4;
 	}
 
 	public boolean isNight() {
-		return this.getDimension().isOverworld() && !this.isDay();
+		return !this.getDimension().hasFixedTime() && !this.isDay();
 	}
 
 	@Override
@@ -743,10 +733,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		int j = MathHelper.floor((box.maxX + 2.0) / 16.0);
 		int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
 		int l = MathHelper.floor((box.maxZ + 2.0) / 16.0);
+		ChunkManager chunkManager = this.getChunkManager();
 
 		for (int m = i; m <= j; m++) {
 			for (int n = k; n <= l; n++) {
-				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
+				WorldChunk worldChunk = chunkManager.getWorldChunk(m, n, false);
 				if (worldChunk != null) {
 					worldChunk.getEntities(except, box, list, predicate);
 				}

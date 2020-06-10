@@ -559,6 +559,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	protected boolean handleHotbarKeyPressed(int keyCode, int scanCode) {
 		if (this.client.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null) {
+			if (this.client.options.keySwapHands.matchesKey(keyCode, scanCode)) {
+				this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
+				return true;
+			}
+
 			for (int i = 0; i < 9; i++) {
 				if (this.client.options.keysHotbar[i].matchesKey(keyCode, scanCode)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, i, SlotActionType.SWAP);

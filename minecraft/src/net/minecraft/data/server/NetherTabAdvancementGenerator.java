@@ -32,6 +32,7 @@ import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
+import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -500,7 +501,9 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 							.build()
 					),
 					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED),
-					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().type(EntityType.PIGLIN).build())
+					EntityPredicate.Extended.ofLegacy(
+						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
+					)
 				)
 			)
 			.build(consumer, "nether/distract_piglin");

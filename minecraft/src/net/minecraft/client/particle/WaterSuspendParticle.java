@@ -24,6 +24,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.6F);
 		this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
+		this.collidesWithWorld = false;
 	}
 
 	@Override

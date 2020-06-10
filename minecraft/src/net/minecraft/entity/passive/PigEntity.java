@@ -1,6 +1,8 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
@@ -236,7 +238,6 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		this.setMovementSpeed(this.getSaddledSpeed());
 		this.travel(this, this.saddledComponent, movementInput);
 	}
 
@@ -262,5 +263,11 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
 		return BREEDING_INGREDIENT.test(stack);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 }

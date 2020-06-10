@@ -340,13 +340,17 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			chunkGenerator = dimensionOptions.getChunkGenerator();
 		}
 
+		RegistryKey<DimensionType> registryKey = (RegistryKey<DimensionType>)this.dimensionTracker
+			.getDimensionTypeRegistry()
+			.getKey(dimensionType)
+			.orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType));
 		ServerWorld serverWorld = new ServerWorld(
 			this,
 			this.workerExecutor,
 			this.session,
 			serverWorldProperties,
 			World.OVERWORLD,
-			DimensionType.OVERWORLD_REGISTRY_KEY,
+			registryKey,
 			dimensionType,
 			worldGenerationProgressListener,
 			chunkGenerator,
@@ -368,12 +372,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				if (bl) {
 					this.setToDebugWorldProperties(this.saveProperties);
 				}
-			} catch (Throwable var27) {
-				CrashReport crashReport = CrashReport.create(var27, "Exception initializing level");
+			} catch (Throwable var28) {
+				CrashReport crashReport = CrashReport.create(var28, "Exception initializing level");
 
 				try {
 					serverWorld.addDetailsToCrashReport(crashReport);
-				} catch (Throwable var26) {
+				} catch (Throwable var27) {
 				}
 
 				throw new CrashException(crashReport);
@@ -388,11 +392,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
-			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
-			if (registryKey != DimensionOptions.OVERWORLD) {
-				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.DIMENSION, registryKey.getValue());
+			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey<DimensionOptions>)entry.getKey();
+			if (registryKey2 != DimensionOptions.OVERWORLD) {
+				RegistryKey<World> registryKey3 = RegistryKey.of(Registry.DIMENSION, registryKey2.getValue());
 				DimensionType dimensionType2 = ((DimensionOptions)entry.getValue()).getDimensionType();
-				RegistryKey<DimensionType> registryKey3 = (RegistryKey<DimensionType>)this.dimensionTracker
+				RegistryKey<DimensionType> registryKey4 = (RegistryKey<DimensionType>)this.dimensionTracker
 					.getDimensionTypeRegistry()
 					.getKey(dimensionType2)
 					.orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType2));
@@ -403,8 +407,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					this.workerExecutor,
 					this.session,
 					unmodifiableLevelProperties,
-					registryKey2,
 					registryKey3,
+					registryKey4,
 					dimensionType2,
 					worldGenerationProgressListener,
 					chunkGenerator2,
@@ -414,7 +418,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					false
 				);
 				worldBorder.addListener(new WorldBorderListener.WorldBorderSyncer(serverWorld2.getWorldBorder()));
-				this.worlds.put(registryKey2, serverWorld2);
+				this.worlds.put(registryKey3, serverWorld2);
 			}
 		}
 	}
@@ -495,7 +499,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
-		ServerWorld serverWorld = this.getWorld(World.OVERWORLD);
+		ServerWorld serverWorld = this.method_30002();
 		LOGGER.info("Preparing start region for dimension {}", serverWorld.getRegistryKey().getValue());
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
@@ -571,7 +575,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			bl4 = true;
 		}
 
-		ServerWorld serverWorld2 = this.getWorld(World.OVERWORLD);
+		ServerWorld serverWorld2 = this.method_30002();
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
 		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
@@ -859,31 +863,29 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.profiler.swap("levels");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
-			if (serverWorld.getDimension().isOverworld() || this.isNetherAllowed()) {
-				this.profiler.push((Supplier<String>)(() -> serverWorld + " " + serverWorld.getRegistryKey().getValue()));
-				if (this.ticks % 20 == 0) {
-					this.profiler.push("timeSync");
-					this.playerManager
-						.sendToDimension(
-							new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)),
-							serverWorld.getRegistryKey()
-						);
-					this.profiler.pop();
-				}
-
-				this.profiler.push("tick");
-
-				try {
-					serverWorld.tick(shouldKeepTicking);
-				} catch (Throwable var6) {
-					CrashReport crashReport = CrashReport.create(var6, "Exception ticking world");
-					serverWorld.addDetailsToCrashReport(crashReport);
-					throw new CrashException(crashReport);
-				}
-
-				this.profiler.pop();
+			this.profiler.push((Supplier<String>)(() -> serverWorld + " " + serverWorld.getRegistryKey().getValue()));
+			if (this.ticks % 20 == 0) {
+				this.profiler.push("timeSync");
+				this.playerManager
+					.sendToDimension(
+						new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)),
+						serverWorld.getRegistryKey()
+					);
 				this.profiler.pop();
 			}
+
+			this.profiler.push("tick");
+
+			try {
+				serverWorld.tick(shouldKeepTicking);
+			} catch (Throwable var6) {
+				CrashReport crashReport = CrashReport.create(var6, "Exception ticking world");
+				serverWorld.addDetailsToCrashReport(crashReport);
+				throw new CrashException(crashReport);
+			}
+
+			this.profiler.pop();
+			this.profiler.pop();
 		}
 
 		this.profiler.swap("connection");
@@ -924,6 +926,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return new File(this.getRunDirectory(), string);
 	}
 
+	public final ServerWorld method_30002() {
+		return (ServerWorld)this.worlds.get(World.OVERWORLD);
+	}
+
+	@Nullable
 	public ServerWorld getWorld(RegistryKey<World> registryKey) {
 		return (ServerWorld)this.worlds.get(registryKey);
 	}
@@ -1404,7 +1411,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public ServerCommandSource getCommandSource() {
-		ServerWorld serverWorld = this.getWorld(World.OVERWORLD);
+		ServerWorld serverWorld = this.method_30002();
 		return new ServerCommandSource(
 			this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", new LiteralText("Server"), this, null
 		);
@@ -1449,7 +1456,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public GameRules getGameRules() {
-		return this.getWorld(World.OVERWORLD).getGameRules();
+		return this.method_30002().getGameRules();
 	}
 
 	public BossBarManager getBossBarManager() {

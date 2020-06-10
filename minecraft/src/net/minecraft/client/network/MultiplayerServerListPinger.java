@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.ClientConnection;
@@ -49,7 +50,7 @@ public class MultiplayerServerListPinger {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
-	public void add(ServerInfo entry) throws UnknownHostException {
+	public void add(ServerInfo entry, Runnable runnable) throws UnknownHostException {
 		ServerAddress serverAddress = ServerAddress.parse(entry.address);
 		final ClientConnection clientConnection = ClientConnection.connect(InetAddress.getByName(serverAddress.getAddress()), serverAddress.getPort(), false);
 		this.clientConnections.add(clientConnection);
@@ -107,15 +108,19 @@ public class MultiplayerServerListPinger {
 							entry.playerCountLabel = new TranslatableText("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
 						}
 
+						String string = null;
 						if (serverMetadata.getFavicon() != null) {
-							String string = serverMetadata.getFavicon();
-							if (string.startsWith("data:image/png;base64,")) {
-								entry.setIcon(string.substring("data:image/png;base64,".length()));
+							String string2 = serverMetadata.getFavicon();
+							if (string2.startsWith("data:image/png;base64,")) {
+								string = string2.substring("data:image/png;base64,".length());
 							} else {
 								MultiplayerServerListPinger.LOGGER.error("Invalid server icon (unknown format)");
 							}
-						} else {
-							entry.setIcon(null);
+						}
+
+						if (!Objects.equals(string, entry.getIcon())) {
+							entry.setIcon(string);
+							runnable.run();
 						}
 
 						this.startTime = Util.getMeasuringTimeMs();
@@ -152,8 +157,8 @@ public class MultiplayerServerListPinger {
 		try {
 			clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.STATUS));
 			clientConnection.send(new QueryRequestC2SPacket());
-		} catch (Throwable var5) {
-			LOGGER.error(var5);
+		} catch (Throwable var6) {
+			LOGGER.error(var6);
 		}
 	}
 

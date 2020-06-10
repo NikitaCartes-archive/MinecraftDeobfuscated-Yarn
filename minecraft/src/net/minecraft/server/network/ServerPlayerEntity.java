@@ -157,6 +157,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private Vec3d enteredNetherPos;
 	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
 	private RegistryKey<World> spawnPointDimension = World.OVERWORLD;
+	@Nullable
 	private BlockPos spawnPointPosition;
 	private boolean spawnPointSet;
 	private int screenHandlerSyncId;
@@ -198,7 +199,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				int q = (o + n * p) % k;
 				int r = q % (i * 2 + 1);
 				int s = q / (i * 2 + 1);
-				BlockPos blockPos2 = SpawnLocating.findPlayerSpawn(world, blockPos, i, r, s);
+				BlockPos blockPos2 = SpawnLocating.findOverworldSpawn(world, blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
 				if (blockPos2 != null) {
 					this.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
 					if (world.doesNotCollide(this)) {
@@ -605,39 +606,38 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Nullable
 	@Override
-	public Entity changeDimension(RegistryKey<World> newDimension) {
+	public Entity changeDimension(ServerWorld serverWorld) {
 		this.inTeleportationState = true;
-		RegistryKey<World> registryKey = this.world.getRegistryKey();
-		if (registryKey == World.END && newDimension == World.OVERWORLD) {
+		ServerWorld serverWorld2 = this.getServerWorld();
+		RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
+		if (registryKey == World.END && serverWorld.getRegistryKey() == World.OVERWORLD) {
 			this.detach();
 			this.getServerWorld().removePlayer(this);
 			if (!this.notInAnyWorld) {
 				this.notInAnyWorld = true;
-				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(4, this.seenCredits ? 0.0F : 1.0F));
+				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25649, this.seenCredits ? 0.0F : 1.0F));
 				this.seenCredits = true;
 			}
 
 			return this;
 		} else {
-			ServerWorld serverWorld = this.server.getWorld(registryKey);
-			ServerWorld serverWorld2 = this.server.getWorld(newDimension);
-			WorldProperties worldProperties = serverWorld2.getLevelProperties();
+			WorldProperties worldProperties = serverWorld.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						serverWorld2.getDimensionRegistryKey(),
-						newDimension,
-						BiomeAccess.hashSeed(serverWorld2.getSeed()),
+						serverWorld.getDimensionRegistryKey(),
+						serverWorld.getRegistryKey(),
+						BiomeAccess.hashSeed(serverWorld.getSeed()),
 						this.interactionManager.getGameMode(),
-						serverWorld2.isDebugWorld(),
-						serverWorld2.method_28125(),
+						serverWorld.isDebugWorld(),
+						serverWorld.method_28125(),
 						true
 					)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
-			serverWorld.removePlayer(this);
+			serverWorld2.removePlayer(this);
 			this.removed = false;
 			double d = this.getX();
 			double e = this.getY();
@@ -645,8 +645,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			float g = this.pitch;
 			float h = this.yaw;
 			float i = h;
-			serverWorld.getProfiler().push("moving");
-			if (registryKey == World.OVERWORLD && newDimension == World.END) {
+			serverWorld2.getProfiler().push("moving");
+			if (serverWorld.getRegistryKey() == World.END) {
 				BlockPos blockPos = ServerWorld.field_25144;
 				d = (double)blockPos.getX();
 				e = (double)blockPos.getY();
@@ -654,12 +654,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				h = 90.0F;
 				g = 0.0F;
 			} else {
-				if (registryKey == World.OVERWORLD && newDimension == World.NETHER) {
+				if (registryKey == World.OVERWORLD && serverWorld.getRegistryKey() == World.NETHER) {
 					this.enteredNetherPos = this.getPos();
 				}
 
-				DimensionType dimensionType = serverWorld.getDimension();
-				DimensionType dimensionType2 = serverWorld2.getDimension();
+				DimensionType dimensionType = serverWorld2.getDimension();
+				DimensionType dimensionType2 = serverWorld.getDimension();
 				double j = 8.0;
 				if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
 					d /= 8.0;
@@ -671,35 +671,35 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			}
 
 			this.refreshPositionAndAngles(d, e, f, h, g);
-			serverWorld.getProfiler().pop();
-			serverWorld.getProfiler().push("placing");
-			double k = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundWest() + 16.0);
-			double j = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundNorth() + 16.0);
-			double l = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
-			double m = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
+			serverWorld2.getProfiler().pop();
+			serverWorld2.getProfiler().push("placing");
+			double k = Math.min(-2.9999872E7, serverWorld.getWorldBorder().getBoundWest() + 16.0);
+			double j = Math.min(-2.9999872E7, serverWorld.getWorldBorder().getBoundNorth() + 16.0);
+			double l = Math.min(2.9999872E7, serverWorld.getWorldBorder().getBoundEast() - 16.0);
+			double m = Math.min(2.9999872E7, serverWorld.getWorldBorder().getBoundSouth() - 16.0);
 			d = MathHelper.clamp(d, k, l);
 			f = MathHelper.clamp(f, j, m);
 			this.refreshPositionAndAngles(d, e, f, h, g);
-			if (newDimension == World.END) {
+			if (serverWorld.getRegistryKey() == World.END) {
 				int n = MathHelper.floor(this.getX());
 				int o = MathHelper.floor(this.getY()) - 1;
 				int p = MathHelper.floor(this.getZ());
-				ServerWorld.method_29200(serverWorld2);
+				ServerWorld.method_29200(serverWorld);
 				this.refreshPositionAndAngles((double)n, (double)o, (double)p, h, 0.0F);
 				this.setVelocity(Vec3d.ZERO);
-			} else if (!serverWorld2.getPortalForcer().usePortal(this, i)) {
-				serverWorld2.getPortalForcer().createPortal(this);
-				serverWorld2.getPortalForcer().usePortal(this, i);
+			} else if (!serverWorld.getPortalForcer().usePortal(this, i)) {
+				serverWorld.getPortalForcer().createPortal(this);
+				serverWorld.getPortalForcer().usePortal(this, i);
 			}
 
-			serverWorld.getProfiler().pop();
-			this.setWorld(serverWorld2);
-			serverWorld2.onPlayerChangeDimension(this);
-			this.dimensionChanged(serverWorld);
+			serverWorld2.getProfiler().pop();
+			this.setWorld(serverWorld);
+			serverWorld.onPlayerChangeDimension(this);
+			this.dimensionChanged(serverWorld2);
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), h, g);
-			this.interactionManager.setWorld(serverWorld2);
+			this.interactionManager.setWorld(serverWorld);
 			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
-			playerManager.sendWorldInfo(this, serverWorld2);
+			playerManager.sendWorldInfo(this, serverWorld);
 			playerManager.sendPlayerStatus(this);
 
 			for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
@@ -715,12 +715,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	private void dimensionChanged(ServerWorld targetWorld) {
-		DimensionType dimensionType = targetWorld.getDimension();
-		DimensionType dimensionType2 = this.world.getDimension();
 		RegistryKey<World> registryKey = targetWorld.getRegistryKey();
 		RegistryKey<World> registryKey2 = this.world.getRegistryKey();
 		Criteria.CHANGED_DIMENSION.trigger(this, registryKey, registryKey2);
-		if (dimensionType.isNether() && dimensionType2.isOverworld() && this.enteredNetherPos != null) {
+		if (registryKey == World.NETHER && registryKey2 == World.OVERWORLD && this.enteredNetherPos != null) {
 			Criteria.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
 		}
 
@@ -1185,7 +1183,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void setGameMode(GameMode gameMode) {
 		this.interactionManager.setGameMode(gameMode);
-		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(3, (float)gameMode.getId()));
+		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25648, (float)gameMode.getId()));
 		if (gameMode == GameMode.SPECTATOR) {
 			this.dropShoulderEntities();
 			this.stopRiding();
@@ -1394,7 +1392,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		return this.spawnPointSet;
 	}
 
-	public void setSpawnPoint(RegistryKey<World> dimension, BlockPos pos, boolean spawnPointSet, boolean bl) {
+	public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, boolean spawnPointSet, boolean bl) {
 		if (pos != null) {
 			boolean bl2 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
 			if (bl && !bl2) {

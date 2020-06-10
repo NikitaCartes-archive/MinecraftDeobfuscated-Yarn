@@ -9,6 +9,7 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5396;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
@@ -650,5 +651,7 @@ public class Schemas {
 		builder.addFixer(new BiomeRenameFix(schema121, false, "Nether biome rename", ImmutableMap.of("minecraft:nether", "minecraft:nether_wastes")));
 		Schema schema122 = builder.addSchema(2553, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BiomesFix(schema122, false));
+		Schema schema123 = builder.addSchema(2558, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new class_5396(schema123, false));
 	}
 }

@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.pathing;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.Comparator;
@@ -9,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
@@ -48,8 +48,9 @@ public class PathNodeNavigator {
 		startNode.heapWeight = startNode.distanceToNearestTarget;
 		this.minHeap.clear();
 		this.minHeap.push(startNode);
-		Set<PathNode> set2 = Sets.<PathNode>newHashSet();
+		Set<PathNode> set2 = ImmutableSet.of();
 		int i = 0;
+		Set<TargetPathNode> set3 = Sets.<TargetPathNode>newHashSetWithExpectedSize(set.size());
 		int j = (int)((float)this.range * rangeMultiplier);
 
 		while (!this.minHeap.isEmpty()) {
@@ -59,8 +60,15 @@ public class PathNodeNavigator {
 
 			PathNode pathNode = this.minHeap.pop();
 			pathNode.visited = true;
-			set.stream().filter(targetPathNode -> pathNode.getManhattanDistance(targetPathNode) <= (float)distance).forEach(TargetPathNode::markReached);
-			if (set.stream().anyMatch(TargetPathNode::isReached)) {
+
+			for (TargetPathNode targetPathNode : set) {
+				if (pathNode.getManhattanDistance(targetPathNode) <= (float)distance) {
+					targetPathNode.markReached();
+					set3.add(targetPathNode);
+				}
+			}
+
+			if (!set3.isEmpty()) {
 				break;
 			}
 
@@ -87,19 +95,13 @@ public class PathNodeNavigator {
 			}
 		}
 
-		Stream<Path> stream;
-		if (set.stream().anyMatch(TargetPathNode::isReached)) {
-			stream = set.stream()
-				.filter(TargetPathNode::isReached)
-				.map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), true))
-				.sorted(Comparator.comparingInt(Path::getLength));
-		} else {
-			stream = set.stream()
-				.map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), false))
-				.sorted(Comparator.comparingDouble(Path::getManhattanDistanceFromTarget).thenComparingInt(Path::getLength));
-		}
-
-		Optional<Path> optional = stream.findFirst();
+		Optional<Path> optional = !set3.isEmpty()
+			? set3.stream()
+				.map(targetPathNodex -> this.createPath(targetPathNodex.getNearestNode(), (BlockPos)positions.get(targetPathNodex), true))
+				.min(Comparator.comparingInt(Path::getLength))
+			: set.stream()
+				.map(targetPathNodex -> this.createPath(targetPathNodex.getNearestNode(), (BlockPos)positions.get(targetPathNodex), false))
+				.min(Comparator.comparingDouble(Path::getManhattanDistanceFromTarget).thenComparingInt(Path::getLength));
 		return !optional.isPresent() ? null : (Path)optional.get();
 	}
 

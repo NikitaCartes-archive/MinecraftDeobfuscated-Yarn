@@ -249,7 +249,9 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.isAiDisabled()) {
+		if (this.isAiDisabled()) {
+			this.setAir(this.getMaxAir());
+		} else {
 			if (this.isWet()) {
 				this.setMoistness(2400);
 			} else {

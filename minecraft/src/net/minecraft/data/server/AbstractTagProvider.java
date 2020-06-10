@@ -1,6 +1,5 @@
 package net.minecraft.data.server;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,6 +16,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.class_5394;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -44,7 +44,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	public void run(DataCache cache) {
 		this.tagBuilders.clear();
 		this.configure();
-		Tag<T> tag = Tag.of(ImmutableSet.of());
+		Tag<T> tag = class_5394.method_29898();
 		Function<Identifier, Tag<T>> function = identifier -> this.tagBuilders.containsKey(identifier) ? tag : null;
 		Function<Identifier, T> function2 = identifier -> this.registry.getOrEmpty(identifier).orElse(null);
 		this.tagBuilders

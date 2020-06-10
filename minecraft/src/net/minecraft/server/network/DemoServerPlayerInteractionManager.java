@@ -31,7 +31,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 		long m = l / 24000L + 1L;
 		if (!this.sentHelp && this.tick > 20) {
 			this.sentHelp = true;
-			this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 0.0F));
+			this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 0.0F));
 		}
 
 		this.demoEnded = l > 120500L;
@@ -42,18 +42,18 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 		if (l % 24000L == 500L) {
 			if (m <= 6L) {
 				if (m == 6L) {
-					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 104.0F));
+					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 104.0F));
 				} else {
 					this.player.sendSystemMessage(new TranslatableText("demo.day." + m), Util.NIL_UUID);
 				}
 			}
 		} else if (m == 1L) {
 			if (l == 100L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 101.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 101.0F));
 			} else if (l == 175L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 102.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 102.0F));
 			} else if (l == 250L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 103.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 103.0F));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
 			this.player.sendSystemMessage(new TranslatableText("demo.day.warning"), Util.NIL_UUID);

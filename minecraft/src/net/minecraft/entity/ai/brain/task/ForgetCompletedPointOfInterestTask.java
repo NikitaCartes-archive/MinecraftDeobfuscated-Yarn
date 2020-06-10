@@ -37,7 +37,7 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 		GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(this.memoryModule).get();
 		BlockPos blockPos = globalPos.getPos();
 		ServerWorld serverWorld = world.getServer().getWorld(globalPos.getDimension());
-		if (this.hasCompletedPointOfInterest(serverWorld, blockPos)) {
+		if (serverWorld == null || this.hasCompletedPointOfInterest(serverWorld, blockPos)) {
 			brain.forget(this.memoryModule);
 		} else if (this.isBedOccupiedByOthers(serverWorld, blockPos, entity)) {
 			brain.forget(this.memoryModule);

@@ -375,7 +375,8 @@ public class DebugHud extends DrawableHelper {
 
 	private World getWorld() {
 		return DataFixUtils.orElse(
-			Optional.ofNullable(this.client.getServer()).map(integratedServer -> integratedServer.getWorld(this.client.world.getRegistryKey())), this.client.world
+			Optional.ofNullable(this.client.getServer()).flatMap(integratedServer -> Optional.ofNullable(integratedServer.getWorld(this.client.world.getRegistryKey()))),
+			this.client.world
 		);
 	}
 

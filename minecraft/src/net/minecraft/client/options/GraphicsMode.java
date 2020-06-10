@@ -35,10 +35,6 @@ public enum GraphicsMode {
 		return byId(this.getId() + 1);
 	}
 
-	public GraphicsMode previous() {
-		return byId(this.getId() - 1);
-	}
-
 	public String toString() {
 		switch (this) {
 			case FAST:

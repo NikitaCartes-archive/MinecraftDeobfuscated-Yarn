@@ -129,7 +129,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		entityRenderDispatcher.setRotation(quaternion2);
 		entityRenderDispatcher.setRenderShadows(false);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, matrixStack, immediate, 15728880);
+		RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, matrixStack, immediate, 15728880));
 		immediate.draw();
 		entityRenderDispatcher.setRenderShadows(true);
 		entity.bodyYaw = h;
@@ -148,6 +148,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.recipeBook.mouseClicked(mouseX, mouseY, button)) {
+			this.setFocused(this.recipeBook);
 			return true;
 		} else {
 			return this.isNarrow && this.recipeBook.isOpen() ? false : super.mouseClicked(mouseX, mouseY, button);

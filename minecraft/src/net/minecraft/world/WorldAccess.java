@@ -66,7 +66,7 @@ public interface WorldAccess extends EntityView, WorldView, ModifiableTestableWo
 	void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data);
 
 	default int getDimensionHeight() {
-		return this.getDimension().hasCeiling() ? 128 : 256;
+		return this.getDimension().getLogicalHeight();
 	}
 
 	default void syncWorldEvent(int eventId, BlockPos pos, int data) {
@@ -79,12 +79,12 @@ public interface WorldAccess extends EntityView, WorldView, ModifiableTestableWo
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-		return EntityView.super.intersectsEntities(except, shape);
+	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
+		return EntityView.super.intersectsEntities(entity, shape);
 	}
 
 	@Override
-	default BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
-		return WorldView.super.getTopPosition(type, pos);
+	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+		return WorldView.super.getTopPosition(heightmap, pos);
 	}
 }

@@ -79,10 +79,23 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 			float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
 			this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
 			this.banner.pivotY = -32.0F;
-			renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
+			method_29999(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
 			matrixStack.pop();
 			matrixStack.pop();
 		}
+	}
+
+	public static void method_29999(
+		MatrixStack matrixStack,
+		VertexConsumerProvider vertexConsumerProvider,
+		int i,
+		int j,
+		ModelPart modelPart,
+		SpriteIdentifier spriteIdentifier,
+		boolean bl,
+		List<Pair<BannerPattern, DyeColor>> list
+	) {
+		renderCanvas(matrixStack, vertexConsumerProvider, i, j, modelPart, spriteIdentifier, bl, list, false);
 	}
 
 	public static void renderCanvas(
@@ -93,9 +106,10 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		ModelPart canvas,
 		SpriteIdentifier baseSprite,
 		boolean isBanner,
-		List<Pair<BannerPattern, DyeColor>> patterns
+		List<Pair<BannerPattern, DyeColor>> patterns,
+		boolean bl
 	) {
-		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid), light, overlay);
+		canvas.render(matrices, baseSprite.method_30001(vertexConsumers, RenderLayer::getEntitySolid, bl), light, overlay);
 
 		for (int i = 0; i < 17 && i < patterns.size(); i++) {
 			Pair<BannerPattern, DyeColor> pair = (Pair<BannerPattern, DyeColor>)patterns.get(i);

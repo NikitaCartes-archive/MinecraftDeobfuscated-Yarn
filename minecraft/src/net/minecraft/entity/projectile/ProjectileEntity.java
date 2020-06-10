@@ -73,7 +73,8 @@ public abstract class ProjectileEntity extends Entity {
 	private boolean method_26961() {
 		Entity entity = this.getOwner();
 		if (entity != null) {
-			for (Entity entity2 : this.world.getEntities(this, this.getBoundingBox().expand(1.0), entityx -> !entityx.isSpectator() && entityx.collides())) {
+			for (Entity entity2 : this.world
+				.getEntities(this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entityx -> !entityx.isSpectator() && entityx.collides())) {
 				if (entity2.getRootVehicle() == entity.getRootVehicle()) {
 					return false;
 				}

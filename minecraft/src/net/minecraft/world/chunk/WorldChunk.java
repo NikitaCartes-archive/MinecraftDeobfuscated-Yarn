@@ -61,6 +61,7 @@ import org.apache.logging.log4j.Logger;
 
 public class WorldChunk implements Chunk {
 	private static final Logger LOGGER = LogManager.getLogger();
+	@Nullable
 	public static final ChunkSection EMPTY_SECTION = null;
 	private final ChunkSection[] sections = new ChunkSection[16];
 	private BiomeArray biomeArray;
@@ -484,18 +485,21 @@ public class WorldChunk implements Chunk {
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
 		for (int k = i; k <= j; k++) {
-			if (!this.entitySections[k].isEmpty()) {
-				for (Entity entity : this.entitySections[k]) {
-					if (entity.getBoundingBox().intersects(box) && entity != except) {
-						if (predicate == null || predicate.test(entity)) {
-							entityList.add(entity);
-						}
+			TypeFilterableList<Entity> typeFilterableList = this.entitySections[k];
+			List<Entity> list = typeFilterableList.method_29903();
+			int l = list.size();
 
-						if (entity instanceof EnderDragonEntity) {
-							for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
-								if (enderDragonPart != except && enderDragonPart.getBoundingBox().intersects(box) && (predicate == null || predicate.test(enderDragonPart))) {
-									entityList.add(enderDragonPart);
-								}
+			for (int m = 0; m < l; m++) {
+				Entity entity = (Entity)list.get(m);
+				if (entity.getBoundingBox().intersects(box) && entity != except) {
+					if (predicate == null || predicate.test(entity)) {
+						entityList.add(entity);
+					}
+
+					if (entity instanceof EnderDragonEntity) {
+						for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
+							if (enderDragonPart != except && enderDragonPart.getBoundingBox().intersects(box) && (predicate == null || predicate.test(enderDragonPart))) {
+								entityList.add(enderDragonPart);
 							}
 						}
 					}

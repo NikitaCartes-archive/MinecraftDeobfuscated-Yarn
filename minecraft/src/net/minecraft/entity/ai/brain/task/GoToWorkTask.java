@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Optional;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -27,19 +28,18 @@ public class GoToWorkTask extends Task<VillagerEntity> {
 		villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
 		if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE) {
 			MinecraftServer minecraftServer = serverWorld.getServer();
-			minecraftServer.getWorld(globalPos.getDimension())
-				.getPointOfInterestStorage()
-				.getType(globalPos.getPos())
-				.ifPresent(
+			Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))
+				.flatMap(serverWorldx -> serverWorldx.getPointOfInterestStorage().getType(globalPos.getPos()))
+				.flatMap(
 					pointOfInterestType -> Registry.VILLAGER_PROFESSION
 							.stream()
 							.filter(villagerProfession -> villagerProfession.getWorkStation() == pointOfInterestType)
 							.findFirst()
-							.ifPresent(villagerProfession -> {
-								villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(villagerProfession));
-								villagerEntity.reinitializeBrain(serverWorld);
-							})
-				);
+				)
+				.ifPresent(villagerProfession -> {
+					villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(villagerProfession));
+					villagerEntity.reinitializeBrain(serverWorld);
+				});
 		}
 	}
 }

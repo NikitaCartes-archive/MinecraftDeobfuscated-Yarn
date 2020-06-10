@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.feature.PiglinBipedArmorFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PiglinEntityModel;
 import net.minecraft.entity.mob.MobEntity;
@@ -16,7 +16,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 
 	public PiglinEntityRenderer(EntityRenderDispatcher dispatcher, boolean zombified) {
 		super(dispatcher, getPiglinModel(zombified), 0.5F, 1.0019531F, 1.0F, 1.0019531F);
-		this.addFeature(new PiglinBipedArmorFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F), createEarlessPiglinModel()));
+		this.addFeature(new ArmorFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.02F)));
 	}
 
 	private static PiglinEntityModel<MobEntity> getPiglinModel(boolean zombified) {
@@ -25,13 +25,6 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 			piglinEntityModel.leftEar.visible = false;
 		}
 
-		return piglinEntityModel;
-	}
-
-	private static <T extends MobEntity> PiglinEntityModel<T> createEarlessPiglinModel() {
-		PiglinEntityModel<T> piglinEntityModel = new PiglinEntityModel<>(1.0F, 64, 16);
-		piglinEntityModel.leftEar.visible = false;
-		piglinEntityModel.rightEar.visible = false;
 		return piglinEntityModel;
 	}
 

@@ -8,11 +8,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 
 public class Texts {
+	@Environment(EnvType.CLIENT)
 	public static MutableText setStyleIfAbsent(MutableText text, Style style) {
 		if (style.isEmpty()) {
 			return text;
@@ -36,7 +39,7 @@ public class Texts {
 				mutableText.append(parse(source, text2, sender, depth + 1));
 			}
 
-			return setStyleIfAbsent(mutableText, method_27663(source, text.getStyle(), sender, depth));
+			return mutableText.fillStyle(method_27663(source, text.getStyle(), sender, depth));
 		}
 	}
 

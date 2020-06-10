@@ -7,7 +7,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
 import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
@@ -45,7 +45,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 	public PlayerEntityRenderer(EntityRenderDispatcher dispatcher, boolean bl) {
 		super(dispatcher, new PlayerEntityModel<>(0.0F, bl), 0.5F);
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
+		this.addFeature(new ArmorFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
 		this.addFeature(new StuckArrowsFeatureRenderer<>(this));
 		this.addFeature(new Deadmau5FeatureRenderer(this));

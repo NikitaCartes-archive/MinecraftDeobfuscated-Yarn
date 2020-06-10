@@ -41,25 +41,27 @@ public class ChunkRendererRegion implements BlockRenderView {
 			}
 		}
 
-		boolean bl = true;
-
-		for (int n = startPos.getX() >> 4; n <= endPos.getX() >> 4; n++) {
-			for (int o = startPos.getZ() >> 4; o <= endPos.getZ() >> 4; o++) {
-				WorldChunk worldChunk = worldChunks[n - i][o - j];
-				if (!worldChunk.method_12228(startPos.getY(), endPos.getY())) {
-					bl = false;
-				}
-			}
-		}
-
-		if (bl) {
+		if (method_30000(startPos, endPos, i, j, worldChunks)) {
 			return null;
 		} else {
-			int n = 1;
+			int m = 1;
 			BlockPos blockPos = startPos.add(-1, -1, -1);
 			BlockPos blockPos2 = endPos.add(1, 1, 1);
 			return new ChunkRendererRegion(world, i, j, worldChunks, blockPos, blockPos2);
 		}
+	}
+
+	public static boolean method_30000(BlockPos blockPos, BlockPos blockPos2, int i, int j, WorldChunk[][] worldChunks) {
+		for (int k = blockPos.getX() >> 4; k <= blockPos2.getX() >> 4; k++) {
+			for (int l = blockPos.getZ() >> 4; l <= blockPos2.getZ() >> 4; l++) {
+				WorldChunk worldChunk = worldChunks[k - i][l - j];
+				if (!worldChunk.method_12228(blockPos.getY(), blockPos2.getY())) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	public ChunkRendererRegion(World world, int chunkX, int chunkZ, WorldChunk[][] chunks, BlockPos startPos, BlockPos endPos) {

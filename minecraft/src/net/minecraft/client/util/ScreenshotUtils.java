@@ -11,12 +11,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.resource.ResourceImpl;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,7 +52,7 @@ public class ScreenshotUtils {
 			file2 = new File(file, fileName);
 		}
 
-		ResourceImpl.RESOURCE_IO_EXECUTOR
+		Util.method_27958()
 			.execute(
 				() -> {
 					try {

@@ -15,6 +15,10 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 	 */
 	public final ModelPart rightEar;
 	public final ModelPart leftEar;
+	private final ModelPart field_25634;
+	private final ModelPart field_25635;
+	private final ModelPart field_25632;
+	private final ModelPart field_25633;
 
 	public PiglinEntityModel(float scale, int textureWidth, int textureHeight) {
 		super(scale, false);
@@ -36,9 +40,17 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 		this.leftEar.setTextureOffset(39, 6).addCuboid(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, scale);
 		this.head.addChild(this.leftEar);
 		this.helmet = new ModelPart(this);
+		this.field_25634 = this.torso.method_29991();
+		this.field_25635 = this.head.method_29991();
+		this.field_25632 = this.leftArm.method_29991();
+		this.field_25633 = this.leftArm.method_29991();
 	}
 
 	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
+		this.torso.copyPositionAndRotation(this.field_25634);
+		this.head.copyPositionAndRotation(this.field_25635);
+		this.leftArm.copyPositionAndRotation(this.field_25632);
+		this.rightArm.copyPositionAndRotation(this.field_25633);
 		super.setAngles(mobEntity, f, g, h, i, j);
 		float k = (float) (Math.PI / 6);
 		float l = h * 0.1F + f * 0.5F;
@@ -53,9 +65,11 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 				this.leftEar.roll = (float) (Math.PI / 6) + (float) (Math.PI / 180.0) * MathHelper.sin(n * 30.0F) * 10.0F;
 				this.rightEar.roll = (float) (-Math.PI / 6) - (float) (Math.PI / 180.0) * MathHelper.cos(n * 30.0F) * 10.0F;
 				this.head.pivotX = MathHelper.sin(n * 10.0F);
-				this.head.pivotY = MathHelper.sin(n * 40.0F);
+				this.head.pivotY = MathHelper.sin(n * 40.0F) + 0.4F;
 				this.rightArm.roll = (float) (Math.PI / 180.0) * (70.0F + MathHelper.cos(n * 40.0F) * 10.0F);
 				this.leftArm.roll = this.rightArm.roll * -1.0F;
+				this.rightArm.pivotY = MathHelper.sin(n * 40.0F) * 0.5F + 1.5F;
+				this.leftArm.pivotY = MathHelper.sin(n * 40.0F) * 0.5F + 1.5F;
 				this.torso.pivotY = MathHelper.sin(n * 40.0F) * 0.35F;
 			} else if (activity == PiglinEntity.Activity.ATTACKING_WITH_MELEE_WEAPON && this.handSwingProgress == 0.0F) {
 				this.method_29354(mobEntity);

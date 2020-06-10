@@ -140,7 +140,7 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.BooleanRule> field_20638 = register(
 		"doImmediateRespawn", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false, (server, rule) -> {
 			for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
-				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(11, rule.get() ? 1.0F : 0.0F));
+				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25656, rule.get() ? 1.0F : 0.0F));
 			}
 		})
 	);

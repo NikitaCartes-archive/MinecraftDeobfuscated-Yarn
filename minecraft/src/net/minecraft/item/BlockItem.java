@@ -79,7 +79,10 @@ public class BlockItem extends Item {
 						(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 						blockSoundGroup.getPitch() * 0.8F
 					);
-					itemStack.decrement(1);
+					if (!playerEntity.abilities.creativeMode) {
+						itemStack.decrement(1);
+					}
+
 					return ActionResult.success(world.isClient);
 				}
 			}

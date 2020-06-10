@@ -25,18 +25,7 @@ public class ChatMessages {
 			textCollector.add(StringRenderable.styled(getRenderedChatMessage(string), style));
 			return Optional.empty();
 		}, Style.EMPTY);
-		List<StringRenderable> list = textRenderer.getTextHandler().wrapLines(textCollector.getCombined(), width, Style.EMPTY);
-		if (list.isEmpty()) {
-			return Lists.<StringRenderable>newArrayList(StringRenderable.EMPTY);
-		} else {
-			List<StringRenderable> list2 = Lists.<StringRenderable>newArrayList();
-			list2.add(list.get(0));
-
-			for (int i = 1; i < list.size(); i++) {
-				list2.add(StringRenderable.concat(field_25263, (StringRenderable)list.get(i)));
-			}
-
-			return list2;
-		}
+		List<StringRenderable> list = textRenderer.getTextHandler().method_29971(textCollector.getCombined(), width, Style.EMPTY, field_25263);
+		return (List<StringRenderable>)(list.isEmpty() ? Lists.<StringRenderable>newArrayList(StringRenderable.EMPTY) : list);
 	}
 }

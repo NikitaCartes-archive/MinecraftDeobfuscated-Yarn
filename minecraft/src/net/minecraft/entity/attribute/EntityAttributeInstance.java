@@ -169,7 +169,7 @@ public class EntityAttributeInstance {
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", Registry.ATTRIBUTES.getId(this.type).toString());
+		compoundTag.putString("Name", Registry.ATTRIBUTE.getId(this.type).toString());
 		compoundTag.putDouble("Base", this.baseValue);
 		if (!this.persistentModifiers.isEmpty()) {
 			ListTag listTag = new ListTag();

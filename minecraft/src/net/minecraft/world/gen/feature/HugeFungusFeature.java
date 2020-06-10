@@ -48,7 +48,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 			}
 
 			if (!hugeFungusFeatureConfig.planted) {
-				int j = serverWorldAccess.getDimensionHeight();
+				int j = chunkGenerator.getMaxY();
 				if (blockPos2.getY() + i + 1 >= j) {
 					return false;
 				}

@@ -60,14 +60,10 @@ public class ChunkStatus {
 		}
 	);
 	public static final ChunkStatus STRUCTURE_REFERENCES = register(
-		"structure_references",
-		STRUCTURE_STARTS,
-		8,
-		PRE_CARVER_HEIGHTMAPS,
-		ChunkStatus.ChunkType.PROTOCHUNK,
-		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.addStructureReferences(
-				new ChunkRegion(serverWorld, list), serverWorld.getStructureAccessor(), chunk
-			)
+		"structure_references", STRUCTURE_STARTS, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (serverWorld, chunkGenerator, list, chunk) -> {
+			ChunkRegion chunkRegion = new ChunkRegion(serverWorld, list);
+			chunkGenerator.addStructureReferences(chunkRegion, serverWorld.getStructureAccessor().method_29951(chunkRegion), chunk);
+		}
 	);
 	public static final ChunkStatus BIOMES = register(
 		"biomes",
@@ -78,12 +74,10 @@ public class ChunkStatus {
 		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.populateBiomes(chunk)
 	);
 	public static final ChunkStatus NOISE = register(
-		"noise",
-		BIOMES,
-		8,
-		PRE_CARVER_HEIGHTMAPS,
-		ChunkStatus.ChunkType.PROTOCHUNK,
-		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.populateNoise(new ChunkRegion(serverWorld, list), serverWorld.getStructureAccessor(), chunk)
+		"noise", BIOMES, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (serverWorld, chunkGenerator, list, chunk) -> {
+			ChunkRegion chunkRegion = new ChunkRegion(serverWorld, list);
+			chunkGenerator.populateNoise(chunkRegion, serverWorld.getStructureAccessor().method_29951(chunkRegion), chunk);
+		}
 	);
 	public static final ChunkStatus SURFACE = register(
 		"surface",
@@ -122,7 +116,8 @@ public class ChunkStatus {
 				Heightmap.populateHeightmaps(
 					chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE)
 				);
-				chunkGenerator.generateFeatures(new ChunkRegion(serverWorld, list), serverWorld.getStructureAccessor());
+				ChunkRegion chunkRegion = new ChunkRegion(serverWorld, list);
+				chunkGenerator.generateFeatures(chunkRegion, serverWorld.getStructureAccessor().method_29951(chunkRegion));
 				protoChunk.setStatus(chunkStatus);
 			}
 

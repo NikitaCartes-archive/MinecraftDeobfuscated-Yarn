@@ -33,7 +33,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resource.ResourceImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
@@ -549,7 +548,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			NativeImage nativeImage = ScreenshotUtils.takeScreenshot(
 				this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer()
 			);
-			ResourceImpl.RESOURCE_IO_EXECUTOR.execute(() -> {
+			Util.method_27958().execute(() -> {
 				int i = nativeImage.getWidth();
 				int j = nativeImage.getHeight();
 				int k = 0;

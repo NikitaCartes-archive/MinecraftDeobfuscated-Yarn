@@ -75,8 +75,8 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			super.setLightEnabled(pos, false);
 
 			for (int i = -1; i < 17; i++) {
-				super.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null);
-				super.queueData(LightType.SKY, ChunkSectionPos.from(pos, i), null);
+				super.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
+				super.queueData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
 			}
 
 			for (int i = 0; i < 16; i++) {
@@ -107,13 +107,13 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles) {
+	public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
 		this.enqueue(
 			pos.getSectionX(),
 			pos.getSectionZ(),
 			() -> 0,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable(() -> super.queueData(lightType, pos, nibbles), () -> "queueData " + pos)
+			Util.debugRunnable(() -> super.queueData(lightType, pos, nibbles, bl), () -> "queueData " + pos)
 		);
 	}
 

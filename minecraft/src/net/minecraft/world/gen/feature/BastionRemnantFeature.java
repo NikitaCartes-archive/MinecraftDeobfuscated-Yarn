@@ -28,7 +28,7 @@ public class BastionRemnantFeature extends StructureFeature<BastionRemnantFeatur
 		ChunkPos chunkPos,
 		BastionRemnantFeatureConfig bastionRemnantFeatureConfig
 	) {
-		return chunkRandom.nextInt(6) >= 2;
+		return chunkRandom.nextInt(5) >= 2;
 	}
 
 	@Override

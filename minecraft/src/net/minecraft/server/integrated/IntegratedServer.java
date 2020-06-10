@@ -269,4 +269,9 @@ public class IntegratedServer extends MinecraftServer {
 	public int adjustTrackingDistance(int initialDistance) {
 		return (int)(this.client.options.entityDistanceScaling * (float)initialDistance);
 	}
+
+	@Override
+	public boolean syncChunkWrites() {
+		return this.client.options.field_25623;
+	}
 }

@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Int2ObjectBiMap;
+import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.util.dynamic.RegistryCodec;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -138,56 +140,42 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return this.indexedEntries.containsId(id);
 	}
 
-	/**
-	 * Returns whether an element corresponding to the key is loaded externally,
-	 * such as from a decoder.
-	 * 
-	 * <p>When an element is loaded externally, it will be encoded when the
-	 * registry is encoded.</p>
-	 */
-	public boolean isLoaded(RegistryKey<T> key) {
-		return this.loadedKeys.contains(key);
+	@Override
+	public boolean isLoaded(RegistryKey<T> registryKey) {
+		return this.loadedKeys.contains(registryKey);
 	}
 
-	/**
-	 * Marks an element corresponding to the key as loaded from a decoder.
-	 * 
-	 * <p>This will make the element being written by the encoder when the
-	 * registry is encoded.</p>
-	 */
-	public void markLoaded(RegistryKey<T> key) {
-		this.loadedKeys.add(key);
+	@Override
+	public void markLoaded(RegistryKey<T> registryKey) {
+		this.loadedKeys.add(registryKey);
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
-		return Codec.mapPair(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("key"), codec.fieldOf("element"))
-			.codec()
-			.listOf()
-			.xmap(list -> {
-				SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
+	public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+		return NumberCodecs.method_29906(registryKey, mapCodec).codec().listOf().xmap(list -> {
+			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
 
-				for (Pair<RegistryKey<T>, T> pair : list) {
-					simpleRegistry.add(pair.getFirst(), pair.getSecond());
-				}
+			for (Pair<RegistryKey<T>, T> pair : list) {
+				simpleRegistry.add(pair.getFirst(), pair.getSecond());
+			}
 
-				return simpleRegistry;
-			}, simpleRegistry -> {
-				com.google.common.collect.ImmutableList.Builder<Pair<RegistryKey<T>, T>> builder = ImmutableList.builder();
+			return simpleRegistry;
+		}, simpleRegistry -> {
+			com.google.common.collect.ImmutableList.Builder<Pair<RegistryKey<T>, T>> builder = ImmutableList.builder();
 
-				for (T object : simpleRegistry.indexedEntries) {
-					builder.add(Pair.of((RegistryKey<T>)simpleRegistry.getKey(object).get(), object));
-				}
+			for (T object : simpleRegistry.indexedEntries) {
+				builder.add(Pair.of((RegistryKey<T>)simpleRegistry.getKey(object).get(), object));
+			}
 
-				return builder.build();
-			});
+			return builder.build();
+		});
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> elementCodec) {
-		return RegistryCodec.of(registryRef, lifecycle, elementCodec);
+	public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+		return RegistryCodec.of(registryRef, lifecycle, mapCodec);
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> createEmptyCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> elementCodec) {
-		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue), elementCodec).xmap(map -> {
+	public static <T> Codec<SimpleRegistry<T>> createEmptyCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue), mapCodec.codec()).xmap(map -> {
 			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryRef, lifecycle);
 			map.forEach((registryKeyx, object) -> {
 				simpleRegistry.set(simpleRegistry.nextId, registryKeyx, object);

@@ -138,7 +138,7 @@ public abstract class AbstractFireBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
-			if (!world.getDimension().isOverworld() && !world.getDimension().isNether() || !NetherPortalBlock.createPortalAt(world, pos)) {
+			if (world.getRegistryKey() != World.OVERWORLD && world.getRegistryKey() != World.NETHER || !NetherPortalBlock.createPortalAt(world, pos)) {
 				if (!state.canPlaceAt(world, pos)) {
 					world.removeBlock(pos, false);
 				}

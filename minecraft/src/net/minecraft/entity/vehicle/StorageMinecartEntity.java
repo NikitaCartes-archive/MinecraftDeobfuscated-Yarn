@@ -24,7 +24,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
@@ -116,9 +115,9 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Nullable
 	@Override
-	public Entity changeDimension(RegistryKey<World> newDimension) {
+	public Entity changeDimension(ServerWorld serverWorld) {
 		this.field_7733 = false;
-		return super.changeDimension(newDimension);
+		return super.changeDimension(serverWorld);
 	}
 
 	@Override

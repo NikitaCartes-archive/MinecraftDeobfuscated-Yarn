@@ -41,7 +41,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 
 		for (int j = 0; j < i; j++) {
 			Identifier identifier = buf.readIdentifier();
-			EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(identifier);
+			EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
 			double d = buf.readDouble();
 			List<EntityAttributeModifier> list = Lists.<EntityAttributeModifier>newArrayList();
 			int k = buf.readVarInt();
@@ -61,7 +61,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		buf.writeInt(this.entries.size());
 
 		for (EntityAttributesS2CPacket.Entry entry : this.entries) {
-			buf.writeIdentifier(Registry.ATTRIBUTES.getId(entry.getId()));
+			buf.writeIdentifier(Registry.ATTRIBUTE.getId(entry.getId()));
 			buf.writeDouble(entry.getBaseValue());
 			buf.writeVarInt(entry.getModifiers().size());
 

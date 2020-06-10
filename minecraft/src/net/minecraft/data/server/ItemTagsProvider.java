@@ -111,7 +111,6 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.GOLD_BLOCK,
 				Items.GILDED_BLACKSTONE,
 				Items.LIGHT_WEIGHTED_PRESSURE_PLATE,
-				Items.GOLD_NUGGET,
 				Items.GOLD_INGOT,
 				Items.BELL,
 				Items.CLOCK,

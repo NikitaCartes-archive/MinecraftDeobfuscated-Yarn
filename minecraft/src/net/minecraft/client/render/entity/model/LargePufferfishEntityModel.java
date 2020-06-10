@@ -86,7 +86,7 @@ public class LargePufferfishEntityModel<T extends Entity> extends CompositeEntit
 			this.field_3496,
 			this.field_3495,
 			this.field_3489,
-			this.field_3488,
+			this.field_3497,
 			this.field_3491,
 			this.field_3492,
 			this.field_3487,

@@ -5,6 +5,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -296,7 +297,10 @@ public abstract class Option {
 	public static final CyclingOption CLOUDS = new CyclingOption("options.renderClouds", (gameOptions, integer) -> {
 		gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer);
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-			MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer().clear(MinecraftClient.IS_SYSTEM_MAC);
+			Framebuffer framebuffer = MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer();
+			if (framebuffer != null) {
+				framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+			}
 		}
 	}, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
 	public static final CyclingOption TEXT_BACKGROUND = new CyclingOption(

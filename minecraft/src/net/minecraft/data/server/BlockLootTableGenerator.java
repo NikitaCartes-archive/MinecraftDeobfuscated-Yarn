@@ -1496,6 +1496,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.SPAWNER, dropsNothing());
 		this.addDrop(Blocks.FIRE, dropsNothing());
 		this.addDrop(Blocks.SOUL_FIRE, dropsNothing());
+		this.addDrop(Blocks.NETHER_PORTAL, dropsNothing());
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (Block block : Registry.BLOCK) {
