@@ -39,7 +39,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		ChunkPos chunkPos,
 		DefaultFeatureConfig defaultFeatureConfig
 	) {
-		return chunkRandom.nextInt(6) < 2;
+		return chunkRandom.nextInt(5) < 2;
 	}
 
 	@Override

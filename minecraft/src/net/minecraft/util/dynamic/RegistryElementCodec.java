@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -23,28 +24,28 @@ import net.minecraft.util.registry.RegistryKey;
  */
 public final class RegistryElementCodec<E> implements Codec<Supplier<E>> {
 	private final RegistryKey<Registry<E>> registryRef;
-	private final Codec<E> elementCodec;
+	private final MapCodec<E> elementCodec;
 
-	public static <E> RegistryElementCodec<E> of(RegistryKey<Registry<E>> registryRef, Codec<E> elementCodec) {
-		return new RegistryElementCodec<>(registryRef, elementCodec);
+	public static <E> RegistryElementCodec<E> of(RegistryKey<Registry<E>> registryRef, MapCodec<E> mapCodec) {
+		return new RegistryElementCodec<>(registryRef, mapCodec);
 	}
 
-	private RegistryElementCodec(RegistryKey<Registry<E>> registryRef, Codec<E> elementCodec) {
+	private RegistryElementCodec(RegistryKey<Registry<E>> registryRef, MapCodec<E> mapCodec) {
 		this.registryRef = registryRef;
-		this.elementCodec = elementCodec;
+		this.elementCodec = mapCodec;
 	}
 
 	public <T> DataResult<T> encode(Supplier<E> supplier, DynamicOps<T> dynamicOps, T object) {
 		return dynamicOps instanceof RegistryReadingOps
 			? ((RegistryReadingOps)dynamicOps).encodeOrId(supplier.get(), object, this.registryRef, this.elementCodec)
-			: this.elementCodec.encode((E)supplier.get(), dynamicOps, object);
+			: this.elementCodec.codec().encode((E)supplier.get(), dynamicOps, object);
 	}
 
 	@Override
 	public <T> DataResult<Pair<Supplier<E>, T>> decode(DynamicOps<T> ops, T input) {
 		return ops instanceof RegistryOps
 			? ((RegistryOps)ops).decodeOrId(input, this.registryRef, this.elementCodec)
-			: this.elementCodec.decode(ops, input).map(pair -> pair.mapFirst(object -> () -> object));
+			: this.elementCodec.codec().decode(ops, input).map(pair -> pair.mapFirst(object -> () -> object));
 	}
 
 	public String toString() {

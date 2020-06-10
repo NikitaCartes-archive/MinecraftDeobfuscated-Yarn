@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -61,14 +62,21 @@ public abstract class GeneratorType {
 	};
 	private static final GeneratorType SINGLE_BIOME_CAVES = new GeneratorType("single_biome_caves") {
 		@Override
+		public GeneratorOptions method_29077(RegistryTracker.Modifiable modifiable, long l, boolean bl, boolean bl2) {
+			return new GeneratorOptions(
+				l, bl, bl2, GeneratorOptions.method_29962(DimensionType.method_28517(l), DimensionType::getOverworldCavesDimensionType, this.method_29076(l))
+			);
+		}
+
+		@Override
 		protected ChunkGenerator method_29076(long l) {
-			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.OCEAN), l, ChunkGeneratorType.Preset.NETHER.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.OCEAN), l, ChunkGeneratorType.Preset.CAVES.getChunkGeneratorType());
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_FLOATING_ISLANDS = new GeneratorType("single_biome_floating_islands") {
 		@Override
 		protected ChunkGenerator method_29076(long l) {
-			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.OCEAN), l, ChunkGeneratorType.Preset.END.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.OCEAN), l, ChunkGeneratorType.Preset.FLOATING_ISLANDS.getChunkGeneratorType());
 		}
 	};
 	private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states") {
@@ -159,7 +167,7 @@ public abstract class GeneratorType {
 		return this.translationKey;
 	}
 
-	public GeneratorOptions method_29077(long l, boolean bl, boolean bl2) {
+	public GeneratorOptions method_29077(RegistryTracker.Modifiable modifiable, long l, boolean bl, boolean bl2) {
 		return new GeneratorOptions(l, bl, bl2, GeneratorOptions.method_28608(DimensionType.method_28517(l), this.method_29076(l)));
 	}
 

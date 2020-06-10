@@ -379,7 +379,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		world.syncWorldEvent(player, 2001, pos, getRawIdFromState(state));
 		if (this.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
-			PiglinBrain.onGoldBlockBroken(player);
+			PiglinBrain.onGoldBlockBroken(player, false);
 		}
 	}
 

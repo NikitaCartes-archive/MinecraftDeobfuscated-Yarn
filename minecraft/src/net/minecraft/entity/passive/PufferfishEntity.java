@@ -143,7 +143,7 @@ public class PufferfishEntity extends FishEntity {
 		int i = this.getPuffState();
 		if (player instanceof ServerPlayerEntity && i > 0 && player.damage(DamageSource.mob(this), (float)(1 + i))) {
 			if (!this.isSilent()) {
-				((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0F));
+				((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25654, 0.0F));
 			}
 
 			player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));

@@ -182,8 +182,8 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		return maxSteps;
 	}
 
-	protected void setLightArray(long pos, @Nullable ChunkNibbleArray lightArray) {
-		this.lightStorage.setLightArray(pos, lightArray);
+	protected void setLightArray(long pos, @Nullable ChunkNibbleArray lightArray, boolean bl) {
+		this.lightStorage.setLightArray(pos, lightArray, bl);
 	}
 
 	@Nullable

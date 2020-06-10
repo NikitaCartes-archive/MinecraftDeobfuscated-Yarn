@@ -1,6 +1,7 @@
 package net.minecraft.structure.processor;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.class_5399;
 import net.minecraft.util.registry.Registry;
 
 public interface StructureProcessorType<P extends StructureProcessor> {
@@ -16,6 +17,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 	StructureProcessorType<BlackstoneReplacementStructureProcessor> BLACKSTONE_REPLACE = register(
 		"blackstone_replace", BlackstoneReplacementStructureProcessor.field_24996
 	);
+	StructureProcessorType<class_5399> LAVA_SUBMERGED_BLOCK = register("lava_submerged_block", class_5399.field_25618);
 	Codec<StructureProcessor> field_25013 = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
 
 	Codec<P> codec();

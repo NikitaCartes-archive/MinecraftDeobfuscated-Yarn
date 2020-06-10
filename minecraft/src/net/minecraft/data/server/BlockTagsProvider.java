@@ -589,6 +589,9 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.WARPED_FENCE_GATE
 			);
 		this.getOrCreateTagBuilder(BlockTags.UNSTABLE_BOTTOM_CENTER).addTag(BlockTags.FENCE_GATES);
+		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.NETHERRACK, Blocks.MAGMA_BLOCK);
+		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_NETHER).addTag(BlockTags.INFINIBURN_OVERWORLD);
+		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_END).addTag(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.BEDROCK);
 	}
 
 	@Override

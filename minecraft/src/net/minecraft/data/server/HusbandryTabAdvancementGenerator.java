@@ -45,7 +45,6 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		EntityType.OCELOT,
 		EntityType.RABBIT,
 		EntityType.LLAMA,
-		EntityType.TURTLE,
 		EntityType.CAT,
 		EntityType.PANDA,
 		EntityType.FOX,
@@ -300,6 +299,12 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			task.criterion(EntityType.getId(entityType).toString(), BredAnimalsCriterion.Conditions.create(EntityPredicate.Builder.create().type(entityType)));
 		}
 
+		task.criterion(
+			EntityType.getId(EntityType.TURTLE).toString(),
+			BredAnimalsCriterion.Conditions.method_29918(
+				EntityPredicate.Builder.create().type(EntityType.TURTLE).build(), EntityPredicate.Builder.create().type(EntityType.TURTLE).build(), EntityPredicate.ANY
+			)
+		);
 		return task;
 	}
 

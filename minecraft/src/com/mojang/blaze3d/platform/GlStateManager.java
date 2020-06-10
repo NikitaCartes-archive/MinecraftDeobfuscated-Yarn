@@ -41,7 +41,6 @@ public class GlStateManager {
 	private static final GlStateManager.PolygonOffsetState POLY_OFFSET = new GlStateManager.PolygonOffsetState();
 	private static final GlStateManager.LogicOpState COLOR_LOGIC = new GlStateManager.LogicOpState();
 	private static final GlStateManager.TexGenState TEX_GEN = new GlStateManager.TexGenState();
-	private static final GlStateManager.ClearState CLEAR = new GlStateManager.ClearState();
 	private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
 	private static final FloatBuffer colorBuffer = GlAllocationUtils.allocateFloatBuffer(4);
 	private static int activeTexture;
@@ -1026,29 +1025,17 @@ public class GlStateManager {
 
 	public static void clearDepth(double depth) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		if (depth != CLEAR.clearDepth) {
-			CLEAR.clearDepth = depth;
-			GL11.glClearDepth(depth);
-		}
+		GL11.glClearDepth(depth);
 	}
 
 	public static void clearColor(float red, float green, float blue, float alpha) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		if (red != CLEAR.clearColor.red || green != CLEAR.clearColor.green || blue != CLEAR.clearColor.blue || alpha != CLEAR.clearColor.alpha) {
-			CLEAR.clearColor.red = red;
-			CLEAR.clearColor.green = green;
-			CLEAR.clearColor.blue = blue;
-			CLEAR.clearColor.alpha = alpha;
-			GL11.glClearColor(red, green, blue, alpha);
-		}
+		GL11.glClearColor(red, green, blue, alpha);
 	}
 
 	public static void clearStencil(int stencil) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (stencil != CLEAR.clearStencil) {
-			CLEAR.clearStencil = stencil;
-			GL11.glClearStencil(stencil);
-		}
+		GL11.glClearStencil(stencil);
 	}
 
 	public static void clear(int mask, boolean getError) {
@@ -1305,16 +1292,6 @@ public class GlStateManager {
 					GL11.glDisable(this.cap);
 				}
 			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class ClearState {
-		public double clearDepth = 1.0;
-		public final GlStateManager.Color4 clearColor = new GlStateManager.Color4(0.0F, 0.0F, 0.0F, 0.0F);
-		public int clearStencil;
-
-		private ClearState() {
 		}
 	}
 

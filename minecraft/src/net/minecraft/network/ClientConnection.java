@@ -148,7 +148,6 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	public void setPacketListener(PacketListener listener) {
 		Validate.notNull(listener, "packetListener");
-		LOGGER.debug("Set listener of {} to {}", this, listener);
 		this.packetListener = listener;
 	}
 

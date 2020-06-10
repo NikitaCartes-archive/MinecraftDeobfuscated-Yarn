@@ -82,12 +82,16 @@ public abstract class Task<E extends LivingEntity> {
 		return this.getClass().getSimpleName();
 	}
 
-	private boolean hasRequiredMemoryState(E entity) {
-		return this.requiredMemoryStates.entrySet().stream().allMatch(entry -> {
+	private boolean hasRequiredMemoryState(E livingEntity) {
+		for(Entry<MemoryModuleType<?>, MemoryModuleState> entry : this.requiredMemoryStates.entrySet()) {
 			MemoryModuleType<?> memoryModuleType = (MemoryModuleType)entry.getKey();
 			MemoryModuleState memoryModuleState = (MemoryModuleState)entry.getValue();
-			return entity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState);
-		});
+			if (!livingEntity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public static enum Status {

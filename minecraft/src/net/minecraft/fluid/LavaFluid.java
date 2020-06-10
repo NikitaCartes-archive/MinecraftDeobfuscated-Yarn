@@ -159,7 +159,7 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public int getTickRate(WorldView world) {
-		return world.getDimension().hasCeiling() ? 10 : 30;
+		return world.getDimension().isUltrawarm() ? 10 : 30;
 	}
 
 	@Override

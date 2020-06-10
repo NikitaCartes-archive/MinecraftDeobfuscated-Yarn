@@ -91,6 +91,7 @@ public class InGameOverlayRenderer {
 	}
 
 	private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
+		RenderSystem.enableTexture();
 		minecraftClient.getTextureManager().bindTexture(UNDERWATER_TEX);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		float f = minecraftClient.player.getBrightnessAtEyes();
@@ -121,6 +122,7 @@ public class InGameOverlayRenderer {
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
+		RenderSystem.enableTexture();
 		Sprite sprite = ModelLoader.FIRE_1.getSprite();
 		minecraftClient.getTextureManager().bindTexture(sprite.getAtlas().getId());
 		float f = sprite.getMinU();

@@ -27,6 +27,7 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -379,6 +380,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		public void recreate() {
+			this.method_29990();
 			RegistryTracker.Modifiable modifiable = RegistryTracker.create();
 
 			try (
@@ -419,8 +421,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private void start() {
 			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
+				this.method_29990();
 				this.client.startIntegratedServer(this.level.getName());
 			}
+		}
+
+		private void method_29990() {
+			this.client.method_29970(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
 		}
 
 		@Nullable

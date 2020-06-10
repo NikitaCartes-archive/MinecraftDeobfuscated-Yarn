@@ -97,11 +97,11 @@ public class ChunkSerializer {
 
 			if (bl) {
 				if (compoundTag2.contains("BlockLight", 7)) {
-					lightingProvider.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("BlockLight")));
+					lightingProvider.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("BlockLight")), true);
 				}
 
 				if (bl2 && compoundTag2.contains("SkyLight", 7)) {
-					lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("SkyLight")));
+					lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("SkyLight")), true);
 				}
 			}
 		}

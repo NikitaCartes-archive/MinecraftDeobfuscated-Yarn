@@ -42,6 +42,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -271,6 +272,12 @@ public class OcelotEntity extends AnimalEntity {
 		}
 
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, (double)(0.5F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 
 	static class FleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

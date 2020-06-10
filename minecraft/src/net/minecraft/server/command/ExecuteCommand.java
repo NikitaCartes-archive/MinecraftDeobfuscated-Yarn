@@ -207,9 +207,7 @@ public class ExecuteCommand {
 						.then(
 							CommandManager.argument("dimension", DimensionArgumentType.dimension())
 								.redirect(
-									literalCommandNode,
-									commandContext -> commandContext.getSource()
-											.withWorld(commandContext.getSource().getMinecraftServer().getWorld(DimensionArgumentType.getDimensionArgument(commandContext, "dimension")))
+									literalCommandNode, commandContext -> commandContext.getSource().withWorld(DimensionArgumentType.getDimensionArgument(commandContext, "dimension"))
 								)
 						)
 				)

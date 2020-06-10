@@ -59,7 +59,7 @@ public class NarratorManager implements ClientChatListener {
 
 	private void narrate(boolean interrupt, String message) {
 		if (SharedConstants.isDevelopment) {
-			LOGGER.debug("Narrating: {}", message);
+			LOGGER.debug("Narrating: {}", message.replaceAll("\n", "\\\\n"));
 		}
 
 		this.narrator.say(message, interrupt);

@@ -140,7 +140,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				ItemStack itemStack2 = playerInventory.getCursorStack();
 				ItemStack itemStack3 = slot.getStack();
 				if (actionType == SlotActionType.SWAP) {
-					if (!itemStack3.isEmpty() && clickData >= 0 && clickData < 9) {
+					if (!itemStack3.isEmpty()) {
 						ItemStack itemStack4 = itemStack3.copy();
 						itemStack4.setCount(itemStack4.getMaxCount());
 						this.client.player.inventory.setStack(clickData, itemStack4);

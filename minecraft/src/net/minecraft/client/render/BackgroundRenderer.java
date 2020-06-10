@@ -133,7 +133,7 @@ public class BackgroundRenderer {
 			}
 		}
 
-		if (d < 1.0) {
+		if (d < 1.0 && !fluidState.matches(FluidTags.LAVA)) {
 			if (d < 0.0) {
 				d = 0.0;
 			}
@@ -181,50 +181,54 @@ public class BackgroundRenderer {
 		FluidState fluidState = camera.getSubmergedFluidState();
 		Entity entity = camera.getFocusedEntity();
 		boolean bl = fluidState.getFluid() != Fluids.EMPTY;
-		if (bl) {
+		if (fluidState.matches(FluidTags.WATER)) {
 			float f = 1.0F;
-			if (fluidState.matches(FluidTags.WATER)) {
-				f = 0.05F;
-				if (entity instanceof ClientPlayerEntity) {
-					ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
-					f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F;
-					Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
-					if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
-						f += 0.005F;
-					}
+			f = 0.05F;
+			if (entity instanceof ClientPlayerEntity) {
+				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
+				f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F;
+				Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
+				if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
+					f += 0.005F;
 				}
-			} else if (fluidState.matches(FluidTags.LAVA)) {
-				f = 2.0F;
 			}
 
 			RenderSystem.fogDensity(f);
 			RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
 		} else {
 			float f;
-			float h;
-			if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
+			float g;
+			if (fluidState.matches(FluidTags.LAVA)) {
+				if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+					f = 0.0F;
+					g = 3.0F;
+				} else {
+					f = 0.25F;
+					g = 1.0F;
+				}
+			} else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
 				int i = ((LivingEntity)entity).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
-				float g = MathHelper.lerp(Math.min(1.0F, (float)i / 20.0F), viewDistance, 5.0F);
+				float h = MathHelper.lerp(Math.min(1.0F, (float)i / 20.0F), viewDistance, 5.0F);
 				if (fogType == BackgroundRenderer.FogType.FOG_SKY) {
 					f = 0.0F;
-					h = g * 0.8F;
+					g = h * 0.8F;
 				} else {
-					f = g * 0.25F;
-					h = g;
+					f = h * 0.25F;
+					g = h;
 				}
 			} else if (thickFog) {
 				f = viewDistance * 0.05F;
-				h = Math.min(viewDistance, 192.0F) * 0.5F;
+				g = Math.min(viewDistance, 192.0F) * 0.5F;
 			} else if (fogType == BackgroundRenderer.FogType.FOG_SKY) {
 				f = 0.0F;
-				h = viewDistance;
+				g = viewDistance;
 			} else {
 				f = viewDistance * 0.75F;
-				h = viewDistance;
+				g = viewDistance;
 			}
 
 			RenderSystem.fogStart(f);
-			RenderSystem.fogEnd(h);
+			RenderSystem.fogEnd(g);
 			RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
 			RenderSystem.setupNvFogDistance();
 		}

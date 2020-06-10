@@ -125,7 +125,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<ScreenHandlerType<?>>> MENU_KEY = createRegistryKey("menu");
 	public static final RegistryKey<Registry<RecipeType<?>>> RECIPE_TYPE_KEY = createRegistryKey("recipe_type");
 	public static final RegistryKey<Registry<RecipeSerializer<?>>> RECIPE_SERIALIZER_KEY = createRegistryKey("recipe_serializer");
-	public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTES_KEY = createRegistryKey("attributes");
+	public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTE_KEY = createRegistryKey("attribute");
 	public static final RegistryKey<Registry<StatType<?>>> STAT_TYPE_KEY = createRegistryKey("stat_type");
 	public static final RegistryKey<Registry<VillagerType>> VILLAGER_TYPE_KEY = createRegistryKey("villager_type");
 	public static final RegistryKey<Registry<VillagerProfession>> VILLAGER_PROFESSION_KEY = createRegistryKey("villager_profession");
@@ -181,7 +181,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = create(MENU_KEY, () -> ScreenHandlerType.ANVIL);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = create(RECIPE_TYPE_KEY, () -> RecipeType.CRAFTING);
 	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create(RECIPE_SERIALIZER_KEY, () -> RecipeSerializer.SHAPELESS);
-	public static final Registry<EntityAttribute> ATTRIBUTES = create(ATTRIBUTES_KEY, () -> EntityAttributes.GENERIC_LUCK);
+	public static final Registry<EntityAttribute> ATTRIBUTE = create(ATTRIBUTE_KEY, () -> EntityAttributes.GENERIC_LUCK);
 	public static final Registry<StatType<?>> STAT_TYPE = create(STAT_TYPE_KEY, () -> Stats.USED);
 	public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = create(VILLAGER_TYPE_KEY, "plains", () -> VillagerType.PLAINS);
 	public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = create(VILLAGER_PROFESSION_KEY, "none", () -> VillagerProfession.NONE);
@@ -314,6 +314,8 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	}
 
 	public abstract boolean containsId(Identifier id);
+
+	public abstract boolean isLoaded(RegistryKey<T> registryKey);
 
 	public abstract boolean containsId(int id);
 

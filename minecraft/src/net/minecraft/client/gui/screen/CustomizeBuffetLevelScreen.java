@@ -31,6 +31,11 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	@Override
+	public void onClose() {
+		this.client.openScreen(this.field_24562);
+	}
+
+	@Override
 	protected void init() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();

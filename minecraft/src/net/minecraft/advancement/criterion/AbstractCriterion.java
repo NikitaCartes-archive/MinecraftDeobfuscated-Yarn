@@ -1,6 +1,5 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -51,7 +50,7 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 	protected void test(ServerPlayerEntity player, Predicate<T> tester) {
 		PlayerAdvancementTracker playerAdvancementTracker = player.getAdvancementTracker();
 		Set<Criterion.ConditionsContainer<T>> set = (Set)this.progressions.get(playerAdvancementTracker);
-		if (set != null) {
+		if (set != null && !set.isEmpty()) {
 			LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, player);
 			List<Criterion.ConditionsContainer<T>> list = null;
 
@@ -70,15 +69,6 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 				for(Criterion.ConditionsContainer<T> conditionsContainer : list) {
 					conditionsContainer.grant(playerAdvancementTracker);
 				}
-			}
-		}
-	}
-
-	protected void grant(PlayerAdvancementTracker tracker) {
-		Set<Criterion.ConditionsContainer<T>> set = (Set)this.progressions.get(tracker);
-		if (set != null && !set.isEmpty()) {
-			for(Criterion.ConditionsContainer<T> conditionsContainer : ImmutableSet.copyOf(set)) {
-				conditionsContainer.grant(tracker);
 			}
 		}
 	}

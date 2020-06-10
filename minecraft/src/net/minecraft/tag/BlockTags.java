@@ -88,6 +88,9 @@ public class BlockTags {
 	public static final Tag.Identified<Block> PREVENT_MOB_SPAWNING_INSIDE = register("prevent_mob_spawning_inside");
 	public static final Tag.Identified<Block> FENCE_GATES = register("fence_gates");
 	public static final Tag.Identified<Block> UNSTABLE_BOTTOM_CENTER = register("unstable_bottom_center");
+	public static final Tag.Identified<Block> INFINIBURN_OVERWORLD = register("infiniburn_overworld");
+	public static final Tag.Identified<Block> INFINIBURN_NETHER = register("infiniburn_nether");
+	public static final Tag.Identified<Block> INFINIBURN_END = register("infiniburn_end");
 
 	private static Tag.Identified<Block> register(String id) {
 		return ACCESSOR.get(id);

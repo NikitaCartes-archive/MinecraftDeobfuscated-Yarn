@@ -717,7 +717,6 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 						float h = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0));
 						float i = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0));
 						this.setVelocity(this.getVelocity().add((double)(-0.4F * h * this.jumpStrength), 0.0, (double)(0.4F * i * this.jumpStrength)));
-						this.playJumpSound();
 					}
 
 					this.jumpStrength = 0.0F;
@@ -871,6 +870,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	public void startJumping(int height) {
 		this.jumping = true;
 		this.updateAnger();
+		this.playJumpSound();
 	}
 
 	@Override

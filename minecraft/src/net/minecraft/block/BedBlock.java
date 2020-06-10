@@ -81,7 +81,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			}
 
-			if (!isOverworld(world, pos)) {
+			if (!isOverworld(world)) {
 				world.removeBlock(pos, false);
 				BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 				if (world.getBlockState(blockPos).isOf(this)) {
@@ -117,8 +117,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		}
 	}
 
-	public static boolean isOverworld(World world, BlockPos pos) {
-		return world.getDimension().isOverworld();
+	public static boolean isOverworld(World world) {
+		return world.getDimension().isBedWorking();
 	}
 
 	private boolean isFree(World world, BlockPos pos) {

@@ -6,17 +6,18 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -40,10 +41,8 @@ public class FlatChunkGeneratorConfig {
 			instance -> instance.group(
 						StructuresConfig.CODEC.fieldOf("structures").forGetter(FlatChunkGeneratorConfig::getConfig),
 						FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers").forGetter(FlatChunkGeneratorConfig::getLayers),
-						Registry.BIOME.fieldOf("biome").withDefault((Supplier<? extends Biome>)(() -> {
-							LOGGER.error("Unknown biome, defaulting to plains");
-							return Biomes.PLAINS;
-						})).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)
+						NumberCodecs.method_29905(Registry.BIOME.fieldOf("biome"), Util.method_29188("Unknown biome, defaulting to plains", LOGGER::error), () -> Biomes.PLAINS)
+							.forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)
 					)
 					.apply(instance, FlatChunkGeneratorConfig::new)
 		)
@@ -95,15 +94,28 @@ public class FlatChunkGeneratorConfig {
 
 	@Environment(EnvType.CLIENT)
 	public FlatChunkGeneratorConfig method_28912(StructuresConfig structuresConfig) {
+		return this.method_29965(this.layers, structuresConfig);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public FlatChunkGeneratorConfig method_29965(List<FlatChunkGeneratorLayer> list, StructuresConfig structuresConfig) {
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
 
-		for(FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.getLayers()) {
-			flatChunkGeneratorConfig.getLayers()
+		for(FlatChunkGeneratorLayer flatChunkGeneratorLayer : list) {
+			flatChunkGeneratorConfig.layers
 				.add(new FlatChunkGeneratorLayer(flatChunkGeneratorLayer.getThickness(), flatChunkGeneratorLayer.getBlockState().getBlock()));
 			flatChunkGeneratorConfig.updateLayerBlocks();
 		}
 
 		flatChunkGeneratorConfig.setBiome(this.biome);
+		if (this.field_24976) {
+			flatChunkGeneratorConfig.method_28911();
+		}
+
+		if (this.field_24977) {
+			flatChunkGeneratorConfig.method_28916();
+		}
+
 		return flatChunkGeneratorConfig;
 	}
 
@@ -190,6 +202,7 @@ public class FlatChunkGeneratorConfig {
 	}
 
 	public void updateLayerBlocks() {
+		Arrays.fill(this.layerBlocks, 0, this.layerBlocks.length, null);
 		int i = 0;
 
 		for(FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.layers) {

@@ -9,6 +9,9 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
+import net.minecraft.block.StainedGlassPaneBlock;
+import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
@@ -33,6 +36,7 @@ import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -107,10 +111,14 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
 			matrices.translate(-0.5, -0.5, -0.5);
 			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl)) {
-				boolean bl2 = renderMode == ModelTransformation.Mode.GUI
-					|| renderMode == ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND
-					|| renderMode == ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND
-					|| renderMode == ModelTransformation.Mode.FIXED;
+				boolean bl2;
+				if (renderMode != ModelTransformation.Mode.GUI && !renderMode.method_29998() && stack.getItem() instanceof BlockItem) {
+					Block block = ((BlockItem)stack.getItem()).getBlock();
+					bl2 = !(block instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock);
+				} else {
+					bl2 = true;
+				}
+
 				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl2);
 				VertexConsumer vertexConsumer;
 				if (bl2) {

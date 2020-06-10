@@ -10,4 +10,6 @@ public abstract class MutableRegistry<T> extends Registry<T> {
 	public abstract <V extends T> V set(int rawId, RegistryKey<T> key, V entry);
 
 	public abstract <V extends T> V add(RegistryKey<T> key, V entry);
+
+	public abstract void markLoaded(RegistryKey<T> registryKey);
 }

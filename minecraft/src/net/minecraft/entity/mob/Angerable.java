@@ -1,12 +1,15 @@
 package net.minecraft.entity.mob;
 
+import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
@@ -29,44 +32,56 @@ public interface Angerable {
 		}
 	}
 
-	default void angerFromTag(World world, CompoundTag tag) {
+	default void angerFromTag(ServerWorld serverWorld, CompoundTag tag) {
 		this.setAngerTime(tag.getInt("AngerTime"));
-		if (tag.containsUuid("AngryAt")) {
-			this.setAngryAt(tag.getUuid("AngryAt"));
-			UUID uUID = this.getAngryAt();
-			PlayerEntity playerEntity = uUID == null ? null : world.getPlayerByUuid(uUID);
-			if (playerEntity != null) {
-				this.setAttacker(playerEntity);
-				this.method_29505(playerEntity);
+		if (!tag.containsUuid("AngryAt")) {
+			this.setAngryAt(null);
+		} else {
+			UUID uUID = tag.getUuid("AngryAt");
+			this.setAngryAt(uUID);
+			Entity entity = serverWorld.getEntity(uUID);
+			if (entity != null) {
+				if (entity instanceof MobEntity) {
+					this.setAttacker((MobEntity)entity);
+				}
+
+				if (entity.getType() == EntityType.PLAYER) {
+					this.setAttacking((PlayerEntity)entity);
+				}
 			}
 		}
 	}
 
-	default void tickAngerLogic() {
+	default void tickAngerLogic(ServerWorld serverWorld, boolean bl) {
 		LivingEntity livingEntity = this.getTarget();
-		if (livingEntity != null && livingEntity.getType() == EntityType.PLAYER) {
-			this.setAngryAt(livingEntity.getUuid());
-			if (this.getAngerTime() <= 0) {
+		UUID uUID = this.getAngryAt();
+		if ((livingEntity == null || livingEntity.isDead()) && uUID != null && serverWorld.getEntity(uUID) instanceof MobEntity) {
+			this.method_29922();
+		} else {
+			if (livingEntity != null && !Objects.equals(uUID, livingEntity.getUuid())) {
+				this.setAngryAt(livingEntity.getUuid());
 				this.chooseRandomAngerTime();
 			}
-		} else {
-			int i = this.getAngerTime();
-			if (i > 0) {
-				this.setAngerTime(i - 1);
+
+			if (this.getAngerTime() > 0 && (livingEntity == null || livingEntity.getType() != EntityType.PLAYER || !bl)) {
+				this.setAngerTime(this.getAngerTime() - 1);
 				if (this.getAngerTime() == 0) {
-					this.setAngryAt(null);
+					this.method_29922();
 				}
 			}
 		}
 	}
 
 	default boolean shouldAngerAt(LivingEntity entity) {
-		if (entity instanceof PlayerEntity && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity)) {
-			boolean bl = entity.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER);
-			return bl ? this.hasAngerTime() : entity.getUuid().equals(this.getAngryAt());
-		} else {
+		if (!EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity)) {
 			return false;
+		} else {
+			return entity.getType() == EntityType.PLAYER && this.method_29923(entity.world) ? true : entity.getUuid().equals(this.getAngryAt());
 		}
+	}
+
+	default boolean method_29923(World world) {
+		return world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.hasAngerTime() && this.getAngryAt() == null;
 	}
 
 	default boolean hasAngerTime() {
@@ -74,20 +89,28 @@ public interface Angerable {
 	}
 
 	default void forgive(PlayerEntity player) {
-		if (!player.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+		if (player.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+			if (player.getUuid().equals(this.getAngryAt())) {
+				this.method_29922();
+			}
 		}
+	}
 
-		if (player.getUuid().equals(this.getAngryAt())) {
-			this.setAttacker(null);
-			this.setAngryAt(null);
-			this.setTarget(null);
-			this.setAngerTime(0);
-		}
+	default void method_29921() {
+		this.method_29922();
+		this.chooseRandomAngerTime();
+	}
+
+	default void method_29922() {
+		this.setAttacker(null);
+		this.setAngryAt(null);
+		this.setTarget(null);
+		this.setAngerTime(0);
 	}
 
 	void setAttacker(@Nullable LivingEntity attacker);
 
-	void method_29505(@Nullable PlayerEntity playerEntity);
+	void setAttacking(@Nullable PlayerEntity playerEntity);
 
 	void setTarget(@Nullable LivingEntity target);
 

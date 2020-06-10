@@ -24,9 +24,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.Trader;
@@ -180,9 +180,9 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Nullable
 	@Override
-	public Entity changeDimension(RegistryKey<World> newDimension) {
+	public Entity changeDimension(ServerWorld serverWorld) {
 		this.resetCustomer();
-		return super.changeDimension(newDimension);
+		return super.changeDimension(serverWorld);
 	}
 
 	protected void resetCustomer() {

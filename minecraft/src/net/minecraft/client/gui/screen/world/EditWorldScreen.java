@@ -217,28 +217,19 @@ public class EditWorldScreen extends Screen {
 		}
 	}
 
-	public static boolean method_29784(LevelStorage levelStorage, String string) {
-		LevelStorage.Session session;
-		try {
-			session = levelStorage.createSession(string);
-		} catch (IOException var13) {
-			field_23776.warn("Failed to read level {} data", string, var13);
-			SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), string);
-			return false;
-		}
+	public static void method_29784(LevelStorage levelStorage, String string) {
+		boolean bl = false;
 
-		boolean iOException;
-		try {
-			iOException = backupLevel(session);
-		} finally {
-			try {
-				session.close();
-			} catch (IOException var11) {
-				field_23776.warn("Failed to unlock access to level {}", string, var11);
+		try (LevelStorage.Session session = levelStorage.createSession(string)) {
+			bl = true;
+			backupLevel(session);
+		} catch (IOException var16) {
+			if (!bl) {
+				SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), string);
 			}
-		}
 
-		return iOException;
+			field_23776.warn("Failed to create backup of level {}", string, var16);
+		}
 	}
 
 	public static boolean backupLevel(LevelStorage.Session session) {

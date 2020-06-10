@@ -14,7 +14,7 @@ public class NameTagItem extends Item {
 	@Override
 	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
 		if (stack.hasCustomName() && !(entity instanceof PlayerEntity)) {
-			if (entity.isAlive()) {
+			if (!user.world.isClient && entity.isAlive()) {
 				entity.setCustomName(stack.getName());
 				if (entity instanceof MobEntity) {
 					((MobEntity)entity).setPersistent();

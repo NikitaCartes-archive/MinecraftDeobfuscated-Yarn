@@ -17,6 +17,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	private PlayerInteractEntityC2SPacket.InteractionType type;
 	private Vec3d hitPos;
 	private Hand hand;
+	private boolean field_25660;
 
 	public PlayerInteractEntityC2SPacket() {
 	}
@@ -27,18 +28,20 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand) {
+	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, boolean bl) {
 		this.entityId = entity.getEntityId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT;
 		this.hand = hand;
+		this.field_25660 = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d vec3d) {
+	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d vec3d, boolean bl) {
 		this.entityId = entity.getEntityId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT;
 		this.hand = hand;
 		this.hitPos = vec3d;
+		this.field_25660 = bl;
 	}
 
 	@Override
@@ -51,6 +54,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			this.hand = buf.readEnumConstant(Hand.class);
+			this.field_25660 = buf.readBoolean();
 		}
 	}
 
@@ -66,6 +70,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			buf.writeEnumConstant(this.hand);
+			buf.writeBoolean(this.field_25660);
 		}
 	}
 
@@ -88,6 +93,10 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 	public Vec3d getHitPosition() {
 		return this.hitPos;
+	}
+
+	public boolean method_30007() {
+		return this.field_25660;
 	}
 
 	public static enum InteractionType {

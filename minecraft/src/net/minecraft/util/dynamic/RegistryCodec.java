@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
@@ -23,16 +24,16 @@ import net.minecraft.util.registry.SimpleRegistry;
 public final class RegistryCodec<E> implements Codec<SimpleRegistry<E>> {
 	private final Codec<SimpleRegistry<E>> delegate;
 	private final RegistryKey<Registry<E>> registryRef;
-	private final Codec<E> elementCodec;
+	private final MapCodec<E> elementCodec;
 
-	public static <E> RegistryCodec<E> of(RegistryKey<Registry<E>> registryRef, Lifecycle lifecycle, Codec<E> elementCodec) {
-		return new RegistryCodec<>(registryRef, lifecycle, elementCodec);
+	public static <E> RegistryCodec<E> of(RegistryKey<Registry<E>> registryRef, Lifecycle lifecycle, MapCodec<E> mapCodec) {
+		return new RegistryCodec<>(registryRef, lifecycle, mapCodec);
 	}
 
-	private RegistryCodec(RegistryKey<Registry<E>> registryRef, Lifecycle lifecycle, Codec<E> elementCodec) {
-		this.delegate = SimpleRegistry.createEmptyCodec(registryRef, lifecycle, elementCodec);
+	private RegistryCodec(RegistryKey<Registry<E>> registryRef, Lifecycle lifecycle, MapCodec<E> mapCodec) {
+		this.delegate = SimpleRegistry.createEmptyCodec(registryRef, lifecycle, mapCodec);
 		this.registryRef = registryRef;
-		this.elementCodec = elementCodec;
+		this.elementCodec = mapCodec;
 	}
 
 	public <T> DataResult<T> encode(SimpleRegistry<E> simpleRegistry, DynamicOps<T> dynamicOps, T object) {

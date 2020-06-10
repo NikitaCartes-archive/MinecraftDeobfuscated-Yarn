@@ -53,7 +53,6 @@ public class MusicTracker {
 		if (this.current != null) {
 			this.client.getSoundManager().stop(this.current);
 			this.current = null;
-			this.timeUntilNextSong = 100;
 		}
 	}
 

@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.GiantEntityModel;
@@ -19,7 +19,7 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 		super(dispatcher, new GiantEntityModel(), 0.5F * f);
 		this.scale = f;
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
+		this.addFeature(new ArmorFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
 	}
 
 	protected void scale(GiantEntity giantEntity, MatrixStack matrixStack, float f) {

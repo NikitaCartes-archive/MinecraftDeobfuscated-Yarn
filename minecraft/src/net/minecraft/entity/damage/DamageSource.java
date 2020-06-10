@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion;
 
 public class DamageSource {
-	public static final DamageSource IN_FIRE = new DamageSource("inFire").setFire();
+	public static final DamageSource IN_FIRE = new DamageSource("inFire").setBypassesArmor().setFire();
 	public static final DamageSource LIGHTNING_BOLT = new DamageSource("lightningBolt");
 	public static final DamageSource ON_FIRE = new DamageSource("onFire").setBypassesArmor().setFire();
 	public static final DamageSource LAVA = new DamageSource("lava").setFire();

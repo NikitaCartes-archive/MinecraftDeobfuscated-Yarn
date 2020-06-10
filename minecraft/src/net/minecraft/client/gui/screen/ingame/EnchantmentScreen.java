@@ -191,7 +191,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			int m = j + 1;
 			if (this.isPointWithinBounds(60, 14 + 19 * j, 108, 17, (double)mouseX, (double)mouseY) && k > 0 && l >= 0 && enchantment != null) {
 				List<Text> list = Lists.<Text>newArrayList();
-				list.add(new TranslatableText("container.enchant.clue", enchantment.getName(l)).formatted(new Formatting[]{Formatting.WHITE, Formatting.ITALIC}));
+				list.add(new TranslatableText("container.enchant.clue", enchantment.getName(l)).formatted(Formatting.WHITE));
 				if (!bl) {
 					list.add(LiteralText.EMPTY);
 					if (this.client.player.experienceLevel < k) {
