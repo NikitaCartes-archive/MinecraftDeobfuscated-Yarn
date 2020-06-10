@@ -6,6 +6,7 @@ package net.minecraft.entity.mob;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
@@ -387,7 +388,7 @@ extends HostileEntity {
             ZombieVillagerEntity zombieVillagerEntity = EntityType.ZOMBIE_VILLAGER.create(this.world);
             zombieVillagerEntity.copyPositionAndRotation(villagerEntity);
             villagerEntity.remove();
-            zombieVillagerEntity.initialize(this.world, this.world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieData(false), null);
+            zombieVillagerEntity.initialize(this.world, this.world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieData(false, true), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
             zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
             zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
@@ -429,26 +430,28 @@ extends HostileEntity {
         float f = difficulty.getClampedLocalDifficulty();
         this.setCanPickUpLoot(this.random.nextFloat() < 0.55f * f);
         if (entityData == null) {
-            entityData = new ZombieData(world.getRandom().nextFloat() < 0.05f);
+            entityData = new ZombieData(ZombieEntity.method_29936(world.getRandom()), true);
         }
         if (entityData instanceof ZombieData) {
             ZombieData zombieData = (ZombieData)entityData;
             if (zombieData.baby) {
                 this.setBaby(true);
-                if ((double)world.getRandom().nextFloat() < 0.05) {
-                    List<Entity> list = world.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
-                    if (!list.isEmpty()) {
-                        ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
-                        chickenEntity.setHasJockey(true);
-                        this.startRiding(chickenEntity);
+                if (zombieData.field_25607) {
+                    if ((double)world.getRandom().nextFloat() < 0.05) {
+                        List<Entity> list = world.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
+                        if (!list.isEmpty()) {
+                            ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
+                            chickenEntity.setHasJockey(true);
+                            this.startRiding(chickenEntity);
+                        }
+                    } else if ((double)world.getRandom().nextFloat() < 0.05) {
+                        ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
+                        chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
+                        chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
+                        chickenEntity2.setHasJockey(true);
+                        this.startRiding(chickenEntity2);
+                        world.spawnEntity(chickenEntity2);
                     }
-                } else if ((double)world.getRandom().nextFloat() < 0.05) {
-                    ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
-                    chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
-                    chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
-                    chickenEntity2.setHasJockey(true);
-                    this.startRiding(chickenEntity2);
-                    world.spawnEntity(chickenEntity2);
                 }
             }
             this.setCanBreakDoors(this.shouldBreakDoors() && this.random.nextFloat() < f * 0.1f);
@@ -466,6 +469,10 @@ extends HostileEntity {
         }
         this.applyAttributeModifiers(f);
         return entityData;
+    }
+
+    public static boolean method_29936(Random random) {
+        return random.nextFloat() < 0.05f;
     }
 
     protected void applyAttributeModifiers(float chanceMultiplier) {
@@ -534,9 +541,11 @@ extends HostileEntity {
     public static class ZombieData
     implements EntityData {
         public final boolean baby;
+        public final boolean field_25607;
 
-        public ZombieData(boolean baby) {
+        public ZombieData(boolean baby, boolean bl) {
             this.baby = baby;
+            this.field_25607 = bl;
         }
     }
 }

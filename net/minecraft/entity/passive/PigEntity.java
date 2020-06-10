@@ -3,6 +3,8 @@
  */
 package net.minecraft.entity.passive;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
@@ -239,7 +241,6 @@ Saddleable {
 
     @Override
     public void travel(Vec3d movementInput) {
-        this.setMovementSpeed(this.getSaddledSpeed());
         this.travel(this, this.saddledComponent, movementInput);
     }
 
@@ -266,6 +267,12 @@ Saddleable {
     @Override
     public boolean isBreedingItem(ItemStack stack) {
         return BREEDING_INGREDIENT.test(stack);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public Vec3d method_29919() {
+        return new Vec3d(0.0, 0.6f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 
     @Override

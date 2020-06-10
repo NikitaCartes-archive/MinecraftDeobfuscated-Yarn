@@ -177,8 +177,8 @@ implements ChunkLightingView {
         return maxSteps;
     }
 
-    protected void setLightArray(long pos, @Nullable ChunkNibbleArray lightArray) {
-        ((LightStorage)this.lightStorage).setLightArray(pos, lightArray);
+    protected void setLightArray(long pos, @Nullable ChunkNibbleArray lightArray, boolean bl) {
+        ((LightStorage)this.lightStorage).setLightArray(pos, lightArray, bl);
     }
 
     @Override

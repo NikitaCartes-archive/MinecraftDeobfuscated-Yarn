@@ -25,7 +25,7 @@ extends StructureFeature<BastionRemnantFeatureConfig> {
 
     @Override
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, BastionRemnantFeatureConfig bastionRemnantFeatureConfig) {
-        return chunkRandom.nextInt(6) >= 2;
+        return chunkRandom.nextInt(5) >= 2;
     }
 
     @Override

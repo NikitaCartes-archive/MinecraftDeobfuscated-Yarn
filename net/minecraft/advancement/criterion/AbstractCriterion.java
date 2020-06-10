@@ -3,7 +3,6 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -57,7 +56,7 @@ implements Criterion<T> {
     protected void test(ServerPlayerEntity player, Predicate<T> tester) {
         PlayerAdvancementTracker playerAdvancementTracker = player.getAdvancementTracker();
         Set<Criterion.ConditionsContainer<T>> set = this.progressions.get(playerAdvancementTracker);
-        if (set == null) {
+        if (set == null || set.isEmpty()) {
             return;
         }
         LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, player);
@@ -73,15 +72,6 @@ implements Criterion<T> {
         if (list != null) {
             for (Criterion.ConditionsContainer<Object> conditionsContainer : list) {
                 conditionsContainer.grant(playerAdvancementTracker);
-            }
-        }
-    }
-
-    protected void grant(PlayerAdvancementTracker tracker) {
-        Set<Criterion.ConditionsContainer<T>> set = this.progressions.get(tracker);
-        if (set != null && !set.isEmpty()) {
-            for (Criterion.ConditionsContainer conditionsContainer : ImmutableSet.copyOf(set)) {
-                conditionsContainer.grant(tracker);
             }
         }
     }

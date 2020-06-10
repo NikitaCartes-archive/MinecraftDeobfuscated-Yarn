@@ -195,10 +195,14 @@ public class TextHandler {
         return list;
     }
 
-    public List<StringRenderable> wrapLines(StringRenderable text, int maxWidth, Style style2) {
+    public List<StringRenderable> wrapLines(StringRenderable stringRenderable, int maxWidth, Style style) {
+        return this.method_29971(stringRenderable, maxWidth, style, null);
+    }
+
+    public List<StringRenderable> method_29971(StringRenderable stringRenderable, int i, Style style2, @Nullable StringRenderable stringRenderable2) {
         ArrayList<StringRenderable> list = Lists.newArrayList();
         ArrayList<StyledString> list2 = Lists.newArrayList();
-        text.visit((style, string) -> {
+        stringRenderable.visit((style, string) -> {
             if (!string.isEmpty()) {
                 list2.add(new StyledString(string, style));
             }
@@ -207,32 +211,42 @@ public class TextHandler {
         LineWrappingCollector lineWrappingCollector = new LineWrappingCollector(list2);
         boolean bl = true;
         boolean bl2 = false;
+        boolean bl3 = false;
         block0: while (bl) {
             bl = false;
-            LineBreakingVisitor lineBreakingVisitor = new LineBreakingVisitor(maxWidth);
+            LineBreakingVisitor lineBreakingVisitor = new LineBreakingVisitor(i);
             for (StyledString styledString : lineWrappingCollector.parts) {
-                boolean bl3 = TextVisitFactory.visitFormatted(styledString.literal, 0, styledString.style, style2, lineBreakingVisitor);
-                if (!bl3) {
-                    int i = lineBreakingVisitor.getEndingIndex();
+                boolean bl4 = TextVisitFactory.visitFormatted(styledString.literal, 0, styledString.style, style2, lineBreakingVisitor);
+                if (!bl4) {
+                    int j = lineBreakingVisitor.getEndingIndex();
                     Style style22 = lineBreakingVisitor.getEndingStyle();
-                    char c = lineWrappingCollector.charAt(i);
-                    boolean bl4 = c == '\n';
-                    boolean bl5 = bl4 || c == ' ';
-                    bl2 = bl4;
-                    list.add(lineWrappingCollector.collectLine(i, bl5 ? 1 : 0, style22));
+                    char c = lineWrappingCollector.charAt(j);
+                    boolean bl5 = c == '\n';
+                    boolean bl6 = bl5 || c == ' ';
+                    bl2 = bl5;
+                    StringRenderable stringRenderable3 = lineWrappingCollector.collectLine(j, bl6 ? 1 : 0, style22);
+                    list.add(this.method_29972(stringRenderable3, bl3, stringRenderable2));
+                    bl3 = !bl5;
                     bl = true;
                     continue block0;
                 }
                 lineBreakingVisitor.offset(styledString.literal.length());
             }
         }
-        StringRenderable stringRenderable = lineWrappingCollector.collectRemainers();
-        if (stringRenderable != null) {
-            list.add(stringRenderable);
+        StringRenderable stringRenderable4 = lineWrappingCollector.collectRemainers();
+        if (stringRenderable4 != null) {
+            list.add(this.method_29972(stringRenderable4, bl3, stringRenderable2));
         } else if (bl2) {
             list.add(StringRenderable.EMPTY);
         }
         return list;
+    }
+
+    private StringRenderable method_29972(StringRenderable stringRenderable, boolean bl, StringRenderable stringRenderable2) {
+        if (bl && stringRenderable2 != null) {
+            return StringRenderable.concat(stringRenderable2, stringRenderable);
+        }
+        return stringRenderable;
     }
 
     @Environment(value=EnvType.CLIENT)

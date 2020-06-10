@@ -4,6 +4,7 @@
 package net.minecraft.structure.processor;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.class_5399;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
 import net.minecraft.structure.processor.BlockAgeStructureProcessor;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
@@ -24,6 +25,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
     public static final StructureProcessorType<NopStructureProcessor> NOP = StructureProcessorType.register("nop", NopStructureProcessor.field_25005);
     public static final StructureProcessorType<BlockAgeStructureProcessor> BLOCK_AGE = StructureProcessorType.register("block_age", BlockAgeStructureProcessor.field_24997);
     public static final StructureProcessorType<BlackstoneReplacementStructureProcessor> BLACKSTONE_REPLACE = StructureProcessorType.register("blackstone_replace", BlackstoneReplacementStructureProcessor.field_24996);
+    public static final StructureProcessorType<class_5399> LAVA_SUBMERGED_BLOCK = StructureProcessorType.register("lava_submerged_block", class_5399.field_25618);
     public static final Codec<StructureProcessor> field_25013 = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
 
     public Codec<P> codec();

@@ -41,7 +41,7 @@ implements Packet<ClientPlayPacketListener> {
         int i = buf.readInt();
         for (int j = 0; j < i; ++j) {
             Identifier identifier = buf.readIdentifier();
-            EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(identifier);
+            EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
             double d = buf.readDouble();
             ArrayList<EntityAttributeModifier> list = Lists.newArrayList();
             int k = buf.readVarInt();
@@ -58,7 +58,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.entityId);
         buf.writeInt(this.entries.size());
         for (Entry entry : this.entries) {
-            buf.writeIdentifier(Registry.ATTRIBUTES.getId(entry.getId()));
+            buf.writeIdentifier(Registry.ATTRIBUTE.getId(entry.getId()));
             buf.writeDouble(entry.getBaseValue());
             buf.writeVarInt(entry.getModifiers().size());
             for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {

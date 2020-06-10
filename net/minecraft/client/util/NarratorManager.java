@@ -57,7 +57,7 @@ implements ClientChatListener {
 
     private void narrate(boolean interrupt, String message) {
         if (SharedConstants.isDevelopment) {
-            LOGGER.debug("Narrating: {}", (Object)message);
+            LOGGER.debug("Narrating: {}", (Object)message.replaceAll("\n", "\\\\n"));
         }
         this.narrator.say(message, interrupt);
     }

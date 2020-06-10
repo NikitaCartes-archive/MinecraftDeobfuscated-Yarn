@@ -397,17 +397,7 @@ extends ChunkManager {
         int i = pos.getX() >> 4;
         ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j = pos.getZ() >> 4));
         if (chunkHolder != null) {
-            chunkHolder.markForBlockUpdate(this, pos.getX() & 0xF, pos.getY(), pos.getZ() & 0xF);
-        }
-    }
-
-    protected void method_29482(int i, int j) {
-        for (int k = -1; k <= 1; ++k) {
-            for (int l = -1; l <= 1; ++l) {
-                ChunkHolder chunkHolder;
-                if (k == 0 && l == 0 || (chunkHolder = this.getChunkHolder(ChunkPos.toLong(i + k, j + l))) == null) continue;
-                chunkHolder.method_29481();
-            }
+            chunkHolder.markForBlockUpdate(pos.getX() & 0xF, pos.getY(), pos.getZ() & 0xF);
         }
     }
 

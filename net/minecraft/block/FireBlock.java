@@ -118,7 +118,7 @@ extends AbstractFireBlock {
             world.removeBlock(pos, false);
         }
         BlockState blockState = world.getBlockState(pos.down());
-        boolean bl = world.getDimension().isEnd() && blockState.isOf(Blocks.BEDROCK) || blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.MAGMA_BLOCK);
+        boolean bl = blockState.isIn(world.getDimension().getInfiniburnBlocks());
         int i = state.get(AGE);
         if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2f + (float)i * 0.03f) {
             world.removeBlock(pos, false);

@@ -919,7 +919,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private void sendChunkDataPackets(ServerPlayerEntity player, Packet<?>[] packets, WorldChunk chunk) {
         if (packets[0] == null) {
             packets[0] = new ChunkDataS2CPacket(chunk, 65535);
-            packets[1] = new LightUpdateS2CPacket(chunk.getPos(), this.serverLightingProvider);
+            packets[1] = new LightUpdateS2CPacket(chunk.getPos(), this.serverLightingProvider, true);
         }
         player.sendInitialChunkPackets(chunk.getPos(), packets[0], packets[1]);
         DebugInfoSender.sendChunkWatchingChange(this.world, chunk.getPos());

@@ -83,7 +83,7 @@ extends CompositeEntityModel<T> {
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.field_3493, this.field_3499, this.field_3494, this.field_3490, this.field_3496, this.field_3495, this.field_3489, this.field_3488, this.field_3491, this.field_3492, this.field_3487, this.field_3498, new ModelPart[]{this.field_3488});
+        return ImmutableList.of(this.field_3493, this.field_3499, this.field_3494, this.field_3490, this.field_3496, this.field_3495, this.field_3489, this.field_3497, this.field_3491, this.field_3492, this.field_3487, this.field_3498, new ModelPart[]{this.field_3488});
     }
 
     @Override

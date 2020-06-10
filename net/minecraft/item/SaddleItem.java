@@ -22,8 +22,10 @@ extends Item {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         Saddleable saddleable;
         if (entity instanceof Saddleable && entity.isAlive() && !(saddleable = (Saddleable)((Object)entity)).isSaddled() && saddleable.canBeSaddled()) {
-            saddleable.saddle(SoundCategory.NEUTRAL);
-            stack.decrement(1);
+            if (!user.world.isClient) {
+                saddleable.saddle(SoundCategory.NEUTRAL);
+                stack.decrement(1);
+            }
             return ActionResult.success(user.world.isClient);
         }
         return ActionResult.PASS;

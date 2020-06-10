@@ -87,6 +87,7 @@ implements RecipeBookProvider {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.recipeBook.mouseClicked(mouseX, mouseY, button)) {
+            this.setFocused(this.recipeBook);
             return true;
         }
         if (this.isNarrow && this.recipeBook.isOpen()) {

@@ -144,7 +144,7 @@ public abstract class PlayerManager {
         ServerWorld serverWorld = this.server.getWorld(registryKey);
         if (serverWorld == null) {
             LOGGER.warn("Unknown respawn dimension {}, defaulting to overworld", (Object)registryKey);
-            serverWorld2 = this.server.getWorld(World.OVERWORLD);
+            serverWorld2 = this.server.method_30002();
         } else {
             serverWorld2 = serverWorld;
         }
@@ -371,7 +371,7 @@ public abstract class PlayerManager {
         for (ServerPlayerEntity serverPlayerEntity : list) {
             serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login"));
         }
-        ServerWorld serverWorld = this.server.getWorld(World.OVERWORLD);
+        ServerWorld serverWorld = this.server.method_30002();
         ServerPlayerInteractionManager serverPlayerInteractionManager = this.server.isDemo() ? new DemoServerPlayerInteractionManager(serverWorld) : new ServerPlayerInteractionManager(serverWorld);
         return new ServerPlayerEntity(this.server, serverWorld, profile, serverPlayerInteractionManager);
     }
@@ -381,11 +381,11 @@ public abstract class PlayerManager {
         player.getServerWorld().removePlayer(player);
         BlockPos blockPos = player.getSpawnPointPosition();
         boolean bl2 = player.isSpawnPointSet();
-        Optional<Object> optional = blockPos != null ? PlayerEntity.findRespawnPosition(this.server.getWorld(player.getSpawnPointDimension()), blockPos, bl2, bl) : Optional.empty();
-        RegistryKey<World> registryKey = optional.isPresent() ? player.getSpawnPointDimension() : World.OVERWORLD;
-        ServerWorld serverWorld = this.server.getWorld(registryKey);
-        ServerPlayerInteractionManager serverPlayerInteractionManager = this.server.isDemo() ? new DemoServerPlayerInteractionManager(serverWorld) : new ServerPlayerInteractionManager(serverWorld);
-        ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld, player.getGameProfile(), serverPlayerInteractionManager);
+        ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
+        Optional<Object> optional = serverWorld != null && blockPos != null ? PlayerEntity.findRespawnPosition(serverWorld, blockPos, bl2, bl) : Optional.empty();
+        ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.method_30002();
+        ServerPlayerInteractionManager serverPlayerInteractionManager = this.server.isDemo() ? new DemoServerPlayerInteractionManager(serverWorld2) : new ServerPlayerInteractionManager(serverWorld2);
+        ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), serverPlayerInteractionManager);
         serverPlayerEntity.networkHandler = player.networkHandler;
         serverPlayerEntity.copyFrom(player, bl);
         serverPlayerEntity.setEntityId(player.getEntityId());
@@ -393,28 +393,28 @@ public abstract class PlayerManager {
         for (String string : player.getScoreboardTags()) {
             serverPlayerEntity.addScoreboardTag(string);
         }
-        this.setGameMode(serverPlayerEntity, player, serverWorld);
+        this.setGameMode(serverPlayerEntity, player, serverWorld2);
         boolean bl3 = false;
         if (optional.isPresent()) {
             Vec3d vec3d = (Vec3d)optional.get();
             serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0f, 0.0f);
-            serverPlayerEntity.setSpawnPoint(registryKey, blockPos, bl2, false);
-            bl3 = !bl && serverWorld.getBlockState(blockPos).getBlock() instanceof RespawnAnchorBlock;
+            serverPlayerEntity.setSpawnPoint(serverWorld2.getRegistryKey(), blockPos, bl2, false);
+            bl3 = !bl && serverWorld2.getBlockState(blockPos).getBlock() instanceof RespawnAnchorBlock;
         } else if (blockPos != null) {
-            serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0f));
+            serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25645, 0.0f));
         }
-        while (!serverWorld.doesNotCollide(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
+        while (!serverWorld2.doesNotCollide(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
             serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
         }
         WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();
         serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.world.getDimensionRegistryKey(), serverPlayerEntity.world.getRegistryKey(), BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()), serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.getServerWorld().isDebugWorld(), serverPlayerEntity.getServerWorld().method_28125(), bl));
         serverPlayerEntity.networkHandler.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch);
-        serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld.getSpawnPos()));
+        serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld2.getSpawnPos()));
         serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
         serverPlayerEntity.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity.experienceProgress, serverPlayerEntity.totalExperience, serverPlayerEntity.experienceLevel));
-        this.sendWorldInfo(serverPlayerEntity, serverWorld);
+        this.sendWorldInfo(serverPlayerEntity, serverWorld2);
         this.sendCommandTree(serverPlayerEntity);
-        serverWorld.onPlayerRespawned(serverPlayerEntity);
+        serverWorld2.onPlayerRespawned(serverPlayerEntity);
         this.players.add(serverPlayerEntity);
         this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
         serverPlayerEntity.onSpawn();
@@ -572,14 +572,14 @@ public abstract class PlayerManager {
     }
 
     public void sendWorldInfo(ServerPlayerEntity player, ServerWorld world) {
-        WorldBorder worldBorder = this.server.getWorld(World.OVERWORLD).getWorldBorder();
+        WorldBorder worldBorder = this.server.method_30002().getWorldBorder();
         player.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
         player.networkHandler.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
         player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos()));
         if (world.isRaining()) {
-            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(1, 0.0f));
-            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(7, world.getRainGradient(1.0f)));
-            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(8, world.getThunderGradient(1.0f)));
+            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25646, 0.0f));
+            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25652, world.getRainGradient(1.0f)));
+            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25653, world.getThunderGradient(1.0f)));
         }
     }
 
@@ -631,7 +631,7 @@ public abstract class PlayerManager {
         this.gameMode = gameMode;
     }
 
-    private void setGameMode(ServerPlayerEntity player, ServerPlayerEntity oldPlayer, ServerWorld world) {
+    private void setGameMode(ServerPlayerEntity player, @Nullable ServerPlayerEntity oldPlayer, ServerWorld world) {
         if (oldPlayer != null) {
             player.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode());
         } else if (this.gameMode != null) {

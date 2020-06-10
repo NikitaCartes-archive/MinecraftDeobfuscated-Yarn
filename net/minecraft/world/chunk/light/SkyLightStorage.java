@@ -160,12 +160,12 @@ extends LightStorage<Data> {
     }
 
     @Override
-    protected void updateLightArrays(ChunkLightProvider<Data, ?> lightProvider, boolean doSkylight, boolean skipEdgeLightPropagation) {
+    protected void updateLightArrays(ChunkLightProvider<Data, ?> chunkLightProvider, boolean doSkylight, boolean skipEdgeLightPropagation) {
         int j;
         int i;
         long l;
         LongIterator longIterator;
-        super.updateLightArrays(lightProvider, doSkylight, skipEdgeLightPropagation);
+        super.updateLightArrays(chunkLightProvider, doSkylight, skipEdgeLightPropagation);
         if (!doSkylight) {
             return;
         }
@@ -178,7 +178,7 @@ extends LightStorage<Data> {
                 if (i == 2 || this.field_15816.contains(l) || !this.field_15820.add(l)) continue;
                 if (i == 1) {
                     long n;
-                    this.removeChunkData(lightProvider, l);
+                    this.removeChunkData(chunkLightProvider, l);
                     if (this.field_15802.add(l)) {
                         ((Data)this.lightArrays).replaceWithCopy(l);
                     }
@@ -214,7 +214,7 @@ extends LightStorage<Data> {
                                         r = BlockPos.asLong(j + 16, k + o, m + p);
                                     }
                                 }
-                                lightProvider.updateLevel(q, r, lightProvider.getPropagatedLevel(q, r, 0), true);
+                                chunkLightProvider.updateLevel(q, r, chunkLightProvider.getPropagatedLevel(q, r, 0), true);
                             }
                         }
                     }
@@ -222,7 +222,7 @@ extends LightStorage<Data> {
                         for (int t = 0; t < 16; ++t) {
                             long u = BlockPos.asLong(ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l)) + s, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l)), ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l)) + t);
                             n = BlockPos.asLong(ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l)) + s, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l)) - 1, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l)) + t);
-                            lightProvider.updateLevel(u, n, lightProvider.getPropagatedLevel(u, n, 0), true);
+                            chunkLightProvider.updateLevel(u, n, chunkLightProvider.getPropagatedLevel(u, n, 0), true);
                         }
                     }
                     continue;
@@ -230,7 +230,7 @@ extends LightStorage<Data> {
                 for (j = 0; j < 16; ++j) {
                     for (k = 0; k < 16; ++k) {
                         long v = BlockPos.asLong(ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l)) + j, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l)) + 16 - 1, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l)) + k);
-                        lightProvider.updateLevel(Long.MAX_VALUE, v, 0, true);
+                        chunkLightProvider.updateLevel(Long.MAX_VALUE, v, 0, true);
                     }
                 }
             }
@@ -244,7 +244,7 @@ extends LightStorage<Data> {
                 for (i = 0; i < 16; ++i) {
                     for (j = 0; j < 16; ++j) {
                         long w = BlockPos.asLong(ChunkSectionPos.getWorldCoord(ChunkSectionPos.getX(l)) + i, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getY(l)) + 16 - 1, ChunkSectionPos.getWorldCoord(ChunkSectionPos.getZ(l)) + j);
-                        lightProvider.updateLevel(Long.MAX_VALUE, w, 15, false);
+                        chunkLightProvider.updateLevel(Long.MAX_VALUE, w, 15, false);
                     }
                 }
             }

@@ -81,7 +81,7 @@ extends ConditionalLootFunction {
         public JsonObject serialize(JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", this.name);
-            jsonObject.addProperty("attribute", Registry.ATTRIBUTES.getId(this.attribute).toString());
+            jsonObject.addProperty("attribute", Registry.ATTRIBUTE.getId(this.attribute).toString());
             jsonObject.addProperty("operation", Attribute.getName(this.operation));
             jsonObject.add("amount", context.serialize(this.amountRange));
             if (this.id != null) {
@@ -103,7 +103,7 @@ extends ConditionalLootFunction {
             EquipmentSlot[] equipmentSlots;
             String string = JsonHelper.getString(json, "name");
             Identifier identifier = new Identifier(JsonHelper.getString(json, "attribute"));
-            EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(identifier);
+            EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
             if (entityAttribute == null) {
                 throw new JsonSyntaxException("Unknown attribute: " + identifier);
             }

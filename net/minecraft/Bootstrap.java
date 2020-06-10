@@ -80,7 +80,7 @@ public class Bootstrap {
 
     public static Set<String> getMissingTranslations() {
         TreeSet<String> set = new TreeSet<String>();
-        Bootstrap.collectMissingTranslations(Registry.ATTRIBUTES, EntityAttribute::getTranslationKey, set);
+        Bootstrap.collectMissingTranslations(Registry.ATTRIBUTE, EntityAttribute::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.ENTITY_TYPE, EntityType::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.ITEM, Item::getTranslationKey, set);

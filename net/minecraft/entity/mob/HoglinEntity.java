@@ -277,7 +277,7 @@ Hoglin {
     }
 
     public boolean canConvert() {
-        return !this.world.getDimension().isNether() && !this.isImmuneToZombification() && !this.isAiDisabled();
+        return !this.world.getDimension().isPiglinSafe() && !this.isImmuneToZombification() && !this.isAiDisabled();
     }
 
     private void setCannotBeHunted(boolean cannotBeHunted) {

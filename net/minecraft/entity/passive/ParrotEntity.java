@@ -420,5 +420,11 @@ implements Flutterer {
     public boolean isInAir() {
         return !this.onGround;
     }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public Vec3d method_29919() {
+        return new Vec3d(0.0, 0.5f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
+    }
 }
 

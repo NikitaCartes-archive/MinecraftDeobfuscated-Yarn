@@ -23,7 +23,7 @@ public class EntityAttributes {
     public static final EntityAttribute HORSE_JUMP_STRENGTH = EntityAttributes.register("horse.jump_strength", new ClampedEntityAttribute("attribute.name.horse.jump_strength", 0.7, 0.0, 2.0).setTracked(true));
 
     private static EntityAttribute register(String id, EntityAttribute attribute) {
-        return Registry.register(Registry.ATTRIBUTES, id, attribute);
+        return Registry.register(Registry.ATTRIBUTE, id, attribute);
     }
 }
 

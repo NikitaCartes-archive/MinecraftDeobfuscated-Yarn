@@ -31,7 +31,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
 
 public class AttributeCommand {
-    private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(Registry.ATTRIBUTES.getIds(), suggestionsBuilder);
+    private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(Registry.ATTRIBUTE.getIds(), suggestionsBuilder);
     private static final DynamicCommandExceptionType ENTITY_FAILED_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.attribute.failed.entity", object));
     private static final Dynamic2CommandExceptionType NO_ATTRIBUTE_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.attribute.failed.no_attribute", object, object2));
     private static final Dynamic3CommandExceptionType NO_MODIFIER_EXCEPTION = new Dynamic3CommandExceptionType((object, object2, object3) -> new TranslatableText("commands.attribute.failed.no_modifier", object2, object, object3));

@@ -85,7 +85,7 @@ extends PersistentState {
             return null;
         }
         DimensionType dimensionType = player.world.getDimension();
-        if (dimensionType.isNether()) {
+        if (!dimensionType.hasRaids()) {
             return null;
         }
         BlockPos blockPos = player.getBlockPos();

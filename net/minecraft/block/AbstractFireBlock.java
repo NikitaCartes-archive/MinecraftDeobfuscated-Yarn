@@ -145,7 +145,7 @@ extends Block {
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        if ((world.getDimension().isOverworld() || world.getDimension().isNether()) && NetherPortalBlock.createPortalAt(world, pos)) {
+        if ((world.getRegistryKey() == World.OVERWORLD || world.getRegistryKey() == World.NETHER) && NetherPortalBlock.createPortalAt(world, pos)) {
             return;
         }
         if (!state.canPlaceAt(world, pos)) {

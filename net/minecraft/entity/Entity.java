@@ -6,6 +6,7 @@ package net.minecraft.entity;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonSyntaxException;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
@@ -167,6 +168,8 @@ CommandOutput {
     protected boolean touchingWater;
     protected Object2DoubleMap<Tag<Fluid>> fluidHeight = new Object2DoubleArrayMap<Tag<Fluid>>(2);
     protected boolean submergedInWater;
+    @Nullable
+    protected Tag<Fluid> field_25599;
     protected boolean inLava;
     public int timeUntilRegen;
     protected boolean firstUpdate = true;
@@ -913,7 +916,7 @@ CommandOutput {
         if (this.isTouchingWater()) {
             return true;
         }
-        double d = this.world.getDimension().hasCeiling() ? 0.007 : 0.0023333333333333335;
+        double d = this.world.getDimension().isUltrawarm() ? 0.007 : 0.0023333333333333335;
         return this.updateMovementInFluid(FluidTags.LAVA, d);
     }
 
@@ -934,6 +937,18 @@ CommandOutput {
 
     private void updateSubmergedInWaterState() {
         this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
+        this.field_25599 = null;
+        double d = this.getEyeY() - 0.1111111119389534;
+        BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
+        FluidState fluidState = this.world.getFluidState(blockPos);
+        for (Tag tag : FluidTags.method_29897()) {
+            if (!fluidState.matches(tag)) continue;
+            double e = (float)blockPos.getY() + fluidState.getHeight(this.world, blockPos);
+            if (e > d) {
+                this.field_25599 = tag;
+            }
+            return;
+        }
     }
 
     protected void onSwimmingStart() {
@@ -989,7 +1004,7 @@ CommandOutput {
     }
 
     public boolean isSubmergedIn(Tag<Fluid> tag) {
-        return (double)this.getStandingEyeHeight() < this.getFluidHeight(tag);
+        return this.field_25599 == tag;
     }
 
     public void setInLava() {
@@ -1348,7 +1363,12 @@ CommandOutput {
             this.refreshPosition();
             this.setRotation(this.yaw, this.pitch);
             if (tag.contains("CustomName", 8)) {
-                this.setCustomName(Text.Serializer.fromJson(tag.getString("CustomName")));
+                String string = tag.getString("CustomName");
+                try {
+                    this.setCustomName(Text.Serializer.fromJson(string));
+                } catch (JsonSyntaxException jsonSyntaxException) {
+                    LOGGER.warn("Failed to parse entity custom name {}", (Object)string, (Object)jsonSyntaxException);
+                }
             }
             this.setCustomNameVisible(tag.getBoolean("CustomNameVisible"));
             this.setSilent(tag.getBoolean("Silent"));
@@ -1632,13 +1652,16 @@ CommandOutput {
             return;
         }
         int i = this.getMaxNetherPortalTime();
+        ServerWorld serverWorld = (ServerWorld)this.world;
         if (this.inNetherPortal) {
-            if (this.world.getServer().isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
+            RegistryKey<World> registryKey;
+            MinecraftServer minecraftServer = serverWorld.getServer();
+            ServerWorld serverWorld2 = minecraftServer.getWorld(registryKey = this.world.getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER);
+            if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
                 this.world.getProfiler().push("portal");
                 this.netherPortalTime = i;
                 this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
-                RegistryKey<World> registryKey = this.world.getDimension().isNether() ? World.OVERWORLD : World.NETHER;
-                this.changeDimension(registryKey);
+                this.changeDimension(serverWorld2);
                 this.world.getProfiler().pop();
             }
             this.inNetherPortal = false;
@@ -1890,7 +1913,7 @@ CommandOutput {
     }
 
     private static Text removeClickEvents(Text textComponent) {
-        MutableText mutableText = textComponent.copy().styled(style -> style.withClickEvent(null));
+        MutableText mutableText = textComponent.copy().setStyle(textComponent.getStyle().withClickEvent(null));
         for (Text text : textComponent.getSiblings()) {
             mutableText.append(Entity.removeClickEvents(text));
         }
@@ -1963,29 +1986,25 @@ CommandOutput {
     }
 
     @Nullable
-    public Entity changeDimension(RegistryKey<World> newDimension) {
+    public Entity changeDimension(ServerWorld serverWorld) {
         BlockPos blockPos;
-        if (this.world.isClient || this.removed) {
+        if (!(this.world instanceof ServerWorld) || this.removed) {
             return null;
         }
         this.world.getProfiler().push("changeDimension");
-        MinecraftServer minecraftServer = this.getServer();
-        RegistryKey<World> registryKey = this.world.getRegistryKey();
-        ServerWorld serverWorld = minecraftServer.getWorld(registryKey);
-        ServerWorld serverWorld2 = minecraftServer.getWorld(newDimension);
         this.detach();
         this.world.getProfiler().push("reposition");
         Vec3d vec3d = this.getVelocity();
         float f = 0.0f;
-        if (registryKey == World.END && newDimension == World.OVERWORLD) {
-            blockPos = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.getSpawnPos());
-        } else if (newDimension == World.END) {
+        if (this.world.getRegistryKey() == World.END && serverWorld.getRegistryKey() == World.OVERWORLD) {
+            blockPos = serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld.getSpawnPos());
+        } else if (serverWorld.getRegistryKey() == World.END) {
             blockPos = ServerWorld.field_25144;
         } else {
             double d = this.getX();
             double e = this.getZ();
-            DimensionType dimensionType = serverWorld.getDimension();
-            DimensionType dimensionType2 = serverWorld2.getDimension();
+            DimensionType dimensionType = this.world.getDimension();
+            DimensionType dimensionType2 = serverWorld.getDimension();
             double g = 8.0;
             if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
                 d /= 8.0;
@@ -1994,15 +2013,15 @@ CommandOutput {
                 d *= 8.0;
                 e *= 8.0;
             }
-            double h = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundWest() + 16.0);
-            double i = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundNorth() + 16.0);
-            double j = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
-            double k = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
+            double h = Math.min(-2.9999872E7, serverWorld.getWorldBorder().getBoundWest() + 16.0);
+            double i = Math.min(-2.9999872E7, serverWorld.getWorldBorder().getBoundNorth() + 16.0);
+            double j = Math.min(2.9999872E7, serverWorld.getWorldBorder().getBoundEast() - 16.0);
+            double k = Math.min(2.9999872E7, serverWorld.getWorldBorder().getBoundSouth() - 16.0);
             d = MathHelper.clamp(d, h, j);
             e = MathHelper.clamp(e, i, k);
             Vec3d vec3d2 = this.getLastNetherPortalDirectionVector();
             blockPos = new BlockPos(d, this.getY(), e);
-            BlockPattern.TeleportTarget teleportTarget = serverWorld2.getPortalForcer().getPortal(blockPos, vec3d, this.getLastNetherPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
+            BlockPattern.TeleportTarget teleportTarget = serverWorld.getPortalForcer().getPortal(blockPos, vec3d, this.getLastNetherPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
             if (teleportTarget == null) {
                 return null;
             }
@@ -2011,20 +2030,20 @@ CommandOutput {
             f = teleportTarget.yaw;
         }
         this.world.getProfiler().swap("reloading");
-        Object entity = this.getType().create(serverWorld2);
+        Object entity = this.getType().create(serverWorld);
         if (entity != null) {
             ((Entity)entity).copyFrom(this);
             ((Entity)entity).refreshPositionAndAngles(blockPos, ((Entity)entity).yaw + f, ((Entity)entity).pitch);
             ((Entity)entity).setVelocity(vec3d);
-            serverWorld2.onDimensionChanged((Entity)entity);
-            if (newDimension == World.END) {
-                ServerWorld.method_29200(serverWorld2);
+            serverWorld.onDimensionChanged((Entity)entity);
+            if (serverWorld.getRegistryKey() == World.END) {
+                ServerWorld.method_29200(serverWorld);
             }
         }
         this.removed = true;
         this.world.getProfiler().pop();
+        ((ServerWorld)this.world).resetIdleTimeout();
         serverWorld.resetIdleTimeout();
-        serverWorld2.resetIdleTimeout();
         this.world.getProfiler().pop();
         return entity;
     }
@@ -2236,6 +2255,11 @@ CommandOutput {
 
     public final float getStandingEyeHeight() {
         return this.standingEyeHeight;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Vec3d method_29919() {
+        return new Vec3d(0.0, this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 
     public boolean equip(int slot, ItemStack item) {

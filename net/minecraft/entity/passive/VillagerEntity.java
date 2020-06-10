@@ -528,6 +528,9 @@ VillagerDataContainer {
         MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
         this.brain.getOptionalMemory(memoryModuleType).ifPresent(globalPos -> {
             ServerWorld serverWorld = minecraftServer.getWorld(globalPos.getDimension());
+            if (serverWorld == null) {
+                return;
+            }
             PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
             Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(globalPos.getPos());
             BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = POINTS_OF_INTEREST.get(memoryModuleType);

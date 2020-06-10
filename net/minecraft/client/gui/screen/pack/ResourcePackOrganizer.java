@@ -5,15 +5,17 @@ package net.minecraft.client.gui.screen.pack;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.ResourcePackCompatibility;
+import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.text.StringRenderable;
@@ -21,18 +23,22 @@ import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class ResourcePackOrganizer<T extends ResourcePackProfile> {
+    private final ResourcePackManager<T> field_25626;
     private final List<T> enabledPacks;
     private final List<T> disabledPacks;
     private final BiConsumer<T, TextureManager> renderer;
     private final Runnable updateCallback;
-    private final Applier<T> applier;
+    private final Consumer<ResourcePackManager<T>> applier;
 
-    public ResourcePackOrganizer(Runnable updateCallback, BiConsumer<T, TextureManager> renderer, Collection<T> enabledPacks, Collection<T> disabledPacks, Applier<T> applier) {
+    public ResourcePackOrganizer(Runnable updateCallback, BiConsumer<T, TextureManager> renderer, ResourcePackManager<T> resourcePackManager, Consumer<ResourcePackManager<T>> consumer) {
         this.updateCallback = updateCallback;
         this.renderer = renderer;
-        this.enabledPacks = Lists.newArrayList(enabledPacks);
-        this.disabledPacks = Lists.newArrayList(disabledPacks);
-        this.applier = applier;
+        this.field_25626 = resourcePackManager;
+        this.enabledPacks = Lists.newArrayList(resourcePackManager.getEnabledProfiles());
+        Collections.reverse(this.enabledPacks);
+        this.disabledPacks = Lists.newArrayList(resourcePackManager.getProfiles());
+        this.disabledPacks.removeAll(this.enabledPacks);
+        this.applier = consumer;
     }
 
     public Stream<Pack> getDisabledPacks() {
@@ -43,14 +49,16 @@ public class ResourcePackOrganizer<T extends ResourcePackProfile> {
         return this.enabledPacks.stream().map(resourcePackProfile -> new EnabledPack(this, resourcePackProfile));
     }
 
-    public void apply(boolean unchanged) {
-        this.applier.accept(ImmutableList.copyOf(this.enabledPacks), ImmutableList.copyOf(this.disabledPacks), unchanged);
+    public void apply() {
+        this.field_25626.setEnabledProfiles(Lists.reverse(this.enabledPacks).stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList()));
+        this.applier.accept(this.field_25626);
     }
 
-    @FunctionalInterface
-    @Environment(value=EnvType.CLIENT)
-    public static interface Applier<T extends ResourcePackProfile> {
-        public void accept(List<T> var1, List<T> var2, boolean var3);
+    public void method_29981() {
+        this.field_25626.scanPacks();
+        this.disabledPacks.clear();
+        this.disabledPacks.addAll(this.field_25626.getProfiles());
+        this.disabledPacks.removeAll(this.enabledPacks);
     }
 
     @Environment(value=EnvType.CLIENT)

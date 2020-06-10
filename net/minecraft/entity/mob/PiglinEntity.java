@@ -270,7 +270,7 @@ implements CrossbowUser {
     }
 
     public boolean canConvert() {
-        return !this.world.getDimension().isNether() && !this.isImmuneToZombification() && !this.isAiDisabled();
+        return !this.world.getDimension().isPiglinSafe() && !this.isImmuneToZombification() && !this.isAiDisabled();
     }
 
     @Override

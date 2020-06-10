@@ -72,8 +72,8 @@ implements AutoCloseable {
             super.setRetainData(pos, false);
             super.setLightEnabled(pos, false);
             for (i = -1; i < 17; ++i) {
-                super.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null);
-                super.queueData(LightType.SKY, ChunkSectionPos.from(pos, i), null);
+                super.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
+                super.queueData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
             }
             for (i = 0; i < 16; ++i) {
                 super.updateSectionStatus(ChunkSectionPos.from(pos, i), true);
@@ -92,8 +92,8 @@ implements AutoCloseable {
     }
 
     @Override
-    public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles) {
-        this.enqueue(pos.getSectionX(), pos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.queueData(lightType, pos, nibbles), () -> "queueData " + pos));
+    public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
+        this.enqueue(pos.getSectionX(), pos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.queueData(lightType, pos, nibbles, bl), () -> "queueData " + pos));
     }
 
     private void enqueue(int x, int z, Stage stage, Runnable task) {

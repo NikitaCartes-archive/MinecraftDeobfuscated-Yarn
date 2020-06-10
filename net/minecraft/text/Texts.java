@@ -10,6 +10,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
@@ -22,6 +24,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 public class Texts {
+    @Environment(value=EnvType.CLIENT)
     public static MutableText setStyleIfAbsent(MutableText text, Style style) {
         if (style.isEmpty()) {
             return text;
@@ -44,7 +47,7 @@ public class Texts {
         for (Text text2 : text.getSiblings()) {
             mutableText.append(Texts.parse(source, text2, sender, depth + 1));
         }
-        return Texts.setStyleIfAbsent(mutableText, Texts.method_27663(source, text.getStyle(), sender, depth));
+        return mutableText.fillStyle(Texts.method_27663(source, text.getStyle(), sender, depth));
     }
 
     private static Style method_27663(@Nullable ServerCommandSource serverCommandSource, Style style, @Nullable Entity entity, int i) throws CommandSyntaxException {

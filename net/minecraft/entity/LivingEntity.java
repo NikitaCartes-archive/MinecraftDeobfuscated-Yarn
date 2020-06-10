@@ -450,6 +450,10 @@ extends Entity {
         return this.isBaby() ? 0.5f : 1.0f;
     }
 
+    protected boolean method_29920() {
+        return true;
+    }
+
     @Override
     public boolean canBeRiddenInWater() {
         return false;
@@ -915,7 +919,7 @@ extends Entity {
         }
         this.knockbackVelocity = 0.0f;
         Entity entity2 = source.getAttacker();
-        if (entity2 != null && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity2)) {
+        if (entity2 != null) {
             WolfEntity wolfEntity;
             if (entity2 instanceof LivingEntity) {
                 this.setAttacker((LivingEntity)entity2);
@@ -1710,7 +1714,7 @@ extends Entity {
                 this.fallDistance = 0.0f;
             }
             FluidState fluidState = this.world.getFluidState(this.getBlockPos());
-            if (!(!this.isTouchingWater() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying || this.canWalkOnFluid(fluidState.getFluid()))) {
+            if (this.isTouchingWater() && this.method_29920() && !this.canWalkOnFluid(fluidState.getFluid())) {
                 double e = this.getY();
                 float f = this.isSprinting() ? 0.9f : this.getBaseMovementSpeedMultiplier();
                 float g = 0.02f;
@@ -1740,7 +1744,7 @@ extends Entity {
                 if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + (double)0.6f - this.getY() + e, vec3d2.z)) {
                     this.setVelocity(vec3d2.x, 0.3f, vec3d2.z);
                 }
-            } else if (!(!this.isInLava() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying || this.canWalkOnFluid(fluidState.getFluid()))) {
+            } else if (this.isInLava() && this.method_29920() && !this.canWalkOnFluid(fluidState.getFluid())) {
                 double e = this.getY();
                 this.updateVelocity(0.02f, movementInput);
                 this.move(MovementType.SELF, this.getVelocity());
@@ -2081,7 +2085,7 @@ extends Entity {
         }
         this.world.getProfiler().pop();
         this.world.getProfiler().push("jump");
-        if (this.jumping) {
+        if (this.jumping && this.method_29920()) {
             double k = this.getFluidHeight(FluidTags.WATER);
             boolean bl = this.isTouchingWater() && k > 0.0;
             double l = this.method_29241();

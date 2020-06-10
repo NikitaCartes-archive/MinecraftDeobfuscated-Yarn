@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.List;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
@@ -13,6 +14,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.Box;
+import net.minecraft.world.GameRules;
 
 public class RevengeGoal
 extends TrackTargetGoal {
@@ -33,6 +35,9 @@ extends TrackTargetGoal {
         int i = this.mob.getLastAttackedTime();
         LivingEntity livingEntity = this.mob.getAttacker();
         if (i == this.lastAttackedTime || livingEntity == null) {
+            return false;
+        }
+        if (livingEntity.getType() == EntityType.PLAYER && this.mob.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
             return false;
         }
         for (Class<?> class_ : this.noRevengeTypes) {
@@ -62,7 +67,8 @@ extends TrackTargetGoal {
 
     protected void callSameTypeForRevenge() {
         double d = this.getFollowRange();
-        List<?> list = this.mob.world.getEntitiesIncludingUngeneratedChunks(this.mob.getClass(), new Box(this.mob.getX(), this.mob.getY(), this.mob.getZ(), this.mob.getX() + 1.0, this.mob.getY() + 1.0, this.mob.getZ() + 1.0).expand(d, 10.0, d));
+        Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0, d);
+        List<?> list = this.mob.world.getEntitiesIncludingUngeneratedChunks(this.mob.getClass(), box);
         for (MobEntity mobEntity : list) {
             if (this.mob == mobEntity || mobEntity.getTarget() != null || this.mob instanceof TameableEntity && ((TameableEntity)this.mob).getOwner() != ((TameableEntity)mobEntity).getOwner() || mobEntity.isTeammate(this.mob.getAttacker())) continue;
             if (this.noHelpTypes != null) {

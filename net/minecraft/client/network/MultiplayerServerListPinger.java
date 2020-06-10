@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ServerInfo;
@@ -54,7 +55,7 @@ public class MultiplayerServerListPinger {
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
-    public void add(final ServerInfo entry) throws UnknownHostException {
+    public void add(final ServerInfo entry, final Runnable runnable) throws UnknownHostException {
         ServerAddress serverAddress = ServerAddress.parse(entry.address);
         final ClientConnection clientConnection = ClientConnection.connect(InetAddress.getByName(serverAddress.getAddress()), serverAddress.getPort(), false);
         this.clientConnections.add(clientConnection);
@@ -97,15 +98,18 @@ public class MultiplayerServerListPinger {
                 } else {
                     entry.playerCountLabel = new TranslatableText("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
                 }
+                String string = null;
                 if (serverMetadata.getFavicon() != null) {
-                    String string = serverMetadata.getFavicon();
-                    if (string.startsWith("data:image/png;base64,")) {
-                        entry.setIcon(string.substring("data:image/png;base64,".length()));
+                    String string2 = serverMetadata.getFavicon();
+                    if (string2.startsWith("data:image/png;base64,")) {
+                        string = string2.substring("data:image/png;base64,".length());
                     } else {
                         LOGGER.error("Invalid server icon (unknown format)");
                     }
-                } else {
-                    entry.setIcon(null);
+                }
+                if (!Objects.equals(string, entry.getIcon())) {
+                    entry.setIcon(string);
+                    runnable.run();
                 }
                 this.startTime = Util.getMeasuringTimeMs();
                 clientConnection.send(new QueryPingC2SPacket(this.startTime));

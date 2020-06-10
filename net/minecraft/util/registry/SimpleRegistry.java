@@ -11,6 +11,7 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import java.util.Set;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Int2ObjectBiMap;
+import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.util.dynamic.RegistryCodec;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -141,29 +143,18 @@ extends MutableRegistry<T> {
         return this.indexedEntries.containsId(id);
     }
 
-    /**
-     * Returns whether an element corresponding to the key is loaded externally,
-     * such as from a decoder.
-     * 
-     * <p>When an element is loaded externally, it will be encoded when the
-     * registry is encoded.</p>
-     */
-    public boolean isLoaded(RegistryKey<T> key) {
-        return this.loadedKeys.contains(key);
+    @Override
+    public boolean isLoaded(RegistryKey<T> registryKey) {
+        return this.loadedKeys.contains(registryKey);
     }
 
-    /**
-     * Marks an element corresponding to the key as loaded from a decoder.
-     * 
-     * <p>This will make the element being written by the encoder when the
-     * registry is encoded.</p>
-     */
-    public void markLoaded(RegistryKey<T> key) {
-        this.loadedKeys.add(key);
+    @Override
+    public void markLoaded(RegistryKey<T> registryKey) {
+        this.loadedKeys.add(registryKey);
     }
 
-    public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
-        return Codec.mapPair(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("key"), codec.fieldOf("element")).codec().listOf().xmap(list -> {
+    public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+        return NumberCodecs.method_29906(registryKey, mapCodec).codec().listOf().xmap(list -> {
             SimpleRegistry simpleRegistry = new SimpleRegistry(registryKey, lifecycle);
             for (Pair pair : list) {
                 simpleRegistry.add((RegistryKey)pair.getFirst(), pair.getSecond());
@@ -178,12 +169,12 @@ extends MutableRegistry<T> {
         });
     }
 
-    public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> elementCodec) {
-        return RegistryCodec.of(registryRef, lifecycle, elementCodec);
+    public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+        return RegistryCodec.of(registryRef, lifecycle, mapCodec);
     }
 
-    public static <T> Codec<SimpleRegistry<T>> createEmptyCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> elementCodec) {
-        return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue), elementCodec).xmap(map -> {
+    public static <T> Codec<SimpleRegistry<T>> createEmptyCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+        return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue), mapCodec.codec()).xmap(map -> {
             SimpleRegistry simpleRegistry = new SimpleRegistry(registryRef, lifecycle);
             map.forEach((? super K registryKey, ? super V object) -> {
                 simpleRegistry.set(simpleRegistry.nextId, (RegistryKey)registryKey, (Object)object);

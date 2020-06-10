@@ -111,6 +111,7 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.65f, Items.NETHER_WART);
         ComposterBlock.registerCompostableItem(0.65f, Items.CRIMSON_ROOTS);
         ComposterBlock.registerCompostableItem(0.65f, Items.WARPED_ROOTS);
+        ComposterBlock.registerCompostableItem(0.65f, Items.SHROOMLIGHT);
         ComposterBlock.registerCompostableItem(0.65f, Items.DANDELION);
         ComposterBlock.registerCompostableItem(0.65f, Items.POPPY);
         ComposterBlock.registerCompostableItem(0.65f, Items.BLUE_ORCHID);

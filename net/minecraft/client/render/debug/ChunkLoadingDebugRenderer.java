@@ -103,6 +103,9 @@ implements DebugRenderer.Renderer {
             this.clientStates = builder.build();
             this.serverStates = integratedServer.submit(() -> {
                 ServerWorld serverWorld = integratedServer.getWorld(registryKey);
+                if (serverWorld == null) {
+                    return ImmutableMap.of();
+                }
                 ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
                 ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
                 for (int k = i - 12; k <= i + 12; ++k) {

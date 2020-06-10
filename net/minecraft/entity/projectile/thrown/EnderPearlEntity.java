@@ -19,26 +19,23 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class EnderPearlEntity
 extends ThrownItemEntity {
-    private LivingEntity owner;
-
     public EnderPearlEntity(EntityType<? extends EnderPearlEntity> entityType, World world) {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
     }
 
     public EnderPearlEntity(World world, LivingEntity owner) {
         super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, owner, world);
-        this.owner = owner;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -54,11 +51,7 @@ extends ThrownItemEntity {
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
-        Entity entity = entityHitResult.getEntity();
-        if (entity == this.owner) {
-            return;
-        }
-        entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0f);
+        entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0f);
     }
 
     @Override
@@ -116,7 +109,7 @@ extends ThrownItemEntity {
     @Override
     public void tick() {
         Entity entity = this.getOwner();
-        if (entity != null && entity instanceof PlayerEntity && !entity.isAlive()) {
+        if (entity instanceof PlayerEntity && !entity.isAlive()) {
             this.remove();
         } else {
             super.tick();
@@ -125,12 +118,12 @@ extends ThrownItemEntity {
 
     @Override
     @Nullable
-    public Entity changeDimension(RegistryKey<World> newDimension) {
+    public Entity changeDimension(ServerWorld serverWorld) {
         Entity entity = this.getOwner();
-        if (entity != null && entity.world.getRegistryKey() != newDimension) {
+        if (entity != null && entity.world.getRegistryKey() != serverWorld.getRegistryKey()) {
             this.setOwner(null);
         }
-        return super.changeDimension(newDimension);
+        return super.changeDimension(serverWorld);
     }
 }
 

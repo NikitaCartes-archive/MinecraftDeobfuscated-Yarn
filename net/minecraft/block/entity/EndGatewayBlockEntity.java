@@ -150,12 +150,12 @@ implements Tickable {
             return;
         }
         this.teleportCooldown = 100;
-        if (this.exitPortalPos == null && this.world.getDimension().isEnd()) {
+        if (this.exitPortalPos == null && this.world.getRegistryKey() == World.END) {
             this.createPortal((ServerWorld)this.world);
         }
         if (this.exitPortalPos != null) {
             BlockPos blockPos = this.exactTeleport ? this.exitPortalPos : this.findBestPortalExitPos();
-            entity.teleport((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+            entity.teleport((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
         }
         this.startTeleportCooldown();
     }

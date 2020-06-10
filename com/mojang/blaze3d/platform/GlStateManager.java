@@ -44,7 +44,6 @@ public class GlStateManager {
     private static final PolygonOffsetState POLY_OFFSET = new PolygonOffsetState();
     private static final LogicOpState COLOR_LOGIC = new LogicOpState();
     private static final TexGenState TEX_GEN = new TexGenState();
-    private static final ClearState CLEAR = new ClearState();
     private static final StencilState STENCIL = new StencilState();
     private static final FloatBuffer colorBuffer = GlAllocationUtils.allocateFloatBuffer(4);
     private static int activeTexture;
@@ -1031,29 +1030,17 @@ public class GlStateManager {
 
     public static void clearDepth(double depth) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        if (depth != GlStateManager.CLEAR.clearDepth) {
-            GlStateManager.CLEAR.clearDepth = depth;
-            GL11.glClearDepth(depth);
-        }
+        GL11.glClearDepth(depth);
     }
 
     public static void clearColor(float red, float green, float blue, float alpha) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        if (red != GlStateManager.CLEAR.clearColor.red || green != GlStateManager.CLEAR.clearColor.green || blue != GlStateManager.CLEAR.clearColor.blue || alpha != GlStateManager.CLEAR.clearColor.alpha) {
-            GlStateManager.CLEAR.clearColor.red = red;
-            GlStateManager.CLEAR.clearColor.green = green;
-            GlStateManager.CLEAR.clearColor.blue = blue;
-            GlStateManager.CLEAR.clearColor.alpha = alpha;
-            GL11.glClearColor(red, green, blue, alpha);
-        }
+        GL11.glClearColor(red, green, blue, alpha);
     }
 
     public static void clearStencil(int stencil) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        if (stencil != GlStateManager.CLEAR.clearStencil) {
-            GlStateManager.CLEAR.clearStencil = stencil;
-            GL11.glClearStencil(stencil);
-        }
+        GL11.glClearStencil(stencil);
     }
 
     public static void clear(int mask, boolean getError) {
@@ -1432,16 +1419,6 @@ public class GlStateManager {
         public int mask = -1;
 
         private StencilSubState() {
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class ClearState {
-        public double clearDepth = 1.0;
-        public final Color4 clearColor = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
-        public int clearStencil;
-
-        private ClearState() {
         }
     }
 

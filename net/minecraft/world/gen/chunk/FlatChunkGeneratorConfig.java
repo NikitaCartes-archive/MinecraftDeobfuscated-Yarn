@@ -11,6 +11,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -41,10 +43,7 @@ import org.apache.logging.log4j.Logger;
 
 public class FlatChunkGeneratorConfig {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(FlatChunkGeneratorConfig::getConfig), ((MapCodec)FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers")).forGetter(FlatChunkGeneratorConfig::getLayers), ((MapCodec)Registry.BIOME.fieldOf("biome")).withDefault(() -> {
-        LOGGER.error("Unknown biome, defaulting to plains");
-        return Biomes.PLAINS;
-    }).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)).apply((Applicative<FlatChunkGeneratorConfig, ?>)instance, FlatChunkGeneratorConfig::new)).stable();
+    public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(FlatChunkGeneratorConfig::getConfig), ((MapCodec)FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers")).forGetter(FlatChunkGeneratorConfig::getLayers), NumberCodecs.method_29905(Registry.BIOME.fieldOf("biome"), Util.method_29188("Unknown biome, defaulting to plains", LOGGER::error), () -> Biomes.PLAINS).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)).apply((Applicative<FlatChunkGeneratorConfig, ?>)instance, FlatChunkGeneratorConfig::new)).stable();
     private static final ConfiguredFeature<?, ?> WATER_LAKE = Feature.LAKE.configure(new SingleStateFeatureConfig(Blocks.WATER.getDefaultState())).createDecoratedFeature(Decorator.WATER_LAKE.configure(new ChanceDecoratorConfig(4)));
     private static final ConfiguredFeature<?, ?> LAVA_LAKE = Feature.LAKE.configure(new SingleStateFeatureConfig(Blocks.LAVA.getDefaultState())).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new ChanceDecoratorConfig(80)));
     private static final Map<StructureFeature<?>, ConfiguredStructureFeature<?, ?>> STRUCTURE_TO_FEATURES = Util.make(Maps.newHashMap(), hashMap -> {
@@ -86,12 +85,23 @@ public class FlatChunkGeneratorConfig {
 
     @Environment(value=EnvType.CLIENT)
     public FlatChunkGeneratorConfig method_28912(StructuresConfig structuresConfig) {
+        return this.method_29965(this.layers, structuresConfig);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public FlatChunkGeneratorConfig method_29965(List<FlatChunkGeneratorLayer> list, StructuresConfig structuresConfig) {
         FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
-        for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.getLayers()) {
-            flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(flatChunkGeneratorLayer.getThickness(), flatChunkGeneratorLayer.getBlockState().getBlock()));
+        for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : list) {
+            flatChunkGeneratorConfig.layers.add(new FlatChunkGeneratorLayer(flatChunkGeneratorLayer.getThickness(), flatChunkGeneratorLayer.getBlockState().getBlock()));
             flatChunkGeneratorConfig.updateLayerBlocks();
         }
         flatChunkGeneratorConfig.setBiome(this.biome);
+        if (this.field_24976) {
+            flatChunkGeneratorConfig.method_28911();
+        }
+        if (this.field_24977) {
+            flatChunkGeneratorConfig.method_28916();
+        }
         return flatChunkGeneratorConfig;
     }
 
@@ -159,6 +169,7 @@ public class FlatChunkGeneratorConfig {
     }
 
     public void updateLayerBlocks() {
+        Arrays.fill(this.layerBlocks, 0, this.layerBlocks.length, null);
         int i = 0;
         for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.layers) {
             flatChunkGeneratorLayer.setStartY(i);

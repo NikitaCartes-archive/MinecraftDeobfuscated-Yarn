@@ -3,6 +3,8 @@
  */
 package net.minecraft.entity.passive;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityDimensions;
@@ -38,6 +40,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -189,6 +192,12 @@ RangedAttackMob {
     @Nullable
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_SNOW_GOLEM_DEATH;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public Vec3d method_29919() {
+        return new Vec3d(0.0, 0.75f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 }
 

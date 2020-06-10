@@ -231,6 +231,7 @@ import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.GeneratorOptions;
@@ -1366,7 +1367,7 @@ WindowEventHandler {
         }
         while (this.options.keySwapHands.wasPressed()) {
             if (this.player.isSpectator()) continue;
-            this.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, Direction.DOWN));
+            this.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ORIGIN, Direction.DOWN));
         }
         while (this.options.keyDrop.wasPressed()) {
             if (this.player.isSpectator() || !this.player.dropSelectedItem(Screen.hasControlDown())) continue;
@@ -1552,6 +1553,12 @@ WindowEventHandler {
                     runnable.run();
                 } else {
                     this.openScreen(null);
+                    try (LevelStorage.Session session = this.levelStorage.createSession(string);){
+                        session.deleteSessionLock();
+                    } catch (IOException iOException) {
+                        SystemToast.addWorldDeleteFailureToast(this, string);
+                        LOGGER.error("Failed to delete world {}", (Object)string, (Object)iOException);
+                    }
                 }
             }, new TranslatableText("selectWorld.backupQuestion.experimental"), new TranslatableText("selectWorld.backupWarning.experimental"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
         }
@@ -1627,10 +1634,16 @@ WindowEventHandler {
 
     private void reset(Screen screen) {
         this.profiler.push("forcedTick");
-        this.musicTracker.stop();
         this.soundManager.stopAll();
         this.cameraEntity = null;
         this.connection = null;
+        this.openScreen(screen);
+        this.render(false);
+        this.profiler.pop();
+    }
+
+    public void method_29970(Screen screen) {
+        this.profiler.push("forcedTick");
         this.openScreen(screen);
         this.render(false);
         this.profiler.pop();
@@ -1995,7 +2008,7 @@ WindowEventHandler {
             return MusicType.CREDITS;
         }
         if (this.player != null) {
-            if (this.player.world.getDimension().isEnd()) {
+            if (this.player.world.getRegistryKey() == World.END) {
                 if (this.inGameHud.getBossBarHud().shouldPlayDragonMusic()) {
                     return MusicType.DRAGON;
                 }

@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5398;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -41,6 +42,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -92,6 +94,7 @@ implements Angerable {
         this.targetSelector.add(2, new FollowPlayersGoal());
         this.targetSelector.add(3, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
         this.targetSelector.add(4, new FollowTargetGoal<FoxEntity>(this, FoxEntity.class, 10, true, true, null));
+        this.targetSelector.add(5, new class_5398<PolarBearEntity>(this, false));
     }
 
     public static DefaultAttributeContainer.Builder createPolarBearAttributes() {
@@ -109,7 +112,7 @@ implements Angerable {
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
-        this.angerFromTag(this.world, tag);
+        this.angerFromTag((ServerWorld)this.world, tag);
     }
 
     @Override
@@ -193,7 +196,7 @@ implements Angerable {
             --this.warningSoundCooldown;
         }
         if (!this.world.isClient) {
-            this.tickAngerLogic();
+            this.tickAngerLogic((ServerWorld)this.world, true);
         }
     }
 

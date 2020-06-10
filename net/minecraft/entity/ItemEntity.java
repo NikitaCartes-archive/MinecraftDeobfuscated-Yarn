@@ -22,6 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
@@ -30,7 +31,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -315,8 +315,8 @@ extends Entity {
 
     @Override
     @Nullable
-    public Entity changeDimension(RegistryKey<World> newDimension) {
-        Entity entity = super.changeDimension(newDimension);
+    public Entity changeDimension(ServerWorld serverWorld) {
+        Entity entity = super.changeDimension(serverWorld);
         if (!this.world.isClient && entity instanceof ItemEntity) {
             ((ItemEntity)entity).tryMerge();
         }

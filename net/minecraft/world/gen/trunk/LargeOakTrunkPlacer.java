@@ -43,7 +43,9 @@ extends TrunkPlacer {
         int i = 5;
         int j = trunkHeight + 2;
         int k = MathHelper.floor((double)j * 0.618);
-        LargeOakTrunkPlacer.method_27400(world, pos.down());
+        if (!treeFeatureConfig.skipFluidCheck) {
+            LargeOakTrunkPlacer.method_27400(world, pos.down());
+        }
         double d = 1.0;
         int l = Math.min(1, MathHelper.floor(1.382 + Math.pow(1.0 * (double)j / 13.0, 2.0)));
         int m = pos.getY() + k;

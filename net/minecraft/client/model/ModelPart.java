@@ -49,6 +49,15 @@ public class ModelPart {
         this.setTextureOffset(textureOffsetU, textureOffsetV);
     }
 
+    private ModelPart() {
+    }
+
+    public ModelPart method_29991() {
+        ModelPart modelPart = new ModelPart();
+        modelPart.copyPositionAndRotation(this);
+        return modelPart;
+    }
+
     public void copyPositionAndRotation(ModelPart modelPart) {
         this.pitch = modelPart.pitch;
         this.yaw = modelPart.yaw;

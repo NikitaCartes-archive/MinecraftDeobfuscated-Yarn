@@ -246,6 +246,7 @@ extends WaterCreatureEntity {
     public void tick() {
         super.tick();
         if (this.isAiDisabled()) {
+            this.setAir(this.getMaxAir());
             return;
         }
         if (this.isWet()) {

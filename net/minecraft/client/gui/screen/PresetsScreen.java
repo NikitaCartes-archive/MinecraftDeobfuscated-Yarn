@@ -58,7 +58,7 @@ extends Screen {
     private SuperflatPresetsListWidget listWidget;
     private ButtonWidget selectPresetButton;
     private TextFieldWidget customPresetField;
-    private StructuresConfig field_25044;
+    private FlatChunkGeneratorConfig field_25044;
 
     public PresetsScreen(CustomizeFlatLevelScreen parent) {
         super(new TranslatableText("createWorld.customize.presets.title"));
@@ -113,18 +113,16 @@ extends Screen {
         return list;
     }
 
-    public static FlatChunkGeneratorConfig method_29060(String string, StructuresConfig structuresConfig) {
+    public static FlatChunkGeneratorConfig method_29060(String string, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
         Iterator<String> iterator = Splitter.on(';').split(string).iterator();
         if (!iterator.hasNext()) {
             return FlatChunkGeneratorConfig.getDefaultConfig();
         }
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
         List<FlatChunkGeneratorLayer> list = PresetsScreen.method_29058(iterator.next());
         if (list.isEmpty()) {
             return FlatChunkGeneratorConfig.getDefaultConfig();
         }
-        flatChunkGeneratorConfig.getLayers().addAll(list);
-        flatChunkGeneratorConfig.updateLayerBlocks();
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getConfig());
         Biome biome = Biomes.PLAINS;
         if (iterator.hasNext()) {
             try {
@@ -134,8 +132,8 @@ extends Screen {
                 field_25043.error("Error while parsing flat world string => {}", (Object)exception.getMessage());
             }
         }
-        flatChunkGeneratorConfig.setBiome(biome);
-        return flatChunkGeneratorConfig;
+        flatChunkGeneratorConfig2.setBiome(biome);
+        return flatChunkGeneratorConfig2;
     }
 
     private static String method_29062(FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
@@ -159,7 +157,7 @@ extends Screen {
         this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
         this.customPresetField.setMaxLength(1230);
         this.customPresetField.setText(PresetsScreen.method_29062(this.parent.method_29055()));
-        this.field_25044 = this.parent.method_29055().getConfig();
+        this.field_25044 = this.parent.method_29055();
         this.children.add(this.customPresetField);
         this.listWidget = new SuperflatPresetsListWidget();
         this.children.add(this.listWidget);
@@ -241,12 +239,12 @@ extends Screen {
 
     static {
         PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.classic_flat"), Blocks.GRASS_BLOCK, Biomes.PLAINS, Arrays.asList(StructureFeature.VILLAGE), false, false, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(2, Blocks.DIRT), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.tunnelers_dream"), Blocks.STONE, Biomes.MOUNTAINS, Arrays.asList(StructureFeature.SWAMP_HUT, StructureFeature.DESERT_PYRAMID, StructureFeature.JUNGLE_PYRAMID, StructureFeature.IGLOO, StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK, StructureFeature.MINESHAFT), true, true, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(5, Blocks.DIRT), new FlatChunkGeneratorLayer(230, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.water_world"), Items.WATER_BUCKET, Biomes.DEEP_OCEAN, Arrays.asList(StructureFeature.SWAMP_HUT, StructureFeature.DESERT_PYRAMID, StructureFeature.JUNGLE_PYRAMID, StructureFeature.IGLOO, StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK, StructureFeature.MONUMENT), false, false, false, new FlatChunkGeneratorLayer(90, Blocks.WATER), new FlatChunkGeneratorLayer(5, Blocks.SAND), new FlatChunkGeneratorLayer(5, Blocks.DIRT), new FlatChunkGeneratorLayer(5, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.overworld"), Blocks.GRASS, Biomes.PLAINS, Arrays.asList(StructureFeature.VILLAGE, StructureFeature.SWAMP_HUT, StructureFeature.DESERT_PYRAMID, StructureFeature.JUNGLE_PYRAMID, StructureFeature.IGLOO, StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK, StructureFeature.MINESHAFT, StructureFeature.PILLAGER_OUTPOST, StructureFeature.RUINED_PORTAL), true, true, true, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(59, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.snowy_kingdom"), Blocks.SNOW, Biomes.SNOWY_TUNDRA, Arrays.asList(StructureFeature.VILLAGE, StructureFeature.SWAMP_HUT, StructureFeature.DESERT_PYRAMID, StructureFeature.JUNGLE_PYRAMID, StructureFeature.IGLOO, StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK), false, false, false, new FlatChunkGeneratorLayer(1, Blocks.SNOW), new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(59, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.bottomless_pit"), Items.FEATHER, Biomes.PLAINS, Arrays.asList(StructureFeature.VILLAGE, StructureFeature.SWAMP_HUT, StructureFeature.DESERT_PYRAMID, StructureFeature.JUNGLE_PYRAMID, StructureFeature.IGLOO, StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK), false, false, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(2, Blocks.COBBLESTONE));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.desert"), Blocks.SAND, Biomes.DESERT, Arrays.asList(StructureFeature.VILLAGE, StructureFeature.SWAMP_HUT, StructureFeature.DESERT_PYRAMID, StructureFeature.JUNGLE_PYRAMID, StructureFeature.IGLOO, StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK, StructureFeature.MINESHAFT), true, true, false, new FlatChunkGeneratorLayer(8, Blocks.SAND), new FlatChunkGeneratorLayer(52, Blocks.SANDSTONE), new FlatChunkGeneratorLayer(3, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.tunnelers_dream"), Blocks.STONE, Biomes.MOUNTAINS, Arrays.asList(StructureFeature.MINESHAFT), true, true, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(5, Blocks.DIRT), new FlatChunkGeneratorLayer(230, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.water_world"), Items.WATER_BUCKET, Biomes.DEEP_OCEAN, Arrays.asList(StructureFeature.OCEAN_RUIN, StructureFeature.SHIPWRECK, StructureFeature.MONUMENT), false, false, false, new FlatChunkGeneratorLayer(90, Blocks.WATER), new FlatChunkGeneratorLayer(5, Blocks.SAND), new FlatChunkGeneratorLayer(5, Blocks.DIRT), new FlatChunkGeneratorLayer(5, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.overworld"), Blocks.GRASS, Biomes.PLAINS, Arrays.asList(StructureFeature.VILLAGE, StructureFeature.MINESHAFT, StructureFeature.PILLAGER_OUTPOST, StructureFeature.RUINED_PORTAL), true, true, true, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(59, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.snowy_kingdom"), Blocks.SNOW, Biomes.SNOWY_TUNDRA, Arrays.asList(StructureFeature.VILLAGE, StructureFeature.IGLOO), false, false, false, new FlatChunkGeneratorLayer(1, Blocks.SNOW), new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(59, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.bottomless_pit"), Items.FEATHER, Biomes.PLAINS, Arrays.asList(StructureFeature.VILLAGE), false, false, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(2, Blocks.COBBLESTONE));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.desert"), Blocks.SAND, Biomes.DESERT, Arrays.asList(StructureFeature.VILLAGE, StructureFeature.DESERT_PYRAMID, StructureFeature.MINESHAFT), true, true, false, new FlatChunkGeneratorLayer(8, Blocks.SAND), new FlatChunkGeneratorLayer(52, Blocks.SANDSTONE), new FlatChunkGeneratorLayer(3, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
         PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.redstone_ready"), Items.REDSTONE, Biomes.DESERT, Collections.emptyList(), false, false, false, new FlatChunkGeneratorLayer(52, Blocks.SANDSTONE), new FlatChunkGeneratorLayer(3, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
         PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.the_void"), Blocks.BARRIER, Biomes.THE_VOID, Collections.emptyList(), false, true, false, new FlatChunkGeneratorLayer(1, Blocks.AIR));
     }
@@ -332,7 +330,7 @@ extends Screen {
                 SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(SuperflatPresetsListWidget.this.children().indexOf(this));
                 PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(superflatPreset.field_25045));
                 PresetsScreen.this.customPresetField.setCursorToStart();
-                PresetsScreen.this.field_25044 = superflatPreset.field_25045.getConfig();
+                PresetsScreen.this.field_25044 = superflatPreset.field_25045;
             }
 
             private void method_2200(MatrixStack matrixStack, int i, int j, Item item) {

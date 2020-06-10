@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -30,9 +31,11 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.collection.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GravityField;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
@@ -45,6 +48,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -202,7 +206,11 @@ public final class SpawnHelper {
 
     @Nullable
     private static Biome.SpawnEntry pickRandomSpawnEntry(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos blockPos) {
-        List<Biome.SpawnEntry> list = chunkGenerator.getEntitySpawnList(serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos);
+        Biome biome = serverWorld.getBiome(blockPos);
+        if (spawnGroup == SpawnGroup.WATER_AMBIENT && biome.getCategory() == Biome.Category.RIVER && random.nextFloat() < 0.98f) {
+            return null;
+        }
+        List<Biome.SpawnEntry> list = SpawnHelper.method_29950(serverWorld, structureAccessor, chunkGenerator, spawnGroup, blockPos, biome);
         if (list.isEmpty()) {
             return null;
         }
@@ -210,7 +218,14 @@ public final class SpawnHelper {
     }
 
     private static boolean containsSpawnEntry(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Biome.SpawnEntry spawnEntry, BlockPos blockPos) {
-        return chunkGenerator.getEntitySpawnList(serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos).contains(spawnEntry);
+        return SpawnHelper.method_29950(serverWorld, structureAccessor, chunkGenerator, spawnGroup, blockPos, null).contains(spawnEntry);
+    }
+
+    private static List<Biome.SpawnEntry> method_29950(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos blockPos, @Nullable Biome biome) {
+        if (spawnGroup == SpawnGroup.MONSTER && serverWorld.getBlockState(blockPos.down()).getBlock() == Blocks.NETHER_BRICKS && structureAccessor.method_28388(blockPos, false, StructureFeature.FORTRESS).hasChildren()) {
+            return StructureFeature.FORTRESS.getMonsterSpawns();
+        }
+        return chunkGenerator.getEntitySpawnList(biome != null ? biome : serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos);
     }
 
     private static BlockPos getSpawnPos(World world, WorldChunk chunk) {
@@ -254,7 +269,7 @@ public final class SpawnHelper {
                 return fluidState.matches(FluidTags.WATER) && world.getFluidState(blockPos2).matches(FluidTags.WATER) && !world.getBlockState(blockPos).isSolidBlock(world, blockPos);
             }
             case IN_LAVA: {
-                return fluidState.matches(FluidTags.LAVA) && world.getFluidState(blockPos2).matches(FluidTags.LAVA) && !world.getBlockState(blockPos).isSolidBlock(world, blockPos);
+                return fluidState.matches(FluidTags.LAVA);
             }
         }
         BlockState blockState2 = world.getBlockState(blockPos2);
@@ -283,7 +298,7 @@ public final class SpawnHelper {
                 boolean bl = false;
                 for (int q = 0; !bl && q < 4; ++q) {
                     BlockPos blockPos = SpawnHelper.getEntitySpawnPos(world, spawnEntry.type, l, m);
-                    if (spawnEntry.type.isSummonable() && SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, world, blockPos, spawnEntry.type)) {
+                    if (spawnEntry.type.isSummonable() && SpawnHelper.canSpawn(SpawnRestriction.getLocation(spawnEntry.type), world, blockPos, spawnEntry.type)) {
                         MobEntity mobEntity;
                         Object entity;
                         float f = spawnEntry.type.getWidth();
@@ -314,13 +329,22 @@ public final class SpawnHelper {
         }
     }
 
-    private static BlockPos getEntitySpawnPos(WorldView world, @Nullable EntityType<?> entityType, int x, int z) {
-        BlockPos blockPos = new BlockPos(x, world.getTopY(SpawnRestriction.getHeightmapType(entityType), x, z), z);
-        BlockPos blockPos2 = blockPos.down();
-        if (world.getBlockState(blockPos2).canPathfindThrough(world, blockPos2, NavigationType.LAND)) {
-            return blockPos2;
+    private static BlockPos getEntitySpawnPos(WorldView world, EntityType<?> entityType, int x, int z) {
+        Vec3i blockPos;
+        int i = world.getTopY(SpawnRestriction.getHeightmapType(entityType), x, z);
+        BlockPos.Mutable mutable = new BlockPos.Mutable(x, i, z);
+        if (world.getDimension().hasCeiling()) {
+            do {
+                mutable.move(Direction.DOWN);
+            } while (!world.getBlockState(mutable).isAir());
+            do {
+                mutable.move(Direction.DOWN);
+            } while (world.getBlockState(mutable).isAir() && mutable.getY() > 0);
         }
-        return blockPos;
+        if (SpawnRestriction.getLocation(entityType) == SpawnRestriction.Location.ON_GROUND && world.getBlockState((BlockPos)(blockPos = mutable.down())).canPathfindThrough(world, (BlockPos)blockPos, NavigationType.LAND)) {
+            return blockPos;
+        }
+        return mutable.toImmutable();
     }
 
     @FunctionalInterface

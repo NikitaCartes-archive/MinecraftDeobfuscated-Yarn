@@ -33,6 +33,7 @@ extends SpriteBillboardParticle {
         this.setBoundingBoxSpacing(0.01f, 0.01f);
         this.scale *= this.random.nextFloat() * 0.6f + 0.6f;
         this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
+        this.collidesWithWorld = false;
     }
 
     @Override

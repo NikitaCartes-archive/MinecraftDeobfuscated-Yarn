@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.ai.pathing;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathMinHeap;
 import net.minecraft.entity.ai.pathing.PathNode;
@@ -48,21 +48,25 @@ public class PathNodeNavigator {
 
     @Nullable
     private Path findPathToAny(PathNode startNode, Map<TargetPathNode, BlockPos> positions, float followRange, int distance, float rangeMultiplier) {
-        Stream<Path> stream;
         Optional<Path> optional;
         Set<TargetPathNode> set = positions.keySet();
         startNode.penalizedPathLength = 0.0f;
         startNode.heapWeight = startNode.distanceToNearestTarget = this.calculateDistances(startNode, set);
         this.minHeap.clear();
         this.minHeap.push(startNode);
-        HashSet set2 = Sets.newHashSet();
+        ImmutableSet set2 = ImmutableSet.of();
         int i = 0;
+        HashSet<TargetPathNode> set3 = Sets.newHashSetWithExpectedSize(set.size());
         int j = (int)((float)this.range * rangeMultiplier);
         while (!this.minHeap.isEmpty() && ++i < j) {
             PathNode pathNode = this.minHeap.pop();
             pathNode.visited = true;
-            set.stream().filter(targetPathNode -> pathNode.getManhattanDistance((PathNode)targetPathNode) <= (float)distance).forEach(TargetPathNode::markReached);
-            if (set.stream().anyMatch(TargetPathNode::isReached)) break;
+            for (TargetPathNode targetPathNode2 : set) {
+                if (!(pathNode.getManhattanDistance(targetPathNode2) <= (float)distance)) continue;
+                targetPathNode2.markReached();
+                set3.add(targetPathNode2);
+            }
+            if (!set3.isEmpty()) break;
             if (pathNode.getDistance(startNode) >= followRange) continue;
             int k = this.pathNodeMaker.getSuccessors(this.successors, pathNode);
             for (int l = 0; l < k; ++l) {
@@ -82,7 +86,8 @@ public class PathNodeNavigator {
                 this.minHeap.push(pathNode2);
             }
         }
-        if (!(optional = (stream = set.stream().anyMatch(TargetPathNode::isReached) ? set.stream().filter(TargetPathNode::isReached).map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), true)).sorted(Comparator.comparingInt(Path::getLength)) : set.stream().map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), false)).sorted(Comparator.comparingDouble(Path::getManhattanDistanceFromTarget).thenComparingInt(Path::getLength))).findFirst()).isPresent()) {
+        Optional<Path> optional2 = optional = !set3.isEmpty() ? set3.stream().map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), true)).min(Comparator.comparingInt(Path::getLength)) : set.stream().map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), false)).min(Comparator.comparingDouble(Path::getManhattanDistanceFromTarget).thenComparingInt(Path::getLength));
+        if (!optional.isPresent()) {
             return null;
         }
         Path path = optional.get();

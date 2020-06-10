@@ -82,8 +82,8 @@ extends EntityNavigation {
             g = (float)((double)g * (vec3d2.length() * 6.0));
         }
         int i = 6;
-        Vec3d vec3d3 = Vec3d.ofCenter(this.currentPath.getCurrentPosition());
-        if (Math.abs(this.entity.getX() - (vec3d3.x + 0.5)) < (double)g && Math.abs(this.entity.getZ() - (vec3d3.z + 0.5)) < (double)g && Math.abs(this.entity.getY() - vec3d3.y) < (double)(g * 2.0f)) {
+        Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.getCurrentPosition());
+        if (Math.abs(this.entity.getX() - vec3d3.x) < (double)g && Math.abs(this.entity.getZ() - vec3d3.z) < (double)g && Math.abs(this.entity.getY() - vec3d3.y) < (double)(g * 2.0f)) {
             this.currentPath.next();
         }
         for (int j = Math.min(this.currentPath.getCurrentNodeIndex() + 6, this.currentPath.getLength() - 1); j > this.currentPath.getCurrentNodeIndex(); --j) {

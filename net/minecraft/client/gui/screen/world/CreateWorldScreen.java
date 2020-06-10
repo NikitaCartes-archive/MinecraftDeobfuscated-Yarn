@@ -3,12 +3,15 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import com.google.common.collect.ImmutableList;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -28,9 +31,12 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ServerResourceManager;
+import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -66,7 +72,6 @@ extends Screen {
     private boolean cheatsEnabled;
     private boolean tweakedCheats;
     public boolean hardcore;
-    private boolean creatingLevel;
     protected DataPackSettings field_25479 = DataPackSettings.SAFE_MODE;
     @Nullable
     private Path field_25477;
@@ -241,11 +246,7 @@ extends Screen {
 
     private void createLevel() {
         LevelInfo levelInfo;
-        this.client.openScreen(null);
-        if (this.creatingLevel) {
-            return;
-        }
-        this.creatingLevel = true;
+        this.client.method_29970(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
         if (!this.method_29696()) {
             return;
         }
@@ -389,11 +390,22 @@ extends Screen {
     private void method_29694() {
         Path path = this.method_29693();
         if (path != null) {
-            this.client.openScreen(new DataPackScreen((Screen)this, this.field_25479, this::method_29682, path.toFile()));
+            File file = path.toFile();
+            ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(file, ResourcePackSource.field_25347));
+            resourcePackManager.scanPacks();
+            resourcePackManager.setEnabledProfiles(this.field_25479.getEnabled());
+            this.client.openScreen(new DataPackScreen((Screen)this, resourcePackManager, this::method_29682, file));
         }
     }
 
-    private void method_29682(DataPackSettings dataPackSettings, ResourcePackManager<ResourcePackProfile> resourcePackManager) {
+    private void method_29682(ResourcePackManager<ResourcePackProfile> resourcePackManager) {
+        ImmutableList<String> list = ImmutableList.copyOf(resourcePackManager.getEnabledNames());
+        List list2 = resourcePackManager.getNames().stream().filter(string -> !list.contains(string)).collect(ImmutableList.toImmutableList());
+        DataPackSettings dataPackSettings = new DataPackSettings(list, list2);
+        if (list.equals(this.field_25479.getEnabled())) {
+            this.field_25479 = dataPackSettings;
+            return;
+        }
         this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
         ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this.client).handle((serverResourceManager, throwable) -> {
             if (throwable != null) {

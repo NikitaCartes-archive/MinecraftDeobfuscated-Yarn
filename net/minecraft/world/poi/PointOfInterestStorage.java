@@ -73,12 +73,8 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.getInSquare(typePredicate, pos, radius, occupationStatus).filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(pos) <= (double)i);
     }
 
-    public Stream<PointOfInterest> getInChunk(Predicate<PointOfInterestType> typePredicate, ChunkPos pos, OccupationStatus occupationStatus) {
-        return IntStream.range(0, 16).boxed().flatMap(integer -> this.getInChunkSection(typePredicate, ChunkSectionPos.from(pos, integer).asLong(), occupationStatus));
-    }
-
-    private Stream<PointOfInterest> getInChunkSection(Predicate<PointOfInterestType> typePredicate, long pos, OccupationStatus occupationStatus) {
-        return this.get(pos).map(pointOfInterestSet -> pointOfInterestSet.get(typePredicate, occupationStatus)).orElseGet(Stream::empty);
+    public Stream<PointOfInterest> getInChunk(Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, OccupationStatus occupationStatus) {
+        return IntStream.range(0, 16).boxed().map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong())).filter(Optional::isPresent).flatMap(optional -> ((PointOfInterestSet)optional.get()).get(predicate, occupationStatus));
     }
 
     public Stream<BlockPos> getPositions(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> posPredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {

@@ -70,6 +70,7 @@ import org.jetbrains.annotations.Nullable;
 public class WorldChunk
 implements Chunk {
     private static final Logger LOGGER = LogManager.getLogger();
+    @Nullable
     public static final ChunkSection EMPTY_SECTION = null;
     private final ChunkSection[] sections = new ChunkSection[16];
     private BiomeArray biomeArray;
@@ -428,8 +429,11 @@ implements Chunk {
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
-            if (this.entitySections[k].isEmpty()) continue;
-            for (Entity entity : this.entitySections[k]) {
+            TypeFilterableList<Entity> typeFilterableList = this.entitySections[k];
+            List<Entity> list = typeFilterableList.method_29903();
+            int l = list.size();
+            for (int m = 0; m < l; ++m) {
+                Entity entity = list.get(m);
                 if (!entity.getBoundingBox().intersects(box) || entity == except) continue;
                 if (predicate == null || predicate.test(entity)) {
                     entityList.add(entity);

@@ -136,7 +136,7 @@ implements RecipeBookProvider {
         entityRenderDispatcher.setRotation(quaternion2);
         entityRenderDispatcher.setRenderShadows(false);
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0f, 1.0f, matrixStack, immediate, 0xF000F0);
+        RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0f, 1.0f, matrixStack, immediate, 0xF000F0));
         immediate.draw();
         entityRenderDispatcher.setRenderShadows(true);
         entity.bodyYaw = h;
@@ -155,6 +155,7 @@ implements RecipeBookProvider {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.recipeBook.mouseClicked(mouseX, mouseY, button)) {
+            this.setFocused(this.recipeBook);
             return true;
         }
         if (this.isNarrow && this.recipeBook.isOpen()) {

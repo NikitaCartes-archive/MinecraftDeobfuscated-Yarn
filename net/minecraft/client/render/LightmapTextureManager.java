@@ -105,7 +105,7 @@ implements AutoCloseable {
                 float p = n * ((n * 0.6f + 0.4f) * 0.6f + 0.4f);
                 float q = n * (n * n * 0.6f + 0.4f);
                 vector3f2.set(o, p, q);
-                if (clientWorld.getDimension().isEnd()) {
+                if (clientWorld.getSkyProperties().shouldRenderSky()) {
                     vector3f2.lerp(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
                 } else {
                     Vector3f vector3f3 = vector3f.copy();

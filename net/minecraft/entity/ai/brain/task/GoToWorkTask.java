@@ -4,6 +4,7 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Optional;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -28,18 +29,18 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+    protected void run(ServerWorld serverWorld2, VillagerEntity villagerEntity, long l) {
         GlobalPos globalPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
         villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
         villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
         if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.NONE) {
             return;
         }
-        MinecraftServer minecraftServer = serverWorld.getServer();
-        minecraftServer.getWorld(globalPos.getDimension()).getPointOfInterestStorage().getType(globalPos.getPos()).ifPresent(pointOfInterestType -> Registry.VILLAGER_PROFESSION.stream().filter(villagerProfession -> villagerProfession.getWorkStation() == pointOfInterestType).findFirst().ifPresent(villagerProfession -> {
+        MinecraftServer minecraftServer = serverWorld2.getServer();
+        Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension())).flatMap(serverWorld -> serverWorld.getPointOfInterestStorage().getType(globalPos.getPos())).flatMap(pointOfInterestType -> Registry.VILLAGER_PROFESSION.stream().filter(villagerProfession -> villagerProfession.getWorkStation() == pointOfInterestType).findFirst()).ifPresent(villagerProfession -> {
             villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession((VillagerProfession)villagerProfession));
-            villagerEntity.reinitializeBrain(serverWorld);
-        }));
+            villagerEntity.reinitializeBrain(serverWorld2);
+        });
     }
 }
 

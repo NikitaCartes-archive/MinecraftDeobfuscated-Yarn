@@ -84,7 +84,9 @@ extends Item {
         }
         BlockSoundGroup blockSoundGroup = blockState2.getSoundGroup();
         world.playSound(playerEntity, blockPos, this.getPlaceSound(blockState2), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0f) / 2.0f, blockSoundGroup.getPitch() * 0.8f);
-        itemStack.decrement(1);
+        if (!playerEntity.abilities.creativeMode) {
+            itemStack.decrement(1);
+        }
         return ActionResult.success(world.isClient);
     }
 

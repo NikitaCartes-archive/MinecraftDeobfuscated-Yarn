@@ -7,8 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
-import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.SkeletonEntityModel;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.util.Identifier;
@@ -20,8 +19,7 @@ extends BipedEntityRenderer<AbstractSkeletonEntity, SkeletonEntityModel<Abstract
 
     public SkeletonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new SkeletonEntityModel(), 0.5f);
-        this.addFeature(new HeldItemFeatureRenderer<AbstractSkeletonEntity, SkeletonEntityModel<AbstractSkeletonEntity>>(this));
-        this.addFeature(new ArmorBipedFeatureRenderer(this, new SkeletonEntityModel(0.5f, true), new SkeletonEntityModel(1.0f, true)));
+        this.addFeature(new ArmorFeatureRenderer(this, new SkeletonEntityModel(0.5f, true), new SkeletonEntityModel(1.0f, true)));
     }
 
     @Override

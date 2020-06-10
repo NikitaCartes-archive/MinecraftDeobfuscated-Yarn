@@ -43,6 +43,7 @@ import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.CloudRenderMode;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.options.ParticlesOption;
 import net.minecraft.client.particle.Particle;
@@ -62,6 +63,7 @@ import net.minecraft.client.render.OutlineVertexConsumerProvider;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.render.SkyProperties;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.TransformingVertexConsumer;
@@ -450,14 +452,12 @@ AutoCloseable {
             this.particlesFramebuffer = framebuffer3;
             this.weatherFramebuffer = framebuffer4;
             this.cloudsFramebuffer = framebuffer5;
-        } catch (IOException iOException) {
+        } catch (Exception exception) {
+            String string = exception instanceof JsonSyntaxException ? "parse" : "load";
             GameOptions gameOptions = MinecraftClient.getInstance().options;
-            gameOptions.graphicsMode = gameOptions.graphicsMode.previous();
-            throw new ShaderException("Failed to load shader: " + identifier, iOException);
-        } catch (JsonSyntaxException jsonSyntaxException) {
-            GameOptions gameOptions = MinecraftClient.getInstance().options;
-            gameOptions.graphicsMode = gameOptions.graphicsMode.previous();
-            throw new ShaderException("Failed to parse shader: " + identifier, jsonSyntaxException);
+            gameOptions.graphicsMode = GraphicsMode.FANCY;
+            gameOptions.write();
+            throw new ShaderException("Failed to " + string + " shader: " + identifier, exception);
         }
     }
 
@@ -883,7 +883,7 @@ AutoCloseable {
         this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f);
         this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f);
         this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f);
-        if (this.world.getDimension().isNether()) {
+        if (this.world.getSkyProperties().method_29993()) {
             DiffuseLighting.enableForLevel(matrices.peek().getModel());
         } else {
             DiffuseLighting.method_27869(matrices.peek().getModel());
@@ -1030,6 +1030,8 @@ AutoCloseable {
             this.translucentFramebuffer.copyDepthFrom(this.client.getFramebuffer());
             profiler.swap("translucent");
             this.renderLayer(RenderLayer.getTranslucent(), matrices, d, e, f);
+            profiler.swap("string");
+            this.renderLayer(RenderLayer.method_29997(), matrices, d, e, f);
             this.particlesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             this.particlesFramebuffer.copyDepthFrom(this.client.getFramebuffer());
             RenderPhase.PARTICLES_TARGET.startDrawing();
@@ -1039,6 +1041,8 @@ AutoCloseable {
         } else {
             profiler.swap("translucent");
             this.renderLayer(RenderLayer.getTranslucent(), matrices, d, e, f);
+            profiler.swap("string");
+            this.renderLayer(RenderLayer.method_29997(), matrices, d, e, f);
             profiler.swap("particles");
             this.client.particleManager.renderParticles(matrices, immediate, lightmapTextureManager, camera, tickDelta);
         }
@@ -1359,11 +1363,11 @@ AutoCloseable {
         int m;
         float k;
         float i;
-        if (this.client.world.getDimension().isEnd()) {
+        if (this.client.world.getSkyProperties().method_29992() == SkyProperties.class_5401.field_25641) {
             this.renderEndSky(matrices);
             return;
         }
-        if (!this.client.world.getSkyProperties().shouldRenderSky()) {
+        if (this.client.world.getSkyProperties().method_29992() != SkyProperties.class_5401.field_25640) {
             return;
         }
         RenderSystem.disableTexture();
@@ -1808,46 +1812,62 @@ AutoCloseable {
         });
     }
 
-    public static void drawBox(MatrixStack matrixStack, VertexConsumer vertexConsumer, Box box, float f, float g, float h, float i) {
-        WorldRenderer.drawBox(matrixStack, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i, f, g, h);
+    /**
+     * Draws a box.
+     * 
+     * <p>Note the coordinates the box spans are relative to current translation of the matrices.
+     */
+    public static void drawBox(MatrixStack matrices, VertexConsumer vertexConsumer, Box box, float red, float green, float blue, float alpha) {
+        WorldRenderer.drawBox(matrices, vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, red, green, blue, alpha, red, green, blue);
     }
 
-    public static void drawBox(MatrixStack matrixStack, VertexConsumer vertexConsumer, double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
-        WorldRenderer.drawBox(matrixStack, vertexConsumer, d, e, f, g, h, i, j, k, l, m, j, k, l);
+    /**
+     * Draws a box spanning from [x1,y1,z1] to [x2,y2,z2].
+     * 
+     * <p>Note the coordinates the box spans are relative to current translation of the matrices.
+     */
+    public static void drawBox(MatrixStack matrices, VertexConsumer vertexConsumer, double x1, double y1, double z1, double x2, double y2, double z2, float red, float green, float blue, float alpha) {
+        WorldRenderer.drawBox(matrices, vertexConsumer, x1, y1, z1, x2, y2, z2, red, green, blue, alpha, red, green, blue);
     }
 
-    public static void drawBox(MatrixStack matrices, VertexConsumer vertexConsumer, double x1, double y1, double z1, double x2, double y2, double z2, float red, float f, float g, float alpha, float h, float green, float blue) {
+    /**
+     * Draws a box spanning from [x1,y1,z1] to [x2,y2,z2].
+     * The 3 axes centered at [x1,y1,z1] may be colored differently using xAxisRed, yAxisGreen, and zAxisBlue.
+     * 
+     * <p>Note the coordinates the box spans are relative to current translation of the matrices.
+     */
+    public static void drawBox(MatrixStack matrices, VertexConsumer vertexConsumer, double x1, double y1, double z1, double x2, double y2, double z2, float red, float green, float blue, float alpha, float xAxisRed, float yAxisGreen, float zAxisBlue) {
         Matrix4f matrix4f = matrices.peek().getModel();
-        float i = (float)x1;
-        float j = (float)y1;
-        float k = (float)z1;
-        float l = (float)x2;
-        float m = (float)y2;
-        float n = (float)z2;
+        float f = (float)x1;
+        float g = (float)y1;
+        float h = (float)z1;
+        float i = (float)x2;
+        float j = (float)y2;
+        float k = (float)z2;
+        vertexConsumer.vertex(matrix4f, f, g, h).color(red, yAxisGreen, zAxisBlue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, g, h).color(red, yAxisGreen, zAxisBlue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, g, h).color(xAxisRed, green, zAxisBlue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, j, h).color(xAxisRed, green, zAxisBlue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, g, h).color(xAxisRed, yAxisGreen, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, g, k).color(xAxisRed, yAxisGreen, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, g, h).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, j, h).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, j, h).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, j, h).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, j, h).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, j, k).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, j, k).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, g, k).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, g, k).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, g, k).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, g, k).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, g, h).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, f, j, k).color(red, green, blue, alpha).next();
         vertexConsumer.vertex(matrix4f, i, j, k).color(red, green, blue, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, j, k).color(red, green, blue, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, j, k).color(h, f, blue, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, m, k).color(h, f, blue, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, j, k).color(h, green, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, j, n).color(h, green, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, j, k).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, m, k).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, m, k).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, m, k).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, m, k).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, m, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, m, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, j, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, j, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, j, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, j, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, j, k).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, i, m, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, m, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, j, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, m, n).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, m, k).color(red, f, g, alpha).next();
-        vertexConsumer.vertex(matrix4f, l, m, n).color(red, f, g, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, g, k).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, j, k).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, j, h).color(red, green, blue, alpha).next();
+        vertexConsumer.vertex(matrix4f, i, j, k).color(red, green, blue, alpha).next();
     }
 
     public static void drawBox(BufferBuilder buffer, double x1, double y1, double z1, double x2, double y2, double z2, float red, float green, float blue, float alpha) {

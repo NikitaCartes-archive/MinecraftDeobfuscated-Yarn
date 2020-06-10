@@ -21,6 +21,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
 @Environment(value=EnvType.CLIENT)
@@ -74,12 +75,13 @@ extends LivingEntityRenderer<T, M> {
         double l = MathHelper.lerp((double)f, entity.prevY + (double)entity.getStandingEyeHeight() * 0.7, entity.getY() + (double)entity.getStandingEyeHeight() * 0.7) - i * 0.5 - 0.25;
         double m = MathHelper.lerp((double)f, entity.prevZ, entity.getZ()) - h * 0.7 + g * 0.5 * j;
         double n = (double)(MathHelper.lerp(f, ((MobEntity)mobEntity).bodyYaw, ((MobEntity)mobEntity).prevBodyYaw) * ((float)Math.PI / 180)) + 1.5707963267948966;
-        g = Math.cos(n) * (double)((Entity)mobEntity).getWidth() * 0.4;
-        h = Math.sin(n) * (double)((Entity)mobEntity).getWidth() * 0.4;
+        Vec3d vec3d = ((Entity)mobEntity).method_29919();
+        g = Math.cos(n) * vec3d.z + Math.sin(n) * vec3d.x;
+        h = Math.sin(n) * vec3d.z - Math.cos(n) * vec3d.x;
         double o = MathHelper.lerp((double)f, ((MobEntity)mobEntity).prevX, ((Entity)mobEntity).getX()) + g;
-        double p = MathHelper.lerp((double)f, ((MobEntity)mobEntity).prevY, ((Entity)mobEntity).getY());
+        double p = MathHelper.lerp((double)f, ((MobEntity)mobEntity).prevY, ((Entity)mobEntity).getY()) + vec3d.y;
         double q = MathHelper.lerp((double)f, ((MobEntity)mobEntity).prevZ, ((Entity)mobEntity).getZ()) + h;
-        matrixStack.translate(g, -(1.6 - (double)((Entity)mobEntity).getHeight()) * 0.5, h);
+        matrixStack.translate(g, vec3d.y, h);
         float r = (float)(k - o);
         float s = (float)(l - p);
         float t = (float)(m - q);
@@ -123,7 +125,7 @@ extends LivingEntityRenderer<T, M> {
         }
         float s = (float)m / (float)l;
         float t = f * s;
-        float u = g * (s * s + s) * 0.5f + ((float)l - (float)m) / ((float)l * 0.75f) + 0.125f;
+        float u = g > 0.0f ? g * s * s : g - g * (1.0f - s) * (1.0f - s);
         float v = h * s;
         if (!bl) {
             vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0f).light(i).next();

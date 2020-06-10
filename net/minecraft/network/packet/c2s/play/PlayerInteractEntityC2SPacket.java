@@ -21,6 +21,7 @@ implements Packet<ServerPlayPacketListener> {
     private InteractionType type;
     private Vec3d hitPos;
     private Hand hand;
+    private boolean field_25660;
 
     public PlayerInteractEntityC2SPacket() {
     }
@@ -31,18 +32,20 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public PlayerInteractEntityC2SPacket(Entity entity, Hand hand) {
+    public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, boolean bl) {
         this.entityId = entity.getEntityId();
         this.type = InteractionType.INTERACT;
         this.hand = hand;
+        this.field_25660 = bl;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d vec3d) {
+    public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d vec3d, boolean bl) {
         this.entityId = entity.getEntityId();
         this.type = InteractionType.INTERACT_AT;
         this.hand = hand;
         this.hitPos = vec3d;
+        this.field_25660 = bl;
     }
 
     @Override
@@ -54,6 +57,7 @@ implements Packet<ServerPlayPacketListener> {
         }
         if (this.type == InteractionType.INTERACT || this.type == InteractionType.INTERACT_AT) {
             this.hand = buf.readEnumConstant(Hand.class);
+            this.field_25660 = buf.readBoolean();
         }
     }
 
@@ -68,6 +72,7 @@ implements Packet<ServerPlayPacketListener> {
         }
         if (this.type == InteractionType.INTERACT || this.type == InteractionType.INTERACT_AT) {
             buf.writeEnumConstant(this.hand);
+            buf.writeBoolean(this.field_25660);
         }
     }
 
@@ -91,6 +96,10 @@ implements Packet<ServerPlayPacketListener> {
 
     public Vec3d getHitPosition() {
         return this.hitPos;
+    }
+
+    public boolean method_30007() {
+        return this.field_25660;
     }
 
     public static enum InteractionType {

@@ -81,7 +81,7 @@ ModifiableTestableWorld {
     public void syncWorldEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
 
     default public int getDimensionHeight() {
-        return this.getDimension().hasCeiling() ? 128 : 256;
+        return this.getDimension().getLogicalHeight();
     }
 
     default public void syncWorldEvent(int eventId, BlockPos pos, int data) {
@@ -94,8 +94,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-        return EntityView.super.intersectsEntities(except, shape);
+    default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
+        return EntityView.super.intersectsEntities(entity, shape);
     }
 
     @Override

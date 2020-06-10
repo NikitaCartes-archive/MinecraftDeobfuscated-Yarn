@@ -60,7 +60,7 @@ implements ArgumentType<Identifier> {
 
     public static EntityAttribute method_27575(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
         Identifier identifier = commandContext.getArgument(string, Identifier.class);
-        return Registry.ATTRIBUTES.getOrEmpty(identifier).orElseThrow(() -> field_24267.create(identifier));
+        return Registry.ATTRIBUTE.getOrEmpty(identifier).orElseThrow(() -> field_24267.create(identifier));
     }
 
     public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {

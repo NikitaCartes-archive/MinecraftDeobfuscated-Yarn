@@ -125,7 +125,7 @@ public class BackgroundRenderer {
             j2 = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
             d = j2 < 20 ? (d *= (double)(1.0f - (float)j2 / 20.0f)) : 0.0;
         }
-        if (d < 1.0) {
+        if (d < 1.0 && !fluidState.matches(FluidTags.LAVA)) {
             if (d < 0.0) {
                 d = 0.0;
             }
@@ -169,48 +169,52 @@ public class BackgroundRenderer {
         FluidState fluidState = camera.getSubmergedFluidState();
         Entity entity = camera.getFocusedEntity();
         boolean bl2 = bl = fluidState.getFluid() != Fluids.EMPTY;
-        if (bl) {
+        if (fluidState.matches(FluidTags.WATER)) {
             float f = 1.0f;
-            if (fluidState.matches(FluidTags.WATER)) {
-                f = 0.05f;
-                if (entity instanceof ClientPlayerEntity) {
-                    ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
-                    f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03f;
-                    Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
-                    if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
-                        f += 0.005f;
-                    }
+            f = 0.05f;
+            if (entity instanceof ClientPlayerEntity) {
+                ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
+                f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03f;
+                Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
+                if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
+                    f += 0.005f;
                 }
-            } else if (fluidState.matches(FluidTags.LAVA)) {
-                f = 2.0f;
             }
             RenderSystem.fogDensity(f);
             RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
         } else {
-            float h;
+            float g;
             float f;
-            if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
+            if (fluidState.matches(FluidTags.LAVA)) {
+                if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+                    f = 0.0f;
+                    g = 3.0f;
+                } else {
+                    f = 0.25f;
+                    g = 1.0f;
+                }
+            } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
                 int i = ((LivingEntity)entity).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
-                float g = MathHelper.lerp(Math.min(1.0f, (float)i / 20.0f), viewDistance, 5.0f);
+                float h = MathHelper.lerp(Math.min(1.0f, (float)i / 20.0f), viewDistance, 5.0f);
                 if (fogType == FogType.FOG_SKY) {
                     f = 0.0f;
-                    h = g * 0.8f;
+                    g = h * 0.8f;
                 } else {
-                    f = g * 0.25f;
-                    h = g;
+                    f = h * 0.25f;
+                    g = h;
                 }
             } else if (thickFog) {
                 f = viewDistance * 0.05f;
-                h = Math.min(viewDistance, 192.0f) * 0.5f;
+                g = Math.min(viewDistance, 192.0f) * 0.5f;
             } else if (fogType == FogType.FOG_SKY) {
                 f = 0.0f;
-                h = viewDistance;
+                g = viewDistance;
             } else {
                 f = viewDistance * 0.75f;
-                h = viewDistance;
+                g = viewDistance;
             }
             RenderSystem.fogStart(f);
-            RenderSystem.fogEnd(h);
+            RenderSystem.fogEnd(g);
             RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
             RenderSystem.setupNvFogDistance();
         }

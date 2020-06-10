@@ -49,6 +49,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -272,6 +273,12 @@ extends AnimalEntity {
             ((PassiveEntity.PassiveData)entityData).setBabyChance(1.0f);
         }
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public Vec3d method_29919() {
+        return new Vec3d(0.0, 0.5f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 
     @Override

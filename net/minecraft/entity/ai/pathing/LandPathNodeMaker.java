@@ -408,8 +408,11 @@ extends PathNodeMaker {
                     if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
                         return PathNodeType.DANGER_OTHER;
                     }
-                    if (!LandPathNodeMaker.method_27138(blockState)) continue;
-                    return PathNodeType.DANGER_FIRE;
+                    if (LandPathNodeMaker.method_27138(blockState)) {
+                        return PathNodeType.DANGER_FIRE;
+                    }
+                    if (!blockView.getFluidState(mutable).matches(FluidTags.WATER)) continue;
+                    return PathNodeType.WATER_BORDER;
                 }
             }
         }

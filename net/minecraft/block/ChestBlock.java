@@ -272,7 +272,7 @@ implements Waterloggable {
         if (namedScreenHandlerFactory != null) {
             player.openHandledScreen(namedScreenHandlerFactory);
             player.incrementStat(this.getOpenStat());
-            PiglinBrain.onGoldBlockBroken(player);
+            PiglinBrain.onGoldBlockBroken(player, true);
         }
         return ActionResult.CONSUME;
     }

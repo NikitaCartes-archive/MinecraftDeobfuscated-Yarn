@@ -7,16 +7,17 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
+import com.mojang.serialization.MapCodec;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.ForwardingDynamicOps;
+import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -50,24 +51,29 @@ extends ForwardingDynamicOps<T> {
      * 
      * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, Codec)
      */
-    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T input, RegistryKey<Registry<E>> registryRef, Codec<E> elementCodec) {
-        DataResult dataResult = Identifier.CODEC.decode(this.delegate, input);
-        if (!dataResult.result().isPresent()) {
-            return elementCodec.decode(this.delegate, input).map(pair -> pair.mapFirst(object -> () -> object));
-        }
-        Optional<MutableRegistry<E>> optional = this.registryTracker.get(registryRef);
+    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<Registry<E>> registryKey, MapCodec<E> mapCodec) {
+        Optional<MutableRegistry<E>> optional = this.registryTracker.get(registryKey);
         if (!optional.isPresent()) {
-            return DataResult.error("Unknown registry: " + registryRef);
+            return DataResult.error("Unknown registry: " + registryKey);
         }
-        Pair pair2 = dataResult.result().get();
-        Identifier identifier = (Identifier)pair2.getFirst();
-        return this.readSupplier(registryRef, optional.get(), elementCodec, identifier).map(supplier -> Pair.of(supplier, pair2.getSecond()));
+        MutableRegistry mutableRegistry = optional.get();
+        DataResult dataResult = Identifier.CODEC.decode(this.delegate, object);
+        if (!dataResult.result().isPresent()) {
+            return NumberCodecs.method_29906(registryKey, mapCodec).codec().decode(this.delegate, object).map(pair2 -> pair2.mapFirst(pair -> {
+                mutableRegistry.add((RegistryKey)pair.getFirst(), pair.getSecond());
+                mutableRegistry.markLoaded((RegistryKey)pair.getFirst());
+                return pair::getSecond;
+            }));
+        }
+        Pair pair = dataResult.result().get();
+        Identifier identifier = (Identifier)pair.getFirst();
+        return this.readSupplier(registryKey, mutableRegistry, mapCodec, identifier).map(supplier -> Pair.of(supplier, pair.getSecond()));
     }
 
     /**
      * Loads elements into a registry just loaded from a decoder.
      */
-    public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<Registry<E>> registryRef, Codec<E> elementCodec) {
+    public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<Registry<E>> registryRef, MapCodec<E> mapCodec) {
         Identifier identifier = registryRef.getValue();
         Collection<Identifier> collection = this.resourceManager.findResources(identifier, string -> string.endsWith(".json"));
         DataResult<SimpleRegistry<Object>> dataResult = DataResult.success(registry, Lifecycle.stable());
@@ -90,7 +96,7 @@ extends ForwardingDynamicOps<T> {
             String string3 = string22.substring(0, i);
             String string4 = string22.substring(i + 1);
             Identifier identifier3 = new Identifier(string3, string4);
-            dataResult = dataResult.flatMap(simpleRegistry -> this.readSupplier(registryRef, (MutableRegistry)simpleRegistry, elementCodec, identifier3).map(supplier -> simpleRegistry));
+            dataResult = dataResult.flatMap(simpleRegistry -> this.readSupplier(registryRef, (MutableRegistry)simpleRegistry, mapCodec, identifier3).map(supplier -> simpleRegistry));
         }
         return dataResult.setPartial(registry);
     }
@@ -100,7 +106,7 @@ extends ForwardingDynamicOps<T> {
      * 
      * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.</p>
      */
-    private <E> DataResult<java.util.function.Supplier<E>> readSupplier(RegistryKey<Registry<E>> registryRef, MutableRegistry<E> registry, Codec<E> elementCodec, Identifier elementId) {
+    private <E> DataResult<java.util.function.Supplier<E>> readSupplier(RegistryKey<Registry<E>> registryRef, MutableRegistry<E> registry, MapCodec<E> mapCodec, Identifier elementId) {
         RegistryKey registryKey = RegistryKey.of(registryRef, elementId);
         Object object2 = registry.get(registryKey);
         if (object2 != null) {
@@ -119,7 +125,7 @@ extends ForwardingDynamicOps<T> {
             return object;
         });
         ((ValueHolder)valueHolder).values.put(registryKey, DataResult.success(supplier));
-        DataResult<E> dataResult2 = this.readElement(registryRef, registryKey, elementCodec);
+        DataResult<E> dataResult2 = this.readElement(registryRef, registryKey, mapCodec);
         dataResult2.result().ifPresent(object -> registry.add(registryKey, object));
         DataResult<java.util.function.Supplier<E>> dataResult3 = dataResult2.map(object -> () -> object);
         ((ValueHolder)valueHolder).values.put(registryKey, dataResult3);
@@ -132,7 +138,7 @@ extends ForwardingDynamicOps<T> {
     /**
      * Reads the actual element.
      */
-    private <E> DataResult<E> readElement(RegistryKey<Registry<E>> registryRef, RegistryKey<E> elementRef, Codec<E> elementCodec) {
+    private <E> DataResult<E> readElement(RegistryKey<Registry<E>> registryRef, RegistryKey<E> elementRef, MapCodec<E> mapCodec) {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
          * 

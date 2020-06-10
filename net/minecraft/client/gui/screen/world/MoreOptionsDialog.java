@@ -126,7 +126,7 @@ Drawable {
                 }
                 GeneratorType generatorType = GeneratorType.VALUES.get(i);
                 this.field_25049 = Optional.of(generatorType);
-                this.generatorOptions = generatorType.method_29077(this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
+                this.generatorOptions = generatorType.method_29077(this.field_25483, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
                 if (this.generatorOptions.isDebugWorld() && !Screen.hasShiftDown()) continue;
             }
             parent.setMoreOptionsOpen();

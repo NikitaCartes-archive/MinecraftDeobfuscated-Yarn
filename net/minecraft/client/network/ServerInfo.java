@@ -26,6 +26,7 @@ public class ServerInfo {
     public boolean online;
     public List<Text> playerListSummary = Collections.emptyList();
     private ResourcePackState resourcePackState = ResourcePackState.PROMPT;
+    @Nullable
     private String icon;
     private boolean local;
 

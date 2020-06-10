@@ -4,6 +4,9 @@
 package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Encoder;
+import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -31,7 +34,7 @@ import net.minecraft.world.gen.chunk.VerticalBlockSample;
 public class DebugChunkGenerator
 extends ChunkGenerator {
     public static final DebugChunkGenerator INSTANCE = new DebugChunkGenerator();
-    public static final Codec<DebugChunkGenerator> field_24768 = Codec.unit(() -> INSTANCE).stable();
+    public static final Codec<DebugChunkGenerator> field_24768 = MapCodec.of(Encoder.empty(), Decoder.unit(() -> INSTANCE)).stable().codec();
     private static final List<BlockState> BLOCK_STATES = StreamSupport.stream(Registry.BLOCK.spliterator(), false).flatMap(block -> block.getStateManager().getStates().stream()).collect(Collectors.toList());
     private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size()));
     private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);

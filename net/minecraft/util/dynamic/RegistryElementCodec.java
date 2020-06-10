@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.dynamic.RegistryReadingOps;
@@ -29,15 +30,15 @@ import net.minecraft.util.registry.RegistryKey;
 public final class RegistryElementCodec<E>
 implements Codec<Supplier<E>> {
     private final RegistryKey<Registry<E>> registryRef;
-    private final Codec<E> elementCodec;
+    private final MapCodec<E> elementCodec;
 
-    public static <E> RegistryElementCodec<E> of(RegistryKey<Registry<E>> registryRef, Codec<E> elementCodec) {
-        return new RegistryElementCodec<E>(registryRef, elementCodec);
+    public static <E> RegistryElementCodec<E> of(RegistryKey<Registry<E>> registryRef, MapCodec<E> mapCodec) {
+        return new RegistryElementCodec<E>(registryRef, mapCodec);
     }
 
-    private RegistryElementCodec(RegistryKey<Registry<E>> registryRef, Codec<E> elementCodec) {
+    private RegistryElementCodec(RegistryKey<Registry<E>> registryRef, MapCodec<E> mapCodec) {
         this.registryRef = registryRef;
-        this.elementCodec = elementCodec;
+        this.elementCodec = mapCodec;
     }
 
     @Override
@@ -45,7 +46,7 @@ implements Codec<Supplier<E>> {
         if (dynamicOps instanceof RegistryReadingOps) {
             return ((RegistryReadingOps)dynamicOps).encodeOrId(supplier.get(), object, this.registryRef, this.elementCodec);
         }
-        return this.elementCodec.encode(supplier.get(), dynamicOps, object);
+        return this.elementCodec.codec().encode(supplier.get(), dynamicOps, object);
     }
 
     @Override
@@ -53,7 +54,7 @@ implements Codec<Supplier<E>> {
         if (ops instanceof RegistryOps) {
             return ((RegistryOps)ops).decodeOrId(input, this.registryRef, this.elementCodec);
         }
-        return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(object -> () -> object));
+        return this.elementCodec.codec().decode(ops, input).map((? super R pair) -> pair.mapFirst(object -> () -> object));
     }
 
     public String toString() {

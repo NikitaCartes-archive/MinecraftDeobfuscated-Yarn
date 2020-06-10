@@ -75,23 +75,8 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         if (direction == null) {
             matrixStack.translate(0.5, 0.0, 0.5);
         } else {
-            switch (direction) {
-                case NORTH: {
-                    matrixStack.translate(0.5, 0.25, 0.74f);
-                    break;
-                }
-                case SOUTH: {
-                    matrixStack.translate(0.5, 0.25, 0.26f);
-                    break;
-                }
-                case WEST: {
-                    matrixStack.translate(0.74f, 0.25, 0.5);
-                    break;
-                }
-                default: {
-                    matrixStack.translate(0.26f, 0.25, 0.5);
-                }
-            }
+            float h = 0.25f;
+            matrixStack.translate(0.5f - (float)direction.getOffsetX() * 0.25f, 0.25, 0.5f - (float)direction.getOffsetZ() * 0.25f);
         }
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(SkullBlockEntityRenderer.method_3578(skullType, gameProfile));

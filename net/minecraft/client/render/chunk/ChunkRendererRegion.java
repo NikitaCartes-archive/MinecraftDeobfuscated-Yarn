@@ -33,32 +33,35 @@ implements BlockRenderView {
 
     @Nullable
     public static ChunkRendererRegion create(World world, BlockPos startPos, BlockPos endPos, int chunkRadius) {
-        int n;
+        int m;
         int i = startPos.getX() - chunkRadius >> 4;
         int j = startPos.getZ() - chunkRadius >> 4;
         int k = endPos.getX() + chunkRadius >> 4;
         int l = endPos.getZ() + chunkRadius >> 4;
         WorldChunk[][] worldChunks = new WorldChunk[k - i + 1][l - j + 1];
-        for (int m = i; m <= k; ++m) {
-            for (n = j; n <= l; ++n) {
+        for (m = i; m <= k; ++m) {
+            for (int n = j; n <= l; ++n) {
                 worldChunks[m - i][n - j] = world.getChunk(m, n);
             }
         }
-        boolean bl = true;
-        for (n = startPos.getX() >> 4; n <= endPos.getX() >> 4; ++n) {
-            for (int o = startPos.getZ() >> 4; o <= endPos.getZ() >> 4; ++o) {
-                WorldChunk worldChunk = worldChunks[n - i][o - j];
-                if (worldChunk.method_12228(startPos.getY(), endPos.getY())) continue;
-                bl = false;
-            }
-        }
-        if (bl) {
+        if (ChunkRendererRegion.method_30000(startPos, endPos, i, j, worldChunks)) {
             return null;
         }
-        n = 1;
+        m = 1;
         BlockPos blockPos = startPos.add(-1, -1, -1);
         BlockPos blockPos2 = endPos.add(1, 1, 1);
         return new ChunkRendererRegion(world, i, j, worldChunks, blockPos, blockPos2);
+    }
+
+    public static boolean method_30000(BlockPos blockPos, BlockPos blockPos2, int i, int j, WorldChunk[][] worldChunks) {
+        for (int k = blockPos.getX() >> 4; k <= blockPos2.getX() >> 4; ++k) {
+            for (int l = blockPos.getZ() >> 4; l <= blockPos2.getZ() >> 4; ++l) {
+                WorldChunk worldChunk = worldChunks[k - i][l - j];
+                if (worldChunk.method_12228(blockPos.getY(), blockPos2.getY())) continue;
+                return false;
+            }
+        }
+        return true;
     }
 
     public ChunkRendererRegion(World world, int chunkX, int chunkZ, WorldChunk[][] chunks, BlockPos startPos, BlockPos endPos) {

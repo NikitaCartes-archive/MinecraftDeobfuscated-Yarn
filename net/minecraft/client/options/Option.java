@@ -8,6 +8,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -244,9 +245,10 @@ public abstract class Option {
         gameOptions.particles = ParticlesOption.byId(gameOptions.particles.getId() + integer);
     }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.particles.getTranslationKey())));
     public static final CyclingOption CLOUDS = new CyclingOption("options.renderClouds", (gameOptions, integer) -> {
+        Framebuffer framebuffer;
         gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer);
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer().clear(MinecraftClient.IS_SYSTEM_MAC);
+        if (MinecraftClient.isFabulousGraphicsOrBetter() && (framebuffer = MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer()) != null) {
+            framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
         }
     }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
     public static final CyclingOption TEXT_BACKGROUND = new CyclingOption("options.accessibility.text_background", (gameOptions, integer) -> {

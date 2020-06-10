@@ -17,6 +17,9 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Matrix4f;
@@ -792,6 +795,20 @@ public class RenderSystem {
 
     public static void defaultAlphaFunc() {
         RenderSystem.alphaFunc(516, 0.1f);
+    }
+
+    @Deprecated
+    public static void runAsFancy(Runnable runnable) {
+        boolean bl = MinecraftClient.isFabulousGraphicsOrBetter();
+        if (!bl) {
+            runnable.run();
+            return;
+        }
+        GameOptions gameOptions = MinecraftClient.getInstance().options;
+        GraphicsMode graphicsMode = gameOptions.graphicsMode;
+        gameOptions.graphicsMode = GraphicsMode.FANCY;
+        runnable.run();
+        gameOptions.graphicsMode = graphicsMode;
     }
 
     private static /* synthetic */ void lambda$setupGui3DDiffuseLighting$70(Vector3f vector3f, Vector3f vector3f2) {

@@ -135,7 +135,7 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<ScreenHandlerType<?>>> MENU_KEY = Registry.createRegistryKey("menu");
     public static final RegistryKey<Registry<RecipeType<?>>> RECIPE_TYPE_KEY = Registry.createRegistryKey("recipe_type");
     public static final RegistryKey<Registry<RecipeSerializer<?>>> RECIPE_SERIALIZER_KEY = Registry.createRegistryKey("recipe_serializer");
-    public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTES_KEY = Registry.createRegistryKey("attributes");
+    public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTE_KEY = Registry.createRegistryKey("attribute");
     public static final RegistryKey<Registry<StatType<?>>> STAT_TYPE_KEY = Registry.createRegistryKey("stat_type");
     public static final RegistryKey<Registry<VillagerType>> VILLAGER_TYPE_KEY = Registry.createRegistryKey("villager_type");
     public static final RegistryKey<Registry<VillagerProfession>> VILLAGER_PROFESSION_KEY = Registry.createRegistryKey("villager_profession");
@@ -185,7 +185,7 @@ IndexedIterable<T> {
     public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = Registry.create(MENU_KEY, () -> ScreenHandlerType.ANVIL);
     public static final Registry<RecipeType<?>> RECIPE_TYPE = Registry.create(RECIPE_TYPE_KEY, () -> RecipeType.CRAFTING);
     public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = Registry.create(RECIPE_SERIALIZER_KEY, () -> RecipeSerializer.SHAPELESS);
-    public static final Registry<EntityAttribute> ATTRIBUTES = Registry.create(ATTRIBUTES_KEY, () -> EntityAttributes.GENERIC_LUCK);
+    public static final Registry<EntityAttribute> ATTRIBUTE = Registry.create(ATTRIBUTE_KEY, () -> EntityAttributes.GENERIC_LUCK);
     public static final Registry<StatType<?>> STAT_TYPE = Registry.create(STAT_TYPE_KEY, () -> Stats.USED);
     public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = Registry.create(VILLAGER_TYPE_KEY, "plains", () -> VillagerType.PLAINS);
     public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = Registry.create(VILLAGER_PROFESSION_KEY, "none", () -> VillagerProfession.NONE);
@@ -312,6 +312,8 @@ IndexedIterable<T> {
     }
 
     public abstract boolean containsId(Identifier var1);
+
+    public abstract boolean isLoaded(RegistryKey<T> var1);
 
     public abstract boolean containsId(int var1);
 

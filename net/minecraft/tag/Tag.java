@@ -3,7 +3,6 @@
  */
 package net.minecraft.tag;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
@@ -20,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.minecraft.class_5394;
 import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -50,20 +50,8 @@ public interface Tag<T> {
         return list.get(random.nextInt(list.size()));
     }
 
-    public static <T> Tag<T> of(final Set<T> set) {
-        final ImmutableList<T> immutableList = ImmutableList.copyOf(set);
-        return new Tag<T>(){
-
-            @Override
-            public boolean contains(T entry) {
-                return set.contains(entry);
-            }
-
-            @Override
-            public List<T> values() {
-                return immutableList;
-            }
-        };
+    public static <T> Tag<T> of(Set<T> set) {
+        return class_5394.method_29900(set);
     }
 
     public static interface Identified<T>

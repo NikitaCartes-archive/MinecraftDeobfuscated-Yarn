@@ -5,6 +5,7 @@ package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Comparator;
@@ -158,14 +159,11 @@ extends Screen {
 
     @Environment(value=EnvType.CLIENT)
     public class IntRuleWidget
-    extends AbstractRuleWidget {
-        private final Text name;
+    extends class_5400 {
         private final TextFieldWidget valueWidget;
-        private final List<? extends Element> children;
 
         public IntRuleWidget(Text name, List<StringRenderable> description, String ruleName, GameRules.IntRule rule) {
-            super(description);
-            this.name = name;
+            super(description, name);
             this.valueWidget = new TextFieldWidget(((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer, 10, 5, 42, 20, name.shallowCopy().append("\n").append(ruleName).append("\n"));
             this.valueWidget.setText(Integer.toString(rule.get()));
             this.valueWidget.setChangedListener(string -> {
@@ -177,20 +175,76 @@ extends Screen {
                     EditGameRulesScreen.this.markInvalid(this);
                 }
             });
-            this.children = ImmutableList.of(this.valueWidget);
+            this.field_25630.add(this.valueWidget);
         }
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrices, this.name, (float)x, (float)(y + 5), 0xFFFFFF);
+            this.method_29989(matrices, y, x);
             this.valueWidget.x = x + entryWidth - 44;
             this.valueWidget.y = y;
             this.valueWidget.render(matrices, mouseX, mouseY, tickDelta);
         }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public class BooleanRuleWidget
+    extends class_5400 {
+        private final ButtonWidget toggleButton;
+
+        public BooleanRuleWidget(final Text name, List<StringRenderable> description, final String ruleName, final GameRules.BooleanRule booleanRule) {
+            super(description, name);
+            this.toggleButton = new ButtonWidget(10, 5, 44, 20, ScreenTexts.getToggleText(booleanRule.get()), buttonWidget -> {
+                boolean bl = !booleanRule.get();
+                booleanRule.set(bl, null);
+                buttonWidget.setMessage(ScreenTexts.getToggleText(booleanRule.get()));
+            }){
+
+                @Override
+                protected MutableText getNarrationMessage() {
+                    return BooleanRuleWidget.this.createBooleanRuleText(name, booleanRule.get()).shallowCopy().append("\n").append(ruleName);
+                }
+            };
+            this.field_25630.add(this.toggleButton);
+        }
+
+        private MutableText createBooleanRuleText(Text text, boolean value) {
+            return new LiteralText("").append(text).append(": ").append(ScreenTexts.getToggleText(value));
+        }
+
+        @Override
+        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            this.method_29989(matrices, y, x);
+            this.toggleButton.x = x + entryWidth - 45;
+            this.toggleButton.y = y;
+            this.toggleButton.render(matrices, mouseX, mouseY, tickDelta);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public abstract class class_5400
+    extends AbstractRuleWidget {
+        private final List<StringRenderable> field_25629;
+        protected final List<Element> field_25630;
+
+        public class_5400(List<StringRenderable> list, Text text) {
+            super(list);
+            this.field_25630 = Lists.newArrayList();
+            this.field_25629 = ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.wrapLines(text, 175);
+        }
 
         @Override
         public List<? extends Element> children() {
-            return this.children;
+            return this.field_25630;
+        }
+
+        protected void method_29989(MatrixStack matrixStack, int i, int j) {
+            if (this.field_25629.size() == 1) {
+                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrixStack, this.field_25629.get(0), (float)j, (float)(i + 5), 0xFFFFFF);
+            } else if (this.field_25629.size() >= 2) {
+                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrixStack, this.field_25629.get(0), (float)j, (float)i, 0xFFFFFF);
+                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrixStack, this.field_25629.get(1), (float)j, (float)(i + 10), 0xFFFFFF);
+            }
         }
     }
 
@@ -198,45 +252,6 @@ extends Screen {
     @Environment(value=EnvType.CLIENT)
     static interface RuleWidgetFactory<T extends GameRules.Rule<T>> {
         public AbstractRuleWidget create(Text var1, List<StringRenderable> var2, String var3, T var4);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public class BooleanRuleWidget
-    extends AbstractRuleWidget {
-        private final ButtonWidget toggleButton;
-        private final List<? extends Element> children;
-
-        public BooleanRuleWidget(Text name, List<StringRenderable> description, final String ruleName, GameRules.BooleanRule rule) {
-            super(description);
-            this.toggleButton = new ButtonWidget(10, 5, 220, 20, this.createBooleanRuleText(name, rule.get()), buttonWidget -> {
-                boolean bl = !rule.get();
-                rule.set(bl, null);
-                buttonWidget.setMessage(this.createBooleanRuleText(name, bl));
-            }){
-
-                @Override
-                protected MutableText getNarrationMessage() {
-                    return this.getMessage().shallowCopy().append("\n").append(ruleName);
-                }
-            };
-            this.children = ImmutableList.of(this.toggleButton);
-        }
-
-        private Text createBooleanRuleText(Text text, boolean value) {
-            return text.shallowCopy().append(": ").append(ScreenTexts.getToggleText(value));
-        }
-
-        @Override
-        public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            this.toggleButton.x = x;
-            this.toggleButton.y = y;
-            this.toggleButton.render(matrices, mouseX, mouseY, tickDelta);
-        }
-
-        @Override
-        public List<? extends Element> children() {
-            return this.children;
-        }
     }
 
     @Environment(value=EnvType.CLIENT)

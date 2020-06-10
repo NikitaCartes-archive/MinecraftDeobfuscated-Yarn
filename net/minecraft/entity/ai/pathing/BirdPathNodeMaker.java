@@ -154,28 +154,28 @@ extends LandPathNodeMaker {
         if (this.unvisited(pathNode18 = this.getNode(node.x - 1, node.y, node.z + 1)) && this.isPassable(pathNode) && this.isPassable(pathNode2)) {
             successors[i++] = pathNode18;
         }
-        if (this.unvisited(pathNode19 = this.getNode(node.x + 1, node.y + 1, node.z - 1)) && this.isPassable(pathNode15) && this.isPassable(pathNode10) && this.isPassable(pathNode9)) {
+        if (this.unvisited(pathNode19 = this.getNode(node.x + 1, node.y + 1, node.z - 1)) && this.isPassable(pathNode15) && this.isPassable(pathNode4) && this.isPassable(pathNode3) && this.isPassable(pathNode5) && this.isPassable(pathNode10) && this.isPassable(pathNode9)) {
             successors[i++] = pathNode19;
         }
-        if (this.unvisited(pathNode20 = this.getNode(node.x + 1, node.y + 1, node.z + 1)) && this.isPassable(pathNode16) && this.isPassable(pathNode7) && this.isPassable(pathNode9)) {
+        if (this.unvisited(pathNode20 = this.getNode(node.x + 1, node.y + 1, node.z + 1)) && this.isPassable(pathNode16) && this.isPassable(pathNode) && this.isPassable(pathNode3) && this.isPassable(pathNode5) && this.isPassable(pathNode7) && this.isPassable(pathNode9)) {
             successors[i++] = pathNode20;
         }
-        if (this.unvisited(pathNode21 = this.getNode(node.x - 1, node.y + 1, node.z - 1)) && this.isPassable(pathNode17) && this.isPassable(pathNode10) && this.isPassable(pathNode8)) {
+        if (this.unvisited(pathNode21 = this.getNode(node.x - 1, node.y + 1, node.z - 1)) && this.isPassable(pathNode17) && this.isPassable(pathNode4) && this.isPassable(pathNode2) & this.isPassable(pathNode5) && this.isPassable(pathNode10) && this.isPassable(pathNode8)) {
             successors[i++] = pathNode21;
         }
-        if (this.unvisited(pathNode22 = this.getNode(node.x - 1, node.y + 1, node.z + 1)) && this.isPassable(pathNode18) && this.isPassable(pathNode7) && this.isPassable(pathNode8)) {
+        if (this.unvisited(pathNode22 = this.getNode(node.x - 1, node.y + 1, node.z + 1)) && this.isPassable(pathNode18) && this.isPassable(pathNode) && this.isPassable(pathNode2) & this.isPassable(pathNode5) && this.isPassable(pathNode7) && this.isPassable(pathNode8)) {
             successors[i++] = pathNode22;
         }
-        if (this.unvisited(pathNode23 = this.getNode(node.x + 1, node.y - 1, node.z - 1)) && this.isPassable(pathNode15) && this.isPassable(pathNode14) && this.isPassable(pathNode13)) {
+        if (this.unvisited(pathNode23 = this.getNode(node.x + 1, node.y - 1, node.z - 1)) && this.isPassable(pathNode15) && this.isPassable(pathNode4) && this.isPassable(pathNode3) && this.isPassable(pathNode6) && this.isPassable(pathNode14) && this.isPassable(pathNode13)) {
             successors[i++] = pathNode23;
         }
-        if (this.unvisited(pathNode24 = this.getNode(node.x + 1, node.y - 1, node.z + 1)) && this.isPassable(pathNode16) && this.isPassable(pathNode11) && this.isPassable(pathNode13)) {
+        if (this.unvisited(pathNode24 = this.getNode(node.x + 1, node.y - 1, node.z + 1)) && this.isPassable(pathNode16) && this.isPassable(pathNode) && this.isPassable(pathNode3) && this.isPassable(pathNode6) && this.isPassable(pathNode11) && this.isPassable(pathNode13)) {
             successors[i++] = pathNode24;
         }
-        if (this.unvisited(pathNode25 = this.getNode(node.x - 1, node.y - 1, node.z - 1)) && this.isPassable(pathNode17) && this.isPassable(pathNode14) && this.isPassable(pathNode12)) {
+        if (this.unvisited(pathNode25 = this.getNode(node.x - 1, node.y - 1, node.z - 1)) && this.isPassable(pathNode17) && this.isPassable(pathNode4) && this.isPassable(pathNode2) && this.isPassable(pathNode6) && this.isPassable(pathNode14) && this.isPassable(pathNode12)) {
             successors[i++] = pathNode25;
         }
-        if (this.unvisited(pathNode26 = this.getNode(node.x - 1, node.y - 1, node.z + 1)) && this.isPassable(pathNode18) && this.isPassable(pathNode11) && this.isPassable(pathNode12)) {
+        if (this.unvisited(pathNode26 = this.getNode(node.x - 1, node.y - 1, node.z + 1)) && this.isPassable(pathNode18) && this.isPassable(pathNode) && this.isPassable(pathNode2) && this.isPassable(pathNode6) && this.isPassable(pathNode11) && this.isPassable(pathNode12)) {
             successors[i++] = pathNode26;
         }
         return i;

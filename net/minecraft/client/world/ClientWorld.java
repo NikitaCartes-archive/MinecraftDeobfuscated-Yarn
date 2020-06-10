@@ -677,7 +677,7 @@ extends World {
 
     @Override
     public float getBrightness(Direction direction, boolean shaded) {
-        boolean bl = this.getDimension().isNether();
+        boolean bl = this.getSkyProperties().method_29993();
         if (!shaded) {
             return bl ? 0.9f : 1.0f;
         }

@@ -66,8 +66,12 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(builder.build()));
         }
 
+        public static Conditions method_29918(EntityPredicate entityPredicate, EntityPredicate entityPredicate2, EntityPredicate entityPredicate3) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(entityPredicate), EntityPredicate.Extended.ofLegacy(entityPredicate2), EntityPredicate.Extended.ofLegacy(entityPredicate3));
+        }
+
         public boolean matches(LootContext lootContext, LootContext lootContext2, @Nullable LootContext lootContext3) {
-            if (lootContext3 != null && !this.child.test(lootContext3)) {
+            if (!(this.child == EntityPredicate.Extended.EMPTY || lootContext3 != null && this.child.test(lootContext3))) {
                 return false;
             }
             return this.parent.test(lootContext) && this.partner.test(lootContext2) || this.parent.test(lootContext2) && this.partner.test(lootContext);

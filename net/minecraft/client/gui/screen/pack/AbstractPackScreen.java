@@ -38,44 +38,39 @@ extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.DARK_GRAY);
     private static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");
-    private final Function<Runnable, ResourcePackOrganizer<?>> field_25467;
-    private ResourcePackOrganizer<?> organizer;
+    private final ResourcePackOrganizer<?> organizer;
     private final Screen parent;
-    private boolean dirty;
     private boolean shouldSave;
     private PackListWidget availablePackList;
     private PackListWidget selectedPackList;
-    private final Function<MinecraftClient, File> field_25474;
+    private final File field_25474;
     private ButtonWidget doneButton;
 
-    public AbstractPackScreen(Screen parent, TranslatableText title, Function<Runnable, ResourcePackOrganizer<?>> function, Function<MinecraftClient, File> function2) {
+    public AbstractPackScreen(Screen parent, TranslatableText title, Function<Runnable, ResourcePackOrganizer<?>> function, File file) {
         super(title);
         this.parent = parent;
-        this.field_25467 = function;
-        this.organizer = function.apply(this::organizerUpdated);
-        this.field_25474 = function2;
+        this.organizer = function.apply(this::updatePackLists);
+        this.field_25474 = file;
     }
 
     @Override
     public void removed() {
         if (this.shouldSave) {
             this.shouldSave = false;
-            this.organizer.apply(false);
+            this.organizer.apply();
         }
     }
 
     @Override
     public void onClose() {
+        this.shouldSave = true;
         this.client.openScreen(this.parent);
     }
 
     @Override
     protected void init() {
-        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, buttonWidget -> {
-            this.shouldSave = this.dirty;
-            this.onClose();
-        }));
-        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("pack.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.field_25474.apply(this.client)), (buttonWidget, matrixStack, i, j) -> this.renderTooltip(matrixStack, FOLDER_INFO, i, j)));
+        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, buttonWidget -> this.onClose()));
+        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("pack.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.field_25474), (buttonWidget, matrixStack, i, j) -> this.renderTooltip(matrixStack, FOLDER_INFO, i, j)));
         this.availablePackList = new PackListWidget(this.client, 200, this.height, new TranslatableText("pack.available.title"));
         this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
         this.children.add(this.availablePackList);
@@ -96,15 +91,10 @@ extends Screen {
         packs.forEach(pack -> widget.children().add(new PackListWidget.ResourcePackEntry(this.client, widget, this, (ResourcePackOrganizer.Pack)pack)));
     }
 
-    protected void organizerUpdated() {
+    private void method_29680() {
+        this.organizer.method_29981();
         this.updatePackLists();
-        this.dirty = true;
-    }
-
-    protected void method_29680() {
-        this.organizer.apply(true);
-        this.organizer = this.field_25467.apply(this::organizerUpdated);
-        this.updatePackLists();
+        this.shouldSave = true;
     }
 
     @Override
@@ -144,7 +134,7 @@ extends Screen {
         String string = list.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
         this.client.openScreen(new ConfirmScreen(bl -> {
             if (bl) {
-                AbstractPackScreen.method_29669(this.client, list, this.field_25474.apply(this.client).toPath());
+                AbstractPackScreen.method_29669(this.client, list, this.field_25474.toPath());
                 this.method_29680();
             }
             this.client.openScreen(this);

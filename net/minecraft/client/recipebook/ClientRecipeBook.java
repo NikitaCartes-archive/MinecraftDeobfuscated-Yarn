@@ -26,10 +26,15 @@ import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.FurnaceScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.SmokerScreenHandler;
+import net.minecraft.util.registry.Registry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Supplier;
 
 @Environment(value=EnvType.CLIENT)
 public class ClientRecipeBook
 extends RecipeBook {
+    private static final Logger field_25622 = LogManager.getLogger();
     private final RecipeManager manager;
     private final Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = Maps.newHashMap();
     private final List<RecipeResultCollection> orderedResults = Lists.newArrayList();
@@ -70,11 +75,7 @@ extends RecipeBook {
             this.addGroupResults(RecipeBookGroup.BLAST_FURNACE_SEARCH, recipeResultCollection);
         } else if (group == RecipeBookGroup.SMOKER_FOOD) {
             this.addGroupResults(RecipeBookGroup.SMOKER_SEARCH, recipeResultCollection);
-        } else if (group == RecipeBookGroup.STONECUTTER) {
-            this.addGroupResults(RecipeBookGroup.STONECUTTER, recipeResultCollection);
-        } else if (group == RecipeBookGroup.CAMPFIRE) {
-            this.addGroupResults(RecipeBookGroup.CAMPFIRE, recipeResultCollection);
-        } else {
+        } else if (group == RecipeBookGroup.CRAFTING_BUILDING_BLOCKS || group == RecipeBookGroup.CRAFTING_REDSTONE || group == RecipeBookGroup.CRAFTING_EQUIPMENT || group == RecipeBookGroup.CRAFTING_MISC) {
             this.addGroupResults(RecipeBookGroup.SEARCH, recipeResultCollection);
         }
         return recipeResultCollection;
@@ -86,6 +87,20 @@ extends RecipeBook {
 
     private static RecipeBookGroup getGroupForRecipe(Recipe<?> recipe) {
         RecipeType<?> recipeType = recipe.getType();
+        if (recipeType == RecipeType.CRAFTING) {
+            ItemStack itemStack = recipe.getOutput();
+            ItemGroup itemGroup = itemStack.getItem().getGroup();
+            if (itemGroup == ItemGroup.BUILDING_BLOCKS) {
+                return RecipeBookGroup.CRAFTING_BUILDING_BLOCKS;
+            }
+            if (itemGroup == ItemGroup.TOOLS || itemGroup == ItemGroup.COMBAT) {
+                return RecipeBookGroup.CRAFTING_EQUIPMENT;
+            }
+            if (itemGroup == ItemGroup.REDSTONE) {
+                return RecipeBookGroup.CRAFTING_REDSTONE;
+            }
+            return RecipeBookGroup.CRAFTING_MISC;
+        }
         if (recipeType == RecipeType.SMELTING) {
             if (recipe.getOutput().getItem().isFood()) {
                 return RecipeBookGroup.FURNACE_FOOD;
@@ -110,23 +125,19 @@ extends RecipeBook {
         if (recipeType == RecipeType.CAMPFIRE_COOKING) {
             return RecipeBookGroup.CAMPFIRE;
         }
-        ItemStack itemStack = recipe.getOutput();
-        ItemGroup itemGroup = itemStack.getItem().getGroup();
-        if (itemGroup == ItemGroup.BUILDING_BLOCKS) {
-            return RecipeBookGroup.BUILDING_BLOCKS;
+        if (recipeType == RecipeType.SMITHING) {
+            return RecipeBookGroup.SMITHING;
         }
-        if (itemGroup == ItemGroup.TOOLS || itemGroup == ItemGroup.COMBAT) {
-            return RecipeBookGroup.EQUIPMENT;
-        }
-        if (itemGroup == ItemGroup.REDSTONE) {
-            return RecipeBookGroup.REDSTONE;
-        }
-        return RecipeBookGroup.MISC;
+        Supplier[] supplierArray = new Supplier[2];
+        supplierArray[0] = () -> Registry.RECIPE_TYPE.getId(recipe.getType());
+        supplierArray[1] = recipe::getId;
+        field_25622.warn("Unknown recipe category: {}/{}", supplierArray);
+        return RecipeBookGroup.UNKNOWN;
     }
 
     public static List<RecipeBookGroup> getGroups(AbstractRecipeScreenHandler<?> handler) {
         if (handler instanceof CraftingScreenHandler || handler instanceof PlayerScreenHandler) {
-            return Lists.newArrayList(RecipeBookGroup.SEARCH, RecipeBookGroup.EQUIPMENT, RecipeBookGroup.BUILDING_BLOCKS, RecipeBookGroup.MISC, RecipeBookGroup.REDSTONE);
+            return Lists.newArrayList(RecipeBookGroup.SEARCH, RecipeBookGroup.CRAFTING_EQUIPMENT, RecipeBookGroup.CRAFTING_BUILDING_BLOCKS, RecipeBookGroup.CRAFTING_MISC, RecipeBookGroup.CRAFTING_REDSTONE);
         }
         if (handler instanceof FurnaceScreenHandler) {
             return Lists.newArrayList(RecipeBookGroup.FURNACE_SEARCH, RecipeBookGroup.FURNACE_FOOD, RecipeBookGroup.FURNACE_BLOCKS, RecipeBookGroup.FURNACE_MISC);

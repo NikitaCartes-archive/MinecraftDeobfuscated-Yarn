@@ -90,7 +90,7 @@ implements BlockEntityProvider {
         if (state.get(PART) != BedPart.HEAD && !(state = world.getBlockState(pos = pos.offset(state.get(FACING)))).isOf(this)) {
             return ActionResult.CONSUME;
         }
-        if (!BedBlock.isOverworld(world, pos)) {
+        if (!BedBlock.isOverworld(world)) {
             world.removeBlock(pos, false);
             BlockPos blockPos = pos.offset(state.get(FACING).getOpposite());
             if (world.getBlockState(blockPos).isOf(this)) {
@@ -113,8 +113,8 @@ implements BlockEntityProvider {
         return ActionResult.SUCCESS;
     }
 
-    public static boolean isOverworld(World world, BlockPos pos) {
-        return world.getDimension().isOverworld();
+    public static boolean isOverworld(World world) {
+        return world.getDimension().isBedWorking();
     }
 
     private boolean isFree(World world, BlockPos pos) {

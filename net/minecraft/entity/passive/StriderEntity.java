@@ -6,6 +6,8 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Sets;
 import java.util.LinkedHashSet;
 import java.util.Random;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -40,6 +42,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -90,8 +93,12 @@ Saddleable {
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0f);
     }
 
-    public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return world.getBlockState(pos.up()).isAir();
+    public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess worldAccess, SpawnReason spawnReason, BlockPos blockPos, Random random) {
+        BlockPos.Mutable mutable = blockPos.mutableCopy();
+        do {
+            mutable.move(Direction.UP);
+        } while (worldAccess.getFluidState(mutable).matches(FluidTags.LAVA));
+        return worldAccess.getBlockState(mutable).isAir();
     }
 
     @Override
@@ -299,7 +306,7 @@ Saddleable {
         }
         BlockState blockState = this.world.getBlockState(this.getBlockPos());
         BlockState blockState2 = this.getLandingBlockState();
-        boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS);
+        boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
         this.setCold(!bl);
         super.tick();
         this.updateFloating();
@@ -411,14 +418,26 @@ Saddleable {
     }
 
     @Override
+    @Environment(value=EnvType.CLIENT)
+    public Vec3d method_29919() {
+        return new Vec3d(0.0, 0.6f * this.getStandingEyeHeight(), this.getWidth() * 0.4f);
+    }
+
+    @Override
     @Nullable
     public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         ZombifiedPiglinEntity zombifiedPiglinEntity;
         StriderData.RiderType riderType;
+        ZombieEntity.ZombieData entityData2 = null;
         if (entityData instanceof StriderData) {
             riderType = ((StriderData)entityData).type;
         } else if (!this.isBaby()) {
-            riderType = this.random.nextInt(30) == 0 ? StriderData.RiderType.PIGLIN_RIDER : (this.random.nextInt(10) == 0 ? StriderData.RiderType.BABY_RIDER : StriderData.RiderType.NO_RIDER);
+            if (this.random.nextInt(30) == 0) {
+                riderType = StriderData.RiderType.PIGLIN_RIDER;
+                entityData2 = new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false);
+            } else {
+                riderType = this.random.nextInt(10) == 0 ? StriderData.RiderType.BABY_RIDER : StriderData.RiderType.NO_RIDER;
+            }
             entityData = new StriderData(riderType);
             ((PassiveEntity.PassiveData)entityData).setBabyChance(riderType == StriderData.RiderType.NO_RIDER ? 0.5f : 0.0f);
         } else {
@@ -437,7 +456,7 @@ Saddleable {
         }
         if (mobEntity != null) {
             mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
-            mobEntity.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
+            mobEntity.initialize(world, difficulty, SpawnReason.JOCKEY, entityData2, null);
             mobEntity.startRiding(this, true);
             world.spawnEntity(mobEntity);
         }

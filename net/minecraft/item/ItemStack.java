@@ -737,7 +737,7 @@ public final class ItemStack {
                 EntityAttributeModifier entityAttributeModifier;
                 Optional<EntityAttribute> optional;
                 CompoundTag compoundTag = listTag.getCompound(i);
-                if (compoundTag.contains("Slot", 8) && !compoundTag.getString("Slot").equals(equipmentSlot.getName()) || !(optional = Registry.ATTRIBUTES.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")))).isPresent() || (entityAttributeModifier = EntityAttributeModifier.fromTag(compoundTag)) == null || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
+                if (compoundTag.contains("Slot", 8) && !compoundTag.getString("Slot").equals(equipmentSlot.getName()) || !(optional = Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")))).isPresent() || (entityAttributeModifier = EntityAttributeModifier.fromTag(compoundTag)) == null || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
                 multimap.put(optional.get(), entityAttributeModifier);
             }
         } else {
@@ -753,7 +753,7 @@ public final class ItemStack {
         }
         ListTag listTag = this.tag.getList("AttributeModifiers", 10);
         CompoundTag compoundTag = modifier.toTag();
-        compoundTag.putString("AttributeName", Registry.ATTRIBUTES.getId(entityAttribute).toString());
+        compoundTag.putString("AttributeName", Registry.ATTRIBUTE.getId(entityAttribute).toString());
         if (slot != null) {
             compoundTag.putString("Slot", slot.getName());
         }

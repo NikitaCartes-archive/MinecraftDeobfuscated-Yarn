@@ -34,26 +34,14 @@ public abstract class RenderPhase {
     protected static final Transparency LIGHTNING_TRANSPARENCY = new Transparency("lightning_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().worldRenderer.getWeatherFramebuffer().beginWrite(false);
-        }
     }, () -> {
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-        }
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
     protected static final Transparency GLINT_TRANSPARENCY = new Transparency("glint_transparency", () -> {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE);
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().worldRenderer.getEntityFramebuffer().beginWrite(false);
-        }
     }, () -> {
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-        }
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
@@ -75,28 +63,6 @@ public abstract class RenderPhase {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
     }, () -> {
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-    });
-    protected static final Transparency DRAGON_EXPLOSION_TRANSPARENCY = new Transparency("dragon_explosion_transparency", () -> {
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().worldRenderer.getWeatherFramebuffer().beginWrite(false);
-        }
-    }, () -> {
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-        }
-    });
-    protected static final Transparency ITEM_TRANSPARENCY = new Transparency("item_transparency", () -> {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().worldRenderer.getEntityFramebuffer().beginWrite(false);
-        }
-    }, () -> {
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-        }
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
@@ -190,6 +156,15 @@ public abstract class RenderPhase {
     protected static final Target CLOUDS_TARGET = new Target("clouds_target", () -> {
         if (MinecraftClient.isFabulousGraphicsOrBetter()) {
             MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer().beginWrite(false);
+        }
+    }, () -> {
+        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
+            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+        }
+    });
+    protected static final Target field_25643 = new Target("item_entity_target", () -> {
+        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
+            MinecraftClient.getInstance().worldRenderer.getEntityFramebuffer().beginWrite(false);
         }
     }, () -> {
         if (MinecraftClient.isFabulousGraphicsOrBetter()) {

@@ -343,7 +343,8 @@ AutoCloseable {
             dimensionType = dimensionOptions.getDimensionType();
             chunkGenerator = dimensionOptions.getChunkGenerator();
         }
-        ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, this.session, serverWorldProperties, World.OVERWORLD, DimensionType.OVERWORLD_REGISTRY_KEY, dimensionType, worldGenerationProgressListener, chunkGenerator, bl, m, list, true);
+        RegistryKey<DimensionType> registryKey = this.dimensionTracker.getDimensionTypeRegistry().getKey(dimensionType).orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType));
+        ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, this.session, serverWorldProperties, World.OVERWORLD, registryKey, dimensionType, worldGenerationProgressListener, chunkGenerator, bl, m, list, true);
         this.worlds.put(World.OVERWORLD, serverWorld);
         PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
         this.initScoreboard(persistentStateManager);
@@ -373,16 +374,16 @@ AutoCloseable {
             this.getBossBarManager().fromTag(this.saveProperties.getCustomBossEvents());
         }
         for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
-            RegistryKey<DimensionOptions> registryKey = entry.getKey();
-            if (registryKey == DimensionOptions.OVERWORLD) continue;
-            RegistryKey<World> registryKey2 = RegistryKey.of(Registry.DIMENSION, registryKey.getValue());
+            RegistryKey<DimensionOptions> registryKey2 = entry.getKey();
+            if (registryKey2 == DimensionOptions.OVERWORLD) continue;
+            RegistryKey<World> registryKey3 = RegistryKey.of(Registry.DIMENSION, registryKey2.getValue());
             DimensionType dimensionType2 = entry.getValue().getDimensionType();
-            RegistryKey<DimensionType> registryKey3 = this.dimensionTracker.getDimensionTypeRegistry().getKey(dimensionType2).orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType2));
+            RegistryKey<DimensionType> registryKey4 = this.dimensionTracker.getDimensionTypeRegistry().getKey(dimensionType2).orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType2));
             ChunkGenerator chunkGenerator2 = entry.getValue().getChunkGenerator();
             UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
-            ServerWorld serverWorld2 = new ServerWorld(this, this.workerExecutor, this.session, unmodifiableLevelProperties, registryKey2, registryKey3, dimensionType2, worldGenerationProgressListener, chunkGenerator2, bl, m, ImmutableList.of(), false);
+            ServerWorld serverWorld2 = new ServerWorld(this, this.workerExecutor, this.session, unmodifiableLevelProperties, registryKey3, registryKey4, dimensionType2, worldGenerationProgressListener, chunkGenerator2, bl, m, ImmutableList.of(), false);
             worldBorder.addListener(new WorldBorderListener.WorldBorderSyncer(serverWorld2.getWorldBorder()));
-            this.worlds.put(registryKey2, serverWorld2);
+            this.worlds.put(registryKey3, serverWorld2);
         }
     }
 
@@ -449,7 +450,7 @@ AutoCloseable {
     }
 
     private void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
-        ServerWorld serverWorld = this.getWorld(World.OVERWORLD);
+        ServerWorld serverWorld = this.method_30002();
         LOGGER.info("Preparing start region for dimension {}", (Object)serverWorld.getRegistryKey().getValue());
         BlockPos blockPos = serverWorld.getSpawnPos();
         worldGenerationProgressListener.start(new ChunkPos(blockPos));
@@ -515,7 +516,7 @@ AutoCloseable {
             serverWorld.save(null, bl2, serverWorld.savingDisabled && !bl3);
             bl4 = true;
         }
-        ServerWorld serverWorld2 = this.getWorld(World.OVERWORLD);
+        ServerWorld serverWorld2 = this.method_30002();
         ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
         serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
         this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
@@ -781,7 +782,6 @@ AutoCloseable {
         this.getCommandFunctionManager().tick();
         this.profiler.swap("levels");
         for (ServerWorld serverWorld : this.getWorlds()) {
-            if (!serverWorld.getDimension().isOverworld() && !this.isNetherAllowed()) continue;
             this.profiler.push(() -> serverWorld + " " + serverWorld.getRegistryKey().getValue());
             if (this.ticks % 20 == 0) {
                 this.profiler.push("timeSync");
@@ -834,6 +834,11 @@ AutoCloseable {
         return new File(this.getRunDirectory(), string);
     }
 
+    public final ServerWorld method_30002() {
+        return this.worlds.get(World.OVERWORLD);
+    }
+
+    @Nullable
     public ServerWorld getWorld(RegistryKey<World> registryKey) {
         return this.worlds.get(registryKey);
     }
@@ -1273,7 +1278,7 @@ AutoCloseable {
     }
 
     public ServerCommandSource getCommandSource() {
-        ServerWorld serverWorld = this.getWorld(World.OVERWORLD);
+        ServerWorld serverWorld = this.method_30002();
         return new ServerCommandSource(this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", new LiteralText("Server"), this, null);
     }
 
@@ -1315,7 +1320,7 @@ AutoCloseable {
     }
 
     public GameRules getGameRules() {
-        return this.getWorld(World.OVERWORLD).getGameRules();
+        return this.method_30002().getGameRules();
     }
 
     public BossBarManager getBossBarManager() {

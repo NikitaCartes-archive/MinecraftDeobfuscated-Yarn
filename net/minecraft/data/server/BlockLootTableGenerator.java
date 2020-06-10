@@ -920,6 +920,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.SPAWNER, BlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.FIRE, BlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.SOUL_FIRE, BlockLootTableGenerator.dropsNothing());
+        this.addDrop(Blocks.NETHER_PORTAL, BlockLootTableGenerator.dropsNothing());
         HashSet<Identifier> set = Sets.newHashSet();
         for (Block block2 : Registry.BLOCK) {
             Identifier identifier = block2.getLootTableId();
