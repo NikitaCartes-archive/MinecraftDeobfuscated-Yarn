@@ -96,6 +96,6 @@ public class WarpedForestBiome extends Biome {
 		DefaultBiomeFeatures.addNetherMineables(this);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
 		this.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 1, 2));
-		this.addSpawnDensity(EntityType.ENDERMAN, 1.0, 0.08);
+		this.addSpawnDensity(EntityType.ENDERMAN, 1.0, 0.12);
 	}
 }

@@ -7,6 +7,7 @@ import java.util.AbstractList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -374,23 +375,48 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else if (keyCode == 264) {
-			this.moveSelection(1);
+			this.moveSelection(EntryListWidget.class_5403.field_25662);
 			return true;
 		} else if (keyCode == 265) {
-			this.moveSelection(-1);
+			this.moveSelection(EntryListWidget.class_5403.field_25661);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected void moveSelection(int amount) {
-		if (!this.children().isEmpty()) {
-			int i = this.children().indexOf(this.getSelected());
-			int j = MathHelper.clamp(i + amount, 0, this.getItemCount() - 1);
-			E entry = (E)this.children().get(j);
+	protected void moveSelection(EntryListWidget.class_5403 arg) {
+		this.method_30013(arg, entry -> true);
+	}
+
+	protected void method_30015() {
+		E entry = this.getSelected();
+		if (entry != null) {
 			this.setSelected(entry);
 			this.ensureVisible(entry);
+		}
+	}
+
+	protected void method_30013(EntryListWidget.class_5403 arg, Predicate<E> predicate) {
+		int i = arg == EntryListWidget.class_5403.field_25661 ? -1 : 1;
+		if (!this.children().isEmpty()) {
+			int j = this.children().indexOf(this.getSelected());
+
+			while (true) {
+				int k = MathHelper.clamp(j + i, 0, this.getItemCount() - 1);
+				if (j == k) {
+					break;
+				}
+
+				E entry = (E)this.children().get(k);
+				if (predicate.test(entry)) {
+					this.setSelected(entry);
+					this.ensureVisible(entry);
+					break;
+				}
+
+				j = k;
+			}
 		}
 	}
 
@@ -520,5 +546,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		public boolean isMouseOver(double mouseX, double mouseY) {
 			return Objects.equals(this.list.getEntryAtPosition(mouseX, mouseY), this);
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum class_5403 {
+		field_25661,
+		field_25662;
 	}
 }

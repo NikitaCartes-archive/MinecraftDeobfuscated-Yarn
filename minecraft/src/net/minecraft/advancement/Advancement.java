@@ -22,7 +22,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -61,7 +63,7 @@ public class Advancement {
 		} else {
 			Text text = display.getTitle();
 			Formatting formatting = display.getFrame().getTitleFormat();
-			Text text2 = text.shallowCopy().formatted(formatting).append("\n").append(display.getDescription());
+			Text text2 = Texts.setStyleIfAbsent(text.shallowCopy(), Style.EMPTY.withColor(formatting)).append("\n").append(display.getDescription());
 			Text text3 = text.shallowCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
 			this.text = new LiteralText("[").append(text3).append("]").formatted(formatting);
 		}

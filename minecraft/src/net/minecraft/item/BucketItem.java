@@ -58,7 +58,7 @@ public class BucketItem extends Item {
 					if (fluid != Fluids.EMPTY) {
 						user.incrementStat(Stats.USED.getOrCreateStat(this));
 						user.playSound(fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
-						ItemStack itemStack2 = this.getFilledStack(itemStack, user, fluid.getBucketItem());
+						ItemStack itemStack2 = ItemUsage.method_30012(itemStack, user, new ItemStack(fluid.getBucketItem()));
 						if (!world.isClient) {
 							Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
 						}
@@ -91,28 +91,6 @@ public class BucketItem extends Item {
 	}
 
 	public void onEmptied(World world, ItemStack stack, BlockPos pos) {
-	}
-
-	private ItemStack getFilledStack(ItemStack stack, PlayerEntity player, Item filledBucket) {
-		if (player.abilities.creativeMode) {
-			ItemStack itemStack = new ItemStack(filledBucket);
-			if (!player.inventory.contains(itemStack)) {
-				player.inventory.insertStack(itemStack);
-			}
-
-			return stack;
-		} else {
-			stack.decrement(1);
-			if (stack.isEmpty()) {
-				return new ItemStack(filledBucket);
-			} else {
-				if (!player.inventory.insertStack(new ItemStack(filledBucket))) {
-					player.dropItem(new ItemStack(filledBucket), false);
-				}
-
-				return stack;
-			}
-		}
 	}
 
 	public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult blockHitResult) {

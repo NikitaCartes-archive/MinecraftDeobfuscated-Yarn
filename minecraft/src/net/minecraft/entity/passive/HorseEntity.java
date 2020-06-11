@@ -188,12 +188,7 @@ public class HorseEntity extends HorseBaseEntity {
 
 		if (!itemStack.isEmpty()) {
 			if (this.isBreedingItem(itemStack)) {
-				boolean bl = this.receiveFood(player, itemStack);
-				if (!player.abilities.creativeMode) {
-					itemStack.decrement(1);
-				}
-
-				return bl ? ActionResult.success(this.world.isClient) : ActionResult.CONSUME;
+				return this.method_30009(player, itemStack);
 			}
 
 			ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
@@ -206,8 +201,8 @@ public class HorseEntity extends HorseBaseEntity {
 				return ActionResult.success(this.world.isClient);
 			}
 
-			boolean bl2 = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
-			if (this.canEquip(itemStack) || bl2) {
+			boolean bl = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
+			if (this.canEquip(itemStack) || bl) {
 				this.openInventory(player);
 				return ActionResult.success(this.world.isClient);
 			}

@@ -267,7 +267,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 					}
 
 					if ((flags & 16) == 0) {
-						int i = flags & -2;
+						int i = flags & -34;
 						blockState.prepare(this, pos, i);
 						state.updateNeighbors(this, pos, i);
 						state.prepare(this, pos, i);

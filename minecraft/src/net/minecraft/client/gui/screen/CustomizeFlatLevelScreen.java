@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -152,8 +153,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		@Override
-		protected void moveSelection(int amount) {
-			super.moveSelection(amount);
+		protected void moveSelection(EntryListWidget.class_5403 arg) {
+			super.moveSelection(arg);
 			CustomizeFlatLevelScreen.this.method_2145();
 		}
 

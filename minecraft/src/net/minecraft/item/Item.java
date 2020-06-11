@@ -293,7 +293,6 @@ public class Item implements ItemConvertible {
 		return stack.getItem() == Items.CROSSBOW;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public ItemStack getStackForRender() {
 		return new ItemStack(this);
 	}

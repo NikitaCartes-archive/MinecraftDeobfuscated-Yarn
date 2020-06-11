@@ -135,9 +135,9 @@ public abstract class GeneratorType {
 		BiomeSource biomeSource = new FixedBiomeSource(biome);
 		ChunkGeneratorType chunkGeneratorType;
 		if (generatorType == SINGLE_BIOME_CAVES) {
-			chunkGeneratorType = ChunkGeneratorType.Preset.NETHER.getChunkGeneratorType();
+			chunkGeneratorType = ChunkGeneratorType.Preset.CAVES.getChunkGeneratorType();
 		} else if (generatorType == SINGLE_BIOME_FLOATING_ISLANDS) {
-			chunkGeneratorType = ChunkGeneratorType.Preset.END.getChunkGeneratorType();
+			chunkGeneratorType = ChunkGeneratorType.Preset.FLOATING_ISLANDS.getChunkGeneratorType();
 		} else {
 			chunkGeneratorType = ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType();
 		}

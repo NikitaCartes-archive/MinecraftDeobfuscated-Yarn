@@ -19,6 +19,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.nbt.CompoundTag;
@@ -75,10 +76,6 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() == Items.BOWL && !this.isBaby()) {
-			if (!player.abilities.creativeMode) {
-				itemStack.decrement(1);
-			}
-
 			boolean bl = false;
 			ItemStack itemStack2;
 			if (this.stewEffect != null) {
@@ -91,12 +88,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 				itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
 			}
 
-			if (itemStack.isEmpty()) {
-				player.setStackInHand(hand, itemStack2);
-			} else if (!player.inventory.insertStack(itemStack2)) {
-				player.dropItem(itemStack2, false);
-			}
-
+			ItemUsage.method_30012(itemStack, player, itemStack2);
 			SoundEvent soundEvent;
 			if (bl) {
 				soundEvent = SoundEvents.ENTITY_MOOSHROOM_SUSPICIOUS_MILK;

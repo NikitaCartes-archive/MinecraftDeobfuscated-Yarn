@@ -31,9 +31,10 @@ public class FireChargeItem extends Item {
 			}
 		} else {
 			blockPos = blockPos.offset(context.getSide());
-			if (world.getBlockState(blockPos).isAir()) {
+			BlockState blockState2 = AbstractFireBlock.getState(world, blockPos);
+			if (world.getBlockState(blockPos).isAir() && blockState2.canPlaceAt(world, blockPos)) {
 				this.playUseSound(world, blockPos);
-				world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
+				world.setBlockState(blockPos, blockState2);
 				bl = true;
 			}
 		}

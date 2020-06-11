@@ -39,7 +39,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
@@ -504,17 +503,12 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.inventory.updateItems();
 		this.prevStrideDistance = this.strideDistance;
 		super.tickMovement();
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-		if (!this.world.isClient) {
-			entityAttributeInstance.setBaseValue((double)this.abilities.getWalkSpeed());
-		}
-
 		this.flyingSpeed = 0.02F;
 		if (this.isSprinting()) {
 			this.flyingSpeed = (float)((double)this.flyingSpeed + 0.005999999865889549);
 		}
 
-		this.setMovementSpeed((float)entityAttributeInstance.getValue());
+		this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 		float f;
 		if (this.onGround && !this.isDead() && !this.isSwimming()) {
 			f = Math.min(0.1F, MathHelper.sqrt(squaredHorizontalLength(this.getVelocity())));
@@ -776,6 +770,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.setScore(tag.getInt("Score"));
 		this.hungerManager.fromTag(tag);
 		this.abilities.deserialize(tag);
+		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
 		if (tag.contains("EnderItems", 9)) {
 			this.enderChestInventory.readTags(tag.getList("EnderItems", 10));
 		}
