@@ -37,7 +37,6 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getStackForRender() {
         return PotionUtil.setPotion(super.getStackForRender(), Potions.WATER);
     }

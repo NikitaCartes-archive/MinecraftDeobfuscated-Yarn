@@ -251,7 +251,7 @@ AutoCloseable {
                     }
                 }
                 if ((flags & 0x10) == 0) {
-                    int i = flags & 0xFFFFFFFE;
+                    int i = flags & 0xFFFFFFDE;
                     blockState.prepare(this, pos, i);
                     state.updateNeighbors(this, pos, i);
                     state.prepare(this, pos, i);

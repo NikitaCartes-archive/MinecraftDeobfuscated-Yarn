@@ -25,6 +25,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -285,8 +286,8 @@ extends Screen {
         }
 
         @Override
-        protected void moveSelection(int amount) {
-            super.moveSelection(amount);
+        protected void moveSelection(EntryListWidget.class_5403 arg) {
+            super.moveSelection(arg);
             PresetsScreen.this.updateSelectButton(true);
         }
 

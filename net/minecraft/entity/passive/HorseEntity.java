@@ -190,13 +190,9 @@ extends HorseBaseEntity {
             }
         }
         if (!itemStack.isEmpty()) {
-            boolean bl2;
+            boolean bl;
             if (this.isBreedingItem(itemStack)) {
-                boolean bl = this.receiveFood(player, itemStack);
-                if (!player.abilities.creativeMode) {
-                    itemStack.decrement(1);
-                }
-                return bl ? ActionResult.success(this.world.isClient) : ActionResult.CONSUME;
+                return this.method_30009(player, itemStack);
             }
             ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
             if (actionResult.isAccepted()) {
@@ -206,8 +202,8 @@ extends HorseBaseEntity {
                 this.playAngrySound();
                 return ActionResult.success(this.world.isClient);
             }
-            boolean bl = bl2 = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
-            if (this.canEquip(itemStack) || bl2) {
+            boolean bl2 = bl = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
+            if (this.canEquip(itemStack) || bl) {
                 this.openInventory(player);
                 return ActionResult.success(this.world.isClient);
             }

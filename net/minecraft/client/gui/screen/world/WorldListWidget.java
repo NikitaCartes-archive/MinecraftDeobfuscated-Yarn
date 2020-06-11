@@ -34,6 +34,7 @@ import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
@@ -131,9 +132,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Override
-    protected void moveSelection(int amount) {
-        super.moveSelection(amount);
-        this.parent.worldSelected(true);
+    protected void moveSelection(EntryListWidget.class_5403 arg) {
+        this.method_30013(arg, entry -> !((Entry)entry).level.isLocked());
+        Entry entry2 = (Entry)this.getSelected();
+        this.parent.worldSelected(entry2 != null && entry2.level.isLocked());
     }
 
     public Optional<Entry> method_20159() {

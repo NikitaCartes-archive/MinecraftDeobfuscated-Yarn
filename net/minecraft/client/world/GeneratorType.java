@@ -106,7 +106,7 @@ public abstract class GeneratorType {
 
     private static GeneratorOptions method_29079(GeneratorOptions generatorOptions, GeneratorType generatorType, Biome biome) {
         FixedBiomeSource biomeSource = new FixedBiomeSource(biome);
-        ChunkGeneratorType chunkGeneratorType = generatorType == SINGLE_BIOME_CAVES ? ChunkGeneratorType.Preset.NETHER.getChunkGeneratorType() : (generatorType == SINGLE_BIOME_FLOATING_ISLANDS ? ChunkGeneratorType.Preset.END.getChunkGeneratorType() : ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType());
+        ChunkGeneratorType chunkGeneratorType = generatorType == SINGLE_BIOME_CAVES ? ChunkGeneratorType.Preset.CAVES.getChunkGeneratorType() : (generatorType == SINGLE_BIOME_FLOATING_ISLANDS ? ChunkGeneratorType.Preset.FLOATING_ISLANDS.getChunkGeneratorType() : ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType());
         return new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new SurfaceChunkGenerator(biomeSource, generatorOptions.getSeed(), chunkGeneratorType)));
     }
 

@@ -15,6 +15,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -65,7 +66,7 @@ extends Item {
                 if (blockState.getBlock() instanceof FluidDrainable && (fluid = ((FluidDrainable)((Object)blockState.getBlock())).tryDrainFluid(world, blockPos, blockState)) != Fluids.EMPTY) {
                     user.incrementStat(Stats.USED.getOrCreateStat(this));
                     user.playSound(fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0f, 1.0f);
-                    ItemStack itemStack2 = this.getFilledStack(itemStack, user, fluid.getBucketItem());
+                    ItemStack itemStack2 = ItemUsage.method_30012(itemStack, user, new ItemStack(fluid.getBucketItem()));
                     if (!world.isClient) {
                         Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
                     }
@@ -96,24 +97,6 @@ extends Item {
     }
 
     public void onEmptied(World world, ItemStack stack, BlockPos pos) {
-    }
-
-    private ItemStack getFilledStack(ItemStack stack, PlayerEntity player, Item filledBucket) {
-        if (player.abilities.creativeMode) {
-            ItemStack itemStack = new ItemStack(filledBucket);
-            if (!player.inventory.contains(itemStack)) {
-                player.inventory.insertStack(itemStack);
-            }
-            return stack;
-        }
-        stack.decrement(1);
-        if (stack.isEmpty()) {
-            return new ItemStack(filledBucket);
-        }
-        if (!player.inventory.insertStack(new ItemStack(filledBucket))) {
-            player.dropItem(new ItemStack(filledBucket), false);
-        }
-        return stack;
     }
 
     public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult blockHitResult) {

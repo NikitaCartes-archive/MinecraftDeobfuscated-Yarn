@@ -36,6 +36,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 @EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
 public class FireworkRocketEntity
@@ -65,7 +66,7 @@ implements FlyingItemEntity {
         this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
     }
 
-    public FireworkRocketEntity(World world, Entity entity, double x, double y, double z, ItemStack stack) {
+    public FireworkRocketEntity(World world, @Nullable Entity entity, double x, double y, double z, ItemStack stack) {
         this(world, x, y, z, stack);
         this.setOwner(entity);
     }

@@ -33,10 +33,14 @@ extends Item {
                 world.setBlockState(blockPos, (BlockState)blockState.with(CampfireBlock.LIT, true));
                 bl = true;
             }
-        } else if (world.getBlockState(blockPos = blockPos.offset(context.getSide())).isAir()) {
-            this.playUseSound(world, blockPos);
-            world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
-            bl = true;
+        } else {
+            blockPos = blockPos.offset(context.getSide());
+            BlockState blockState2 = AbstractFireBlock.getState(world, blockPos);
+            if (world.getBlockState(blockPos).isAir() && blockState2.canPlaceAt(world, blockPos)) {
+                this.playUseSound(world, blockPos);
+                world.setBlockState(blockPos, blockState2);
+                bl = true;
+            }
         }
         if (bl) {
             context.getStack().decrement(1);

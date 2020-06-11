@@ -66,11 +66,6 @@ public class TagContainer<T> {
         return this.entries.getOrDefault(id, this.empty);
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public Tag<T> getEmpty() {
-        return this.empty;
-    }
-
     @Nullable
     public Identifier getId(Tag<T> tag) {
         if (tag instanceof Tag.Identified) {

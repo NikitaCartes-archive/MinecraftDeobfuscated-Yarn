@@ -21,6 +21,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.ServerList;
@@ -37,7 +38,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
-import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,11 +68,12 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Override
-    public void setSelected(Entry entry) {
+    public void setSelected(@Nullable Entry entry) {
         super.setSelected(entry);
         if (this.getSelected() instanceof ServerEntry) {
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((ServerEntry)((ServerEntry)this.getSelected())).server.name).getString());
         }
+        this.screen.updateButtonActivationStates();
     }
 
     @Override
@@ -82,17 +83,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Override
-    protected void moveSelection(int amount) {
-        int i = this.children().indexOf(this.getSelected());
-        int j = MathHelper.clamp(i + amount, 0, this.getItemCount() - 1);
-        Entry entry = (Entry)this.children().get(j);
-        if (entry instanceof ScanningEntry) {
-            j = MathHelper.clamp(j + (amount > 0 ? 1 : -1), 0, this.getItemCount() - 1);
-            entry = (Entry)this.children().get(j);
-        }
-        super.setSelected(entry);
-        this.ensureVisible(entry);
-        this.screen.updateButtonActivationStates();
+    protected void moveSelection(EntryListWidget.class_5403 arg) {
+        this.method_30013(arg, entry -> !(entry instanceof ScanningEntry));
     }
 
     public void setServers(ServerList servers) {

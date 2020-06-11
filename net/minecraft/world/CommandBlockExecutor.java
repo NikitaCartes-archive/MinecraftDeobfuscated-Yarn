@@ -34,6 +34,7 @@ implements CommandOutput {
     private boolean updateLastExecution = true;
     private int successCount;
     private boolean trackOutput = true;
+    @Nullable
     private Text lastOutput;
     private String command = "";
     private Text customName = DEFAULT_NAME;
@@ -109,7 +110,7 @@ implements CommandOutput {
         }
         this.successCount = 0;
         MinecraftServer minecraftServer = this.getWorld().getServer();
-        if (minecraftServer != null && minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
+        if (minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
             try {
                 this.lastOutput = null;
                 ServerCommandSource serverCommandSource = this.getSource().withConsumer((commandContext, bl, i) -> {

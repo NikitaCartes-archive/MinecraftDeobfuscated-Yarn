@@ -5,14 +5,13 @@ package net.minecraft;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import java.util.Collections;
+import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.tag.Tag;
 
 public class class_5394<T>
 implements Tag<T> {
-    private static final class_5394<Object> field_25592 = new class_5394(Collections.emptySet(), Object.class);
     private final ImmutableList<T> field_25593;
     private final Set<T> field_25594;
     @VisibleForTesting
@@ -25,13 +24,10 @@ implements Tag<T> {
     }
 
     public static <T> class_5394<T> method_29898() {
-        return field_25592;
+        return new class_5394(ImmutableSet.of(), Void.class);
     }
 
     public static <T> class_5394<T> method_29900(Set<T> set) {
-        if (set.isEmpty()) {
-            return class_5394.method_29898();
-        }
         return new class_5394<T>(set, class_5394.method_29901(set));
     }
 
@@ -47,7 +43,7 @@ implements Tag<T> {
 
     private static <T> Class<?> method_29901(Set<T> set) {
         if (set.isEmpty()) {
-            throw new IllegalArgumentException("Expected non-empty set. Got: " + set);
+            return Void.class;
         }
         Class<?> class_ = null;
         for (T object : set) {

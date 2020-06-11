@@ -61,7 +61,7 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        Realms.narrateNow(this.line1 + ": " + this.line2);
+        Realms.narrateNow(this.line1.getString() + ": " + this.line2.getString());
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), buttonWidget -> this.client.openScreen(this.field_22695)));
     }
 

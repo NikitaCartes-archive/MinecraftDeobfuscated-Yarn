@@ -143,11 +143,7 @@ extends HorseBaseEntity {
         }
         if (!itemStack.isEmpty()) {
             if (this.isBreedingItem(itemStack)) {
-                boolean bl = this.receiveFood(player, itemStack);
-                if (!player.abilities.creativeMode) {
-                    itemStack.decrement(1);
-                }
-                return bl ? ActionResult.success(this.world.isClient) : ActionResult.CONSUME;
+                return this.method_30009(player, itemStack);
             }
             if (!this.isTame()) {
                 this.playAngrySound();

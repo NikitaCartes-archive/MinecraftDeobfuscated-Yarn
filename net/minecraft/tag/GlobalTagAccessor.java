@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5394;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
@@ -36,7 +37,7 @@ public class GlobalTagAccessor<T> {
     @Environment(value=EnvType.CLIENT)
     public void markReady() {
         this.currentContainer = this.emptyContainer;
-        Tag tag = this.emptyContainer.getEmpty();
+        class_5394 tag = class_5394.method_29898();
         this.tags.forEach(cachedTag -> cachedTag.updateContainer(identifier -> tag));
     }
 

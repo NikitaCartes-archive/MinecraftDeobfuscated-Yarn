@@ -59,6 +59,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -390,6 +391,17 @@ Saddleable {
         }
     }
 
+    public ActionResult method_30009(PlayerEntity playerEntity, ItemStack itemStack) {
+        boolean bl = this.receiveFood(playerEntity, itemStack);
+        if (!playerEntity.abilities.creativeMode) {
+            itemStack.decrement(1);
+        }
+        if (this.world.isClient) {
+            return ActionResult.CONSUME;
+        }
+        return bl ? ActionResult.SUCCESS : ActionResult.PASS;
+    }
+
     protected boolean receiveFood(PlayerEntity player, ItemStack item) {
         boolean bl = false;
         float f = 0.0f;
@@ -415,7 +427,7 @@ Saddleable {
             f = 4.0f;
             i = 60;
             j = 5;
-            if (this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
+            if (!this.world.isClient && this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
                 bl = true;
                 this.lovePlayer(player);
             }
@@ -423,7 +435,7 @@ Saddleable {
             f = 10.0f;
             i = 240;
             j = 10;
-            if (this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
+            if (!this.world.isClient && this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
                 bl = true;
                 this.lovePlayer(player);
             }

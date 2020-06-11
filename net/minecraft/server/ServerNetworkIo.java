@@ -44,7 +44,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -148,10 +147,7 @@ public class ServerNetworkIo {
                         clientConnection.tick();
                     } catch (Exception exception) {
                         if (clientConnection.isLocal()) {
-                            CrashReport crashReport = CrashReport.create(exception, "Ticking memory connection");
-                            CrashReportSection crashReportSection = crashReport.addElement("Ticking connection");
-                            crashReportSection.add("Connection", clientConnection::toString);
-                            throw new CrashException(crashReport);
+                            throw new CrashException(CrashReport.create(exception, "Ticking memory connection"));
                         }
                         LOGGER.warn("Failed to handle packet for {}", (Object)clientConnection.getAddress(), (Object)exception);
                         LiteralText text = new LiteralText("Internal server error");
