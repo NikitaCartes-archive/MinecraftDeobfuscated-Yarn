@@ -27,7 +27,6 @@ public class PotionItem extends Item {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getStackForRender() {
 		return PotionUtil.setPotion(super.getStackForRender(), Potions.WATER);

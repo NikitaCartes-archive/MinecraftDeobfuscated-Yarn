@@ -79,7 +79,7 @@ public class BlockItem extends Item {
 						(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 						blockSoundGroup.getPitch() * 0.8F
 					);
-					if (!playerEntity.abilities.creativeMode) {
+					if (playerEntity == null || !playerEntity.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
 

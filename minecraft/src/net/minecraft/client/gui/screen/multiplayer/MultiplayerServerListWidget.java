@@ -18,6 +18,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.ServerList;
@@ -34,7 +35,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
-import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,12 +64,14 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		this.lanServers.forEach(this::addEntry);
 	}
 
-	public void setSelected(MultiplayerServerListWidget.Entry entry) {
+	public void setSelected(@Nullable MultiplayerServerListWidget.Entry entry) {
 		super.setSelected(entry);
 		if (this.getSelected() instanceof MultiplayerServerListWidget.ServerEntry) {
 			NarratorManager.INSTANCE
 				.narrate(new TranslatableText("narrator.select", ((MultiplayerServerListWidget.ServerEntry)this.getSelected()).server.name).getString());
 		}
+
+		this.screen.updateButtonActivationStates();
 	}
 
 	@Override
@@ -79,18 +81,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	}
 
 	@Override
-	protected void moveSelection(int amount) {
-		int i = this.children().indexOf(this.getSelected());
-		int j = MathHelper.clamp(i + amount, 0, this.getItemCount() - 1);
-		MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.children().get(j);
-		if (entry instanceof MultiplayerServerListWidget.ScanningEntry) {
-			j = MathHelper.clamp(j + (amount > 0 ? 1 : -1), 0, this.getItemCount() - 1);
-			entry = (MultiplayerServerListWidget.Entry)this.children().get(j);
-		}
-
-		super.setSelected(entry);
-		this.ensureVisible(entry);
-		this.screen.updateButtonActivationStates();
+	protected void moveSelection(EntryListWidget.class_5403 arg) {
+		this.method_30013(arg, entry -> !(entry instanceof MultiplayerServerListWidget.ScanningEntry));
 	}
 
 	public void setServers(ServerList servers) {

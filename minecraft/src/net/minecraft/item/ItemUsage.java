@@ -10,4 +10,25 @@ public class ItemUsage {
 		playerEntity.setCurrentHand(hand);
 		return TypedActionResult.consume(playerEntity.getStackInHand(hand));
 	}
+
+	public static ItemStack method_30012(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
+		if (playerEntity.abilities.creativeMode) {
+			if (!playerEntity.inventory.contains(itemStack2)) {
+				playerEntity.inventory.insertStack(itemStack2);
+			}
+
+			return itemStack;
+		} else {
+			itemStack.decrement(1);
+			if (itemStack.isEmpty()) {
+				return itemStack2;
+			} else {
+				if (!playerEntity.inventory.insertStack(itemStack2)) {
+					playerEntity.dropItem(itemStack2, false);
+				}
+
+				return itemStack;
+			}
+		}
+	}
 }

@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -101,8 +102,8 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		}
 
 		@Override
-		protected void moveSelection(int amount) {
-			super.moveSelection(amount);
+		protected void moveSelection(EntryListWidget.class_5403 arg) {
+			super.moveSelection(arg);
 			CustomizeBuffetLevelScreen.this.refreshConfirmButton();
 		}
 

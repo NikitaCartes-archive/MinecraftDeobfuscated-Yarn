@@ -1,6 +1,5 @@
 package net.minecraft.world;
 
-import com.google.common.collect.Streams;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -49,12 +48,10 @@ public interface CollisionView extends BlockView {
 		return this.getCollisions(entity, box, predicate).allMatch(VoxelShape::isEmpty);
 	}
 
-	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-		return Stream.empty();
-	}
+	Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate);
 
 	default Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
-		return Streams.concat(this.getBlockCollisions(entity, box), this.getEntityCollisions(entity, box, predicate));
+		return Stream.concat(this.getBlockCollisions(entity, box), this.getEntityCollisions(entity, box, predicate));
 	}
 
 	default Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box) {

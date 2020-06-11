@@ -20,41 +20,41 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public PlayerAbilitiesS2CPacket(PlayerAbilities playerAbilities) {
-		this.setInvulnerable(playerAbilities.invulnerable);
-		this.setFlying(playerAbilities.flying);
-		this.setAllowFlying(playerAbilities.allowFlying);
-		this.setCreativeMode(playerAbilities.creativeMode);
-		this.setFlySpeed(playerAbilities.getFlySpeed());
-		this.setWalkSpeed(playerAbilities.getWalkSpeed());
+		this.invulnerable = playerAbilities.invulnerable;
+		this.flying = playerAbilities.flying;
+		this.allowFlying = playerAbilities.allowFlying;
+		this.creativeMode = playerAbilities.creativeMode;
+		this.flySpeed = playerAbilities.getFlySpeed();
+		this.walkSpeed = playerAbilities.getWalkSpeed();
 	}
 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		byte b = buf.readByte();
-		this.setInvulnerable((b & 1) > 0);
-		this.setFlying((b & 2) > 0);
-		this.setAllowFlying((b & 4) > 0);
-		this.setCreativeMode((b & 8) > 0);
-		this.setFlySpeed(buf.readFloat());
-		this.setWalkSpeed(buf.readFloat());
+		this.invulnerable = (b & 1) != 0;
+		this.flying = (b & 2) != 0;
+		this.allowFlying = (b & 4) != 0;
+		this.creativeMode = (b & 8) != 0;
+		this.flySpeed = buf.readFloat();
+		this.walkSpeed = buf.readFloat();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
 		byte b = 0;
-		if (this.isInvulnerable()) {
+		if (this.invulnerable) {
 			b = (byte)(b | 1);
 		}
 
-		if (this.isFlying()) {
+		if (this.flying) {
 			b = (byte)(b | 2);
 		}
 
-		if (this.allowFlying()) {
+		if (this.allowFlying) {
 			b = (byte)(b | 4);
 		}
 
-		if (this.isCreativeMode()) {
+		if (this.creativeMode) {
 			b = (byte)(b | 8);
 		}
 
@@ -67,36 +67,24 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		clientPlayPacketListener.onPlayerAbilities(this);
 	}
 
+	@Environment(EnvType.CLIENT)
 	public boolean isInvulnerable() {
 		return this.invulnerable;
 	}
 
-	public void setInvulnerable(boolean bl) {
-		this.invulnerable = bl;
-	}
-
+	@Environment(EnvType.CLIENT)
 	public boolean isFlying() {
 		return this.flying;
 	}
 
-	public void setFlying(boolean bl) {
-		this.flying = bl;
-	}
-
+	@Environment(EnvType.CLIENT)
 	public boolean allowFlying() {
 		return this.allowFlying;
 	}
 
-	public void setAllowFlying(boolean bl) {
-		this.allowFlying = bl;
-	}
-
+	@Environment(EnvType.CLIENT)
 	public boolean isCreativeMode() {
 		return this.creativeMode;
-	}
-
-	public void setCreativeMode(boolean bl) {
-		this.creativeMode = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -104,16 +92,8 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		return this.flySpeed;
 	}
 
-	public void setFlySpeed(float f) {
-		this.flySpeed = f;
-	}
-
 	@Environment(EnvType.CLIENT)
 	public float getWalkSpeed() {
 		return this.walkSpeed;
-	}
-
-	public void setWalkSpeed(float f) {
-		this.walkSpeed = f;
 	}
 }

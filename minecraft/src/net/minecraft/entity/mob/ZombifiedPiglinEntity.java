@@ -60,6 +60,11 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
+	public double getHeightOffset() {
+		return this.isBaby() ? -0.16 : -0.45;
+	}
+
+	@Override
 	protected void initCustomGoals() {
 		this.goalSelector.add(2, new ZombieAttackGoal(this, 1.0, false));
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));

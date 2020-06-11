@@ -18,7 +18,6 @@ public class TippedArrowItem extends ArrowItem {
 		super(settings);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getStackForRender() {
 		return PotionUtil.setPotion(super.getStackForRender(), Potions.POISON);
