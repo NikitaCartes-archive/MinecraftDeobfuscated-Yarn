@@ -29,7 +29,6 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -164,24 +163,13 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
-        super.afterBreak(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
-    }
-
-    @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        BedPart bedPart = state.get(PART);
-        BlockPos blockPos = pos.offset(BedBlock.getDirectionTowardsOtherPart(bedPart, state.get(FACING)));
-        BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.isOf(this) && blockState.get(PART) != bedPart) {
+        BlockPos blockPos;
+        BlockState blockState;
+        BedPart bedPart;
+        if (!world.isClient && player.isCreative() && (bedPart = state.get(PART)) == BedPart.FOOT && (blockState = world.getBlockState(blockPos = pos.offset(BedBlock.getDirectionTowardsOtherPart(bedPart, state.get(FACING))))).getBlock() == this && blockState.get(PART) == BedPart.HEAD) {
             world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
             world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
-            if (!world.isClient && !player.isCreative()) {
-                ItemStack itemStack = player.getMainHandStack();
-                BedBlock.dropStacks(state, world, pos, null, player, itemStack);
-                BedBlock.dropStacks(blockState, world, blockPos, null, player, itemStack);
-            }
-            player.incrementStat(Stats.MINED.getOrCreateStat(this));
         }
         super.onBreak(world, pos, state, player);
     }

@@ -144,6 +144,15 @@ public interface StringRenderable {
         };
     }
 
+    default public String getString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        this.visit(string -> {
+            stringBuilder.append(string);
+            return Optional.empty();
+        });
+        return stringBuilder.toString();
+    }
+
     public static interface Visitor<T> {
         public Optional<T> accept(String var1);
     }

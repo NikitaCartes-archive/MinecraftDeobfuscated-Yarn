@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Unmodifiable;
 @Unmodifiable
 public class BlockPos
 extends Vec3i {
-    public static final Codec<BlockPos> field_25064 = Codec.INT_STREAM.comapFlatMap(intStream -> Util.method_29190(intStream, 3).map(is -> new BlockPos(is[0], is[1], is[2])), blockPos -> IntStream.of(blockPos.getX(), blockPos.getY(), blockPos.getZ())).stable();
+    public static final Codec<BlockPos> field_25064 = Codec.INT_STREAM.comapFlatMap(intStream -> Util.toIntArray(intStream, 3).map(is -> new BlockPos(is[0], is[1], is[2])), blockPos -> IntStream.of(blockPos.getX(), blockPos.getY(), blockPos.getZ())).stable();
     private static final Logger LOGGER = LogManager.getLogger();
     /**
      * The block position which x, y, and z values are all zero.

@@ -29,8 +29,8 @@ implements ClientChatListener {
     private final Narrator narrator = Narrator.getNarrator();
 
     @Override
-    public void onChatMessage(MessageType messageType, Text message, UUID uUID) {
-        if (MinecraftClient.getInstance().shouldBlockMessages(uUID)) {
+    public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
+        if (MinecraftClient.getInstance().shouldBlockMessages(senderUuid)) {
             return;
         }
         NarratorOption narratorOption = NarratorManager.getNarratorOption();

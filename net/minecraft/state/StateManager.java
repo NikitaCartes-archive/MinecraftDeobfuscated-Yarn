@@ -10,11 +10,10 @@ import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.MapLike;
-import com.mojang.serialization.RecordBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
-import org.apache.commons.lang3.mutable.MutableObject;
+import net.minecraft.util.dynamic.NumberCodecs;
 import org.jetbrains.annotations.Nullable;
 
 public class StateManager<O, S extends State<O, S>> {
@@ -37,10 +36,15 @@ public class StateManager<O, S extends State<O, S>> {
     private final ImmutableSortedMap<String, Property<?>> properties;
     private final ImmutableList<S> states;
 
-    protected StateManager(Function<O, S> ownerToStateFunction, O owner, Factory<O, S> factory, Map<String, Property<?>> propertiesMap) {
-        this.owner = owner;
+    protected StateManager(Function<O, S> function, O object, Factory<O, S> factory, Map<String, Property<?>> propertiesMap) {
+        this.owner = object;
         this.properties = ImmutableSortedMap.copyOf(propertiesMap);
-        PropertiesCodec<State> mapCodec = new PropertiesCodec<State>(this.properties, () -> (State)ownerToStateFunction.apply(owner));
+        Supplier<State> supplier = () -> (State)function.apply(object);
+        MapCodec<State> mapCodec = MapCodec.of(Encoder.empty(), Decoder.unit(supplier));
+        for (Map.Entry entry : this.properties.entrySet()) {
+            mapCodec = StateManager.method_30040(mapCodec, supplier, (String)entry.getKey(), (Property)entry.getValue());
+        }
+        MapCodec<State> mapCodec2 = mapCodec;
         LinkedHashMap map = Maps.newLinkedHashMap();
         ArrayList<State> list3 = Lists.newArrayList();
         Stream<List<List<Object>>> stream = Stream.of(Collections.emptyList());
@@ -53,7 +57,7 @@ public class StateManager<O, S extends State<O, S>> {
         }
         stream.forEach(list2 -> {
             ImmutableMap<Property<?>, Comparable<?>> immutableMap = list2.stream().collect(ImmutableMap.toImmutableMap(Pair::getFirst, Pair::getSecond));
-            State state = (State)factory.create(owner, immutableMap, mapCodec);
+            State state = (State)factory.create(object, immutableMap, mapCodec2);
             map.put(immutableMap, state);
             list3.add(state);
         });
@@ -61,6 +65,10 @@ public class StateManager<O, S extends State<O, S>> {
             state.createWithTable(map);
         }
         this.states = ImmutableList.copyOf(list3);
+    }
+
+    private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> method_30040(MapCodec<S> mapCodec, Supplier<S> supplier, String string, Property<T> property) {
+        return Codec.mapPair(mapCodec, NumberCodecs.method_30018(property.method_30044().fieldOf(string), () -> property.method_30041((State)supplier.get()))).xmap(pair -> (State)((State)pair.getFirst()).with(property, ((Property.class_4933)pair.getSecond()).method_30045()), state -> Pair.of(state, property.method_30041((State<?, ?>)state)));
     }
 
     public ImmutableList<S> getStates() {
@@ -86,52 +94,6 @@ public class StateManager<O, S extends State<O, S>> {
     @Nullable
     public Property<?> getProperty(String name) {
         return this.properties.get(name);
-    }
-
-    static class PropertiesCodec<S extends State<?, S>>
-    extends MapCodec<S> {
-        private final Map<String, Property<?>> field_24735;
-        private final Supplier<S> field_24736;
-
-        public PropertiesCodec(Map<String, Property<?>> map, Supplier<S> supplier) {
-            this.field_24735 = map;
-            this.field_24736 = supplier;
-        }
-
-        @Override
-        public <T> RecordBuilder<T> encode(S state, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
-            ((State)state).getEntries().forEach((property, comparable) -> recordBuilder.add(property.getName(), dynamicOps.createString(PropertiesCodec.method_28487(property, comparable))));
-            return recordBuilder;
-        }
-
-        @Override
-        public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
-            return this.field_24735.keySet().stream().map(dynamicOps::createString);
-        }
-
-        @Override
-        public <T> DataResult<S> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
-            MutableObject<DataResult<S>> mutableObject = new MutableObject<DataResult<S>>(DataResult.success(this.field_24736.get()));
-            mapLike.entries().forEach(pair -> {
-                DataResult<Property> dataResult = dynamicOps.getStringValue(pair.getFirst()).map(this.field_24735::get);
-                Object object = pair.getSecond();
-                mutableObject.setValue(((DataResult)mutableObject.getValue()).flatMap((? super R state) -> dataResult.flatMap((? super R property) -> property.method_28503(dynamicOps, state, object))));
-            });
-            return mutableObject.getValue();
-        }
-
-        private static <T extends Comparable<T>> String method_28487(Property<T> property, Comparable<?> comparable) {
-            return property.name(comparable);
-        }
-
-        public String toString() {
-            return "PropertiesCodec";
-        }
-
-        @Override
-        public /* synthetic */ RecordBuilder encode(Object object, DynamicOps dynamicOps, RecordBuilder recordBuilder) {
-            return this.encode((S)((State)object), (DynamicOps<T>)dynamicOps, (RecordBuilder<T>)recordBuilder);
-        }
     }
 
     public static class Builder<O, S extends State<O, S>> {

@@ -1031,7 +1031,7 @@ AutoCloseable {
             profiler.swap("translucent");
             this.renderLayer(RenderLayer.getTranslucent(), matrices, d, e, f);
             profiler.swap("string");
-            this.renderLayer(RenderLayer.method_29997(), matrices, d, e, f);
+            this.renderLayer(RenderLayer.getTripwire(), matrices, d, e, f);
             this.particlesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             this.particlesFramebuffer.copyDepthFrom(this.client.getFramebuffer());
             RenderPhase.PARTICLES_TARGET.startDrawing();
@@ -1042,7 +1042,7 @@ AutoCloseable {
             profiler.swap("translucent");
             this.renderLayer(RenderLayer.getTranslucent(), matrices, d, e, f);
             profiler.swap("string");
-            this.renderLayer(RenderLayer.method_29997(), matrices, d, e, f);
+            this.renderLayer(RenderLayer.getTripwire(), matrices, d, e, f);
             profiler.swap("particles");
             this.client.particleManager.renderParticles(matrices, immediate, lightmapTextureManager, camera, tickDelta);
         }

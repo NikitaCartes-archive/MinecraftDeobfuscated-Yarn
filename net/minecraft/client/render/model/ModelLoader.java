@@ -198,7 +198,7 @@ public class ModelLoader {
             spriteAtlasTexture.upload(data);
             textureManager.registerTexture(spriteAtlasTexture.getId(), spriteAtlasTexture);
             textureManager.bindTexture(spriteAtlasTexture.getId());
-            spriteAtlasTexture.method_24198(data);
+            spriteAtlasTexture.applyTextureFilter(data);
         }
         this.spriteAtlasManager = new SpriteAtlasManager(this.spriteAtlasData.values().stream().map(Pair::getFirst).collect(Collectors.toList()));
         profiler.swap("baking");

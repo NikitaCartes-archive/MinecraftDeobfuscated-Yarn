@@ -896,7 +896,7 @@ AutoCloseable {
     public abstract Optional<String> getModdedStatusMessage();
 
     @Override
-    public void sendSystemMessage(Text message, UUID uUID) {
+    public void sendSystemMessage(Text message, UUID senderUuid) {
         LOGGER.info(message.getString());
     }
 

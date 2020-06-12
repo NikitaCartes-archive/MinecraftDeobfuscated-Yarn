@@ -1128,17 +1128,17 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID uUID) {
-        this.sendMessage(message, MessageType.SYSTEM, uUID);
+    public void sendSystemMessage(Text message, UUID senderUuid) {
+        this.sendMessage(message, MessageType.SYSTEM, senderUuid);
     }
 
-    public void sendMessage(Text message, MessageType type, UUID uUID) {
-        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, type, uUID), future -> {
+    public void sendMessage(Text message, MessageType type, UUID senderUuid) {
+        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, type, senderUuid), future -> {
             if (!(future.isSuccess() || type != MessageType.GAME_INFO && type != MessageType.SYSTEM)) {
                 int i = 256;
                 String string = message.asTruncatedString(256);
                 MutableText text2 = new LiteralText(string).formatted(Formatting.YELLOW);
-                this.networkHandler.sendPacket(new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, uUID));
+                this.networkHandler.sendPacket(new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, senderUuid));
             }
         });
     }

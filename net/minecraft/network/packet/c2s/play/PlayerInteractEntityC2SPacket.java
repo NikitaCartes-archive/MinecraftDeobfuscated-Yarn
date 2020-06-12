@@ -26,9 +26,11 @@ implements Packet<ServerPlayPacketListener> {
     public PlayerInteractEntityC2SPacket() {
     }
 
-    public PlayerInteractEntityC2SPacket(Entity entity) {
+    @Environment(value=EnvType.CLIENT)
+    public PlayerInteractEntityC2SPacket(Entity entity, boolean bl) {
         this.entityId = entity.getEntityId();
         this.type = InteractionType.ATTACK;
+        this.field_25660 = bl;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -57,8 +59,8 @@ implements Packet<ServerPlayPacketListener> {
         }
         if (this.type == InteractionType.INTERACT || this.type == InteractionType.INTERACT_AT) {
             this.hand = buf.readEnumConstant(Hand.class);
-            this.field_25660 = buf.readBoolean();
         }
+        this.field_25660 = buf.readBoolean();
     }
 
     @Override
@@ -72,8 +74,8 @@ implements Packet<ServerPlayPacketListener> {
         }
         if (this.type == InteractionType.INTERACT || this.type == InteractionType.INTERACT_AT) {
             buf.writeEnumConstant(this.hand);
-            buf.writeBoolean(this.field_25660);
         }
+        buf.writeBoolean(this.field_25660);
     }
 
     @Override

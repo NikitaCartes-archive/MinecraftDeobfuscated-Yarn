@@ -489,6 +489,7 @@ implements ScreenHandlerProvider<T> {
         }
         if (keyCode == 256 || this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
             this.client.player.closeHandledScreen();
+            return true;
         }
         this.handleHotbarKeyPressed(keyCode, scanCode);
         if (this.focusedSlot != null && this.focusedSlot.hasStack()) {

@@ -394,12 +394,12 @@ public class Util {
         return string2 -> consumer.accept(string + string2);
     }
 
-    public static DataResult<int[]> method_29190(IntStream intStream, int i) {
-        int[] is = intStream.limit(i + 1).toArray();
-        if (is.length != i) {
-            String string = "Input is not a list of " + i + " ints";
-            if (is.length >= i) {
-                return DataResult.error(string, Arrays.copyOf(is, i));
+    public static DataResult<int[]> toIntArray(IntStream intStream, int length) {
+        int[] is = intStream.limit(length + 1).toArray();
+        if (is.length != length) {
+            String string = "Input is not a list of " + length + " ints";
+            if (is.length >= length) {
+                return DataResult.error(string, Arrays.copyOf(is, length));
             }
             return DataResult.error(string);
         }

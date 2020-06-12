@@ -1020,9 +1020,9 @@ extends DrawableHelper {
         }
     }
 
-    public void addChatMessage(MessageType messageType, Text text, UUID uUID) {
-        for (ClientChatListener clientChatListener : this.listeners.get((Object)messageType)) {
-            clientChatListener.onChatMessage(messageType, text, uUID);
+    public void addChatMessage(MessageType type, Text text, UUID senderUuid) {
+        for (ClientChatListener clientChatListener : this.listeners.get((Object)type)) {
+            clientChatListener.onChatMessage(type, text, senderUuid);
         }
     }
 

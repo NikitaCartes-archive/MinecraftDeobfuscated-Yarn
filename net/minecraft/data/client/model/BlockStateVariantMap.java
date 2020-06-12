@@ -14,7 +14,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.data.client.model.BlockStateVariant;
-import net.minecraft.data.client.model.PropertiesEntry;
 import net.minecraft.data.client.model.PropertiesMap;
 import net.minecraft.state.property.Property;
 
@@ -41,7 +40,7 @@ public abstract class BlockStateVariantMap {
         List<Property<?>> list = this.getProperties();
         Stream<PropertiesMap> stream = Stream.of(PropertiesMap.empty());
         for (Property<?> property : list) {
-            stream = stream.flatMap(propertiesMap -> PropertiesEntry.streamAllFor(property).map(propertiesMap::with));
+            stream = stream.flatMap(propertiesMap -> property.method_30043().map(propertiesMap::method_25819));
         }
         List list2 = stream.filter(propertiesMap -> !this.variants.containsKey(propertiesMap)).collect(Collectors.toList());
         if (!list2.isEmpty()) {
@@ -98,7 +97,7 @@ public abstract class BlockStateVariantMap {
         }
 
         public QuintupleProperty<T1, T2, T3, T4, T5> register(T1 comparable, T2 comparable2, T3 comparable3, T4 comparable4, T5 comparable5, List<BlockStateVariant> list) {
-            PropertiesMap propertiesMap = PropertiesMap.create(new PropertiesEntry<T1>(this.first, comparable), new PropertiesEntry<T2>(this.second, comparable2), new PropertiesEntry<T3>(this.third, comparable3), new PropertiesEntry<T4>(this.fourth, comparable4), new PropertiesEntry<T5>(this.fifth, comparable5));
+            PropertiesMap propertiesMap = PropertiesMap.method_25821(this.first.method_30042(comparable), this.second.method_30042(comparable2), this.third.method_30042(comparable3), this.fourth.method_30042(comparable4), this.fifth.method_30042(comparable5));
             this.register(propertiesMap, list);
             return this;
         }
@@ -128,7 +127,7 @@ public abstract class BlockStateVariantMap {
         }
 
         public QuadrupleProperty<T1, T2, T3, T4> register(T1 comparable, T2 comparable2, T3 comparable3, T4 comparable4, List<BlockStateVariant> list) {
-            PropertiesMap propertiesMap = PropertiesMap.create(new PropertiesEntry<T1>(this.first, comparable), new PropertiesEntry<T2>(this.second, comparable2), new PropertiesEntry<T3>(this.third, comparable3), new PropertiesEntry<T4>(this.fourth, comparable4));
+            PropertiesMap propertiesMap = PropertiesMap.method_25821(this.first.method_30042(comparable), this.second.method_30042(comparable2), this.third.method_30042(comparable3), this.fourth.method_30042(comparable4));
             this.register(propertiesMap, list);
             return this;
         }
@@ -156,7 +155,7 @@ public abstract class BlockStateVariantMap {
         }
 
         public TripleProperty<T1, T2, T3> register(T1 comparable, T2 comparable2, T3 comparable3, List<BlockStateVariant> list) {
-            PropertiesMap propertiesMap = PropertiesMap.create(new PropertiesEntry<T1>(this.first, comparable), new PropertiesEntry<T2>(this.second, comparable2), new PropertiesEntry<T3>(this.third, comparable3));
+            PropertiesMap propertiesMap = PropertiesMap.method_25821(this.first.method_30042(comparable), this.second.method_30042(comparable2), this.third.method_30042(comparable3));
             this.register(propertiesMap, list);
             return this;
         }
@@ -187,7 +186,7 @@ public abstract class BlockStateVariantMap {
         }
 
         public DoubleProperty<T1, T2> register(T1 comparable, T2 comparable2, List<BlockStateVariant> list) {
-            PropertiesMap propertiesMap = PropertiesMap.create(new PropertiesEntry<T1>(this.first, comparable), new PropertiesEntry<T2>(this.second, comparable2));
+            PropertiesMap propertiesMap = PropertiesMap.method_25821(this.first.method_30042(comparable), this.second.method_30042(comparable2));
             this.register(propertiesMap, list);
             return this;
         }
@@ -221,7 +220,7 @@ public abstract class BlockStateVariantMap {
         }
 
         public SingleProperty<T1> register(T1 value, List<BlockStateVariant> variants) {
-            PropertiesMap propertiesMap = PropertiesMap.create(new PropertiesEntry<T1>(this.property, value));
+            PropertiesMap propertiesMap = PropertiesMap.method_25821(this.property.method_30042(value));
             this.register(propertiesMap, variants);
             return this;
         }

@@ -94,6 +94,25 @@ public class NumberCodecs {
         });
     }
 
+    public static <A> MapCodec<A> method_30018(MapCodec<A> mapCodec, final Supplier<A> supplier) {
+        return NumberCodecs.method_29904(mapCodec, new class_5395<A>(){
+
+            @Override
+            public <T> DataResult<A> method_29907(DynamicOps<T> dynamicOps, MapLike<T> mapLike, DataResult<A> dataResult) {
+                return dataResult.setPartial((Object)supplier);
+            }
+
+            @Override
+            public <T> RecordBuilder<T> method_29908(DynamicOps<T> dynamicOps, A object, RecordBuilder<T> recordBuilder) {
+                return recordBuilder;
+            }
+
+            public String toString() {
+                return "SetPartial[" + supplier + "]";
+            }
+        });
+    }
+
     static interface class_5395<A> {
         public <T> DataResult<A> method_29907(DynamicOps<T> var1, MapLike<T> var2, DataResult<A> var3);
 

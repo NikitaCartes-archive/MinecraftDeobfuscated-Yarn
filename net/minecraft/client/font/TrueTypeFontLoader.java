@@ -86,7 +86,7 @@ implements FontLoader {
         try (Resource resource = manager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));){
             LOGGER.debug("Loading font {}", (Object)this.filename);
             sTBTTFontinfo = STBTTFontinfo.malloc();
-            byteBuffer = TextureUtil.method_24962(resource.getInputStream());
+            byteBuffer = TextureUtil.readAllToByteBuffer(resource.getInputStream());
             byteBuffer.flip();
             LOGGER.debug("Reading font {}", (Object)this.filename);
             if (!STBTruetype.stbtt_InitFont((STBTTFontinfo)sTBTTFontinfo, byteBuffer)) {

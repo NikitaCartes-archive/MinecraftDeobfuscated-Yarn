@@ -774,6 +774,11 @@ extends Entity {
         return new EntitySpawnS2CPacket(this);
     }
 
+    @Override
+    public boolean isSubmergedInWater() {
+        return this.location == Location.UNDER_WATER || this.location == Location.UNDER_FLOWING_WATER;
+    }
+
     public static enum Type {
         OAK(Blocks.OAK_PLANKS, "oak"),
         SPRUCE(Blocks.SPRUCE_PLANKS, "spruce"),

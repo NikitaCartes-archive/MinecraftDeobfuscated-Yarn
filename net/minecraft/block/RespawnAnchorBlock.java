@@ -73,7 +73,7 @@ extends Block {
                 world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 return ActionResult.SUCCESS;
             }
-            return RespawnAnchorBlock.canCharge(state) ? ActionResult.PASS : ActionResult.CONSUME;
+            return ActionResult.CONSUME;
         }
         if (!world.isClient) {
             this.explode(state, world, pos);

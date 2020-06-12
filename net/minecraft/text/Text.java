@@ -65,19 +65,9 @@ StringRenderable {
      */
     public String asString();
 
-    /**
-     * Returns the full string representation of this text, including siblings.
-     * 
-     * {@inheritDoc}
-     */
     @Override
     default public String getString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        this.visit(string -> {
-            stringBuilder.append(string);
-            return Optional.empty();
-        });
-        return stringBuilder.toString();
+        return StringRenderable.super.getString();
     }
 
     /**

@@ -140,7 +140,7 @@ implements CommandOutput {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID uUID) {
+    public void sendSystemMessage(Text message, UUID senderUuid) {
         if (this.trackOutput) {
             this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
             this.markDirty();

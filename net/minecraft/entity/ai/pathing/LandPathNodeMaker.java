@@ -411,8 +411,11 @@ extends PathNodeMaker {
                     if (LandPathNodeMaker.method_27138(blockState)) {
                         return PathNodeType.DANGER_FIRE;
                     }
-                    if (!blockView.getFluidState(mutable).matches(FluidTags.WATER)) continue;
-                    return PathNodeType.WATER_BORDER;
+                    if (blockView.getFluidState(mutable).matches(FluidTags.WATER)) {
+                        return PathNodeType.WATER_BORDER;
+                    }
+                    if (!blockView.getFluidState(mutable).matches(FluidTags.LAVA)) continue;
+                    return PathNodeType.LAVA;
                 }
             }
         }
@@ -476,7 +479,7 @@ extends PathNodeMaker {
     }
 
     private static boolean method_27138(BlockState blockState) {
-        return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
+        return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
     }
 }
 

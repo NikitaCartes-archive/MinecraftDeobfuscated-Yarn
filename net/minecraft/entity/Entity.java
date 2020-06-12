@@ -6,7 +6,6 @@ package net.minecraft.entity;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonSyntaxException;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
@@ -936,10 +935,16 @@ CommandOutput {
     }
 
     private void updateSubmergedInWaterState() {
+        BoatEntity boatEntity;
         this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
         this.field_25599 = null;
         double d = this.getEyeY() - 0.1111111119389534;
-        BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
+        Vec3d vec3d = new Vec3d(this.getX(), d, this.getZ());
+        Entity entity = this.getVehicle();
+        if (entity instanceof BoatEntity && !(boatEntity = (BoatEntity)entity).isSubmergedInWater() && boatEntity.getBoundingBox().contains(vec3d)) {
+            return;
+        }
+        BlockPos blockPos = new BlockPos(vec3d);
         FluidState fluidState = this.world.getFluidState(blockPos);
         for (Tag tag : FluidTags.method_29897()) {
             if (!fluidState.matches(tag)) continue;
@@ -1366,8 +1371,8 @@ CommandOutput {
                 String string = tag.getString("CustomName");
                 try {
                     this.setCustomName(Text.Serializer.fromJson(string));
-                } catch (JsonSyntaxException jsonSyntaxException) {
-                    LOGGER.warn("Failed to parse entity custom name {}", (Object)string, (Object)jsonSyntaxException);
+                } catch (Exception exception) {
+                    LOGGER.warn("Failed to parse entity custom name {}", (Object)string, (Object)exception);
                 }
             }
             this.setCustomNameVisible(tag.getBoolean("CustomNameVisible"));
@@ -1462,17 +1467,10 @@ CommandOutput {
         if (this.noClip) {
             return false;
         }
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int i = 0; i < 8; ++i) {
-            int j = MathHelper.floor(this.getY() + (double)(((float)((i >> 0) % 2) - 0.5f) * 0.1f) + (double)this.standingEyeHeight);
-            int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5f) * this.dimensions.width * 0.8f));
-            int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * this.dimensions.width * 0.8f));
-            if (mutable.getX() == k && mutable.getY() == j && mutable.getZ() == l) continue;
-            mutable.set(k, j, l);
-            if (!this.world.getBlockState(mutable).shouldSuffocate(this.world, mutable)) continue;
-            return true;
-        }
-        return false;
+        float f = 0.1f;
+        float g = this.dimensions.width * 0.8f;
+        Box box = Box.method_30048(g, 0.1f, g).offset(this.getX(), this.getEyeY(), this.getZ());
+        return this.world.method_30030(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos)).findAny().isPresent();
     }
 
     /**
@@ -2267,7 +2265,7 @@ CommandOutput {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID uUID) {
+    public void sendSystemMessage(Text message, UUID senderUuid) {
     }
 
     public World getEntityWorld() {

@@ -13,7 +13,7 @@ public interface CommandOutput {
     public static final CommandOutput DUMMY = new CommandOutput(){
 
         @Override
-        public void sendSystemMessage(Text message, UUID uUID) {
+        public void sendSystemMessage(Text message, UUID senderUuid) {
         }
 
         @Override

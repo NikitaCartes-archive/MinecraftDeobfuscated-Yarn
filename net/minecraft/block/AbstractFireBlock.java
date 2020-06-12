@@ -26,6 +26,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public abstract class AbstractFireBlock
 extends Block {
@@ -158,6 +159,20 @@ extends Block {
         if (!world.isClient()) {
             world.syncWorldEvent(null, 1009, pos, 0);
         }
+    }
+
+    public static boolean method_30032(WorldAccess worldAccess, BlockPos blockPos) {
+        BlockState blockState = worldAccess.getBlockState(blockPos);
+        BlockState blockState2 = AbstractFireBlock.getState(worldAccess, blockPos);
+        return blockState.isAir() && (blockState2.canPlaceAt(worldAccess, blockPos) || AbstractFireBlock.method_30033(worldAccess, blockPos));
+    }
+
+    private static boolean method_30033(WorldAccess worldAccess, BlockPos blockPos) {
+        for (Direction direction : Direction.Type.HORIZONTAL) {
+            if (!worldAccess.getBlockState(blockPos.offset(direction)).isOf(Blocks.OBSIDIAN) || NetherPortalBlock.createAreaHelper(worldAccess, blockPos) == null) continue;
+            return true;
+        }
+        return false;
     }
 }
 
