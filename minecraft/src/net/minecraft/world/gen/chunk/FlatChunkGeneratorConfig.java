@@ -39,6 +39,8 @@ public class FlatChunkGeneratorConfig {
 			instance -> instance.group(
 						StructuresConfig.CODEC.fieldOf("structures").forGetter(FlatChunkGeneratorConfig::getConfig),
 						FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers").forGetter(FlatChunkGeneratorConfig::getLayers),
+						Codec.BOOL.fieldOf("lakes").withDefault(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24977),
+						Codec.BOOL.fieldOf("features").withDefault(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24976),
 						NumberCodecs.method_29905(Registry.BIOME.fieldOf("biome"), Util.method_29188("Unknown biome, defaulting to plains", LOGGER::error), () -> Biomes.PLAINS)
 							.forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)
 					)
@@ -79,8 +81,16 @@ public class FlatChunkGeneratorConfig {
 	private boolean field_24976 = false;
 	private boolean field_24977 = false;
 
-	public FlatChunkGeneratorConfig(StructuresConfig structuresConfig, List<FlatChunkGeneratorLayer> list, Biome biome) {
+	public FlatChunkGeneratorConfig(StructuresConfig structuresConfig, List<FlatChunkGeneratorLayer> list, boolean bl, boolean bl2, Biome biome) {
 		this(structuresConfig);
+		if (bl) {
+			this.method_28916();
+		}
+
+		if (bl2) {
+			this.method_28911();
+		}
+
 		this.layers.addAll(list);
 		this.updateLayerBlocks();
 		this.biome = biome;
@@ -116,12 +126,10 @@ public class FlatChunkGeneratorConfig {
 		return flatChunkGeneratorConfig;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void method_28911() {
 		this.field_24976 = true;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void method_28916() {
 		this.field_24977 = true;
 	}

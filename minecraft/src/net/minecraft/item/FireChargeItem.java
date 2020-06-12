@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -21,20 +20,15 @@ public class FireChargeItem extends Item {
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		boolean bl = false;
-		if (blockState.method_27851(
-			BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(CampfireBlock.LIT) && abstractBlockState.contains(CampfireBlock.WATERLOGGED)
-		)) {
-			if (!(Boolean)blockState.get(CampfireBlock.LIT) && !(Boolean)blockState.get(CampfireBlock.WATERLOGGED)) {
-				this.playUseSound(world, blockPos);
-				world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(true)));
-				bl = true;
-			}
+		if (CampfireBlock.method_30035(blockState)) {
+			this.playUseSound(world, blockPos);
+			world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(true)));
+			bl = true;
 		} else {
 			blockPos = blockPos.offset(context.getSide());
-			BlockState blockState2 = AbstractFireBlock.getState(world, blockPos);
-			if (world.getBlockState(blockPos).isAir() && blockState2.canPlaceAt(world, blockPos)) {
+			if (AbstractFireBlock.method_30032(world, blockPos)) {
 				this.playUseSound(world, blockPos);
-				world.setBlockState(blockPos, blockState2);
+				world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
 				bl = true;
 			}
 		}

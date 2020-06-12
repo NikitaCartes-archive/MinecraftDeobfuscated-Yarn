@@ -399,11 +399,11 @@ public class Util {
 		return string2 -> consumer.accept(string + string2);
 	}
 
-	public static DataResult<int[]> method_29190(IntStream intStream, int i) {
-		int[] is = intStream.limit((long)(i + 1)).toArray();
-		if (is.length != i) {
-			String string = "Input is not a list of " + i + " ints";
-			return is.length >= i ? DataResult.error(string, Arrays.copyOf(is, i)) : DataResult.error(string);
+	public static DataResult<int[]> toIntArray(IntStream intStream, int length) {
+		int[] is = intStream.limit((long)(length + 1)).toArray();
+		if (is.length != length) {
+			String string = "Input is not a list of " + length + " ints";
+			return is.length >= length ? DataResult.error(string, Arrays.copyOf(is, length)) : DataResult.error(string);
 		} else {
 			return DataResult.success(is);
 		}

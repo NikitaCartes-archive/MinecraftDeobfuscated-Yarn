@@ -3,7 +3,6 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -69,25 +68,24 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
-		super.afterBreak(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
-	}
-
-	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
-		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
-		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.isOf(this) && blockState.get(HALF) != doubleBlockHalf) {
-			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-			world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
-			if (!world.isClient && !player.isCreative()) {
-				dropStacks(state, world, pos, null, player, player.getMainHandStack());
-				dropStacks(blockState, world, blockPos, null, player, player.getMainHandStack());
-			}
+		if (!world.isClient && player.isCreative()) {
+			method_30036(world, pos, state, player);
 		}
 
 		super.onBreak(world, pos, state, player);
+	}
+
+	protected static void method_30036(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
+		if (doubleBlockHalf == DoubleBlockHalf.UPPER) {
+			BlockPos blockPos2 = blockPos.down();
+			BlockState blockState2 = world.getBlockState(blockPos2);
+			if (blockState2.getBlock() == blockState.getBlock() && blockState2.get(HALF) == DoubleBlockHalf.LOWER) {
+				world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
+				world.syncWorldEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
+			}
+		}
 	}
 
 	@Override

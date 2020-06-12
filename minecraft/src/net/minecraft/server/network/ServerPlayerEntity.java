@@ -1206,14 +1206,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID uUID) {
-		this.sendMessage(message, MessageType.SYSTEM, uUID);
+	public void sendSystemMessage(Text message, UUID senderUuid) {
+		this.sendMessage(message, MessageType.SYSTEM, senderUuid);
 	}
 
-	public void sendMessage(Text message, MessageType type, UUID uUID) {
+	public void sendMessage(Text message, MessageType type, UUID senderUuid) {
 		this.networkHandler
 			.sendPacket(
-				new GameMessageS2CPacket(message, type, uUID),
+				new GameMessageS2CPacket(message, type, senderUuid),
 				future -> {
 					if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM)) {
 						int i = 256;
@@ -1221,7 +1221,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 						Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
 						this.networkHandler
 							.sendPacket(
-								new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, uUID)
+								new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, senderUuid)
 							);
 					}
 				}

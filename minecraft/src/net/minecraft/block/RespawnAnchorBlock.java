@@ -80,7 +80,7 @@ public class RespawnAnchorBlock extends Block {
 				}
 			}
 
-			return canCharge(state) ? ActionResult.PASS : ActionResult.CONSUME;
+			return ActionResult.CONSUME;
 		}
 	}
 

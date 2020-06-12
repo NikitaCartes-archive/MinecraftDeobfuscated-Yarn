@@ -766,9 +766,9 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public void broadcastChatMessage(Text message, MessageType messageType, UUID uUID) {
-		this.server.sendSystemMessage(message, uUID);
-		this.sendToAll(new GameMessageS2CPacket(message, messageType, uUID));
+	public void broadcastChatMessage(Text message, MessageType type, UUID senderUuid) {
+		this.server.sendSystemMessage(message, senderUuid);
+		this.sendToAll(new GameMessageS2CPacket(message, type, senderUuid));
 	}
 
 	public ServerStatHandler createStatHandler(PlayerEntity player) {

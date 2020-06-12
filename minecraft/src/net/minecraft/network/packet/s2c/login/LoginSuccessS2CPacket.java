@@ -28,14 +28,14 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 			is[i] = buf.readInt();
 		}
 
-		UUID uUID = DynamicSerializableUuid.method_26276(is);
+		UUID uUID = DynamicSerializableUuid.toUuid(is);
 		String string = buf.readString(16);
 		this.profile = new GameProfile(uUID, string);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
-		for (int i : DynamicSerializableUuid.method_26275(this.profile.getId())) {
+		for (int i : DynamicSerializableUuid.toIntArray(this.profile.getId())) {
 			buf.writeInt(i);
 		}
 

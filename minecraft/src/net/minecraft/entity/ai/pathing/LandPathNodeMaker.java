@@ -518,6 +518,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						if (blockView.getFluidState(mutable).matches(FluidTags.WATER)) {
 							return PathNodeType.WATER_BORDER;
 						}
+
+						if (blockView.getFluidState(mutable).matches(FluidTags.LAVA)) {
+							return PathNodeType.LAVA;
+						}
 					}
 				}
 			}
@@ -573,6 +577,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private static boolean method_27138(BlockState blockState) {
-		return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
+		return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
 	}
 }

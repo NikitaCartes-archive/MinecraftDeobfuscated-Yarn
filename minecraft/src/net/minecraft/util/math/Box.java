@@ -442,4 +442,8 @@ public class Box {
 	public Vec3d getCenter() {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}
+
+	public static Box method_30048(double d, double e, double f) {
+		return new Box(-d / 2.0, -e / 2.0, -f / 2.0, d / 2.0, e / 2.0, f / 2.0);
+	}
 }

@@ -42,6 +42,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5407;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -290,6 +291,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final MusicTracker musicTracker;
 	private final FontManager fontManager;
 	private final SplashTextResourceSupplier splashTextLoader;
+	private final class_5407 field_25671;
 	private final MinecraftSessionService sessionService;
 	private final PlayerSkinProvider skinProvider;
 	private final BakedModelManager bakedModelManager;
@@ -473,6 +475,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerListener(this.paintingManager);
 		this.statusEffectSpriteManager = new StatusEffectSpriteManager(this.textureManager);
 		this.resourceManager.registerListener(this.statusEffectSpriteManager);
+		this.field_25671 = new class_5407();
+		this.resourceManager.registerListener(this.field_25671);
 		this.inGameHud = new InGameHud(this);
 		this.debugRenderer = new DebugRenderer(this);
 		RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
@@ -2253,6 +2257,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public boolean isPaused() {
 		return this.paused;
+	}
+
+	public class_5407 method_30049() {
+		return this.field_25671;
 	}
 
 	public SoundManager getSoundManager() {

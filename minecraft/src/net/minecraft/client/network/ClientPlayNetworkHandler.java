@@ -505,7 +505,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity = new AreaEffectCloudEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.LIGHTNING_BOLT) {
 			entity = new LightningEntity(EntityType.LIGHTNING_BOLT, this.world);
-			entity.positAfterTeleport(d, e, f);
 		} else {
 			entity = null;
 		}
@@ -513,6 +512,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (entity != null) {
 			int i = packet.getId();
 			entity.updateTrackedPosition(d, e, f);
+			entity.positAfterTeleport(d, e, f);
 			entity.pitch = (float)(packet.getPitch() * 360) / 256.0F;
 			entity.yaw = (float)(packet.getYaw() * 360) / 256.0F;
 			entity.setEntityId(i);
@@ -871,7 +871,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGameMessage(GameMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.method_29175());
+		this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSenderUuid());
 	}
 
 	@Override

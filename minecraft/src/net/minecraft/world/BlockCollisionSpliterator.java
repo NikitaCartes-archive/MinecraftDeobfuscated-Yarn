@@ -2,6 +2,7 @@ package net.minecraft.world;
 
 import java.util.Objects;
 import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -27,16 +28,22 @@ public class BlockCollisionSpliterator extends AbstractSpliterator<VoxelShape> {
 	private final VoxelShape boxShape;
 	private final CollisionView world;
 	private boolean checkEntity;
+	private final BiPredicate<BlockState, BlockPos> field_25669;
 
 	public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box) {
+		this(world, entity, box, (blockState, blockPos) -> true);
+	}
+
+	public BlockCollisionSpliterator(CollisionView collisionView, @Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
 		super(Long.MAX_VALUE, 1280);
 		this.context = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
 		this.pos = new BlockPos.Mutable();
 		this.boxShape = VoxelShapes.cuboid(box);
-		this.world = world;
+		this.world = collisionView;
 		this.checkEntity = entity != null;
 		this.entity = entity;
 		this.box = box;
+		this.field_25669 = biPredicate;
 		int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
 		int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
 		int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
@@ -61,7 +68,7 @@ public class BlockCollisionSpliterator extends AbstractSpliterator<VoxelShape> {
 				if (blockView != null) {
 					this.pos.set(i, j, k);
 					BlockState blockState = blockView.getBlockState(this.pos);
-					if ((l != 1 || blockState.exceedsCube()) && (l != 2 || blockState.isOf(Blocks.MOVING_PISTON))) {
+					if (this.field_25669.test(blockState, this.pos) && (l != 1 || blockState.exceedsCube()) && (l != 2 || blockState.isOf(Blocks.MOVING_PISTON))) {
 						VoxelShape voxelShape = blockState.getCollisionShape(this.world, this.pos, this.context);
 						if (voxelShape == VoxelShapes.fullCube()) {
 							if (this.box.intersects((double)i, (double)j, (double)k, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)) {

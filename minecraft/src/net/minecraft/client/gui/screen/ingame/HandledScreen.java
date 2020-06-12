@@ -539,11 +539,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else {
-			if (keyCode == 256 || this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
-				this.client.player.closeHandledScreen();
-			}
-
+		} else if (keyCode != 256 && !this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
 			this.handleHotbarKeyPressed(keyCode, scanCode);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
 				if (this.client.options.keyPickItem.matchesKey(keyCode, scanCode)) {
@@ -553,6 +549,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				}
 			}
 
+			return true;
+		} else {
+			this.client.player.closeHandledScreen();
 			return true;
 		}
 	}

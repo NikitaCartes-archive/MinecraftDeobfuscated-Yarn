@@ -1003,7 +1003,14 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 					LootPool.builder()
 						.rolls(ConstantLootTableRange.create(1))
 						.with(ItemEntry.builder(Items.GOLD_INGOT))
-						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(
+							KilledByPlayerLootCondition.builder()
+								.or(
+									EntityPropertiesLootCondition.builder(
+										LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().targetedEntity(EntityPredicate.Builder.create().build())
+									)
+								)
+						)
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);

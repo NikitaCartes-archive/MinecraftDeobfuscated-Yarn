@@ -85,7 +85,7 @@ public final class NativeImage implements AutoCloseable {
 
 		NativeImage var3;
 		try {
-			byteBuffer = TextureUtil.method_24962(inputStream);
+			byteBuffer = TextureUtil.readAllToByteBuffer(inputStream);
 			byteBuffer.rewind();
 			var3 = read(format, byteBuffer);
 		} finally {
@@ -248,8 +248,8 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void upload(int level, int offsetX, int offsetY, boolean mipmap) {
-		this.upload(level, offsetX, offsetY, 0, 0, this.width, this.height, false, mipmap);
+	public void upload(int level, int offsetX, int offsetY, boolean close) {
+		this.upload(level, offsetX, offsetY, 0, 0, this.width, this.height, false, close);
 	}
 
 	public void upload(int level, int offsetX, int offsetY, int unpackSkipPixels, int unpackSkipRows, int width, int height, boolean mipmap, boolean close) {
@@ -362,7 +362,7 @@ public final class NativeImage implements AutoCloseable {
 			Throwable var3 = null;
 
 			try {
-				if (!this.method_24032(writableByteChannel)) {
+				if (!this.write(writableByteChannel)) {
 					throw new IOException("Could not write image to the PNG file \"" + path.toAbsolutePath() + "\": " + STBImage.stbi_failure_reason());
 				}
 			} catch (Throwable var12) {
@@ -394,7 +394,7 @@ public final class NativeImage implements AutoCloseable {
 			Throwable var4 = null;
 
 			try {
-				if (!this.method_24032(writableByteChannel)) {
+				if (!this.write(writableByteChannel)) {
 					throw new IOException("Could not write image to byte array: " + STBImage.stbi_failure_reason());
 				}
 
@@ -435,7 +435,7 @@ public final class NativeImage implements AutoCloseable {
 		return var5;
 	}
 
-	private boolean method_24032(WritableByteChannel writableByteChannel) throws IOException {
+	private boolean write(WritableByteChannel writableByteChannel) throws IOException {
 		NativeImage.WriteCallback writeCallback = new NativeImage.WriteCallback(writableByteChannel);
 
 		boolean var4;

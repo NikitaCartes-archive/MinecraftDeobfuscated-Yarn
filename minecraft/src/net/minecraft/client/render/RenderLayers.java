@@ -19,7 +19,7 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class RenderLayers {
 	private static final Map<Block, RenderLayer> BLOCKS = Util.make(Maps.<Block, RenderLayer>newHashMap(), hashMap -> {
-		RenderLayer renderLayer = RenderLayer.method_29997();
+		RenderLayer renderLayer = RenderLayer.getTripwire();
 		hashMap.put(Blocks.TRIPWIRE, renderLayer);
 		RenderLayer renderLayer2 = RenderLayer.getCutoutMipped();
 		hashMap.put(Blocks.GRASS_BLOCK, renderLayer2);

@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -89,7 +90,19 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
+		World world = ctx.getWorld();
+		ItemStack itemStack = ctx.getStack();
+		CompoundTag compoundTag = itemStack.getOrCreateTag();
+		PlayerEntity playerEntity = ctx.getPlayer();
+		boolean bl = false;
+		if (!world.isClient && playerEntity != null && playerEntity.isCreativeLevelTwoOp() && compoundTag.contains("BlockEntityTag")) {
+			CompoundTag compoundTag2 = compoundTag.getCompound("BlockEntityTag");
+			if (compoundTag2.contains("Book")) {
+				bl = true;
+			}
+		}
+
+		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite()).with(HAS_BOOK, Boolean.valueOf(bl));
 	}
 
 	@Override

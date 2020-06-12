@@ -67,7 +67,7 @@ public class TextureUtil {
 		GlStateManager.bindTexture(id);
 	}
 
-	public static ByteBuffer method_24962(InputStream inputStream) throws IOException {
+	public static ByteBuffer readAllToByteBuffer(InputStream inputStream) throws IOException {
 		ByteBuffer byteBuffer;
 		if (inputStream instanceof FileInputStream) {
 			FileInputStream fileInputStream = (FileInputStream)inputStream;
@@ -90,12 +90,12 @@ public class TextureUtil {
 		return byteBuffer;
 	}
 
-	public static String method_24965(InputStream inputStream) {
+	public static String readAllToString(InputStream inputStream) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		ByteBuffer byteBuffer = null;
 
 		try {
-			byteBuffer = method_24962(inputStream);
+			byteBuffer = readAllToByteBuffer(inputStream);
 			int i = byteBuffer.position();
 			byteBuffer.rewind();
 			return MemoryUtil.memASCII(byteBuffer, i);

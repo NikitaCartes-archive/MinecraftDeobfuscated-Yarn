@@ -307,4 +307,12 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
+
+	public static boolean method_30035(BlockState blockState) {
+		return blockState.method_27851(
+				BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(Properties.WATERLOGGED) && abstractBlockState.contains(Properties.LIT)
+			)
+			&& !(Boolean)blockState.get(Properties.WATERLOGGED)
+			&& !(Boolean)blockState.get(Properties.LIT);
+	}
 }

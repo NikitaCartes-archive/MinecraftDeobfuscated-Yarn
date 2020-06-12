@@ -1105,9 +1105,9 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public void addChatMessage(MessageType messageType, Text text, UUID uUID) {
-		for (ClientChatListener clientChatListener : (List)this.listeners.get(messageType)) {
-			clientChatListener.onChatMessage(messageType, text, uUID);
+	public void addChatMessage(MessageType type, Text text, UUID senderUuid) {
+		for (ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
+			clientChatListener.onChatMessage(type, text, senderUuid);
 		}
 	}
 

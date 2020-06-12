@@ -847,6 +847,11 @@ public class BoatEntity extends Entity {
 		return new EntitySpawnS2CPacket(this);
 	}
 
+	@Override
+	public boolean isSubmergedInWater() {
+		return this.location == BoatEntity.Location.UNDER_WATER || this.location == BoatEntity.Location.UNDER_FLOWING_WATER;
+	}
+
 	public static enum Location {
 		IN_WATER,
 		UNDER_WATER,

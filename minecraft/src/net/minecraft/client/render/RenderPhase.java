@@ -190,7 +190,7 @@ public abstract class RenderPhase {
 			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 		}
 	});
-	protected static final RenderPhase.Target field_25643 = new RenderPhase.Target("item_entity_target", () -> {
+	protected static final RenderPhase.Target ITEM_TARGET = new RenderPhase.Target("item_entity_target", () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			MinecraftClient.getInstance().worldRenderer.getEntityFramebuffer().beginWrite(false);
 		}

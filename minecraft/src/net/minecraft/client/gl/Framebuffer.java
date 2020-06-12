@@ -115,9 +115,7 @@ public class Framebuffer {
 			GlStateManager.texParameter(3553, 10240, 9728);
 			GlStateManager.texParameter(3553, 10242, 10496);
 			GlStateManager.texParameter(3553, 10243, 10496);
-			GlStateManager.texParameter(3553, 34892, 34894);
-			GlStateManager.texParameter(3553, 34893, 515);
-			GlStateManager.texParameter(3553, 34891, 6409);
+			GlStateManager.texParameter(3553, 34892, 0);
 			GlStateManager.texImage2D(3553, 0, 6402, this.textureWidth, this.textureHeight, 0, 6402, 5126, null);
 		}
 

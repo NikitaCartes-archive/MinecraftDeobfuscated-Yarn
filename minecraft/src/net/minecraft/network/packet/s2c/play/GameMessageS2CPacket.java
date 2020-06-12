@@ -13,29 +13,29 @@ import net.minecraft.text.Text;
 public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	private Text message;
 	private MessageType location;
-	private UUID field_25133;
+	private UUID senderUuid;
 
 	public GameMessageS2CPacket() {
 	}
 
-	public GameMessageS2CPacket(Text message, MessageType location, UUID uUID) {
+	public GameMessageS2CPacket(Text message, MessageType location, UUID senderUuid) {
 		this.message = message;
 		this.location = location;
-		this.field_25133 = uUID;
+		this.senderUuid = senderUuid;
 	}
 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.message = buf.readText();
 		this.location = MessageType.byId(buf.readByte());
-		this.field_25133 = buf.readUuid();
+		this.senderUuid = buf.readUuid();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeText(this.message);
 		buf.writeByte(this.location.getId());
-		buf.writeUuid(this.field_25133);
+		buf.writeUuid(this.senderUuid);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -56,8 +56,8 @@ public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public UUID method_29175() {
-		return this.field_25133;
+	public UUID getSenderUuid() {
+		return this.senderUuid;
 	}
 
 	@Override

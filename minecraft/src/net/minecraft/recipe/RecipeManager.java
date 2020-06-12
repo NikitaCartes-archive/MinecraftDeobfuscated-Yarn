@@ -70,6 +70,10 @@ public class RecipeManager extends JsonDataLoader {
 		return this.getAllOfType(type).values().stream().flatMap(recipe -> Util.stream(type.get(recipe, world, inventory))).findFirst();
 	}
 
+	public <C extends Inventory, T extends Recipe<C>> List<T> method_30027(RecipeType<T> recipeType) {
+		return (List<T>)this.getAllOfType(recipeType).values().stream().map(recipe -> recipe).collect(Collectors.toList());
+	}
+
 	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> type, C inventory, World world) {
 		return (List<T>)this.getAllOfType(type)
 			.values()

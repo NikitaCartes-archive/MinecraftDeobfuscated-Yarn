@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -880,26 +881,36 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		for (int i = 0; i < 10; i++) {
 			double d = (double)(this.world.random.nextInt(16) - 8);
 			double e = (double)(this.world.random.nextInt(16) - 8);
-			double f = 6.0;
+			BlockPos blockPos2 = this.method_30023(blockPos, d, e);
+			if (blockPos2 != null) {
+				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(this.world, null, null, null, blockPos2, SpawnReason.MOB_SUMMONED, false, false);
+				if (ironGolemEntity != null) {
+					if (ironGolemEntity.canSpawn(this.world, SpawnReason.MOB_SUMMONED) && ironGolemEntity.canSpawn(this.world)) {
+						this.world.spawnEntity(ironGolemEntity);
+						return ironGolemEntity;
+					}
 
-			for (int j = 0; j >= -12; j--) {
-				BlockPos blockPos2 = blockPos.add(d, f + (double)j, e);
-				if ((this.world.getBlockState(blockPos2).isAir() || this.world.getBlockState(blockPos2).getMaterial().isLiquid())
-					&& this.world.getBlockState(blockPos2.down()).getMaterial().blocksLight()) {
-					f += (double)j;
-					break;
+					ironGolemEntity.remove();
 				}
 			}
+		}
 
-			BlockPos blockPos3 = blockPos.add(d, f, e);
-			IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(this.world, null, null, null, blockPos3, SpawnReason.MOB_SUMMONED, false, false);
-			if (ironGolemEntity != null) {
-				if (ironGolemEntity.canSpawn(this.world, SpawnReason.MOB_SUMMONED) && ironGolemEntity.canSpawn(this.world)) {
-					this.world.spawnEntity(ironGolemEntity);
-					return ironGolemEntity;
-				}
+		return null;
+	}
 
-				ironGolemEntity.remove();
+	@Nullable
+	private BlockPos method_30023(BlockPos blockPos, double d, double e) {
+		int i = 6;
+		BlockPos blockPos2 = blockPos.add(d, 6.0, e);
+		BlockState blockState = this.world.getBlockState(blockPos2);
+
+		for (int j = 6; j >= -6; j--) {
+			BlockPos blockPos3 = blockPos2;
+			BlockState blockState2 = blockState;
+			blockPos2 = blockPos2.down();
+			blockState = this.world.getBlockState(blockPos2);
+			if ((blockState2.isAir() || blockState2.getMaterial().isLiquid()) && blockState.getMaterial().blocksLight()) {
+				return blockPos3;
 			}
 		}
 

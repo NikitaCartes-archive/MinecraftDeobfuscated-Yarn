@@ -3,7 +3,6 @@ package net.minecraft.entity;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonSyntaxException;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
@@ -991,7 +990,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
 		this.field_25599 = null;
 		double d = this.getEyeY() - 0.11111111F;
-		BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
+		Vec3d vec3d = new Vec3d(this.getX(), d, this.getZ());
+		Entity entity = this.getVehicle();
+		if (entity instanceof BoatEntity) {
+			BoatEntity boatEntity = (BoatEntity)entity;
+			if (!boatEntity.isSubmergedInWater() && boatEntity.getBoundingBox().contains(vec3d)) {
+				return;
+			}
+		}
+
+		BlockPos blockPos = new BlockPos(vec3d);
 		FluidState fluidState = this.world.getFluidState(blockPos);
 
 		for (Tag<Fluid> tag : FluidTags.method_29897()) {
@@ -1443,7 +1451,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 					try {
 						this.setCustomName(Text.Serializer.fromJson(string));
-					} catch (JsonSyntaxException var14) {
+					} catch (Exception var14) {
 						LOGGER.warn("Failed to parse entity custom name {}", string, var14);
 					}
 				}
@@ -1549,21 +1557,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.noClip) {
 			return false;
 		} else {
-			BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-			for (int i = 0; i < 8; i++) {
-				int j = MathHelper.floor(this.getY() + (double)(((float)((i >> 0) % 2) - 0.5F) * 0.1F) + (double)this.standingEyeHeight);
-				int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5F) * this.dimensions.width * 0.8F));
-				int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * this.dimensions.width * 0.8F));
-				if (mutable.getX() != k || mutable.getY() != j || mutable.getZ() != l) {
-					mutable.set(k, j, l);
-					if (this.world.getBlockState(mutable).shouldSuffocate(this.world, mutable)) {
-						return true;
-					}
-				}
-			}
-
-			return false;
+			float f = 0.1F;
+			float g = this.dimensions.width * 0.8F;
+			Box box = Box.method_30048((double)g, 0.1F, (double)g).offset(this.getX(), this.getEyeY(), this.getZ());
+			return this.world.method_30030(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, blockPos)).findAny().isPresent();
 		}
 	}
 
@@ -2416,7 +2413,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID uUID) {
+	public void sendSystemMessage(Text message, UUID senderUuid) {
 	}
 
 	public World getEntityWorld() {

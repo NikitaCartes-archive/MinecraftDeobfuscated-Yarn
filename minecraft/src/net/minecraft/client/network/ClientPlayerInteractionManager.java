@@ -323,7 +323,7 @@ public class ClientPlayerInteractionManager {
 
 	public void attackEntity(PlayerEntity player, Entity target) {
 		this.syncSelectedSlot();
-		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(target));
+		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(target, player.isSneaking()));
 		if (this.gameMode != GameMode.SPECTATOR) {
 			player.attack(target);
 			player.resetLastAttackedTicks();
