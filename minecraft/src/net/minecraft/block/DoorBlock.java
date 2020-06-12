@@ -3,7 +3,6 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
@@ -89,23 +88,9 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
-		super.afterBreak(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
-	}
-
-	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
-		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
-		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.isOf(this) && blockState.get(HALF) != doubleBlockHalf) {
-			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-			world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
-			ItemStack itemStack = player.getMainHandStack();
-			if (!world.isClient && !player.isCreative() && player.isUsingEffectiveTool(blockState)) {
-				Block.dropStacks(state, world, pos, null, player, itemStack);
-				Block.dropStacks(blockState, world, blockPos, null, player, itemStack);
-			}
+		if (!world.isClient && player.isCreative()) {
+			TallPlantBlock.method_30036(world, pos, state, player);
 		}
 
 		super.onBreak(world, pos, state, player);

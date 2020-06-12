@@ -52,6 +52,10 @@ public class SmithingRecipe implements Recipe<Inventory> {
 		return this.result;
 	}
 
+	public boolean method_30029(ItemStack itemStack) {
+		return this.addition.test(itemStack);
+	}
+
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getRecipeKindIcon() {

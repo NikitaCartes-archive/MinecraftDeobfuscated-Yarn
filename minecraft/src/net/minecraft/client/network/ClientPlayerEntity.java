@@ -491,7 +491,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID uUID) {
+	public void sendSystemMessage(Text message, UUID senderUuid) {
 		this.client.inGameHud.getChatHud().addMessage(message);
 	}
 

@@ -140,6 +140,15 @@ public interface StringRenderable {
 		};
 	}
 
+	default String getString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		this.visit(string -> {
+			stringBuilder.append(string);
+			return Optional.empty();
+		});
+		return stringBuilder.toString();
+	}
+
 	/**
 	 * A visitor for rendered string content and a contextual {@link Style}.
 	 */

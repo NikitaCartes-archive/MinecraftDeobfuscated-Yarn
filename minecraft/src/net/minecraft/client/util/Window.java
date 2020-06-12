@@ -178,7 +178,7 @@ public final class Window implements AutoCloseable {
 
 		ByteBuffer var6;
 		try {
-			byteBuffer = TextureUtil.method_24962(in);
+			byteBuffer = TextureUtil.readAllToByteBuffer(in);
 			byteBuffer.rewind();
 			var6 = STBImage.stbi_load_from_memory(byteBuffer, x, y, channels, 0);
 		} finally {

@@ -22,9 +22,11 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	public PlayerInteractEntityC2SPacket() {
 	}
 
-	public PlayerInteractEntityC2SPacket(Entity entity) {
+	@Environment(EnvType.CLIENT)
+	public PlayerInteractEntityC2SPacket(Entity entity, boolean bl) {
 		this.entityId = entity.getEntityId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.ATTACK;
+		this.field_25660 = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -54,8 +56,9 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			this.hand = buf.readEnumConstant(Hand.class);
-			this.field_25660 = buf.readBoolean();
 		}
+
+		this.field_25660 = buf.readBoolean();
 	}
 
 	@Override
@@ -70,8 +73,9 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
 			buf.writeEnumConstant(this.hand);
-			buf.writeBoolean(this.field_25660);
 		}
+
+		buf.writeBoolean(this.field_25660);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

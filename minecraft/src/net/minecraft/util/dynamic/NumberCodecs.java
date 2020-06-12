@@ -83,6 +83,24 @@ public class NumberCodecs {
 		});
 	}
 
+	public static <A> MapCodec<A> method_30018(MapCodec<A> mapCodec, Supplier<A> supplier) {
+		return method_29904(mapCodec, new NumberCodecs.class_5395<A>() {
+			@Override
+			public <T> DataResult<A> method_29907(DynamicOps<T> dynamicOps, MapLike<T> mapLike, DataResult<A> dataResult) {
+				return dataResult.setPartial(supplier);
+			}
+
+			@Override
+			public <T> RecordBuilder<T> method_29908(DynamicOps<T> dynamicOps, A object, RecordBuilder<T> recordBuilder) {
+				return recordBuilder;
+			}
+
+			public String toString() {
+				return "SetPartial[" + supplier + "]";
+			}
+		});
+	}
+
 	interface class_5395<A> {
 		<T> DataResult<A> method_29907(DynamicOps<T> dynamicOps, MapLike<T> mapLike, DataResult<A> dataResult);
 

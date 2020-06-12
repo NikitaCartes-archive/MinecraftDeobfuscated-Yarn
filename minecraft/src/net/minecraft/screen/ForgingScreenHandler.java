@@ -92,6 +92,10 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 			);
 	}
 
+	protected boolean method_30025(ItemStack itemStack) {
+		return false;
+	}
+
 	@Override
 	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
@@ -106,8 +110,11 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 
 				slot.onStackChanged(itemStack2, itemStack);
 			} else if (index != 0 && index != 1) {
-				if (index >= 3 && index < 39 && !this.insertItem(itemStack2, 0, 2, false)) {
-					return ItemStack.EMPTY;
+				if (index >= 3 && index < 39) {
+					int i = this.method_30025(itemStack) ? 1 : 0;
+					if (!this.insertItem(itemStack2, i, 2, false)) {
+						return ItemStack.EMPTY;
+					}
 				}
 			} else if (!this.insertItem(itemStack2, 3, 39, false)) {
 				return ItemStack.EMPTY;

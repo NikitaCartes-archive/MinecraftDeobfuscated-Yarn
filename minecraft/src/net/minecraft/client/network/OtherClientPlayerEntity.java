@@ -87,9 +87,9 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID uUID) {
+	public void sendSystemMessage(Text message, UUID senderUuid) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		if (!minecraftClient.shouldBlockMessages(uUID)) {
+		if (!minecraftClient.shouldBlockMessages(senderUuid)) {
 			minecraftClient.inGameHud.getChatHud().addMessage(message);
 		}
 	}

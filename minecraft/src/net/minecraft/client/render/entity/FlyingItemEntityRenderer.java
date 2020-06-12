@@ -38,13 +38,15 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 
 	@Override
 	public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		matrices.push();
-		matrices.scale(this.scale, this.scale, this.scale);
-		matrices.multiply(this.dispatcher.getRotation());
-		matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-		this.itemRenderer.renderItem(entity.getStack(), ModelTransformation.Mode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
-		matrices.pop();
-		super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
+		if (entity.age >= 2 || !(this.dispatcher.camera.getFocusedEntity().squaredDistanceTo(entity) < 12.25)) {
+			matrices.push();
+			matrices.scale(this.scale, this.scale, this.scale);
+			matrices.multiply(this.dispatcher.getRotation());
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+			this.itemRenderer.renderItem(entity.getStack(), ModelTransformation.Mode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers);
+			matrices.pop();
+			super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
+		}
 	}
 
 	@Override

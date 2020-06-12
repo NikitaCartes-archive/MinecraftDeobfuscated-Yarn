@@ -25,8 +25,8 @@ public class NarratorManager implements ClientChatListener {
 	private final Narrator narrator = Narrator.getNarrator();
 
 	@Override
-	public void onChatMessage(MessageType messageType, Text message, UUID uUID) {
-		if (!MinecraftClient.getInstance().shouldBlockMessages(uUID)) {
+	public void onChatMessage(MessageType messageType, Text message, UUID senderUuid) {
+		if (!MinecraftClient.getInstance().shouldBlockMessages(senderUuid)) {
 			NarratorOption narratorOption = getNarratorOption();
 			if (narratorOption != NarratorOption.OFF && this.narrator.active()) {
 				if (narratorOption == NarratorOption.ALL

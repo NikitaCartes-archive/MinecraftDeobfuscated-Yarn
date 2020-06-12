@@ -18,7 +18,6 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -167,25 +166,17 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
-		super.afterBreak(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
-	}
-
-	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		BedPart bedPart = state.get(PART);
-		BlockPos blockPos = pos.offset(getDirectionTowardsOtherPart(bedPart, state.get(FACING)));
-		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.isOf(this) && blockState.get(PART) != bedPart) {
-			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-			world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
-			if (!world.isClient && !player.isCreative()) {
-				ItemStack itemStack = player.getMainHandStack();
-				dropStacks(state, world, pos, null, player, itemStack);
-				dropStacks(blockState, world, blockPos, null, player, itemStack);
+		if (!world.isClient && player.isCreative()) {
+			BedPart bedPart = state.get(PART);
+			if (bedPart == BedPart.FOOT) {
+				BlockPos blockPos = pos.offset(getDirectionTowardsOtherPart(bedPart, state.get(FACING)));
+				BlockState blockState = world.getBlockState(blockPos);
+				if (blockState.getBlock() == this && blockState.get(PART) == BedPart.HEAD) {
+					world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
+					world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+				}
 			}
-
-			player.incrementStat(Stats.MINED.getOrCreateStat(this));
 		}
 
 		super.onBreak(world, pos, state, player);

@@ -113,7 +113,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
-			.target(field_25643)
+			.target(ITEM_TARGET)
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
@@ -142,7 +142,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
-			.target(field_25643)
+			.target(ITEM_TARGET)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
@@ -184,7 +184,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.target(field_25643)
+			.target(ITEM_TARGET)
 			.writeMaskState(ALL_MASK)
 			.build(false)
 	);
@@ -227,7 +227,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.lightmap(ENABLE_LIGHTMAP)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.target(field_25643)
+			.target(ITEM_TARGET)
 			.build(true);
 	}
 
@@ -315,7 +315,7 @@ public abstract class RenderLayer extends RenderPhase {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
 			.texture(new RenderPhase.Texture(texture, false, false))
 			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.target(field_25643)
+			.target(ITEM_TARGET)
 			.diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
 			.alpha(ONE_TENTH_ALPHA)
 			.lightmap(ENABLE_LIGHTMAP)
@@ -586,7 +586,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.build(true);
 	}
 
-	public static RenderLayer method_29997() {
+	public static RenderLayer getTripwire() {
 		return TRIPWIRE;
 	}
 
@@ -677,7 +677,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static List<RenderLayer> getBlockLayers() {
-		return ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), method_29997());
+		return ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), getTripwire());
 	}
 
 	public int getExpectedBufferSize() {
