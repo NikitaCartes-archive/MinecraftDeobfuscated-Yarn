@@ -105,5 +105,9 @@ implements SoundInstance {
     public boolean isLooping() {
         return this.looping;
     }
+
+    public String toString() {
+        return "SoundInstance[" + this.id + "]";
+    }
 }
 

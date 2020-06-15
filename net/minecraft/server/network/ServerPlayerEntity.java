@@ -155,7 +155,7 @@ implements ScreenHandlerListener {
     private int syncedFoodLevel = -99999999;
     private boolean syncedSaturationIsZero = true;
     private int syncedExperience = -99999999;
-    private int field_13998 = 60;
+    private int joinInvulnerabilityTicks = 60;
     private ChatVisibility clientChatVisibility;
     private boolean clientChatColorsEnabled = true;
     private long lastActionTime = Util.getMeasuringTimeMs();
@@ -174,7 +174,7 @@ implements ScreenHandlerListener {
     private BlockPos spawnPointPosition;
     private boolean spawnPointSet;
     private int screenHandlerSyncId;
-    public boolean field_13991;
+    public boolean skipPacketSlotUpdates;
     public int pingMilliseconds;
     public boolean notInAnyWorld;
 
@@ -234,9 +234,9 @@ implements ScreenHandlerListener {
         super.readCustomDataFromTag(tag);
         if (tag.contains("playerGameType", 99)) {
             if (this.getServer().shouldForceGameMode()) {
-                this.interactionManager.setGameMode(this.getServer().getDefaultGameMode());
+                this.interactionManager.setGameMode(this.getServer().getDefaultGameMode(), GameMode.NOT_SET);
             } else {
-                this.interactionManager.setGameMode(GameMode.byId(tag.getInt("playerGameType")));
+                this.interactionManager.setGameMode(GameMode.byId(tag.getInt("playerGameType")), tag.contains("previousPlayerGameType", 3) ? GameMode.byId(tag.getInt("previousPlayerGameType")) : GameMode.NOT_SET);
             }
         }
         if (tag.contains("enteredNetherPosition", 10)) {
@@ -263,6 +263,7 @@ implements ScreenHandlerListener {
     public void writeCustomDataToTag(CompoundTag tag2) {
         super.writeCustomDataToTag(tag2);
         tag2.putInt("playerGameType", this.interactionManager.getGameMode().getId());
+        tag2.putInt("previousPlayerGameType", this.interactionManager.method_30119().getId());
         tag2.putBoolean("seenCredits", this.seenCredits);
         if (this.enteredNetherPos != null) {
             CompoundTag compoundTag = new CompoundTag();
@@ -345,7 +346,7 @@ implements ScreenHandlerListener {
     @Override
     public void tick() {
         this.interactionManager.update();
-        --this.field_13998;
+        --this.joinInvulnerabilityTicks;
         if (this.timeUntilRegen > 0) {
             --this.timeUntilRegen;
         }
@@ -533,7 +534,7 @@ implements ScreenHandlerListener {
             return false;
         }
         boolean bl2 = bl = this.server.isDedicated() && this.isPvpEnabled() && "fall".equals(source.name);
-        if (!bl && this.field_13998 > 0 && source != DamageSource.OUT_OF_WORLD) {
+        if (!bl && this.joinInvulnerabilityTicks > 0 && source != DamageSource.OUT_OF_WORLD) {
             return false;
         }
         if (source instanceof EntityDamageSource) {
@@ -581,7 +582,7 @@ implements ScreenHandlerListener {
             return this;
         }
         WorldProperties worldProperties = serverWorld.getLevelProperties();
-        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverWorld.getDimensionRegistryKey(), serverWorld.getRegistryKey(), BiomeAccess.hashSeed(serverWorld.getSeed()), this.interactionManager.getGameMode(), serverWorld.isDebugWorld(), serverWorld.method_28125(), true));
+        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverWorld.getDimensionRegistryKey(), serverWorld.getRegistryKey(), BiomeAccess.hashSeed(serverWorld.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.method_30119(), serverWorld.isDebugWorld(), serverWorld.method_28125(), true));
         this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
         PlayerManager playerManager = this.server.getPlayerManager();
         playerManager.sendCommandTree(this);
@@ -878,7 +879,7 @@ implements ScreenHandlerListener {
         if (handler == this.playerScreenHandler) {
             Criteria.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
         }
-        if (this.field_13991) {
+        if (this.skipPacketSlotUpdates) {
             return;
         }
         this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slotId, stack));
@@ -906,7 +907,7 @@ implements ScreenHandlerListener {
     }
 
     public void updateCursorStack() {
-        if (this.field_13991) {
+        if (this.skipPacketSlotUpdates) {
             return;
         }
         this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
@@ -1105,7 +1106,7 @@ implements ScreenHandlerListener {
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        this.interactionManager.setGameMode(gameMode);
+        this.interactionManager.method_30118(gameMode);
         this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25648, gameMode.getId()));
         if (gameMode == GameMode.SPECTATOR) {
             this.dropShoulderEntities();
@@ -1268,7 +1269,7 @@ implements ScreenHandlerListener {
         } else {
             ServerWorld serverWorld = this.getServerWorld();
             WorldProperties worldProperties = targetWorld.getLevelProperties();
-            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(targetWorld.getDimensionRegistryKey(), targetWorld.getRegistryKey(), BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), targetWorld.isDebugWorld(), targetWorld.method_28125(), true));
+            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(targetWorld.getDimensionRegistryKey(), targetWorld.getRegistryKey(), BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.method_30119(), targetWorld.isDebugWorld(), targetWorld.method_28125(), true));
             this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
             this.server.getPlayerManager().sendCommandTree(this);
             serverWorld.removePlayer(this);

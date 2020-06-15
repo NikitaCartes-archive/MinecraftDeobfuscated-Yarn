@@ -297,7 +297,7 @@ implements BlockEntityProvider {
             BlockPos blockPos = pos.offset(state.get(FACING));
             world.setBlockState(blockPos, (BlockState)state.with(PART, BedPart.HEAD), 3);
             world.updateNeighbors(pos, Blocks.AIR);
-            state.updateNeighbors(world, pos, 3);
+            state.method_30101(world, pos, 3);
         }
     }
 

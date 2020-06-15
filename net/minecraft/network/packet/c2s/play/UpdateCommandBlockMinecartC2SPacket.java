@@ -25,10 +25,10 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public UpdateCommandBlockMinecartC2SPacket(int i, String string, boolean bl) {
-        this.entityId = i;
-        this.command = string;
-        this.trackOutput = bl;
+    public UpdateCommandBlockMinecartC2SPacket(int entityId, String command, boolean trackOutput) {
+        this.entityId = entityId;
+        this.command = command;
+        this.trackOutput = trackOutput;
     }
 
     @Override

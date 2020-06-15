@@ -20,9 +20,9 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public QueryBlockNbtC2SPacket(int i, BlockPos blockPos) {
-        this.transactionId = i;
-        this.pos = blockPos;
+    public QueryBlockNbtC2SPacket(int transactionId, BlockPos pos) {
+        this.transactionId = transactionId;
+        this.pos = pos;
     }
 
     @Override

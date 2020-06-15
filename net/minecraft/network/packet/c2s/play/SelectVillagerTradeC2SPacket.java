@@ -18,8 +18,8 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public SelectVillagerTradeC2SPacket(int i) {
-        this.tradeId = i;
+    public SelectVillagerTradeC2SPacket(int tradeId) {
+        this.tradeId = tradeId;
     }
 
     @Override
@@ -37,7 +37,7 @@ implements Packet<ServerPlayPacketListener> {
         serverPlayPacketListener.onVillagerTradeSelect(this);
     }
 
-    public int method_12431() {
+    public int getTradeId() {
         return this.tradeId;
     }
 }

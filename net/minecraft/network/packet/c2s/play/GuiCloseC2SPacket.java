@@ -18,8 +18,8 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public GuiCloseC2SPacket(int i) {
-        this.id = i;
+    public GuiCloseC2SPacket(int id) {
+        this.id = id;
     }
 
     @Override

@@ -354,7 +354,7 @@ AutoCloseable {
         manager.disable();
     }
 
-    public void method_22713(Camera camera) {
+    public void tickRainSplashing(Camera camera) {
         float f = this.client.world.getRainGradient(1.0f) / (MinecraftClient.isFancyGraphicsOrBetter() ? 1.0f : 2.0f);
         if (f <= 0.0f) {
             return;
@@ -947,7 +947,8 @@ AutoCloseable {
                 matrices.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
                 SortedSet sortedSet = (SortedSet)this.blockBreakingProgressions.get(blockPos.asLong());
                 if (sortedSet != null && !sortedSet.isEmpty() && (u = ((BlockBreakingInfo)sortedSet.last()).getStage()) >= 0) {
-                    TransformingVertexConsumer vertexConsumer = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(u)), matrices.peek());
+                    MatrixStack.Entry entry = matrices.peek();
+                    TransformingVertexConsumer vertexConsumer = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(u)), entry.getModel(), entry.getNormal());
                     vertexConsumerProvider2 = renderLayer -> {
                         VertexConsumer vertexConsumer2 = immediate.getBuffer(renderLayer);
                         if (renderLayer.hasCrumbling()) {
@@ -994,7 +995,8 @@ AutoCloseable {
             int x = ((BlockBreakingInfo)sortedSet2.last()).getStage();
             matrices.push();
             matrices.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - f);
-            TransformingVertexConsumer vertexConsumer2 = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(x)), matrices.peek());
+            MatrixStack.Entry entry3 = matrices.peek();
+            TransformingVertexConsumer vertexConsumer2 = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(x)), entry3.getModel(), entry3.getNormal());
             this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrices, vertexConsumer2);
             matrices.pop();
         }
@@ -2141,27 +2143,25 @@ AutoCloseable {
             }
             case 2002: 
             case 2007: {
-                double r = pos.getX();
-                double s = pos.getY();
-                double d = pos.getZ();
-                for (int t = 0; t < 8; ++t) {
-                    this.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.SPLASH_POTION)), r, s, d, random.nextGaussian() * 0.15, random.nextDouble() * 0.2, random.nextGaussian() * 0.15);
+                Vec3d vec3d = Vec3d.ofBottomCenter(pos);
+                for (int i = 0; i < 8; ++i) {
+                    this.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.SPLASH_POTION)), vec3d.x, vec3d.y, vec3d.z, random.nextGaussian() * 0.15, random.nextDouble() * 0.2, random.nextGaussian() * 0.15);
                 }
                 float u = (float)(data >> 16 & 0xFF) / 255.0f;
                 float v = (float)(data >> 8 & 0xFF) / 255.0f;
                 float w = (float)(data >> 0 & 0xFF) / 255.0f;
                 DefaultParticleType particleEffect = eventId == 2007 ? ParticleTypes.INSTANT_EFFECT : ParticleTypes.EFFECT;
-                for (int l = 0; l < 100; ++l) {
-                    double g = random.nextDouble() * 4.0;
-                    double h = random.nextDouble() * Math.PI * 2.0;
-                    double m = Math.cos(h) * g;
-                    double n = 0.01 + random.nextDouble() * 0.5;
-                    double o = Math.sin(h) * g;
-                    Particle particle = this.spawnParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn(), r + m * 0.1, s + 0.3, d + o * 0.1, m, n, o);
+                for (int x = 0; x < 100; ++x) {
+                    double e = random.nextDouble() * 4.0;
+                    double f = random.nextDouble() * Math.PI * 2.0;
+                    double y = Math.cos(f) * e;
+                    double z = 0.01 + random.nextDouble() * 0.5;
+                    double aa = Math.sin(f) * e;
+                    Particle particle = this.spawnParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn(), vec3d.x + y * 0.1, vec3d.y + 0.3, vec3d.z + aa * 0.1, y, z, aa);
                     if (particle == null) continue;
-                    float x = 0.75f + random.nextFloat() * 0.25f;
-                    particle.setColor(u * x, v * x, w * x);
-                    particle.move((float)g);
+                    float ab = 0.75f + random.nextFloat() * 0.25f;
+                    particle.setColor(u * ab, v * ab, w * ab);
+                    particle.move((float)e);
                 }
                 this.world.playSound(pos, SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.NEUTRAL, 1.0f, random.nextFloat() * 0.1f + 0.9f, false);
                 break;
@@ -2226,14 +2226,14 @@ AutoCloseable {
             }
             case 2006: {
                 for (int i = 0; i < 200; ++i) {
-                    float y = random.nextFloat() * 4.0f;
-                    float z = random.nextFloat() * ((float)Math.PI * 2);
-                    double d = MathHelper.cos(z) * y;
+                    float v = random.nextFloat() * 4.0f;
+                    float w = random.nextFloat() * ((float)Math.PI * 2);
+                    double d = MathHelper.cos(w) * v;
                     double e = 0.01 + random.nextDouble() * 0.5;
-                    double f = MathHelper.sin(z) * y;
+                    double f = MathHelper.sin(w) * v;
                     Particle particle2 = this.spawnParticle(ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + d * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + f * 0.1, d, e, f);
                     if (particle2 == null) continue;
-                    particle2.move(y);
+                    particle2.move(v);
                 }
                 if (data != 1) break;
                 this.world.playSound(pos, SoundEvents.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.HOSTILE, 1.0f, random.nextFloat() * 0.1f + 0.9f, false);

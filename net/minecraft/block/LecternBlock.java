@@ -82,10 +82,10 @@ extends BlockWithEntity {
         CompoundTag compoundTag2;
         World world = ctx.getWorld();
         ItemStack itemStack = ctx.getStack();
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
+        CompoundTag compoundTag = itemStack.getTag();
         PlayerEntity playerEntity = ctx.getPlayer();
         boolean bl = false;
-        if (!world.isClient && playerEntity != null && playerEntity.isCreativeLevelTwoOp() && compoundTag.contains("BlockEntityTag") && (compoundTag2 = compoundTag.getCompound("BlockEntityTag")).contains("Book")) {
+        if (!world.isClient && playerEntity != null && compoundTag != null && playerEntity.isCreativeLevelTwoOp() && compoundTag.contains("BlockEntityTag") && (compoundTag2 = compoundTag.getCompound("BlockEntityTag")).contains("Book")) {
             bl = true;
         }
         return (BlockState)((BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite())).with(HAS_BOOK, bl);

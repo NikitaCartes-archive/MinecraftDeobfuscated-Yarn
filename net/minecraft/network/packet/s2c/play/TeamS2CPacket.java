@@ -58,18 +58,18 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public TeamS2CPacket(Team team, Collection<String> playerList, int i) {
+    public TeamS2CPacket(Team team, Collection<String> playerList, int mode) {
         this.nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS.name;
         this.collisionRule = AbstractTeam.CollisionRule.ALWAYS.name;
         this.color = Formatting.RESET;
         this.playerList = Lists.newArrayList();
-        if (i != 3 && i != 4) {
+        if (mode != 3 && mode != 4) {
             throw new IllegalArgumentException("Method must be join or leave for player constructor");
         }
         if (playerList == null || playerList.isEmpty()) {
             throw new IllegalArgumentException("Players cannot be null/empty");
         }
-        this.mode = i;
+        this.mode = mode;
         this.teamName = team.getName();
         this.playerList.addAll(playerList);
     }

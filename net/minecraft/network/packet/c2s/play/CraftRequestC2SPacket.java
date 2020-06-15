@@ -22,10 +22,10 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public CraftRequestC2SPacket(int syncId, Recipe<?> recipe, boolean bl) {
+    public CraftRequestC2SPacket(int syncId, Recipe<?> recipe, boolean craftAll) {
         this.syncId = syncId;
         this.recipe = recipe.getId();
-        this.craftAll = bl;
+        this.craftAll = craftAll;
     }
 
     @Override

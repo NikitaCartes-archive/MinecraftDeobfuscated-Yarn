@@ -18,8 +18,8 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public UpdateDifficultyLockC2SPacket(boolean bl) {
-        this.difficultyLocked = bl;
+    public UpdateDifficultyLockC2SPacket(boolean difficultyLocked) {
+        this.difficultyLocked = difficultyLocked;
     }
 
     @Override

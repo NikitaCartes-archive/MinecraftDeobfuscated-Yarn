@@ -40,7 +40,16 @@ extends Screen {
 
     public GameModeSelectionScreen() {
         super(NarratorManager.EMPTY);
-        this.currentGameMode = GameMode.of(MinecraftClient.getInstance().interactionManager.getPreviousGameMode());
+        this.currentGameMode = GameMode.of(this.method_30106());
+    }
+
+    private net.minecraft.world.GameMode method_30106() {
+        net.minecraft.world.GameMode gameMode = MinecraftClient.getInstance().interactionManager.getCurrentGameMode();
+        net.minecraft.world.GameMode gameMode2 = MinecraftClient.getInstance().interactionManager.getPreviousGameMode();
+        if (gameMode2 == net.minecraft.world.GameMode.NOT_SET) {
+            gameMode2 = gameMode == net.minecraft.world.GameMode.CREATIVE ? net.minecraft.world.GameMode.SURVIVAL : net.minecraft.world.GameMode.CREATIVE;
+        }
+        return gameMode2;
     }
 
     @Override

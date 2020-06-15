@@ -175,11 +175,11 @@ implements Packet<ClientPlayPacketListener> {
         private final GameProfile profile;
         private final Text displayName;
 
-        public Entry(GameProfile gameProfile, @Nullable int i, @Nullable GameMode gameMode, Text text) {
-            this.profile = gameProfile;
-            this.latency = i;
+        public Entry(GameProfile profile, @Nullable int latency, @Nullable GameMode gameMode, Text displayName) {
+            this.profile = profile;
+            this.latency = latency;
             this.gameMode = gameMode;
-            this.displayName = text;
+            this.displayName = displayName;
         }
 
         public GameProfile getProfile() {

@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -274,14 +273,9 @@ implements DebugRenderer.Renderer {
     private Map<BlockPos, List<String>> getGhostPointsOfInterest() {
         HashMap<BlockPos, List<String>> map = Maps.newHashMap();
         for (Brain brain : this.brains.values()) {
-            for (BlockPos blockPos : Iterables.concat(brain.pointsOfInterest, brain.field_25287)) {
-                if (this.pointsOfInterest.containsKey(blockPos)) continue;
-                ArrayList<String> list = (ArrayList<String>)map.get(blockPos);
-                if (list == null) {
-                    list = Lists.newArrayList();
-                    map.put(blockPos, list);
-                }
-                list.add(brain.field_19328);
+            for (BlockPos blockPos2 : Iterables.concat(brain.pointsOfInterest, brain.field_25287)) {
+                if (this.pointsOfInterest.containsKey(blockPos2)) continue;
+                map.computeIfAbsent(blockPos2, blockPos -> Lists.newArrayList()).add(brain.field_19328);
             }
         }
         return map;

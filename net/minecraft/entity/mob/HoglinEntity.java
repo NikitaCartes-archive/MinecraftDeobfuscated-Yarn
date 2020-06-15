@@ -74,7 +74,7 @@ Hoglin {
     }
 
     public static DefaultAttributeContainer.Builder createHoglinAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5).add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.6f).add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
     }
 
     @Override
@@ -127,11 +127,10 @@ Hoglin {
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
         HoglinBrain.refreshActivities(this);
-        HoglinBrain.playSoundAtChance(this);
         if (this.canConvert()) {
             ++this.timeInOverworld;
             if (this.timeInOverworld > 300) {
-                this.playZombifySound();
+                this.method_30081(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED);
                 this.zombify((ServerWorld)this.world);
             }
         } else {
@@ -310,7 +309,10 @@ Hoglin {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_HOGLIN_AMBIENT;
+        if (this.world.isClient) {
+            return null;
+        }
+        return HoglinBrain.method_30083(this).orElse(null);
     }
 
     @Override
@@ -334,27 +336,12 @@ Hoglin {
     }
 
     @Override
-    public void playAmbientSound() {
-        if (HoglinBrain.hasIdleActivity(this)) {
-            super.playAmbientSound();
-        }
-    }
-
-    @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.ENTITY_HOGLIN_STEP, 0.15f, 1.0f);
     }
 
-    protected void playFightSound() {
-        this.playSound(SoundEvents.ENTITY_HOGLIN_ANGRY, 1.0f, this.getSoundPitch());
-    }
-
-    protected void playRetreatSound() {
-        this.playSound(SoundEvents.ENTITY_HOGLIN_RETREAT, 1.0f, this.getSoundPitch());
-    }
-
-    private void playZombifySound() {
-        this.playSound(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED, 1.0f, this.getSoundPitch());
+    protected void method_30081(SoundEvent soundEvent) {
+        this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
     }
 
     @Override

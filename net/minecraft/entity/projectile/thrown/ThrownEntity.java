@@ -5,7 +5,10 @@ package net.minecraft.entity.projectile.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -15,6 +18,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
@@ -50,12 +54,23 @@ extends ProjectileEntity {
         float h;
         super.tick();
         HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.OUTLINE);
-        if (hitResult.getType() != HitResult.Type.MISS) {
-            if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).isOf(Blocks.NETHER_PORTAL)) {
-                this.setInNetherPortal(((BlockHitResult)hitResult).getBlockPos());
-            } else {
-                this.onCollision(hitResult);
+        boolean bl = false;
+        if (hitResult.getType() == HitResult.Type.BLOCK) {
+            BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
+            BlockState blockState = this.world.getBlockState(blockPos);
+            if (blockState.isOf(Blocks.NETHER_PORTAL)) {
+                this.setInNetherPortal(blockPos);
+                bl = true;
+            } else if (blockState.isOf(Blocks.END_GATEWAY)) {
+                BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+                if (blockEntity instanceof EndGatewayBlockEntity) {
+                    ((EndGatewayBlockEntity)blockEntity).tryTeleportingEntity(this);
+                }
+                bl = true;
             }
+        }
+        if (hitResult.getType() != HitResult.Type.MISS && !bl) {
+            this.onCollision(hitResult);
         }
         Vec3d vec3d = this.getVelocity();
         double d = this.getX() + vec3d.x;

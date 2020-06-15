@@ -25,12 +25,12 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public UpdateCommandBlockC2SPacket(BlockPos blockPos, String string, CommandBlockBlockEntity.Type type, boolean bl, boolean bl2, boolean bl3) {
-        this.pos = blockPos;
-        this.command = string;
-        this.trackOutput = bl;
-        this.conditional = bl2;
-        this.alwaysActive = bl3;
+    public UpdateCommandBlockC2SPacket(BlockPos pos, String command, CommandBlockBlockEntity.Type type, boolean trackOutput, boolean conditional, boolean alwaysActive) {
+        this.pos = pos;
+        this.command = command;
+        this.trackOutput = trackOutput;
+        this.conditional = conditional;
+        this.alwaysActive = alwaysActive;
         this.type = type;
     }
 

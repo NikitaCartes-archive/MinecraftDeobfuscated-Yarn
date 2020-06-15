@@ -69,6 +69,8 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -78,12 +80,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 
 public class PiglinBrain {
-    protected static final Item BARTERING_ITEM = Items.GOLD_INGOT;
+    public static final Item BARTERING_ITEM = Items.GOLD_INGOT;
     private static final IntRange HUNT_MEMORY_DURATION = Durations.betweenSeconds(30, 120);
     private static final IntRange MEMORY_TRANSFER_TASK_DURATION = Durations.betweenSeconds(10, 40);
     private static final IntRange RIDE_TARGET_MEMORY_DURATION = Durations.betweenSeconds(10, 30);
     private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
     private static final IntRange field_25384 = Durations.betweenSeconds(5, 7);
+    private static final IntRange field_25698 = Durations.betweenSeconds(5, 7);
     private static final Set<Item> FOOD = ImmutableSet.of(Items.PORKCHOP, Items.COOKED_PORKCHOP);
 
     protected static Brain<?> create(PiglinEntity piglin, Brain<PiglinEntity> brain) {
@@ -106,7 +109,7 @@ public class PiglinBrain {
     }
 
     private static void addCoreActivities(Brain<PiglinEntity> brain) {
-        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(200), new OpenDoorsTask(), PiglinBrain.makeGoToZombifiedPiglinTask(), new RemoveOffHandItemTask(), new AdmireItemTask(120), new DefeatTargetTask(300, PiglinBrain::method_29276), new ForgetAngryAtTargetTask()));
+        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(200), new OpenDoorsTask(), PiglinBrain.method_30090(), PiglinBrain.makeGoToZombifiedPiglinTask(), new RemoveOffHandItemTask(), new AdmireItemTask(120), new DefeatTargetTask(300, PiglinBrain::method_29276), new ForgetAngryAtTargetTask()));
     }
 
     private static void addIdleActivities(Brain<PiglinEntity> brain) {
@@ -126,7 +129,7 @@ public class PiglinBrain {
     }
 
     private static void addAvoidActivities(Brain<PiglinEntity> brain) {
-        brain.setTaskList(Activity.AVOID, 10, ImmutableList.of(GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, 1.1f, 6, true), PiglinBrain.makeRandomFollowTask(), PiglinBrain.makeRandomWanderTask(), new ForgetTask<PiglinEntity>(PiglinBrain::shouldRunAwayFromHoglins, MemoryModuleType.AVOID_TARGET)), MemoryModuleType.AVOID_TARGET);
+        brain.setTaskList(Activity.AVOID, 10, ImmutableList.of(GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, 1.0f, 12, true), PiglinBrain.makeRandomFollowTask(), PiglinBrain.makeRandomWanderTask(), new ForgetTask<PiglinEntity>(PiglinBrain::shouldRunAwayFromHoglins, MemoryModuleType.AVOID_TARGET)), MemoryModuleType.AVOID_TARGET);
     }
 
     private static void addRideActivities(Brain<PiglinEntity> brain) {
@@ -142,7 +145,11 @@ public class PiglinBrain {
     }
 
     private static GoToRememberedPositionTask<BlockPos> makeGoToSoulFireTask() {
-        return GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, 1.1f, 8, false);
+        return GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, 1.0f, 8, false);
+    }
+
+    private static MemoryTransferTask<PiglinEntity, LivingEntity> method_30090() {
+        return new MemoryTransferTask<PiglinEntity, LivingEntity>(PiglinEntity::isBaby, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.AVOID_TARGET, field_25698);
     }
 
     private static MemoryTransferTask<PiglinEntity, LivingEntity> makeGoToZombifiedPiglinTask() {
@@ -155,7 +162,7 @@ public class PiglinBrain {
         brain.resetPossibleActivities(ImmutableList.of(Activity.ADMIRE_ITEM, Activity.FIGHT, Activity.AVOID, Activity.CELEBRATE, Activity.RIDE, Activity.IDLE));
         Activity activity2 = brain.getFirstPossibleNonCoreActivity().orElse(null);
         if (activity != activity2) {
-            PiglinBrain.playSound(piglin);
+            PiglinBrain.method_30091(piglin).ifPresent(piglin::method_30086);
         }
         piglin.setAttacking(brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
         if (!brain.hasMemoryModule(MemoryModuleType.RIDE_TARGET) && PiglinBrain.method_29277(piglin)) {
@@ -188,10 +195,7 @@ public class PiglinBrain {
         }
         Item item = itemStack.getItem();
         if (PiglinBrain.isGoldenItem(item)) {
-            if (PiglinBrain.hasItemInOffHand(piglin)) {
-                piglin.dropStack(piglin.getStackInHand(Hand.OFF_HAND));
-            }
-            piglin.equipToOffHand(itemStack);
+            PiglinBrain.method_30089(piglin, itemStack);
             PiglinBrain.setAdmiringItem(piglin);
             return;
         }
@@ -204,6 +208,13 @@ public class PiglinBrain {
             return;
         }
         PiglinBrain.method_24849(piglin, itemStack);
+    }
+
+    private static void method_30089(PiglinEntity piglinEntity, ItemStack itemStack) {
+        if (PiglinBrain.hasItemInOffHand(piglinEntity)) {
+            piglinEntity.dropStack(piglinEntity.getStackInHand(Hand.OFF_HAND));
+        }
+        piglinEntity.equipToOffHand(itemStack);
     }
 
     private static ItemStack method_24848(ItemEntity stack) {
@@ -381,8 +392,9 @@ public class PiglinBrain {
         ItemStack itemStack = player.getStackInHand(hand);
         if (PiglinBrain.method_27086(piglin, itemStack)) {
             ItemStack itemStack2 = itemStack.split(1);
-            piglin.equipToOffHand(itemStack2);
+            PiglinBrain.method_30089(piglin, itemStack2);
             PiglinBrain.setAdmiringItem(piglin);
+            PiglinBrain.stopWalking(piglin);
             return ActionResult.CONSUME;
         }
         return ActionResult.PASS;
@@ -445,24 +457,33 @@ public class PiglinBrain {
         }
     }
 
-    private static void playSound(PiglinEntity piglin) {
-        piglin.getBrain().getFirstPossibleNonCoreActivity().ifPresent(activity -> {
-            if (activity == Activity.FIGHT) {
-                piglin.playAngrySound();
-            } else if (piglin.canConvert()) {
-                piglin.playRetreatSound();
-            } else if (activity == Activity.AVOID && PiglinBrain.method_29538(piglin)) {
-                piglin.playRetreatSound();
-            } else if (activity == Activity.ADMIRE_ITEM) {
-                piglin.playAdmireItemSound();
-            } else if (activity == Activity.CELEBRATE) {
-                piglin.playCelebrateSound();
-            } else if (PiglinBrain.hasPlayerHoldingWantedItemNearby(piglin)) {
-                piglin.playJealousSound();
-            } else if (PiglinBrain.hasSoulFireNearby(piglin)) {
-                piglin.playRetreatSound();
-            }
-        });
+    public static Optional<SoundEvent> method_30091(PiglinEntity piglinEntity) {
+        return piglinEntity.getBrain().getFirstPossibleNonCoreActivity().map(activity -> PiglinBrain.method_30087(piglinEntity, activity));
+    }
+
+    private static SoundEvent method_30087(PiglinEntity piglinEntity, Activity activity) {
+        if (activity == Activity.FIGHT) {
+            return SoundEvents.ENTITY_PIGLIN_ANGRY;
+        }
+        if (piglinEntity.canConvert()) {
+            return SoundEvents.ENTITY_PIGLIN_RETREAT;
+        }
+        if (activity == Activity.AVOID && PiglinBrain.method_29538(piglinEntity)) {
+            return SoundEvents.ENTITY_PIGLIN_RETREAT;
+        }
+        if (activity == Activity.ADMIRE_ITEM) {
+            return SoundEvents.ENTITY_PIGLIN_ADMIRING_ITEM;
+        }
+        if (activity == Activity.CELEBRATE) {
+            return SoundEvents.ENTITY_PIGLIN_CELEBRATE;
+        }
+        if (PiglinBrain.hasPlayerHoldingWantedItemNearby(piglinEntity)) {
+            return SoundEvents.ENTITY_PIGLIN_JEALOUS;
+        }
+        if (PiglinBrain.hasSoulFireNearby(piglinEntity)) {
+            return SoundEvents.ENTITY_PIGLIN_RETREAT;
+        }
+        return SoundEvents.ENTITY_PIGLIN_AMBIENT;
     }
 
     private static boolean method_29538(PiglinEntity piglinEntity) {
@@ -470,13 +491,7 @@ public class PiglinBrain {
         if (!brain.hasMemoryModule(MemoryModuleType.AVOID_TARGET)) {
             return false;
         }
-        return brain.getOptionalMemory(MemoryModuleType.AVOID_TARGET).get().isInRange(piglinEntity, 6.0);
-    }
-
-    protected static void playSoundAtChance(PiglinEntity piglin) {
-        if ((double)piglin.world.random.nextFloat() < 0.0125) {
-            PiglinBrain.playSound(piglin);
-        }
+        return brain.getOptionalMemory(MemoryModuleType.AVOID_TARGET).get().isInRange(piglinEntity, 12.0);
     }
 
     protected static boolean haveHuntedHoglinsRecently(PiglinEntity piglin) {

@@ -34,16 +34,16 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public RecipeBookDataC2SPacket(boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, boolean bl6) {
+    public RecipeBookDataC2SPacket(boolean guiOpen, boolean filteringCraftable, boolean furnaceGuiOpen, boolean furnaceFilteringCraftable, boolean cookingGuiOpen, boolean cookingFilteringCraftable) {
         this.mode = Mode.SETTINGS;
-        this.guiOpen = bl;
-        this.filteringCraftable = bl2;
-        this.furnaceGuiOpen = bl3;
-        this.furnaceFilteringCraftable = bl4;
-        this.blastFurnaceGuiOpen = bl5;
-        this.blastFurnaceFilteringCraftable = bl6;
-        this.smokerGuiOpen = bl5;
-        this.smokerGuiFilteringCraftable = bl6;
+        this.guiOpen = guiOpen;
+        this.filteringCraftable = filteringCraftable;
+        this.furnaceGuiOpen = furnaceGuiOpen;
+        this.furnaceFilteringCraftable = furnaceFilteringCraftable;
+        this.blastFurnaceGuiOpen = cookingGuiOpen;
+        this.blastFurnaceFilteringCraftable = cookingFilteringCraftable;
+        this.smokerGuiOpen = cookingGuiOpen;
+        this.smokerGuiFilteringCraftable = cookingFilteringCraftable;
     }
 
     @Override

@@ -148,14 +148,18 @@ implements ItemConvertible {
         return blockState;
     }
 
-    public static void replaceBlock(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags) {
+    public static void method_30094(BlockState blockState, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, int i) {
+        Block.replaceBlock(blockState, blockState2, worldAccess, blockPos, i, 512);
+    }
+
+    public static void replaceBlock(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags, int i) {
         if (newState != state) {
             if (newState.isAir()) {
                 if (!world.isClient()) {
-                    world.breakBlock(pos, (flags & 0x20) == 0);
+                    world.method_30093(pos, (flags & 0x20) == 0, null, i);
                 }
             } else {
-                world.setBlockState(pos, newState, flags & 0xFFFFFFDF);
+                world.method_30092(pos, newState, flags & 0xFFFFFFDF, i);
             }
         }
     }

@@ -5,9 +5,6 @@ package net.minecraft.entity.projectile.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -20,10 +17,8 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -52,26 +47,6 @@ extends ThrownItemEntity {
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
         entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0f);
-    }
-
-    @Override
-    protected void onBlockHit(BlockHitResult blockHitResult) {
-        super.onBlockHit(blockHitResult);
-        Entity entity = this.getOwner();
-        BlockPos blockPos = blockHitResult.getBlockPos();
-        BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-        if (blockEntity instanceof EndGatewayBlockEntity) {
-            EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
-            if (entity != null) {
-                if (entity instanceof ServerPlayerEntity) {
-                    Criteria.ENTER_BLOCK.trigger((ServerPlayerEntity)entity, this.world.getBlockState(blockPos));
-                }
-                endGatewayBlockEntity.tryTeleportingEntity(entity);
-                this.remove();
-            } else {
-                endGatewayBlockEntity.tryTeleportingEntity(this);
-            }
-        }
     }
 
     @Override

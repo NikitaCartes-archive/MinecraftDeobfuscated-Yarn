@@ -128,7 +128,7 @@ extends BlockEntity {
         return this.toTag(new CompoundTag());
     }
 
-    public void generate(ServerWorld world, int maxDepth, boolean bl) {
+    public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {
         ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
         StructureManager structureManager = world.getStructureManager();
         StructureAccessor structureAccessor = world.getStructureAccessor();
@@ -141,7 +141,7 @@ extends BlockEntity {
         RuntimeStructurePiece runtimeStructurePiece = new RuntimeStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos));
         StructurePoolBasedGenerator.method_27230(runtimeStructurePiece, maxDepth, RuntimeStructurePiece::new, chunkGenerator, structureManager, list, random);
         for (PoolStructurePiece poolStructurePiece : list) {
-            poolStructurePiece.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, bl);
+            poolStructurePiece.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
         }
     }
 

@@ -22,9 +22,9 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public PlayerActionC2SPacket(Action action, BlockPos blockPos, Direction direction) {
+    public PlayerActionC2SPacket(Action action, BlockPos pos, Direction direction) {
         this.action = action;
-        this.pos = blockPos.toImmutable();
+        this.pos = pos.toImmutable();
         this.direction = direction;
     }
 

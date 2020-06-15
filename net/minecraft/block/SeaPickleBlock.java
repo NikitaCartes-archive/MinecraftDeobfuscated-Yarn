@@ -22,7 +22,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -56,7 +55,7 @@ Waterloggable {
             return (BlockState)blockState.with(PICKLES, Math.min(4, blockState.get(PICKLES) + 1));
         }
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-        boolean bl = fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
+        boolean bl = fluidState.getFluid() == Fluids.WATER;
         return (BlockState)super.getPlacementState(ctx).with(WATERLOGGED, bl);
     }
 

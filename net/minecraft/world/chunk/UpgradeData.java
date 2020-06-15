@@ -101,7 +101,7 @@ public class UpgradeData {
                 mutable.set(blockPos, direction);
                 blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, world, blockPos, mutable);
             }
-            Block.replaceBlock(blockState, blockState2, world, blockPos, 18);
+            Block.method_30094(blockState, blockState2, world, blockPos, 18);
         }
     }
 
@@ -134,7 +134,7 @@ public class UpgradeData {
                     if (mutable.getX() >> 4 != chunkPos.x || mutable.getZ() >> 4 != chunkPos.z) continue;
                     blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, worldAccess, mutable, mutable2);
                 }
-                Block.replaceBlock(blockState, blockState2, worldAccess, mutable, 18);
+                Block.method_30094(blockState, blockState2, worldAccess, mutable, 18);
             }
         }
         for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {

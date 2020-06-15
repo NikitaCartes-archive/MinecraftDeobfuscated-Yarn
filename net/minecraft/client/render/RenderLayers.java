@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.fluid.Fluid;
@@ -304,6 +305,9 @@ public class RenderLayers {
     public static RenderLayer getEntityBlockLayer(BlockState state, boolean bl) {
         RenderLayer renderLayer = RenderLayers.getBlockLayer(state);
         if (renderLayer == RenderLayer.getTranslucent()) {
+            if (!MinecraftClient.isFabulousGraphicsOrBetter()) {
+                return TexturedRenderLayers.getEntityTranslucentCull();
+            }
             return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
         }
         return TexturedRenderLayers.getEntityCutout();

@@ -298,10 +298,9 @@ Saddleable {
 
     @Override
     public void tick() {
-        if (this.temptGoal != null && this.temptGoal.isActive() && this.random.nextInt(100) == 0) {
+        if (this.method_30079() && this.random.nextInt(140) == 0) {
             this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0f, this.getSoundPitch());
-        }
-        if (this.escapeDangerGoal != null && this.escapeDangerGoal.isActive() && this.random.nextInt(60) == 0) {
+        } else if (this.method_30078() && this.random.nextInt(60) == 0) {
             this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0f, this.getSoundPitch());
         }
         BlockState blockState = this.world.getBlockState(this.getBlockPos());
@@ -311,6 +310,14 @@ Saddleable {
         super.tick();
         this.updateFloating();
         this.checkBlockCollision();
+    }
+
+    private boolean method_30078() {
+        return this.escapeDangerGoal != null && this.escapeDangerGoal.isActive();
+    }
+
+    private boolean method_30079() {
+        return this.temptGoal != null && this.temptGoal.isActive();
     }
 
     @Override
@@ -335,6 +342,9 @@ Saddleable {
 
     @Override
     protected SoundEvent getAmbientSound() {
+        if (this.method_30078() || this.method_30079()) {
+            return null;
+        }
         return SoundEvents.ENTITY_STRIDER_AMBIENT;
     }
 

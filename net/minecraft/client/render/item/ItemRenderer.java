@@ -24,6 +24,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.TransformingVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexConsumers;
@@ -106,10 +107,23 @@ implements SynchronousResourceReloadListener {
         if (model.isBuiltin() || stack.getItem() == Items.TRIDENT && !bl) {
             BuiltinModelItemRenderer.INSTANCE.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
         } else {
+            VertexConsumer vertexConsumer;
             Block block;
             boolean bl22 = renderMode != ModelTransformation.Mode.GUI && !renderMode.method_29998() && stack.getItem() instanceof BlockItem ? !((block = ((BlockItem)stack.getItem()).getBlock()) instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock) : true;
             RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl22);
-            VertexConsumer vertexConsumer = bl22 ? ItemRenderer.method_29711(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint()) : ItemRenderer.getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+            if (stack.getItem() == Items.COMPASS && stack.hasEnchantmentGlint()) {
+                matrices.push();
+                MatrixStack.Entry entry = matrices.peek();
+                if (renderMode == ModelTransformation.Mode.GUI) {
+                    entry.getModel().multiply(0.5f);
+                } else if (renderMode.method_29998()) {
+                    entry.getModel().multiply(0.75f);
+                }
+                vertexConsumer = bl22 ? ItemRenderer.method_30115(vertexConsumers, renderLayer, entry) : ItemRenderer.method_30114(vertexConsumers, renderLayer, entry);
+                matrices.pop();
+            } else {
+                vertexConsumer = bl22 ? ItemRenderer.method_29711(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint()) : ItemRenderer.getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+            }
             this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
         }
         matrices.pop();
@@ -120,6 +134,14 @@ implements SynchronousResourceReloadListener {
             return VertexConsumers.dual(vertexConsumerProvider.getBuffer(bl ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer));
         }
         return vertexConsumerProvider.getBuffer(renderLayer);
+    }
+
+    public static VertexConsumer method_30114(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
+        return VertexConsumers.dual(new TransformingVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()), vertexConsumerProvider.getBuffer(renderLayer));
+    }
+
+    public static VertexConsumer method_30115(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
+        return VertexConsumers.dual(new TransformingVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlintDirect()), entry.getModel(), entry.getNormal()), vertexConsumerProvider.getBuffer(renderLayer));
     }
 
     public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {

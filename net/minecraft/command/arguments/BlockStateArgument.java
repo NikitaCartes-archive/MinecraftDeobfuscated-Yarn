@@ -5,6 +5,7 @@ package net.minecraft.command.arguments;
 
 import java.util.Set;
 import java.util.function.Predicate;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -51,7 +52,8 @@ implements Predicate<CachedBlockPosition> {
 
     public boolean setBlockState(ServerWorld serverWorld, BlockPos blockPos, int i) {
         BlockEntity blockEntity;
-        if (!serverWorld.setBlockState(blockPos, this.state, i)) {
+        BlockState blockState = Block.postProcessState(this.state, serverWorld, blockPos);
+        if (!serverWorld.setBlockState(blockPos, blockState, i)) {
             return false;
         }
         if (this.data != null && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
@@ -59,7 +61,7 @@ implements Predicate<CachedBlockPosition> {
             compoundTag.putInt("x", blockPos.getX());
             compoundTag.putInt("y", blockPos.getY());
             compoundTag.putInt("z", blockPos.getZ());
-            blockEntity.fromTag(this.state, compoundTag);
+            blockEntity.fromTag(blockState, compoundTag);
         }
         return true;
     }

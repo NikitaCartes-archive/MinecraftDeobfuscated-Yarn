@@ -39,7 +39,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityPredicate {
-    public static final EntityPredicate ANY = new EntityPredicate(EntityTypePredicate.ANY, DistancePredicate.ANY, LocationPredicate.ANY, EntityEffectPredicate.EMPTY, NbtPredicate.ANY, EntityFlagsPredicate.ANY, EntityEquipmentPredicate.ANY, PlayerPredicate.ANY, FishingHookPredicate.ANY, ANY, ANY, null, null);
+    public static final EntityPredicate ANY = new EntityPredicate(EntityTypePredicate.ANY, DistancePredicate.ANY, LocationPredicate.ANY, EntityEffectPredicate.EMPTY, NbtPredicate.ANY, EntityFlagsPredicate.ANY, EntityEquipmentPredicate.ANY, PlayerPredicate.ANY, FishingHookPredicate.ANY, null, null);
     private final EntityTypePredicate type;
     private final DistancePredicate distance;
     private final LocationPredicate location;
@@ -55,6 +55,22 @@ public class EntityPredicate {
     private final String team;
     @Nullable
     private final Identifier catType;
+
+    private EntityPredicate(EntityTypePredicate entityTypePredicate, DistancePredicate distancePredicate, LocationPredicate locationPredicate, EntityEffectPredicate entityEffectPredicate, NbtPredicate nbtPredicate, EntityFlagsPredicate entityFlagsPredicate, EntityEquipmentPredicate entityEquipmentPredicate, PlayerPredicate playerPredicate, FishingHookPredicate fishingHookPredicate, @Nullable String string, @Nullable Identifier identifier) {
+        this.type = entityTypePredicate;
+        this.distance = distancePredicate;
+        this.location = locationPredicate;
+        this.effects = entityEffectPredicate;
+        this.nbt = nbtPredicate;
+        this.flags = entityFlagsPredicate;
+        this.equipment = entityEquipmentPredicate;
+        this.player = playerPredicate;
+        this.fishingHook = fishingHookPredicate;
+        this.vehicle = this;
+        this.targetedEntity = this;
+        this.team = string;
+        this.catType = identifier;
+    }
 
     private EntityPredicate(EntityTypePredicate type, DistancePredicate distance, LocationPredicate location, EntityEffectPredicate effects, NbtPredicate nbt, EntityFlagsPredicate flags, EntityEquipmentPredicate equipment, PlayerPredicate player, FishingHookPredicate fishingHook, EntityPredicate vehicle, EntityPredicate targetedEntity, @Nullable String team, @Nullable Identifier catType) {
         this.type = type;

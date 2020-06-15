@@ -44,6 +44,7 @@ import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.advancement.criterion.UsedEnderEyeCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
+import net.minecraft.class_5409;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,6 +91,7 @@ public class Criteria {
     public static final ItemUsedOnBlockCriterion ITEM_USED_ON_BLOCK = Criteria.register(new ItemUsedOnBlockCriterion());
     public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = Criteria.register(new PlayerGeneratesContainerLootCriterion());
     public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = Criteria.register(new ThrownItemPickedUpByEntityCriterion());
+    public static final class_5409 field_25694 = Criteria.register(new class_5409());
 
     private static <T extends Criterion<?>> T register(T object) {
         if (VALUES.containsKey(object.getId())) {

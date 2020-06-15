@@ -411,10 +411,11 @@ extends PathNodeMaker {
                     if (LandPathNodeMaker.method_27138(blockState)) {
                         return PathNodeType.DANGER_FIRE;
                     }
-                    if (blockView.getFluidState(mutable).matches(FluidTags.WATER)) {
+                    FluidState fluidState = blockView.getFluidState(mutable);
+                    if (fluidState.matches(FluidTags.WATER)) {
                         return PathNodeType.WATER_BORDER;
                     }
-                    if (!blockView.getFluidState(mutable).matches(FluidTags.LAVA)) continue;
+                    if (!fluidState.matches(FluidTags.LAVA)) continue;
                     return PathNodeType.LAVA;
                 }
             }

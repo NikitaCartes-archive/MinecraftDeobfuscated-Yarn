@@ -15,23 +15,23 @@ import org.jetbrains.annotations.Nullable;
 
 public class SetCameraEntityS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    public int id;
+    public int entityId;
 
     public SetCameraEntityS2CPacket() {
     }
 
     public SetCameraEntityS2CPacket(Entity entity) {
-        this.id = entity.getEntityId();
+        this.entityId = entity.getEntityId();
     }
 
     @Override
     public void read(PacketByteBuf buf) throws IOException {
-        this.id = buf.readVarInt();
+        this.entityId = buf.readVarInt();
     }
 
     @Override
     public void write(PacketByteBuf buf) throws IOException {
-        buf.writeVarInt(this.id);
+        buf.writeVarInt(this.entityId);
     }
 
     @Override
@@ -42,7 +42,7 @@ implements Packet<ClientPlayPacketListener> {
     @Nullable
     @Environment(value=EnvType.CLIENT)
     public Entity getEntity(World world) {
-        return world.getEntityById(this.id);
+        return world.getEntityById(this.entityId);
     }
 }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.mob;
 
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -232,10 +233,10 @@ implements Monster {
             this.delay = 60;
             List<PlayerEntity> list = PhantomEntity.this.world.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
             if (!list.isEmpty()) {
-                list.sort((playerEntity, playerEntity2) -> playerEntity.getY() > playerEntity2.getY() ? -1 : 1);
-                for (PlayerEntity playerEntity3 : list) {
-                    if (!PhantomEntity.this.isTarget(playerEntity3, TargetPredicate.DEFAULT)) continue;
-                    PhantomEntity.this.setTarget(playerEntity3);
+                list.sort(Comparator.comparing(Entity::getY).reversed());
+                for (PlayerEntity playerEntity : list) {
+                    if (!PhantomEntity.this.isTarget(playerEntity, TargetPredicate.DEFAULT)) continue;
+                    PhantomEntity.this.setTarget(playerEntity);
                     return true;
                 }
             }

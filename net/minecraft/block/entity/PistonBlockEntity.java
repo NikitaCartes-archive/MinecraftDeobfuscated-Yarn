@@ -267,7 +267,7 @@ implements Tickable {
                 BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
                 if (blockState.isAir()) {
                     this.world.setBlockState(this.pos, this.pushedBlock, 84);
-                    Block.replaceBlock(this.pushedBlock, blockState, this.world, this.pos, 3);
+                    Block.method_30094(this.pushedBlock, blockState, this.world, this.pos, 3);
                 } else {
                     if (blockState.contains(Properties.WATERLOGGED) && blockState.get(Properties.WATERLOGGED).booleanValue()) {
                         blockState = (BlockState)blockState.with(Properties.WATERLOGGED, false);

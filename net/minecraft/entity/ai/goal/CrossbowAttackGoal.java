@@ -15,15 +15,18 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.IntRange;
 
 public class CrossbowAttackGoal<T extends HostileEntity & CrossbowUser>
 extends Goal {
+    public static final IntRange field_25696 = new IntRange(20, 40);
     private final T actor;
     private Stage stage = Stage.UNCHARGED;
     private final double speed;
     private final float squaredRange;
     private int seeingTargetTicker;
     private int chargedTicksLeft;
+    private int field_25697;
 
     public CrossbowAttackGoal(T actor, double speed, float range) {
         this.actor = actor;
@@ -80,8 +83,13 @@ extends Goal {
         double d = ((Entity)this.actor).squaredDistanceTo(livingEntity);
         boolean bl5 = bl3 = (d > (double)this.squaredRange || this.seeingTargetTicker < 5) && this.chargedTicksLeft == 0;
         if (bl3) {
-            ((MobEntity)this.actor).getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.speed : this.speed * 0.5);
+            --this.field_25697;
+            if (this.field_25697 <= 0) {
+                ((MobEntity)this.actor).getNavigation().startMovingTo(livingEntity, this.isUncharged() ? this.speed : this.speed * 0.5);
+                this.field_25697 = field_25696.choose(((LivingEntity)this.actor).getRandom());
+            }
         } else {
+            this.field_25697 = 0;
             ((MobEntity)this.actor).getNavigation().stop();
         }
         ((MobEntity)this.actor).getLookControl().lookAt(livingEntity, 30.0f, 30.0f);

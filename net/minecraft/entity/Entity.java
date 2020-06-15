@@ -2038,12 +2038,16 @@ CommandOutput {
                 ServerWorld.method_29200(serverWorld);
             }
         }
-        this.removed = true;
+        this.method_30076();
         this.world.getProfiler().pop();
         ((ServerWorld)this.world).resetIdleTimeout();
         serverWorld.resetIdleTimeout();
         this.world.getProfiler().pop();
         return entity;
+    }
+
+    protected void method_30076() {
+        this.removed = true;
     }
 
     public boolean canUsePortals() {
@@ -2551,7 +2555,13 @@ CommandOutput {
             if (!(this instanceof PlayerEntity)) {
                 vec3d = vec3d.normalize();
             }
-            this.setVelocity(this.getVelocity().add(vec3d.multiply(d)));
+            Vec3d vec3d3 = this.getVelocity();
+            vec3d = vec3d.multiply(d * 1.0);
+            double g = 0.003;
+            if (Math.abs(vec3d3.x) < 0.003 && Math.abs(vec3d3.z) < 0.003 && vec3d.length() < 0.0045000000000000005) {
+                vec3d = vec3d.normalize().multiply(0.0045000000000000005);
+            }
+            this.setVelocity(this.getVelocity().add(vec3d));
         }
         this.fluidHeight.put(tag, e);
         return bl2;

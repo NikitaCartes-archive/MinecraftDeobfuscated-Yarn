@@ -18,8 +18,8 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public UpdateSelectedSlotC2SPacket(int i) {
-        this.selectedSlot = i;
+    public UpdateSelectedSlotC2SPacket(int selectedSlot) {
+        this.selectedSlot = selectedSlot;
     }
 
     @Override

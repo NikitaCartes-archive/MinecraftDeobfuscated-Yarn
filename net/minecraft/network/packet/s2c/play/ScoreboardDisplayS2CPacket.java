@@ -21,9 +21,9 @@ implements Packet<ClientPlayPacketListener> {
     public ScoreboardDisplayS2CPacket() {
     }
 
-    public ScoreboardDisplayS2CPacket(int slot, @Nullable ScoreboardObjective scoreboardObjective) {
+    public ScoreboardDisplayS2CPacket(int slot, @Nullable ScoreboardObjective objective) {
         this.slot = slot;
-        this.name = scoreboardObjective == null ? "" : scoreboardObjective.getName();
+        this.name = objective == null ? "" : objective.getName();
     }
 
     @Override

@@ -112,10 +112,10 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean bl) {
+    public boolean generate(StructureManager structureManager, ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
         StructurePlacementData structurePlacementData;
         Structure structure = this.method_27233(structureManager);
-        if (structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox, bl), random, 18)) {
+        if (structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox, keepJigsaws), random, 18)) {
             List<Structure.StructureBlockInfo> list = Structure.process(serverWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 this.method_16756(serverWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);
@@ -125,7 +125,7 @@ extends StructurePoolElement {
         return false;
     }
 
-    protected StructurePlacementData createPlacementData(BlockRotation blockRotation, BlockBox blockBox, boolean bl) {
+    protected StructurePlacementData createPlacementData(BlockRotation blockRotation, BlockBox blockBox, boolean keepJigsaws) {
         StructurePlacementData structurePlacementData = new StructurePlacementData();
         structurePlacementData.setBoundingBox(blockBox);
         structurePlacementData.setRotation(blockRotation);
@@ -133,7 +133,7 @@ extends StructurePoolElement {
         structurePlacementData.setIgnoreEntities(false);
         structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
         structurePlacementData.method_27264(true);
-        if (!bl) {
+        if (!keepJigsaws) {
             structurePlacementData.addProcessor(JigsawReplacementStructureProcessor.INSTANCE);
         }
         this.processors.forEach(structurePlacementData::addProcessor);

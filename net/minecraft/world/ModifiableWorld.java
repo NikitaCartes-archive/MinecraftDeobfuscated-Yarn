@@ -12,6 +12,8 @@ import org.jetbrains.annotations.Nullable;
  * Represents a modifable world where block states can be changed and entities spawned.
  */
 public interface ModifiableWorld {
+    public boolean method_30092(BlockPos var1, BlockState var2, int var3, int var4);
+
     /**
      * Updates the block state at a position, calling appropriate callbacks.
      * 
@@ -35,7 +37,9 @@ public interface ModifiableWorld {
      * @param state the block state to set
      * @param flags the bitwise flag combination, as described above
      */
-    public boolean setBlockState(BlockPos var1, BlockState var2, int var3);
+    default public boolean setBlockState(BlockPos pos, BlockState state, int flags) {
+        return this.method_30092(pos, state, flags, 512);
+    }
 
     public boolean removeBlock(BlockPos var1, boolean var2);
 
@@ -43,7 +47,11 @@ public interface ModifiableWorld {
         return this.breakBlock(pos, drop, null);
     }
 
-    public boolean breakBlock(BlockPos var1, boolean var2, @Nullable Entity var3);
+    default public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity) {
+        return this.method_30093(pos, drop, breakingEntity, 512);
+    }
+
+    public boolean method_30093(BlockPos var1, boolean var2, @Nullable Entity var3, int var4);
 
     default public boolean spawnEntity(Entity entity) {
         return false;

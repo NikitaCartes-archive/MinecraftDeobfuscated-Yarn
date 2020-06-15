@@ -21,9 +21,9 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public CustomPayloadC2SPacket(Identifier channel, PacketByteBuf packetByteBuf) {
+    public CustomPayloadC2SPacket(Identifier channel, PacketByteBuf data) {
         this.channel = channel;
-        this.data = packetByteBuf;
+        this.data = data;
     }
 
     @Override

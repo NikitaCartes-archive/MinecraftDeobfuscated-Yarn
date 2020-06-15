@@ -7,10 +7,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -115,20 +113,13 @@ implements DebugRenderer.Renderer {
 
     private Map<BlockPos, Set<UUID>> getBlacklistingBees() {
         HashMap<BlockPos, Set<UUID>> map = Maps.newHashMap();
-        this.bees.values().forEach(bee -> bee.blacklist.forEach(blockPos -> BeeDebugRenderer.addToMap(map, bee, blockPos)));
+        this.bees.values().forEach(bee -> bee.blacklist.forEach(blockPos2 -> map.computeIfAbsent((BlockPos)blockPos2, blockPos -> Sets.newHashSet()).add(bee.getUuid())));
         return map;
     }
 
     private void drawFlowers() {
         HashMap map = Maps.newHashMap();
-        this.bees.values().stream().filter(Bee::hasFlower).forEach(bee -> {
-            HashSet<UUID> set = (HashSet<UUID>)map.get(bee.flower);
-            if (set == null) {
-                set = Sets.newHashSet();
-                map.put(bee.flower, set);
-            }
-            set.add(bee.getUuid());
-        });
+        this.bees.values().stream().filter(Bee::hasFlower).forEach(bee -> map.computeIfAbsent(bee.flower, blockPos -> Sets.newHashSet()).add(bee.getUuid()));
         map.entrySet().forEach(entry -> {
             BlockPos blockPos = (BlockPos)entry.getKey();
             Set set = (Set)entry.getValue();
@@ -149,15 +140,6 @@ implements DebugRenderer.Renderer {
             return "" + bees.size() + " bees";
         }
         return bees.stream().map(NameGenerator::name).collect(Collectors.toSet()).toString();
-    }
-
-    private static void addToMap(Map<BlockPos, Set<UUID>> map, Bee bee, BlockPos pos) {
-        Set<UUID> set = map.get(pos);
-        if (set == null) {
-            set = Sets.newHashSet();
-            map.put(pos, set);
-        }
-        set.add(bee.getUuid());
     }
 
     private static void drawHive(BlockPos pos) {
@@ -281,12 +263,7 @@ implements DebugRenderer.Renderer {
         HashMap<BlockPos, List<String>> map = Maps.newHashMap();
         for (Bee bee : this.bees.values()) {
             if (bee.hive == null || this.hives.containsKey(bee.hive)) continue;
-            ArrayList<String> list = (ArrayList<String>)map.get(bee.hive);
-            if (list == null) {
-                list = Lists.newArrayList();
-                map.put(bee.hive, list);
-            }
-            list.add(bee.getName());
+            map.computeIfAbsent(bee.hive, blockPos -> Lists.newArrayList()).add(bee.getName());
         }
         return map;
     }
