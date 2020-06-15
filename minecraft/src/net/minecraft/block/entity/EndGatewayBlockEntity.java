@@ -5,13 +5,16 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
@@ -83,7 +86,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		} else if (!this.world.isClient) {
 			List<Entity> list = this.world.getNonSpectatingEntities(Entity.class, new Box(this.getPos()));
 			if (!list.isEmpty()) {
-				this.tryTeleportingEntity(((Entity)list.get(0)).getRootVehicle());
+				this.tryTeleportingEntity((Entity)list.get(this.world.random.nextInt(list.size())));
 			}
 
 			if (this.age % 2400L == 0L) {
@@ -152,7 +155,24 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 
 			if (this.exitPortalPos != null) {
 				BlockPos blockPos = this.exactTeleport ? this.exitPortalPos : this.findBestPortalExitPos();
-				entity.teleport((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
+				Entity entity3;
+				if (entity instanceof EnderPearlEntity) {
+					Entity entity2 = ((EnderPearlEntity)entity).getOwner();
+					if (entity2 instanceof ServerPlayerEntity) {
+						Criteria.ENTER_BLOCK.trigger((ServerPlayerEntity)entity2, this.world.getBlockState(this.getPos()));
+					}
+
+					if (entity2 != null) {
+						entity3 = entity2;
+						entity.remove();
+					} else {
+						entity3 = entity;
+					}
+				} else {
+					entity3 = entity.getRootVehicle();
+				}
+
+				entity3.teleport((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
 			}
 
 			this.startTeleportCooldown();

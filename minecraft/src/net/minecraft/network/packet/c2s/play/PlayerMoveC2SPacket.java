@@ -70,13 +70,13 @@ public class PlayerMoveC2SPacket implements Packet<ServerPlayPacketListener> {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public Both(double d, double e, double f, float g, float h, boolean bl) {
-			this.x = d;
-			this.y = e;
-			this.z = f;
-			this.yaw = g;
-			this.pitch = h;
-			this.onGround = bl;
+		public Both(double x, double y, double z, float yaw, float pitch, boolean onGround) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.yaw = yaw;
+			this.pitch = pitch;
+			this.onGround = onGround;
 			this.changeLook = true;
 			this.changePosition = true;
 		}
@@ -108,10 +108,10 @@ public class PlayerMoveC2SPacket implements Packet<ServerPlayPacketListener> {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public LookOnly(float f, float g, boolean bl) {
-			this.yaw = f;
-			this.pitch = g;
-			this.onGround = bl;
+		public LookOnly(float yaw, float pitch, boolean onGround) {
+			this.yaw = yaw;
+			this.pitch = pitch;
+			this.onGround = onGround;
 			this.changeLook = true;
 		}
 

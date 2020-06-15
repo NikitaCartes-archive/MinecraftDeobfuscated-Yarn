@@ -28,18 +28,9 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	public void addNeighborUpdate(long time, BlockPos pos) {
-		Map<BlockPos, Integer> map = (Map)this.neighborUpdates.get(time);
-		if (map == null) {
-			map = Maps.newHashMap();
-			this.neighborUpdates.put(time, map);
-		}
-
-		Integer integer = (Integer)map.get(pos);
-		if (integer == null) {
-			integer = 0;
-		}
-
-		map.put(pos, integer + 1);
+		Map<BlockPos, Integer> map = (Map)this.neighborUpdates.computeIfAbsent(time, long_ -> Maps.newHashMap());
+		int i = map.getOrDefault(pos, 0);
+		map.put(pos, i + 1);
 	}
 
 	@Override

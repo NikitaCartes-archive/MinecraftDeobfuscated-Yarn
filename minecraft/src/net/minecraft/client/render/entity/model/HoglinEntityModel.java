@@ -46,7 +46,7 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 		this.head.addChild(this.leftEar);
 		ModelPart modelPart = new ModelPart(this);
 		modelPart.setPivot(-7.0F, 2.0F, -12.0F);
-		modelPart.setTextureOffset(1, 13).addCuboid(-1.0F, -11.0F, -1.0F, 2.0F, 11.0F, 2.0F);
+		modelPart.setTextureOffset(10, 13).addCuboid(-1.0F, -11.0F, -1.0F, 2.0F, 11.0F, 2.0F);
 		this.head.addChild(modelPart);
 		ModelPart modelPart2 = new ModelPart(this);
 		modelPart2.setPivot(7.0F, 2.0F, -12.0F);

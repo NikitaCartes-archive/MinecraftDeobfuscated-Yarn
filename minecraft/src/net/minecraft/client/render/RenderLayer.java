@@ -174,7 +174,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.shadeModel(SMOOTH_SHADE_MODEL)
 			.build(false)
 	);
-	private static final RenderLayer TRIPWIRE = of("tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, method_29996());
+	private static final RenderLayer TRIPWIRE = of("tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, getTripwirePhaseData());
 	public static final RenderLayer.MultiPhase LINES = of(
 		"lines",
 		VertexFormats.POSITION_COLOR,
@@ -576,7 +576,7 @@ public abstract class RenderLayer extends RenderPhase {
 		return LIGHTNING;
 	}
 
-	private static RenderLayer.MultiPhaseParameters method_29996() {
+	private static RenderLayer.MultiPhaseParameters getTripwirePhaseData() {
 		return RenderLayer.MultiPhaseParameters.builder()
 			.shadeModel(SMOOTH_SHADE_MODEL)
 			.lightmap(ENABLE_LIGHTMAP)

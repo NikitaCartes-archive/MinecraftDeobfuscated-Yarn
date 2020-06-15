@@ -195,7 +195,7 @@ public class TrackedDataHandlerRegistry {
 			return blockPos;
 		}
 	};
-	public static final TrackedDataHandler<Optional<BlockPos>> OPTIONA_BLOCK_POS = new TrackedDataHandler<Optional<BlockPos>>() {
+	public static final TrackedDataHandler<Optional<BlockPos>> OPTIONAL_BLOCK_POS = new TrackedDataHandler<Optional<BlockPos>>() {
 		public void write(PacketByteBuf packetByteBuf, Optional<BlockPos> optional) {
 			packetByteBuf.writeBoolean(optional.isPresent());
 			if (optional.isPresent()) {
@@ -322,7 +322,7 @@ public class TrackedDataHandlerRegistry {
 		register(BOOLEAN);
 		register(ROTATION);
 		register(BLOCK_POS);
-		register(OPTIONA_BLOCK_POS);
+		register(OPTIONAL_BLOCK_POS);
 		register(FACING);
 		register(OPTIONAL_UUID);
 		register(OPTIONAL_BLOCK_STATE);

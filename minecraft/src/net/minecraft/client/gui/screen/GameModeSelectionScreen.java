@@ -37,7 +37,21 @@ public class GameModeSelectionScreen extends Screen {
 
 	public GameModeSelectionScreen() {
 		super(NarratorManager.EMPTY);
-		this.currentGameMode = GameModeSelectionScreen.GameMode.of(MinecraftClient.getInstance().interactionManager.getPreviousGameMode());
+		this.currentGameMode = GameModeSelectionScreen.GameMode.of(this.method_30106());
+	}
+
+	private net.minecraft.world.GameMode method_30106() {
+		net.minecraft.world.GameMode gameMode = MinecraftClient.getInstance().interactionManager.getCurrentGameMode();
+		net.minecraft.world.GameMode gameMode2 = MinecraftClient.getInstance().interactionManager.getPreviousGameMode();
+		if (gameMode2 == net.minecraft.world.GameMode.NOT_SET) {
+			if (gameMode == net.minecraft.world.GameMode.CREATIVE) {
+				gameMode2 = net.minecraft.world.GameMode.SURVIVAL;
+			} else {
+				gameMode2 = net.minecraft.world.GameMode.CREATIVE;
+			}
+		}
+
+		return gameMode2;
 	}
 
 	@Override

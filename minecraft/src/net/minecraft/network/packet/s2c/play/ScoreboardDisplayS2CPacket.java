@@ -17,12 +17,12 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 	public ScoreboardDisplayS2CPacket() {
 	}
 
-	public ScoreboardDisplayS2CPacket(int slot, @Nullable ScoreboardObjective scoreboardObjective) {
+	public ScoreboardDisplayS2CPacket(int slot, @Nullable ScoreboardObjective objective) {
 		this.slot = slot;
-		if (scoreboardObjective == null) {
+		if (objective == null) {
 			this.name = "";
 		} else {
-			this.name = scoreboardObjective.getName();
+			this.name = objective.getName();
 		}
 	}
 

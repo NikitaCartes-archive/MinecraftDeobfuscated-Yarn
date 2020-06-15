@@ -16,9 +16,9 @@ public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public UpdateSignC2SPacket(BlockPos blockPos, String string, String string2, String string3, String string4) {
-		this.pos = blockPos;
-		this.text = new String[]{string, string2, string3, string4};
+	public UpdateSignC2SPacket(BlockPos pos, String line1, String line2, String line3, String line4) {
+		this.pos = pos;
+		this.text = new String[]{line1, line2, line3, line4};
 	}
 
 	@Override

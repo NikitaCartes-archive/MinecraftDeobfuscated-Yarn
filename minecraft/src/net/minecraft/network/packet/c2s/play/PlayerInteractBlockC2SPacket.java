@@ -10,7 +10,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 
 public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketListener> {
-	private BlockHitResult field_17602;
+	private BlockHitResult blockHitResult;
 	private Hand hand;
 
 	public PlayerInteractBlockC2SPacket() {
@@ -19,19 +19,19 @@ public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketList
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractBlockC2SPacket(Hand hand, BlockHitResult blockHitResult) {
 		this.hand = hand;
-		this.field_17602 = blockHitResult;
+		this.blockHitResult = blockHitResult;
 	}
 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.hand = buf.readEnumConstant(Hand.class);
-		this.field_17602 = buf.readBlockHitResult();
+		this.blockHitResult = buf.readBlockHitResult();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeEnumConstant(this.hand);
-		buf.writeBlockHitResult(this.field_17602);
+		buf.writeBlockHitResult(this.blockHitResult);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -42,7 +42,7 @@ public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketList
 		return this.hand;
 	}
 
-	public BlockHitResult getHitY() {
-		return this.field_17602;
+	public BlockHitResult getBlockHitResult() {
+		return this.blockHitResult;
 	}
 }

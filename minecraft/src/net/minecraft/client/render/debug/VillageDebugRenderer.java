@@ -292,13 +292,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		for(VillageDebugRenderer.Brain brain : this.brains.values()) {
 			for(BlockPos blockPos : Iterables.concat(brain.pointsOfInterest, brain.field_25287)) {
 				if (!this.pointsOfInterest.containsKey(blockPos)) {
-					List<String> list = (List)map.get(blockPos);
-					if (list == null) {
-						list = Lists.newArrayList();
-						map.put(blockPos, list);
-					}
-
-					list.add(brain.field_19328);
+					((List)map.computeIfAbsent(blockPos, blockPosx -> Lists.newArrayList())).add(brain.field_19328);
 				}
 			}
 		}

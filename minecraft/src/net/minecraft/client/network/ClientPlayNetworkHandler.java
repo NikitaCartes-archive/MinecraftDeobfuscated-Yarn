@@ -405,6 +405,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.player.setReducedDebugInfo(packet.hasReducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showsDeathScreen());
 		this.client.interactionManager.setGameMode(packet.getGameMode());
+		this.client.interactionManager.method_30108(packet.method_30116());
 		this.client.options.onPlayerModelPartChange();
 		this.connection
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
@@ -1099,6 +1100,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		this.client.interactionManager.setGameMode(packet.getGameMode());
+		this.client.interactionManager.method_30108(packet.method_30117());
 	}
 
 	@Override

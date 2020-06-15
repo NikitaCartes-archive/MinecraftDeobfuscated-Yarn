@@ -22,10 +22,10 @@ public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ClientCommandC2SPacket(Entity entity, ClientCommandC2SPacket.Mode mode, int i) {
+	public ClientCommandC2SPacket(Entity entity, ClientCommandC2SPacket.Mode mode, int mountJumpHeight) {
 		this.entityId = entity.getEntityId();
 		this.mode = mode;
-		this.mountJumpHeight = i;
+		this.mountJumpHeight = mountJumpHeight;
 	}
 
 	@Override

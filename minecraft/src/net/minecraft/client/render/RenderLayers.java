@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -297,7 +298,11 @@ public class RenderLayers {
 	public static RenderLayer getEntityBlockLayer(BlockState state, boolean bl) {
 		RenderLayer renderLayer = getBlockLayer(state);
 		if (renderLayer == RenderLayer.getTranslucent()) {
-			return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
+			if (!MinecraftClient.isFabulousGraphicsOrBetter()) {
+				return TexturedRenderLayers.getEntityTranslucentCull();
+			} else {
+				return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
+			}
 		} else {
 			return TexturedRenderLayers.getEntityCutout();
 		}

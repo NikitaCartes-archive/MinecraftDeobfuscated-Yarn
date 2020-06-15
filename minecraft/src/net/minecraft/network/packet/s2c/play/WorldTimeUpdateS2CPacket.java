@@ -14,10 +14,10 @@ public class WorldTimeUpdateS2CPacket implements Packet<ClientPlayPacketListener
 	public WorldTimeUpdateS2CPacket() {
 	}
 
-	public WorldTimeUpdateS2CPacket(long time, long timeOfDay, boolean bl) {
+	public WorldTimeUpdateS2CPacket(long time, long timeOfDay, boolean doDaylightCycle) {
 		this.time = time;
 		this.timeOfDay = timeOfDay;
-		if (!bl) {
+		if (!doDaylightCycle) {
 			this.timeOfDay = -this.timeOfDay;
 			if (this.timeOfDay == 0L) {
 				this.timeOfDay = -1L;

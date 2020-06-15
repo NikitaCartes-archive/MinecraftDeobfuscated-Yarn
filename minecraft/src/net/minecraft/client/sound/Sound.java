@@ -74,6 +74,10 @@ public class Sound implements SoundContainer<Sound> {
 		return this.attenuation;
 	}
 
+	public String toString() {
+		return "Sound[" + this.id + "]";
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static enum RegistrationType {
 		FILE("file"),

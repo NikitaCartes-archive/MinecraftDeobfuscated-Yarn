@@ -14,8 +14,8 @@ public class GuiCloseC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public GuiCloseC2SPacket(int i) {
-		this.id = i;
+	public GuiCloseC2SPacket(int id) {
+		this.id = id;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

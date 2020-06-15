@@ -16,9 +16,9 @@ public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacket
 	}
 
 	@Environment(EnvType.CLIENT)
-	public CreativeInventoryActionC2SPacket(int i, ItemStack itemStack) {
-		this.slot = i;
-		this.stack = itemStack.copy();
+	public CreativeInventoryActionC2SPacket(int slot, ItemStack stack) {
+		this.slot = slot;
+		this.stack = stack.copy();
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

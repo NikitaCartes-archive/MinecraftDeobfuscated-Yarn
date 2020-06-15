@@ -15,9 +15,9 @@ public class UpdateBeaconC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public UpdateBeaconC2SPacket(int i, int j) {
-		this.primaryEffectId = i;
-		this.secondaryEffectId = j;
+	public UpdateBeaconC2SPacket(int primaryEffectId, int secondaryEffectId) {
+		this.primaryEffectId = primaryEffectId;
+		this.secondaryEffectId = secondaryEffectId;
 	}
 
 	@Override

@@ -20,14 +20,14 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	public ScoreboardPlayerUpdateS2CPacket() {
 	}
 
-	public ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode updateMode, @Nullable String objectiveName, String playerName, int score) {
-		if (updateMode != ServerScoreboard.UpdateMode.REMOVE && objectiveName == null) {
+	public ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode mode, @Nullable String objectiveName, String playerName, int score) {
+		if (mode != ServerScoreboard.UpdateMode.REMOVE && objectiveName == null) {
 			throw new IllegalArgumentException("Need an objective name");
 		} else {
 			this.playerName = playerName;
 			this.objectiveName = objectiveName;
 			this.score = score;
-			this.mode = updateMode;
+			this.mode = mode;
 		}
 	}
 

@@ -54,7 +54,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	);
 	protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
 	protected static final TrackedData<Optional<BlockPos>> ATTACHED_BLOCK = DataTracker.registerData(
-		ShulkerEntity.class, TrackedDataHandlerRegistry.OPTIONA_BLOCK_POS
+		ShulkerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS
 	);
 	protected static final TrackedData<Byte> PEEK_AMOUNT = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Byte> COLOR = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);

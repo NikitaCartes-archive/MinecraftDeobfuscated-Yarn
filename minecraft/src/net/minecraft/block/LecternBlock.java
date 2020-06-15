@@ -92,10 +92,10 @@ public class LecternBlock extends BlockWithEntity {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		World world = ctx.getWorld();
 		ItemStack itemStack = ctx.getStack();
-		CompoundTag compoundTag = itemStack.getOrCreateTag();
+		CompoundTag compoundTag = itemStack.getTag();
 		PlayerEntity playerEntity = ctx.getPlayer();
 		boolean bl = false;
-		if (!world.isClient && playerEntity != null && playerEntity.isCreativeLevelTwoOp() && compoundTag.contains("BlockEntityTag")) {
+		if (!world.isClient && playerEntity != null && compoundTag != null && playerEntity.isCreativeLevelTwoOp() && compoundTag.contains("BlockEntityTag")) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("BlockEntityTag");
 			if (compoundTag2.contains("Book")) {
 				bl = true;

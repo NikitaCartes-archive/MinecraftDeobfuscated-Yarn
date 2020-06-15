@@ -19,10 +19,10 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 	public ScoreboardObjectiveUpdateS2CPacket() {
 	}
 
-	public ScoreboardObjectiveUpdateS2CPacket(ScoreboardObjective scoreboardObjective, int mode) {
-		this.name = scoreboardObjective.getName();
-		this.displayName = scoreboardObjective.getDisplayName();
-		this.type = scoreboardObjective.getRenderType();
+	public ScoreboardObjectiveUpdateS2CPacket(ScoreboardObjective objective, int mode) {
+		this.name = objective.getName();
+		this.displayName = objective.getDisplayName();
+		this.type = objective.getRenderType();
 		this.mode = mode;
 	}
 

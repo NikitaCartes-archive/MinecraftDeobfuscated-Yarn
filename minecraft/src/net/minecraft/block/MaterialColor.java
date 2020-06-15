@@ -57,6 +57,13 @@ public class MaterialColor {
 	public static final MaterialColor GREEN_TERRACOTTA = new MaterialColor(49, 5001770);
 	public static final MaterialColor RED_TERRACOTTA = new MaterialColor(50, 9321518);
 	public static final MaterialColor BLACK_TERRACOTTA = new MaterialColor(51, 2430480);
+	public static final MaterialColor field_25702 = new MaterialColor(52, 12398641);
+	public static final MaterialColor field_25703 = new MaterialColor(53, 9715553);
+	public static final MaterialColor field_25704 = new MaterialColor(54, 6035741);
+	public static final MaterialColor field_25705 = new MaterialColor(55, 1474182);
+	public static final MaterialColor field_25706 = new MaterialColor(56, 3837580);
+	public static final MaterialColor field_25707 = new MaterialColor(57, 5647422);
+	public static final MaterialColor field_25708 = new MaterialColor(58, 1356933);
 	public final int color;
 	public final int id;
 
