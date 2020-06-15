@@ -14,8 +14,8 @@ public class UpdateSelectedSlotC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	@Environment(EnvType.CLIENT)
-	public UpdateSelectedSlotC2SPacket(int i) {
-		this.selectedSlot = i;
+	public UpdateSelectedSlotC2SPacket(int selectedSlot) {
+		this.selectedSlot = selectedSlot;
 	}
 
 	@Override

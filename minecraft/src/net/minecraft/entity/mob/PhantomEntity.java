@@ -1,10 +1,12 @@
 package net.minecraft.entity.mob;
 
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -306,7 +308,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				List<PlayerEntity> list = PhantomEntity.this.world
 					.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
 				if (!list.isEmpty()) {
-					list.sort((playerEntityx, playerEntity2) -> playerEntityx.getY() > playerEntity2.getY() ? -1 : 1);
+					list.sort(Comparator.comparing(Entity::getY).reversed());
 
 					for (PlayerEntity playerEntity : list) {
 						if (PhantomEntity.this.isTarget(playerEntity, TargetPredicate.DEFAULT)) {

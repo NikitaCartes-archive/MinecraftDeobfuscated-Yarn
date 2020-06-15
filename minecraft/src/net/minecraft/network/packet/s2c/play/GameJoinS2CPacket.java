@@ -20,6 +20,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private long sha256Seed;
 	private boolean hardcore;
 	private GameMode gameMode;
+	private GameMode field_25713;
 	private Set<RegistryKey<World>> field_25320;
 	private RegistryTracker.Modifiable dimensionTracker;
 	private RegistryKey<DimensionType> field_25321;
@@ -37,18 +38,19 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	public GameJoinS2CPacket(
 		int playerEntityId,
 		GameMode gameMode,
+		GameMode gameMode2,
 		long sha256Seed,
 		boolean hardcore,
 		Set<RegistryKey<World>> set,
 		RegistryTracker.Modifiable modifiable,
 		RegistryKey<DimensionType> registryKey,
 		RegistryKey<World> registryKey2,
-		int i,
-		int j,
-		boolean bl,
-		boolean bl2,
-		boolean bl3,
-		boolean bl4
+		int maxPlayers,
+		int chunkLoadDistance,
+		boolean reducedDebugInfo,
+		boolean showDeathScreen,
+		boolean debugWorld,
+		boolean flatWorld
 	) {
 		this.playerEntityId = playerEntityId;
 		this.field_25320 = set;
@@ -57,13 +59,14 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.dimensionId = registryKey2;
 		this.sha256Seed = sha256Seed;
 		this.gameMode = gameMode;
-		this.maxPlayers = i;
+		this.field_25713 = gameMode2;
+		this.maxPlayers = maxPlayers;
 		this.hardcore = hardcore;
-		this.chunkLoadDistance = j;
-		this.reducedDebugInfo = bl;
-		this.showDeathScreen = bl2;
-		this.debugWorld = bl3;
-		this.flatWorld = bl4;
+		this.chunkLoadDistance = chunkLoadDistance;
+		this.reducedDebugInfo = reducedDebugInfo;
+		this.showDeathScreen = showDeathScreen;
+		this.debugWorld = debugWorld;
+		this.flatWorld = flatWorld;
 	}
 
 	@Override
@@ -73,6 +76,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.hardcore = (i & 8) == 8;
 		i &= -9;
 		this.gameMode = GameMode.byId(i);
+		this.field_25713 = GameMode.byId(buf.readUnsignedByte());
 		int j = buf.readVarInt();
 		this.field_25320 = Sets.<RegistryKey<World>>newHashSet();
 
@@ -101,6 +105,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		buf.writeByte(i);
+		buf.writeByte(this.field_25713.getId());
 		buf.writeVarInt(this.field_25320.size());
 
 		for (RegistryKey<World> registryKey : this.field_25320) {
@@ -141,6 +146,11 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Environment(EnvType.CLIENT)
 	public GameMode getGameMode() {
 		return this.gameMode;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public GameMode method_30116() {
+		return this.field_25713;
 	}
 
 	@Environment(EnvType.CLIENT)

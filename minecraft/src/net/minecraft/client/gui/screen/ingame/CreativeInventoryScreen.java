@@ -22,6 +22,7 @@ import net.minecraft.client.options.HotbarStorageEntry;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.Searchable;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -296,28 +297,31 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		this.ignoreTypedCharacter = false;
-		if (selectedTab == ItemGroup.SEARCH.getIndex()) {
-			String string = this.searchBox.getText();
-			if (this.searchBox.keyPressed(keyCode, scanCode, modifiers)) {
-				if (!Objects.equals(string, this.searchBox.getText())) {
-					this.search();
-				}
-
-				return true;
-			} else {
-				return this.searchBox.isFocused() && this.searchBox.isVisible() && keyCode != 256 ? true : super.keyPressed(keyCode, scanCode, modifiers);
-			}
-		} else {
-			boolean bl = !this.isCreativeInventorySlot(this.focusedSlot) || this.focusedSlot != null && this.focusedSlot.hasStack();
-			if (bl && this.handleHotbarKeyPressed(keyCode, scanCode)) {
-				this.ignoreTypedCharacter = true;
-				return true;
-			} else if (this.client.options.keyChat.matchesKey(keyCode, scanCode)) {
+		if (selectedTab != ItemGroup.SEARCH.getIndex()) {
+			if (this.client.options.keyChat.matchesKey(keyCode, scanCode)) {
 				this.ignoreTypedCharacter = true;
 				this.setSelectedTab(ItemGroup.SEARCH);
 				return true;
 			} else {
 				return super.keyPressed(keyCode, scanCode, modifiers);
+			}
+		} else {
+			boolean bl = !this.isCreativeInventorySlot(this.focusedSlot) || this.focusedSlot.hasStack();
+			boolean bl2 = InputUtil.fromKeyCode(keyCode, scanCode).method_30103().isPresent();
+			if (bl && bl2 && this.handleHotbarKeyPressed(keyCode, scanCode)) {
+				this.ignoreTypedCharacter = true;
+				return true;
+			} else {
+				String string = this.searchBox.getText();
+				if (this.searchBox.keyPressed(keyCode, scanCode, modifiers)) {
+					if (!Objects.equals(string, this.searchBox.getText())) {
+						this.search();
+					}
+
+					return true;
+				} else {
+					return this.searchBox.isFocused() && this.searchBox.isVisible() && keyCode != 256 ? true : super.keyPressed(keyCode, scanCode, modifiers);
+				}
 			}
 		}
 	}

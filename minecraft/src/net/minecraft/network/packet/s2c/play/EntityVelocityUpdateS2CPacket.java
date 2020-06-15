@@ -23,12 +23,12 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 		this(entity.getEntityId(), entity.getVelocity());
 	}
 
-	public EntityVelocityUpdateS2CPacket(int id, Vec3d vec3d) {
+	public EntityVelocityUpdateS2CPacket(int id, Vec3d velocity) {
 		this.id = id;
 		double d = 3.9;
-		double e = MathHelper.clamp(vec3d.x, -3.9, 3.9);
-		double f = MathHelper.clamp(vec3d.y, -3.9, 3.9);
-		double g = MathHelper.clamp(vec3d.z, -3.9, 3.9);
+		double e = MathHelper.clamp(velocity.x, -3.9, 3.9);
+		double f = MathHelper.clamp(velocity.y, -3.9, 3.9);
+		double g = MathHelper.clamp(velocity.z, -3.9, 3.9);
 		this.velocityX = (int)(e * 8000.0);
 		this.velocityY = (int)(f * 8000.0);
 		this.velocityZ = (int)(g * 8000.0);

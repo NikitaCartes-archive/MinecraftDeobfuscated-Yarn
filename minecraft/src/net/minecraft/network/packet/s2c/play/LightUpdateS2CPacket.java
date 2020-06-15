@@ -58,36 +58,36 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public LightUpdateS2CPacket(ChunkPos pos, LightingProvider lightProvider, int i, int blockLightMask, boolean bl) {
+	public LightUpdateS2CPacket(ChunkPos pos, LightingProvider lightProvider, int skyLightMask, int blockLightMask, boolean bl) {
 		this.chunkX = pos.x;
 		this.chunkZ = pos.z;
 		this.field_25659 = bl;
-		this.skyLightMask = i;
+		this.skyLightMask = skyLightMask;
 		this.blockLightMask = blockLightMask;
 		this.skyLightUpdates = Lists.<byte[]>newArrayList();
 		this.blockLightUpdates = Lists.<byte[]>newArrayList();
 
-		for (int j = 0; j < 18; j++) {
-			if ((this.skyLightMask & 1 << j) != 0) {
-				ChunkNibbleArray chunkNibbleArray = lightProvider.get(LightType.SKY).getLightArray(ChunkSectionPos.from(pos, -1 + j));
+		for (int i = 0; i < 18; i++) {
+			if ((this.skyLightMask & 1 << i) != 0) {
+				ChunkNibbleArray chunkNibbleArray = lightProvider.get(LightType.SKY).getLightArray(ChunkSectionPos.from(pos, -1 + i));
 				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
 					this.skyLightUpdates.add(chunkNibbleArray.asByteArray().clone());
 				} else {
-					this.skyLightMask &= ~(1 << j);
+					this.skyLightMask &= ~(1 << i);
 					if (chunkNibbleArray != null) {
-						this.filledSkyLightMask |= 1 << j;
+						this.filledSkyLightMask |= 1 << i;
 					}
 				}
 			}
 
-			if ((this.blockLightMask & 1 << j) != 0) {
-				ChunkNibbleArray chunkNibbleArray = lightProvider.get(LightType.BLOCK).getLightArray(ChunkSectionPos.from(pos, -1 + j));
+			if ((this.blockLightMask & 1 << i) != 0) {
+				ChunkNibbleArray chunkNibbleArray = lightProvider.get(LightType.BLOCK).getLightArray(ChunkSectionPos.from(pos, -1 + i));
 				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
 					this.blockLightUpdates.add(chunkNibbleArray.asByteArray().clone());
 				} else {
-					this.blockLightMask &= ~(1 << j);
+					this.blockLightMask &= ~(1 << i);
 					if (chunkNibbleArray != null) {
-						this.filledBlockLightMask |= 1 << j;
+						this.filledBlockLightMask |= 1 << i;
 					}
 				}
 			}

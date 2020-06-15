@@ -9,6 +9,8 @@ import net.minecraft.util.math.BlockPos;
  * Represents a modifable world where block states can be changed and entities spawned.
  */
 public interface ModifiableWorld {
+	boolean method_30092(BlockPos blockPos, BlockState blockState, int i, int j);
+
 	/**
 	 * Updates the block state at a position, calling appropriate callbacks.
 	 * 
@@ -32,7 +34,9 @@ public interface ModifiableWorld {
 	 * @param state the block state to set
 	 * @param flags the bitwise flag combination, as described above
 	 */
-	boolean setBlockState(BlockPos pos, BlockState state, int flags);
+	default boolean setBlockState(BlockPos pos, BlockState state, int flags) {
+		return this.method_30092(pos, state, flags, 512);
+	}
 
 	boolean removeBlock(BlockPos pos, boolean move);
 
@@ -40,7 +44,11 @@ public interface ModifiableWorld {
 		return this.breakBlock(pos, drop, null);
 	}
 
-	boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity);
+	default boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity) {
+		return this.method_30093(pos, drop, breakingEntity, 512);
+	}
+
+	boolean method_30093(BlockPos blockPos, boolean bl, @Nullable Entity entity, int i);
 
 	default boolean spawnEntity(Entity entity) {
 		return false;

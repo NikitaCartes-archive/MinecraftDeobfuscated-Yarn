@@ -276,7 +276,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			long l = Util.getMeasuringTimeMs();
 			this.isDoubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
 			this.cancelNextRelease = false;
-			if (button == 0 || button == 1 || bl) {
+			if (button != 0 && button != 1 && !bl) {
+				this.method_30107(button);
+			} else {
 				int i = this.x;
 				int j = this.y;
 				boolean bl2 = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
@@ -345,6 +347,21 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			this.lastButtonClickTime = l;
 			this.lastClickedButton = button;
 			return true;
+		}
+	}
+
+	private void method_30107(int i) {
+		if (this.client.player.inventory.getCursorStack().isEmpty()) {
+			if (this.client.options.keySwapHands.matchesMouse(i)) {
+				this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
+				return;
+			}
+
+			for (int j = 0; j < 9; j++) {
+				if (this.client.options.keysHotbar[j].matchesMouse(i)) {
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, j, SlotActionType.SWAP);
+				}
+			}
 		}
 	}
 

@@ -66,11 +66,11 @@ public class ListPoolElement extends StructurePoolElement {
 		BlockRotation blockRotation,
 		BlockBox blockBox,
 		Random random,
-		boolean bl
+		boolean keepJigsaws
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
 			if (!structurePoolElement.generate(
-				structureManager, serverWorldAccess, structureAccessor, chunkGenerator, blockPos, blockPos2, blockRotation, blockBox, random, bl
+				structureManager, serverWorldAccess, structureAccessor, chunkGenerator, blockPos, blockPos2, blockRotation, blockBox, random, keepJigsaws
 			)) {
 				return false;
 			}

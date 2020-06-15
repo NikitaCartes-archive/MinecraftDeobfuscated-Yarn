@@ -41,7 +41,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
 		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
 	);
-	private static final IntRange field_25382 = Durations.betweenSeconds(0, 2);
+	private static final IntRange field_25382 = Durations.betweenSeconds(0, 1);
 	private int angrySoundDelay;
 	private static final IntRange field_25379 = Durations.betweenSeconds(20, 39);
 	private int field_25380;
@@ -93,12 +93,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
 			}
 
-			if (this.angrySoundDelay == 0) {
-				this.method_29533();
-				this.angrySoundDelay = field_25382.choose(this.random);
-			} else {
-				this.angrySoundDelay--;
-			}
+			this.method_30080();
 		} else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
 			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
 		}
@@ -109,6 +104,15 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 		}
 
 		super.mobTick();
+	}
+
+	private void method_30080() {
+		if (this.angrySoundDelay > 0) {
+			this.angrySoundDelay--;
+			if (this.angrySoundDelay == 0) {
+				this.method_29533();
+			}
+		}
 	}
 
 	private void method_29941() {
@@ -142,7 +146,6 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	public void setTarget(@Nullable LivingEntity target) {
 		if (this.getTarget() == null && target != null) {
-			this.method_29533();
 			this.angrySoundDelay = field_25382.choose(this.random);
 			this.field_25608 = field_25609.choose(this.random);
 		}
@@ -198,7 +201,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_AMBIENT;
+		return this.hasAngerTime() ? SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_ANGRY : SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_AMBIENT;
 	}
 
 	@Override

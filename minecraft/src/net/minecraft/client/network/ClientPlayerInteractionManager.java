@@ -61,7 +61,7 @@ public class ClientPlayerInteractionManager {
 	private int blockBreakingCooldown;
 	private boolean breakingBlock;
 	private GameMode gameMode = GameMode.SURVIVAL;
-	private GameMode previousGameMode = GameMode.SURVIVAL;
+	private GameMode previousGameMode = GameMode.NOT_SET;
 	private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, PosAndRot> unacknowledgedPlayerActions = new Object2ObjectLinkedOpenHashMap<>();
 	private int lastSelectedSlot;
 
@@ -72,6 +72,10 @@ public class ClientPlayerInteractionManager {
 
 	public void copyAbilities(PlayerEntity player) {
 		this.gameMode.setAbilitites(player.abilities);
+	}
+
+	public void method_30108(GameMode gameMode) {
+		this.previousGameMode = gameMode;
 	}
 
 	public void setGameMode(GameMode gameMode) {

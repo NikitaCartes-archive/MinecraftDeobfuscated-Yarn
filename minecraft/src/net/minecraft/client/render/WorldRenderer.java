@@ -370,7 +370,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		}
 	}
 
-	public void method_22713(Camera camera) {
+	public void tickRainSplashing(Camera camera) {
 		float f = this.client.world.getRainGradient(1.0F) / (MinecraftClient.isFancyGraphicsOrBetter() ? 1.0F : 2.0F);
 		if (!(f <= 0.0F)) {
 			Random random = new Random((long)this.ticks * 312987231L);
@@ -1062,8 +1062,11 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 					if (sortedSet != null && !sortedSet.isEmpty()) {
 						int u = ((BlockBreakingInfo)sortedSet.last()).getStage();
 						if (u >= 0) {
+							MatrixStack.Entry entry = matrices.peek();
 							VertexConsumer vertexConsumer = new TransformingVertexConsumer(
-								this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(u)), matrices.peek()
+								this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(u)),
+								entry.getModel(),
+								entry.getNormal()
 							);
 							vertexConsumerProvider2 = renderLayer -> {
 								VertexConsumer vertexConsumer2x = immediate.getBuffer(renderLayer);
@@ -1104,19 +1107,22 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 
 		profiler.swap("destroyProgress");
 
-		for (Entry<SortedSet<BlockBreakingInfo>> entry : this.blockBreakingProgressions.long2ObjectEntrySet()) {
-			BlockPos blockPos3 = BlockPos.fromLong(entry.getLongKey());
+		for (Entry<SortedSet<BlockBreakingInfo>> entry2 : this.blockBreakingProgressions.long2ObjectEntrySet()) {
+			BlockPos blockPos3 = BlockPos.fromLong(entry2.getLongKey());
 			double h = (double)blockPos3.getX() - d;
 			double v = (double)blockPos3.getY() - e;
 			double w = (double)blockPos3.getZ() - f;
 			if (!(h * h + v * v + w * w > 1024.0)) {
-				SortedSet<BlockBreakingInfo> sortedSet2 = (SortedSet<BlockBreakingInfo>)entry.getValue();
+				SortedSet<BlockBreakingInfo> sortedSet2 = (SortedSet<BlockBreakingInfo>)entry2.getValue();
 				if (sortedSet2 != null && !sortedSet2.isEmpty()) {
 					int x = ((BlockBreakingInfo)sortedSet2.last()).getStage();
 					matrices.push();
 					matrices.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - f);
+					MatrixStack.Entry entry3 = matrices.peek();
 					VertexConsumer vertexConsumer2 = new TransformingVertexConsumer(
-						this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(x)), matrices.peek()
+						this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(x)),
+						entry3.getModel(),
+						entry3.getNormal()
 					);
 					this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrices, vertexConsumer2);
 					matrices.pop();
@@ -2628,7 +2634,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				double e = (double)pos.getY() + (double)j * 0.6 + 0.5;
 				double f = (double)pos.getZ() + (double)k * 0.6 + 0.5;
 
-				for (int lx = 0; lx < 10; lx++) {
+				for (int l = 0; l < 10; l++) {
 					double g = random.nextDouble() * 0.2 + 0.01;
 					double h = d + (double)ix * 0.01 + (random.nextDouble() - 0.5) * (double)k * 0.5;
 					double m = e + (double)j * 0.01 + (random.nextDouble() - 0.5) * (double)j * 0.5;
@@ -2653,16 +2659,14 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				break;
 			case 2002:
 			case 2007:
-				double r = (double)pos.getX();
-				double s = (double)pos.getY();
-				double d = (double)pos.getZ();
+				Vec3d vec3d = Vec3d.ofBottomCenter(pos);
 
-				for (int t = 0; t < 8; t++) {
+				for (int ix = 0; ix < 8; ix++) {
 					this.addParticle(
 						new ItemStackParticleEffect(ParticleTypes.ITEM, new ItemStack(Items.SPLASH_POTION)),
-						r,
-						s,
-						d,
+						vec3d.x,
+						vec3d.y,
+						vec3d.z,
 						random.nextGaussian() * 0.15,
 						random.nextDouble() * 0.2,
 						random.nextGaussian() * 0.15
@@ -2674,17 +2678,19 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				float w = (float)(data >> 0 & 0xFF) / 255.0F;
 				ParticleEffect particleEffect = eventId == 2007 ? ParticleTypes.INSTANT_EFFECT : ParticleTypes.EFFECT;
 
-				for (int l = 0; l < 100; l++) {
-					double g = random.nextDouble() * 4.0;
-					double h = random.nextDouble() * Math.PI * 2.0;
-					double m = Math.cos(h) * g;
-					double n = 0.01 + random.nextDouble() * 0.5;
-					double o = Math.sin(h) * g;
-					Particle particle = this.spawnParticle(particleEffect, particleEffect.getType().shouldAlwaysSpawn(), r + m * 0.1, s + 0.3, d + o * 0.1, m, n, o);
+				for (int x = 0; x < 100; x++) {
+					double e = random.nextDouble() * 4.0;
+					double f = random.nextDouble() * Math.PI * 2.0;
+					double y = Math.cos(f) * e;
+					double z = 0.01 + random.nextDouble() * 0.5;
+					double aa = Math.sin(f) * e;
+					Particle particle = this.spawnParticle(
+						particleEffect, particleEffect.getType().shouldAlwaysSpawn(), vec3d.x + y * 0.1, vec3d.y + 0.3, vec3d.z + aa * 0.1, y, z, aa
+					);
 					if (particle != null) {
-						float x = 0.75F + random.nextFloat() * 0.25F;
-						particle.setColor(u * x, v * x, w * x);
-						particle.move((float)g);
+						float ab = 0.75F + random.nextFloat() * 0.25F;
+						particle.setColor(u * ab, v * ab, w * ab);
+						particle.move((float)e);
 					}
 				}
 
@@ -2726,16 +2732,16 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				break;
 			case 2006:
 				for (int i = 0; i < 200; i++) {
-					float y = random.nextFloat() * 4.0F;
-					float z = random.nextFloat() * (float) (Math.PI * 2);
-					double d = (double)(MathHelper.cos(z) * y);
+					float v = random.nextFloat() * 4.0F;
+					float w = random.nextFloat() * (float) (Math.PI * 2);
+					double d = (double)(MathHelper.cos(w) * v);
 					double e = 0.01 + random.nextDouble() * 0.5;
-					double f = (double)(MathHelper.sin(z) * y);
+					double f = (double)(MathHelper.sin(w) * v);
 					Particle particle2 = this.spawnParticle(
 						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + d * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + f * 0.1, d, e, f
 					);
 					if (particle2 != null) {
-						particle2.move(y);
+						particle2.move(v);
 					}
 				}
 

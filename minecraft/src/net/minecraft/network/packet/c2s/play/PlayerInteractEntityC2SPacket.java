@@ -17,33 +17,33 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	private PlayerInteractEntityC2SPacket.InteractionType type;
 	private Vec3d hitPos;
 	private Hand hand;
-	private boolean field_25660;
+	private boolean playerSneaking;
 
 	public PlayerInteractEntityC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerInteractEntityC2SPacket(Entity entity, boolean bl) {
-		this.entityId = entity.getEntityId();
+	public PlayerInteractEntityC2SPacket(Entity target, boolean playerSneaking) {
+		this.entityId = target.getEntityId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.ATTACK;
-		this.field_25660 = bl;
+		this.playerSneaking = playerSneaking;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, boolean bl) {
+	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, boolean playerSneaking) {
 		this.entityId = entity.getEntityId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT;
 		this.hand = hand;
-		this.field_25660 = bl;
+		this.playerSneaking = playerSneaking;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d vec3d, boolean bl) {
+	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d hitPos, boolean playerSneaking) {
 		this.entityId = entity.getEntityId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT;
 		this.hand = hand;
-		this.hitPos = vec3d;
-		this.field_25660 = bl;
+		this.hitPos = hitPos;
+		this.playerSneaking = playerSneaking;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 			this.hand = buf.readEnumConstant(Hand.class);
 		}
 
-		this.field_25660 = buf.readBoolean();
+		this.playerSneaking = buf.readBoolean();
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 			buf.writeEnumConstant(this.hand);
 		}
 
-		buf.writeBoolean(this.field_25660);
+		buf.writeBoolean(this.playerSneaking);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -99,8 +99,8 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 		return this.hitPos;
 	}
 
-	public boolean method_30007() {
-		return this.field_25660;
+	public boolean isPlayerSneaking() {
+		return this.playerSneaking;
 	}
 
 	public static enum InteractionType {

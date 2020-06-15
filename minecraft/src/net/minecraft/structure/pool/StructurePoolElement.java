@@ -46,7 +46,7 @@ public abstract class StructurePoolElement {
 		BlockRotation blockRotation,
 		BlockBox blockBox,
 		Random random,
-		boolean bl
+		boolean keepJigsaws
 	);
 
 	public abstract StructurePoolElementType<?> getType();

@@ -47,11 +47,11 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public TeamS2CPacket(Team team, Collection<String> playerList, int i) {
-		if (i != 3 && i != 4) {
+	public TeamS2CPacket(Team team, Collection<String> playerList, int mode) {
+		if (mode != 3 && mode != 4) {
 			throw new IllegalArgumentException("Method must be join or leave for player constructor");
 		} else if (playerList != null && !playerList.isEmpty()) {
-			this.mode = i;
+			this.mode = mode;
 			this.teamName = team.getName();
 			this.playerList.addAll(playerList);
 		} else {

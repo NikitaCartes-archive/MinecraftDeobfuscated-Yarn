@@ -297,11 +297,9 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public void tick() {
-		if (this.temptGoal != null && this.temptGoal.isActive() && this.random.nextInt(100) == 0) {
+		if (this.method_30079() && this.random.nextInt(140) == 0) {
 			this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0F, this.getSoundPitch());
-		}
-
-		if (this.escapeDangerGoal != null && this.escapeDangerGoal.isActive() && this.random.nextInt(60) == 0) {
+		} else if (this.method_30078() && this.random.nextInt(60) == 0) {
 			this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0F, this.getSoundPitch());
 		}
 
@@ -312,6 +310,14 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		super.tick();
 		this.updateFloating();
 		this.checkBlockCollision();
+	}
+
+	private boolean method_30078() {
+		return this.escapeDangerGoal != null && this.escapeDangerGoal.isActive();
+	}
+
+	private boolean method_30079() {
+		return this.temptGoal != null && this.temptGoal.isActive();
 	}
 
 	@Override
@@ -338,7 +344,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_STRIDER_AMBIENT;
+		return !this.method_30078() && !this.method_30079() ? SoundEvents.ENTITY_STRIDER_AMBIENT : null;
 	}
 
 	@Override

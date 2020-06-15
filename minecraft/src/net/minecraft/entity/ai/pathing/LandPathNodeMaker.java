@@ -515,11 +515,12 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							return PathNodeType.DANGER_FIRE;
 						}
 
-						if (blockView.getFluidState(mutable).matches(FluidTags.WATER)) {
+						FluidState fluidState = blockView.getFluidState(mutable);
+						if (fluidState.matches(FluidTags.WATER)) {
 							return PathNodeType.WATER_BORDER;
 						}
 
-						if (blockView.getFluidState(mutable).matches(FluidTags.LAVA)) {
+						if (fluidState.matches(FluidTags.LAVA)) {
 							return PathNodeType.LAVA;
 						}
 					}

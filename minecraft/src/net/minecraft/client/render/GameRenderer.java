@@ -206,7 +206,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		this.camera.updateEyeHeight();
 		this.ticks++;
 		this.firstPersonRenderer.updateHeldItems();
-		this.client.worldRenderer.method_22713(this.camera);
+		this.client.worldRenderer.tickRainSplashing(this.camera);
 		this.lastSkyDarkness = this.skyDarkness;
 		if (this.client.inGameHud.getBossBarHud().shouldDarkenSky()) {
 			this.skyDarkness += 0.05F;

@@ -122,10 +122,10 @@ public class SinglePoolElement extends StructurePoolElement {
 		BlockRotation blockRotation,
 		BlockBox blockBox,
 		Random random,
-		boolean bl
+		boolean keepJigsaws
 	) {
 		Structure structure = this.method_27233(structureManager);
-		StructurePlacementData structurePlacementData = this.createPlacementData(blockRotation, blockBox, bl);
+		StructurePlacementData structurePlacementData = this.createPlacementData(blockRotation, blockBox, keepJigsaws);
 		if (!structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData, random, 18)) {
 			return false;
 		} else {
@@ -139,7 +139,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		}
 	}
 
-	protected StructurePlacementData createPlacementData(BlockRotation blockRotation, BlockBox blockBox, boolean bl) {
+	protected StructurePlacementData createPlacementData(BlockRotation blockRotation, BlockBox blockBox, boolean keepJigsaws) {
 		StructurePlacementData structurePlacementData = new StructurePlacementData();
 		structurePlacementData.setBoundingBox(blockBox);
 		structurePlacementData.setRotation(blockRotation);
@@ -147,7 +147,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		structurePlacementData.setIgnoreEntities(false);
 		structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 		structurePlacementData.method_27264(true);
-		if (!bl) {
+		if (!keepJigsaws) {
 			structurePlacementData.addProcessor(JigsawReplacementStructureProcessor.INSTANCE);
 		}
 

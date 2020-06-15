@@ -102,10 +102,10 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		Random random,
 		BlockBox blockBox,
 		BlockPos blockPos,
-		boolean bl
+		boolean keepJigsaws
 	) {
 		return this.poolElement
-			.generate(this.structureManager, serverWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, bl);
+			.generate(this.structureManager, serverWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, keepJigsaws);
 	}
 
 	@Override

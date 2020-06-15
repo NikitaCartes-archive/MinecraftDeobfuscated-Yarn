@@ -14,8 +14,8 @@ public class UpdateDifficultyLockC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	@Environment(EnvType.CLIENT)
-	public UpdateDifficultyLockC2SPacket(boolean bl) {
-		this.difficultyLocked = bl;
+	public UpdateDifficultyLockC2SPacket(boolean difficultyLocked) {
+		this.difficultyLocked = difficultyLocked;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

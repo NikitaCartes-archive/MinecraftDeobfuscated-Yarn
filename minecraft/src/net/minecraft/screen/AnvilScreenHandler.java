@@ -148,7 +148,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 					for (Enchantment enchantment : map2.keySet()) {
 						if (enchantment != null) {
-							int q = map.containsKey(enchantment) ? (Integer)map.get(enchantment) : 0;
+							int q = (Integer)map.getOrDefault(enchantment, 0);
 							int r = (Integer)map2.get(enchantment);
 							r = q == r ? r + 1 : Math.max(r, q);
 							boolean bl4 = enchantment.isAcceptableItem(itemStack);

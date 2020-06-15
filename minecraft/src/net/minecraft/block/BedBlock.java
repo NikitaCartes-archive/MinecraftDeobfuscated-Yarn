@@ -301,7 +301,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			BlockPos blockPos = pos.offset(state.get(FACING));
 			world.setBlockState(blockPos, state.with(PART, BedPart.HEAD), 3);
 			world.updateNeighbors(pos, Blocks.AIR);
-			state.updateNeighbors(world, pos, 3);
+			state.method_30101(world, pos, 3);
 		}
 	}
 

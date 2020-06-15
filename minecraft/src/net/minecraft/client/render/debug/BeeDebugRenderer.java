@@ -107,21 +107,17 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 	private Map<BlockPos, Set<UUID>> getBlacklistingBees() {
 		Map<BlockPos, Set<UUID>> map = Maps.<BlockPos, Set<UUID>>newHashMap();
-		this.bees.values().forEach(bee -> bee.blacklist.forEach(blockPos -> addToMap(map, bee, blockPos)));
+		this.bees.values().forEach(bee -> bee.blacklist.forEach(blockPos -> ((Set)map.computeIfAbsent(blockPos, blockPosx -> Sets.newHashSet())).add(bee.getUuid())));
 		return map;
 	}
 
 	private void drawFlowers() {
 		Map<BlockPos, Set<UUID>> map = Maps.<BlockPos, Set<UUID>>newHashMap();
-		this.bees.values().stream().filter(BeeDebugRenderer.Bee::hasFlower).forEach(bee -> {
-			Set<UUID> set = (Set<UUID>)map.get(bee.flower);
-			if (set == null) {
-				set = Sets.<UUID>newHashSet();
-				map.put(bee.flower, set);
-			}
-
-			set.add(bee.getUuid());
-		});
+		this.bees
+			.values()
+			.stream()
+			.filter(BeeDebugRenderer.Bee::hasFlower)
+			.forEach(bee -> ((Set)map.computeIfAbsent(bee.flower, blockPos -> Sets.newHashSet())).add(bee.getUuid()));
 		map.entrySet().forEach(entry -> {
 			BlockPos blockPos = (BlockPos)entry.getKey();
 			Set<UUID> set = (Set<UUID>)entry.getValue();
@@ -140,16 +136,6 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		} else {
 			return bees.size() > 3 ? "" + bees.size() + " bees" : ((Set)bees.stream().map(NameGenerator::name).collect(Collectors.toSet())).toString();
 		}
-	}
-
-	private static void addToMap(Map<BlockPos, Set<UUID>> map, BeeDebugRenderer.Bee bee, BlockPos pos) {
-		Set<UUID> set = (Set<UUID>)map.get(pos);
-		if (set == null) {
-			set = Sets.<UUID>newHashSet();
-			map.put(pos, set);
-		}
-
-		set.add(bee.getUuid());
 	}
 
 	private static void drawHive(BlockPos pos) {
@@ -282,13 +268,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 		for (BeeDebugRenderer.Bee bee : this.bees.values()) {
 			if (bee.hive != null && !this.hives.containsKey(bee.hive)) {
-				List<String> list = (List<String>)map.get(bee.hive);
-				if (list == null) {
-					list = Lists.<String>newArrayList();
-					map.put(bee.hive, list);
-				}
-
-				list.add(bee.getName());
+				((List)map.computeIfAbsent(bee.hive, blockPos -> Lists.newArrayList())).add(bee.getName());
 			}
 		}
 

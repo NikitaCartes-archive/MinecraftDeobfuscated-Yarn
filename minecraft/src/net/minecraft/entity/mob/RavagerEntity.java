@@ -84,7 +84,7 @@ public class RavagerEntity extends RaiderEntity {
 		return HostileEntity.createHostileAttributes()
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 100.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3)
-			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.75)
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 12.0)
 			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
 			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0);

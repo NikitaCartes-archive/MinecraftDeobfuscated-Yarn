@@ -27,18 +27,18 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public <T extends ParticleEffect> ParticleS2CPacket(
-		T parameters, boolean longDistance, double d, double e, double f, float g, float h, float i, float j, int k
+		T parameters, boolean longDistance, double x, double y, double z, float offsetX, float offsetY, float offsetZ, float speed, int count
 	) {
 		this.parameters = parameters;
 		this.longDistance = longDistance;
-		this.x = d;
-		this.y = e;
-		this.z = f;
-		this.offsetX = g;
-		this.offsetY = h;
-		this.offsetZ = i;
-		this.speed = j;
-		this.count = k;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+		this.offsetZ = offsetZ;
+		this.speed = speed;
+		this.count = count;
 	}
 
 	@Override

@@ -33,8 +33,8 @@ public class LegacySinglePoolElement extends SinglePoolElement {
 	}
 
 	@Override
-	protected StructurePlacementData createPlacementData(BlockRotation blockRotation, BlockBox blockBox, boolean bl) {
-		StructurePlacementData structurePlacementData = super.createPlacementData(blockRotation, blockBox, bl);
+	protected StructurePlacementData createPlacementData(BlockRotation blockRotation, BlockBox blockBox, boolean keepJigsaws) {
+		StructurePlacementData structurePlacementData = super.createPlacementData(blockRotation, blockBox, keepJigsaws);
 		structurePlacementData.removeProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 		structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 		return structurePlacementData;

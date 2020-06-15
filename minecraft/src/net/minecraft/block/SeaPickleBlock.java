@@ -12,7 +12,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -42,7 +41,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 			return blockState.with(PICKLES, Integer.valueOf(Math.min(4, (Integer)blockState.get(PICKLES) + 1)));
 		} else {
 			FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-			boolean bl = fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
+			boolean bl = fluidState.getFluid() == Fluids.WATER;
 			return super.getPlacementState(ctx).with(WATERLOGGED, Boolean.valueOf(bl));
 		}
 	}

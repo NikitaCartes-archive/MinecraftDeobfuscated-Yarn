@@ -164,6 +164,7 @@ public abstract class PlayerManager {
 			new GameJoinS2CPacket(
 				player.getEntityId(),
 				player.interactionManager.getGameMode(),
+				player.interactionManager.method_30119(),
 				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				worldProperties.isHardcore(),
 				this.server.getWorldRegistryKeys(),
@@ -488,6 +489,7 @@ public abstract class PlayerManager {
 					serverPlayerEntity.world.getRegistryKey(),
 					BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()),
 					serverPlayerEntity.interactionManager.getGameMode(),
+					serverPlayerEntity.interactionManager.method_30119(),
 					serverPlayerEntity.getServerWorld().isDebugWorld(),
 					serverPlayerEntity.getServerWorld().method_28125(),
 					bl
@@ -747,9 +749,9 @@ public abstract class PlayerManager {
 
 	private void setGameMode(ServerPlayerEntity player, @Nullable ServerPlayerEntity oldPlayer, ServerWorld world) {
 		if (oldPlayer != null) {
-			player.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode());
+			player.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.method_30119());
 		} else if (this.gameMode != null) {
-			player.interactionManager.setGameMode(this.gameMode);
+			player.interactionManager.setGameMode(this.gameMode, GameMode.NOT_SET);
 		}
 
 		player.interactionManager.setGameModeIfNotPresent(world.getServer().getSaveProperties().getGameMode());

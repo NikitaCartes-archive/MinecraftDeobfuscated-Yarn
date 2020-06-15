@@ -33,11 +33,13 @@ import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookWidget extends DrawableHelper implements Drawable, Element, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
 	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
+	private static final Text field_25711 = new TranslatableText("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 	private int leftOffset;
 	private int parentWidth;
 	private int parentHeight;
@@ -232,7 +234,11 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			int i = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int j = (this.parentHeight - 166) / 2;
 			this.drawTexture(matrices, i, j, 1, 1, 147, 166);
-			this.searchField.render(matrices, mouseX, mouseY, delta);
+			if (!this.searchField.isFocused() && this.searchField.getText().isEmpty()) {
+				this.drawTextWithShadow(matrices, this.client.textRenderer, field_25711, i + 25, j + 14, -1);
+			} else {
+				this.searchField.render(matrices, mouseX, mouseY, delta);
+			}
 
 			for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
 				recipeGroupButtonWidget.render(matrices, mouseX, mouseY, delta);

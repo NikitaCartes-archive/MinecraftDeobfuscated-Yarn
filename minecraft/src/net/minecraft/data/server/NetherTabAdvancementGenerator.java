@@ -1,6 +1,7 @@
 package net.minecraft.data.server;
 
 import java.util.function.Consumer;
+import net.minecraft.class_5409;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -22,6 +23,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -48,6 +50,36 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 	private static final Biome[] NETHER_BIOMES = new Biome[]{
 		Biomes.NETHER_WASTES, Biomes.SOUL_SAND_VALLEY, Biomes.WARPED_FOREST, Biomes.CRIMSON_FOREST, Biomes.BASALT_DELTAS
 	};
+	private static final EntityPredicate.Extended field_25712 = EntityPredicate.Extended.create(
+		EntityPropertiesLootCondition.builder(
+				LootContext.EntityTarget.THIS,
+				EntityPredicate.Builder.create()
+					.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().item(Items.GOLDEN_HELMET).build()).build())
+			)
+			.invert()
+			.build(),
+		EntityPropertiesLootCondition.builder(
+				LootContext.EntityTarget.THIS,
+				EntityPredicate.Builder.create()
+					.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().item(Items.GOLDEN_CHESTPLATE).build()).build())
+			)
+			.invert()
+			.build(),
+		EntityPropertiesLootCondition.builder(
+				LootContext.EntityTarget.THIS,
+				EntityPredicate.Builder.create()
+					.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().item(Items.GOLDEN_LEGGINGS).build()).build())
+			)
+			.invert()
+			.build(),
+		EntityPropertiesLootCondition.builder(
+				LootContext.EntityTarget.THIS,
+				EntityPredicate.Builder.create()
+					.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(Items.GOLDEN_BOOTS).build()).build())
+			)
+			.invert()
+			.build()
+	);
 
 	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
@@ -457,6 +489,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.build(consumer, "nether/loot_bastion");
 		Advancement.Task.create()
 			.parent(advancement)
+			.criteriaMerger(CriterionMerger.OR)
 			.display(
 				Items.GOLD_INGOT,
 				new TranslatableText("advancements.nether.distract_piglin.title"),
@@ -470,37 +503,18 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion(
 				"distract_piglin",
 				ThrownItemPickedUpByEntityCriterion.Conditions.create(
-					EntityPredicate.Extended.create(
-						EntityPropertiesLootCondition.builder(
-								LootContext.EntityTarget.THIS,
-								EntityPredicate.Builder.create()
-									.equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().item(Items.GOLDEN_HELMET).build()).build())
-							)
-							.invert()
-							.build(),
-						EntityPropertiesLootCondition.builder(
-								LootContext.EntityTarget.THIS,
-								EntityPredicate.Builder.create()
-									.equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().item(Items.GOLDEN_CHESTPLATE).build()).build())
-							)
-							.invert()
-							.build(),
-						EntityPropertiesLootCondition.builder(
-								LootContext.EntityTarget.THIS,
-								EntityPredicate.Builder.create()
-									.equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().item(Items.GOLDEN_LEGGINGS).build()).build())
-							)
-							.invert()
-							.build(),
-						EntityPropertiesLootCondition.builder(
-								LootContext.EntityTarget.THIS,
-								EntityPredicate.Builder.create()
-									.equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().item(Items.GOLDEN_BOOTS).build()).build())
-							)
-							.invert()
-							.build()
-					),
+					field_25712,
 					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED),
+					EntityPredicate.Extended.ofLegacy(
+						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
+					)
+				)
+			)
+			.criterion(
+				"distract_piglin_directly",
+				class_5409.class_5410.method_30099(
+					field_25712,
+					ItemPredicate.Builder.create().item(PiglinBrain.BARTERING_ITEM),
 					EntityPredicate.Extended.ofLegacy(
 						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
 					)

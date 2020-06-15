@@ -6,6 +6,9 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -111,6 +114,12 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 	}
 
 	private static Optional<BlockPos> findSoulFire(ServerWorld world, LivingEntity entity) {
-		return BlockPos.findClosest(entity.getBlockPos(), 8, 4, blockPos -> world.getBlockState(blockPos).isIn(BlockTags.PIGLIN_REPELLENTS));
+		return BlockPos.findClosest(entity.getBlockPos(), 8, 4, blockPos -> method_24648(world, blockPos));
+	}
+
+	private static boolean method_24648(ServerWorld serverWorld, BlockPos blockPos) {
+		BlockState blockState = serverWorld.getBlockState(blockPos);
+		boolean bl = blockState.isIn(BlockTags.PIGLIN_REPELLENTS);
+		return bl && blockState.isOf(Blocks.SOUL_CAMPFIRE) ? CampfireBlock.isLitCampfire(blockState) : bl;
 	}
 }

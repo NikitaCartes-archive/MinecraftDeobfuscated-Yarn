@@ -181,7 +181,7 @@ public class PistonBlock extends FacingBlock {
 				pos, PistonExtensionBlock.createBlockEntityPiston(this.getDefaultState().with(FACING, Direction.byId(data & 7)), direction, false, true)
 			);
 			world.updateNeighbors(pos, blockState.getBlock());
-			blockState.updateNeighbors(world, pos, 2);
+			blockState.method_30101(world, pos, 2);
 			if (this.sticky) {
 				BlockPos blockPos = pos.add(direction.getOffsetX() * 2, direction.getOffsetY() * 2, direction.getOffsetZ() * 2);
 				BlockState blockState2 = world.getBlockState(blockPos);
@@ -318,9 +318,9 @@ public class PistonBlock extends FacingBlock {
 			for (Entry<BlockPos, BlockState> entry : map.entrySet()) {
 				BlockPos blockPos5 = (BlockPos)entry.getKey();
 				BlockState blockState5 = (BlockState)entry.getValue();
-				blockState5.prepare(world, blockPos5, 2);
-				blockState4.updateNeighbors(world, blockPos5, 2);
-				blockState4.prepare(world, blockPos5, 2);
+				blockState5.method_30102(world, blockPos5, 2);
+				blockState4.method_30101(world, blockPos5, 2);
+				blockState4.method_30102(world, blockPos5, 2);
 			}
 
 			j = 0;
@@ -328,7 +328,7 @@ public class PistonBlock extends FacingBlock {
 			for (int l = list3.size() - 1; l >= 0; l--) {
 				BlockState blockState2 = blockStates[j++];
 				BlockPos blockPos5 = (BlockPos)list3.get(l);
-				blockState2.prepare(world, blockPos5, 2);
+				blockState2.method_30102(world, blockPos5, 2);
 				world.updateNeighborsAlways(blockPos5, blockState2.getBlock());
 			}
 

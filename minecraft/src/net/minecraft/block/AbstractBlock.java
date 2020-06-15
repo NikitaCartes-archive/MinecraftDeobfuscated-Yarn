@@ -87,7 +87,7 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags) {
+	public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags, int i) {
 	}
 
 	@Deprecated
@@ -570,7 +570,11 @@ public abstract class AbstractBlock {
 			this.getBlock().neighborUpdate(this.asBlockState(), world, pos, block, posFrom, notify);
 		}
 
-		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags) {
+		public final void method_30101(WorldAccess worldAccess, BlockPos blockPos, int i) {
+			this.updateNeighbors(worldAccess, blockPos, i, 512);
+		}
+
+		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags, int i) {
 			this.getBlock();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -578,12 +582,16 @@ public abstract class AbstractBlock {
 				mutable.set(pos, direction);
 				BlockState blockState = world.getBlockState(mutable);
 				BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), world, mutable, pos);
-				Block.replaceBlock(blockState, blockState2, world, mutable, flags);
+				Block.replaceBlock(blockState, blockState2, world, mutable, flags, i);
 			}
 		}
 
-		public void prepare(WorldAccess world, BlockPos pos, int flags) {
-			this.getBlock().prepare(this.asBlockState(), world, pos, flags);
+		public final void method_30102(WorldAccess worldAccess, BlockPos blockPos, int i) {
+			this.prepare(worldAccess, blockPos, i, 512);
+		}
+
+		public void prepare(WorldAccess world, BlockPos pos, int flags, int i) {
+			this.getBlock().prepare(this.asBlockState(), world, pos, flags, i);
 		}
 
 		public void onBlockAdded(World world, BlockPos pos, BlockState state, boolean notify) {

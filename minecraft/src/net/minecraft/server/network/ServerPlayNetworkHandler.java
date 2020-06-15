@@ -546,7 +546,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.currentScreenHandler instanceof AnvilScreenHandler) {
 			AnvilScreenHandler anvilScreenHandler = (AnvilScreenHandler)this.player.currentScreenHandler;
-			String string = SharedConstants.stripInvalidChars(packet.getItemName());
+			String string = SharedConstants.stripInvalidChars(packet.getName());
 			if (string.length() <= 35) {
 				anvilScreenHandler.setNewItemName(string);
 			}
@@ -643,7 +643,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 			if (blockEntity instanceof JigsawBlockEntity) {
 				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
-				jigsawBlockEntity.generate(this.player.getServerWorld(), packet.getMaxDepth(), packet.method_29446());
+				jigsawBlockEntity.generate(this.player.getServerWorld(), packet.getMaxDepth(), packet.shouldKeepJigsaws());
 			}
 		}
 	}
@@ -651,7 +651,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onVillagerTradeSelect(SelectVillagerTradeC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		int i = packet.method_12431();
+		int i = packet.getTradeId();
 		ScreenHandler screenHandler = this.player.currentScreenHandler;
 		if (screenHandler instanceof MerchantScreenHandler) {
 			MerchantScreenHandler merchantScreenHandler = (MerchantScreenHandler)screenHandler;
@@ -920,7 +920,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		ServerWorld serverWorld = this.player.getServerWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
-		BlockHitResult blockHitResult = packet.getHitY();
+		BlockHitResult blockHitResult = packet.getBlockHitResult();
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		Direction direction = blockHitResult.getSide();
 		this.player.updateLastActionTime();
@@ -1146,7 +1146,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		ServerWorld serverWorld = this.player.getServerWorld();
 		Entity entity = rpacket.getEntity(serverWorld);
 		this.player.updateLastActionTime();
-		this.player.setSneaking(rpacket.method_30007());
+		this.player.setSneaking(rpacket.isPlayerSneaking());
 		if (entity != null) {
 			double d = 36.0;
 			if (this.player.squaredDistanceTo(entity) < 36.0) {
@@ -1166,8 +1166,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					this.player.attack(entity);
 				}
 
-				if (optional.isPresent() && ((ActionResult)optional.get()).shouldSwingHand()) {
-					this.player.swingHand(hand, true);
+				if (optional.isPresent() && ((ActionResult)optional.get()).isAccepted()) {
+					Criteria.field_25694.method_30097(this.player, this.player.getStackInHand(hand), entity);
+					if (((ActionResult)optional.get()).shouldSwingHand()) {
+						this.player.swingHand(hand, true);
+					}
 				}
 			}
 		}
@@ -1224,10 +1227,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getClickData(), packet.getActionType(), this.player);
 				if (ItemStack.areEqual(packet.getStack(), itemStack)) {
 					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getActionId(), true));
-					this.player.field_13991 = true;
+					this.player.skipPacketSlotUpdates = true;
 					this.player.currentScreenHandler.sendContentUpdates();
 					this.player.updateCursorStack();
-					this.player.field_13991 = false;
+					this.player.skipPacketSlotUpdates = false;
 				} else {
 					this.transactions.put(this.player.currentScreenHandler.syncId, packet.getActionId());
 					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getActionId(), false));

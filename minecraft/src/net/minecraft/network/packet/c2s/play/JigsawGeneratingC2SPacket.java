@@ -11,30 +11,30 @@ import net.minecraft.util.math.BlockPos;
 public class JigsawGeneratingC2SPacket implements Packet<ServerPlayPacketListener> {
 	private BlockPos pos;
 	private int maxDepth;
-	private boolean field_25323;
+	private boolean keepJigsaws;
 
 	public JigsawGeneratingC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public JigsawGeneratingC2SPacket(BlockPos pos, int maxDepth, boolean bl) {
+	public JigsawGeneratingC2SPacket(BlockPos pos, int maxDepth, boolean keepJigsaws) {
 		this.pos = pos;
 		this.maxDepth = maxDepth;
-		this.field_25323 = bl;
+		this.keepJigsaws = keepJigsaws;
 	}
 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.pos = buf.readBlockPos();
 		this.maxDepth = buf.readVarInt();
-		this.field_25323 = buf.readBoolean();
+		this.keepJigsaws = buf.readBoolean();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeBlockPos(this.pos);
 		buf.writeVarInt(this.maxDepth);
-		buf.writeBoolean(this.field_25323);
+		buf.writeBoolean(this.keepJigsaws);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -49,7 +49,7 @@ public class JigsawGeneratingC2SPacket implements Packet<ServerPlayPacketListene
 		return this.maxDepth;
 	}
 
-	public boolean method_29446() {
-		return this.field_25323;
+	public boolean shouldKeepJigsaws() {
+		return this.keepJigsaws;
 	}
 }

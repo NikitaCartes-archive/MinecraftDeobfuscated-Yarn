@@ -9,6 +9,7 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Map;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -16,6 +17,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Language;
 import net.minecraft.util.Lazy;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharModsCallbackI;
@@ -144,6 +146,14 @@ public class InputUtil {
 			return this.localizedText.get();
 		}
 
+		public OptionalInt method_30103() {
+			if (this.code >= 48 && this.code <= 57) {
+				return OptionalInt.of(this.code - 48);
+			} else {
+				return this.code >= 320 && this.code <= 329 ? OptionalInt.of(this.code - 320) : OptionalInt.empty();
+			}
+		}
+
 		public boolean equals(Object other) {
 			if (this == other) {
 				return true;
@@ -174,7 +184,10 @@ public class InputUtil {
 			String string2 = GLFW.glfwGetKeyName(-1, integer);
 			return (Text)(string2 != null ? new LiteralText(string2) : new TranslatableText(string));
 		}),
-		MOUSE("key.mouse", (integer, string) -> new TranslatableText(string));
+		MOUSE(
+			"key.mouse",
+			(integer, string) -> Language.getInstance().hasTranslation(string) ? new TranslatableText(string) : new TranslatableText("key.mouse", integer + 1)
+		);
 
 		private final Int2ObjectMap<InputUtil.Key> map = new Int2ObjectOpenHashMap<>();
 		private final String name;

@@ -142,7 +142,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private int syncedFoodLevel = -99999999;
 	private boolean syncedSaturationIsZero = true;
 	private int syncedExperience = -99999999;
-	private int field_13998 = 60;
+	private int joinInvulnerabilityTicks = 60;
 	private ChatVisibility clientChatVisibility;
 	private boolean clientChatColorsEnabled = true;
 	private long lastActionTime = Util.getMeasuringTimeMs();
@@ -161,7 +161,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private BlockPos spawnPointPosition;
 	private boolean spawnPointSet;
 	private int screenHandlerSyncId;
-	public boolean field_13991;
+	public boolean skipPacketSlotUpdates;
 	public int pingMilliseconds;
 	public boolean notInAnyWorld;
 
@@ -225,9 +225,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		super.readCustomDataFromTag(tag);
 		if (tag.contains("playerGameType", 99)) {
 			if (this.getServer().shouldForceGameMode()) {
-				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode());
+				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode(), GameMode.NOT_SET);
 			} else {
-				this.interactionManager.setGameMode(GameMode.byId(tag.getInt("playerGameType")));
+				this.interactionManager
+					.setGameMode(
+						GameMode.byId(tag.getInt("playerGameType")),
+						tag.contains("previousPlayerGameType", 3) ? GameMode.byId(tag.getInt("previousPlayerGameType")) : GameMode.NOT_SET
+					);
 			}
 		}
 
@@ -261,6 +265,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		tag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
+		tag.putInt("previousPlayerGameType", this.interactionManager.method_30119().getId());
 		tag.putBoolean("seenCredits", this.seenCredits);
 		if (this.enteredNetherPos != null) {
 			CompoundTag compoundTag = new CompoundTag();
@@ -348,7 +353,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void tick() {
 		this.interactionManager.update();
-		this.field_13998--;
+		this.joinInvulnerabilityTicks--;
 		if (this.timeUntilRegen > 0) {
 			this.timeUntilRegen--;
 		}
@@ -572,7 +577,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			return false;
 		} else {
 			boolean bl = this.server.isDedicated() && this.isPvpEnabled() && "fall".equals(source.name);
-			if (!bl && this.field_13998 > 0 && source != DamageSource.OUT_OF_WORLD) {
+			if (!bl && this.joinInvulnerabilityTicks > 0 && source != DamageSource.OUT_OF_WORLD) {
 				return false;
 			} else {
 				if (source instanceof EntityDamageSource) {
@@ -629,6 +634,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 						serverWorld.getRegistryKey(),
 						BiomeAccess.hashSeed(serverWorld.getSeed()),
 						this.interactionManager.getGameMode(),
+						this.interactionManager.method_30119(),
 						serverWorld.isDebugWorld(),
 						serverWorld.method_28125(),
 						true
@@ -950,7 +956,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				Criteria.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
 			}
 
-			if (!this.field_13991) {
+			if (!this.skipPacketSlotUpdates) {
 				this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slotId, stack));
 			}
 		}
@@ -978,7 +984,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	public void updateCursorStack() {
-		if (!this.field_13991) {
+		if (!this.skipPacketSlotUpdates) {
 			this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 		}
 	}
@@ -1182,7 +1188,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public void setGameMode(GameMode gameMode) {
-		this.interactionManager.setGameMode(gameMode);
+		this.interactionManager.method_30118(gameMode);
 		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25648, (float)gameMode.getId()));
 		if (gameMode == GameMode.SPECTATOR) {
 			this.dropShoulderEntities();
@@ -1359,6 +1365,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 						targetWorld.getRegistryKey(),
 						BiomeAccess.hashSeed(targetWorld.getSeed()),
 						this.interactionManager.getGameMode(),
+						this.interactionManager.method_30119(),
 						targetWorld.isDebugWorld(),
 						targetWorld.method_28125(),
 						true

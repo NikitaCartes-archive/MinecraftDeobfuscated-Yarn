@@ -149,7 +149,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		return HostileEntity.createHostileAttributes()
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.6F)
 			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
 	}
@@ -208,8 +208,8 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		Activity activity = (Activity)this.brain.getFirstPossibleNonCoreActivity().orElse(null);
 		this.brain.resetPossibleActivities(ImmutableList.of(Activity.FIGHT, Activity.IDLE));
 		Activity activity2 = (Activity)this.brain.getFirstPossibleNonCoreActivity().orElse(null);
-		if (activity != activity2) {
-			this.method_26935();
+		if (activity2 == Activity.FIGHT && activity != Activity.FIGHT) {
+			this.playAngrySound();
 		}
 
 		this.setAttacking(this.brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
@@ -221,19 +221,6 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		this.getBrain().tick((ServerWorld)this.world, this);
 		this.world.getProfiler().pop();
 		this.method_26931();
-		this.method_26932();
-	}
-
-	private void method_26935() {
-		if (this.brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET)) {
-			this.playAngrySound();
-		}
-	}
-
-	protected void method_26932() {
-		if ((double)this.random.nextFloat() < 0.0125) {
-			this.method_26935();
-		}
 	}
 
 	@Override
@@ -277,7 +264,11 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_ZOGLIN_AMBIENT;
+		if (this.world.isClient) {
+			return null;
+		} else {
+			return this.brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET) ? SoundEvents.ENTITY_ZOGLIN_ANGRY : SoundEvents.ENTITY_ZOGLIN_AMBIENT;
+		}
 	}
 
 	@Override
