@@ -25,6 +25,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class HandledScreen<T extends ScreenHandler>
@@ -39,18 +40,24 @@ implements ScreenHandlerProvider<T> {
     protected int playerInventoryTitleY;
     protected final T handler;
     protected final PlayerInventory playerInventory;
+    @Nullable
+    protected Slot focusedSlot;
+    @Nullable
+    private Slot touchDragSlotStart;
+    @Nullable
+    private Slot touchDropOriginSlot;
+    @Nullable
+    private Slot touchHoveredSlot;
+    @Nullable
+    private Slot lastClickedSlot;
     protected int x;
     protected int y;
-    protected Slot focusedSlot;
-    private Slot touchDragSlotStart;
     private boolean touchIsRightClickDrag;
     private ItemStack touchDragStack = ItemStack.EMPTY;
     private int touchDropX;
     private int touchDropY;
-    private Slot touchDropOriginSlot;
     private long touchDropTime;
     private ItemStack touchDropReturningStack = ItemStack.EMPTY;
-    private Slot touchHoveredSlot;
     private long touchDropTimer;
     protected final Set<Slot> cursorDragSlots = Sets.newHashSet();
     protected boolean isCursorDragging;
@@ -59,7 +66,6 @@ implements ScreenHandlerProvider<T> {
     private boolean cancelNextRelease;
     private int draggedStackRemainder;
     private long lastButtonClickTime;
-    private Slot lastClickedSlot;
     private int lastClickedButton;
     private boolean isDoubleClicking;
     private ItemStack quickMovingStack = ItemStack.EMPTY;
@@ -248,6 +254,7 @@ implements ScreenHandlerProvider<T> {
         }
     }
 
+    @Nullable
     private Slot getSlotAt(double xPosition, double yPosition) {
         for (int i = 0; i < ((ScreenHandler)this.handler).slots.size(); ++i) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(i);
@@ -331,7 +338,7 @@ implements ScreenHandlerProvider<T> {
     }
 
     private void method_30107(int i) {
-        if (this.client.player.inventory.getCursorStack().isEmpty()) {
+        if (this.focusedSlot != null && this.client.player.inventory.getCursorStack().isEmpty()) {
             if (this.client.options.keySwapHands.matchesMouse(i)) {
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
                 return;

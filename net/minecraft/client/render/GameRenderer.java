@@ -159,7 +159,7 @@ AutoCloseable {
             this.forcedShaderIndex = SHADER_COUNT;
             this.shadersEnabled = false;
         } catch (JsonSyntaxException jsonSyntaxException) {
-            LOGGER.warn("Failed to load shader: {}", (Object)identifier, (Object)jsonSyntaxException);
+            LOGGER.warn("Failed to parse shader: {}", (Object)identifier, (Object)jsonSyntaxException);
             this.forcedShaderIndex = SHADER_COUNT;
             this.shadersEnabled = false;
         }

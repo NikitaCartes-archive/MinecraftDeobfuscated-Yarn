@@ -30,7 +30,7 @@ extends CompositeEntityModel<T> {
         this.field_23353 = new ModelPart(this, 0, 32);
         this.field_23353.setPivot(-4.0f, 8.0f, 0.0f);
         this.field_23353.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 16.0f, 4.0f, 0.0f);
-        this.field_23354 = new ModelPart(this, 0, 32);
+        this.field_23354 = new ModelPart(this, 0, 55);
         this.field_23354.setPivot(4.0f, 8.0f, 0.0f);
         this.field_23354.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 16.0f, 4.0f, 0.0f);
         this.field_23355 = new ModelPart(this, 0, 0);

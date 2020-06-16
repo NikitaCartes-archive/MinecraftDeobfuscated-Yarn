@@ -6,11 +6,15 @@ package net.minecraft.entity;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +90,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -118,7 +123,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -1507,10 +1511,21 @@ extends Entity {
                 HoneyBlock.addRichParticles(this);
                 break;
             }
+            case 55: {
+                this.method_30127();
+                break;
+            }
             default: {
                 super.handleStatus(status);
             }
         }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    private void method_30127() {
+        ItemStack itemStack = this.getEquippedStack(EquipmentSlot.OFFHAND);
+        this.equipStack(EquipmentSlot.OFFHAND, this.getEquippedStack(EquipmentSlot.MAINHAND));
+        this.equipStack(EquipmentSlot.MAINHAND, itemStack);
     }
 
     @Override
@@ -1745,14 +1760,21 @@ extends Entity {
                     this.setVelocity(vec3d2.x, 0.3f, vec3d2.z);
                 }
             } else if (this.isInLava() && this.method_29920() && !this.canWalkOnFluid(fluidState.getFluid())) {
+                Vec3d vec3d3;
                 double e = this.getY();
                 this.updateVelocity(0.02f, movementInput);
                 this.move(MovementType.SELF, this.getVelocity());
-                this.setVelocity(this.getVelocity().multiply(0.5));
+                if (this.getFluidHeight(FluidTags.LAVA) <= this.method_29241()) {
+                    this.setVelocity(this.getVelocity().multiply(0.5, 0.8f, 0.5));
+                    vec3d3 = this.method_26317(d, bl, this.getVelocity());
+                    this.setVelocity(vec3d3);
+                } else {
+                    this.setVelocity(this.getVelocity().multiply(0.5));
+                }
                 if (!this.hasNoGravity()) {
                     this.setVelocity(this.getVelocity().add(0.0, -d / 4.0, 0.0));
                 }
-                Vec3d vec3d3 = this.getVelocity();
+                vec3d3 = this.getVelocity();
                 if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.getY() + e, vec3d3.z)) {
                     this.setVelocity(vec3d3.x, 0.3f, vec3d3.z);
                 }
@@ -1907,40 +1929,7 @@ extends Entity {
                     this.setStingerCount(j - 1);
                 }
             }
-            block8: for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-                ItemStack itemStack;
-                switch (equipmentSlot.getType()) {
-                    case HAND: {
-                        itemStack = this.equippedHand.get(equipmentSlot.getEntitySlotId());
-                        break;
-                    }
-                    case ARMOR: {
-                        itemStack = this.equippedArmor.get(equipmentSlot.getEntitySlotId());
-                        break;
-                    }
-                    default: {
-                        continue block8;
-                    }
-                }
-                ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-                if (ItemStack.areEqual(itemStack2, itemStack)) continue;
-                ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
-                if (!itemStack.isEmpty()) {
-                    this.getAttributes().removeModifiers(itemStack.getAttributeModifiers(equipmentSlot));
-                }
-                if (!itemStack2.isEmpty()) {
-                    this.getAttributes().addTemporaryModifiers(itemStack2.getAttributeModifiers(equipmentSlot));
-                }
-                switch (equipmentSlot.getType()) {
-                    case HAND: {
-                        this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack2.copy());
-                        continue block8;
-                    }
-                    case ARMOR: {
-                        this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack2.copy());
-                    }
-                }
-            }
+            this.method_30128();
             if (this.age % 20 == 0) {
                 this.getDamageTracker().update();
             }
@@ -2010,6 +1999,95 @@ extends Entity {
         if (this.isSleeping()) {
             this.pitch = 0.0f;
         }
+    }
+
+    private void method_30128() {
+        Map<EquipmentSlot, ItemStack> map = this.method_30129();
+        if (map != null) {
+            this.method_30121(map);
+            if (!map.isEmpty()) {
+                this.method_30123(map);
+            }
+        }
+    }
+
+    @Nullable
+    private Map<EquipmentSlot, ItemStack> method_30129() {
+        EnumMap<EquipmentSlot, ItemStack> map = null;
+        block4: for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+            ItemStack itemStack;
+            switch (equipmentSlot.getType()) {
+                case HAND: {
+                    itemStack = this.method_30126(equipmentSlot);
+                    break;
+                }
+                case ARMOR: {
+                    itemStack = this.method_30125(equipmentSlot);
+                    break;
+                }
+                default: {
+                    continue block4;
+                }
+            }
+            ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
+            if (ItemStack.areEqual(itemStack2, itemStack)) continue;
+            if (map == null) {
+                map = Maps.newEnumMap(EquipmentSlot.class);
+            }
+            map.put(equipmentSlot, itemStack2);
+            if (!itemStack.isEmpty()) {
+                this.getAttributes().removeModifiers(itemStack.getAttributeModifiers(equipmentSlot));
+            }
+            if (itemStack2.isEmpty()) continue;
+            this.getAttributes().addTemporaryModifiers(itemStack2.getAttributeModifiers(equipmentSlot));
+        }
+        return map;
+    }
+
+    private void method_30121(Map<EquipmentSlot, ItemStack> map) {
+        ItemStack itemStack = map.get((Object)EquipmentSlot.MAINHAND);
+        ItemStack itemStack2 = map.get((Object)EquipmentSlot.OFFHAND);
+        if (itemStack != null && itemStack2 != null && ItemStack.areEqual(itemStack, this.method_30126(EquipmentSlot.OFFHAND)) && ItemStack.areEqual(itemStack2, this.method_30126(EquipmentSlot.MAINHAND))) {
+            ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, 55));
+            map.remove((Object)EquipmentSlot.MAINHAND);
+            map.remove((Object)EquipmentSlot.OFFHAND);
+            this.method_30124(EquipmentSlot.MAINHAND, itemStack.copy());
+            this.method_30124(EquipmentSlot.OFFHAND, itemStack2.copy());
+        }
+    }
+
+    private void method_30123(Map<EquipmentSlot, ItemStack> map) {
+        ArrayList<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayListWithCapacity(map.size());
+        map.forEach((equipmentSlot, itemStack) -> {
+            ItemStack itemStack2 = itemStack.copy();
+            list.add(Pair.of(equipmentSlot, itemStack2));
+            switch (equipmentSlot.getType()) {
+                case HAND: {
+                    this.method_30124((EquipmentSlot)((Object)equipmentSlot), itemStack2);
+                    break;
+                }
+                case ARMOR: {
+                    this.method_30122((EquipmentSlot)((Object)equipmentSlot), itemStack2);
+                }
+            }
+        });
+        ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), list));
+    }
+
+    private ItemStack method_30125(EquipmentSlot equipmentSlot) {
+        return this.equippedArmor.get(equipmentSlot.getEntitySlotId());
+    }
+
+    private void method_30122(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+        this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack);
+    }
+
+    private ItemStack method_30126(EquipmentSlot equipmentSlot) {
+        return this.equippedHand.get(equipmentSlot.getEntitySlotId());
+    }
+
+    private void method_30124(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+        this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack);
     }
 
     protected float turnHead(float bodyRotation, float headRotation) {
@@ -2086,12 +2164,12 @@ extends Entity {
         this.world.getProfiler().pop();
         this.world.getProfiler().push("jump");
         if (this.jumping && this.method_29920()) {
-            double k = this.getFluidHeight(FluidTags.WATER);
+            double k = this.isInLava() ? this.getFluidHeight(FluidTags.LAVA) : this.getFluidHeight(FluidTags.WATER);
             boolean bl = this.isTouchingWater() && k > 0.0;
             double l = this.method_29241();
             if (bl && (!this.onGround || k > l)) {
                 this.swimUpward(FluidTags.WATER);
-            } else if (this.isInLava()) {
+            } else if (this.isInLava() && (!this.onGround || k > l)) {
                 this.swimUpward(FluidTags.LAVA);
             } else if ((this.onGround || bl && k <= l) && this.jumpingCooldown == 0) {
                 this.jump();
@@ -2701,8 +2779,8 @@ extends Entity {
         if (item.isFood()) {
             List<Pair<StatusEffectInstance, Float>> list = item.getFoodComponent().getStatusEffects();
             for (Pair<StatusEffectInstance, Float> pair : list) {
-                if (world.isClient || pair.getLeft() == null || !(world.random.nextFloat() < pair.getRight().floatValue())) continue;
-                targetEntity.addStatusEffect(new StatusEffectInstance(pair.getLeft()));
+                if (world.isClient || pair.getFirst() == null || !(world.random.nextFloat() < pair.getSecond().floatValue())) continue;
+                targetEntity.addStatusEffect(new StatusEffectInstance(pair.getFirst()));
             }
         }
     }

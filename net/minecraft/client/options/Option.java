@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5407;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -201,11 +202,17 @@ public abstract class Option {
     private static final Text field_25673 = new TranslatableText("options.graphics.fabulous.tooltip", new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC));
     private static final Text field_25674 = new TranslatableText("options.graphics.fancy.tooltip");
     public static final CyclingOption GRAPHICS = new CyclingOption("options.graphics", (options, count) -> {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        class_5407 lv = minecraftClient.method_30049();
+        if (options.graphicsMode == GraphicsMode.FANCY && lv.method_30137()) {
+            lv.method_30138();
+            return;
+        }
         options.graphicsMode = options.graphicsMode.next();
-        if (options.graphicsMode == GraphicsMode.FABULOUS && !GlStateManager.supportsGl30()) {
+        if (options.graphicsMode == GraphicsMode.FABULOUS && (!GlStateManager.supportsGl30() || lv.method_30142())) {
             options.graphicsMode = GraphicsMode.FAST;
         }
-        MinecraftClient.getInstance().worldRenderer.reload();
+        minecraftClient.worldRenderer.reload();
     }, (options, cyclingOption) -> {
         switch (options.graphicsMode) {
             case FAST: {

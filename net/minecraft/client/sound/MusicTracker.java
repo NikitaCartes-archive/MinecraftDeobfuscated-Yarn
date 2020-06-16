@@ -57,6 +57,7 @@ public class MusicTracker {
             this.client.getSoundManager().stop(this.current);
             this.current = null;
         }
+        this.timeUntilNextSong += 100;
     }
 
     public boolean isPlayingType(MusicSound type) {

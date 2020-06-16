@@ -11,5 +11,7 @@ public interface WindowEventHandler {
     public void onWindowFocusChanged(boolean var1);
 
     public void onResolutionChanged();
+
+    public void method_30133();
 }
 

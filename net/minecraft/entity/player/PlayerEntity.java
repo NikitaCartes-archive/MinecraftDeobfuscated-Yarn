@@ -227,9 +227,6 @@ extends LivingEntity {
             this.closeHandledScreen();
             this.currentScreenHandler = this.playerScreenHandler;
         }
-        if (this.isOnFire() && this.abilities.invulnerable) {
-            this.extinguish();
-        }
         this.updateCapeAngles();
         if (!this.world.isClient) {
             this.hungerManager.update(this);
@@ -1733,6 +1730,11 @@ extends LivingEntity {
     @Environment(value=EnvType.CLIENT)
     public void setReducedDebugInfo(boolean reducedDebugInfo) {
         this.reducedDebugInfo = reducedDebugInfo;
+    }
+
+    @Override
+    public void setFireTicks(int ticks) {
+        super.setFireTicks(this.abilities.invulnerable ? Math.min(ticks, 1) : ticks);
     }
 
     @Override

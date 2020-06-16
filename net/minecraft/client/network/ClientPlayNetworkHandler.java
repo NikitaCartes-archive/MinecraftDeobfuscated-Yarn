@@ -96,6 +96,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.FallingBlockEntity;
@@ -688,10 +689,22 @@ implements ClientPlayPacketListener {
             this.world.scheduleBlockRenders(i, k, j);
         }
         for (CompoundTag compoundTag : packet.getBlockEntityTagList()) {
-            BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
-            BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+            BlockPos blockPos2 = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+            BlockEntity blockEntity = this.world.getBlockEntity(blockPos2);
             if (blockEntity == null) continue;
-            blockEntity.fromTag(this.world.getBlockState(blockPos), compoundTag);
+            blockEntity.fromTag(this.world.getBlockState(blockPos2), compoundTag);
+        }
+        if (!packet.method_30144()) {
+            this.world.getLightingProvider().setLightEnabled(worldChunk.getPos(), false);
+            int k = packet.getVerticalStripBitmask();
+            for (int l = 0; l < 16; ++l) {
+                if ((k & 1 << l) == 0) continue;
+                this.world.getLightingProvider().queueData(LightType.BLOCK, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
+                this.world.getLightingProvider().queueData(LightType.SKY, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
+            }
+            this.world.getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
+            this.world.getLightingProvider().setLightEnabled(worldChunk.getPos(), true);
+            worldChunk.getLightSourcesStream().forEach(blockPos -> this.world.getLightingProvider().addLightSource((BlockPos)blockPos, worldChunk.getLuminance((BlockPos)blockPos)));
         }
     }
 
@@ -1096,7 +1109,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = this.world.getEntityById(packet.getId());
         if (entity != null) {
-            entity.equipStack(packet.getSlot(), packet.getStack());
+            packet.method_30145().forEach(pair -> entity.equipStack((EquipmentSlot)((Object)((Object)pair.getFirst())), (ItemStack)pair.getSecond()));
         }
     }
 

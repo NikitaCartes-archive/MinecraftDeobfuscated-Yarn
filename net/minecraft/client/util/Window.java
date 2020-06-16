@@ -105,6 +105,7 @@ implements AutoCloseable {
         GLFW.glfwSetWindowPosCallback(this.handle, this::onWindowPosChanged);
         GLFW.glfwSetWindowSizeCallback(this.handle, this::onWindowSizeChanged);
         GLFW.glfwSetWindowFocusCallback(this.handle, this::onWindowFocusChanged);
+        GLFW.glfwSetCursorEnterCallback(this.handle, this::method_30132);
     }
 
     public int getRefreshRate() {
@@ -270,6 +271,12 @@ implements AutoCloseable {
     private void onWindowFocusChanged(long window, boolean focused) {
         if (window == this.handle) {
             this.eventHandler.onWindowFocusChanged(focused);
+        }
+    }
+
+    private void method_30132(long l, boolean bl) {
+        if (bl) {
+            this.eventHandler.method_30133();
         }
     }
 

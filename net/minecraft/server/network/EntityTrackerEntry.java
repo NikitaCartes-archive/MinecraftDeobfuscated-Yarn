@@ -3,6 +3,9 @@
  */
 package net.minecraft.server.network;
 
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -193,9 +196,9 @@ public class EntityTrackerEntry {
         }
         boolean bl = this.alwaysUpdateVelocity;
         if (this.entity instanceof LivingEntity) {
-            EquipmentSlot[] collection = ((LivingEntity)this.entity).getAttributes().getAttributesToSend();
+            Collection<EntityAttributeInstance> collection = ((LivingEntity)this.entity).getAttributes().getAttributesToSend();
             if (!collection.isEmpty()) {
-                sender.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), (Collection<EntityAttributeInstance>)collection));
+                sender.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), collection));
             }
             if (((LivingEntity)this.entity).isFallFlying()) {
                 bl = true;
@@ -206,10 +209,14 @@ public class EntityTrackerEntry {
             sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.velocity));
         }
         if (this.entity instanceof LivingEntity) {
+            ArrayList<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayList();
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 ItemStack itemStack = ((LivingEntity)this.entity).getEquippedStack(equipmentSlot);
                 if (itemStack.isEmpty()) continue;
-                sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), equipmentSlot, itemStack));
+                list.add(Pair.of(equipmentSlot, itemStack.copy()));
+            }
+            if (!list.isEmpty()) {
+                sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), list));
             }
         }
         if (this.entity instanceof LivingEntity) {

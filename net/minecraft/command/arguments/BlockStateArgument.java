@@ -53,6 +53,9 @@ implements Predicate<CachedBlockPosition> {
     public boolean setBlockState(ServerWorld serverWorld, BlockPos blockPos, int i) {
         BlockEntity blockEntity;
         BlockState blockState = Block.postProcessState(this.state, serverWorld, blockPos);
+        if (blockState.isAir()) {
+            blockState = this.state;
+        }
         if (!serverWorld.setBlockState(blockPos, blockState, i)) {
             return false;
         }

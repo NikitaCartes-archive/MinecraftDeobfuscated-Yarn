@@ -163,14 +163,14 @@ extends StructurePieceWithDimensions {
         this.addBlock(serverWorldAccess, (BlockState)((BlockState)((BlockState)Blocks.TRIPWIRE.getDefaultState().with(TripwireBlock.EAST, true)).with(TripwireBlock.WEST, true)).with(TripwireBlock.ATTACHED, true), 2, -3, 8, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)((BlockState)((BlockState)Blocks.TRIPWIRE.getDefaultState().with(TripwireBlock.EAST, true)).with(TripwireBlock.WEST, true)).with(TripwireBlock.ATTACHED, true), 3, -3, 8, boundingBox);
         BlockState blockState5 = (BlockState)((BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.SIDE);
-        this.addBlock(serverWorldAccess, (BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.SIDE), 5, -3, 7, boundingBox);
+        this.addBlock(serverWorldAccess, blockState5, 5, -3, 7, boundingBox);
         this.addBlock(serverWorldAccess, blockState5, 5, -3, 6, boundingBox);
         this.addBlock(serverWorldAccess, blockState5, 5, -3, 5, boundingBox);
         this.addBlock(serverWorldAccess, blockState5, 5, -3, 4, boundingBox);
         this.addBlock(serverWorldAccess, blockState5, 5, -3, 3, boundingBox);
         this.addBlock(serverWorldAccess, blockState5, 5, -3, 2, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_WEST, WireConnection.SIDE), 5, -3, 1, boundingBox);
-        this.addBlock(serverWorldAccess, (BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_EAST, WireConnection.SIDE), 4, -3, 1, boundingBox);
+        this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_EAST, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_WEST, WireConnection.SIDE), 4, -3, 1, boundingBox);
         this.addBlock(serverWorldAccess, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 3, -3, 1, boundingBox);
         if (!this.placedTrap1) {
             this.placedTrap1 = this.addDispenser(serverWorldAccess, boundingBox, random, 3, -2, 1, Direction.NORTH, LootTables.JUNGLE_TEMPLE_DISPENSER_CHEST);
@@ -181,11 +181,11 @@ extends StructurePieceWithDimensions {
         this.addBlock(serverWorldAccess, (BlockState)((BlockState)((BlockState)Blocks.TRIPWIRE.getDefaultState().with(TripwireBlock.NORTH, true)).with(TripwireBlock.SOUTH, true)).with(TripwireBlock.ATTACHED, true), 7, -3, 2, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)((BlockState)((BlockState)Blocks.TRIPWIRE.getDefaultState().with(TripwireBlock.NORTH, true)).with(TripwireBlock.SOUTH, true)).with(TripwireBlock.ATTACHED, true), 7, -3, 3, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)((BlockState)((BlockState)Blocks.TRIPWIRE.getDefaultState().with(TripwireBlock.NORTH, true)).with(TripwireBlock.SOUTH, true)).with(TripwireBlock.ATTACHED, true), 7, -3, 4, boundingBox);
-        this.addBlock(serverWorldAccess, (BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_EAST, WireConnection.SIDE), 8, -3, 6, boundingBox);
+        this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_EAST, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_WEST, WireConnection.SIDE), 8, -3, 6, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_WEST, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.SIDE), 9, -3, 6, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.UP), 9, -3, 5, boundingBox);
         this.addBlock(serverWorldAccess, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 9, -3, 4, boundingBox);
-        this.addBlock(serverWorldAccess, (BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.SIDE), 9, -2, 4, boundingBox);
+        this.addBlock(serverWorldAccess, blockState5, 9, -2, 4, boundingBox);
         if (!this.placedTrap2) {
             this.placedTrap2 = this.addDispenser(serverWorldAccess, boundingBox, random, 9, -2, 3, Direction.WEST, LootTables.JUNGLE_TEMPLE_DISPENSER_CHEST);
         }
@@ -215,9 +215,9 @@ extends StructurePieceWithDimensions {
         this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 8, -3, 8, 8, -3, 10, false, random, COBBLESTONE_RANDOMIZER);
         this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 10, -3, 8, 10, -3, 10, false, random, COBBLESTONE_RANDOMIZER);
         this.addBlock(serverWorldAccess, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 10, -2, 9, boundingBox);
-        this.addBlock(serverWorldAccess, (BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.SIDE), 8, -2, 9, boundingBox);
-        this.addBlock(serverWorldAccess, (BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.SIDE), 8, -2, 10, boundingBox);
-        this.addBlock(serverWorldAccess, Blocks.REDSTONE_WIRE.getDefaultState(), 10, -1, 9, boundingBox);
+        this.addBlock(serverWorldAccess, blockState5, 8, -2, 9, boundingBox);
+        this.addBlock(serverWorldAccess, blockState5, 8, -2, 10, boundingBox);
+        this.addBlock(serverWorldAccess, (BlockState)((BlockState)((BlockState)((BlockState)Blocks.REDSTONE_WIRE.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_SOUTH, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_EAST, WireConnection.SIDE)).with(RedstoneWireBlock.WIRE_CONNECTION_WEST, WireConnection.SIDE), 10, -1, 9, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)Blocks.STICKY_PISTON.getDefaultState().with(PistonBlock.FACING, Direction.UP), 9, -2, 8, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)Blocks.STICKY_PISTON.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -2, 8, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)Blocks.STICKY_PISTON.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -1, 8, boundingBox);

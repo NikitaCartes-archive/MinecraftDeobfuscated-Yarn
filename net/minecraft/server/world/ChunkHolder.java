@@ -55,7 +55,6 @@ public class ChunkHolder {
     private final short[] blockUpdatePositions = new short[64];
     private int blockUpdateCount;
     private int sectionsNeedingUpdateMask;
-    private boolean field_25344;
     private int blockLightUpdateBits;
     private int skyLightUpdateBits;
     private final LightingProvider lightingProvider;
@@ -169,13 +168,8 @@ public class ChunkHolder {
             return;
         }
         World world = worldChunk.getWorld();
-        if (this.blockUpdateCount == 64) {
-            this.field_25344 = true;
-        }
-        boolean bl = !this.field_25344;
-        boolean bl2 = this.field_25344 = this.field_25344 && this.lightingProvider.hasUpdates();
-        if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
-            this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, bl), bl);
+        if (this.blockUpdateCount < 64 && (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0)) {
+            this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, false), true);
             this.skyLightUpdateBits = 0;
             this.blockLightUpdateBits = 0;
         }
@@ -189,7 +183,7 @@ public class ChunkHolder {
                 this.sendBlockEntityUpdatePacket(world, blockPos);
             }
         } else if (this.blockUpdateCount == 64) {
-            this.sendPacketToPlayersWatching(new ChunkDataS2CPacket(worldChunk, this.sectionsNeedingUpdateMask), false);
+            this.sendPacketToPlayersWatching(new ChunkDataS2CPacket(worldChunk, this.sectionsNeedingUpdateMask, false), false);
         } else if (this.blockUpdateCount != 0) {
             this.sendPacketToPlayersWatching(new ChunkDeltaUpdateS2CPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false);
             for (int i = 0; i < this.blockUpdateCount; ++i) {
