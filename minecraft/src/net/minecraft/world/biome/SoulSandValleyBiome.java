@@ -110,15 +110,15 @@ public class SoulSandValleyBiome extends Biome {
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(12, 0, 0, 32)))
 		);
 		DefaultBiomeFeatures.addNetherMineables(this);
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 10, 5, 5));
+		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 20, 5, 5));
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 50, 4, 4));
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
 		this.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 1, 2));
-		double d = 1.0;
+		double d = 0.7;
 		double e = 0.15;
-		this.addSpawnDensity(EntityType.SKELETON, 1.0, 0.15);
-		this.addSpawnDensity(EntityType.GHAST, 1.0, 0.15);
-		this.addSpawnDensity(EntityType.ENDERMAN, 1.0, 0.15);
-		this.addSpawnDensity(EntityType.STRIDER, 1.0, 0.15);
+		this.addSpawnDensity(EntityType.SKELETON, 0.7, 0.15);
+		this.addSpawnDensity(EntityType.GHAST, 0.7, 0.15);
+		this.addSpawnDensity(EntityType.ENDERMAN, 0.7, 0.15);
+		this.addSpawnDensity(EntityType.STRIDER, 0.7, 0.15);
 	}
 }

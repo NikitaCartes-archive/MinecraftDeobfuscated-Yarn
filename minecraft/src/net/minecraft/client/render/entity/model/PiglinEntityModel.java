@@ -91,6 +91,12 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 		} else if (mobEntity.getType() == EntityType.ZOMBIFIED_PIGLIN) {
 			CrossbowPosing.method_29352(this.leftArm, this.rightArm, mobEntity.isAttacking(), this.handSwingProgress, h);
 		}
+
+		this.leftPantLeg.copyPositionAndRotation(this.leftLeg);
+		this.rightPantLeg.copyPositionAndRotation(this.rightLeg);
+		this.leftSleeve.copyPositionAndRotation(this.leftArm);
+		this.rightSleeve.copyPositionAndRotation(this.rightArm);
+		this.jacket.copyPositionAndRotation(this.torso);
 	}
 
 	protected void method_29353(T mobEntity, float f) {
