@@ -1058,6 +1058,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.mouse.onResolutionChanged();
 	}
 
+	@Override
+	public void method_30133() {
+		this.mouse.method_30134();
+	}
+
 	private int getFramerateLimit() {
 		return this.world != null || this.currentScreen == null && this.overlay == null ? this.window.getFramerateLimit() : 60;
 	}
@@ -2277,7 +2282,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				Biome.Category category = this.player.world.getBiome(this.player.getBlockPos()).getCategory();
 				if (!this.musicTracker.isPlayingType(MusicType.UNDERWATER)
 					&& (!this.player.isSubmergedInWater() || category != Biome.Category.OCEAN && category != Biome.Category.RIVER)) {
-					return this.player.abilities.creativeMode && this.player.abilities.allowFlying
+					return this.player.world.getRegistryKey() != World.NETHER && this.player.abilities.creativeMode && this.player.abilities.allowFlying
 						? MusicType.CREATIVE
 						: (MusicSound)this.world.getBiomeAccess().method_27344(this.player.getBlockPos()).method_27343().orElse(MusicType.GAME);
 				} else {

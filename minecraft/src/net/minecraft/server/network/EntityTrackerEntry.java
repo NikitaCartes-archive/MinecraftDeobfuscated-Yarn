@@ -1,5 +1,7 @@
 package net.minecraft.server.network;
 
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -222,11 +224,17 @@ public class EntityTrackerEntry {
 		}
 
 		if (this.entity instanceof LivingEntity) {
+			List<Pair<EquipmentSlot, ItemStack>> list = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
+
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 				ItemStack itemStack = ((LivingEntity)this.entity).getEquippedStack(equipmentSlot);
 				if (!itemStack.isEmpty()) {
-					sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), equipmentSlot, itemStack));
+					list.add(Pair.of(equipmentSlot, itemStack.copy()));
 				}
+			}
+
+			if (!list.isEmpty()) {
+				sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), list));
 			}
 		}
 

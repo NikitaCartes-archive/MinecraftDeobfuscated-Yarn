@@ -98,7 +98,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 				? RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN))
 				: RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
 		} else {
-			return RenderLayer.getEntityCutoutNoCull(identifier);
+			return RenderLayer.getEntityCutoutNoCullZOffset(identifier);
 		}
 	}
 }

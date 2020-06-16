@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,14 +23,51 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class class_5407 extends SinglePreparationResourceReloadListener<class_5407.class_5408> {
+	private static final Logger field_25716 = LogManager.getLogger();
 	private static final Identifier field_25689 = new Identifier("gpu_warnlist.json");
 	private ImmutableMap<String, String> field_25690 = ImmutableMap.of();
+	private boolean field_25717;
+	private boolean field_25718;
+	private boolean field_25719;
 
 	public boolean method_30055() {
 		return !this.field_25690.isEmpty();
+	}
+
+	public boolean method_30137() {
+		return this.method_30055() && !this.field_25718;
+	}
+
+	public void method_30138() {
+		this.field_25717 = true;
+	}
+
+	public void method_30139() {
+		this.field_25718 = true;
+	}
+
+	public void method_30140() {
+		this.field_25718 = true;
+		this.field_25719 = true;
+	}
+
+	public boolean method_30141() {
+		return this.field_25717 && !this.field_25718;
+	}
+
+	public boolean method_30142() {
+		return this.field_25719;
+	}
+
+	public void method_30143() {
+		this.field_25717 = false;
+		this.field_25718 = false;
+		this.field_25719 = false;
 	}
 
 	@Nullable
@@ -120,7 +158,8 @@ public class class_5407 extends SinglePreparationResourceReloadListener<class_54
 					}
 				}
 			}
-		} catch (IOException var35) {
+		} catch (JsonSyntaxException | IOException var35) {
+			field_25716.warn("Failed to load GPU warnlist");
 		}
 
 		profiler.pop();

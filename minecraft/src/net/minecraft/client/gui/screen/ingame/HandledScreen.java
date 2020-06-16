@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -33,18 +34,24 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	protected int playerInventoryTitleY;
 	protected final T handler;
 	protected final PlayerInventory playerInventory;
+	@Nullable
+	protected Slot focusedSlot;
+	@Nullable
+	private Slot touchDragSlotStart;
+	@Nullable
+	private Slot touchDropOriginSlot;
+	@Nullable
+	private Slot touchHoveredSlot;
+	@Nullable
+	private Slot lastClickedSlot;
 	protected int x;
 	protected int y;
-	protected Slot focusedSlot;
-	private Slot touchDragSlotStart;
 	private boolean touchIsRightClickDrag;
 	private ItemStack touchDragStack = ItemStack.EMPTY;
 	private int touchDropX;
 	private int touchDropY;
-	private Slot touchDropOriginSlot;
 	private long touchDropTime;
 	private ItemStack touchDropReturningStack = ItemStack.EMPTY;
-	private Slot touchHoveredSlot;
 	private long touchDropTimer;
 	protected final Set<Slot> cursorDragSlots = Sets.<Slot>newHashSet();
 	protected boolean isCursorDragging;
@@ -53,7 +60,6 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	private boolean cancelNextRelease;
 	private int draggedStackRemainder;
 	private long lastButtonClickTime;
-	private Slot lastClickedSlot;
 	private int lastClickedButton;
 	private boolean isDoubleClicking;
 	private ItemStack quickMovingStack = ItemStack.EMPTY;
@@ -255,6 +261,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		}
 	}
 
+	@Nullable
 	private Slot getSlotAt(double xPosition, double yPosition) {
 		for (int i = 0; i < this.handler.slots.size(); i++) {
 			Slot slot = (Slot)this.handler.slots.get(i);
@@ -351,7 +358,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	private void method_30107(int i) {
-		if (this.client.player.inventory.getCursorStack().isEmpty()) {
+		if (this.focusedSlot != null && this.client.player.inventory.getCursorStack().isEmpty()) {
 			if (this.client.options.keySwapHands.matchesMouse(i)) {
 				this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
 				return;

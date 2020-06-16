@@ -370,20 +370,23 @@ public class ServerChunkManager extends ChunkManager {
 			List<ChunkHolder> list = Lists.<ChunkHolder>newArrayList(this.threadedAnvilChunkStorage.entryIterator());
 			Collections.shuffle(list);
 			list.forEach(chunkHolder -> {
-				Optional<WorldChunk> optional = ((Either)chunkHolder.getEntityTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
+				Optional<WorldChunk> optional = ((Either)chunkHolder.getTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
 				if (optional.isPresent()) {
-					WorldChunk worldChunk = (WorldChunk)optional.get();
 					this.world.getProfiler().push("broadcast");
-					chunkHolder.flushUpdates(worldChunk);
+					chunkHolder.flushUpdates((WorldChunk)optional.get());
 					this.world.getProfiler().pop();
-					ChunkPos chunkPos = chunkHolder.getPos();
-					if (!this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
-						worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
-						if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(worldChunk.getPos())) {
-							SpawnHelper.spawn(this.world, worldChunk, info, this.spawnAnimals, this.spawnMonsters, bl3);
-						}
+					Optional<WorldChunk> optional2 = ((Either)chunkHolder.getEntityTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
+					if (optional2.isPresent()) {
+						WorldChunk worldChunk = (WorldChunk)optional2.get();
+						ChunkPos chunkPos = chunkHolder.getPos();
+						if (!this.threadedAnvilChunkStorage.isTooFarFromPlayersToSpawnMobs(chunkPos)) {
+							worldChunk.setInhabitedTime(worldChunk.getInhabitedTime() + m);
+							if (bl2 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(worldChunk.getPos())) {
+								SpawnHelper.spawn(this.world, worldChunk, info, this.spawnAnimals, this.spawnMonsters, bl3);
+							}
 
-						this.world.tickChunk(worldChunk, i);
+							this.world.tickChunk(worldChunk, i);
+						}
 					}
 				}
 			});

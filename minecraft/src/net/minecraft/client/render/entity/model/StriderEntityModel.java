@@ -25,7 +25,7 @@ public class StriderEntityModel<T extends StriderEntity> extends CompositeEntity
 		this.field_23353 = new ModelPart(this, 0, 32);
 		this.field_23353.setPivot(-4.0F, 8.0F, 0.0F);
 		this.field_23353.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 16.0F, 4.0F, 0.0F);
-		this.field_23354 = new ModelPart(this, 0, 32);
+		this.field_23354 = new ModelPart(this, 0, 55);
 		this.field_23354.setPivot(4.0F, 8.0F, 0.0F);
 		this.field_23354.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 16.0F, 4.0F, 0.0F);
 		this.field_23355 = new ModelPart(this, 0, 0);

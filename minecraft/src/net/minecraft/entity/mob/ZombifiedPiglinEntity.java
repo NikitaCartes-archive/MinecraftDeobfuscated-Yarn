@@ -103,6 +103,10 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 			this.method_29941();
 		}
 
+		if (this.hasAngerTime()) {
+			this.playerHitTimer = this.age;
+		}
+
 		super.mobTick();
 	}
 
@@ -150,12 +154,11 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 			this.field_25608 = field_25609.choose(this.random);
 		}
 
-		super.setTarget(target);
-	}
+		if (target instanceof PlayerEntity) {
+			this.setAttacking((PlayerEntity)target);
+		}
 
-	@Override
-	protected boolean shouldAlwaysDropXp() {
-		return this.getTarget() != null;
+		super.setTarget(target);
 	}
 
 	@Override

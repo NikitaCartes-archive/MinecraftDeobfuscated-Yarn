@@ -98,7 +98,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	public static boolean method_29952(BlockView blockView, BlockPos blockPos) {
-		return blockView.getBlockState(blockPos.down()).isIn(BlockTags.SAND);
+		return blockView.getBlockState(blockPos).isIn(BlockTags.SAND);
 	}
 
 	@Override

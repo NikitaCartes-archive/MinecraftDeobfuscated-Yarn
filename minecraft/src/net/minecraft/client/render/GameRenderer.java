@@ -176,7 +176,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			this.forcedShaderIndex = SHADER_COUNT;
 			this.shadersEnabled = false;
 		} catch (JsonSyntaxException var4) {
-			LOGGER.warn("Failed to load shader: {}", identifier, var4);
+			LOGGER.warn("Failed to parse shader: {}", identifier, var4);
 			this.forcedShaderIndex = SHADER_COUNT;
 			this.shadersEnabled = false;
 		}

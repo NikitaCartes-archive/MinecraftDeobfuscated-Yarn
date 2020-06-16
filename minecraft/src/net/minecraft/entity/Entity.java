@@ -382,7 +382,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.extinguish();
 		} else if (this.fireTicks > 0) {
 			if (this.isFireImmune()) {
-				this.fireTicks -= 4;
+				this.setFireTicks(this.fireTicks - 4);
 				if (this.fireTicks < 0) {
 					this.extinguish();
 				}
@@ -391,7 +391,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					this.damage(DamageSource.ON_FIRE, 1.0F);
 				}
 
-				this.fireTicks--;
+				this.setFireTicks(this.fireTicks - 1);
 			}
 		}
 
@@ -436,7 +436,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 
 		if (this.fireTicks < i) {
-			this.fireTicks = i;
+			this.setFireTicks(i);
 		}
 	}
 
@@ -449,7 +449,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void extinguish() {
-		this.fireTicks = 0;
+		this.setFireTicks(0);
 	}
 
 	protected void destroy() {
@@ -570,12 +570,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 					.method_29556(this.getBoundingBox().contract(0.001))
 					.noneMatch(blockStatex -> blockStatex.isIn(BlockTags.FIRE) || blockStatex.isOf(Blocks.LAVA))
 				&& this.fireTicks <= 0) {
-				this.fireTicks = -this.getBurningDuration();
+				this.setFireTicks(-this.getBurningDuration());
 			}
 
 			if (this.isWet() && this.isOnFire()) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
-				this.fireTicks = -this.getBurningDuration();
+				this.setFireTicks(-this.getBurningDuration());
 			}
 
 			this.world.getProfiler().pop();
@@ -1959,7 +1959,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void onStruckByLightning(LightningEntity lightning) {
-		this.fireTicks++;
+		this.setFireTicks(this.fireTicks + 1);
 		if (this.fireTicks == 0) {
 			this.setOnFireFor(8);
 		}

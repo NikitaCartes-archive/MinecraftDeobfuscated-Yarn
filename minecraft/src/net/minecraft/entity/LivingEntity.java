@@ -3,7 +3,9 @@ package net.minecraft.entity;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import java.util.Collection;
@@ -73,6 +75,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -105,7 +108,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Represents an entity which has a health value and can receive damage.
@@ -1709,7 +1711,17 @@ public abstract class LivingEntity extends Entity {
 				break;
 			case 54:
 				HoneyBlock.addRichParticles(this);
+				break;
+			case 55:
+				this.method_30127();
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	private void method_30127() {
+		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.OFFHAND);
+		this.equipStack(EquipmentSlot.OFFHAND, this.getEquippedStack(EquipmentSlot.MAINHAND));
+		this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 	}
 
 	@Override
@@ -1964,7 +1976,14 @@ public abstract class LivingEntity extends Entity {
 				double ex = this.getY();
 				this.updateVelocity(0.02F, movementInput);
 				this.move(MovementType.SELF, this.getVelocity());
-				this.setVelocity(this.getVelocity().multiply(0.5));
+				if (this.getFluidHeight(FluidTags.LAVA) <= this.method_29241()) {
+					this.setVelocity(this.getVelocity().multiply(0.5, 0.8F, 0.5));
+					Vec3d vec3d3 = this.method_26317(d, bl, this.getVelocity());
+					this.setVelocity(vec3d3);
+				} else {
+					this.setVelocity(this.getVelocity().multiply(0.5));
+				}
+
 				if (!this.hasNoGravity()) {
 					this.setVelocity(this.getVelocity().add(0.0, -d / 4.0, 0.0));
 				}
@@ -2147,42 +2166,7 @@ public abstract class LivingEntity extends Entity {
 				}
 			}
 
-			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				ItemStack itemStack;
-				switch (equipmentSlot.getType()) {
-					case HAND:
-						itemStack = this.equippedHand.get(equipmentSlot.getEntitySlotId());
-						break;
-					case ARMOR:
-						itemStack = this.equippedArmor.get(equipmentSlot.getEntitySlotId());
-						break;
-					default:
-						continue;
-				}
-
-				ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-				if (!ItemStack.areEqual(itemStack2, itemStack)) {
-					((ServerWorld)this.world)
-						.getChunkManager()
-						.sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));
-					if (!itemStack.isEmpty()) {
-						this.getAttributes().removeModifiers(itemStack.getAttributeModifiers(equipmentSlot));
-					}
-
-					if (!itemStack2.isEmpty()) {
-						this.getAttributes().addTemporaryModifiers(itemStack2.getAttributeModifiers(equipmentSlot));
-					}
-
-					switch (equipmentSlot.getType()) {
-						case HAND:
-							this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack2.copy());
-							break;
-						case ARMOR:
-							this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack2.copy());
-					}
-				}
-			}
-
+			this.method_30128();
 			if (this.age % 20 == 0) {
 				this.getDamageTracker().update();
 			}
@@ -2278,6 +2262,100 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
+	private void method_30128() {
+		Map<EquipmentSlot, ItemStack> map = this.method_30129();
+		if (map != null) {
+			this.method_30121(map);
+			if (!map.isEmpty()) {
+				this.method_30123(map);
+			}
+		}
+	}
+
+	@Nullable
+	private Map<EquipmentSlot, ItemStack> method_30129() {
+		Map<EquipmentSlot, ItemStack> map = null;
+
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			ItemStack itemStack;
+			switch (equipmentSlot.getType()) {
+				case HAND:
+					itemStack = this.method_30126(equipmentSlot);
+					break;
+				case ARMOR:
+					itemStack = this.method_30125(equipmentSlot);
+					break;
+				default:
+					continue;
+			}
+
+			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
+			if (!ItemStack.areEqual(itemStack2, itemStack)) {
+				if (map == null) {
+					map = Maps.newEnumMap(EquipmentSlot.class);
+				}
+
+				map.put(equipmentSlot, itemStack2);
+				if (!itemStack.isEmpty()) {
+					this.getAttributes().removeModifiers(itemStack.getAttributeModifiers(equipmentSlot));
+				}
+
+				if (!itemStack2.isEmpty()) {
+					this.getAttributes().addTemporaryModifiers(itemStack2.getAttributeModifiers(equipmentSlot));
+				}
+			}
+		}
+
+		return map;
+	}
+
+	private void method_30121(Map<EquipmentSlot, ItemStack> map) {
+		ItemStack itemStack = (ItemStack)map.get(EquipmentSlot.MAINHAND);
+		ItemStack itemStack2 = (ItemStack)map.get(EquipmentSlot.OFFHAND);
+		if (itemStack != null
+			&& itemStack2 != null
+			&& ItemStack.areEqual(itemStack, this.method_30126(EquipmentSlot.OFFHAND))
+			&& ItemStack.areEqual(itemStack2, this.method_30126(EquipmentSlot.MAINHAND))) {
+			((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, (byte)55));
+			map.remove(EquipmentSlot.MAINHAND);
+			map.remove(EquipmentSlot.OFFHAND);
+			this.method_30124(EquipmentSlot.MAINHAND, itemStack.copy());
+			this.method_30124(EquipmentSlot.OFFHAND, itemStack2.copy());
+		}
+	}
+
+	private void method_30123(Map<EquipmentSlot, ItemStack> map) {
+		List<Pair<EquipmentSlot, ItemStack>> list = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayListWithCapacity(map.size());
+		map.forEach((equipmentSlot, itemStack) -> {
+			ItemStack itemStack2 = itemStack.copy();
+			list.add(Pair.of(equipmentSlot, itemStack2));
+			switch (equipmentSlot.getType()) {
+				case HAND:
+					this.method_30124(equipmentSlot, itemStack2);
+					break;
+				case ARMOR:
+					this.method_30122(equipmentSlot, itemStack2);
+			}
+		});
+		((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), list));
+	}
+
+	private ItemStack method_30125(EquipmentSlot equipmentSlot) {
+		return this.equippedArmor.get(equipmentSlot.getEntitySlotId());
+	}
+
+	private void method_30122(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+		this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack);
+	}
+
+	private ItemStack method_30126(EquipmentSlot equipmentSlot) {
+		return this.equippedHand.get(equipmentSlot.getEntitySlotId());
+	}
+
+	private void method_30124(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+		this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack);
+	}
+
 	protected float turnHead(float bodyRotation, float headRotation) {
 		float f = MathHelper.wrapDegrees(bodyRotation - this.bodyYaw);
 		this.bodyYaw += f * 0.3F;
@@ -2363,15 +2441,23 @@ public abstract class LivingEntity extends Entity {
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("jump");
 		if (this.jumping && this.method_29920()) {
-			double k = this.getFluidHeight(FluidTags.WATER);
+			double k;
+			if (this.isInLava()) {
+				k = this.getFluidHeight(FluidTags.LAVA);
+			} else {
+				k = this.getFluidHeight(FluidTags.WATER);
+			}
+
 			boolean bl = this.isTouchingWater() && k > 0.0;
 			double l = this.method_29241();
 			if (!bl || this.onGround && !(k > l)) {
-				if (this.isInLava()) {
+				if (!this.isInLava() || this.onGround && !(k > l)) {
+					if ((this.onGround || bl && k <= l) && this.jumpingCooldown == 0) {
+						this.jump();
+						this.jumpingCooldown = 10;
+					}
+				} else {
 					this.swimUpward(FluidTags.LAVA);
-				} else if ((this.onGround || bl && k <= l) && this.jumpingCooldown == 0) {
-					this.jump();
-					this.jumpingCooldown = 10;
 				}
 			} else {
 				this.swimUpward(FluidTags.WATER);
@@ -3021,8 +3107,8 @@ public abstract class LivingEntity extends Entity {
 		Item item = stack.getItem();
 		if (item.isFood()) {
 			for (Pair<StatusEffectInstance, Float> pair : item.getFoodComponent().getStatusEffects()) {
-				if (!world.isClient && pair.getLeft() != null && world.random.nextFloat() < pair.getRight()) {
-					targetEntity.addStatusEffect(new StatusEffectInstance(pair.getLeft()));
+				if (!world.isClient && pair.getFirst() != null && world.random.nextFloat() < pair.getSecond()) {
+					targetEntity.addStatusEffect(new StatusEffectInstance(pair.getFirst()));
 				}
 			}
 		}

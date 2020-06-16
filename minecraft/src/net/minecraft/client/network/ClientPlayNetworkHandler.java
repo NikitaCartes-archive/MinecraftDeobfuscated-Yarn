@@ -88,6 +88,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.FallingBlockEntity;
@@ -764,6 +765,22 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				blockEntity.fromTag(this.world.getBlockState(blockPos), compoundTag);
 			}
 		}
+
+		if (!packet.method_30144()) {
+			this.world.getLightingProvider().setLightEnabled(worldChunk.getPos(), false);
+			int k = packet.getVerticalStripBitmask();
+
+			for (int l = 0; l < 16; l++) {
+				if ((k & 1 << l) != 0) {
+					this.world.getLightingProvider().queueData(LightType.BLOCK, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
+					this.world.getLightingProvider().queueData(LightType.SKY, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
+				}
+			}
+
+			this.world.getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
+			this.world.getLightingProvider().setLightEnabled(worldChunk.getPos(), true);
+			worldChunk.getLightSourcesStream().forEach(blockPosx -> this.world.getLightingProvider().addLightSource(blockPosx, worldChunk.getLuminance(blockPosx)));
+		}
 	}
 
 	@Override
@@ -1248,7 +1265,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getId());
 		if (entity != null) {
-			entity.equipStack(packet.getSlot(), packet.getStack());
+			packet.method_30145().forEach(pair -> entity.equipStack((EquipmentSlot)pair.getFirst(), (ItemStack)pair.getSecond()));
 		}
 	}
 
