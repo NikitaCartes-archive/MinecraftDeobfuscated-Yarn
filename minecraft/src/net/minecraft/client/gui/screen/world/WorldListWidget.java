@@ -152,13 +152,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						.getString()
 				);
 		}
+
+		this.parent.worldSelected(entry != null && !entry.level.isLocked());
 	}
 
 	@Override
 	protected void moveSelection(EntryListWidget.class_5403 arg) {
-		this.method_30013(arg, entryx -> !entryx.level.isLocked());
-		WorldListWidget.Entry entry = this.getSelected();
-		this.parent.worldSelected(entry != null && entry.level.isLocked());
+		this.method_30013(arg, entry -> !entry.level.isLocked());
 	}
 
 	public Optional<WorldListWidget.Entry> method_20159() {

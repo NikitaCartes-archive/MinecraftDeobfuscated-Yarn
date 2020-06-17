@@ -1,7 +1,6 @@
 package net.minecraft.data.server;
 
 import java.util.function.Consumer;
-import net.minecraft.class_5409;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -17,6 +16,7 @@ import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.NetherTravelCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
+import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
 import net.minecraft.block.Blocks;
@@ -512,7 +512,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion(
 				"distract_piglin_directly",
-				class_5409.class_5410.method_30099(
+				PlayerInteractedWithEntityCriterion.Conditions.create(
 					field_25712,
 					ItemPredicate.Builder.create().item(PiglinBrain.BARTERING_ITEM),
 					EntityPredicate.Extended.ofLegacy(

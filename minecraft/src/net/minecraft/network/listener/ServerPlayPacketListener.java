@@ -69,7 +69,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onCustomPayload(CustomPayloadC2SPacket packet);
 
-	void onPlayerInteractEntity(PlayerInteractEntityC2SPacket rpacket);
+	void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet);
 
 	void onKeepAlive(KeepAliveC2SPacket packet);
 

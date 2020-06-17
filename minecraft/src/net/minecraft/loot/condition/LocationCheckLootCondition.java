@@ -40,6 +40,10 @@ public class LocationCheckLootCondition implements LootCondition {
 		return () -> new LocationCheckLootCondition(predicateBuilder.build(), BlockPos.ORIGIN);
 	}
 
+	public static LootCondition.Builder method_30151(LocationPredicate.Builder builder, BlockPos blockPos) {
+		return () -> new LocationCheckLootCondition(builder.build(), blockPos);
+	}
+
 	public static class Serializer implements JsonSerializer<LocationCheckLootCondition> {
 		public void toJson(JsonObject jsonObject, LocationCheckLootCondition locationCheckLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("predicate", locationCheckLootCondition.predicate.toJson());

@@ -18,8 +18,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements FluidFillable {
-	public static final EnumProperty<DoubleBlockHalf> HALF = ReplaceableTallPlantBlock.HALF;
+public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
+	public static final EnumProperty<DoubleBlockHalf> HALF = TallPlantBlock.HALF;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
 	public TallSeagrassBlock(AbstractBlock.Settings settings) {
