@@ -10,8 +10,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
-import net.minecraft.block.ReplaceableTallPlantBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -29,9 +29,9 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class TallSeagrassBlock
-extends ReplaceableTallPlantBlock
+extends TallPlantBlock
 implements FluidFillable {
-    public static final EnumProperty<DoubleBlockHalf> HALF = ReplaceableTallPlantBlock.HALF;
+    public static final EnumProperty<DoubleBlockHalf> HALF = TallPlantBlock.HALF;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 
     public TallSeagrassBlock(AbstractBlock.Settings settings) {

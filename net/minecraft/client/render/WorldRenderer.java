@@ -259,10 +259,12 @@ AutoCloseable {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.defaultAlphaFunc();
+        RenderSystem.enableDepthTest();
         int l = 5;
         if (MinecraftClient.isFancyGraphicsOrBetter()) {
             l = 10;
         }
+        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
         int m = -1;
         float n = (float)this.ticks + f;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -1501,6 +1503,7 @@ AutoCloseable {
         RenderSystem.defaultAlphaFunc();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.enableFog();
+        RenderSystem.depthMask(true);
         float g = 12.0f;
         float h = 4.0f;
         double d = 2.0E-4;
@@ -1695,7 +1698,7 @@ AutoCloseable {
         RenderSystem.enableDepthTest();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
         this.textureManager.bindTexture(FORCEFIELD);
-        RenderSystem.depthMask(true);
+        RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
         RenderSystem.pushMatrix();
         int i = worldBorder.getStage().getColor();
         float j = (float)(i >> 16 & 0xFF) / 255.0f;

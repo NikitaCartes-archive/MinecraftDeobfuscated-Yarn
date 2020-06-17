@@ -25,7 +25,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -283,12 +282,7 @@ extends Screen {
             if (superflatPresetEntry != null) {
                 NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", ((SuperflatPreset)presets.get(this.children().indexOf(superflatPresetEntry))).method_27571()).getString());
             }
-        }
-
-        @Override
-        protected void moveSelection(EntryListWidget.class_5403 arg) {
-            super.moveSelection(arg);
-            PresetsScreen.this.updateSelectButton(true);
+            PresetsScreen.this.updateSelectButton(superflatPresetEntry != null);
         }
 
         @Override
@@ -327,7 +321,6 @@ extends Screen {
 
             private void setPreset() {
                 SuperflatPresetsListWidget.this.setSelected(this);
-                PresetsScreen.this.updateSelectButton(true);
                 SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(SuperflatPresetsListWidget.this.children().indexOf(this));
                 PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(superflatPreset.field_25045));
                 PresetsScreen.this.customPresetField.setCursorToStart();

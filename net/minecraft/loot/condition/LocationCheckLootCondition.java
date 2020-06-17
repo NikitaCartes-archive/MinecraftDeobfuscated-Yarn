@@ -41,6 +41,10 @@ implements LootCondition {
         return () -> new LocationCheckLootCondition(predicateBuilder.build(), BlockPos.ORIGIN);
     }
 
+    public static LootCondition.Builder method_30151(LocationPredicate.Builder builder, BlockPos blockPos) {
+        return () -> new LocationCheckLootCondition(builder.build(), blockPos);
+    }
+
     @Override
     public /* synthetic */ boolean test(Object context) {
         return this.test((LootContext)context);

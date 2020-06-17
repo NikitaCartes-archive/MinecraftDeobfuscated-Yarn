@@ -3,10 +3,12 @@
  */
 package net.minecraft.entity.passive;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
@@ -23,6 +25,7 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
@@ -116,7 +119,11 @@ implements Shearable {
                     this.world.addParticle(ParticleTypes.SMOKE, this.getX() + this.random.nextDouble() / 2.0, this.getBodyY(0.5), this.getZ() + this.random.nextDouble() / 2.0, 0.0, this.random.nextDouble() / 5.0, 0.0);
                 }
             } else {
-                Pair<StatusEffect, Integer> pair = this.getStewEffectFrom(itemStack);
+                Optional<Pair<StatusEffect, Integer>> optional = this.getStewEffectFrom(itemStack);
+                if (!optional.isPresent()) {
+                    return ActionResult.PASS;
+                }
+                Pair<StatusEffect, Integer> pair = optional.get();
                 if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
@@ -184,9 +191,14 @@ implements Shearable {
         }
     }
 
-    private Pair<StatusEffect, Integer> getStewEffectFrom(ItemStack flower) {
-        FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)flower.getItem()).getBlock();
-        return Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration());
+    private Optional<Pair<StatusEffect, Integer>> getStewEffectFrom(ItemStack flower) {
+        Block block;
+        Item item = flower.getItem();
+        if (item instanceof BlockItem && (block = ((BlockItem)item).getBlock()) instanceof FlowerBlock) {
+            FlowerBlock flowerBlock = (FlowerBlock)block;
+            return Optional.of(Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration()));
+        }
+        return Optional.empty();
     }
 
     private void setType(Type type) {

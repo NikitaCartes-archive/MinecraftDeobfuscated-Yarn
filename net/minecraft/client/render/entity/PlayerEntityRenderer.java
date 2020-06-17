@@ -85,8 +85,6 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             playerEntityModel.head.visible = true;
             playerEntityModel.helmet.visible = true;
         } else {
-            ItemStack itemStack = abstractClientPlayerEntity.getMainHandStack();
-            ItemStack itemStack2 = abstractClientPlayerEntity.getOffHandStack();
             playerEntityModel.setVisible(true);
             playerEntityModel.helmet.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.HAT);
             playerEntityModel.jacket.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.JACKET);
@@ -95,8 +93,11 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             playerEntityModel.leftSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_SLEEVE);
             playerEntityModel.rightSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_SLEEVE);
             playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
-            BipedEntityModel.ArmPose armPose = this.getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN_HAND);
-            BipedEntityModel.ArmPose armPose2 = this.getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF_HAND);
+            BipedEntityModel.ArmPose armPose = PlayerEntityRenderer.getArmPose(abstractClientPlayerEntity, Hand.MAIN_HAND);
+            BipedEntityModel.ArmPose armPose2 = PlayerEntityRenderer.getArmPose(abstractClientPlayerEntity, Hand.OFF_HAND);
+            if (armPose.method_30156()) {
+                BipedEntityModel.ArmPose armPose3 = armPose2 = abstractClientPlayerEntity.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
+            }
             if (abstractClientPlayerEntity.getMainArm() == Arm.RIGHT) {
                 playerEntityModel.rightArmPose = armPose;
                 playerEntityModel.leftArmPose = armPose2;
@@ -107,37 +108,29 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         }
     }
 
-    private BipedEntityModel.ArmPose getArmPose(AbstractClientPlayerEntity abstractClientPlayerEntity, ItemStack itemStack, ItemStack itemStack2, Hand hand) {
-        ItemStack itemStack3;
-        BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.EMPTY;
-        ItemStack itemStack4 = itemStack3 = hand == Hand.MAIN_HAND ? itemStack : itemStack2;
-        if (!itemStack3.isEmpty()) {
-            armPose = BipedEntityModel.ArmPose.ITEM;
-            if (abstractClientPlayerEntity.getItemUseTimeLeft() > 0) {
-                UseAction useAction = itemStack3.getUseAction();
-                if (useAction == UseAction.BLOCK) {
-                    armPose = BipedEntityModel.ArmPose.BLOCK;
-                } else if (useAction == UseAction.BOW) {
-                    armPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
-                } else if (useAction == UseAction.SPEAR) {
-                    armPose = BipedEntityModel.ArmPose.THROW_SPEAR;
-                } else if (useAction == UseAction.CROSSBOW && hand == abstractClientPlayerEntity.getActiveHand()) {
-                    armPose = BipedEntityModel.ArmPose.CROSSBOW_CHARGE;
-                }
-            } else {
-                boolean bl = itemStack.getItem() == Items.CROSSBOW;
-                boolean bl2 = CrossbowItem.isCharged(itemStack);
-                boolean bl3 = itemStack2.getItem() == Items.CROSSBOW;
-                boolean bl4 = CrossbowItem.isCharged(itemStack2);
-                if (bl && bl2) {
-                    armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
-                }
-                if (bl3 && bl4 && itemStack.getItem().getUseAction(itemStack) == UseAction.NONE) {
-                    armPose = BipedEntityModel.ArmPose.CROSSBOW_HOLD;
-                }
-            }
+    private static BipedEntityModel.ArmPose getArmPose(AbstractClientPlayerEntity abstractClientPlayerEntity, Hand hand) {
+        ItemStack itemStack = abstractClientPlayerEntity.getStackInHand(hand);
+        if (itemStack.isEmpty()) {
+            return BipedEntityModel.ArmPose.EMPTY;
         }
-        return armPose;
+        if (abstractClientPlayerEntity.getActiveHand() == hand && abstractClientPlayerEntity.getItemUseTimeLeft() > 0) {
+            UseAction useAction = itemStack.getUseAction();
+            if (useAction == UseAction.BLOCK) {
+                return BipedEntityModel.ArmPose.BLOCK;
+            }
+            if (useAction == UseAction.BOW) {
+                return BipedEntityModel.ArmPose.BOW_AND_ARROW;
+            }
+            if (useAction == UseAction.SPEAR) {
+                return BipedEntityModel.ArmPose.THROW_SPEAR;
+            }
+            if (useAction == UseAction.CROSSBOW && hand == abstractClientPlayerEntity.getActiveHand()) {
+                return BipedEntityModel.ArmPose.CROSSBOW_CHARGE;
+            }
+        } else if (!abstractClientPlayerEntity.handSwinging && itemStack.getItem() == Items.CROSSBOW && CrossbowItem.isCharged(itemStack)) {
+            return BipedEntityModel.ArmPose.CROSSBOW_HOLD;
+        }
+        return BipedEntityModel.ArmPose.ITEM;
     }
 
     @Override

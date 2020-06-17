@@ -61,10 +61,10 @@ extends ZombieEntityModel<T> {
             this.rightArm.yaw = 0.0f;
         }
         if (this.leaningPitch > 0.0f) {
-            this.rightArm.pitch = this.lerpAngle(this.rightArm.pitch, -2.5132742f, this.leaningPitch) + this.leaningPitch * 0.35f * MathHelper.sin(0.1f * h);
-            this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, -2.5132742f, this.leaningPitch) - this.leaningPitch * 0.35f * MathHelper.sin(0.1f * h);
-            this.rightArm.roll = this.lerpAngle(this.rightArm.roll, -0.15f, this.leaningPitch);
-            this.leftArm.roll = this.lerpAngle(this.leftArm.roll, 0.15f, this.leaningPitch);
+            this.rightArm.pitch = this.lerpAngle(this.leaningPitch, this.rightArm.pitch, -2.5132742f) + this.leaningPitch * 0.35f * MathHelper.sin(0.1f * h);
+            this.leftArm.pitch = this.lerpAngle(this.leaningPitch, this.leftArm.pitch, -2.5132742f) - this.leaningPitch * 0.35f * MathHelper.sin(0.1f * h);
+            this.rightArm.roll = this.lerpAngle(this.leaningPitch, this.rightArm.roll, -0.15f);
+            this.leftArm.roll = this.lerpAngle(this.leaningPitch, this.leftArm.roll, 0.15f);
             this.leftLeg.pitch -= this.leaningPitch * 0.55f * MathHelper.sin(0.1f * h);
             this.rightLeg.pitch += this.leaningPitch * 0.55f * MathHelper.sin(0.1f * h);
             this.head.pitch = 0.0f;

@@ -16,7 +16,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -71,6 +70,7 @@ extends Screen {
             list.remove(j);
             this.layers.setSelected(list.isEmpty() ? null : (SuperflatLayersListWidget.SuperflatLayerItem)this.layers.children().get(Math.min(i, list.size() - 1)));
             this.config.updateLayerBlocks();
+            this.layers.method_19372();
             this.method_2145();
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, new TranslatableText("createWorld.customize.presets"), buttonWidget -> {
@@ -82,20 +82,17 @@ extends Screen {
             this.field_24565.accept(this.config);
             this.client.openScreen(this.parent);
             this.config.updateLayerBlocks();
-            this.method_2145();
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> {
             this.client.openScreen(this.parent);
             this.config.updateLayerBlocks();
-            this.method_2145();
         }));
         this.config.updateLayerBlocks();
         this.method_2145();
     }
 
-    public void method_2145() {
+    private void method_2145() {
         this.widgetButtonRemoveLayer.active = this.method_2147();
-        this.layers.method_19372();
     }
 
     private boolean method_2147() {
@@ -136,11 +133,6 @@ extends Screen {
             if (superflatLayerItem != null && (item = (flatChunkGeneratorLayer = CustomizeFlatLevelScreen.this.config.getLayers().get(CustomizeFlatLevelScreen.this.config.getLayers().size() - this.children().indexOf(superflatLayerItem) - 1)).getBlockState().getBlock().asItem()) != Items.AIR) {
                 NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", item.getName(new ItemStack(item))).getString());
             }
-        }
-
-        @Override
-        protected void moveSelection(EntryListWidget.class_5403 arg) {
-            super.moveSelection(arg);
             CustomizeFlatLevelScreen.this.method_2145();
         }
 
@@ -195,7 +187,6 @@ extends Screen {
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 0) {
                     SuperflatLayersListWidget.this.setSelected(this);
-                    CustomizeFlatLevelScreen.this.method_2145();
                     return true;
                 }
                 return false;

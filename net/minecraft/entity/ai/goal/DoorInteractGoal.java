@@ -21,9 +21,9 @@ extends Goal {
     private float xOffset;
     private float zOffset;
 
-    public DoorInteractGoal(MobEntity mob) {
-        this.mob = mob;
-        if (!(mob.getNavigation() instanceof MobNavigation)) {
+    public DoorInteractGoal(MobEntity mobEntity) {
+        this.mob = mobEntity;
+        if (!this.method_30146()) {
             throw new IllegalArgumentException("Unsupported mob type for DoorInteractGoal");
         }
     }
@@ -49,6 +49,9 @@ extends Goal {
 
     @Override
     public boolean canStart() {
+        if (!this.method_30146()) {
+            return false;
+        }
         if (!this.mob.horizontalCollision) {
             return false;
         }
@@ -90,6 +93,10 @@ extends Goal {
         if (h < 0.0f) {
             this.shouldStop = true;
         }
+    }
+
+    private boolean method_30146() {
+        return this.mob.getNavigation() instanceof MobNavigation;
     }
 }
 

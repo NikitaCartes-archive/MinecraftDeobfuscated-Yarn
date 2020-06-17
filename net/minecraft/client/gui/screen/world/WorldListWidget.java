@@ -129,13 +129,12 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             LevelSummary levelSummary = entry.level;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", new TranslatableText("narrator.select.world", levelSummary.getDisplayName(), new Date(levelSummary.getLastPlayed()), levelSummary.isHardcore() ? new TranslatableText("gameMode.hardcore") : new TranslatableText("gameMode." + levelSummary.getGameMode().getName()), levelSummary.hasCheats() ? new TranslatableText("selectWorld.cheats") : LiteralText.EMPTY, levelSummary.getVersion())).getString());
         }
+        this.parent.worldSelected(entry != null && !entry.level.isLocked());
     }
 
     @Override
     protected void moveSelection(EntryListWidget.class_5403 arg) {
         this.method_30013(arg, entry -> !((Entry)entry).level.isLocked());
-        Entry entry2 = (Entry)this.getSelected();
-        this.parent.worldSelected(entry2 != null && entry2.level.isLocked());
     }
 
     public Optional<Entry> method_20159() {

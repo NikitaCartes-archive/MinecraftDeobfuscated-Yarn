@@ -20,6 +20,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -245,9 +246,18 @@ public abstract class ChunkGenerator {
             for (int o = k - 8; o <= k + 8; ++o) {
                 long p = ChunkPos.toLong(n, o);
                 for (StructureStart<?> structureStart : world.getChunk(n, o).getStructureStarts().values()) {
-                    if (structureStart == StructureStart.DEFAULT || !structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) continue;
-                    accessor.addStructureReference(chunkSectionPos, structureStart.getFeature(), p, chunk);
-                    DebugInfoSender.sendStructureStart(world, structureStart);
+                    try {
+                        if (structureStart == StructureStart.DEFAULT || !structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) continue;
+                        accessor.addStructureReference(chunkSectionPos, structureStart.getFeature(), p, chunk);
+                        DebugInfoSender.sendStructureStart(world, structureStart);
+                    } catch (Exception exception) {
+                        CrashReport crashReport = CrashReport.create(exception, "Generating structure reference");
+                        CrashReportSection crashReportSection = crashReport.addElement("Structure");
+                        crashReportSection.add("Id", () -> Registry.STRUCTURE_FEATURE.getId(structureStart.getFeature()).toString());
+                        crashReportSection.add("Name", () -> structureStart.getFeature().getName());
+                        crashReportSection.add("Class", () -> structureStart.getFeature().getClass().getCanonicalName());
+                        throw new CrashException(crashReport);
+                    }
                 }
             }
         }
