@@ -1141,22 +1141,22 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket rpacket) {
-		NetworkThreadUtils.forceMainThread(rpacket, this, this.player.getServerWorld());
+	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		ServerWorld serverWorld = this.player.getServerWorld();
-		Entity entity = rpacket.getEntity(serverWorld);
+		Entity entity = packet.getEntity(serverWorld);
 		this.player.updateLastActionTime();
-		this.player.setSneaking(rpacket.isPlayerSneaking());
+		this.player.setSneaking(packet.isPlayerSneaking());
 		if (entity != null) {
 			double d = 36.0;
 			if (this.player.squaredDistanceTo(entity) < 36.0) {
-				Hand hand = rpacket.getHand();
+				Hand hand = packet.getHand();
 				Optional<ActionResult> optional = Optional.empty();
-				if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT) {
+				if (packet.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT) {
 					optional = Optional.of(this.player.interact(entity, hand));
-				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
-					optional = Optional.of(entity.interactAt(this.player, rpacket.getHitPosition(), hand));
-				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
+				} else if (packet.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
+					optional = Optional.of(entity.interactAt(this.player, packet.getHitPosition(), hand));
+				} else if (packet.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
 					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof PersistentProjectileEntity || entity == this.player) {
 						this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
 						LOGGER.warn("Player {} tried to attack an invalid entity", this.player.getName().getString());
@@ -1167,7 +1167,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 
 				if (optional.isPresent() && ((ActionResult)optional.get()).isAccepted()) {
-					Criteria.field_25694.method_30097(this.player, this.player.getStackInHand(hand), entity);
+					Criteria.PLAYER_INTERACTED_WITH_ENTITY.test(this.player, this.player.getStackInHand(hand), entity);
 					if (((ActionResult)optional.get()).shouldSwingHand()) {
 						this.player.swingHand(hand, true);
 					}

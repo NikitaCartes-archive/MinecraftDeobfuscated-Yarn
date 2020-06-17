@@ -1,9 +1,11 @@
 package net.minecraft.entity.passive;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
@@ -18,6 +20,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
@@ -121,7 +124,12 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 						);
 				}
 			} else {
-				Pair<StatusEffect, Integer> pair = this.getStewEffectFrom(itemStack);
+				Optional<Pair<StatusEffect, Integer>> optional = this.getStewEffectFrom(itemStack);
+				if (!optional.isPresent()) {
+					return ActionResult.PASS;
+				}
+
+				Pair<StatusEffect, Integer> pair = (Pair<StatusEffect, Integer>)optional.get();
 				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -207,9 +215,17 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		}
 	}
 
-	private Pair<StatusEffect, Integer> getStewEffectFrom(ItemStack flower) {
-		FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)flower.getItem()).getBlock();
-		return Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration());
+	private Optional<Pair<StatusEffect, Integer>> getStewEffectFrom(ItemStack flower) {
+		Item item = flower.getItem();
+		if (item instanceof BlockItem) {
+			Block block = ((BlockItem)item).getBlock();
+			if (block instanceof FlowerBlock) {
+				FlowerBlock flowerBlock = (FlowerBlock)block;
+				return Optional.of(Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration()));
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	private void setType(MooshroomEntity.Type type) {

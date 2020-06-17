@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +18,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 		BlockState blockState = worldView.getBlockState(blockPos);
 		if (blockState.isOf(Blocks.SNOW) && (Integer)blockState.get(SnowBlock.LAYERS) == 1) {
 			return true;
-		} else if (blockState.getFluidState().getFluid() != Fluids.EMPTY) {
+		} else if (blockState.getFluidState().getLevel() == 8) {
 			return false;
 		} else {
 			int i = ChunkLightProvider.getRealisticOpacity(worldView, state, pos, blockState, blockPos, Direction.UP, blockState.getOpacity(worldView, blockPos));

@@ -12,8 +12,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.block.ReplaceableTallPlantBlock;
 import net.minecraft.block.StemBlock;
+import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.FoliageColors;
@@ -34,12 +34,12 @@ public class BlockColors {
 		BlockColors blockColors = new BlockColors();
 		blockColors.registerColorProvider(
 			(state, world, pos, tintIndex) -> world != null && pos != null
-					? BiomeColors.getGrassColor(world, state.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? pos.down() : pos)
+					? BiomeColors.getGrassColor(world, state.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? pos.down() : pos)
 					: -1,
 			Blocks.LARGE_FERN,
 			Blocks.TALL_GRASS
 		);
-		blockColors.registerColorProperty(ReplaceableTallPlantBlock.HALF, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
+		blockColors.registerColorProperty(TallPlantBlock.HALF, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
 		blockColors.registerColorProvider(
 			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getColor(0.5, 1.0),
 			Blocks.GRASS_BLOCK,

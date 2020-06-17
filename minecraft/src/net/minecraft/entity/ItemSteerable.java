@@ -41,6 +41,7 @@ public interface ItemSteerable {
 					entity.bodyTrackingIncrements = 0;
 				} else {
 					entity.method_29242(entity, false);
+					entity.setVelocity(Vec3d.ZERO);
 				}
 
 				return true;

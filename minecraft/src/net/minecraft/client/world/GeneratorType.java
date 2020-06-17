@@ -57,7 +57,7 @@ public abstract class GeneratorType {
 	private static final GeneratorType SINGLE_BIOME_SURFACE = new GeneratorType("single_biome_surface") {
 		@Override
 		protected ChunkGenerator method_29076(long l) {
-			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.OCEAN), l, ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), l, ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType());
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_CAVES = new GeneratorType("single_biome_caves") {
@@ -70,13 +70,13 @@ public abstract class GeneratorType {
 
 		@Override
 		protected ChunkGenerator method_29076(long l) {
-			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.OCEAN), l, ChunkGeneratorType.Preset.CAVES.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), l, ChunkGeneratorType.Preset.CAVES.getChunkGeneratorType());
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_FLOATING_ISLANDS = new GeneratorType("single_biome_floating_islands") {
 		@Override
 		protected ChunkGenerator method_29076(long l) {
-			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.OCEAN), l, ChunkGeneratorType.Preset.FLOATING_ISLANDS.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), l, ChunkGeneratorType.Preset.FLOATING_ISLANDS.getChunkGeneratorType());
 		}
 	};
 	private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states") {
@@ -151,7 +151,7 @@ public abstract class GeneratorType {
 	}
 
 	private static Biome method_29083(GeneratorOptions generatorOptions) {
-		return (Biome)generatorOptions.getChunkGenerator().getBiomeSource().method_28443().stream().findFirst().orElse(Biomes.OCEAN);
+		return (Biome)generatorOptions.getChunkGenerator().getBiomeSource().method_28443().stream().findFirst().orElse(Biomes.PLAINS);
 	}
 
 	public static Optional<GeneratorType> method_29078(GeneratorOptions generatorOptions) {

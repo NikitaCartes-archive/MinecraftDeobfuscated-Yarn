@@ -231,11 +231,13 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.defaultAlphaFunc();
+			RenderSystem.enableDepthTest();
 			int l = 5;
 			if (MinecraftClient.isFancyGraphicsOrBetter()) {
 				l = 10;
 			}
 
+			RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
 			int m = -1;
 			float n = (float)this.ticks + f;
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1690,6 +1692,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
 			);
 			RenderSystem.enableFog();
+			RenderSystem.depthMask(true);
 			float g = 12.0F;
 			float h = 4.0F;
 			double d = 2.0E-4;
@@ -2015,7 +2018,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.enableDepthTest();
 			RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
 			this.textureManager.bindTexture(FORCEFIELD);
-			RenderSystem.depthMask(true);
+			RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
 			RenderSystem.pushMatrix();
 			int i = worldBorder.getStage().getColor();
 			float j = (float)(i >> 16 & 0xFF) / 255.0F;

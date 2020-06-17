@@ -54,12 +54,12 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 		}
 
 		if (this.leaningPitch > 0.0F) {
-			this.rightArm.pitch = this.lerpAngle(this.rightArm.pitch, (float) (-Math.PI * 4.0 / 5.0), this.leaningPitch)
+			this.rightArm.pitch = this.lerpAngle(this.leaningPitch, this.rightArm.pitch, (float) (-Math.PI * 4.0 / 5.0))
 				+ this.leaningPitch * 0.35F * MathHelper.sin(0.1F * h);
-			this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, (float) (-Math.PI * 4.0 / 5.0), this.leaningPitch)
+			this.leftArm.pitch = this.lerpAngle(this.leaningPitch, this.leftArm.pitch, (float) (-Math.PI * 4.0 / 5.0))
 				- this.leaningPitch * 0.35F * MathHelper.sin(0.1F * h);
-			this.rightArm.roll = this.lerpAngle(this.rightArm.roll, -0.15F, this.leaningPitch);
-			this.leftArm.roll = this.lerpAngle(this.leftArm.roll, 0.15F, this.leaningPitch);
+			this.rightArm.roll = this.lerpAngle(this.leaningPitch, this.rightArm.roll, -0.15F);
+			this.leftArm.roll = this.lerpAngle(this.leaningPitch, this.leftArm.roll, 0.15F);
 			this.leftLeg.pitch = this.leftLeg.pitch - this.leaningPitch * 0.55F * MathHelper.sin(0.1F * h);
 			this.rightLeg.pitch = this.rightLeg.pitch + this.leaningPitch * 0.55F * MathHelper.sin(0.1F * h);
 			this.head.pitch = 0.0F;

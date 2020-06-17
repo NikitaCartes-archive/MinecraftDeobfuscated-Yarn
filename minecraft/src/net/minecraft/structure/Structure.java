@@ -86,7 +86,7 @@ public class Structure {
 						compoundTag.remove("x");
 						compoundTag.remove("y");
 						compoundTag.remove("z");
-						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, compoundTag);
+						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, compoundTag.copy());
 					} else {
 						structureBlockInfo = new Structure.StructureBlockInfo(blockPos5, blockState, null);
 					}
@@ -152,7 +152,7 @@ public class Structure {
 				blockPos = new BlockPos(vec3d);
 			}
 
-			this.entities.add(new Structure.StructureEntityInfo(vec3d, blockPos, compoundTag));
+			this.entities.add(new Structure.StructureEntityInfo(vec3d, blockPos, compoundTag.copy()));
 		}
 	}
 
@@ -365,7 +365,9 @@ public class Structure {
 
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
 			BlockPos blockPos2 = transform(structurePlacementData, structureBlockInfo.pos).add(pos);
-			Structure.StructureBlockInfo structureBlockInfo2 = new Structure.StructureBlockInfo(blockPos2, structureBlockInfo.state, structureBlockInfo.tag);
+			Structure.StructureBlockInfo structureBlockInfo2 = new Structure.StructureBlockInfo(
+				blockPos2, structureBlockInfo.state, structureBlockInfo.tag != null ? structureBlockInfo.tag.copy() : null
+			);
 			Iterator<StructureProcessor> iterator = structurePlacementData.getProcessors().iterator();
 
 			while (structureBlockInfo2 != null && iterator.hasNext()) {
@@ -386,7 +388,7 @@ public class Structure {
 		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
 			BlockPos blockPos = transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
 			if (area == null || area.contains(blockPos)) {
-				CompoundTag compoundTag = structureEntityInfo.tag;
+				CompoundTag compoundTag = structureEntityInfo.tag.copy();
 				Vec3d vec3d = transformAround(structureEntityInfo.pos, blockMirror, blockRotation, pivot);
 				Vec3d vec3d2 = vec3d.add((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 				ListTag listTag = new ListTag();

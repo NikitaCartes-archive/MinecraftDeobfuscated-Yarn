@@ -3,6 +3,7 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -69,11 +70,20 @@ public class TallPlantBlock extends PlantBlock {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && player.isCreative()) {
-			method_30036(world, pos, state, player);
+		if (!world.isClient) {
+			if (player.isCreative()) {
+				method_30036(world, pos, state, player);
+			} else {
+				dropStacks(state, world, pos, null, player, player.getMainHandStack());
+			}
 		}
 
 		super.onBreak(world, pos, state, player);
+	}
+
+	@Override
+	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
+		super.afterBreak(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
 	}
 
 	protected static void method_30036(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {

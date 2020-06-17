@@ -139,13 +139,14 @@ public final class ChunkGeneratorType {
 			"nether", preset -> createCavesType(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), preset)
 		);
 		public static final ChunkGeneratorType.Preset END = new ChunkGeneratorType.Preset(
-			"end", preset -> createIslandsType(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), preset, true)
+			"end", preset -> createIslandsType(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), preset, true, true)
 		);
 		public static final ChunkGeneratorType.Preset CAVES = new ChunkGeneratorType.Preset(
 			"caves", preset -> createCavesType(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset)
 		);
 		public static final ChunkGeneratorType.Preset FLOATING_ISLANDS = new ChunkGeneratorType.Preset(
-			"floating_islands", preset -> createIslandsType(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset, false)
+			"floating_islands",
+			preset -> createIslandsType(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), preset, false, false)
 		);
 		private final Text text;
 		private final Identifier id;
@@ -163,19 +164,19 @@ public final class ChunkGeneratorType {
 		}
 
 		private static ChunkGeneratorType createIslandsType(
-			StructuresConfig config, BlockState defaultBlock, BlockState defaultFluid, ChunkGeneratorType.Preset preset, boolean bl
+			StructuresConfig config, BlockState defaultBlock, BlockState defaultFluid, ChunkGeneratorType.Preset preset, boolean bl, boolean bl2
 		) {
 			return new ChunkGeneratorType(
 				config,
 				new NoiseConfig(
-					128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-3000, 64, -46), new SlideConfig(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, bl, false
+					128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-3000, 64, -46), new SlideConfig(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, bl2, false
 				),
 				defaultBlock,
 				defaultFluid,
 				-10,
 				-10,
 				0,
-				true,
+				bl,
 				Optional.of(preset)
 			);
 		}

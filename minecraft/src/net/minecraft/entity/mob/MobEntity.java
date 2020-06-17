@@ -1234,15 +1234,16 @@ public abstract class MobEntity extends LivingEntity {
 				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
 				if (entity != null) {
 					this.attachLeash(entity, true);
+					return;
 				}
 			} else if (this.leashTag.contains("X", 99) && this.leashTag.contains("Y", 99) && this.leashTag.contains("Z", 99)) {
 				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
 				this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
-			} else {
-				this.detachLeash(false, true);
+				return;
 			}
 
 			if (this.age > 100) {
+				this.dropItem(Items.LEAD);
 				this.leashTag = null;
 			}
 		}

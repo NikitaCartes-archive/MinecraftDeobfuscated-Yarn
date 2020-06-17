@@ -19,7 +19,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -413,12 +412,8 @@ public class PresetsScreen extends Screen {
 							.getString()
 					);
 			}
-		}
 
-		@Override
-		protected void moveSelection(EntryListWidget.class_5403 arg) {
-			super.moveSelection(arg);
-			PresetsScreen.this.updateSelectButton(true);
+			PresetsScreen.this.updateSelectButton(superflatPresetEntry != null);
 		}
 
 		@Override
@@ -459,7 +454,6 @@ public class PresetsScreen extends Screen {
 
 			private void setPreset() {
 				SuperflatPresetsListWidget.this.setSelected(this);
-				PresetsScreen.this.updateSelectButton(true);
 				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.presets
 					.get(SuperflatPresetsListWidget.this.children().indexOf(this));
 				PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(superflatPreset.field_25045));
