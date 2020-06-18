@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 
 public class MaterialColor {
 	public static final MaterialColor[] COLORS = new MaterialColor[64];
-	public static final MaterialColor AIR = new MaterialColor(0, 0);
+	public static final MaterialColor CLEAR = new MaterialColor(0, 0);
 	public static final MaterialColor GRASS = new MaterialColor(1, 8368696);
 	public static final MaterialColor SAND = new MaterialColor(2, 16247203);
 	public static final MaterialColor WEB = new MaterialColor(3, 13092807);

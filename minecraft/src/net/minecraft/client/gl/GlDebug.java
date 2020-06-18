@@ -27,9 +27,9 @@ import org.lwjgl.opengl.KHRDebug;
 @Environment(EnvType.CLIENT)
 public class GlDebug {
 	private static final Logger LOGGER = LogManager.getLogger();
-	protected static final ByteBuffer field_4924 = GlAllocationUtils.allocateByteBuffer(64);
-	protected static final FloatBuffer field_4916 = field_4924.asFloatBuffer();
-	protected static final IntBuffer field_4917 = field_4924.asIntBuffer();
+	protected static final ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(64);
+	protected static final FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
+	protected static final IntBuffer intBuffer = byteBuffer.asIntBuffer();
 	private static final Joiner NEWLINE_JOINER = Joiner.on('\n');
 	private static final Joiner SEMICOLON_JOINER = Joiner.on("; ");
 	private static final Map<Integer, String> CONSTANTS = Maps.<Integer, String>newHashMap();

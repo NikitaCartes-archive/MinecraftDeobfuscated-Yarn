@@ -9,15 +9,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public class BlockRotStructureProcessor extends StructureProcessor {
-	public static final Codec<BlockRotStructureProcessor> field_25000 = Codec.FLOAT
+	public static final Codec<BlockRotStructureProcessor> CODEC = Codec.FLOAT
 		.fieldOf("integrity")
 		.withDefault(1.0F)
 		.<BlockRotStructureProcessor>xmap(BlockRotStructureProcessor::new, blockRotStructureProcessor -> blockRotStructureProcessor.integrity)
 		.codec();
 	private final float integrity;
 
-	public BlockRotStructureProcessor(float f) {
-		this.integrity = f;
+	public BlockRotStructureProcessor(float integrity) {
+		this.integrity = integrity;
 	}
 
 	@Nullable

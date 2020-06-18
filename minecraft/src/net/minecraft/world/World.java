@@ -204,8 +204,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return Double.POSITIVE_INFINITY;
 	}
 
-	public WorldChunk getWorldChunk(BlockPos blockPos) {
-		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+	public WorldChunk getWorldChunk(BlockPos pos) {
+		return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
 	}
 
 	public WorldChunk getChunk(int i, int j) {
@@ -224,61 +224,61 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Override
 	public boolean setBlockState(BlockPos pos, BlockState state, int flags) {
-		return this.method_30092(pos, state, flags, 512);
+		return this.setBlockState(pos, state, flags, 512);
 	}
 
 	@Override
-	public boolean method_30092(BlockPos blockPos, BlockState blockState, int i, int j) {
-		if (isHeightInvalid(blockPos)) {
+	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
+		if (isHeightInvalid(pos)) {
 			return false;
 		} else if (!this.isClient && this.isDebugWorld()) {
 			return false;
 		} else {
-			WorldChunk worldChunk = this.getWorldChunk(blockPos);
-			Block block = blockState.getBlock();
-			BlockState blockState2 = worldChunk.setBlockState(blockPos, blockState, (i & 64) != 0);
-			if (blockState2 == null) {
+			WorldChunk worldChunk = this.getWorldChunk(pos);
+			Block block = state.getBlock();
+			BlockState blockState = worldChunk.setBlockState(pos, state, (flags & 64) != 0);
+			if (blockState == null) {
 				return false;
 			} else {
-				BlockState blockState3 = this.getBlockState(blockPos);
-				if (blockState3 != blockState2
+				BlockState blockState2 = this.getBlockState(pos);
+				if (blockState2 != blockState
 					&& (
-						blockState3.getOpacity(this, blockPos) != blockState2.getOpacity(this, blockPos)
-							|| blockState3.getLuminance() != blockState2.getLuminance()
-							|| blockState3.hasSidedTransparency()
+						blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos)
+							|| blockState2.getLuminance() != blockState.getLuminance()
 							|| blockState2.hasSidedTransparency()
+							|| blockState.hasSidedTransparency()
 					)) {
 					this.getProfiler().push("queueCheckLight");
-					this.getChunkManager().getLightingProvider().checkBlock(blockPos);
+					this.getChunkManager().getLightingProvider().checkBlock(pos);
 					this.getProfiler().pop();
 				}
 
-				if (blockState3 == blockState) {
-					if (blockState2 != blockState3) {
-						this.scheduleBlockRerenderIfNeeded(blockPos, blockState2, blockState3);
+				if (blockState2 == state) {
+					if (blockState != blockState2) {
+						this.scheduleBlockRerenderIfNeeded(pos, blockState, blockState2);
 					}
 
-					if ((i & 2) != 0
-						&& (!this.isClient || (i & 4) == 0)
+					if ((flags & 2) != 0
+						&& (!this.isClient || (flags & 4) == 0)
 						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
-						this.updateListeners(blockPos, blockState2, blockState, i);
+						this.updateListeners(pos, blockState, state, flags);
 					}
 
-					if ((i & 1) != 0) {
-						this.updateNeighbors(blockPos, blockState2.getBlock());
-						if (!this.isClient && blockState.hasComparatorOutput()) {
-							this.updateComparators(blockPos, block);
+					if ((flags & 1) != 0) {
+						this.updateNeighbors(pos, blockState.getBlock());
+						if (!this.isClient && state.hasComparatorOutput()) {
+							this.updateComparators(pos, block);
 						}
 					}
 
-					if ((i & 16) == 0 && j > 0) {
-						int k = i & -34;
-						blockState2.prepare(this, blockPos, k, j - 1);
-						blockState.updateNeighbors(this, blockPos, k, j - 1);
-						blockState.prepare(this, blockPos, k, j - 1);
+					if ((flags & 16) == 0 && maxUpdateDepth > 0) {
+						int i = flags & -34;
+						blockState.prepare(this, pos, i, maxUpdateDepth - 1);
+						state.updateNeighbors(this, pos, i, maxUpdateDepth - 1);
+						state.prepare(this, pos, i, maxUpdateDepth - 1);
 					}
 
-					this.onBlockChanged(blockPos, blockState2, blockState3);
+					this.onBlockChanged(pos, blockState, blockState2);
 				}
 
 				return true;
@@ -311,7 +311,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				Block.dropStacks(blockState, this, blockPos, blockEntity, entity, ItemStack.EMPTY);
 			}
 
-			return this.method_30092(blockPos, fluidState.getBlockState(), 3, i);
+			return this.setBlockState(blockPos, fluidState.getBlockState(), 3, i);
 		}
 	}
 

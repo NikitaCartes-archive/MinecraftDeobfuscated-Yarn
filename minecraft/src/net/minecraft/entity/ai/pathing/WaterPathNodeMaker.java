@@ -64,9 +64,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		if (fluidState.isEmpty() && blockState.canPathfindThrough(world, blockPos.down(), NavigationType.WATER) && blockState.isAir()) {
 			return PathNodeType.BREACH;
 		} else {
-			return fluidState.matches(FluidTags.WATER) && blockState.canPathfindThrough(world, blockPos, NavigationType.WATER)
-				? PathNodeType.WATER
-				: PathNodeType.BLOCKED;
+			return fluidState.isIn(FluidTags.WATER) && blockState.canPathfindThrough(world, blockPos, NavigationType.WATER) ? PathNodeType.WATER : PathNodeType.BLOCKED;
 		}
 	}
 
@@ -106,7 +104,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 						return PathNodeType.BREACH;
 					}
 
-					if (!fluidState.matches(FluidTags.WATER)) {
+					if (!fluidState.isIn(FluidTags.WATER)) {
 						return PathNodeType.BLOCKED;
 					}
 				}

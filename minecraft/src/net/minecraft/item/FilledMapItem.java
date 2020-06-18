@@ -142,7 +142,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 												do {
 													mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
 													blockState = worldChunk.getBlockState(mutable);
-												} while (blockState.getTopMaterialColor(world, mutable) == MaterialColor.AIR && aa > 0);
+												} while (blockState.getTopMaterialColor(world, mutable) == MaterialColor.CLEAR && aa > 0);
 
 												if (aa > 0 && !blockState.getFluidState().isEmpty()) {
 													int ab = aa - 1;
@@ -177,7 +177,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 									y = 0;
 								}
 
-								MaterialColor materialColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MaterialColor.AIR);
+								MaterialColor materialColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MaterialColor.CLEAR);
 								if (materialColor == MaterialColor.WATER) {
 									f = (double)w * 0.1 + (double)(o + p & 1) * 0.2;
 									y = 1;
@@ -270,7 +270,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 							}
 
 							int o = 3;
-							MaterialColor materialColor = MaterialColor.AIR;
+							MaterialColor materialColor = MaterialColor.CLEAR;
 							if (biome.getDepth() < 0.0F) {
 								materialColor = MaterialColor.ORANGE;
 								if (n > 7 && m % 2 == 0) {
@@ -281,7 +281,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 										o = 0;
 									}
 								} else if (n > 7) {
-									materialColor = MaterialColor.AIR;
+									materialColor = MaterialColor.CLEAR;
 								} else if (n > 5) {
 									o = 1;
 								} else if (n > 3) {
@@ -298,7 +298,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 								}
 							}
 
-							if (materialColor != MaterialColor.AIR) {
+							if (materialColor != MaterialColor.CLEAR) {
 								mapState.colors[l + m * 128] = (byte)(materialColor.id * 4 + o);
 								mapState.markDirty(l, m);
 							}

@@ -82,7 +82,7 @@ public class SugarCaneBlock extends Block {
 				for (Direction direction : Direction.Type.HORIZONTAL) {
 					BlockState blockState2 = world.getBlockState(blockPos.offset(direction));
 					FluidState fluidState = world.getFluidState(blockPos.offset(direction));
-					if (fluidState.matches(FluidTags.WATER) || blockState2.isOf(Blocks.FROSTED_ICE)) {
+					if (fluidState.isIn(FluidTags.WATER) || blockState2.isOf(Blocks.FROSTED_ICE)) {
 						return true;
 					}
 				}

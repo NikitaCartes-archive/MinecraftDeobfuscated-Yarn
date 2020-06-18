@@ -499,7 +499,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
-		ServerWorld serverWorld = this.method_30002();
+		ServerWorld serverWorld = this.getOverworld();
 		LOGGER.info("Preparing start region for dimension {}", serverWorld.getRegistryKey().getValue());
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
@@ -575,7 +575,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			bl4 = true;
 		}
 
-		ServerWorld serverWorld2 = this.method_30002();
+		ServerWorld serverWorld2 = this.getOverworld();
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
 		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
@@ -926,7 +926,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return new File(this.getRunDirectory(), string);
 	}
 
-	public final ServerWorld method_30002() {
+	public final ServerWorld getOverworld() {
 		return (ServerWorld)this.worlds.get(World.OVERWORLD);
 	}
 
@@ -1411,7 +1411,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public ServerCommandSource getCommandSource() {
-		ServerWorld serverWorld = this.method_30002();
+		ServerWorld serverWorld = this.getOverworld();
 		return new ServerCommandSource(
 			this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", new LiteralText("Server"), this, null
 		);
@@ -1456,7 +1456,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public GameRules getGameRules() {
-		return this.method_30002().getGameRules();
+		return this.getOverworld().getGameRules();
 	}
 
 	public BossBarManager getBossBarManager() {

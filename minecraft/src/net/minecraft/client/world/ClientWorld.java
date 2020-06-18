@@ -724,7 +724,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {
-		boolean bl = this.getSkyProperties().method_29993();
+		boolean bl = this.getSkyProperties().isDarkened();
 		if (!shaded) {
 			return bl ? 0.9F : 1.0F;
 		} else {

@@ -516,11 +516,11 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						}
 
 						FluidState fluidState = blockView.getFluidState(mutable);
-						if (fluidState.matches(FluidTags.WATER)) {
+						if (fluidState.isIn(FluidTags.WATER)) {
 							return PathNodeType.WATER_BORDER;
 						}
 
-						if (fluidState.matches(FluidTags.LAVA)) {
+						if (fluidState.isIn(FluidTags.LAVA)) {
 							return PathNodeType.LAVA;
 						}
 					}
@@ -566,10 +566,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				return PathNodeType.BLOCKED;
 			} else {
 				FluidState fluidState = blockView.getFluidState(blockPos);
-				if (fluidState.matches(FluidTags.WATER)) {
+				if (fluidState.isIn(FluidTags.WATER)) {
 					return PathNodeType.WATER;
 				} else {
-					return fluidState.matches(FluidTags.LAVA) ? PathNodeType.LAVA : PathNodeType.OPEN;
+					return fluidState.isIn(FluidTags.LAVA) ? PathNodeType.LAVA : PathNodeType.OPEN;
 				}
 			}
 		} else {

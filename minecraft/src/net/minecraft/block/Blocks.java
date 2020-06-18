@@ -844,11 +844,11 @@ public class Blocks {
 	);
 	public static final Block IRON_BARS = register(
 		"iron_bars",
-		new PaneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).requiresTool().strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque())
+		new PaneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.CLEAR).requiresTool().strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque())
 	);
 	public static final Block CHAIN = register(
 		"chain",
-		new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).requiresTool().strength(5.0F, 6.0F).sounds(BlockSoundGroup.CHAIN).nonOpaque())
+		new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.CLEAR).requiresTool().strength(5.0F, 6.0F).sounds(BlockSoundGroup.CHAIN).nonOpaque())
 	);
 	public static final Block GLASS_PANE = register(
 		"glass_pane", new PaneBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).nonOpaque())

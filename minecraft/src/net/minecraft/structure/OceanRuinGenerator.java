@@ -242,7 +242,7 @@ public class OceanRuinGenerator {
 		@Override
 		protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
-				world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(world.getFluidState(pos).matches(FluidTags.WATER))), 2);
+				world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(world.getFluidState(pos).isIn(FluidTags.WATER))), 2);
 				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity instanceof ChestBlockEntity) {
 					((ChestBlockEntity)blockEntity)
@@ -300,7 +300,7 @@ public class OceanRuinGenerator {
 				BlockState blockState = blockView.getBlockState(mutable);
 
 				for (FluidState fluidState = blockView.getFluidState(mutable);
-					(blockState.isAir() || fluidState.matches(FluidTags.WATER) || blockState.getBlock().isIn(BlockTags.ICE)) && o > 1;
+					(blockState.isAir() || fluidState.isIn(FluidTags.WATER) || blockState.getBlock().isIn(BlockTags.ICE)) && o > 1;
 					fluidState = blockView.getFluidState(mutable)
 				) {
 					mutable.set(m, --o, n);

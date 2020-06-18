@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.village.raid.Raid;
 
 public class EndRaidTask extends Task<LivingEntity> {
 	public EndRaidTask() {

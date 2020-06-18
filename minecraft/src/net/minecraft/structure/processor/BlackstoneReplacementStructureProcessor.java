@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public class BlackstoneReplacementStructureProcessor extends StructureProcessor {
-	public static final Codec<BlackstoneReplacementStructureProcessor> field_24996 = Codec.unit(
+	public static final Codec<BlackstoneReplacementStructureProcessor> CODEC = Codec.unit(
 		(Supplier<BlackstoneReplacementStructureProcessor>)(() -> BlackstoneReplacementStructureProcessor.INSTANCE)
 	);
 	public static final BlackstoneReplacementStructureProcessor INSTANCE = new BlackstoneReplacementStructureProcessor();

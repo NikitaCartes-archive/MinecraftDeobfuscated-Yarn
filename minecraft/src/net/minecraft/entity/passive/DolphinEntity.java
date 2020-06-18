@@ -345,7 +345,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		return pos.getY() > 45
 			&& pos.getY() < world.getSeaLevel()
 			&& (world.getBiome(pos) != Biomes.OCEAN || world.getBiome(pos) != Biomes.DEEP_OCEAN)
-			&& world.getFluidState(pos).matches(FluidTags.WATER);
+			&& world.getFluidState(pos).isIn(FluidTags.WATER);
 	}
 
 	@Override
@@ -522,7 +522,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 				if (vec3d2 != null) {
 					BlockPos blockPos = new BlockPos(vec3d2);
-					if (!world.getFluidState(blockPos).matches(FluidTags.WATER) || !world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER)) {
+					if (!world.getFluidState(blockPos).isIn(FluidTags.WATER) || !world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER)) {
 						vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 5, vec3d);
 					}
 				}

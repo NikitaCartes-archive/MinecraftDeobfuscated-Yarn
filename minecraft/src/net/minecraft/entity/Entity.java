@@ -1003,7 +1003,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		FluidState fluidState = this.world.getFluidState(blockPos);
 
 		for (Tag<Fluid> tag : FluidTags.method_29897()) {
-			if (fluidState.matches(tag)) {
+			if (fluidState.isIn(tag)) {
 				double e = (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos));
 				if (e > d) {
 					this.field_25599 = tag;
@@ -2114,7 +2114,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Nullable
-	public Entity changeDimension(ServerWorld serverWorld) {
+	public Entity changeDimension(ServerWorld destination) {
 		if (this.world instanceof ServerWorld && !this.removed) {
 			this.world.getProfiler().push("changeDimension");
 			this.detach();
@@ -2122,15 +2122,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 			Vec3d vec3d = this.getVelocity();
 			float f = 0.0F;
 			BlockPos blockPos;
-			if (this.world.getRegistryKey() == World.END && serverWorld.getRegistryKey() == World.OVERWORLD) {
-				blockPos = serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld.getSpawnPos());
-			} else if (serverWorld.getRegistryKey() == World.END) {
-				blockPos = ServerWorld.field_25144;
+			if (this.world.getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD) {
+				blockPos = destination.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, destination.getSpawnPos());
+			} else if (destination.getRegistryKey() == World.END) {
+				blockPos = ServerWorld.END_SPAWN_POS;
 			} else {
 				double d = this.getX();
 				double e = this.getZ();
 				DimensionType dimensionType = this.world.getDimension();
-				DimensionType dimensionType2 = serverWorld.getDimension();
+				DimensionType dimensionType2 = destination.getDimension();
 				double g = 8.0;
 				if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
 					d /= 8.0;
@@ -2140,15 +2140,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 					e *= 8.0;
 				}
 
-				double h = Math.min(-2.9999872E7, serverWorld.getWorldBorder().getBoundWest() + 16.0);
-				double i = Math.min(-2.9999872E7, serverWorld.getWorldBorder().getBoundNorth() + 16.0);
-				double j = Math.min(2.9999872E7, serverWorld.getWorldBorder().getBoundEast() - 16.0);
-				double k = Math.min(2.9999872E7, serverWorld.getWorldBorder().getBoundSouth() - 16.0);
+				double h = Math.min(-2.9999872E7, destination.getWorldBorder().getBoundWest() + 16.0);
+				double i = Math.min(-2.9999872E7, destination.getWorldBorder().getBoundNorth() + 16.0);
+				double j = Math.min(2.9999872E7, destination.getWorldBorder().getBoundEast() - 16.0);
+				double k = Math.min(2.9999872E7, destination.getWorldBorder().getBoundSouth() - 16.0);
 				d = MathHelper.clamp(d, h, j);
 				e = MathHelper.clamp(e, i, k);
 				Vec3d vec3d2 = this.getLastNetherPortalDirectionVector();
 				blockPos = new BlockPos(d, this.getY(), e);
-				BlockPattern.TeleportTarget teleportTarget = serverWorld.getPortalForcer()
+				BlockPattern.TeleportTarget teleportTarget = destination.getPortalForcer()
 					.getPortal(blockPos, vec3d, this.getLastNetherPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
 				if (teleportTarget == null) {
 					return null;
@@ -2160,21 +2160,21 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 
 			this.world.getProfiler().swap("reloading");
-			Entity entity = this.getType().create(serverWorld);
+			Entity entity = this.getType().create(destination);
 			if (entity != null) {
 				entity.copyFrom(this);
 				entity.refreshPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
 				entity.setVelocity(vec3d);
-				serverWorld.onDimensionChanged(entity);
-				if (serverWorld.getRegistryKey() == World.END) {
-					ServerWorld.method_29200(serverWorld);
+				destination.onDimensionChanged(entity);
+				if (destination.getRegistryKey() == World.END) {
+					ServerWorld.createEndSpawnPlatform(destination);
 				}
 			}
 
 			this.method_30076();
 			this.world.getProfiler().pop();
 			((ServerWorld)this.world).resetIdleTimeout();
-			serverWorld.resetIdleTimeout();
+			destination.resetIdleTimeout();
 			this.world.getProfiler().pop();
 			return entity;
 		} else {
@@ -2697,7 +2697,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					for (int r = m; r < n; r++) {
 						mutable.set(p, q, r);
 						FluidState fluidState = this.world.getFluidState(mutable);
-						if (fluidState.matches(tag)) {
+						if (fluidState.isIn(tag)) {
 							double f = (double)((float)q + fluidState.getHeight(this.world, mutable));
 							if (f >= box.minY) {
 								bl2 = true;

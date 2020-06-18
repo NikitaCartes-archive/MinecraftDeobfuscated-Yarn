@@ -89,7 +89,7 @@ public class EscapeDangerGoal extends Goal {
 			for (int m = j - rangeY; m <= j + rangeY; m++) {
 				for (int n = k - rangeX; n <= k + rangeX; n++) {
 					mutable.set(l, m, n);
-					if (blockView.getFluidState(mutable).matches(FluidTags.WATER)) {
+					if (blockView.getFluidState(mutable).isIn(FluidTags.WATER)) {
 						float g = (float)((l - i) * (l - i) + (m - j) * (m - j) + (n - k) * (n - k));
 						if (g < f) {
 							f = g;

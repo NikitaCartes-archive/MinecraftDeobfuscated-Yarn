@@ -49,10 +49,10 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 				&& !randomPatchFeatureConfig.blacklist.contains(blockState2)
 				&& (
 					!randomPatchFeatureConfig.needsWater
-						|| serverWorldAccess.getFluidState(blockPos3.west()).matches(FluidTags.WATER)
-						|| serverWorldAccess.getFluidState(blockPos3.east()).matches(FluidTags.WATER)
-						|| serverWorldAccess.getFluidState(blockPos3.north()).matches(FluidTags.WATER)
-						|| serverWorldAccess.getFluidState(blockPos3.south()).matches(FluidTags.WATER)
+						|| serverWorldAccess.getFluidState(blockPos3.west()).isIn(FluidTags.WATER)
+						|| serverWorldAccess.getFluidState(blockPos3.east()).isIn(FluidTags.WATER)
+						|| serverWorldAccess.getFluidState(blockPos3.north()).isIn(FluidTags.WATER)
+						|| serverWorldAccess.getFluidState(blockPos3.south()).isIn(FluidTags.WATER)
 				)) {
 				randomPatchFeatureConfig.blockPlacer.method_23403(serverWorldAccess, mutable, blockState, random);
 				i++;

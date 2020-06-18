@@ -11,9 +11,9 @@ import org.apache.logging.log4j.Logger;
 public class DedicatedPlayerManager extends PlayerManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public DedicatedPlayerManager(MinecraftDedicatedServer minecraftDedicatedServer, RegistryTracker.Modifiable modifiable, WorldSaveHandler worldSaveHandler) {
-		super(minecraftDedicatedServer, modifiable, worldSaveHandler, minecraftDedicatedServer.getProperties().maxPlayers);
-		ServerPropertiesHandler serverPropertiesHandler = minecraftDedicatedServer.getProperties();
+	public DedicatedPlayerManager(MinecraftDedicatedServer server, RegistryTracker.Modifiable tracker, WorldSaveHandler saveHandler) {
+		super(server, tracker, saveHandler, server.getProperties().maxPlayers);
+		ServerPropertiesHandler serverPropertiesHandler = server.getProperties();
 		this.setViewDistance(serverPropertiesHandler.viewDistance);
 		super.setWhitelistEnabled(serverPropertiesHandler.whiteList.get());
 		this.loadUserBanList();

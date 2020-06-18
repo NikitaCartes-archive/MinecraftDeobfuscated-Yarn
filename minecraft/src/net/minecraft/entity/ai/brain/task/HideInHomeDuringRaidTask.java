@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.village.raid.Raid;
 
 public class HideInHomeDuringRaidTask extends HideInHomeTask {
 	public HideInHomeDuringRaidTask(int maxDistance, float walkSpeed) {

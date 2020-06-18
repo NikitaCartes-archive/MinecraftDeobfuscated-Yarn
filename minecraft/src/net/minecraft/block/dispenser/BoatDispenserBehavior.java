@@ -26,10 +26,10 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 		double f = pointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125F);
 		BlockPos blockPos = pointer.getBlockPos().offset(direction);
 		double g;
-		if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
+		if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 			g = 1.0;
 		} else {
-			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.down()).matches(FluidTags.WATER)) {
+			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.down()).isIn(FluidTags.WATER)) {
 				return this.itemDispenser.dispense(pointer, stack);
 			}
 

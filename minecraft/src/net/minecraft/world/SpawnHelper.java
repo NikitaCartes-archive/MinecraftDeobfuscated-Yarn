@@ -303,11 +303,11 @@ public final class SpawnHelper {
 			BlockPos blockPos2 = pos.down();
 			switch (location) {
 				case IN_WATER:
-					return fluidState.matches(FluidTags.WATER)
-						&& world.getFluidState(blockPos2).matches(FluidTags.WATER)
+					return fluidState.isIn(FluidTags.WATER)
+						&& world.getFluidState(blockPos2).isIn(FluidTags.WATER)
 						&& !world.getBlockState(blockPos).isSolidBlock(world, blockPos);
 				case IN_LAVA:
-					return fluidState.matches(FluidTags.LAVA);
+					return fluidState.isIn(FluidTags.LAVA);
 				case ON_GROUND:
 				default:
 					BlockState blockState2 = world.getBlockState(blockPos2);

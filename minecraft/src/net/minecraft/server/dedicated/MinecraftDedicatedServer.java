@@ -34,6 +34,7 @@ import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
+import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.UserCache;
@@ -60,7 +61,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
 	private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
 	private QueryResponseHandler queryResponseHandler;
-	private final ServerCommandOutput rconCommandOutput;
+	private final RconCommandOutput rconCommandOutput;
 	private RconListener rconServer;
 	private final ServerPropertiesLoader propertiesLoader;
 	@Nullable
@@ -95,7 +96,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			worldGenerationProgressListenerFactory
 		);
 		this.propertiesLoader = serverPropertiesLoader;
-		this.rconCommandOutput = new ServerCommandOutput(this);
+		this.rconCommandOutput = new RconCommandOutput(this);
 	}
 
 	@Override

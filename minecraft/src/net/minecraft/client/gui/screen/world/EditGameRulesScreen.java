@@ -111,7 +111,7 @@ public class EditGameRulesScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class BooleanRuleWidget extends EditGameRulesScreen.class_5400 {
+	public class BooleanRuleWidget extends EditGameRulesScreen.NamedRuleWidget {
 		private final ButtonWidget toggleButton;
 
 		public BooleanRuleWidget(Text name, List<StringRenderable> description, String ruleName, GameRules.BooleanRule booleanRule) {
@@ -126,7 +126,7 @@ public class EditGameRulesScreen extends Screen {
 					return BooleanRuleWidget.this.createBooleanRuleText(name, booleanRule.get()).shallowCopy().append("\n").append(ruleName);
 				}
 			};
-			this.field_25630.add(this.toggleButton);
+			this.children.add(this.toggleButton);
 		}
 
 		private MutableText createBooleanRuleText(Text text, boolean value) {
@@ -135,7 +135,7 @@ public class EditGameRulesScreen extends Screen {
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.method_29989(matrices, y, x);
+			this.drawName(matrices, y, x);
 			this.toggleButton.x = x + entryWidth - 45;
 			this.toggleButton.y = y;
 			this.toggleButton.render(matrices, mouseX, mouseY, tickDelta);
@@ -143,7 +143,7 @@ public class EditGameRulesScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class IntRuleWidget extends EditGameRulesScreen.class_5400 {
+	public class IntRuleWidget extends EditGameRulesScreen.NamedRuleWidget {
 		private final TextFieldWidget valueWidget;
 
 		public IntRuleWidget(Text name, List<StringRenderable> description, String ruleName, GameRules.IntRule rule) {
@@ -161,15 +161,40 @@ public class EditGameRulesScreen extends Screen {
 					EditGameRulesScreen.this.markInvalid(this);
 				}
 			});
-			this.field_25630.add(this.valueWidget);
+			this.children.add(this.valueWidget);
 		}
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.method_29989(matrices, y, x);
+			this.drawName(matrices, y, x);
 			this.valueWidget.x = x + entryWidth - 44;
 			this.valueWidget.y = y;
 			this.valueWidget.render(matrices, mouseX, mouseY, tickDelta);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public abstract class NamedRuleWidget extends EditGameRulesScreen.AbstractRuleWidget {
+		private final List<StringRenderable> name;
+		protected final List<Element> children = Lists.<Element>newArrayList();
+
+		public NamedRuleWidget(@Nullable List<StringRenderable> description, Text name) {
+			super(description);
+			this.name = EditGameRulesScreen.this.client.textRenderer.wrapLines(name, 175);
+		}
+
+		@Override
+		public List<? extends Element> children() {
+			return this.children;
+		}
+
+		protected void drawName(MatrixStack matrices, int x, int y) {
+			if (this.name.size() == 1) {
+				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (StringRenderable)this.name.get(0), (float)y, (float)(x + 5), 16777215);
+			} else if (this.name.size() >= 2) {
+				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (StringRenderable)this.name.get(0), (float)y, (float)x, 16777215);
+				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (StringRenderable)this.name.get(1), (float)y, (float)(x + 10), 16777215);
+			}
 		}
 	}
 
@@ -267,30 +292,5 @@ public class EditGameRulesScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	interface RuleWidgetFactory<T extends GameRules.Rule<T>> {
 		EditGameRulesScreen.AbstractRuleWidget create(Text name, List<StringRenderable> description, String ruleName, T rule);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public abstract class class_5400 extends EditGameRulesScreen.AbstractRuleWidget {
-		private final List<StringRenderable> field_25629;
-		protected final List<Element> field_25630 = Lists.<Element>newArrayList();
-
-		public class_5400(@Nullable List<StringRenderable> list, Text text) {
-			super(list);
-			this.field_25629 = EditGameRulesScreen.this.client.textRenderer.wrapLines(text, 175);
-		}
-
-		@Override
-		public List<? extends Element> children() {
-			return this.field_25630;
-		}
-
-		protected void method_29989(MatrixStack matrixStack, int i, int j) {
-			if (this.field_25629.size() == 1) {
-				EditGameRulesScreen.this.client.textRenderer.draw(matrixStack, (StringRenderable)this.field_25629.get(0), (float)j, (float)(i + 5), 16777215);
-			} else if (this.field_25629.size() >= 2) {
-				EditGameRulesScreen.this.client.textRenderer.draw(matrixStack, (StringRenderable)this.field_25629.get(0), (float)j, (float)i, 16777215);
-				EditGameRulesScreen.this.client.textRenderer.draw(matrixStack, (StringRenderable)this.field_25629.get(1), (float)j, (float)(i + 10), 16777215);
-			}
-		}
 	}
 }

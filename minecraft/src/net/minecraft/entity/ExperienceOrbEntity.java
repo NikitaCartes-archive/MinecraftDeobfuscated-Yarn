@@ -63,7 +63,7 @@ public class ExperienceOrbEntity extends Entity {
 			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 		}
 
-		if (this.world.getFluidState(this.getBlockPos()).matches(FluidTags.LAVA)) {
+		if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA)) {
 			this.setVelocity(
 				(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 			);

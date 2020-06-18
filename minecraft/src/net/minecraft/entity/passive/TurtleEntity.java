@@ -281,7 +281,7 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		if (!this.isLandBound() && world.getFluidState(pos).matches(FluidTags.WATER)) {
+		if (!this.isLandBound() && world.getFluidState(pos).isIn(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
 			return TurtleEggBlock.isSand(world, pos) ? 10.0F : world.getBrightness(pos) - 0.5F;

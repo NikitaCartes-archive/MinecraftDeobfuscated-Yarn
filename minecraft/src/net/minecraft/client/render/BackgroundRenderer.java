@@ -33,7 +33,7 @@ public class BackgroundRenderer {
 
 	public static void render(Camera camera, float tickDelta, ClientWorld world, int i, float f) {
 		FluidState fluidState = camera.getSubmergedFluidState();
-		if (fluidState.matches(FluidTags.WATER)) {
+		if (fluidState.isIn(FluidTags.WATER)) {
 			long l = Util.getMeasuringTimeMs();
 			int j = world.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
 			if (lastWaterFogColorUpdateTime < 0L) {
@@ -60,7 +60,7 @@ public class BackgroundRenderer {
 				nextWaterFogColor = MathHelper.floor(h) << 16 | MathHelper.floor(r) << 8 | MathHelper.floor(s);
 				lastWaterFogColorUpdateTime = l;
 			}
-		} else if (fluidState.matches(FluidTags.LAVA)) {
+		} else if (fluidState.isIn(FluidTags.LAVA)) {
 			red = 0.6F;
 			green = 0.1F;
 			blue = 0.0F;
@@ -133,7 +133,7 @@ public class BackgroundRenderer {
 			}
 		}
 
-		if (d < 1.0 && !fluidState.matches(FluidTags.LAVA)) {
+		if (d < 1.0 && !fluidState.isIn(FluidTags.LAVA)) {
 			if (d < 0.0) {
 				d = 0.0;
 			}
@@ -150,7 +150,7 @@ public class BackgroundRenderer {
 			blue = blue * (1.0F - f) + blue * 0.6F * f;
 		}
 
-		if (fluidState.matches(FluidTags.WATER)) {
+		if (fluidState.isIn(FluidTags.WATER)) {
 			float ux = 0.0F;
 			if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
 				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
@@ -181,7 +181,7 @@ public class BackgroundRenderer {
 		FluidState fluidState = camera.getSubmergedFluidState();
 		Entity entity = camera.getFocusedEntity();
 		boolean bl = fluidState.getFluid() != Fluids.EMPTY;
-		if (fluidState.matches(FluidTags.WATER)) {
+		if (fluidState.isIn(FluidTags.WATER)) {
 			float f = 1.0F;
 			f = 0.05F;
 			if (entity instanceof ClientPlayerEntity) {
@@ -198,7 +198,7 @@ public class BackgroundRenderer {
 		} else {
 			float f;
 			float g;
-			if (fluidState.matches(FluidTags.LAVA)) {
+			if (fluidState.isIn(FluidTags.LAVA)) {
 				if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 					f = 0.0F;
 					g = 3.0F;

@@ -531,7 +531,7 @@ public interface DispenserBehavior {
 						((BeehiveBlock)blockState.getBlock()).takeHoney(worldAccess.getWorld(), blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 						this.setSuccess(true);
 						return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
-					} else if (worldAccess.getFluidState(blockPos).matches(FluidTags.WATER)) {
+					} else if (worldAccess.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						this.setSuccess(true);
 						return this.method_22141(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
 					} else {

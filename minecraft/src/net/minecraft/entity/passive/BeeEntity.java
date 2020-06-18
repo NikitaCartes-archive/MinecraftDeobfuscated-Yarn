@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5398;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,6 +42,7 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.goal.UniversalAngerGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -149,7 +149,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.goalSelector.add(9, new SwimGoal(this));
 		this.targetSelector.add(1, new BeeEntity.BeeRevengeGoal(this).setGroupRevenge(new Class[0]));
 		this.targetSelector.add(2, new BeeEntity.BeeFollowTargetGoal(this));
-		this.targetSelector.add(3, new class_5398<>(this, true));
+		this.targetSelector.add(3, new UniversalAngerGoal<>(this, true));
 	}
 
 	@Override
@@ -212,7 +212,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			}
 
 			this.setHasStung(true);
-			this.method_29922();
+			this.stopAnger();
 			this.playSound(SoundEvents.ENTITY_BEE_STING, 1.0F, 1.0F);
 		}
 

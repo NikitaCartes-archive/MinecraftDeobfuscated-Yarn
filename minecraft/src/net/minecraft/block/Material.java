@@ -3,15 +3,15 @@ package net.minecraft.block;
 import net.minecraft.block.piston.PistonBehavior;
 
 public final class Material {
-	public static final Material AIR = new Material.Builder(MaterialColor.AIR).allowsMovement().lightPassesThrough().notSolid().replaceable().build();
+	public static final Material AIR = new Material.Builder(MaterialColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().replaceable().build();
 	/**
 	 * Material for structure void block.
 	 */
-	public static final Material STRUCTURE_VOID = new Material.Builder(MaterialColor.AIR).allowsMovement().lightPassesThrough().notSolid().replaceable().build();
+	public static final Material STRUCTURE_VOID = new Material.Builder(MaterialColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().replaceable().build();
 	/**
 	 * Material for the various portal blocks.
 	 */
-	public static final Material PORTAL = new Material.Builder(MaterialColor.AIR).allowsMovement().lightPassesThrough().notSolid().blocksPistons().build();
+	public static final Material PORTAL = new Material.Builder(MaterialColor.CLEAR).allowsMovement().lightPassesThrough().notSolid().blocksPistons().build();
 	public static final Material CARPET = new Material.Builder(MaterialColor.WEB).allowsMovement().lightPassesThrough().notSolid().burnable().build();
 	/**
 	 * Material for plants such as flowers and crops
@@ -75,7 +75,7 @@ public final class Material {
 		.destroyedByPiston()
 		.replaceable()
 		.build();
-	public static final Material FIRE = new Material.Builder(MaterialColor.AIR)
+	public static final Material FIRE = new Material.Builder(MaterialColor.CLEAR)
 		.allowsMovement()
 		.lightPassesThrough()
 		.notSolid()
@@ -85,9 +85,14 @@ public final class Material {
 	/**
 	 * Material for blocks that require a supporting block such as redstone components, torches, flower pots, and skulls.
 	 */
-	public static final Material SUPPORTED = new Material.Builder(MaterialColor.AIR).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
+	public static final Material SUPPORTED = new Material.Builder(MaterialColor.CLEAR)
+		.allowsMovement()
+		.lightPassesThrough()
+		.notSolid()
+		.destroyedByPiston()
+		.build();
 	public static final Material COBWEB = new Material.Builder(MaterialColor.WEB).allowsMovement().lightPassesThrough().destroyedByPiston().build();
-	public static final Material REDSTONE_LAMP = new Material.Builder(MaterialColor.AIR).build();
+	public static final Material REDSTONE_LAMP = new Material.Builder(MaterialColor.CLEAR).build();
 	/**
 	 * Material for blocks that come from mobs such as honey, slime, or infested blocks. Includes clay but not bone blocks.
 	 */
@@ -129,7 +134,7 @@ public final class Material {
 	/**
 	 * Material for glass and glass-like blocks (includes sea lanterns and conduits).
 	 */
-	public static final Material GLASS = new Material.Builder(MaterialColor.AIR).lightPassesThrough().build();
+	public static final Material GLASS = new Material.Builder(MaterialColor.CLEAR).lightPassesThrough().build();
 	/**
 	 * Material for ice that can melt. See {@link #DENSE_ICE} for unmeltable ice.
 	 */
@@ -148,7 +153,7 @@ public final class Material {
 	 * Material for blocks that can repair tools, including grindstone and anvils.
 	 */
 	public static final Material REPAIR_STATION = new Material.Builder(MaterialColor.IRON).blocksPistons().build();
-	public static final Material BARRIER = new Material.Builder(MaterialColor.AIR).blocksPistons().build();
+	public static final Material BARRIER = new Material.Builder(MaterialColor.CLEAR).blocksPistons().build();
 	public static final Material PISTON = new Material.Builder(MaterialColor.STONE).blocksPistons().build();
 	/**
 	 * Not in use, but has foliage color.
@@ -162,7 +167,7 @@ public final class Material {
 	 * Material for egg blocks, such as dragon and turtle eggs.
 	 */
 	public static final Material EGG = new Material.Builder(MaterialColor.FOLIAGE).destroyedByPiston().build();
-	public static final Material CAKE = new Material.Builder(MaterialColor.AIR).destroyedByPiston().build();
+	public static final Material CAKE = new Material.Builder(MaterialColor.CLEAR).destroyedByPiston().build();
 	private final MaterialColor color;
 	private final PistonBehavior pistonBehavior;
 	private final boolean blocksMovement;

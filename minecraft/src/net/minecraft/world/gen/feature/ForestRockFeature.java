@@ -8,8 +8,8 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
-	public ForestRockFeature(Codec<BoulderFeatureConfig> codec) {
+public class ForestRockFeature extends Feature<ForestRockFeatureConfig> {
+	public ForestRockFeature(Codec<ForestRockFeatureConfig> codec) {
 		super(codec);
 	}
 
@@ -19,7 +19,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
-		BoulderFeatureConfig boulderFeatureConfig
+		ForestRockFeatureConfig forestRockFeatureConfig
 	) {
 		while (blockPos.getY() > 3) {
 			if (!serverWorldAccess.isAir(blockPos.down())) {
@@ -35,7 +35,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 		if (blockPos.getY() <= 3) {
 			return false;
 		} else {
-			int i = boulderFeatureConfig.startRadius;
+			int i = forestRockFeatureConfig.startRadius;
 
 			for (int j = 0; i >= 0 && j < 3; j++) {
 				int k = i + random.nextInt(2);
@@ -45,7 +45,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 
 				for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-k, -l, -m), blockPos.add(k, l, m))) {
 					if (blockPos2.getSquaredDistance(blockPos) <= (double)(f * f)) {
-						serverWorldAccess.setBlockState(blockPos2, boulderFeatureConfig.state, 4);
+						serverWorldAccess.setBlockState(blockPos2, forestRockFeatureConfig.state, 4);
 					}
 				}
 

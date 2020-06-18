@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.DSL;
@@ -17,12 +17,11 @@ import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.datafixer.fix.StructureSeparationDataFix;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
-public class class_5396 extends DataFix {
-	public class_5396(Schema schema, boolean bl) {
-		super(schema, bl);
+public class MissingDimensionFix extends DataFix {
+	public MissingDimensionFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	private static <A> Type<Pair<A, Dynamic<?>>> method_29913(String string, Type<A> type) {

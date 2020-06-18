@@ -82,7 +82,7 @@ public class CactusBlock extends Block {
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockState blockState = world.getBlockState(pos.offset(direction));
 			Material material = blockState.getMaterial();
-			if (material.isSolid() || world.getFluidState(pos.offset(direction)).matches(FluidTags.LAVA)) {
+			if (material.isSolid() || world.getFluidState(pos.offset(direction)).isIn(FluidTags.LAVA)) {
 				return false;
 			}
 		}

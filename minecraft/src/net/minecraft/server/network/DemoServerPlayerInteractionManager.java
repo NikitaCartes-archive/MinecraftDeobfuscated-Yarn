@@ -31,7 +31,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 		long m = l / 24000L + 1L;
 		if (!this.sentHelp && this.tick > 20) {
 			this.sentHelp = true;
-			this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 0.0F));
+			this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, 0.0F));
 		}
 
 		this.demoEnded = l > 120500L;
@@ -42,18 +42,18 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 		if (l % 24000L == 500L) {
 			if (m <= 6L) {
 				if (m == 6L) {
-					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 104.0F));
+					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, 104.0F));
 				} else {
 					this.player.sendSystemMessage(new TranslatableText("demo.day." + m), Util.NIL_UUID);
 				}
 			}
 		} else if (m == 1L) {
 			if (l == 100L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 101.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, 101.0F));
 			} else if (l == 175L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 102.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, 102.0F));
 			} else if (l == 250L) {
-				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25650, 103.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, 103.0F));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
 			this.player.sendSystemMessage(new TranslatableText("demo.day.warning"), Util.NIL_UUID);
@@ -77,22 +77,22 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	}
 
 	@Override
-	public ActionResult interactItem(ServerPlayerEntity serverPlayerEntity, World world, ItemStack stack, Hand hand) {
+	public ActionResult interactItem(ServerPlayerEntity player, World world, ItemStack stack, Hand hand) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
 			return ActionResult.PASS;
 		} else {
-			return super.interactItem(serverPlayerEntity, world, stack, hand);
+			return super.interactItem(player, world, stack, hand);
 		}
 	}
 
 	@Override
-	public ActionResult interactBlock(ServerPlayerEntity serverPlayerEntity, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
+	public ActionResult interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
 			return ActionResult.PASS;
 		} else {
-			return super.interactBlock(serverPlayerEntity, world, stack, hand, hitResult);
+			return super.interactBlock(player, world, stack, hand, hitResult);
 		}
 	}
 }

@@ -265,7 +265,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				this.adjustDirection();
 			}
 
-			if (this.isCloseToTarget()) {
+			if (this.isNearTarget()) {
 				this.adjustDirection();
 			}
 
@@ -334,7 +334,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
-		protected boolean isCloseToTarget() {
+		protected boolean isNearTarget() {
 			return PhantomEntity.this.targetPosition.squaredDistanceTo(PhantomEntity.this.getX(), PhantomEntity.this.getY(), PhantomEntity.this.getZ()) < 4.0;
 		}
 	}

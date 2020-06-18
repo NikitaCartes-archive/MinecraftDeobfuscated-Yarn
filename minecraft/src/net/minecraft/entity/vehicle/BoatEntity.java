@@ -445,7 +445,7 @@ public class BoatEntity extends Entity {
 				for (int q = m; q < n; q++) {
 					mutable.set(p, o, q);
 					FluidState fluidState = this.world.getFluidState(mutable);
-					if (fluidState.matches(FluidTags.WATER)) {
+					if (fluidState.isIn(FluidTags.WATER)) {
 						f = Math.max(f, fluidState.getHeight(this.world, mutable));
 					}
 
@@ -518,7 +518,7 @@ public class BoatEntity extends Entity {
 				for (int q = m; q < n; q++) {
 					mutable.set(o, p, q);
 					FluidState fluidState = this.world.getFluidState(mutable);
-					if (fluidState.matches(FluidTags.WATER)) {
+					if (fluidState.isIn(FluidTags.WATER)) {
 						float f = (float)p + fluidState.getHeight(this.world, mutable);
 						this.waterLevel = Math.max((double)f, this.waterLevel);
 						bl |= box.minY < (double)f;
@@ -548,7 +548,7 @@ public class BoatEntity extends Entity {
 				for (int q = m; q < n; q++) {
 					mutable.set(o, p, q);
 					FluidState fluidState = this.world.getFluidState(mutable);
-					if (fluidState.matches(FluidTags.WATER) && d < (double)((float)mutable.getY() + fluidState.getHeight(this.world, mutable))) {
+					if (fluidState.isIn(FluidTags.WATER) && d < (double)((float)mutable.getY() + fluidState.getHeight(this.world, mutable))) {
 						if (!fluidState.isStill()) {
 							return BoatEntity.Location.UNDER_FLOWING_WATER;
 						}
@@ -767,7 +767,7 @@ public class BoatEntity extends Entity {
 				}
 
 				this.fallDistance = 0.0F;
-			} else if (!this.world.getFluidState(this.getBlockPos().down()).matches(FluidTags.WATER) && heightDifference < 0.0) {
+			} else if (!this.world.getFluidState(this.getBlockPos().down()).isIn(FluidTags.WATER) && heightDifference < 0.0) {
 				this.fallDistance = (float)((double)this.fallDistance - heightDifference);
 			}
 		}

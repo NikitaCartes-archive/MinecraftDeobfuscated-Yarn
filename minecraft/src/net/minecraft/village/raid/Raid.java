@@ -1,4 +1,4 @@
-package net.minecraft.entity.raid;
+package net.minecraft.village.raid;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -29,6 +29,7 @@ import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -154,9 +155,9 @@ public class Raid {
 	}
 
 	private Predicate<ServerPlayerEntity> isInRaidDistance() {
-		return serverPlayerEntity -> {
-			BlockPos blockPos = serverPlayerEntity.getBlockPos();
-			return serverPlayerEntity.isAlive() && this.world.getRaidAt(blockPos) == this;
+		return player -> {
+			BlockPos blockPos = player.getBlockPos();
+			return player.isAlive() && this.world.getRaidAt(blockPos) == this;
 		};
 	}
 
@@ -219,7 +220,7 @@ public class Raid {
 				}
 
 				if (!this.world.isNearOccupiedPointOfInterest(this.center)) {
-					this.method_20511();
+					this.moveRaidCenter();
 				}
 
 				if (!this.world.isNearOccupiedPointOfInterest(this.center)) {
@@ -352,7 +353,7 @@ public class Raid {
 		}
 	}
 
-	private void method_20511() {
+	private void moveRaidCenter() {
 		Stream<ChunkSectionPos> stream = ChunkSectionPos.stream(ChunkSectionPos.from(this.center), 2);
 		stream.filter(this.world::isNearOccupiedPointOfInterest)
 			.map(ChunkSectionPos::getCenterPos)

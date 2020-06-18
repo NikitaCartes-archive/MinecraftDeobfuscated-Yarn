@@ -178,7 +178,7 @@ public class ChunkRegion implements ServerWorldAccess {
 				Block.dropStacks(blockState, this.world, blockPos, blockEntity, entity, ItemStack.EMPTY);
 			}
 
-			return this.method_30092(blockPos, Blocks.AIR.getDefaultState(), 3, i);
+			return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3, i);
 		}
 	}
 
@@ -219,31 +219,31 @@ public class ChunkRegion implements ServerWorldAccess {
 	}
 
 	@Override
-	public boolean method_30092(BlockPos blockPos, BlockState blockState, int i, int j) {
-		Chunk chunk = this.getChunk(blockPos);
-		BlockState blockState2 = chunk.setBlockState(blockPos, blockState, false);
-		if (blockState2 != null) {
-			this.world.onBlockChanged(blockPos, blockState2, blockState);
+	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
+		Chunk chunk = this.getChunk(pos);
+		BlockState blockState = chunk.setBlockState(pos, state, false);
+		if (blockState != null) {
+			this.world.onBlockChanged(pos, blockState, state);
 		}
 
-		Block block = blockState.getBlock();
+		Block block = state.getBlock();
 		if (block.hasBlockEntity()) {
 			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
-				chunk.setBlockEntity(blockPos, ((BlockEntityProvider)block).createBlockEntity(this));
+				chunk.setBlockEntity(pos, ((BlockEntityProvider)block).createBlockEntity(this));
 			} else {
 				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putInt("x", blockPos.getX());
-				compoundTag.putInt("y", blockPos.getY());
-				compoundTag.putInt("z", blockPos.getZ());
+				compoundTag.putInt("x", pos.getX());
+				compoundTag.putInt("y", pos.getY());
+				compoundTag.putInt("z", pos.getZ());
 				compoundTag.putString("id", "DUMMY");
 				chunk.addPendingBlockEntityTag(compoundTag);
 			}
-		} else if (blockState2 != null && blockState2.getBlock().hasBlockEntity()) {
-			chunk.removeBlockEntity(blockPos);
+		} else if (blockState != null && blockState.getBlock().hasBlockEntity()) {
+			chunk.removeBlockEntity(pos);
 		}
 
-		if (blockState.shouldPostProcess(this, blockPos)) {
-			this.markBlockForPostProcessing(blockPos);
+		if (state.shouldPostProcess(this, pos)) {
+			this.markBlockForPostProcessing(pos);
 		}
 
 		return true;

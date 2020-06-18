@@ -133,7 +133,7 @@ public abstract class PlayerManager {
 		ServerWorld serverWorld2;
 		if (serverWorld == null) {
 			LOGGER.warn("Unknown respawn dimension {}, defaulting to overworld", registryKey);
-			serverWorld2 = this.server.method_30002();
+			serverWorld2 = this.server.getOverworld();
 		} else {
 			serverWorld2 = serverWorld;
 		}
@@ -176,7 +176,7 @@ public abstract class PlayerManager {
 				bl2,
 				!bl,
 				serverWorld2.isDebugWorld(),
-				serverWorld2.method_28125()
+				serverWorld2.isFlat()
 			)
 		);
 		serverPlayNetworkHandler.sendPacket(
@@ -380,19 +380,19 @@ public abstract class PlayerManager {
 	}
 
 	@Nullable
-	public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-		if (this.bannedProfiles.contains(gameProfile)) {
-			BannedPlayerEntry bannedPlayerEntry = this.bannedProfiles.get(gameProfile);
+	public Text checkCanJoin(SocketAddress address, GameProfile profile) {
+		if (this.bannedProfiles.contains(profile)) {
+			BannedPlayerEntry bannedPlayerEntry = this.bannedProfiles.get(profile);
 			MutableText mutableText = new TranslatableText("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
 			if (bannedPlayerEntry.getExpiryDate() != null) {
 				mutableText.append(new TranslatableText("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
 			}
 
 			return mutableText;
-		} else if (!this.isWhitelisted(gameProfile)) {
+		} else if (!this.isWhitelisted(profile)) {
 			return new TranslatableText("multiplayer.disconnect.not_whitelisted");
-		} else if (this.bannedIps.isBanned(socketAddress)) {
-			BannedIpEntry bannedIpEntry = this.bannedIps.get(socketAddress);
+		} else if (this.bannedIps.isBanned(address)) {
+			BannedIpEntry bannedIpEntry = this.bannedIps.get(address);
 			MutableText mutableText = new TranslatableText("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
 			if (bannedIpEntry.getExpiryDate() != null) {
 				mutableText.append(new TranslatableText("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
@@ -400,7 +400,7 @@ public abstract class PlayerManager {
 
 			return mutableText;
 		} else {
-			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameProfile) ? new TranslatableText("multiplayer.disconnect.server_full") : null;
+			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(profile) ? new TranslatableText("multiplayer.disconnect.server_full") : null;
 		}
 	}
 
@@ -424,7 +424,7 @@ public abstract class PlayerManager {
 			serverPlayerEntity3.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login"));
 		}
 
-		ServerWorld serverWorld = this.server.method_30002();
+		ServerWorld serverWorld = this.server.getOverworld();
 		ServerPlayerInteractionManager serverPlayerInteractionManager;
 		if (this.server.isDemo()) {
 			serverPlayerInteractionManager = new DemoServerPlayerInteractionManager(serverWorld);
@@ -448,7 +448,7 @@ public abstract class PlayerManager {
 			optional = Optional.empty();
 		}
 
-		ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.method_30002();
+		ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();
 		ServerPlayerInteractionManager serverPlayerInteractionManager;
 		if (this.server.isDemo()) {
 			serverPlayerInteractionManager = new DemoServerPlayerInteractionManager(serverWorld2);
@@ -474,7 +474,7 @@ public abstract class PlayerManager {
 			serverPlayerEntity.setSpawnPoint(serverWorld2.getRegistryKey(), blockPos, bl2, false);
 			bl3 = !bl && serverWorld2.getBlockState(blockPos).getBlock() instanceof RespawnAnchorBlock;
 		} else if (blockPos != null) {
-			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25645, 0.0F));
+			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0F));
 		}
 
 		while (!serverWorld2.doesNotCollide(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
@@ -491,7 +491,7 @@ public abstract class PlayerManager {
 					serverPlayerEntity.interactionManager.getGameMode(),
 					serverPlayerEntity.interactionManager.method_30119(),
 					serverPlayerEntity.getServerWorld().isDebugWorld(),
-					serverPlayerEntity.getServerWorld().method_28125(),
+					serverPlayerEntity.getServerWorld().isFlat(),
 					bl
 				)
 			);
@@ -684,15 +684,15 @@ public abstract class PlayerManager {
 	}
 
 	public void sendWorldInfo(ServerPlayerEntity player, ServerWorld world) {
-		WorldBorder worldBorder = this.server.method_30002().getWorldBorder();
+		WorldBorder worldBorder = this.server.getOverworld().getWorldBorder();
 		player.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
 		player.networkHandler
 			.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
 		player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos()));
 		if (world.isRaining()) {
-			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25646, 0.0F));
-			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25652, world.getRainGradient(1.0F)));
-			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25653, world.getThunderGradient(1.0F)));
+			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, 0.0F));
+			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, world.getRainGradient(1.0F)));
+			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, world.getThunderGradient(1.0F)));
 		}
 	}
 

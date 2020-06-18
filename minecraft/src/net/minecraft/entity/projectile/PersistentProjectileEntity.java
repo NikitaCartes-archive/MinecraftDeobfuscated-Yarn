@@ -225,8 +225,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 
 			this.pitch = (float)(MathHelper.atan2(e, (double)l) * 180.0F / (float)Math.PI);
-			this.pitch = method_26960(this.prevPitch, this.pitch);
-			this.yaw = method_26960(this.prevYaw, this.yaw);
+			this.pitch = updateRotation(this.prevPitch, this.pitch);
+			this.yaw = updateRotation(this.prevYaw, this.yaw);
 			float m = 0.99F;
 			float n = 0.05F;
 			if (this.isTouchingWater()) {
@@ -290,7 +290,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		super.onEntityHit(entityHitResult);
 		Entity entity = entityHitResult.getEntity();
 		float f = (float)this.getVelocity().length();
-		int i = MathHelper.ceil(Math.max((double)f * this.damage, 0.0));
+		int i = MathHelper.ceil(MathHelper.clamp((double)f * this.damage, 0.0, 2.147483647E9));
 		if (this.getPierceLevel() > 0) {
 			if (this.piercedEntities == null) {
 				this.piercedEntities = new IntOpenHashSet(5);
@@ -309,7 +309,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 
 		if (this.isCritical()) {
-			i += this.random.nextInt(i / 2 + 2);
+			long l = (long)this.random.nextInt(i / 2 + 2);
+			i = (int)Math.min(l + (long)i, 2147483647L);
 		}
 
 		Entity entity2 = this.getOwner();
@@ -354,7 +355,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 				this.onHit(livingEntity);
 				if (entity2 != null && livingEntity != entity2 && livingEntity instanceof PlayerEntity && entity2 instanceof ServerPlayerEntity && !this.isSilent()) {
-					((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25651, 0.0F));
+					((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER, 0.0F));
 				}
 
 				if (!entity.isAlive() && this.piercingKilledEntities != null) {

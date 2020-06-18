@@ -462,7 +462,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (entityType == EntityType.SNOWBALL) {
 			entity = new SnowballEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.LLAMA_SPIT) {
-			entity = new LlamaSpitEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+			entity = new LlamaSpitEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
 		} else if (entityType == EntityType.ITEM_FRAME) {
 			entity = new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(packet.getEntityData()));
 		} else if (entityType == EntityType.LEASH_KNOT) {
@@ -474,15 +474,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (entityType == EntityType.FIREWORK_ROCKET) {
 			entity = new FireworkRocketEntity(this.world, d, e, f, ItemStack.EMPTY);
 		} else if (entityType == EntityType.FIREBALL) {
-			entity = new FireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+			entity = new FireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
 		} else if (entityType == EntityType.DRAGON_FIREBALL) {
-			entity = new DragonFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+			entity = new DragonFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
 		} else if (entityType == EntityType.SMALL_FIREBALL) {
-			entity = new SmallFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+			entity = new SmallFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
 		} else if (entityType == EntityType.WITHER_SKULL) {
-			entity = new WitherSkullEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+			entity = new WitherSkullEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
 		} else if (entityType == EntityType.SHULKER_BULLET) {
-			entity = new ShulkerBulletEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
+			entity = new ShulkerBulletEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
 		} else if (entityType == EntityType.EGG) {
 			entity = new EggEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.EVOKER_FANGS) {
@@ -1291,20 +1291,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onGameStateChange(GameStateChangeS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		GameStateChangeS2CPacket.class_5402 lv = packet.getReason();
+		GameStateChangeS2CPacket.Reason reason = packet.getReason();
 		float f = packet.getValue();
 		int i = MathHelper.floor(f + 0.5F);
-		if (lv == GameStateChangeS2CPacket.field_25645) {
+		if (reason == GameStateChangeS2CPacket.NO_RESPAWN_BLOCK) {
 			playerEntity.sendMessage(new TranslatableText("block.minecraft.spawn.not_valid"), false);
-		} else if (lv == GameStateChangeS2CPacket.field_25646) {
+		} else if (reason == GameStateChangeS2CPacket.RAIN_STARTED) {
 			this.world.getLevelProperties().setRaining(true);
 			this.world.setRainGradient(0.0F);
-		} else if (lv == GameStateChangeS2CPacket.field_25647) {
+		} else if (reason == GameStateChangeS2CPacket.RAIN_STOPPED) {
 			this.world.getLevelProperties().setRaining(false);
 			this.world.setRainGradient(1.0F);
-		} else if (lv == GameStateChangeS2CPacket.field_25648) {
+		} else if (reason == GameStateChangeS2CPacket.GAME_MODE_CHANGED) {
 			this.client.interactionManager.setGameMode(GameMode.byId(i));
-		} else if (lv == GameStateChangeS2CPacket.field_25649) {
+		} else if (reason == GameStateChangeS2CPacket.GAME_WON) {
 			if (i == 0) {
 				this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
 				this.client.openScreen(new DownloadingTerrainScreen());
@@ -1314,7 +1314,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						new CreditsScreen(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN)))
 					);
 			}
-		} else if (lv == GameStateChangeS2CPacket.field_25650) {
+		} else if (reason == GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN) {
 			GameOptions gameOptions = this.client.options;
 			if (f == 0.0F) {
 				this.client.openScreen(new DemoScreen());
@@ -1338,21 +1338,21 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else if (f == 104.0F) {
 				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getBoundKeyLocalizedText()));
 			}
-		} else if (lv == GameStateChangeS2CPacket.field_25651) {
+		} else if (reason == GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER) {
 			this.world
 				.playSound(
 					playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18F, 0.45F
 				);
-		} else if (lv == GameStateChangeS2CPacket.field_25652) {
+		} else if (reason == GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED) {
 			this.world.setRainGradient(f);
-		} else if (lv == GameStateChangeS2CPacket.field_25653) {
+		} else if (reason == GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED) {
 			this.world.setThunderGradient(f);
-		} else if (lv == GameStateChangeS2CPacket.field_25654) {
+		} else if (reason == GameStateChangeS2CPacket.PUFFERFISH_STING) {
 			this.world
 				.playSound(
 					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PUFFER_FISH_STING, SoundCategory.NEUTRAL, 1.0F, 1.0F
 				);
-		} else if (lv == GameStateChangeS2CPacket.field_25655) {
+		} else if (reason == GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT) {
 			this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 0.0, 0.0, 0.0);
 			if (i == 1) {
 				this.world
@@ -1360,7 +1360,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0F, 1.0F
 					);
 			}
-		} else if (lv == GameStateChangeS2CPacket.field_25656) {
+		} else if (reason == GameStateChangeS2CPacket.IMMEDIATE_RESPAWN) {
 			this.client.player.setShowsDeathScreen(f == 0.0F);
 		}
 	}

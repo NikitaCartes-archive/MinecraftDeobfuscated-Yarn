@@ -121,7 +121,7 @@ public class ItemEntity extends Entity {
 				|| MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());
 			int i = bl ? 2 : 40;
 			if (this.age % i == 0) {
-				if (this.world.getFluidState(this.getBlockPos()).matches(FluidTags.LAVA) && !this.isFireImmune()) {
+				if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA) && !this.isFireImmune()) {
 					this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
@@ -318,8 +318,8 @@ public class ItemEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(ServerWorld serverWorld) {
-		Entity entity = super.changeDimension(serverWorld);
+	public Entity changeDimension(ServerWorld destination) {
+		Entity entity = super.changeDimension(destination);
 		if (!this.world.isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}

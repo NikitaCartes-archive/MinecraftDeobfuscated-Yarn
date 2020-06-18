@@ -243,7 +243,7 @@ public class SquidEntity extends WaterCreatureEntity {
 					.getBlockState(new BlockPos(SquidEntity.this.getX() + vec3d.x, SquidEntity.this.getY() + vec3d.y, SquidEntity.this.getZ() + vec3d.z));
 				FluidState fluidState = SquidEntity.this.world
 					.getFluidState(new BlockPos(SquidEntity.this.getX() + vec3d.x, SquidEntity.this.getY() + vec3d.y, SquidEntity.this.getZ() + vec3d.z));
-				if (fluidState.matches(FluidTags.WATER) || blockState.isAir()) {
+				if (fluidState.isIn(FluidTags.WATER) || blockState.isAir()) {
 					double d = vec3d.length();
 					if (d > 0.0) {
 						vec3d.normalize();

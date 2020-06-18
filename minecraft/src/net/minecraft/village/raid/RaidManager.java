@@ -1,4 +1,4 @@
-package net.minecraft.entity.raid;
+package net.minecraft.village.raid;
 
 import com.google.common.collect.Maps;
 import java.util.Iterator;
@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;

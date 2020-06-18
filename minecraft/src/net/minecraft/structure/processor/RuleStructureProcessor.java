@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldView;
 
 public class RuleStructureProcessor extends StructureProcessor {
-	public static final Codec<RuleStructureProcessor> field_25011 = StructureProcessorRule.CODEC
+	public static final Codec<RuleStructureProcessor> CODEC = StructureProcessorRule.CODEC
 		.listOf()
 		.fieldOf("rules")
 		.<RuleStructureProcessor>xmap(RuleStructureProcessor::new, ruleStructureProcessor -> ruleStructureProcessor.rules)

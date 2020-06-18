@@ -104,7 +104,7 @@ public class FarmlandBlock extends Block {
 
 	private static boolean isWaterNearby(WorldView world, BlockPos pos) {
 		for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
-			if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
+			if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 				return true;
 			}
 		}

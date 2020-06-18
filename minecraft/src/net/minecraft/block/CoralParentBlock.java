@@ -35,7 +35,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 			return true;
 		} else {
 			for (Direction direction : Direction.values()) {
-				if (world.getFluidState(pos.offset(direction)).matches(FluidTags.WATER)) {
+				if (world.getFluidState(pos.offset(direction)).isIn(FluidTags.WATER)) {
 					return true;
 				}
 			}
@@ -48,7 +48,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8));
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8));
 	}
 
 	@Override

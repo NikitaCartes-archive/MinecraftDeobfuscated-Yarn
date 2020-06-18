@@ -95,7 +95,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		Biome biome = world.getBiome(pos);
 		boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
 			&& isSpawnDark(world, pos, random)
-			&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).matches(FluidTags.WATER));
+			&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
 		return biome != Biomes.RIVER && biome != Biomes.FROZEN_RIVER ? random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl : random.nextInt(15) == 0 && bl;
 	}
 

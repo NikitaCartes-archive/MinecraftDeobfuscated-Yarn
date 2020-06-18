@@ -189,11 +189,11 @@ public class StructureSeparationDataFix extends DataFix {
 		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build()));
 	}
 
-	public static <T> Dynamic<T> method_29916(Dynamic<T> dynamic, long l) {
+	protected static <T> Dynamic<T> method_29916(Dynamic<T> dynamic, long l) {
 		return method_28268(l, dynamic, dynamic.createString("minecraft:overworld"), method_28272(dynamic, l, false, false));
 	}
 
-	public static <T> T method_29917(Dynamic<T> dynamic, long l, Dynamic<T> dynamic2, boolean bl) {
+	protected static <T> T method_29917(Dynamic<T> dynamic, long l, Dynamic<T> dynamic2, boolean bl) {
 		DynamicOps<T> dynamicOps = dynamic.getOps();
 		return dynamicOps.createMap(
 			ImmutableMap.of(

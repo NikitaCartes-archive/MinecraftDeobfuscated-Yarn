@@ -16,8 +16,8 @@ import net.minecraft.world.WorldSaveHandler;
 public class IntegratedPlayerManager extends PlayerManager {
 	private CompoundTag userData;
 
-	public IntegratedPlayerManager(IntegratedServer integratedServer, RegistryTracker.Modifiable modifiable, WorldSaveHandler worldSaveHandler) {
-		super(integratedServer, modifiable, worldSaveHandler, 8);
+	public IntegratedPlayerManager(IntegratedServer server, RegistryTracker.Modifiable tracker, WorldSaveHandler saveHandler) {
+		super(server, tracker, saveHandler, 8);
 		this.setViewDistance(10);
 	}
 
@@ -31,10 +31,10 @@ public class IntegratedPlayerManager extends PlayerManager {
 	}
 
 	@Override
-	public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-		return (Text)(gameProfile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(gameProfile.getName()) != null
+	public Text checkCanJoin(SocketAddress address, GameProfile profile) {
+		return (Text)(profile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(profile.getName()) != null
 			? new TranslatableText("multiplayer.disconnect.name_taken")
-			: super.checkCanJoin(socketAddress, gameProfile));
+			: super.checkCanJoin(address, profile));
 	}
 
 	public IntegratedServer getServer() {

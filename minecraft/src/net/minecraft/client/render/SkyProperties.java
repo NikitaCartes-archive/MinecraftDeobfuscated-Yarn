@@ -26,16 +26,16 @@ public abstract class SkyProperties {
 	private final float[] rgba = new float[4];
 	private final float cloudsHeight;
 	private final boolean alternateSkyColor;
-	private final SkyProperties.class_5401 field_25637;
+	private final SkyProperties.SkyType skyType;
 	private final boolean shouldRenderSky;
-	private final boolean field_25638;
+	private final boolean darkened;
 
-	public SkyProperties(float cloudsHeight, boolean alternateSkyColor, SkyProperties.class_5401 arg, boolean bl, boolean bl2) {
+	public SkyProperties(float cloudsHeight, boolean alternateSkyColor, SkyProperties.SkyType skyType, boolean shouldRenderSky, boolean darkened) {
 		this.cloudsHeight = cloudsHeight;
 		this.alternateSkyColor = alternateSkyColor;
-		this.field_25637 = arg;
-		this.shouldRenderSky = bl;
-		this.field_25638 = bl2;
+		this.skyType = skyType;
+		this.shouldRenderSky = shouldRenderSky;
+		this.darkened = darkened;
 	}
 
 	public static SkyProperties byDimensionType(Optional<RegistryKey<DimensionType>> optional) {
@@ -73,22 +73,22 @@ public abstract class SkyProperties {
 
 	public abstract boolean useThickFog(int camX, int camY);
 
-	public SkyProperties.class_5401 method_29992() {
-		return this.field_25637;
+	public SkyProperties.SkyType getSkyType() {
+		return this.skyType;
 	}
 
 	public boolean shouldRenderSky() {
 		return this.shouldRenderSky;
 	}
 
-	public boolean method_29993() {
-		return this.field_25638;
+	public boolean isDarkened() {
+		return this.darkened;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class End extends SkyProperties {
 		public End() {
-			super(Float.NaN, false, SkyProperties.class_5401.field_25641, true, false);
+			super(Float.NaN, false, SkyProperties.SkyType.END, true, false);
 		}
 
 		@Override
@@ -111,7 +111,7 @@ public abstract class SkyProperties {
 	@Environment(EnvType.CLIENT)
 	public static class Nether extends SkyProperties {
 		public Nether() {
-			super(Float.NaN, true, SkyProperties.class_5401.field_25639, false, true);
+			super(Float.NaN, true, SkyProperties.SkyType.NONE, false, true);
 		}
 
 		@Override
@@ -128,7 +128,7 @@ public abstract class SkyProperties {
 	@Environment(EnvType.CLIENT)
 	public static class Overworld extends SkyProperties {
 		public Overworld() {
-			super(128.0F, true, SkyProperties.class_5401.field_25640, false, false);
+			super(128.0F, true, SkyProperties.SkyType.NORMAL, false, false);
 		}
 
 		@Override
@@ -143,9 +143,9 @@ public abstract class SkyProperties {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_5401 {
-		field_25639,
-		field_25640,
-		field_25641;
+	public static enum SkyType {
+		NONE,
+		NORMAL,
+		END;
 	}
 }

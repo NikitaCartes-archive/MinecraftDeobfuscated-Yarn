@@ -118,7 +118,7 @@ public class FallingBlockEntity extends Entity {
 			if (!this.world.isClient) {
 				BlockPos blockPos = this.getBlockPos();
 				boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
-				boolean bl2 = bl && this.world.getFluidState(blockPos).matches(FluidTags.WATER);
+				boolean bl2 = bl && this.world.getFluidState(blockPos).isIn(FluidTags.WATER);
 				double d = this.getVelocity().lengthSquared();
 				if (bl && d > 1.0) {
 					BlockHitResult blockHitResult = this.world
@@ -127,7 +127,7 @@ public class FallingBlockEntity extends Entity {
 								new Vec3d(this.prevX, this.prevY, this.prevZ), this.getPos(), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY, this
 							)
 						);
-					if (blockHitResult.getType() != HitResult.Type.MISS && this.world.getFluidState(blockHitResult.getBlockPos()).matches(FluidTags.WATER)) {
+					if (blockHitResult.getType() != HitResult.Type.MISS && this.world.getFluidState(blockHitResult.getBlockPos()).isIn(FluidTags.WATER)) {
 						blockPos = blockHitResult.getBlockPos();
 						bl2 = true;
 					}

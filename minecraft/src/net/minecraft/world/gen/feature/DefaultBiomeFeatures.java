@@ -756,7 +756,7 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
 			Feature.FOREST_ROCK
-				.configure(new BoulderFeatureConfig(MOSSY_COBBLESTONE, 0))
+				.configure(new ForestRockFeatureConfig(MOSSY_COBBLESTONE, 0))
 				.createDecoratedFeature(Decorator.FOREST_ROCK.configure(new CountDecoratorConfig(3)))
 		);
 	}

@@ -140,14 +140,16 @@ public class HoverEvent {
 			return (T)o;
 		}
 
+		@Nullable
 		public HoverEvent buildHoverEvent(JsonElement contents) {
 			T object = (T)this.deserializer.apply(contents);
-			return new HoverEvent(this, object);
+			return object == null ? null : new HoverEvent(this, object);
 		}
 
+		@Nullable
 		public HoverEvent buildHoverEvent(Text value) {
 			T object = (T)this.legacyDeserializer.apply(value);
-			return new HoverEvent(this, object);
+			return object == null ? null : new HoverEvent(this, object);
 		}
 
 		public JsonElement contentsToJson(Object contents) {

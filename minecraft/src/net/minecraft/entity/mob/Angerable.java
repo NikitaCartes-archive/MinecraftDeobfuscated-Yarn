@@ -32,14 +32,14 @@ public interface Angerable {
 		}
 	}
 
-	default void angerFromTag(ServerWorld serverWorld, CompoundTag tag) {
+	default void angerFromTag(ServerWorld world, CompoundTag tag) {
 		this.setAngerTime(tag.getInt("AngerTime"));
 		if (!tag.containsUuid("AngryAt")) {
 			this.setAngryAt(null);
 		} else {
 			UUID uUID = tag.getUuid("AngryAt");
 			this.setAngryAt(uUID);
-			Entity entity = serverWorld.getEntity(uUID);
+			Entity entity = world.getEntity(uUID);
 			if (entity != null) {
 				if (entity instanceof MobEntity) {
 					this.setAttacker((MobEntity)entity);
@@ -52,11 +52,11 @@ public interface Angerable {
 		}
 	}
 
-	default void tickAngerLogic(ServerWorld serverWorld, boolean bl) {
+	default void tickAngerLogic(ServerWorld world, boolean bl) {
 		LivingEntity livingEntity = this.getTarget();
 		UUID uUID = this.getAngryAt();
-		if ((livingEntity == null || livingEntity.isDead()) && uUID != null && serverWorld.getEntity(uUID) instanceof MobEntity) {
-			this.method_29922();
+		if ((livingEntity == null || livingEntity.isDead()) && uUID != null && world.getEntity(uUID) instanceof MobEntity) {
+			this.stopAnger();
 		} else {
 			if (livingEntity != null && !Objects.equals(uUID, livingEntity.getUuid())) {
 				this.setAngryAt(livingEntity.getUuid());
@@ -66,7 +66,7 @@ public interface Angerable {
 			if (this.getAngerTime() > 0 && (livingEntity == null || livingEntity.getType() != EntityType.PLAYER || !bl)) {
 				this.setAngerTime(this.getAngerTime() - 1);
 				if (this.getAngerTime() == 0) {
-					this.method_29922();
+					this.stopAnger();
 				}
 			}
 		}
@@ -76,11 +76,11 @@ public interface Angerable {
 		if (!EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity)) {
 			return false;
 		} else {
-			return entity.getType() == EntityType.PLAYER && this.method_29923(entity.world) ? true : entity.getUuid().equals(this.getAngryAt());
+			return entity.getType() == EntityType.PLAYER && this.isUniversallyAngry(entity.world) ? true : entity.getUuid().equals(this.getAngryAt());
 		}
 	}
 
-	default boolean method_29923(World world) {
+	default boolean isUniversallyAngry(World world) {
 		return world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.hasAngerTime() && this.getAngryAt() == null;
 	}
 
@@ -91,17 +91,17 @@ public interface Angerable {
 	default void forgive(PlayerEntity player) {
 		if (player.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
 			if (player.getUuid().equals(this.getAngryAt())) {
-				this.method_29922();
+				this.stopAnger();
 			}
 		}
 	}
 
-	default void method_29921() {
-		this.method_29922();
+	default void universallyAnger() {
+		this.stopAnger();
 		this.chooseRandomAngerTime();
 	}
 
-	default void method_29922() {
+	default void stopAnger() {
 		this.setAttacker(null);
 		this.setAngryAt(null);
 		this.setTarget(null);
@@ -110,7 +110,7 @@ public interface Angerable {
 
 	void setAttacker(@Nullable LivingEntity attacker);
 
-	void setAttacking(@Nullable PlayerEntity playerEntity);
+	void setAttacking(@Nullable PlayerEntity attacking);
 
 	void setTarget(@Nullable LivingEntity target);
 

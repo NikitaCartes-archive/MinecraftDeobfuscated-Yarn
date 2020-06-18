@@ -154,7 +154,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double getVelocityz() {
+	public double getVelocityZ() {
 		return (double)this.velocityZ / 8000.0;
 	}
 

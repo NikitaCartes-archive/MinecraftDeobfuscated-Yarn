@@ -4,7 +4,6 @@ import java.util.Locale;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.RuinedPortalFeaturePiece;
 
 public interface StructurePieceType {
 	StructurePieceType MINESHAFT_CORRIDOR = register(MineshaftGenerator.MineshaftCorridor::new, "MSCorridor");
@@ -44,7 +43,7 @@ public interface StructurePieceType {
 	StructurePieceType JUNGLE_TEMPLE = register(JungleTempleGenerator::new, "TeJP");
 	StructurePieceType OCEAN_TEMPLE = register(OceanRuinGenerator.Piece::new, "ORP");
 	StructurePieceType IGLOO = register(IglooGenerator.Piece::new, "Iglu");
-	StructurePieceType RUINED_PORTAL = register(RuinedPortalFeaturePiece::new, "RUPO");
+	StructurePieceType RUINED_PORTAL = register(RuinedPortalStructurePiece::new, "RUPO");
 	StructurePieceType SWAMP_HUT = register(SwampHutGenerator::new, "TeSH");
 	StructurePieceType DESERT_TEMPLE = register(DesertTempleGenerator::new, "TeDP");
 	StructurePieceType OCEAN_MONUMENT_BASE = register(OceanMonumentGenerator.Base::new, "OMB");

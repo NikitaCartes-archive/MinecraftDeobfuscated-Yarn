@@ -42,7 +42,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = register("monster_room", new DungeonFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> BLUE_ICE = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> ICEBERG = register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));
-	public static final Feature<BoulderFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(BoulderFeatureConfig.CODEC));
+	public static final Feature<ForestRockFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(ForestRockFeatureConfig.CODEC));
 	public static final Feature<DiskFeatureConfig> DISK = register("disk", new DiskFeature(DiskFeatureConfig.CODEC));
 	public static final Feature<IcePatchFeatureConfig> ICE_PATCH = register("ice_patch", new IcePatchFeature(IcePatchFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> LAKE = register("lake", new LakeFeature(SingleStateFeatureConfig.CODEC));

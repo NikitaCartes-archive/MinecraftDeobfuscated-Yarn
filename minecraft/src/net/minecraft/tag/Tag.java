@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import net.minecraft.class_5394;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -54,7 +53,7 @@ public interface Tag<T> {
 	}
 
 	static <T> Tag<T> of(Set<T> set) {
-		return class_5394.method_29900(set);
+		return SetTag.method_29900(set);
 	}
 
 	/**

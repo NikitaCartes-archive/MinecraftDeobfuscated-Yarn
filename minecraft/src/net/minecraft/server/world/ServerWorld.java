@@ -56,8 +56,6 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.raid.Raid;
-import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -106,6 +104,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.village.raid.Raid;
+import net.minecraft.village.raid.RaidManager;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
@@ -137,7 +137,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ServerWorld extends World implements ServerWorldAccess {
-	public static final BlockPos field_25144 = new BlockPos(100, 50, 0);
+	public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectLinkedOpenHashMap<>();
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
@@ -197,7 +197,7 @@ public class ServerWorld extends World implements ServerWorldAccess {
 			server.getPlayerManager().getViewDistance(),
 			server.syncChunkWrites(),
 			generationProgressListener,
-			() -> server.method_30002().getPersistentStateManager()
+			() -> server.getOverworld().getPersistentStateManager()
 		);
 		this.portalForcer = new PortalForcer(this);
 		this.calculateAmbientDarkness();
@@ -301,24 +301,26 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		}
 
 		if (this.rainGradientPrev != this.rainGradient) {
-			this.server.getPlayerManager().sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25652, this.rainGradient), this.getRegistryKey());
+			this.server
+				.getPlayerManager()
+				.sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient), this.getRegistryKey());
 		}
 
 		if (this.thunderGradientPrev != this.thunderGradient) {
 			this.server
 				.getPlayerManager()
-				.sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25653, this.thunderGradient), this.getRegistryKey());
+				.sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient), this.getRegistryKey());
 		}
 
 		if (bl != this.isRaining()) {
 			if (bl) {
-				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25647, 0.0F));
+				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STOPPED, 0.0F));
 			} else {
-				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25646, 0.0F));
+				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, 0.0F));
 			}
 
-			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25652, this.rainGradient));
-			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25653, this.thunderGradient));
+			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient));
+			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient));
 		}
 
 		if (this.allPlayersSleeping
@@ -1147,17 +1149,17 @@ public class ServerWorld extends World implements ServerWorldAccess {
 	@Nullable
 	@Override
 	public MapState getMapState(String id) {
-		return this.getServer().method_30002().getPersistentStateManager().get(() -> new MapState(id), id);
+		return this.getServer().getOverworld().getPersistentStateManager().get(() -> new MapState(id), id);
 	}
 
 	@Override
 	public void putMapState(MapState mapState) {
-		this.getServer().method_30002().getPersistentStateManager().set(mapState);
+		this.getServer().getOverworld().getPersistentStateManager().set(mapState);
 	}
 
 	@Override
 	public int getNextMapId() {
-		return this.getServer().method_30002().getPersistentStateManager().<IdCountsState>getOrCreate(IdCountsState::new, "idcounts").getNextMapId();
+		return this.getServer().getOverworld().getPersistentStateManager().<IdCountsState>getOrCreate(IdCountsState::new, "idcounts").getNextMapId();
 	}
 
 	public void setSpawnPos(BlockPos pos) {
@@ -1457,7 +1459,7 @@ public class ServerWorld extends World implements ServerWorldAccess {
 		return "ServerLevel[" + this.field_24456.getLevelName() + "]";
 	}
 
-	public boolean method_28125() {
+	public boolean isFlat() {
 		return this.server.getSaveProperties().getGeneratorOptions().isFlatWorld();
 	}
 
@@ -1467,16 +1469,16 @@ public class ServerWorld extends World implements ServerWorldAccess {
 	}
 
 	@Nullable
-	public EnderDragonFight method_29198() {
+	public EnderDragonFight getEnderDragonFight() {
 		return this.enderDragonFight;
 	}
 
-	public static void method_29200(ServerWorld serverWorld) {
-		BlockPos blockPos = field_25144;
+	public static void createEndSpawnPlatform(ServerWorld world) {
+		BlockPos blockPos = END_SPAWN_POS;
 		int i = blockPos.getX();
 		int j = blockPos.getY() - 2;
 		int k = blockPos.getZ();
-		BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach(blockPosx -> serverWorld.setBlockState(blockPosx, Blocks.AIR.getDefaultState()));
-		BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach(blockPosx -> serverWorld.setBlockState(blockPosx, Blocks.OBSIDIAN.getDefaultState()));
+		BlockPos.iterate(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2).forEach(blockPosx -> world.setBlockState(blockPosx, Blocks.AIR.getDefaultState()));
+		BlockPos.iterate(i - 2, j, k - 2, i + 2, j, k + 2).forEach(blockPosx -> world.setBlockState(blockPosx, Blocks.OBSIDIAN.getDefaultState()));
 	}
 }

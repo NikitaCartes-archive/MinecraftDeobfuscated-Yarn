@@ -38,7 +38,7 @@ public class CoralBlockBlock extends Block {
 	protected boolean isInWater(BlockView world, BlockPos pos) {
 		for (Direction direction : Direction.values()) {
 			FluidState fluidState = world.getFluidState(pos.offset(direction));
-			if (fluidState.matches(FluidTags.WATER)) {
+			if (fluidState.isIn(FluidTags.WATER)) {
 				return true;
 			}
 		}

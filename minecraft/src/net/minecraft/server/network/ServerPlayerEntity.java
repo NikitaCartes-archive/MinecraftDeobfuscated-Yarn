@@ -611,39 +611,39 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Nullable
 	@Override
-	public Entity changeDimension(ServerWorld serverWorld) {
+	public Entity changeDimension(ServerWorld destination) {
 		this.inTeleportationState = true;
-		ServerWorld serverWorld2 = this.getServerWorld();
-		RegistryKey<World> registryKey = serverWorld2.getRegistryKey();
-		if (registryKey == World.END && serverWorld.getRegistryKey() == World.OVERWORLD) {
+		ServerWorld serverWorld = this.getServerWorld();
+		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
+		if (registryKey == World.END && destination.getRegistryKey() == World.OVERWORLD) {
 			this.detach();
 			this.getServerWorld().removePlayer(this);
 			if (!this.notInAnyWorld) {
 				this.notInAnyWorld = true;
-				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25649, this.seenCredits ? 0.0F : 1.0F));
+				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_WON, this.seenCredits ? 0.0F : 1.0F));
 				this.seenCredits = true;
 			}
 
 			return this;
 		} else {
-			WorldProperties worldProperties = serverWorld.getLevelProperties();
+			WorldProperties worldProperties = destination.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						serverWorld.getDimensionRegistryKey(),
-						serverWorld.getRegistryKey(),
-						BiomeAccess.hashSeed(serverWorld.getSeed()),
+						destination.getDimensionRegistryKey(),
+						destination.getRegistryKey(),
+						BiomeAccess.hashSeed(destination.getSeed()),
 						this.interactionManager.getGameMode(),
 						this.interactionManager.method_30119(),
-						serverWorld.isDebugWorld(),
-						serverWorld.method_28125(),
+						destination.isDebugWorld(),
+						destination.isFlat(),
 						true
 					)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
-			serverWorld2.removePlayer(this);
+			serverWorld.removePlayer(this);
 			this.removed = false;
 			double d = this.getX();
 			double e = this.getY();
@@ -651,21 +651,21 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			float g = this.pitch;
 			float h = this.yaw;
 			float i = h;
-			serverWorld2.getProfiler().push("moving");
-			if (serverWorld.getRegistryKey() == World.END) {
-				BlockPos blockPos = ServerWorld.field_25144;
+			serverWorld.getProfiler().push("moving");
+			if (destination.getRegistryKey() == World.END) {
+				BlockPos blockPos = ServerWorld.END_SPAWN_POS;
 				d = (double)blockPos.getX();
 				e = (double)blockPos.getY();
 				f = (double)blockPos.getZ();
 				h = 90.0F;
 				g = 0.0F;
 			} else {
-				if (registryKey == World.OVERWORLD && serverWorld.getRegistryKey() == World.NETHER) {
+				if (registryKey == World.OVERWORLD && destination.getRegistryKey() == World.NETHER) {
 					this.enteredNetherPos = this.getPos();
 				}
 
-				DimensionType dimensionType = serverWorld2.getDimension();
-				DimensionType dimensionType2 = serverWorld.getDimension();
+				DimensionType dimensionType = serverWorld.getDimension();
+				DimensionType dimensionType2 = destination.getDimension();
 				double j = 8.0;
 				if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
 					d /= 8.0;
@@ -677,35 +677,35 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			}
 
 			this.refreshPositionAndAngles(d, e, f, h, g);
-			serverWorld2.getProfiler().pop();
-			serverWorld2.getProfiler().push("placing");
-			double k = Math.min(-2.9999872E7, serverWorld.getWorldBorder().getBoundWest() + 16.0);
-			double j = Math.min(-2.9999872E7, serverWorld.getWorldBorder().getBoundNorth() + 16.0);
-			double l = Math.min(2.9999872E7, serverWorld.getWorldBorder().getBoundEast() - 16.0);
-			double m = Math.min(2.9999872E7, serverWorld.getWorldBorder().getBoundSouth() - 16.0);
+			serverWorld.getProfiler().pop();
+			serverWorld.getProfiler().push("placing");
+			double k = Math.min(-2.9999872E7, destination.getWorldBorder().getBoundWest() + 16.0);
+			double j = Math.min(-2.9999872E7, destination.getWorldBorder().getBoundNorth() + 16.0);
+			double l = Math.min(2.9999872E7, destination.getWorldBorder().getBoundEast() - 16.0);
+			double m = Math.min(2.9999872E7, destination.getWorldBorder().getBoundSouth() - 16.0);
 			d = MathHelper.clamp(d, k, l);
 			f = MathHelper.clamp(f, j, m);
 			this.refreshPositionAndAngles(d, e, f, h, g);
-			if (serverWorld.getRegistryKey() == World.END) {
+			if (destination.getRegistryKey() == World.END) {
 				int n = MathHelper.floor(this.getX());
 				int o = MathHelper.floor(this.getY()) - 1;
 				int p = MathHelper.floor(this.getZ());
-				ServerWorld.method_29200(serverWorld);
+				ServerWorld.createEndSpawnPlatform(destination);
 				this.refreshPositionAndAngles((double)n, (double)o, (double)p, h, 0.0F);
 				this.setVelocity(Vec3d.ZERO);
-			} else if (!serverWorld.getPortalForcer().usePortal(this, i)) {
-				serverWorld.getPortalForcer().createPortal(this);
-				serverWorld.getPortalForcer().usePortal(this, i);
+			} else if (!destination.getPortalForcer().usePortal(this, i)) {
+				destination.getPortalForcer().createPortal(this);
+				destination.getPortalForcer().usePortal(this, i);
 			}
 
-			serverWorld2.getProfiler().pop();
-			this.setWorld(serverWorld);
-			serverWorld.onPlayerChangeDimension(this);
-			this.dimensionChanged(serverWorld2);
+			serverWorld.getProfiler().pop();
+			this.setWorld(destination);
+			destination.onPlayerChangeDimension(this);
+			this.dimensionChanged(serverWorld);
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), h, g);
-			this.interactionManager.setWorld(serverWorld);
+			this.interactionManager.setWorld(destination);
 			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
-			playerManager.sendWorldInfo(this, serverWorld);
+			playerManager.sendWorldInfo(this, destination);
 			playerManager.sendPlayerStatus(this);
 
 			for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
@@ -1189,7 +1189,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void setGameMode(GameMode gameMode) {
 		this.interactionManager.method_30118(gameMode);
-		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25648, (float)gameMode.getId()));
+		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_MODE_CHANGED, (float)gameMode.getId()));
 		if (gameMode == GameMode.SPECTATOR) {
 			this.dropShoulderEntities();
 			this.stopRiding();
@@ -1240,11 +1240,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		return string.substring(0, string.indexOf(":"));
 	}
 
-	public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
-		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
-		this.clientChatColorsEnabled = clientSettingsC2SPacket.hasChatColors();
-		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
-		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.LEFT ? 0 : 1));
+	public void setClientSettings(ClientSettingsC2SPacket packet) {
+		this.clientChatVisibility = packet.getChatVisibility();
+		this.clientChatColorsEnabled = packet.hasChatColors();
+		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.getPlayerModelBitMask());
+		this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() == Arm.LEFT ? 0 : 1));
 	}
 
 	public ChatVisibility getClientChatVisibility() {
@@ -1328,7 +1328,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Nullable
-	public Text method_14206() {
+	public Text getPlayerListName() {
 		return null;
 	}
 
@@ -1367,7 +1367,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 						this.interactionManager.getGameMode(),
 						this.interactionManager.method_30119(),
 						targetWorld.isDebugWorld(),
-						targetWorld.method_28125(),
+						targetWorld.isFlat(),
 						true
 					)
 				);

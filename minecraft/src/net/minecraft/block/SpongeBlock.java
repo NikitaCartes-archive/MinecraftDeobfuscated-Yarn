@@ -51,7 +51,7 @@ public class SpongeBlock extends Block {
 				BlockState blockState = world.getBlockState(blockPos2);
 				FluidState fluidState = world.getFluidState(blockPos2);
 				Material material = blockState.getMaterial();
-				if (fluidState.matches(FluidTags.WATER)) {
+				if (fluidState.isIn(FluidTags.WATER)) {
 					if (blockState.getBlock() instanceof FluidDrainable && ((FluidDrainable)blockState.getBlock()).tryDrainFluid(world, blockPos2, blockState) != Fluids.EMPTY
 						)
 					 {

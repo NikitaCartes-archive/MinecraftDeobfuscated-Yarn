@@ -88,7 +88,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		do {
 			mutable.move(Direction.UP);
-		} while (worldAccess.getFluidState(mutable).matches(FluidTags.LAVA));
+		} while (worldAccess.getFluidState(mutable).isIn(FluidTags.LAVA));
 
 		return worldAccess.getBlockState(mutable).isAir();
 	}
@@ -232,7 +232,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		}
 
 		for (BlockPos blockPos : set) {
-			if (!this.world.getFluidState(blockPos).matches(FluidTags.LAVA)) {
+			if (!this.world.getFluidState(blockPos).isIn(FluidTags.LAVA)) {
 				for (EntityPose entityPose : passenger.getPoses()) {
 					double f = this.world.getCollisionHeightAt(blockPos);
 					if (Dismounting.canDismountInBlock(f)) {
@@ -328,9 +328,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	private void updateFloating() {
 		if (this.isInLava()) {
 			ShapeContext shapeContext = ShapeContext.of(this);
-			if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.world.getFluidState(this.getBlockPos().up()).matches(FluidTags.LAVA)
-				)
-			 {
+			if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.world.getFluidState(this.getBlockPos().up()).isIn(FluidTags.LAVA)) {
 				this.onGround = true;
 			} else {
 				this.setVelocity(this.getVelocity().multiply(0.5).add(0.0, 0.05, 0.0));
@@ -379,7 +377,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return world.getBlockState(pos).getFluidState().matches(FluidTags.LAVA) ? 10.0F : 0.0F;
+		return world.getBlockState(pos).getFluidState().isIn(FluidTags.LAVA) ? 10.0F : 0.0F;
 	}
 
 	public StriderEntity createChild(PassiveEntity passiveEntity) {

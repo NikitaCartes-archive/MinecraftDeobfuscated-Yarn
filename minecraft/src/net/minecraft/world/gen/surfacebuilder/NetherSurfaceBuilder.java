@@ -36,7 +36,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 		long m,
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
-		int n = l + 1;
+		int n = l;
 		int o = i & 15;
 		int p = j & 15;
 		double e = 0.03125;
@@ -55,8 +55,9 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 				r = -1;
 			} else if (blockState5.isOf(blockState.getBlock())) {
 				if (r == -1) {
+					boolean bl3 = false;
 					if (q <= 0) {
-						blockState3 = CAVE_AIR;
+						bl3 = true;
 						blockState4 = ternarySurfaceConfig.getUnderMaterial();
 					} else if (s >= n - 4 && s <= n + 1) {
 						blockState3 = ternarySurfaceConfig.getTopMaterial();
@@ -72,7 +73,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 						}
 					}
 
-					if (s < n && blockState3.isAir()) {
+					if (s < n && bl3) {
 						blockState3 = blockState2;
 					}
 
