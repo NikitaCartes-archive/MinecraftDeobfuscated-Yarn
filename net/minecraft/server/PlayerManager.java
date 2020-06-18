@@ -144,7 +144,7 @@ public abstract class PlayerManager {
         ServerWorld serverWorld = this.server.getWorld(registryKey);
         if (serverWorld == null) {
             LOGGER.warn("Unknown respawn dimension {}, defaulting to overworld", (Object)registryKey);
-            serverWorld2 = this.server.method_30002();
+            serverWorld2 = this.server.getOverworld();
         } else {
             serverWorld2 = serverWorld;
         }
@@ -161,7 +161,7 @@ public abstract class PlayerManager {
         GameRules gameRules = serverWorld2.getGameRules();
         boolean bl = gameRules.getBoolean(GameRules.field_20638);
         boolean bl2 = gameRules.getBoolean(GameRules.field_19401);
-        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getEntityId(), player.interactionManager.getGameMode(), player.interactionManager.method_30119(), BiomeAccess.hashSeed(serverWorld2.getSeed()), worldProperties.isHardcore(), this.server.getWorldRegistryKeys(), this.field_24626, serverWorld2.getDimensionRegistryKey(), serverWorld2.getRegistryKey(), this.getMaxPlayerCount(), this.viewDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.method_28125()));
+        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getEntityId(), player.interactionManager.getGameMode(), player.interactionManager.method_30119(), BiomeAccess.hashSeed(serverWorld2.getSeed()), worldProperties.isHardcore(), this.server.getWorldRegistryKeys(), this.field_24626, serverWorld2.getDimensionRegistryKey(), serverWorld2.getRegistryKey(), this.getMaxPlayerCount(), this.viewDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat()));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
         serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.abilities));
@@ -330,27 +330,27 @@ public abstract class PlayerManager {
     }
 
     @Nullable
-    public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-        if (this.bannedProfiles.contains(gameProfile)) {
-            BannedPlayerEntry bannedPlayerEntry = (BannedPlayerEntry)this.bannedProfiles.get(gameProfile);
+    public Text checkCanJoin(SocketAddress address, GameProfile profile) {
+        if (this.bannedProfiles.contains(profile)) {
+            BannedPlayerEntry bannedPlayerEntry = (BannedPlayerEntry)this.bannedProfiles.get(profile);
             TranslatableText mutableText = new TranslatableText("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
             if (bannedPlayerEntry.getExpiryDate() != null) {
                 mutableText.append(new TranslatableText("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
             }
             return mutableText;
         }
-        if (!this.isWhitelisted(gameProfile)) {
+        if (!this.isWhitelisted(profile)) {
             return new TranslatableText("multiplayer.disconnect.not_whitelisted");
         }
-        if (this.bannedIps.isBanned(socketAddress)) {
-            BannedIpEntry bannedIpEntry = this.bannedIps.get(socketAddress);
+        if (this.bannedIps.isBanned(address)) {
+            BannedIpEntry bannedIpEntry = this.bannedIps.get(address);
             TranslatableText mutableText = new TranslatableText("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
             if (bannedIpEntry.getExpiryDate() != null) {
                 mutableText.append(new TranslatableText("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
             }
             return mutableText;
         }
-        if (this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameProfile)) {
+        if (this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(profile)) {
             return new TranslatableText("multiplayer.disconnect.server_full");
         }
         return null;
@@ -371,7 +371,7 @@ public abstract class PlayerManager {
         for (ServerPlayerEntity serverPlayerEntity : list) {
             serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login"));
         }
-        ServerWorld serverWorld = this.server.method_30002();
+        ServerWorld serverWorld = this.server.getOverworld();
         ServerPlayerInteractionManager serverPlayerInteractionManager = this.server.isDemo() ? new DemoServerPlayerInteractionManager(serverWorld) : new ServerPlayerInteractionManager(serverWorld);
         return new ServerPlayerEntity(this.server, serverWorld, profile, serverPlayerInteractionManager);
     }
@@ -383,7 +383,7 @@ public abstract class PlayerManager {
         boolean bl2 = player.isSpawnPointSet();
         ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
         Optional<Object> optional = serverWorld != null && blockPos != null ? PlayerEntity.findRespawnPosition(serverWorld, blockPos, bl2, bl) : Optional.empty();
-        ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.method_30002();
+        ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();
         ServerPlayerInteractionManager serverPlayerInteractionManager = this.server.isDemo() ? new DemoServerPlayerInteractionManager(serverWorld2) : new ServerPlayerInteractionManager(serverWorld2);
         ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), serverPlayerInteractionManager);
         serverPlayerEntity.networkHandler = player.networkHandler;
@@ -401,13 +401,13 @@ public abstract class PlayerManager {
             serverPlayerEntity.setSpawnPoint(serverWorld2.getRegistryKey(), blockPos, bl2, false);
             bl3 = !bl && serverWorld2.getBlockState(blockPos).getBlock() instanceof RespawnAnchorBlock;
         } else if (blockPos != null) {
-            serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25645, 0.0f));
+            serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0f));
         }
         while (!serverWorld2.doesNotCollide(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
             serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
         }
         WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();
-        serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.world.getDimensionRegistryKey(), serverPlayerEntity.world.getRegistryKey(), BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()), serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.interactionManager.method_30119(), serverPlayerEntity.getServerWorld().isDebugWorld(), serverPlayerEntity.getServerWorld().method_28125(), bl));
+        serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.world.getDimensionRegistryKey(), serverPlayerEntity.world.getRegistryKey(), BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()), serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.interactionManager.method_30119(), serverPlayerEntity.getServerWorld().isDebugWorld(), serverPlayerEntity.getServerWorld().isFlat(), bl));
         serverPlayerEntity.networkHandler.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch);
         serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld2.getSpawnPos()));
         serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
@@ -572,14 +572,14 @@ public abstract class PlayerManager {
     }
 
     public void sendWorldInfo(ServerPlayerEntity player, ServerWorld world) {
-        WorldBorder worldBorder = this.server.method_30002().getWorldBorder();
+        WorldBorder worldBorder = this.server.getOverworld().getWorldBorder();
         player.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
         player.networkHandler.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
         player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos()));
         if (world.isRaining()) {
-            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25646, 0.0f));
-            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25652, world.getRainGradient(1.0f)));
-            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25653, world.getThunderGradient(1.0f)));
+            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, 0.0f));
+            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, world.getRainGradient(1.0f)));
+            player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, world.getThunderGradient(1.0f)));
         }
     }
 

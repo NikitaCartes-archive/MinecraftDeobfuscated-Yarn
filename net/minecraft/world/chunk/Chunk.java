@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a scoped, modifable view of biomes, block states, fluid states and block entities.
+ * Represents a scoped, modifiable view of biomes, block states, fluid states and block entities.
  */
 public interface Chunk
 extends BlockView,

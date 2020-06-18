@@ -23,8 +23,8 @@ extends JComponent {
     private final MinecraftServer server;
     private final Timer timer;
 
-    public PlayerStatsGui(MinecraftServer minecraftServer) {
-        this.server = minecraftServer;
+    public PlayerStatsGui(MinecraftServer server) {
+        this.server = server;
         this.setPreferredSize(new Dimension(456, 246));
         this.setMinimumSize(new Dimension(456, 246));
         this.setMaximumSize(new Dimension(456, 246));

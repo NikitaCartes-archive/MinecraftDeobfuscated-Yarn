@@ -28,7 +28,7 @@ extends Task<MobEntityWithAi> {
     private final MemoryModuleType<GlobalPos> targetMemoryModuleType;
     private final boolean onlyRunIfChild;
     private long positionExpireTimeLimit;
-    private final Long2ObjectMap<class_5397> foundPositionsToExpiry = new Long2ObjectOpenHashMap<class_5397>();
+    private final Long2ObjectMap<RetryMarker> foundPositionsToExpiry = new Long2ObjectOpenHashMap<RetryMarker>();
 
     public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl) {
         super(FindPointOfInterestTask.method_29245(memoryModuleType, memoryModuleType2));
@@ -66,16 +66,16 @@ extends Task<MobEntityWithAi> {
     protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
         this.positionExpireTimeLimit = l + 20L + (long)serverWorld.getRandom().nextInt(20);
         PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-        this.foundPositionsToExpiry.long2ObjectEntrySet().removeIf(entry -> !((class_5397)entry.getValue()).method_29927(l));
+        this.foundPositionsToExpiry.long2ObjectEntrySet().removeIf(entry -> !((RetryMarker)entry.getValue()).method_29927(l));
         Predicate<BlockPos> predicate = blockPos -> {
-            class_5397 lv = (class_5397)this.foundPositionsToExpiry.get(blockPos.asLong());
-            if (lv == null) {
+            RetryMarker retryMarker = (RetryMarker)this.foundPositionsToExpiry.get(blockPos.asLong());
+            if (retryMarker == null) {
                 return true;
             }
-            if (!lv.method_29928(l)) {
+            if (!retryMarker.method_29928(l)) {
                 return false;
             }
-            lv.method_29926(l);
+            retryMarker.method_29926(l);
             return true;
         };
         Set<BlockPos> set = pointOfInterestStorage.getPositions(this.poiType.getCompletionCondition(), predicate, mobEntityWithAi.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE).limit(5L).collect(Collectors.toSet());
@@ -90,39 +90,39 @@ extends Task<MobEntityWithAi> {
             });
         } else {
             for (BlockPos blockPos2 : set) {
-                this.foundPositionsToExpiry.computeIfAbsent(blockPos2.asLong(), m -> new class_5397(mobEntityWithAi.world.random, l));
+                this.foundPositionsToExpiry.computeIfAbsent(blockPos2.asLong(), m -> new RetryMarker(mobEntityWithAi.world.random, l));
             }
         }
     }
 
-    static class class_5397 {
-        private final Random field_25600;
-        private long field_25601;
-        private long field_25602;
-        private int field_25603;
+    static class RetryMarker {
+        private final Random random;
+        private long previousAttemptAt;
+        private long nextScheduledAttemptAt;
+        private int currentDelay;
 
-        class_5397(Random random, long l) {
-            this.field_25600 = random;
-            this.method_29926(l);
+        RetryMarker(Random random, long time) {
+            this.random = random;
+            this.method_29926(time);
         }
 
-        public void method_29926(long l) {
-            this.field_25601 = l;
-            int i = this.field_25603 + this.field_25600.nextInt(40) + 40;
-            this.field_25603 = Math.min(i, 400);
-            this.field_25602 = l + (long)this.field_25603;
+        public void method_29926(long time) {
+            this.previousAttemptAt = time;
+            int i = this.currentDelay + this.random.nextInt(40) + 40;
+            this.currentDelay = Math.min(i, 400);
+            this.nextScheduledAttemptAt = time + (long)this.currentDelay;
         }
 
-        public boolean method_29927(long l) {
-            return l - this.field_25601 < 400L;
+        public boolean method_29927(long time) {
+            return time - this.previousAttemptAt < 400L;
         }
 
-        public boolean method_29928(long l) {
-            return l >= this.field_25602;
+        public boolean method_29928(long time) {
+            return time >= this.nextScheduledAttemptAt;
         }
 
         public String toString() {
-            return "RetryMarker{, previousAttemptAt=" + this.field_25601 + ", nextScheduledAttemptAt=" + this.field_25602 + ", currentDelay=" + this.field_25603 + '}';
+            return "RetryMarker{, previousAttemptAt=" + this.previousAttemptAt + ", nextScheduledAttemptAt=" + this.nextScheduledAttemptAt + ", currentDelay=" + this.currentDelay + '}';
         }
     }
 }

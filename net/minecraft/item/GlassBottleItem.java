@@ -49,7 +49,7 @@ extends Item {
             if (!world.canPlayerModifyAt(user, blockPos)) {
                 return TypedActionResult.pass(itemStack);
             }
-            if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
+            if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
                 world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0f, 1.0f);
                 return TypedActionResult.method_29237(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)), world.isClient());
             }

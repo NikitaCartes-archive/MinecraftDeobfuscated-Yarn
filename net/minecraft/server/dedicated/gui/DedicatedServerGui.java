@@ -44,14 +44,14 @@ extends JComponent {
     private final Collection<Runnable> stopTasks = Lists.newArrayList();
     private final AtomicBoolean stopped = new AtomicBoolean();
 
-    public static DedicatedServerGui create(final MinecraftDedicatedServer minecraftDedicatedServer) {
+    public static DedicatedServerGui create(final MinecraftDedicatedServer server) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception exception) {
             // empty catch block
         }
         final JFrame jFrame = new JFrame("Minecraft server");
-        final DedicatedServerGui dedicatedServerGui = new DedicatedServerGui(minecraftDedicatedServer);
+        final DedicatedServerGui dedicatedServerGui = new DedicatedServerGui(server);
         jFrame.setDefaultCloseOperation(2);
         jFrame.add(dedicatedServerGui);
         jFrame.pack();
@@ -63,7 +63,7 @@ extends JComponent {
             public void windowClosing(WindowEvent windowEvent) {
                 if (!dedicatedServerGui.stopped.getAndSet(true)) {
                     jFrame.setTitle("Minecraft server - shutting down!");
-                    minecraftDedicatedServer.stop(true);
+                    server.stop(true);
                     dedicatedServerGui.runStopTasks();
                 }
             }

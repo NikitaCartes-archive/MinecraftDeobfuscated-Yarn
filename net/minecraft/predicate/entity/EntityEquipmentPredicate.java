@@ -9,10 +9,10 @@ import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.raid.Raid;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.village.raid.Raid;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityEquipmentPredicate {

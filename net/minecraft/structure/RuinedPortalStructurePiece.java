@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.feature;
+package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.kinds.Applicative;
@@ -19,7 +19,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.VineBlock;
-import net.minecraft.class_5399;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -32,6 +31,7 @@ import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
 import net.minecraft.structure.processor.BlockAgeStructureProcessor;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
+import net.minecraft.structure.processor.LavaSubmergedBlockStructureProcessor;
 import net.minecraft.structure.processor.RuleStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorRule;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
@@ -53,7 +53,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RuinedPortalFeaturePiece
+public class RuinedPortalStructurePiece
 extends SimpleStructurePiece {
     private static final Logger field_24992 = LogManager.getLogger();
     private final Identifier template;
@@ -62,7 +62,7 @@ extends SimpleStructurePiece {
     private final VerticalPlacement verticalPlacement;
     private final Properties properties;
 
-    public RuinedPortalFeaturePiece(BlockPos pos, VerticalPlacement verticalPlacement, Properties properties, Identifier template, Structure structure, BlockRotation rotation, BlockMirror mirror, BlockPos center) {
+    public RuinedPortalStructurePiece(BlockPos pos, VerticalPlacement verticalPlacement, Properties properties, Identifier template, Structure structure, BlockRotation rotation, BlockMirror mirror, BlockPos center) {
         super(StructurePieceType.RUINED_PORTAL, 0);
         this.pos = pos;
         this.template = template;
@@ -73,7 +73,7 @@ extends SimpleStructurePiece {
         this.processProperties(structure, center);
     }
 
-    public RuinedPortalFeaturePiece(StructureManager manager, CompoundTag tag) {
+    public RuinedPortalStructurePiece(StructureManager manager, CompoundTag tag) {
         super(StructurePieceType.RUINED_PORTAL, tag);
         this.template = new Identifier(tag.getString("Template"));
         this.rotation = BlockRotation.valueOf(tag.getString("Rotation"));
@@ -97,12 +97,12 @@ extends SimpleStructurePiece {
     private void processProperties(Structure structure, BlockPos center) {
         BlockIgnoreStructureProcessor blockIgnoreStructureProcessor = this.properties.airPocket ? BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS : BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS;
         ArrayList<StructureProcessorRule> list = Lists.newArrayList();
-        list.add(RuinedPortalFeaturePiece.createReplacementRule(Blocks.GOLD_BLOCK, 0.3f, Blocks.AIR));
+        list.add(RuinedPortalStructurePiece.createReplacementRule(Blocks.GOLD_BLOCK, 0.3f, Blocks.AIR));
         list.add(this.createLavaReplacementRule());
         if (!this.properties.cold) {
-            list.add(RuinedPortalFeaturePiece.createReplacementRule(Blocks.NETHERRACK, 0.07f, Blocks.MAGMA_BLOCK));
+            list.add(RuinedPortalStructurePiece.createReplacementRule(Blocks.NETHERRACK, 0.07f, Blocks.MAGMA_BLOCK));
         }
-        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirror(this.mirror).setPosition(center).addProcessor(blockIgnoreStructureProcessor).addProcessor(new RuleStructureProcessor(list)).addProcessor(new BlockAgeStructureProcessor(this.properties.mossiness)).addProcessor(new class_5399());
+        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirror(this.mirror).setPosition(center).addProcessor(blockIgnoreStructureProcessor).addProcessor(new RuleStructureProcessor(list)).addProcessor(new BlockAgeStructureProcessor(this.properties.mossiness)).addProcessor(new LavaSubmergedBlockStructureProcessor());
         if (this.properties.replaceWithBlackstone) {
             structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);
         }
@@ -111,12 +111,12 @@ extends SimpleStructurePiece {
 
     private StructureProcessorRule createLavaReplacementRule() {
         if (this.verticalPlacement == VerticalPlacement.ON_OCEAN_FLOOR) {
-            return RuinedPortalFeaturePiece.createReplacementRule(Blocks.LAVA, Blocks.MAGMA_BLOCK);
+            return RuinedPortalStructurePiece.createReplacementRule(Blocks.LAVA, Blocks.MAGMA_BLOCK);
         }
         if (this.properties.cold) {
-            return RuinedPortalFeaturePiece.createReplacementRule(Blocks.LAVA, Blocks.NETHERRACK);
+            return RuinedPortalStructurePiece.createReplacementRule(Blocks.LAVA, Blocks.NETHERRACK);
         }
-        return RuinedPortalFeaturePiece.createReplacementRule(Blocks.LAVA, 0.2f, Blocks.MAGMA_BLOCK);
+        return RuinedPortalStructurePiece.createReplacementRule(Blocks.LAVA, 0.2f, Blocks.MAGMA_BLOCK);
     }
 
     @Override
@@ -206,7 +206,7 @@ extends SimpleStructurePiece {
                 if (r >= k) continue;
                 float f = fs[r];
                 if (!(random.nextDouble() < (double)f)) continue;
-                int s = RuinedPortalFeaturePiece.getBaseHeight(world, o, p, this.verticalPlacement);
+                int s = RuinedPortalStructurePiece.getBaseHeight(world, o, p, this.verticalPlacement);
                 int t = bl ? s : Math.min(this.boundingBox.minY, s);
                 mutable.set(o, t, p);
                 if (Math.abs(t - this.boundingBox.minY) > 3 || !this.canFillNetherrack(world, mutable)) continue;
@@ -233,7 +233,7 @@ extends SimpleStructurePiece {
     }
 
     private static int getBaseHeight(WorldAccess world, int x, int y, VerticalPlacement verticalPlacement) {
-        return world.getTopY(RuinedPortalFeaturePiece.getHeightmapType(verticalPlacement), x, y) - 1;
+        return world.getTopY(RuinedPortalStructurePiece.getHeightmapType(verticalPlacement), x, y) - 1;
     }
 
     public static Heightmap.Type getHeightmapType(VerticalPlacement verticalPlacement) {
@@ -288,13 +288,13 @@ extends SimpleStructurePiece {
         public Properties() {
         }
 
-        public <T> Properties(boolean bl, float f, boolean bl2, boolean bl3, boolean bl4, boolean bl5) {
-            this.cold = bl;
-            this.mossiness = f;
-            this.airPocket = bl2;
-            this.overgrown = bl3;
-            this.vines = bl4;
-            this.replaceWithBlackstone = bl5;
+        public <T> Properties(boolean cold, float mossiness, boolean airPocket, boolean overgrown, boolean vines, boolean replaceWithBlackstone) {
+            this.cold = cold;
+            this.mossiness = mossiness;
+            this.airPocket = airPocket;
+            this.overgrown = overgrown;
+            this.vines = vines;
+            this.replaceWithBlackstone = replaceWithBlackstone;
         }
     }
 }

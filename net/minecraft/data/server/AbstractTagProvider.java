@@ -20,10 +20,10 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.class_5394;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.tag.SetTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -49,7 +49,7 @@ implements DataProvider {
     public void run(DataCache cache) {
         this.tagBuilders.clear();
         this.configure();
-        class_5394 tag = class_5394.method_29898();
+        SetTag tag = SetTag.empty();
         Function<Identifier, Tag> function = identifier -> this.tagBuilders.containsKey(identifier) ? tag : null;
         Function<Identifier, Object> function2 = identifier -> this.registry.getOrEmpty((Identifier)identifier).orElse(null);
         this.tagBuilders.forEach((identifier, builder) -> {

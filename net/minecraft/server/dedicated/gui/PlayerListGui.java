@@ -12,9 +12,9 @@ extends JList<String> {
     private final MinecraftServer server;
     private int tick;
 
-    public PlayerListGui(MinecraftServer minecraftServer) {
-        this.server = minecraftServer;
-        minecraftServer.addServerGuiTickable(this::tick);
+    public PlayerListGui(MinecraftServer server) {
+        this.server = server;
+        server.addServerGuiTickable(this::tick);
     }
 
     public void tick() {

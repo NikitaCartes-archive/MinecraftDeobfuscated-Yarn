@@ -382,7 +382,7 @@ AutoCloseable {
             double g = voxelShape.getEndingCoord(Direction.Axis.Y, d, e);
             double h = fluidState.getHeight(worldView, (BlockPos)blockPos2);
             double m = Math.max(g, h);
-            DefaultParticleType particleEffect = fluidState.matches(FluidTags.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState) ? ParticleTypes.SMOKE : ParticleTypes.RAIN;
+            DefaultParticleType particleEffect = fluidState.isIn(FluidTags.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState) ? ParticleTypes.SMOKE : ParticleTypes.RAIN;
             this.client.world.addParticle(particleEffect, (double)blockPos2.getX() + d, (double)blockPos2.getY() + m, (double)blockPos2.getZ() + e, 0.0, 0.0, 0.0);
         }
         if (blockPos2 != null && random.nextInt(3) < this.field_20793++) {
@@ -885,7 +885,7 @@ AutoCloseable {
         this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f);
         this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f);
         this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f);
-        if (this.world.getSkyProperties().method_29993()) {
+        if (this.world.getSkyProperties().isDarkened()) {
             DiffuseLighting.enableForLevel(matrices.peek().getModel());
         } else {
             DiffuseLighting.method_27869(matrices.peek().getModel());
@@ -1367,11 +1367,11 @@ AutoCloseable {
         int m;
         float k;
         float i;
-        if (this.client.world.getSkyProperties().method_29992() == SkyProperties.class_5401.field_25641) {
+        if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.END) {
             this.renderEndSky(matrices);
             return;
         }
-        if (this.client.world.getSkyProperties().method_29992() != SkyProperties.class_5401.field_25640) {
+        if (this.client.world.getSkyProperties().getSkyType() != SkyProperties.SkyType.NORMAL) {
             return;
         }
         RenderSystem.disableTexture();

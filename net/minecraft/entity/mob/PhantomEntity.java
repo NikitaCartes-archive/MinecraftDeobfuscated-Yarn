@@ -402,7 +402,7 @@ implements Monster {
                 this.angle = PhantomEntity.this.random.nextFloat() * 2.0f * (float)Math.PI;
                 this.adjustDirection();
             }
-            if (this.isCloseToTarget()) {
+            if (this.isNearTarget()) {
                 this.adjustDirection();
             }
             if (((PhantomEntity)PhantomEntity.this).targetPosition.y < PhantomEntity.this.getY() && !PhantomEntity.this.world.isAir(PhantomEntity.this.getBlockPos().down(1))) {
@@ -430,7 +430,7 @@ implements Monster {
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
-        protected boolean isCloseToTarget() {
+        protected boolean isNearTarget() {
             return PhantomEntity.this.targetPosition.squaredDistanceTo(PhantomEntity.this.getX(), PhantomEntity.this.getY(), PhantomEntity.this.getZ()) < 4.0;
         }
     }

@@ -290,15 +290,15 @@ implements ServerPlayPacketListener {
         this.player.method_14218(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
     }
 
-    private static boolean validatePlayerMove(PlayerMoveC2SPacket playerMoveC2SPacket) {
-        if (!(Doubles.isFinite(playerMoveC2SPacket.getX(0.0)) && Doubles.isFinite(playerMoveC2SPacket.getY(0.0)) && Doubles.isFinite(playerMoveC2SPacket.getZ(0.0)) && Floats.isFinite(playerMoveC2SPacket.getPitch(0.0f)) && Floats.isFinite(playerMoveC2SPacket.getYaw(0.0f)))) {
+    private static boolean validatePlayerMove(PlayerMoveC2SPacket packet) {
+        if (!(Doubles.isFinite(packet.getX(0.0)) && Doubles.isFinite(packet.getY(0.0)) && Doubles.isFinite(packet.getZ(0.0)) && Floats.isFinite(packet.getPitch(0.0f)) && Floats.isFinite(packet.getYaw(0.0f)))) {
             return true;
         }
-        return Math.abs(playerMoveC2SPacket.getX(0.0)) > 3.0E7 || Math.abs(playerMoveC2SPacket.getY(0.0)) > 3.0E7 || Math.abs(playerMoveC2SPacket.getZ(0.0)) > 3.0E7;
+        return Math.abs(packet.getX(0.0)) > 3.0E7 || Math.abs(packet.getY(0.0)) > 3.0E7 || Math.abs(packet.getZ(0.0)) > 3.0E7;
     }
 
-    private static boolean validateVehicleMove(VehicleMoveC2SPacket vehicleMoveC2SPacket) {
-        return !Doubles.isFinite(vehicleMoveC2SPacket.getX()) || !Doubles.isFinite(vehicleMoveC2SPacket.getY()) || !Doubles.isFinite(vehicleMoveC2SPacket.getZ()) || !Floats.isFinite(vehicleMoveC2SPacket.getPitch()) || !Floats.isFinite(vehicleMoveC2SPacket.getYaw());
+    private static boolean validateVehicleMove(VehicleMoveC2SPacket packet) {
+        return !Doubles.isFinite(packet.getX()) || !Doubles.isFinite(packet.getY()) || !Doubles.isFinite(packet.getZ()) || !Floats.isFinite(packet.getPitch()) || !Floats.isFinite(packet.getYaw());
     }
 
     @Override
@@ -862,12 +862,17 @@ implements ServerPlayPacketListener {
         throw new IllegalArgumentException("Invalid player action");
     }
 
-    private static boolean method_27913(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-        if (itemStack.isEmpty()) {
+    /**
+     * Checks if a player can place a block or fluid from a bucket.
+     * 
+     * <p>For this to return true, the player must not be actively cooling down.
+     */
+    private static boolean canPlace(ServerPlayerEntity player, ItemStack stack) {
+        if (stack.isEmpty()) {
             return false;
         }
-        Item item = itemStack.getItem();
-        return (item instanceof BlockItem || item instanceof BucketItem) && !serverPlayerEntity.getItemCooldownManager().isCoolingDown(item);
+        Item item = stack.getItem();
+        return (item instanceof BlockItem || item instanceof BucketItem) && !player.getItemCooldownManager().isCoolingDown(item);
     }
 
     @Override
@@ -883,7 +888,7 @@ implements ServerPlayPacketListener {
         if (blockPos.getY() < this.server.getWorldHeight()) {
             if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0 && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
                 ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
-                if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= this.server.getWorldHeight() - 1 && ServerPlayNetworkHandler.method_27913(this.player, itemStack)) {
+                if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= this.server.getWorldHeight() - 1 && ServerPlayNetworkHandler.canPlace(this.player, itemStack)) {
                     MutableText text = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
                     this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO, Util.NIL_UUID));
                 } else if (actionResult.shouldSwingHand()) {
@@ -957,7 +962,7 @@ implements ServerPlayPacketListener {
         this.sendPacket(packet, null);
     }
 
-    public void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+    public void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener) {
         if (packet instanceof GameMessageS2CPacket) {
             GameMessageS2CPacket gameMessageS2CPacket = (GameMessageS2CPacket)packet;
             ChatVisibility chatVisibility = this.player.getClientChatVisibility();
@@ -969,7 +974,7 @@ implements ServerPlayPacketListener {
             }
         }
         try {
-            this.connection.send(packet, genericFutureListener);
+            this.connection.send(packet, listener);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Sending packet");
             CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");
@@ -1018,8 +1023,8 @@ implements ServerPlayPacketListener {
         }
     }
 
-    private void executeCommand(String string) {
-        this.server.getCommandManager().execute(this.player.getCommandSource(), string);
+    private void executeCommand(String input) {
+        this.server.getCommandManager().execute(this.player.getCommandSource(), input);
     }
 
     @Override

@@ -104,7 +104,7 @@ public class TargetFinder {
             if (aboveGround) {
                 blockPos3 = TargetFinder.findValidPositionAbove(blockPos3, random.nextInt(distanceAboveGroundRange + 1) + minDistanceAboveGround, mob.world.getHeight(), blockPos -> mobEntityWithAi.world.getBlockState((BlockPos)blockPos).getMaterial().isSolid());
             }
-            if (!notInWater && mob.world.getFluidState(blockPos3).matches(FluidTags.WATER) || mob.getPathfindingPenalty(pathNodeType = LandPathNodeMaker.getLandNodeType(mob.world, blockPos3.mutableCopy())) != 0.0f || !((e = favorProvider.applyAsDouble(blockPos3)) > d)) continue;
+            if (!notInWater && mob.world.getFluidState(blockPos3).isIn(FluidTags.WATER) || mob.getPathfindingPenalty(pathNodeType = LandPathNodeMaker.getLandNodeType(mob.world, blockPos3.mutableCopy())) != 0.0f || !((e = favorProvider.applyAsDouble(blockPos3)) > d)) continue;
             d = e;
             blockPos2 = blockPos3;
             bl2 = true;

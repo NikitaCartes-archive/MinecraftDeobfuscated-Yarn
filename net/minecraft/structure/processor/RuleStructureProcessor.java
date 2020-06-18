@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class RuleStructureProcessor
 extends StructureProcessor {
-    public static final Codec<RuleStructureProcessor> field_25011 = ((MapCodec)StructureProcessorRule.CODEC.listOf().fieldOf("rules")).xmap(RuleStructureProcessor::new, ruleStructureProcessor -> ruleStructureProcessor.rules).codec();
+    public static final Codec<RuleStructureProcessor> CODEC = ((MapCodec)StructureProcessorRule.CODEC.listOf().fieldOf("rules")).xmap(RuleStructureProcessor::new, ruleStructureProcessor -> ruleStructureProcessor.rules).codec();
     private final ImmutableList<StructureProcessorRule> rules;
 
     public RuleStructureProcessor(List<? extends StructureProcessorRule> list) {

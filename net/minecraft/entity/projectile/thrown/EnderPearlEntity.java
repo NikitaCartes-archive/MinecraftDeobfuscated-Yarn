@@ -93,12 +93,12 @@ extends ThrownItemEntity {
 
     @Override
     @Nullable
-    public Entity changeDimension(ServerWorld serverWorld) {
+    public Entity changeDimension(ServerWorld destination) {
         Entity entity = this.getOwner();
-        if (entity != null && entity.world.getRegistryKey() != serverWorld.getRegistryKey()) {
+        if (entity != null && entity.world.getRegistryKey() != destination.getRegistryKey()) {
             this.setOwner(null);
         }
-        return super.changeDimension(serverWorld);
+        return super.changeDimension(destination);
     }
 }
 

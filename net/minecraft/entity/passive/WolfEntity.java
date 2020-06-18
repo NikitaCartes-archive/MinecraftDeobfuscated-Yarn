@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5398;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -29,6 +28,7 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TrackOwnerAttackerGoal;
+import net.minecraft.entity.ai.goal.UniversalAngerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.WolfBegGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -74,7 +74,7 @@ extends TameableEntity
 implements Angerable {
     private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Integer> field_25373 = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> ANGER_TIME = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.INTEGER);
     public static final Predicate<LivingEntity> FOLLOW_TAMED_PREDICATE = livingEntity -> {
         EntityType<?> entityType = livingEntity.getType();
         return entityType == EntityType.SHEEP || entityType == EntityType.RABBIT || entityType == EntityType.FOX;
@@ -85,8 +85,8 @@ implements Angerable {
     private boolean canShakeWaterOff;
     private float shakeProgress;
     private float lastShakeProgress;
-    private static final IntRange field_25371 = Durations.betweenSeconds(20, 39);
-    private UUID field_25372;
+    private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
+    private UUID angryAt;
 
     public WolfEntity(EntityType<? extends WolfEntity> entityType, World world) {
         super((EntityType<? extends TameableEntity>)entityType, world);
@@ -113,7 +113,7 @@ implements Angerable {
         this.targetSelector.add(5, new FollowTargetIfTamedGoal<AnimalEntity>(this, AnimalEntity.class, false, FOLLOW_TAMED_PREDICATE));
         this.targetSelector.add(6, new FollowTargetIfTamedGoal<TurtleEntity>(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
         this.targetSelector.add(7, new FollowTargetGoal<AbstractSkeletonEntity>((MobEntity)this, AbstractSkeletonEntity.class, false));
-        this.targetSelector.add(8, new class_5398<WolfEntity>(this, true));
+        this.targetSelector.add(8, new UniversalAngerGoal<WolfEntity>(this, true));
     }
 
     public static DefaultAttributeContainer.Builder createWolfAttributes() {
@@ -125,7 +125,7 @@ implements Angerable {
         super.initDataTracker();
         this.dataTracker.startTracking(BEGGING, false);
         this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
-        this.dataTracker.startTracking(field_25373, 0);
+        this.dataTracker.startTracking(ANGER_TIME, 0);
     }
 
     @Override
@@ -415,28 +415,28 @@ implements Angerable {
 
     @Override
     public int getAngerTime() {
-        return this.dataTracker.get(field_25373);
+        return this.dataTracker.get(ANGER_TIME);
     }
 
     @Override
     public void setAngerTime(int ticks) {
-        this.dataTracker.set(field_25373, ticks);
+        this.dataTracker.set(ANGER_TIME, ticks);
     }
 
     @Override
     public void chooseRandomAngerTime() {
-        this.setAngerTime(field_25371.choose(this.random));
+        this.setAngerTime(ANGER_TIME_RANGE.choose(this.random));
     }
 
     @Override
     @Nullable
     public UUID getAngryAt() {
-        return this.field_25372;
+        return this.angryAt;
     }
 
     @Override
     public void setAngryAt(@Nullable UUID uuid) {
-        this.field_25372 = uuid;
+        this.angryAt = uuid;
     }
 
     public DyeColor getCollarColor() {

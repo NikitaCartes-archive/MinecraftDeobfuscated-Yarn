@@ -159,7 +159,7 @@ extends Screen {
 
     @Environment(value=EnvType.CLIENT)
     public class IntRuleWidget
-    extends class_5400 {
+    extends NamedRuleWidget {
         private final TextFieldWidget valueWidget;
 
         public IntRuleWidget(Text name, List<StringRenderable> description, String ruleName, GameRules.IntRule rule) {
@@ -175,12 +175,12 @@ extends Screen {
                     EditGameRulesScreen.this.markInvalid(this);
                 }
             });
-            this.field_25630.add(this.valueWidget);
+            this.children.add(this.valueWidget);
         }
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            this.method_29989(matrices, y, x);
+            this.drawName(matrices, y, x);
             this.valueWidget.x = x + entryWidth - 44;
             this.valueWidget.y = y;
             this.valueWidget.render(matrices, mouseX, mouseY, tickDelta);
@@ -189,7 +189,7 @@ extends Screen {
 
     @Environment(value=EnvType.CLIENT)
     public class BooleanRuleWidget
-    extends class_5400 {
+    extends NamedRuleWidget {
         private final ButtonWidget toggleButton;
 
         public BooleanRuleWidget(final Text name, List<StringRenderable> description, final String ruleName, final GameRules.BooleanRule booleanRule) {
@@ -205,7 +205,7 @@ extends Screen {
                     return BooleanRuleWidget.this.createBooleanRuleText(name, booleanRule.get()).shallowCopy().append("\n").append(ruleName);
                 }
             };
-            this.field_25630.add(this.toggleButton);
+            this.children.add(this.toggleButton);
         }
 
         private MutableText createBooleanRuleText(Text text, boolean value) {
@@ -214,7 +214,7 @@ extends Screen {
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            this.method_29989(matrices, y, x);
+            this.drawName(matrices, y, x);
             this.toggleButton.x = x + entryWidth - 45;
             this.toggleButton.y = y;
             this.toggleButton.render(matrices, mouseX, mouseY, tickDelta);
@@ -222,28 +222,28 @@ extends Screen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public abstract class class_5400
+    public abstract class NamedRuleWidget
     extends AbstractRuleWidget {
-        private final List<StringRenderable> field_25629;
-        protected final List<Element> field_25630;
+        private final List<StringRenderable> name;
+        protected final List<Element> children;
 
-        public class_5400(List<StringRenderable> list, Text text) {
-            super(list);
-            this.field_25630 = Lists.newArrayList();
-            this.field_25629 = ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.wrapLines(text, 175);
+        public NamedRuleWidget(List<StringRenderable> description, Text name) {
+            super(description);
+            this.children = Lists.newArrayList();
+            this.name = ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.wrapLines(name, 175);
         }
 
         @Override
         public List<? extends Element> children() {
-            return this.field_25630;
+            return this.children;
         }
 
-        protected void method_29989(MatrixStack matrixStack, int i, int j) {
-            if (this.field_25629.size() == 1) {
-                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrixStack, this.field_25629.get(0), (float)j, (float)(i + 5), 0xFFFFFF);
-            } else if (this.field_25629.size() >= 2) {
-                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrixStack, this.field_25629.get(0), (float)j, (float)i, 0xFFFFFF);
-                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrixStack, this.field_25629.get(1), (float)j, (float)(i + 10), 0xFFFFFF);
+        protected void drawName(MatrixStack matrices, int x, int y) {
+            if (this.name.size() == 1) {
+                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrices, this.name.get(0), (float)y, (float)(x + 5), 0xFFFFFF);
+            } else if (this.name.size() >= 2) {
+                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrices, this.name.get(0), (float)y, (float)x, 0xFFFFFF);
+                ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.draw(matrices, this.name.get(1), (float)y, (float)(x + 10), 0xFFFFFF);
             }
         }
     }

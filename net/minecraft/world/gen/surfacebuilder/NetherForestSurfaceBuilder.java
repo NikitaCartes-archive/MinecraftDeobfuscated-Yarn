@@ -28,7 +28,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
 
     @Override
     public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m, TernarySurfaceConfig ternarySurfaceConfig) {
-        int n = l + 1;
+        int n = l;
         int o = i & 0xF;
         int p = j & 0xF;
         double e = this.field_22203.sample((double)i * 0.1, l, (double)j * 0.1);
@@ -49,8 +49,9 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
             }
             if (!blockState5.isOf(blockState.getBlock())) continue;
             if (r == -1) {
+                boolean bl3 = false;
                 if (q <= 0) {
-                    blockState4 = CAVE_AIR;
+                    bl3 = true;
                     blockState3 = ternarySurfaceConfig.getUnderMaterial();
                 }
                 if (bl) {
@@ -58,7 +59,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                 } else if (bl2) {
                     blockState4 = ternarySurfaceConfig.getUnderwaterMaterial();
                 }
-                if (s < n && blockState4.isAir()) {
+                if (s < n && bl3) {
                     blockState4 = blockState2;
                 }
                 r = q;

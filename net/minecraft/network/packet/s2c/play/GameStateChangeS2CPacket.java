@@ -14,38 +14,38 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class GameStateChangeS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    public static final class_5402 field_25645 = new class_5402(0);
-    public static final class_5402 field_25646 = new class_5402(1);
-    public static final class_5402 field_25647 = new class_5402(2);
-    public static final class_5402 field_25648 = new class_5402(3);
-    public static final class_5402 field_25649 = new class_5402(4);
-    public static final class_5402 field_25650 = new class_5402(5);
-    public static final class_5402 field_25651 = new class_5402(6);
-    public static final class_5402 field_25652 = new class_5402(7);
-    public static final class_5402 field_25653 = new class_5402(8);
-    public static final class_5402 field_25654 = new class_5402(9);
-    public static final class_5402 field_25655 = new class_5402(10);
-    public static final class_5402 field_25656 = new class_5402(11);
-    private class_5402 reason;
+    public static final Reason NO_RESPAWN_BLOCK = new Reason(0);
+    public static final Reason RAIN_STARTED = new Reason(1);
+    public static final Reason RAIN_STOPPED = new Reason(2);
+    public static final Reason GAME_MODE_CHANGED = new Reason(3);
+    public static final Reason GAME_WON = new Reason(4);
+    public static final Reason DEMO_MESSAGE_SHOWN = new Reason(5);
+    public static final Reason PROJECTILE_HIT_PLAYER = new Reason(6);
+    public static final Reason RAIN_GRADIENT_CHANGED = new Reason(7);
+    public static final Reason THUNDER_GRADIENT_CHANGED = new Reason(8);
+    public static final Reason PUFFERFISH_STING = new Reason(9);
+    public static final Reason ELDER_GUARDIAN_EFFECT = new Reason(10);
+    public static final Reason IMMEDIATE_RESPAWN = new Reason(11);
+    private Reason reason;
     private float value;
 
     public GameStateChangeS2CPacket() {
     }
 
-    public GameStateChangeS2CPacket(class_5402 arg, float value) {
-        this.reason = arg;
+    public GameStateChangeS2CPacket(Reason reason, float value) {
+        this.reason = reason;
         this.value = value;
     }
 
     @Override
     public void read(PacketByteBuf buf) throws IOException {
-        this.reason = (class_5402)class_5402.field_25657.get(buf.readUnsignedByte());
+        this.reason = (Reason)Reason.REASONS.get(buf.readUnsignedByte());
         this.value = buf.readFloat();
     }
 
     @Override
     public void write(PacketByteBuf buf) throws IOException {
-        buf.writeByte(this.reason.field_25658);
+        buf.writeByte(this.reason.id);
         buf.writeFloat(this.value);
     }
 
@@ -55,7 +55,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public class_5402 getReason() {
+    public Reason getReason() {
         return this.reason;
     }
 
@@ -64,13 +64,13 @@ implements Packet<ClientPlayPacketListener> {
         return this.value;
     }
 
-    public static class class_5402 {
-        private static final Int2ObjectMap<class_5402> field_25657 = new Int2ObjectOpenHashMap<class_5402>();
-        private final int field_25658;
+    public static class Reason {
+        private static final Int2ObjectMap<Reason> REASONS = new Int2ObjectOpenHashMap<Reason>();
+        private final int id;
 
-        public class_5402(int i) {
-            this.field_25658 = i;
-            field_25657.put(i, this);
+        public Reason(int id) {
+            this.id = id;
+            REASONS.put(id, this);
         }
     }
 }

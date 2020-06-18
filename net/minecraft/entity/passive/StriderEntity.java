@@ -97,7 +97,7 @@ Saddleable {
         BlockPos.Mutable mutable = blockPos.mutableCopy();
         do {
             mutable.move(Direction.UP);
-        } while (worldAccess.getFluidState(mutable).matches(FluidTags.LAVA));
+        } while (worldAccess.getFluidState(mutable).isIn(FluidTags.LAVA));
         return worldAccess.getBlockState(mutable).isAir();
     }
 
@@ -238,7 +238,7 @@ Saddleable {
             }
         }
         for (BlockPos blockPos : set) {
-            if (this.world.getFluidState(blockPos).matches(FluidTags.LAVA)) continue;
+            if (this.world.getFluidState(blockPos).isIn(FluidTags.LAVA)) continue;
             for (EntityPose entityPose : passenger.getPoses()) {
                 Vec3d vec3d2;
                 Box box;
@@ -328,7 +328,7 @@ Saddleable {
     private void updateFloating() {
         if (this.isInLava()) {
             ShapeContext shapeContext = ShapeContext.of(this);
-            if (!shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) || this.world.getFluidState(this.getBlockPos().up()).matches(FluidTags.LAVA)) {
+            if (!shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) || this.world.getFluidState(this.getBlockPos().up()).isIn(FluidTags.LAVA)) {
                 this.setVelocity(this.getVelocity().multiply(0.5).add(0.0, 0.05, 0.0));
             } else {
                 this.onGround = true;
@@ -380,7 +380,7 @@ Saddleable {
 
     @Override
     public float getPathfindingFavor(BlockPos pos, WorldView world) {
-        if (world.getBlockState(pos).getFluidState().matches(FluidTags.LAVA)) {
+        if (world.getBlockState(pos).getFluidState().isIn(FluidTags.LAVA)) {
             return 10.0f;
         }
         return 0.0f;

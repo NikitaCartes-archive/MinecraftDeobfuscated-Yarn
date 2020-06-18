@@ -7,6 +7,7 @@ import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -58,12 +59,13 @@ extends Block {
         super.onLandedUpon(world, pos, entity, distance);
     }
 
-    private void tryBreakEgg(World world, BlockPos pos, Entity entity, int inverseChance) {
+    private void tryBreakEgg(World world, BlockPos blockPos, Entity entity, int inverseChance) {
+        BlockState blockState;
         if (!this.breaksEgg(world, entity)) {
             return;
         }
-        if (!world.isClient && world.random.nextInt(inverseChance) == 0) {
-            this.breakEgg(world, pos, world.getBlockState(pos));
+        if (!world.isClient && world.random.nextInt(inverseChance) == 0 && (blockState = world.getBlockState(blockPos)).isOf(Blocks.TURTLE_EGG)) {
+            this.breakEgg(world, blockPos, blockState);
         }
     }
 

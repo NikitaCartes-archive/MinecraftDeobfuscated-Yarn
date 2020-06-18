@@ -142,7 +142,7 @@ extends NetworkSyncedItem {
                             if (aa > 1) {
                                 do {
                                     mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
-                                } while ((blockState = worldChunk.getBlockState(mutable)).getTopMaterialColor(world, mutable) == MaterialColor.AIR && aa > 0);
+                                } while ((blockState = worldChunk.getBlockState(mutable)).getTopMaterialColor(world, mutable) == MaterialColor.CLEAR && aa > 0);
                                 if (aa > 0 && !blockState.getFluidState().isEmpty()) {
                                     BlockState blockState2;
                                     int ab = aa - 1;
@@ -172,7 +172,7 @@ extends NetworkSyncedItem {
                 if (f < -0.6) {
                     y = 0;
                 }
-                if ((materialColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MaterialColor.AIR)) == MaterialColor.WATER) {
+                if ((materialColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MaterialColor.CLEAR)) == MaterialColor.WATER) {
                     f = (double)w * 0.1 + (double)(o + p & 1) * 0.2;
                     y = 1;
                     if (f < 0.5) {
@@ -252,7 +252,7 @@ extends NetworkSyncedItem {
                     --n;
                 }
                 int o = 3;
-                MaterialColor materialColor = MaterialColor.AIR;
+                MaterialColor materialColor = MaterialColor.CLEAR;
                 if (biome.getDepth() < 0.0f) {
                     materialColor = MaterialColor.ORANGE;
                     if (n > 7 && m % 2 == 0) {
@@ -263,7 +263,7 @@ extends NetworkSyncedItem {
                             o = 0;
                         }
                     } else if (n > 7) {
-                        materialColor = MaterialColor.AIR;
+                        materialColor = MaterialColor.CLEAR;
                     } else if (n > 5) {
                         o = 1;
                     } else if (n > 3) {
@@ -275,7 +275,7 @@ extends NetworkSyncedItem {
                     materialColor = MaterialColor.BROWN;
                     o = n > 3 ? 1 : 3;
                 }
-                if (materialColor == MaterialColor.AIR) continue;
+                if (materialColor == MaterialColor.CLEAR) continue;
                 mapState.colors[l + m * 128] = (byte)(materialColor.id * 4 + o);
                 mapState.markDirty(l, m);
             }

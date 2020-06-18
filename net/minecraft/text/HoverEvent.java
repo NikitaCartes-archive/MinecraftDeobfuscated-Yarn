@@ -140,13 +140,21 @@ public class HoverEvent {
             return (T)o;
         }
 
+        @Nullable
         public HoverEvent buildHoverEvent(JsonElement contents) {
             T object = this.deserializer.apply(contents);
+            if (object == null) {
+                return null;
+            }
             return new HoverEvent(this, object);
         }
 
+        @Nullable
         public HoverEvent buildHoverEvent(Text value) {
             T object = this.legacyDeserializer.apply(value);
+            if (object == null) {
+                return null;
+            }
             return new HoverEvent(this, object);
         }
 

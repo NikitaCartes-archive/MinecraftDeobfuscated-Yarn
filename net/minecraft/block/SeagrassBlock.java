@@ -52,7 +52,7 @@ FluidFillable {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-        if (fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8) {
+        if (fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8) {
             return super.getPlacementState(ctx);
         }
         return null;

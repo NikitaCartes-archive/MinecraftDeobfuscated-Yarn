@@ -21,7 +21,7 @@ import net.minecraft.world.WorldView;
 
 public class BlackstoneReplacementStructureProcessor
 extends StructureProcessor {
-    public static final Codec<BlackstoneReplacementStructureProcessor> field_24996 = Codec.unit(() -> INSTANCE);
+    public static final Codec<BlackstoneReplacementStructureProcessor> CODEC = Codec.unit(() -> INSTANCE);
     public static final BlackstoneReplacementStructureProcessor INSTANCE = new BlackstoneReplacementStructureProcessor();
     private final Map<Block, Block> replacementMap = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(Blocks.COBBLESTONE, Blocks.BLACKSTONE);

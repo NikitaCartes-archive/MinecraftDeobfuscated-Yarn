@@ -56,7 +56,7 @@ extends SpriteBillboardParticle {
         this.velocityX *= 0.07;
         this.velocityZ *= 0.07;
         this.move(this.velocityX, this.velocityY, this.velocityZ);
-        if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.WATER) || this.onGround) {
+        if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER) || this.onGround) {
             this.markDead();
         }
         this.accelerationAngle = (float)((double)this.accelerationAngle + 0.08);

@@ -89,7 +89,7 @@ extends Goal {
                 for (int n = k - rangeX; n <= k + rangeX; ++n) {
                     float g;
                     mutable.set(l, m, n);
-                    if (!blockView.getFluidState(mutable).matches(FluidTags.WATER) || !((g = (float)((l - i) * (l - i) + (m - j) * (m - j) + (n - k) * (n - k))) < f)) continue;
+                    if (!blockView.getFluidState(mutable).isIn(FluidTags.WATER) || !((g = (float)((l - i) * (l - i) + (m - j) * (m - j) + (n - k) * (n - k))) < f)) continue;
                     f = g;
                     blockPos2 = new BlockPos(mutable);
                 }

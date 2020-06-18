@@ -204,8 +204,8 @@ extends ProjectileEntity {
         float l = MathHelper.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
         this.yaw = bl ? (float)(MathHelper.atan2(-d, -g) * 57.2957763671875) : (float)(MathHelper.atan2(d, g) * 57.2957763671875);
         this.pitch = (float)(MathHelper.atan2(e, l) * 57.2957763671875);
-        this.pitch = PersistentProjectileEntity.method_26960(this.prevPitch, this.pitch);
-        this.yaw = PersistentProjectileEntity.method_26960(this.prevYaw, this.yaw);
+        this.pitch = PersistentProjectileEntity.updateRotation(this.prevPitch, this.pitch);
+        this.yaw = PersistentProjectileEntity.updateRotation(this.prevYaw, this.yaw);
         float m = 0.99f;
         float n = 0.05f;
         if (this.isTouchingWater()) {
@@ -266,7 +266,7 @@ extends ProjectileEntity {
         super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
         float f = (float)this.getVelocity().length();
-        int i = MathHelper.ceil(Math.max((double)f * this.damage, 0.0));
+        int i = MathHelper.ceil(MathHelper.clamp((double)f * this.damage, 0.0, 2.147483647E9));
         if (this.getPierceLevel() > 0) {
             if (this.piercedEntities == null) {
                 this.piercedEntities = new IntOpenHashSet(5);
@@ -282,7 +282,8 @@ extends ProjectileEntity {
             }
         }
         if (this.isCritical()) {
-            i += this.random.nextInt(i / 2 + 2);
+            long l = this.random.nextInt(i / 2 + 2);
+            i = (int)Math.min(l + (long)i, Integer.MAX_VALUE);
         }
         if ((entity2 = this.getOwner()) == null) {
             damageSource = DamageSource.arrow(this, this);
@@ -316,7 +317,7 @@ extends ProjectileEntity {
                 }
                 this.onHit(livingEntity);
                 if (entity2 != null && livingEntity != entity2 && livingEntity instanceof PlayerEntity && entity2 instanceof ServerPlayerEntity && !this.isSilent()) {
-                    ((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.field_25651, 0.0f));
+                    ((ServerPlayerEntity)entity2).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER, 0.0f));
                 }
                 if (!entity.isAlive() && this.piercingKilledEntities != null) {
                     this.piercingKilledEntities.add(livingEntity);

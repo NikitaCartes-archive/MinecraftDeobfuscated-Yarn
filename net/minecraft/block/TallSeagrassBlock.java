@@ -59,7 +59,7 @@ implements FluidFillable {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         FluidState fluidState;
         BlockState blockState = super.getPlacementState(ctx);
-        if (blockState != null && (fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos().up())).matches(FluidTags.WATER) && fluidState.getLevel() == 8) {
+        if (blockState != null && (fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos().up())).isIn(FluidTags.WATER) && fluidState.getLevel() == 8) {
             return blockState;
         }
         return null;
@@ -72,7 +72,7 @@ implements FluidFillable {
             return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
         }
         FluidState fluidState = world.getFluidState(pos);
-        return super.canPlaceAt(state, world, pos) && fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
+        return super.canPlaceAt(state, world, pos) && fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8;
     }
 
     @Override

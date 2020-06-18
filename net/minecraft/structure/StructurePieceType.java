@@ -18,6 +18,7 @@ import net.minecraft.structure.NetherFossilGenerator;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.OceanRuinGenerator;
 import net.minecraft.structure.PillagerOutpostGenerator;
+import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureManager;
@@ -26,7 +27,6 @@ import net.minecraft.structure.SwampHutGenerator;
 import net.minecraft.structure.VillageGenerator;
 import net.minecraft.structure.WoodlandMansionGenerator;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.RuinedPortalFeaturePiece;
 
 public interface StructurePieceType {
     public static final StructurePieceType MINESHAFT_CORRIDOR = StructurePieceType.register(MineshaftGenerator.MineshaftCorridor::new, "MSCorridor");
@@ -66,7 +66,7 @@ public interface StructurePieceType {
     public static final StructurePieceType JUNGLE_TEMPLE = StructurePieceType.register(JungleTempleGenerator::new, "TeJP");
     public static final StructurePieceType OCEAN_TEMPLE = StructurePieceType.register(OceanRuinGenerator.Piece::new, "ORP");
     public static final StructurePieceType IGLOO = StructurePieceType.register(IglooGenerator.Piece::new, "Iglu");
-    public static final StructurePieceType RUINED_PORTAL = StructurePieceType.register(RuinedPortalFeaturePiece::new, "RUPO");
+    public static final StructurePieceType RUINED_PORTAL = StructurePieceType.register(RuinedPortalStructurePiece::new, "RUPO");
     public static final StructurePieceType SWAMP_HUT = StructurePieceType.register(SwampHutGenerator::new, "TeSH");
     public static final StructurePieceType DESERT_TEMPLE = StructurePieceType.register(DesertTempleGenerator::new, "TeDP");
     public static final StructurePieceType OCEAN_MONUMENT_BASE = StructurePieceType.register(OceanMonumentGenerator.Base::new, "OMB");

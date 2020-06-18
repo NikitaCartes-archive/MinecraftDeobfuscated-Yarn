@@ -20,7 +20,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return this.mob.isOnGround() && !this.mob.world.getFluidState(this.mob.getBlockPos()).matches(FluidTags.WATER);
+        return this.mob.isOnGround() && !this.mob.world.getFluidState(this.mob.getBlockPos()).isIn(FluidTags.WATER);
     }
 
     @Override
@@ -28,7 +28,7 @@ extends Goal {
         Vec3i blockPos = null;
         Iterable<BlockPos> iterable = BlockPos.iterate(MathHelper.floor(this.mob.getX() - 2.0), MathHelper.floor(this.mob.getY() - 2.0), MathHelper.floor(this.mob.getZ() - 2.0), MathHelper.floor(this.mob.getX() + 2.0), MathHelper.floor(this.mob.getY()), MathHelper.floor(this.mob.getZ() + 2.0));
         for (BlockPos blockPos2 : iterable) {
-            if (!this.mob.world.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
+            if (!this.mob.world.getFluidState(blockPos2).isIn(FluidTags.WATER)) continue;
             blockPos = blockPos2;
             break;
         }

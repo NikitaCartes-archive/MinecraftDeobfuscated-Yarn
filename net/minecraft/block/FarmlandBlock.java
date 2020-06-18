@@ -115,7 +115,7 @@ extends Block {
 
     private static boolean isWaterNearby(WorldView world, BlockPos pos) {
         for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 1, 4))) {
-            if (!world.getFluidState(blockPos).matches(FluidTags.WATER)) continue;
+            if (!world.getFluidState(blockPos).isIn(FluidTags.WATER)) continue;
             return true;
         }
         return false;

@@ -114,7 +114,7 @@ implements Monster {
         this.setHealth(this.getMaxHealth());
         this.noClip = true;
         this.ignoreCameraFrustum = true;
-        this.fight = world instanceof ServerWorld ? ((ServerWorld)world).method_29198() : null;
+        this.fight = world instanceof ServerWorld ? ((ServerWorld)world).getEnderDragonFight() : null;
         this.phaseManager = new PhaseManager(this);
     }
 

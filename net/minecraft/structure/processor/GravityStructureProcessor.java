@@ -23,9 +23,9 @@ extends StructureProcessor {
     private final Heightmap.Type heightmap;
     private final int offset;
 
-    public GravityStructureProcessor(Heightmap.Type type, int i) {
-        this.heightmap = type;
-        this.offset = i;
+    public GravityStructureProcessor(Heightmap.Type heightmap, int offset) {
+        this.heightmap = heightmap;
+        this.offset = offset;
     }
 
     @Override

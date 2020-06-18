@@ -23,11 +23,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockAgeStructureProcessor
 extends StructureProcessor {
-    public static final Codec<BlockAgeStructureProcessor> field_24997 = ((MapCodec)Codec.FLOAT.fieldOf("mossiness")).xmap(BlockAgeStructureProcessor::new, blockAgeStructureProcessor -> Float.valueOf(blockAgeStructureProcessor.mossiness)).codec();
+    public static final Codec<BlockAgeStructureProcessor> CODEC = ((MapCodec)Codec.FLOAT.fieldOf("mossiness")).xmap(BlockAgeStructureProcessor::new, blockAgeStructureProcessor -> Float.valueOf(blockAgeStructureProcessor.mossiness)).codec();
     private final float mossiness;
 
-    public BlockAgeStructureProcessor(float f) {
-        this.mossiness = f;
+    public BlockAgeStructureProcessor(float mossiness) {
+        this.mossiness = mossiness;
     }
 
     @Override

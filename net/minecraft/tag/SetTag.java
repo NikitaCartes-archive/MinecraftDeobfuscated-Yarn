@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.tag;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
@@ -10,25 +10,25 @@ import java.util.List;
 import java.util.Set;
 import net.minecraft.tag.Tag;
 
-public class class_5394<T>
+public class SetTag<T>
 implements Tag<T> {
-    private final ImmutableList<T> field_25593;
+    private final ImmutableList<T> values;
     private final Set<T> field_25594;
     @VisibleForTesting
     protected final Class<?> field_25591;
 
-    protected class_5394(Set<T> set, Class<?> class_) {
+    protected SetTag(Set<T> set, Class<?> class_) {
         this.field_25591 = class_;
         this.field_25594 = set;
-        this.field_25593 = ImmutableList.copyOf(set);
+        this.values = ImmutableList.copyOf(set);
     }
 
-    public static <T> class_5394<T> method_29898() {
-        return new class_5394(ImmutableSet.of(), Void.class);
+    public static <T> SetTag<T> empty() {
+        return new SetTag(ImmutableSet.of(), Void.class);
     }
 
-    public static <T> class_5394<T> method_29900(Set<T> set) {
-        return new class_5394<T>(set, class_5394.method_29901(set));
+    public static <T> SetTag<T> method_29900(Set<T> set) {
+        return new SetTag<T>(set, SetTag.method_29901(set));
     }
 
     @Override
@@ -38,7 +38,7 @@ implements Tag<T> {
 
     @Override
     public List<T> values() {
-        return this.field_25593;
+        return this.values;
     }
 
     private static <T> Class<?> method_29901(Set<T> set) {
@@ -51,7 +51,7 @@ implements Tag<T> {
                 class_ = object.getClass();
                 continue;
             }
-            class_ = class_5394.method_29899(class_, object.getClass());
+            class_ = SetTag.method_29899(class_, object.getClass());
         }
         return class_;
     }

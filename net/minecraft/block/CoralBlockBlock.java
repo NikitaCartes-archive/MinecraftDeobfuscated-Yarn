@@ -44,7 +44,7 @@ extends Block {
     protected boolean isInWater(BlockView world, BlockPos pos) {
         for (Direction direction : Direction.values()) {
             FluidState fluidState = world.getFluidState(pos.offset(direction));
-            if (!fluidState.matches(FluidTags.WATER)) continue;
+            if (!fluidState.isIn(FluidTags.WATER)) continue;
             return true;
         }
         return false;

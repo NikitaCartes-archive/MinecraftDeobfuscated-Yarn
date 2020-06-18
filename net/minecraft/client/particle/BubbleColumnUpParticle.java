@@ -25,7 +25,7 @@ extends SpriteBillboardParticle {
         this.velocityX = d * (double)0.2f + (Math.random() * 2.0 - 1.0) * (double)0.02f;
         this.velocityY = e * (double)0.2f + (Math.random() * 2.0 - 1.0) * (double)0.02f;
         this.velocityZ = f * (double)0.2f + (Math.random() * 2.0 - 1.0) * (double)0.02f;
-        this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
+        this.maxAge = (int)(40.0 / (Math.random() * 0.8 + 0.2));
     }
 
     @Override
@@ -33,16 +33,16 @@ extends SpriteBillboardParticle {
         this.prevPosX = this.x;
         this.prevPosY = this.y;
         this.prevPosZ = this.z;
+        this.velocityY += 0.005;
         if (this.maxAge-- <= 0) {
             this.markDead();
             return;
         }
-        this.velocityY += 0.002;
         this.move(this.velocityX, this.velocityY, this.velocityZ);
         this.velocityX *= (double)0.85f;
         this.velocityY *= (double)0.85f;
         this.velocityZ *= (double)0.85f;
-        if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.WATER)) {
+        if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
             this.markDead();
         }
     }

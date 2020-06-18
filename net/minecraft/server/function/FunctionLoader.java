@@ -37,8 +37,8 @@ import org.apache.logging.log4j.Logger;
 public class FunctionLoader
 implements ResourceReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int PATH_PREFIX_LENGHT = "functions/".length();
-    private static final int PATH_SUFFIX_LENGHT = ".mcfunction".length();
+    private static final int PATH_PREFIX_LENGTH = "functions/".length();
+    private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
     private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
     private final TagContainer<CommandFunction> tags = new TagContainer(this::get, "tags/functions", "function");
     private final int level;
@@ -73,7 +73,7 @@ implements ResourceReloadListener {
             ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null);
             for (Identifier identifier : collection) {
                 String string = identifier.getPath();
-                Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGHT, string.length() - PATH_SUFFIX_LENGHT));
+                Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - PATH_SUFFIX_LENGTH));
                 map.put(identifier2, CompletableFuture.supplyAsync(() -> {
                     List<String> list = FunctionLoader.readLines(manager, identifier);
                     return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);

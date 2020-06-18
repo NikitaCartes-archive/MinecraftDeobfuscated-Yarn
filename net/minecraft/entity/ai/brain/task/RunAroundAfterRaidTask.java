@@ -5,8 +5,8 @@ package net.minecraft.entity.ai.brain.task;
 
 import net.minecraft.entity.ai.brain.task.FindWalkTargetTask;
 import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.village.raid.Raid;
 
 public class RunAroundAfterRaidTask
 extends FindWalkTargetTask {

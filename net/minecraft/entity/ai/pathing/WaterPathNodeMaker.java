@@ -60,7 +60,7 @@ extends PathNodeMaker {
         if (fluidState.isEmpty() && blockState.canPathfindThrough(world, blockPos.down(), NavigationType.WATER) && blockState.isAir()) {
             return PathNodeType.BREACH;
         }
-        if (!fluidState.matches(FluidTags.WATER) || !blockState.canPathfindThrough(world, blockPos, NavigationType.WATER)) {
+        if (!fluidState.isIn(FluidTags.WATER) || !blockState.canPathfindThrough(world, blockPos, NavigationType.WATER)) {
             return PathNodeType.BLOCKED;
         }
         return PathNodeType.WATER;
@@ -105,7 +105,7 @@ extends PathNodeMaker {
                     if (fluidState.isEmpty() && blockState.canPathfindThrough(this.cachedWorld, (BlockPos)mutable.down(), NavigationType.WATER) && blockState.isAir()) {
                         return PathNodeType.BREACH;
                     }
-                    if (fluidState.matches(FluidTags.WATER)) continue;
+                    if (fluidState.isIn(FluidTags.WATER)) continue;
                     return PathNodeType.BLOCKED;
                 }
             }

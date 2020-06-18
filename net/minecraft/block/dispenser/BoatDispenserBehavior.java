@@ -31,9 +31,9 @@ extends ItemDispenserBehavior {
         double e = pointer.getY() + (double)((float)direction.getOffsetY() * 1.125f);
         double f = pointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125f);
         BlockPos blockPos = pointer.getBlockPos().offset(direction);
-        if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
+        if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
             g = 1.0;
-        } else if (world.getBlockState(blockPos).isAir() && world.getFluidState(blockPos.down()).matches(FluidTags.WATER)) {
+        } else if (world.getBlockState(blockPos).isAir() && world.getFluidState(blockPos.down()).isIn(FluidTags.WATER)) {
             g = 0.0;
         } else {
             return this.itemDispenser.dispense(pointer, stack);

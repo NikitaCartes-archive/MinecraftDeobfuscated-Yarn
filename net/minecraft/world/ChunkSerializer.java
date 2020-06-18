@@ -344,7 +344,15 @@ public class ChunkSerializer {
         HashMap<StructureFeature<?>, StructureStart<?>> map = Maps.newHashMap();
         CompoundTag compoundTag2 = compoundTag.getCompound("Starts");
         for (String string : compoundTag2.getKeys()) {
-            map.put((StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), StructureFeature.method_28660(structureManager, compoundTag2.getCompound(string), l));
+            String string2 = string.toLowerCase(Locale.ROOT);
+            StructureFeature structureFeature = (StructureFeature)StructureFeature.STRUCTURES.get(string2);
+            if (structureFeature == null) {
+                LOGGER.error("Unknown structure start: {}", (Object)string2);
+                continue;
+            }
+            StructureStart<?> structureStart = StructureFeature.method_28660(structureManager, compoundTag2.getCompound(string), l);
+            if (structureStart == null) continue;
+            map.put(structureFeature, structureStart);
         }
         return map;
     }

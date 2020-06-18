@@ -159,7 +159,7 @@ implements ItemConvertible {
                     world.method_30093(pos, (flags & 0x20) == 0, null, i);
                 }
             } else {
-                world.method_30092(pos, newState, flags & 0xFFFFFFDF, i);
+                world.setBlockState(pos, newState, flags & 0xFFFFFFDF, i);
             }
         }
     }

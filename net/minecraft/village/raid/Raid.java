@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.entity.raid;
+package net.minecraft.village.raid;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -158,9 +158,9 @@ public class Raid {
     }
 
     private Predicate<ServerPlayerEntity> isInRaidDistance() {
-        return serverPlayerEntity -> {
-            BlockPos blockPos = serverPlayerEntity.getBlockPos();
-            return serverPlayerEntity.isAlive() && this.world.getRaidAt(blockPos) == this;
+        return player -> {
+            BlockPos blockPos = player.getBlockPos();
+            return player.isAlive() && this.world.getRaidAt(blockPos) == this;
         };
     }
 
@@ -218,7 +218,7 @@ public class Raid {
                 return;
             }
             if (!this.world.isNearOccupiedPointOfInterest(this.center)) {
-                this.method_20511();
+                this.moveRaidCenter();
             }
             if (!this.world.isNearOccupiedPointOfInterest(this.center)) {
                 if (this.wavesSpawned > 0) {
@@ -330,7 +330,7 @@ public class Raid {
         }
     }
 
-    private void method_20511() {
+    private void moveRaidCenter() {
         Stream<ChunkSectionPos> stream = ChunkSectionPos.stream(ChunkSectionPos.from(this.center), 2);
         stream.filter(this.world::isNearOccupiedPointOfInterest).map(ChunkSectionPos::getCenterPos).min(Comparator.comparingDouble(blockPos -> blockPos.getSquaredDistance(this.center))).ifPresent(this::setCenter);
     }

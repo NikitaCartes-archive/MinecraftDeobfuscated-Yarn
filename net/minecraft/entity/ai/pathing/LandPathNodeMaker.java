@@ -412,10 +412,10 @@ extends PathNodeMaker {
                         return PathNodeType.DANGER_FIRE;
                     }
                     FluidState fluidState = blockView.getFluidState(mutable);
-                    if (fluidState.matches(FluidTags.WATER)) {
+                    if (fluidState.isIn(FluidTags.WATER)) {
                         return PathNodeType.WATER_BORDER;
                     }
-                    if (!fluidState.matches(FluidTags.LAVA)) continue;
+                    if (!fluidState.isIn(FluidTags.LAVA)) continue;
                     return PathNodeType.LAVA;
                 }
             }
@@ -470,10 +470,10 @@ extends PathNodeMaker {
             return PathNodeType.BLOCKED;
         }
         FluidState fluidState = blockView.getFluidState(blockPos);
-        if (fluidState.matches(FluidTags.WATER)) {
+        if (fluidState.isIn(FluidTags.WATER)) {
             return PathNodeType.WATER;
         }
-        if (fluidState.matches(FluidTags.LAVA)) {
+        if (fluidState.isIn(FluidTags.LAVA)) {
             return PathNodeType.LAVA;
         }
         return PathNodeType.OPEN;

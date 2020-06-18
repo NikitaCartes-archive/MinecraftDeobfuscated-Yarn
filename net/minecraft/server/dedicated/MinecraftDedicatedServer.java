@@ -39,12 +39,12 @@ import net.minecraft.server.dedicated.DedicatedPlayerManager;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.DedicatedServerWatchdog;
 import net.minecraft.server.dedicated.PendingServerCommand;
-import net.minecraft.server.dedicated.ServerCommandOutput;
 import net.minecraft.server.dedicated.ServerMBean;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
+import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.UserCache;
@@ -73,7 +73,7 @@ implements DedicatedServer {
     private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
     private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
     private QueryResponseHandler queryResponseHandler;
-    private final ServerCommandOutput rconCommandOutput;
+    private final RconCommandOutput rconCommandOutput;
     private RconListener rconServer;
     private final ServerPropertiesLoader propertiesLoader;
     @Nullable
@@ -82,7 +82,7 @@ implements DedicatedServer {
     public MinecraftDedicatedServer(Thread thread, RegistryTracker.Modifiable modifiable, LevelStorage.Session session, ResourcePackManager<ResourcePackProfile> resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super(thread, modifiable, session, saveProperties, resourcePackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
-        this.rconCommandOutput = new ServerCommandOutput(this);
+        this.rconCommandOutput = new RconCommandOutput(this);
     }
 
     @Override

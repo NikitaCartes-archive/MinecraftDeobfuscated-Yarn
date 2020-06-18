@@ -519,7 +519,7 @@ public interface DispenserBehavior {
                     this.setSuccess(true);
                     return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
                 }
-                if (worldAccess.getFluidState(blockPos).matches(FluidTags.WATER)) {
+                if (worldAccess.getFluidState(blockPos).isIn(FluidTags.WATER)) {
                     this.setSuccess(true);
                     return this.method_22141(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
                 }

@@ -10,8 +10,8 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.village.raid.Raid;
 
 public class HideWhenBellRingsTask
 extends Task<LivingEntity> {

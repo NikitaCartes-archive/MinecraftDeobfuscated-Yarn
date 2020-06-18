@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.structure.processor;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
@@ -14,10 +14,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-public class class_5399
+public class LavaSubmergedBlockStructureProcessor
 extends StructureProcessor {
-    public static final Codec<class_5399> field_25618 = Codec.unit(() -> field_25619);
-    public static final class_5399 field_25619 = new class_5399();
+    public static final Codec<LavaSubmergedBlockStructureProcessor> CODEC = Codec.unit(() -> INSTANCE);
+    public static final LavaSubmergedBlockStructureProcessor INSTANCE = new LavaSubmergedBlockStructureProcessor();
 
     @Override
     @Nullable

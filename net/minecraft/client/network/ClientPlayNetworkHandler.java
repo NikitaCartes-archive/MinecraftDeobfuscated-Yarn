@@ -453,7 +453,7 @@ implements ClientPlayPacketListener {
                 ((PersistentProjectileEntity)entity).setOwner(entity2);
             }
         } else {
-            entity = entityType == EntityType.SNOWBALL ? new SnowballEntity(this.world, d, e, f) : (entityType == EntityType.LLAMA_SPIT ? new LlamaSpitEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.ITEM_FRAME ? new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(packet.getEntityData())) : (entityType == EntityType.LEASH_KNOT ? new LeashKnotEntity(this.world, new BlockPos(d, e, f)) : (entityType == EntityType.ENDER_PEARL ? new EnderPearlEntity(this.world, d, e, f) : (entityType == EntityType.EYE_OF_ENDER ? new EyeOfEnderEntity(this.world, d, e, f) : (entityType == EntityType.FIREWORK_ROCKET ? new FireworkRocketEntity(this.world, d, e, f, ItemStack.EMPTY) : (entityType == EntityType.FIREBALL ? new FireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.DRAGON_FIREBALL ? new DragonFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.SMALL_FIREBALL ? new SmallFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.WITHER_SKULL ? new WitherSkullEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.SHULKER_BULLET ? new ShulkerBulletEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz()) : (entityType == EntityType.EGG ? new EggEntity(this.world, d, e, f) : (entityType == EntityType.EVOKER_FANGS ? new EvokerFangsEntity(this.world, d, e, f, 0.0f, 0, null) : (entityType == EntityType.POTION ? new PotionEntity(this.world, d, e, f) : (entityType == EntityType.EXPERIENCE_BOTTLE ? new ExperienceBottleEntity(this.world, d, e, f) : (entityType == EntityType.BOAT ? new BoatEntity(this.world, d, e, f) : (entityType == EntityType.TNT ? new TntEntity(this.world, d, e, f, null) : (entityType == EntityType.ARMOR_STAND ? new ArmorStandEntity(this.world, d, e, f) : (entityType == EntityType.END_CRYSTAL ? new EndCrystalEntity(this.world, d, e, f) : (entityType == EntityType.ITEM ? new ItemEntity(this.world, d, e, f) : (entityType == EntityType.FALLING_BLOCK ? new FallingBlockEntity(this.world, d, e, f, Block.getStateFromRawId(packet.getEntityData())) : (entityType == EntityType.AREA_EFFECT_CLOUD ? new AreaEffectCloudEntity(this.world, d, e, f) : (entityType == EntityType.LIGHTNING_BOLT ? new LightningEntity((EntityType<? extends LightningEntity>)EntityType.LIGHTNING_BOLT, (World)this.world) : null)))))))))))))))))))))));
+            entity = entityType == EntityType.SNOWBALL ? new SnowballEntity(this.world, d, e, f) : (entityType == EntityType.LLAMA_SPIT ? new LlamaSpitEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ()) : (entityType == EntityType.ITEM_FRAME ? new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(packet.getEntityData())) : (entityType == EntityType.LEASH_KNOT ? new LeashKnotEntity(this.world, new BlockPos(d, e, f)) : (entityType == EntityType.ENDER_PEARL ? new EnderPearlEntity(this.world, d, e, f) : (entityType == EntityType.EYE_OF_ENDER ? new EyeOfEnderEntity(this.world, d, e, f) : (entityType == EntityType.FIREWORK_ROCKET ? new FireworkRocketEntity(this.world, d, e, f, ItemStack.EMPTY) : (entityType == EntityType.FIREBALL ? new FireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ()) : (entityType == EntityType.DRAGON_FIREBALL ? new DragonFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ()) : (entityType == EntityType.SMALL_FIREBALL ? new SmallFireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ()) : (entityType == EntityType.WITHER_SKULL ? new WitherSkullEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ()) : (entityType == EntityType.SHULKER_BULLET ? new ShulkerBulletEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ()) : (entityType == EntityType.EGG ? new EggEntity(this.world, d, e, f) : (entityType == EntityType.EVOKER_FANGS ? new EvokerFangsEntity(this.world, d, e, f, 0.0f, 0, null) : (entityType == EntityType.POTION ? new PotionEntity(this.world, d, e, f) : (entityType == EntityType.EXPERIENCE_BOTTLE ? new ExperienceBottleEntity(this.world, d, e, f) : (entityType == EntityType.BOAT ? new BoatEntity(this.world, d, e, f) : (entityType == EntityType.TNT ? new TntEntity(this.world, d, e, f, null) : (entityType == EntityType.ARMOR_STAND ? new ArmorStandEntity(this.world, d, e, f) : (entityType == EntityType.END_CRYSTAL ? new EndCrystalEntity(this.world, d, e, f) : (entityType == EntityType.ITEM ? new ItemEntity(this.world, d, e, f) : (entityType == EntityType.FALLING_BLOCK ? new FallingBlockEntity(this.world, d, e, f, Block.getStateFromRawId(packet.getEntityData())) : (entityType == EntityType.AREA_EFFECT_CLOUD ? new AreaEffectCloudEntity(this.world, d, e, f) : (entityType == EntityType.LIGHTNING_BOLT ? new LightningEntity((EntityType<? extends LightningEntity>)EntityType.LIGHTNING_BOLT, (World)this.world) : null)))))))))))))))))))))));
         }
         if (entity != null) {
             int i = packet.getId();
@@ -1135,27 +1135,27 @@ implements ClientPlayPacketListener {
     public void onGameStateChange(GameStateChangeS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ClientPlayerEntity playerEntity = this.client.player;
-        GameStateChangeS2CPacket.class_5402 lv = packet.getReason();
+        GameStateChangeS2CPacket.Reason reason = packet.getReason();
         float f = packet.getValue();
         int i = MathHelper.floor(f + 0.5f);
-        if (lv == GameStateChangeS2CPacket.field_25645) {
+        if (reason == GameStateChangeS2CPacket.NO_RESPAWN_BLOCK) {
             ((PlayerEntity)playerEntity).sendMessage(new TranslatableText("block.minecraft.spawn.not_valid"), false);
-        } else if (lv == GameStateChangeS2CPacket.field_25646) {
+        } else if (reason == GameStateChangeS2CPacket.RAIN_STARTED) {
             this.world.getLevelProperties().setRaining(true);
             this.world.setRainGradient(0.0f);
-        } else if (lv == GameStateChangeS2CPacket.field_25647) {
+        } else if (reason == GameStateChangeS2CPacket.RAIN_STOPPED) {
             this.world.getLevelProperties().setRaining(false);
             this.world.setRainGradient(1.0f);
-        } else if (lv == GameStateChangeS2CPacket.field_25648) {
+        } else if (reason == GameStateChangeS2CPacket.GAME_MODE_CHANGED) {
             this.client.interactionManager.setGameMode(GameMode.byId(i));
-        } else if (lv == GameStateChangeS2CPacket.field_25649) {
+        } else if (reason == GameStateChangeS2CPacket.GAME_WON) {
             if (i == 0) {
                 this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
                 this.client.openScreen(new DownloadingTerrainScreen());
             } else if (i == 1) {
                 this.client.openScreen(new CreditsScreen(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN))));
             }
-        } else if (lv == GameStateChangeS2CPacket.field_25650) {
+        } else if (reason == GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN) {
             GameOptions gameOptions = this.client.options;
             if (f == 0.0f) {
                 this.client.openScreen(new DemoScreen());
@@ -1168,20 +1168,20 @@ implements ClientPlayPacketListener {
             } else if (f == 104.0f) {
                 this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getBoundKeyLocalizedText()));
             }
-        } else if (lv == GameStateChangeS2CPacket.field_25651) {
+        } else if (reason == GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER) {
             this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18f, 0.45f);
-        } else if (lv == GameStateChangeS2CPacket.field_25652) {
+        } else if (reason == GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED) {
             this.world.setRainGradient(f);
-        } else if (lv == GameStateChangeS2CPacket.field_25653) {
+        } else if (reason == GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED) {
             this.world.setThunderGradient(f);
-        } else if (lv == GameStateChangeS2CPacket.field_25654) {
+        } else if (reason == GameStateChangeS2CPacket.PUFFERFISH_STING) {
             this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PUFFER_FISH_STING, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-        } else if (lv == GameStateChangeS2CPacket.field_25655) {
+        } else if (reason == GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT) {
             this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 0.0, 0.0, 0.0);
             if (i == 1) {
                 this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0f, 1.0f);
             }
-        } else if (lv == GameStateChangeS2CPacket.field_25656) {
+        } else if (reason == GameStateChangeS2CPacket.IMMEDIATE_RESPAWN) {
             this.client.player.setShowsDeathScreen(f == 0.0f);
         }
     }

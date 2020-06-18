@@ -135,7 +135,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public double getVelocityz() {
+    public double getVelocityZ() {
         return (double)this.velocityZ / 8000.0;
     }
 

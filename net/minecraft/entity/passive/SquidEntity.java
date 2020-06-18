@@ -238,7 +238,7 @@ extends WaterCreatureEntity {
             Vec3d vec3d = new Vec3d(SquidEntity.this.getX() - livingEntity.getX(), SquidEntity.this.getY() - livingEntity.getY(), SquidEntity.this.getZ() - livingEntity.getZ());
             BlockState blockState = SquidEntity.this.world.getBlockState(new BlockPos(SquidEntity.this.getX() + vec3d.x, SquidEntity.this.getY() + vec3d.y, SquidEntity.this.getZ() + vec3d.z));
             FluidState fluidState = SquidEntity.this.world.getFluidState(new BlockPos(SquidEntity.this.getX() + vec3d.x, SquidEntity.this.getY() + vec3d.y, SquidEntity.this.getZ() + vec3d.z));
-            if (fluidState.matches(FluidTags.WATER) || blockState.isAir()) {
+            if (fluidState.isIn(FluidTags.WATER) || blockState.isAir()) {
                 double d = vec3d.length();
                 if (d > 0.0) {
                     vec3d.normalize();

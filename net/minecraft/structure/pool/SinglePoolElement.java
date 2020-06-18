@@ -54,7 +54,7 @@ extends StructurePoolElement {
     }
 
     protected static <E extends SinglePoolElement> RecordCodecBuilder<E, List<StructureProcessor>> method_28880() {
-        return ((MapCodec)StructureProcessorType.field_25013.listOf().fieldOf("processors")).forGetter(singlePoolElement -> singlePoolElement.processors);
+        return ((MapCodec)StructureProcessorType.CODEC.listOf().fieldOf("processors")).forGetter(singlePoolElement -> singlePoolElement.processors);
     }
 
     protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> method_28882() {

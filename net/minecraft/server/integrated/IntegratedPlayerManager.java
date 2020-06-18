@@ -22,8 +22,8 @@ public class IntegratedPlayerManager
 extends PlayerManager {
     private CompoundTag userData;
 
-    public IntegratedPlayerManager(IntegratedServer integratedServer, RegistryTracker.Modifiable modifiable, WorldSaveHandler worldSaveHandler) {
-        super(integratedServer, modifiable, worldSaveHandler, 8);
+    public IntegratedPlayerManager(IntegratedServer server, RegistryTracker.Modifiable tracker, WorldSaveHandler saveHandler) {
+        super(server, tracker, saveHandler, 8);
         this.setViewDistance(10);
     }
 
@@ -36,11 +36,11 @@ extends PlayerManager {
     }
 
     @Override
-    public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
-        if (gameProfile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(gameProfile.getName()) != null) {
+    public Text checkCanJoin(SocketAddress address, GameProfile profile) {
+        if (profile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(profile.getName()) != null) {
             return new TranslatableText("multiplayer.disconnect.name_taken");
         }
-        return super.checkCanJoin(socketAddress, gameProfile);
+        return super.checkCanJoin(address, profile);
     }
 
     @Override

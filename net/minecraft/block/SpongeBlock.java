@@ -61,7 +61,7 @@ extends Block {
                 BlockState blockState = world.getBlockState(blockPos2);
                 FluidState fluidState = world.getFluidState(blockPos2);
                 Material material = blockState.getMaterial();
-                if (!fluidState.matches(FluidTags.WATER)) continue;
+                if (!fluidState.isIn(FluidTags.WATER)) continue;
                 if (blockState.getBlock() instanceof FluidDrainable && ((FluidDrainable)((Object)blockState.getBlock())).tryDrainFluid(world, blockPos2, blockState) != Fluids.EMPTY) {
                     ++i;
                     if (j >= 6) continue;

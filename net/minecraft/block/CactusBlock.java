@@ -91,7 +91,7 @@ extends Block {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockState blockState = world.getBlockState(pos.offset(direction));
             Material material = blockState.getMaterial();
-            if (!material.isSolid() && !world.getFluidState(pos.offset(direction)).matches(FluidTags.LAVA)) continue;
+            if (!material.isSolid() && !world.getFluidState(pos.offset(direction)).isIn(FluidTags.LAVA)) continue;
             return false;
         }
         BlockState blockState2 = world.getBlockState(pos.down());
