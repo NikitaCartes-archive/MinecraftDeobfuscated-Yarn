@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_5398;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,6 +23,7 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.UniversalAngerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -95,7 +95,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		this.targetSelector.add(2, new EndermanEntity.TeleportTowardsPlayerGoal(this));
 		this.targetSelector.add(3, new RevengeGoal(this));
 		this.targetSelector.add(4, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
-		this.targetSelector.add(5, new class_5398<>(this, false));
+		this.targetSelector.add(5, new UniversalAngerGoal<>(this, false));
 	}
 
 	public static DefaultAttributeContainer.Builder createEndermanAttributes() {
@@ -293,7 +293,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 		BlockState blockState = this.world.getBlockState(mutable);
 		boolean bl = blockState.getMaterial().blocksMovement();
-		boolean bl2 = blockState.getFluidState().matches(FluidTags.WATER);
+		boolean bl2 = blockState.getFluidState().isIn(FluidTags.WATER);
 		if (bl && !bl2) {
 			boolean bl3 = this.teleport(x, y, z, true);
 			if (bl3 && !this.isSilent()) {

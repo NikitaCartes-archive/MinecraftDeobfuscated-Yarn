@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.village.raid.Raid;
 
 public class SeekSkyAfterRaidWinTask extends SeekSkyTask {
 	public SeekSkyAfterRaidWinTask(float f) {

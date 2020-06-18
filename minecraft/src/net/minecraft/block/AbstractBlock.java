@@ -96,7 +96,7 @@ public abstract class AbstractBlock {
 			case LAND:
 				return !state.isFullCube(world, pos);
 			case WATER:
-				return world.getFluidState(pos).matches(FluidTags.WATER);
+				return world.getFluidState(pos).isIn(FluidTags.WATER);
 			case AIR:
 				return !state.isFullCube(world, pos);
 			default:

@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public class JigsawReplacementStructureProcessor extends StructureProcessor {
-	public static final Codec<JigsawReplacementStructureProcessor> field_25003 = Codec.unit(
+	public static final Codec<JigsawReplacementStructureProcessor> CODEC = Codec.unit(
 		(Supplier<JigsawReplacementStructureProcessor>)(() -> JigsawReplacementStructureProcessor.INSTANCE)
 	);
 	public static final JigsawReplacementStructureProcessor INSTANCE = new JigsawReplacementStructureProcessor();

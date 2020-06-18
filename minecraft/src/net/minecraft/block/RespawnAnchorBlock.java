@@ -94,7 +94,7 @@ public class RespawnAnchorBlock extends Block {
 
 	private static boolean hasStillWater(BlockPos pos, World world) {
 		FluidState fluidState = world.getFluidState(pos);
-		if (!fluidState.matches(FluidTags.WATER)) {
+		if (!fluidState.isIn(FluidTags.WATER)) {
 			return false;
 		} else if (fluidState.isStill()) {
 			return true;
@@ -104,7 +104,7 @@ public class RespawnAnchorBlock extends Block {
 				return false;
 			} else {
 				FluidState fluidState2 = world.getFluidState(pos.down());
-				return !fluidState2.matches(FluidTags.WATER);
+				return !fluidState2.isIn(FluidTags.WATER);
 			}
 		}
 	}
@@ -112,7 +112,7 @@ public class RespawnAnchorBlock extends Block {
 	private void explode(BlockState state, World world, BlockPos explodedPos) {
 		world.removeBlock(explodedPos, false);
 		boolean bl = Direction.Type.HORIZONTAL.stream().map(explodedPos::offset).anyMatch(blockPos -> hasStillWater(blockPos, world));
-		final boolean bl2 = bl || world.getFluidState(explodedPos.up()).matches(FluidTags.WATER);
+		final boolean bl2 = bl || world.getFluidState(explodedPos.up()).isIn(FluidTags.WATER);
 		ExplosionBehavior explosionBehavior = new ExplosionBehavior() {
 			@Override
 			public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {

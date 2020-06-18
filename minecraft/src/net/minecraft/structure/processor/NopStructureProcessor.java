@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public class NopStructureProcessor extends StructureProcessor {
-	public static final Codec<NopStructureProcessor> field_25005 = Codec.unit((Supplier<NopStructureProcessor>)(() -> NopStructureProcessor.INSTANCE));
+	public static final Codec<NopStructureProcessor> CODEC = Codec.unit((Supplier<NopStructureProcessor>)(() -> NopStructureProcessor.INSTANCE));
 	public static final NopStructureProcessor INSTANCE = new NopStructureProcessor();
 
 	private NopStructureProcessor() {

@@ -404,7 +404,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 					double g = voxelShape.getEndingCoord(Direction.Axis.Y, d, e);
 					double h = (double)fluidState.getHeight(worldView, blockPos3);
 					double m = Math.max(g, h);
-					ParticleEffect particleEffect = !fluidState.matches(FluidTags.LAVA) && !blockState.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(blockState)
+					ParticleEffect particleEffect = !fluidState.isIn(FluidTags.LAVA) && !blockState.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(blockState)
 						? ParticleTypes.RAIN
 						: ParticleTypes.SMOKE;
 					this.client.world.addParticle(particleEffect, (double)blockPos3.getX() + d, (double)blockPos3.getY() + m, (double)blockPos3.getZ() + e, 0.0, 0.0, 0.0);
@@ -982,7 +982,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f);
 		this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f);
 		this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f);
-		if (this.world.getSkyProperties().method_29993()) {
+		if (this.world.getSkyProperties().isDarkened()) {
 			DiffuseLighting.enableForLevel(matrices.peek().getModel());
 		} else {
 			DiffuseLighting.method_27869(matrices.peek().getModel());
@@ -1550,9 +1550,9 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public void renderSky(MatrixStack matrices, float tickDelta) {
-		if (this.client.world.getSkyProperties().method_29992() == SkyProperties.class_5401.field_25641) {
+		if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.END) {
 			this.renderEndSky(matrices);
-		} else if (this.client.world.getSkyProperties().method_29992() == SkyProperties.class_5401.field_25640) {
+		} else if (this.client.world.getSkyProperties().getSkyType() == SkyProperties.SkyType.NORMAL) {
 			RenderSystem.disableTexture();
 			Vec3d vec3d = this.world.method_23777(this.client.gameRenderer.getCamera().getBlockPos(), tickDelta);
 			float f = (float)vec3d.x;

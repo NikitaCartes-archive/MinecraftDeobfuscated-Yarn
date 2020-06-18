@@ -33,7 +33,7 @@ public class EndHighlandsBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
 			Feature.END_GATEWAY
-				.configure(EndGatewayFeatureConfig.createConfig(ServerWorld.field_25144, true))
+				.configure(EndGatewayFeatureConfig.createConfig(ServerWorld.END_SPAWN_POS, true))
 				.createDecoratedFeature(Decorator.END_GATEWAY.configure(DecoratorConfig.DEFAULT))
 		);
 		this.addFeature(

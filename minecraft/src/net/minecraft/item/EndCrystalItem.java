@@ -40,7 +40,7 @@ public class EndCrystalItem extends Item {
 						EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, d + 0.5, e, f + 0.5);
 						endCrystalEntity.setShowBottom(false);
 						world.spawnEntity(endCrystalEntity);
-						EnderDragonFight enderDragonFight = ((ServerWorld)world).method_29198();
+						EnderDragonFight enderDragonFight = ((ServerWorld)world).getEnderDragonFight();
 						if (enderDragonFight != null) {
 							enderDragonFight.respawnDragon();
 						}

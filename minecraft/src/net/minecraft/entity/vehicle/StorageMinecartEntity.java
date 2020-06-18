@@ -119,9 +119,9 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Nullable
 	@Override
-	public Entity changeDimension(ServerWorld serverWorld) {
+	public Entity changeDimension(ServerWorld destination) {
 		this.field_7733 = false;
-		return super.changeDimension(serverWorld);
+		return super.changeDimension(destination);
 	}
 
 	@Override

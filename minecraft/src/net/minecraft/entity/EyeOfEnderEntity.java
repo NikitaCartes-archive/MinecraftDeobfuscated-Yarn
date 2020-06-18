@@ -118,8 +118,8 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		double e = this.getY() + vec3d.y;
 		double f = this.getZ() + vec3d.z;
 		float g = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.pitch = ProjectileEntity.method_26960(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, (double)g) * 180.0F / (float)Math.PI));
-		this.yaw = ProjectileEntity.method_26960(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
+		this.pitch = ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, (double)g) * 180.0F / (float)Math.PI));
+		this.yaw = ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
 		if (!this.world.isClient) {
 			double h = this.velocityX - d;
 			double i = this.velocityZ - f;

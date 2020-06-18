@@ -216,7 +216,7 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	protected boolean canCarveBlock(BlockState state, BlockState stateAbove) {
-		return this.canAlwaysCarveBlock(state) || (state.isOf(Blocks.SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().matches(FluidTags.WATER);
+		return this.canAlwaysCarveBlock(state) || (state.isOf(Blocks.SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().isIn(FluidTags.WATER);
 	}
 
 	protected boolean isRegionUncarvable(Chunk chunk, int mainChunkX, int mainChunkZ, int relMinX, int relMaxX, int minY, int maxY, int relMinZ, int relMaxZ) {

@@ -120,7 +120,7 @@ public class SlabBlock extends Block implements Waterloggable {
 			case LAND:
 				return false;
 			case WATER:
-				return world.getFluidState(pos).matches(FluidTags.WATER);
+				return world.getFluidState(pos).isIn(FluidTags.WATER);
 			case AIR:
 				return false;
 			default:

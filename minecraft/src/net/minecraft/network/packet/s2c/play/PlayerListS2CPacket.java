@@ -33,7 +33,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						serverPlayerEntity.getGameProfile(),
 						serverPlayerEntity.pingMilliseconds,
 						serverPlayerEntity.interactionManager.getGameMode(),
-						serverPlayerEntity.method_14206()
+						serverPlayerEntity.getPlayerListName()
 					)
 				);
 		}
@@ -49,7 +49,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						serverPlayerEntity.getGameProfile(),
 						serverPlayerEntity.pingMilliseconds,
 						serverPlayerEntity.interactionManager.getGameMode(),
-						serverPlayerEntity.method_14206()
+						serverPlayerEntity.getPlayerListName()
 					)
 				);
 		}

@@ -1,24 +1,23 @@
 package net.minecraft.structure.processor;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_5399;
 import net.minecraft.util.registry.Registry;
 
 public interface StructureProcessorType<P extends StructureProcessor> {
-	StructureProcessorType<BlockIgnoreStructureProcessor> BLOCK_IGNORE = register("block_ignore", BlockIgnoreStructureProcessor.field_24998);
-	StructureProcessorType<BlockRotStructureProcessor> BLOCK_ROT = register("block_rot", BlockRotStructureProcessor.field_25000);
+	StructureProcessorType<BlockIgnoreStructureProcessor> BLOCK_IGNORE = register("block_ignore", BlockIgnoreStructureProcessor.CODEC);
+	StructureProcessorType<BlockRotStructureProcessor> BLOCK_ROT = register("block_rot", BlockRotStructureProcessor.CODEC);
 	StructureProcessorType<GravityStructureProcessor> GRAVITY = register("gravity", GravityStructureProcessor.CODEC);
-	StructureProcessorType<JigsawReplacementStructureProcessor> JIGSAW_REPLACEMENT = register(
-		"jigsaw_replacement", JigsawReplacementStructureProcessor.field_25003
-	);
-	StructureProcessorType<RuleStructureProcessor> RULE = register("rule", RuleStructureProcessor.field_25011);
-	StructureProcessorType<NopStructureProcessor> NOP = register("nop", NopStructureProcessor.field_25005);
-	StructureProcessorType<BlockAgeStructureProcessor> BLOCK_AGE = register("block_age", BlockAgeStructureProcessor.field_24997);
+	StructureProcessorType<JigsawReplacementStructureProcessor> JIGSAW_REPLACEMENT = register("jigsaw_replacement", JigsawReplacementStructureProcessor.CODEC);
+	StructureProcessorType<RuleStructureProcessor> RULE = register("rule", RuleStructureProcessor.CODEC);
+	StructureProcessorType<NopStructureProcessor> NOP = register("nop", NopStructureProcessor.CODEC);
+	StructureProcessorType<BlockAgeStructureProcessor> BLOCK_AGE = register("block_age", BlockAgeStructureProcessor.CODEC);
 	StructureProcessorType<BlackstoneReplacementStructureProcessor> BLACKSTONE_REPLACE = register(
-		"blackstone_replace", BlackstoneReplacementStructureProcessor.field_24996
+		"blackstone_replace", BlackstoneReplacementStructureProcessor.CODEC
 	);
-	StructureProcessorType<class_5399> LAVA_SUBMERGED_BLOCK = register("lava_submerged_block", class_5399.field_25618);
-	Codec<StructureProcessor> field_25013 = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
+	StructureProcessorType<LavaSubmergedBlockStructureProcessor> LAVA_SUBMERGED_BLOCK = register(
+		"lava_submerged_block", LavaSubmergedBlockStructureProcessor.CODEC
+	);
+	Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
 
 	Codec<P> codec();
 

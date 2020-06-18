@@ -109,7 +109,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		this.noClip = true;
 		this.ignoreCameraFrustum = true;
 		if (world instanceof ServerWorld) {
-			this.fight = ((ServerWorld)world).method_29198();
+			this.fight = ((ServerWorld)world).getEnderDragonFight();
 		} else {
 			this.fight = null;
 		}

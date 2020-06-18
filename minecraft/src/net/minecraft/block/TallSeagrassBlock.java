@@ -48,7 +48,7 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 		BlockState blockState = super.getPlacementState(ctx);
 		if (blockState != null) {
 			FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos().up());
-			if (fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8) {
+			if (fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8) {
 				return blockState;
 			}
 		}
@@ -63,7 +63,7 @@ public class TallSeagrassBlock extends TallPlantBlock implements FluidFillable {
 			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
 		} else {
 			FluidState fluidState = world.getFluidState(pos);
-			return super.canPlaceAt(state, world, pos) && fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
+			return super.canPlaceAt(state, world, pos) && fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8;
 		}
 	}
 

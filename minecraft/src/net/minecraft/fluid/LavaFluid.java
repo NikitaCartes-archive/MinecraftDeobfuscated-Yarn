@@ -190,7 +190,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	protected void flow(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
 		if (direction == Direction.DOWN) {
 			FluidState fluidState2 = world.getFluidState(pos);
-			if (this.isIn(FluidTags.LAVA) && fluidState2.matches(FluidTags.WATER)) {
+			if (this.isIn(FluidTags.LAVA) && fluidState2.isIn(FluidTags.WATER)) {
 				if (state.getBlock() instanceof FluidBlock) {
 					world.setBlockState(pos, Blocks.STONE.getDefaultState(), 3);
 				}

@@ -725,7 +725,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {
-		boolean bl = this.getSkyProperties().method_29993();
+		boolean bl = this.getSkyProperties().isDarkened();
 		if (!shaded) {
 			return bl ? 0.9F : 1.0F;
 		} else {
@@ -908,8 +908,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void populateCrashReport(CrashReportSection reportSection) {
-			MutableWorldProperties.super.populateCrashReport(reportSection);
+		public void populateCrashReport(CrashReportSection crashReportSection) {
+			MutableWorldProperties.super.populateCrashReport(crashReportSection);
 		}
 
 		public void setDifficulty(Difficulty difficulty) {

@@ -97,7 +97,7 @@ public final class FluidState extends State<Fluid, FluidState> {
 		return this.getFluid().getParticle();
 	}
 
-	public boolean matches(Tag<Fluid> tag) {
+	public boolean isIn(Tag<Fluid> tag) {
 		return this.getFluid().isIn(tag);
 	}
 

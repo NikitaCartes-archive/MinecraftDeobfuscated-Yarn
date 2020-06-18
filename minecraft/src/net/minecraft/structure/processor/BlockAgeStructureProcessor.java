@@ -16,14 +16,14 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldView;
 
 public class BlockAgeStructureProcessor extends StructureProcessor {
-	public static final Codec<BlockAgeStructureProcessor> field_24997 = Codec.FLOAT
+	public static final Codec<BlockAgeStructureProcessor> CODEC = Codec.FLOAT
 		.fieldOf("mossiness")
 		.<BlockAgeStructureProcessor>xmap(BlockAgeStructureProcessor::new, blockAgeStructureProcessor -> blockAgeStructureProcessor.mossiness)
 		.codec();
 	private final float mossiness;
 
-	public BlockAgeStructureProcessor(float f) {
-		this.mossiness = f;
+	public BlockAgeStructureProcessor(float mossiness) {
+		this.mossiness = mossiness;
 	}
 
 	@Nullable

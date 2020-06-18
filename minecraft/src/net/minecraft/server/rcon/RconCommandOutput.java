@@ -1,4 +1,4 @@
-package net.minecraft.server.dedicated;
+package net.minecraft.server.rcon;
 
 import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
@@ -10,12 +10,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
-public class ServerCommandOutput implements CommandOutput {
-	private static final LiteralText field_25146 = new LiteralText("Rcon");
+public class RconCommandOutput implements CommandOutput {
+	private static final LiteralText RCON_NAME = new LiteralText("Rcon");
 	private final StringBuffer buffer = new StringBuffer();
 	private final MinecraftServer server;
 
-	public ServerCommandOutput(MinecraftServer server) {
+	public RconCommandOutput(MinecraftServer server) {
 		this.server = server;
 	}
 
@@ -28,8 +28,8 @@ public class ServerCommandOutput implements CommandOutput {
 	}
 
 	public ServerCommandSource createReconCommandSource() {
-		ServerWorld serverWorld = this.server.method_30002();
-		return new ServerCommandSource(this, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Rcon", field_25146, this.server, null);
+		ServerWorld serverWorld = this.server.getOverworld();
+		return new ServerCommandSource(this, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Rcon", RCON_NAME, this.server, null);
 	}
 
 	@Override

@@ -162,7 +162,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 			float f = 0.0F;
 			BlockPos blockPos = this.getBlockPos();
 			FluidState fluidState = this.world.getFluidState(blockPos);
-			if (fluidState.matches(FluidTags.WATER)) {
+			if (fluidState.isIn(FluidTags.WATER)) {
 				f = fluidState.getHeight(this.world, blockPos);
 			}
 
@@ -224,7 +224,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 				}
 			}
 
-			if (!fluidState.matches(FluidTags.WATER)) {
+			if (!fluidState.isIn(FluidTags.WATER)) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 			}
 
@@ -403,7 +403,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 		BlockState blockState = this.world.getBlockState(pos);
 		if (!blockState.isAir() && !blockState.isOf(Blocks.LILY_PAD)) {
 			FluidState fluidState = blockState.getFluidState();
-			return fluidState.matches(FluidTags.WATER) && fluidState.isStill() && blockState.getCollisionShape(this.world, pos).isEmpty()
+			return fluidState.isIn(FluidTags.WATER) && fluidState.isStill() && blockState.getCollisionShape(this.world, pos).isEmpty()
 				? FishingBobberEntity.PositionType.INSIDE_WATER
 				: FishingBobberEntity.PositionType.INVALID;
 		} else {

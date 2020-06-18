@@ -1,4 +1,4 @@
-package net.minecraft.world.gen.feature;
+package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import net.minecraft.class_5399;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,14 +19,10 @@ import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.structure.SimpleStructurePiece;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePieceType;
-import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
 import net.minecraft.structure.processor.BlockAgeStructureProcessor;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
+import net.minecraft.structure.processor.LavaSubmergedBlockStructureProcessor;
 import net.minecraft.structure.processor.RuleStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorRule;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
@@ -49,18 +44,18 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
+public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	private static final Logger field_24992 = LogManager.getLogger();
 	private final Identifier template;
 	private final BlockRotation rotation;
 	private final BlockMirror mirror;
-	private final RuinedPortalFeaturePiece.VerticalPlacement verticalPlacement;
-	private final RuinedPortalFeaturePiece.Properties properties;
+	private final RuinedPortalStructurePiece.VerticalPlacement verticalPlacement;
+	private final RuinedPortalStructurePiece.Properties properties;
 
-	public RuinedPortalFeaturePiece(
+	public RuinedPortalStructurePiece(
 		BlockPos pos,
-		RuinedPortalFeaturePiece.VerticalPlacement verticalPlacement,
-		RuinedPortalFeaturePiece.Properties properties,
+		RuinedPortalStructurePiece.VerticalPlacement verticalPlacement,
+		RuinedPortalStructurePiece.Properties properties,
 		Identifier template,
 		Structure structure,
 		BlockRotation rotation,
@@ -77,13 +72,13 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		this.processProperties(structure, center);
 	}
 
-	public RuinedPortalFeaturePiece(StructureManager manager, CompoundTag tag) {
+	public RuinedPortalStructurePiece(StructureManager manager, CompoundTag tag) {
 		super(StructurePieceType.RUINED_PORTAL, tag);
 		this.template = new Identifier(tag.getString("Template"));
 		this.rotation = BlockRotation.valueOf(tag.getString("Rotation"));
 		this.mirror = BlockMirror.valueOf(tag.getString("Mirror"));
-		this.verticalPlacement = RuinedPortalFeaturePiece.VerticalPlacement.getFromId(tag.getString("VerticalPlacement"));
-		this.properties = RuinedPortalFeaturePiece.Properties.CODEC
+		this.verticalPlacement = RuinedPortalStructurePiece.VerticalPlacement.getFromId(tag.getString("VerticalPlacement"));
+		this.properties = RuinedPortalStructurePiece.Properties.CODEC
 			.parse(new Dynamic<>(NbtOps.INSTANCE, tag.get("Properties")))
 			.getOrThrow(true, field_24992::error);
 		Structure structure = manager.getStructureOrBlank(this.template);
@@ -97,7 +92,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		tag.putString("Rotation", this.rotation.name());
 		tag.putString("Mirror", this.mirror.name());
 		tag.putString("VerticalPlacement", this.verticalPlacement.getId());
-		RuinedPortalFeaturePiece.Properties.CODEC
+		RuinedPortalStructurePiece.Properties.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.properties)
 			.resultOrPartial(field_24992::error)
 			.ifPresent(tagx -> tag.put("Properties", tagx));
@@ -121,7 +116,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 			.addProcessor(blockIgnoreStructureProcessor)
 			.addProcessor(new RuleStructureProcessor(list))
 			.addProcessor(new BlockAgeStructureProcessor(this.properties.mossiness))
-			.addProcessor(new class_5399());
+			.addProcessor(new LavaSubmergedBlockStructureProcessor());
 		if (this.properties.replaceWithBlackstone) {
 			structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);
 		}
@@ -130,7 +125,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 	}
 
 	private StructureProcessorRule createLavaReplacementRule() {
-		if (this.verticalPlacement == RuinedPortalFeaturePiece.VerticalPlacement.ON_OCEAN_FLOOR) {
+		if (this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR) {
 			return createReplacementRule(Blocks.LAVA, Blocks.MAGMA_BLOCK);
 		} else {
 			return this.properties.cold ? createReplacementRule(Blocks.LAVA, Blocks.NETHERRACK) : createReplacementRule(Blocks.LAVA, 0.2F, Blocks.MAGMA_BLOCK);
@@ -219,8 +214,8 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 	}
 
 	private void placeNetherrackBase(Random random, WorldAccess world) {
-		boolean bl = this.verticalPlacement == RuinedPortalFeaturePiece.VerticalPlacement.ON_LAND_SURFACE
-			|| this.verticalPlacement == RuinedPortalFeaturePiece.VerticalPlacement.ON_OCEAN_FLOOR;
+		boolean bl = this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE
+			|| this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR;
 		Vec3i vec3i = this.boundingBox.getCenter();
 		int i = vec3i.getX();
 		int j = vec3i.getZ();
@@ -259,7 +254,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		BlockState blockState = world.getBlockState(pos);
 		return !blockState.isOf(Blocks.AIR)
 			&& !blockState.isOf(Blocks.OBSIDIAN)
-			&& (this.verticalPlacement == RuinedPortalFeaturePiece.VerticalPlacement.IN_NETHER || !blockState.isOf(Blocks.LAVA));
+			&& (this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER || !blockState.isOf(Blocks.LAVA));
 	}
 
 	private void placeNetherrackBottom(Random random, WorldAccess world, BlockPos pos) {
@@ -270,12 +265,12 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		}
 	}
 
-	private static int getBaseHeight(WorldAccess world, int x, int y, RuinedPortalFeaturePiece.VerticalPlacement verticalPlacement) {
+	private static int getBaseHeight(WorldAccess world, int x, int y, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement) {
 		return world.getTopY(getHeightmapType(verticalPlacement), x, y) - 1;
 	}
 
-	public static Heightmap.Type getHeightmapType(RuinedPortalFeaturePiece.VerticalPlacement verticalPlacement) {
-		return verticalPlacement == RuinedPortalFeaturePiece.VerticalPlacement.ON_OCEAN_FLOOR ? Heightmap.Type.OCEAN_FLOOR_WG : Heightmap.Type.WORLD_SURFACE_WG;
+	public static Heightmap.Type getHeightmapType(RuinedPortalStructurePiece.VerticalPlacement verticalPlacement) {
+		return verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR ? Heightmap.Type.OCEAN_FLOOR_WG : Heightmap.Type.WORLD_SURFACE_WG;
 	}
 
 	private static StructureProcessorRule createReplacementRule(Block old, float chance, Block updated) {
@@ -287,7 +282,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 	}
 
 	public static class Properties {
-		public static final Codec<RuinedPortalFeaturePiece.Properties> CODEC = RecordCodecBuilder.create(
+		public static final Codec<RuinedPortalStructurePiece.Properties> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.BOOL.fieldOf("cold").forGetter(properties -> properties.cold),
 						Codec.FLOAT.fieldOf("mossiness").forGetter(properties -> properties.mossiness),
@@ -296,7 +291,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 						Codec.BOOL.fieldOf("vines").forGetter(properties -> properties.vines),
 						Codec.BOOL.fieldOf("replace_with_blackstone").forGetter(properties -> properties.replaceWithBlackstone)
 					)
-					.apply(instance, RuinedPortalFeaturePiece.Properties::new)
+					.apply(instance, RuinedPortalStructurePiece.Properties::new)
 		);
 		public boolean cold;
 		public float mossiness = 0.2F;
@@ -308,13 +303,13 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		public Properties() {
 		}
 
-		public <T> Properties(boolean bl, float f, boolean bl2, boolean bl3, boolean bl4, boolean bl5) {
-			this.cold = bl;
-			this.mossiness = f;
-			this.airPocket = bl2;
-			this.overgrown = bl3;
-			this.vines = bl4;
-			this.replaceWithBlackstone = bl5;
+		public <T> Properties(boolean cold, float mossiness, boolean airPocket, boolean overgrown, boolean vines, boolean replaceWithBlackstone) {
+			this.cold = cold;
+			this.mossiness = mossiness;
+			this.airPocket = airPocket;
+			this.overgrown = overgrown;
+			this.vines = vines;
+			this.replaceWithBlackstone = replaceWithBlackstone;
 		}
 	}
 
@@ -326,10 +321,10 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		UNDERGROUND("underground"),
 		IN_NETHER("in_nether");
 
-		private static final Map<String, RuinedPortalFeaturePiece.VerticalPlacement> VERTICAL_PLACEMENTS = (Map<String, RuinedPortalFeaturePiece.VerticalPlacement>)Arrays.stream(
+		private static final Map<String, RuinedPortalStructurePiece.VerticalPlacement> VERTICAL_PLACEMENTS = (Map<String, RuinedPortalStructurePiece.VerticalPlacement>)Arrays.stream(
 				values()
 			)
-			.collect(Collectors.toMap(RuinedPortalFeaturePiece.VerticalPlacement::getId, verticalPlacement -> verticalPlacement));
+			.collect(Collectors.toMap(RuinedPortalStructurePiece.VerticalPlacement::getId, verticalPlacement -> verticalPlacement));
 		private final String id;
 
 		private VerticalPlacement(String id) {
@@ -340,8 +335,8 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 			return this.id;
 		}
 
-		public static RuinedPortalFeaturePiece.VerticalPlacement getFromId(String id) {
-			return (RuinedPortalFeaturePiece.VerticalPlacement)VERTICAL_PLACEMENTS.get(id);
+		public static RuinedPortalStructurePiece.VerticalPlacement getFromId(String id) {
+			return (RuinedPortalStructurePiece.VerticalPlacement)VERTICAL_PLACEMENTS.get(id);
 		}
 	}
 }

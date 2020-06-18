@@ -46,7 +46,7 @@ public class MagmaBlock extends Block {
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		BlockPos blockPos = pos.up();
-		if (world.getFluidState(pos).matches(FluidTags.WATER)) {
+		if (world.getFluidState(pos).isIn(FluidTags.WATER)) {
 			world.playSound(
 				null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
 			);

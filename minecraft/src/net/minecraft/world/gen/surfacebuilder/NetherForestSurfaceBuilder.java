@@ -34,7 +34,7 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 		long m,
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
-		int n = l + 1;
+		int n = l;
 		int o = i & 15;
 		int p = j & 15;
 		double e = this.field_22203.sample((double)i * 0.1, (double)l, (double)j * 0.1);
@@ -54,8 +54,9 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 				r = -1;
 			} else if (blockState5.isOf(blockState.getBlock())) {
 				if (r == -1) {
+					boolean bl3 = false;
 					if (q <= 0) {
-						blockState4 = CAVE_AIR;
+						bl3 = true;
 						blockState3 = ternarySurfaceConfig.getUnderMaterial();
 					}
 
@@ -65,7 +66,7 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 						blockState4 = ternarySurfaceConfig.getUnderwaterMaterial();
 					}
 
-					if (s < n && blockState4.isAir()) {
+					if (s < n && bl3) {
 						blockState4 = blockState2;
 					}
 

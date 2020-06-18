@@ -22,7 +22,7 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 		BlockPos blockPos,
 		DiskFeatureConfig diskFeatureConfig
 	) {
-		if (!serverWorldAccess.getFluidState(blockPos).matches(FluidTags.WATER)) {
+		if (!serverWorldAccess.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 			return false;
 		} else {
 			int i = 0;

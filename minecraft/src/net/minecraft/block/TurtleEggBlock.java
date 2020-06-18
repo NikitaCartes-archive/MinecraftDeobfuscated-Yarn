@@ -51,10 +51,13 @@ public class TurtleEggBlock extends Block {
 		super.onLandedUpon(world, pos, entity, distance);
 	}
 
-	private void tryBreakEgg(World world, BlockPos pos, Entity entity, int inverseChance) {
+	private void tryBreakEgg(World world, BlockPos blockPos, Entity entity, int inverseChance) {
 		if (this.breaksEgg(world, entity)) {
 			if (!world.isClient && world.random.nextInt(inverseChance) == 0) {
-				this.breakEgg(world, pos, world.getBlockState(pos));
+				BlockState blockState = world.getBlockState(blockPos);
+				if (blockState.isOf(Blocks.TURTLE_EGG)) {
+					this.breakEgg(world, blockPos, blockState);
+				}
 			}
 		}
 	}

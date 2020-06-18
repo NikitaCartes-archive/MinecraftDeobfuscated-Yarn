@@ -47,7 +47,7 @@ public class GlassBottleItem extends Item {
 						return TypedActionResult.pass(itemStack);
 					}
 
-					if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
+					if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 						return TypedActionResult.method_29237(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)), world.isClient());
 					}

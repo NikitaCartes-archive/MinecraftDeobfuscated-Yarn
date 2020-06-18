@@ -181,7 +181,7 @@ public final class NativeImage implements AutoCloseable {
 	 * Gets the color of a pixel on this native image.
 	 * The color returned by this method will be in a ABGR format.
 	 * 
-	 * <p>This is only supported when this native image's format is {@link NativeImage#Format#AGBR ABGR}.
+	 * <p>This is only supported when this native image's format is {@link NativeImage#Format#ABGR ABGR}.
 	 */
 	public int getPixelColor(int x, int y) {
 		if (this.format != NativeImage.Format.ABGR) {

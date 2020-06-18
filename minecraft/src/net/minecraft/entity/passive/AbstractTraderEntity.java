@@ -180,9 +180,9 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Nullable
 	@Override
-	public Entity changeDimension(ServerWorld serverWorld) {
+	public Entity changeDimension(ServerWorld destination) {
 		this.resetCustomer();
-		return super.changeDimension(serverWorld);
+		return super.changeDimension(destination);
 	}
 
 	protected void resetCustomer() {

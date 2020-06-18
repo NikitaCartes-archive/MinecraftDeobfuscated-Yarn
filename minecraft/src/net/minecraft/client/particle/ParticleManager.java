@@ -88,8 +88,8 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.ANGRY_VILLAGER, EmotionParticle.AngryVillagerFactory::new);
 		this.registerFactory(ParticleTypes.BARRIER, new BarrierParticle.Factory());
 		this.registerFactory(ParticleTypes.BLOCK, new BlockDustParticle.Factory());
-		this.registerFactory(ParticleTypes.BUBBLE, BubbleColumnUpParticle.Factory::new);
-		this.registerFactory(ParticleTypes.BUBBLE_COLUMN_UP, WaterBubbleParticle.Factory::new);
+		this.registerFactory(ParticleTypes.BUBBLE, WaterBubbleParticle.Factory::new);
+		this.registerFactory(ParticleTypes.BUBBLE_COLUMN_UP, BubbleColumnUpParticle.Factory::new);
 		this.registerFactory(ParticleTypes.BUBBLE_POP, BubblePopParticle.Factory::new);
 		this.registerFactory(ParticleTypes.CAMPFIRE_COSY_SMOKE, CampfireSmokeParticle.CosySmokeFactory::new);
 		this.registerFactory(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, CampfireSmokeParticle.SignalSmokeFactory::new);

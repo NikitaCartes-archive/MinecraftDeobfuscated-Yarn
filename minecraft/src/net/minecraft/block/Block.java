@@ -149,7 +149,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 					world.method_30093(pos, (flags & 32) == 0, null, i);
 				}
 			} else {
-				world.method_30092(pos, newState, flags & -33, i);
+				world.setBlockState(pos, newState, flags & -33, i);
 			}
 		}
 	}

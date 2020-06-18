@@ -28,7 +28,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 
 	private static boolean canSpread(BlockState state, WorldView worldView, BlockPos pos) {
 		BlockPos blockPos = pos.up();
-		return canSurvive(state, worldView, pos) && !worldView.getFluidState(blockPos).matches(FluidTags.WATER);
+		return canSurvive(state, worldView, pos) && !worldView.getFluidState(blockPos).isIn(FluidTags.WATER);
 	}
 
 	@Override

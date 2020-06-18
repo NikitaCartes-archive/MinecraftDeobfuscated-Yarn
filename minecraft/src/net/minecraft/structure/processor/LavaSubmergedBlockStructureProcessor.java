@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.structure.processor;
 
 import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
@@ -7,14 +7,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
-import net.minecraft.structure.processor.StructureProcessor;
-import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
-public class class_5399 extends StructureProcessor {
-	public static final Codec<class_5399> field_25618 = Codec.unit((Supplier<class_5399>)(() -> class_5399.field_25619));
-	public static final class_5399 field_25619 = new class_5399();
+public class LavaSubmergedBlockStructureProcessor extends StructureProcessor {
+	public static final Codec<LavaSubmergedBlockStructureProcessor> CODEC = Codec.unit(
+		(Supplier<LavaSubmergedBlockStructureProcessor>)(() -> LavaSubmergedBlockStructureProcessor.INSTANCE)
+	);
+	public static final LavaSubmergedBlockStructureProcessor INSTANCE = new LavaSubmergedBlockStructureProcessor();
 
 	@Nullable
 	@Override
