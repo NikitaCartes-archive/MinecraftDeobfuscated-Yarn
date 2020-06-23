@@ -449,7 +449,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();
 					if (!blockState.isAir() && blockState.getMaterial() != Material.FIRE) {
-						if (this.world.getGameRules().getBoolean(GameRules.field_19388) && !BlockTags.DRAGON_IMMUNE.contains(block)) {
+						if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && !BlockTags.DRAGON_IMMUNE.contains(block)) {
 							bl2 = this.world.removeBlock(blockPos, false) || bl2;
 						} else {
 							bl = true;
@@ -537,7 +537,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX() + (double)f, this.getY() + 2.0 + (double)g, this.getZ() + (double)h, 0.0, 0.0, 0.0);
 		}
 
-		boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19391);
+		boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT);
 		int i = 500;
 		if (this.fight != null && !this.fight.hasPreviouslyKilled()) {
 			i = 12000;

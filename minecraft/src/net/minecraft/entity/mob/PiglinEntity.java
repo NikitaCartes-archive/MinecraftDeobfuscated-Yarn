@@ -449,7 +449,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 
 	@Override
 	public boolean canGather(ItemStack stack) {
-		return this.world.getGameRules().getBoolean(GameRules.field_19388) && PiglinBrain.canGather(this, stack);
+		return this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && PiglinBrain.canGather(this, stack);
 	}
 
 	protected boolean method_24846(ItemStack stack) {

@@ -230,7 +230,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 	private void explode() {
 		if (!this.world.isClient) {
-			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
 				? Explosion.DestructionType.DESTROY
 				: Explosion.DestructionType.NONE;
 			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;

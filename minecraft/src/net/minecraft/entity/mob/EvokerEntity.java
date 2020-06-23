@@ -309,7 +309,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				return false;
 			} else if (EvokerEntity.this.age < this.startTime) {
 				return false;
-			} else if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+			} else if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				return false;
 			} else {
 				List<SheepEntity> list = EvokerEntity.this.world

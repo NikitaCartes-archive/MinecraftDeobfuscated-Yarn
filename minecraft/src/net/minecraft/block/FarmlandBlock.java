@@ -85,7 +85,7 @@ public class FarmlandBlock extends Block {
 		if (!world.isClient
 			&& world.random.nextFloat() < distance - 0.5F
 			&& entity instanceof LivingEntity
-			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388))
+			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
 			setToDirt(world.getBlockState(pos), world, pos);
 		}

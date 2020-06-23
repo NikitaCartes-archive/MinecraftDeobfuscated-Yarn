@@ -1239,7 +1239,7 @@ public abstract class LivingEntity extends Entity {
 		if (!this.world.isClient) {
 			boolean bl = false;
 			if (adversary instanceof WitherEntity) {
-				if (this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					BlockPos blockPos = this.getBlockPos();
 					BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
 					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -1266,7 +1266,7 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		boolean bl = this.playerHitTimer > 0;
-		if (this.shouldDropLoot() && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
+		if (this.shouldDropLoot() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 			this.dropLoot(source, bl);
 			this.dropEquipment(source, i, bl);
 		}
@@ -1280,7 +1280,7 @@ public abstract class LivingEntity extends Entity {
 
 	protected void dropXp() {
 		if (!this.world.isClient
-			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.field_19391))) {
+			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
 			int i = this.getCurrentExperience(this.attackingPlayer);
 
 			while (i > 0) {
@@ -2518,7 +2518,7 @@ public abstract class LivingEntity extends Entity {
 	protected void tickCramming() {
 		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
 		if (!list.isEmpty()) {
-			int i = this.world.getGameRules().getInt(GameRules.field_19405);
+			int i = this.world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
 			if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
 				int j = 0;
 

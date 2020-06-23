@@ -33,7 +33,7 @@ public class FireballEntity extends AbstractFireballEntity {
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
-			boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19388);
+			boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 			this.world
 				.createExplosion(
 					null, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE

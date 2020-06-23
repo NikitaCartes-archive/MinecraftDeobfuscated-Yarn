@@ -222,7 +222,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		if (!world.isClient && projectile.isOnFire()) {
 			Entity entity = projectile.getOwner();
-			boolean bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388);
+			boolean bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 			if (bl && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
 				BlockPos blockPos = hit.getBlockPos();
 				world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), 11);

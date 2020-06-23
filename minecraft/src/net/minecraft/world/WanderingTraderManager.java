@@ -52,7 +52,7 @@ public class WanderingTraderManager implements Spawner {
 				return 0;
 			} else {
 				this.spawnDelay = 24000;
-				if (!serverWorld.getGameRules().getBoolean(GameRules.field_19390)) {
+				if (!serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 					return 0;
 				} else {
 					int i = this.spawnChance;

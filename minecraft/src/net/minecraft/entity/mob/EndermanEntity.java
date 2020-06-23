@@ -422,7 +422,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (this.enderman.getCarriedBlock() != null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.field_19388) ? false : this.enderman.getRandom().nextInt(20) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(20) == 0;
 			}
 		}
 
@@ -461,7 +461,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (this.enderman.getCarriedBlock() == null) {
 				return false;
 			} else {
-				return !this.enderman.world.getGameRules().getBoolean(GameRules.field_19388) ? false : this.enderman.getRandom().nextInt(2000) == 0;
+				return !this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(2000) == 0;
 			}
 		}
 

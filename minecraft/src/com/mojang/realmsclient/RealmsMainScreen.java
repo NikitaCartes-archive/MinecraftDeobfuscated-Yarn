@@ -128,7 +128,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.rateLimiter = RateLimiter.create(0.016666668F);
 	}
 
-	public boolean shouldShowMessageInList() {
+	private boolean shouldShowMessageInList() {
 		if (hasParentalConsent() && this.hasFetchedServers) {
 			if (this.trialsAvailable && !this.createdTrial) {
 				return true;
@@ -346,7 +346,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 					this.realmsServers = list;
 					if (this.shouldShowMessageInList()) {
-						this.realmSelectionList.addEntry(new RealmsMainScreen.RealmSelectionListTrialEntry());
+						this.realmSelectionList.method_30161(new RealmsMainScreen.RealmSelectionListTrialEntry());
 					}
 
 					for (RealmsServer realmsServerx : this.realmsServers) {
@@ -1078,7 +1078,9 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	public RealmsMainScreen newScreen() {
-		return new RealmsMainScreen(this.lastScreen);
+		RealmsMainScreen realmsMainScreen = new RealmsMainScreen(this.lastScreen);
+		realmsMainScreen.init(this.client, this.width, this.height);
+		return realmsMainScreen;
 	}
 
 	public static void method_23765(ResourceManager manager) {
@@ -1167,8 +1169,21 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class RealmSelectionList extends RealmsObjectSelectionList<RealmsMainScreen.Entry> {
+		private boolean field_25723;
+
 		public RealmSelectionList() {
 			super(RealmsMainScreen.this.width, RealmsMainScreen.this.height, 32, RealmsMainScreen.this.height - 40, 36);
+		}
+
+		@Override
+		public void clear() {
+			super.clear();
+			this.field_25723 = false;
+		}
+
+		public int method_30161(RealmsMainScreen.Entry entry) {
+			this.field_25723 = true;
+			return this.addEntry(entry);
 		}
 
 		@Override
@@ -1210,7 +1225,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.setSelectedItem(index);
 			if (index != -1) {
 				RealmsServer realmsServer;
-				if (RealmsMainScreen.this.shouldShowMessageInList()) {
+				if (this.field_25723) {
 					if (index == 0) {
 						Realms.narrateNow(I18n.translate("mco.trial.message.line1"), I18n.translate("mco.trial.message.line2"));
 						realmsServer = null;
@@ -1250,15 +1265,14 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		public void setSelected(@Nullable RealmsMainScreen.Entry entry) {
 			super.setSelected(entry);
-			RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers
-				.get(this.children().indexOf(entry) - (RealmsMainScreen.this.shouldShowMessageInList() ? 1 : 0));
+			RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(this.children().indexOf(entry) - (this.field_25723 ? 1 : 0));
 			RealmsMainScreen.this.selectedServerId = realmsServer.id;
 			RealmsMainScreen.this.updateButtonStates(realmsServer);
 		}
 
 		@Override
 		public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
-			if (RealmsMainScreen.this.shouldShowMessageInList()) {
+			if (this.field_25723) {
 				if (selectionIndex == 0) {
 					RealmsMainScreen.this.popupOpenedByUser = true;
 					return;

@@ -909,7 +909,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		protected void eatSweetBerry() {
-			if (FoxEntity.this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+			if (FoxEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
 				if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 					int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
@@ -1218,7 +1218,7 @@ public class FoxEntity extends AnimalEntity {
 				foxEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0F, 0.0F);
 				this.world.spawnEntity(foxEntity);
 				this.world.sendEntityStatus(this.animal, (byte)18);
-				if (this.world.getGameRules().getBoolean(GameRules.field_19391)) {
+				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 					this.world
 						.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));
 				}

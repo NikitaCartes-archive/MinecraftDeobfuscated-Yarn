@@ -192,7 +192,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			String string = String.format(Locale.ROOT, "%.3fs", (double)m / 1.0E9);
 			LOGGER.info("Done ({})! For help, type \"help\"", string);
 			if (serverPropertiesHandler.announcePlayerAchievements != null) {
-				this.getGameRules().get(GameRules.field_19409).set(serverPropertiesHandler.announcePlayerAchievements, this);
+				this.getGameRules().get(GameRules.ANNOUNCE_ADVANCEMENTS).set(serverPropertiesHandler.announcePlayerAchievements, this);
 			}
 
 			if (serverPropertiesHandler.enableQuery) {

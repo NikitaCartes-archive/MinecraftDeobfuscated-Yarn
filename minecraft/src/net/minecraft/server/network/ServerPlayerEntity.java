@@ -1101,7 +1101,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
 			this.lastNetherPortalDirectionVector = oldPlayer.lastNetherPortalDirectionVector;
 			this.lastNetherPortalDirection = oldPlayer.lastNetherPortalDirection;
-		} else if (this.world.getGameRules().getBoolean(GameRules.field_19389) || oldPlayer.isSpectator()) {
+		} else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			this.inventory.clone(oldPlayer.inventory);
 			this.experienceLevel = oldPlayer.experienceLevel;
 			this.totalExperience = oldPlayer.totalExperience;

@@ -45,7 +45,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		if (!serverWorld.getGameRules().getBoolean(GameRules.field_19388)) {
+		if (!serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 			return false;
 		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.FARMER) {
 			return false;

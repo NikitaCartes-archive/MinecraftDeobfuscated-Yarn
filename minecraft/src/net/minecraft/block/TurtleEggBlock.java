@@ -148,7 +148,7 @@ public class TurtleEggBlock extends Block {
 		if (entity instanceof TurtleEntity || entity instanceof BatEntity) {
 			return false;
 		} else {
-			return !(entity instanceof LivingEntity) ? false : entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388);
+			return !(entity instanceof LivingEntity) ? false : entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 		}
 	}
 }

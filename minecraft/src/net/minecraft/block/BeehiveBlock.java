@@ -246,7 +246,7 @@ public class BeehiveBlock extends BlockWithEntity {
 
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.field_19392)) {
+		if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeehiveBlockEntity) {
 				BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;

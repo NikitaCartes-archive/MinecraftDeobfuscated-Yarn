@@ -222,7 +222,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 			passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
 			world.spawnEntity(passiveEntity);
 			world.sendEntityStatus(this, (byte)18);
-			if (world.getGameRules().getBoolean(GameRules.field_19391)) {
+			if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 				world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
 			}
 		}
