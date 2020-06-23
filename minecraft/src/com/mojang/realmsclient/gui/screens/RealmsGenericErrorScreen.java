@@ -11,6 +11,7 @@ import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsGenericErrorScreen extends RealmsScreen {
@@ -40,8 +41,7 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 		} else {
 			this.line1 = new LiteralText("Realms (" + realmsServiceException.errorCode + "):");
 			String string = "mco.errorMessage." + realmsServiceException.errorCode;
-			String string2 = I18n.translate(string);
-			this.line2 = new LiteralText(string2.equals(string) ? realmsServiceException.errorMsg : string2);
+			this.line2 = (Text)(I18n.hasTranslation(string) ? new TranslatableText(string) : Text.method_30163(realmsServiceException.errorMsg));
 		}
 	}
 

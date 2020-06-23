@@ -609,7 +609,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	protected void dropInventory() {
 		super.dropInventory();
-		if (!this.world.getGameRules().getBoolean(GameRules.field_19389)) {
+		if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
 			this.vanishCursedItems();
 			this.inventory.dropAll();
 		}
@@ -1653,7 +1653,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected int getCurrentExperience(PlayerEntity player) {
-		if (!this.world.getGameRules().getBoolean(GameRules.field_19389) && !this.isSpectator()) {
+		if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !this.isSpectator()) {
 			int i = this.experienceLevel * 7;
 			return i > 100 ? 100 : i;
 		} else {

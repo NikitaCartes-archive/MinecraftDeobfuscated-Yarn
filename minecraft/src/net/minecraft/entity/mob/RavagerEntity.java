@@ -149,7 +149,7 @@ public class RavagerEntity extends RaiderEntity {
 				this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
 			}
 
-			if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+			if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				boolean bl = false;
 				Box box = this.getBoundingBox().expand(0.2);
 

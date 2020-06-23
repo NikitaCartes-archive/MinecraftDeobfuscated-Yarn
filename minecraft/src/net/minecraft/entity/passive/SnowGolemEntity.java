@@ -96,7 +96,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 				this.damage(DamageSource.ON_FIRE, 1.0F);
 			}
 
-			if (!this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+			if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				return;
 			}
 

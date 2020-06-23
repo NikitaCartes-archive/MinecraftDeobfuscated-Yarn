@@ -21,7 +21,6 @@ import net.minecraft.realms.CloseServerTask;
 import net.minecraft.realms.OpenServerTask;
 import net.minecraft.realms.SwitchMinigameTask;
 import net.minecraft.realms.SwitchSlotTask;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -293,7 +292,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				}
 			} catch (RealmsServiceException var5) {
 				LOGGER.error("Couldn't get own world");
-				this.client.execute(() -> this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText(var5.getMessage()), this.lastScreen)));
+				this.client.execute(() -> this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(var5.getMessage()), this.lastScreen)));
 			}
 		}).start();
 	}

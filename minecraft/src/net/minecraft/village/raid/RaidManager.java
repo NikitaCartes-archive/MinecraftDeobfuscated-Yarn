@@ -48,7 +48,7 @@ public class RaidManager extends PersistentState {
 
 		while(iterator.hasNext()) {
 			Raid raid = (Raid)iterator.next();
-			if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
+			if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 				raid.invalidate();
 			}
 
@@ -79,7 +79,7 @@ public class RaidManager extends PersistentState {
 	public Raid startRaid(ServerPlayerEntity player) {
 		if (player.isSpectator()) {
 			return null;
-		} else if (this.world.getGameRules().getBoolean(GameRules.field_19422)) {
+		} else if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 			return null;
 		} else {
 			DimensionType dimensionType = player.world.getDimension();

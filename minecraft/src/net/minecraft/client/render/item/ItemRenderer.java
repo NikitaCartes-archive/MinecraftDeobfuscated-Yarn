@@ -122,7 +122,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl2);
 				VertexConsumer vertexConsumer;
-				if (stack.getItem() == Items.COMPASS && stack.hasEnchantmentGlint()) {
+				if (stack.getItem() == Items.COMPASS && stack.hasGlint()) {
 					matrices.push();
 					MatrixStack.Entry entry = matrices.peek();
 					if (renderMode == ModelTransformation.Mode.GUI) {
@@ -139,9 +139,9 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 					matrices.pop();
 				} else if (bl2) {
-					vertexConsumer = method_29711(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+					vertexConsumer = method_29711(vertexConsumers, renderLayer, true, stack.hasGlint());
 				} else {
-					vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+					vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
 				}
 
 				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
@@ -316,7 +316,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 				crashReportSection.add("Item Type", (CrashCallable<String>)(() -> String.valueOf(itemStack.getItem())));
 				crashReportSection.add("Item Damage", (CrashCallable<String>)(() -> String.valueOf(itemStack.getDamage())));
 				crashReportSection.add("Item NBT", (CrashCallable<String>)(() -> String.valueOf(itemStack.getTag())));
-				crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(itemStack.hasEnchantmentGlint())));
+				crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(itemStack.hasGlint())));
 				throw new CrashException(crashReport);
 			}
 

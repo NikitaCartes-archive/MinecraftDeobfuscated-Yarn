@@ -242,7 +242,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		if (this.getInvulnerableTimer() > 0) {
 			int i = this.getInvulnerableTimer() - 1;
 			if (i <= 0) {
-				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.field_19388)
+				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
 					? Explosion.DestructionType.DESTROY
 					: Explosion.DestructionType.NONE;
 				this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, destructionType);
@@ -313,7 +313,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 			if (this.field_7082 > 0) {
 				--this.field_7082;
-				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					int i = MathHelper.floor(this.getY());
 					int j = MathHelper.floor(this.getX());
 					int l = MathHelper.floor(this.getZ());

@@ -96,8 +96,8 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack stack) {
-		return super.hasEnchantmentGlint(stack) || !PotionUtil.getPotionEffects(stack).isEmpty();
+	public boolean hasGlint(ItemStack stack) {
+		return super.hasGlint(stack) || !PotionUtil.getPotionEffects(stack).isEmpty();
 	}
 
 	@Override

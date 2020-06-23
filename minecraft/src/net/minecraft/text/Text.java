@@ -155,6 +155,11 @@ public interface Text extends Message, StringRenderable {
 		return visitor.accept(this.asString());
 	}
 
+	@Environment(EnvType.CLIENT)
+	static Text method_30163(@Nullable String string) {
+		return (Text)(string != null ? new LiteralText(string) : LiteralText.EMPTY);
+	}
+
 	/**
 	 * A JSON serializer for {@link Text}.
 	 */
