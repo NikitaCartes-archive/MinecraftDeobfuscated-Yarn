@@ -98,7 +98,7 @@ extends Block {
 
     @Override
     public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-        if (!world.isClient && world.random.nextFloat() < distance - 0.5f && entity instanceof LivingEntity && (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388)) && entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512f) {
+        if (!world.isClient && world.random.nextFloat() < distance - 0.5f && entity instanceof LivingEntity && (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) && entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512f) {
             FarmlandBlock.setToDirt(world.getBlockState(pos), world, pos);
         }
         super.onLandedUpon(world, pos, entity, distance);

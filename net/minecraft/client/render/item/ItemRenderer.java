@@ -111,7 +111,7 @@ implements SynchronousResourceReloadListener {
             Block block;
             boolean bl22 = renderMode != ModelTransformation.Mode.GUI && !renderMode.method_29998() && stack.getItem() instanceof BlockItem ? !((block = ((BlockItem)stack.getItem()).getBlock()) instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock) : true;
             RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl22);
-            if (stack.getItem() == Items.COMPASS && stack.hasEnchantmentGlint()) {
+            if (stack.getItem() == Items.COMPASS && stack.hasGlint()) {
                 matrices.push();
                 MatrixStack.Entry entry = matrices.peek();
                 if (renderMode == ModelTransformation.Mode.GUI) {
@@ -122,7 +122,7 @@ implements SynchronousResourceReloadListener {
                 vertexConsumer = bl22 ? ItemRenderer.method_30115(vertexConsumers, renderLayer, entry) : ItemRenderer.method_30114(vertexConsumers, renderLayer, entry);
                 matrices.pop();
             } else {
-                vertexConsumer = bl22 ? ItemRenderer.method_29711(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint()) : ItemRenderer.getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasEnchantmentGlint());
+                vertexConsumer = bl22 ? ItemRenderer.method_29711(vertexConsumers, renderLayer, true, stack.hasGlint()) : ItemRenderer.getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
             }
             this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
         }
@@ -266,7 +266,7 @@ implements SynchronousResourceReloadListener {
             crashReportSection.add("Item Type", () -> String.valueOf(itemStack.getItem()));
             crashReportSection.add("Item Damage", () -> String.valueOf(itemStack.getDamage()));
             crashReportSection.add("Item NBT", () -> String.valueOf(itemStack.getTag()));
-            crashReportSection.add("Item Foil", () -> String.valueOf(itemStack.hasEnchantmentGlint()));
+            crashReportSection.add("Item Foil", () -> String.valueOf(itemStack.hasGlint()));
             throw new CrashException(crashReport);
         }
         this.zOffset -= 50.0f;

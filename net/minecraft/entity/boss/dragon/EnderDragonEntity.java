@@ -397,7 +397,7 @@ implements Monster {
                     BlockState blockState = this.world.getBlockState(blockPos);
                     Block block = blockState.getBlock();
                     if (blockState.isAir() || blockState.getMaterial() == Material.FIRE) continue;
-                    if (!this.world.getGameRules().getBoolean(GameRules.field_19388) || BlockTags.DRAGON_IMMUNE.contains(block)) {
+                    if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) || BlockTags.DRAGON_IMMUNE.contains(block)) {
                         bl = true;
                         continue;
                     }
@@ -474,7 +474,7 @@ implements Monster {
             float h = (this.random.nextFloat() - 0.5f) * 8.0f;
             this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX() + (double)f, this.getY() + 2.0 + (double)g, this.getZ() + (double)h, 0.0, 0.0, 0.0);
         }
-        boolean bl = this.world.getGameRules().getBoolean(GameRules.field_19391);
+        boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT);
         int i = 500;
         if (this.fight != null && !this.fight.hasPreviouslyKilled()) {
             i = 12000;

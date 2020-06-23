@@ -34,7 +34,6 @@ import net.minecraft.realms.OpenServerTask;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.realms.SwitchSlotTask;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
@@ -177,7 +176,7 @@ extends RealmsScreen {
                 this.addButtons();
             } catch (RealmsServiceException realmsServiceException) {
                 LOGGER.error("Couldn't get own world");
-                this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText(realmsServiceException.getMessage()), this.lastScreen));
+                this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(realmsServiceException.getMessage()), this.lastScreen));
             }
         }).start();
     }

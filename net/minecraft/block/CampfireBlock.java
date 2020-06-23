@@ -198,7 +198,7 @@ implements Waterloggable {
         if (!world.isClient && projectile.isOnFire()) {
             boolean bl;
             Entity entity = projectile.getOwner();
-            boolean bl2 = bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388);
+            boolean bl2 = bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
             if (bl && !state.get(LIT).booleanValue() && !state.get(WATERLOGGED).booleanValue()) {
                 BlockPos blockPos = hit.getBlockPos();
                 world.setBlockState(blockPos, (BlockState)state.with(Properties.LIT, true), 11);

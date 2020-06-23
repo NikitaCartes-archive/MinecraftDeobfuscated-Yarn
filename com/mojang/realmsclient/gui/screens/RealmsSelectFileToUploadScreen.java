@@ -25,6 +25,7 @@ import net.minecraft.realms.RealmsLabel;
 import net.minecraft.realms.RealmsObjectSelectionList;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -81,7 +82,7 @@ extends RealmsScreen {
             this.loadLevelList();
         } catch (Exception exception) {
             LOGGER.error("Couldn't load level list", (Throwable)exception);
-            this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), new LiteralText(exception.getMessage()), this.lastScreen));
+            this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.method_30163(exception.getMessage()), this.lastScreen));
             return;
         }
         this.worldLang = I18n.translate("selectWorld.world", new Object[0]);

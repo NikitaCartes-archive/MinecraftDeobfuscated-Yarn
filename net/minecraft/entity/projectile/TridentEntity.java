@@ -45,7 +45,7 @@ extends PersistentProjectileEntity {
         super(EntityType.TRIDENT, owner, world);
         this.tridentStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
-        this.dataTracker.set(ENCHANTED, stack.hasEnchantmentGlint());
+        this.dataTracker.set(ENCHANTED, stack.hasGlint());
     }
 
     @Environment(value=EnvType.CLIENT)

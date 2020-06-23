@@ -47,7 +47,7 @@ extends RealmsScreen {
     private final String worldName;
     private final DownloadStatus downloadStatus;
     private volatile Text field_20494;
-    private volatile Text status;
+    private volatile Text status = new TranslatableText("mco.download.preparing");
     private volatile String progress;
     private volatile boolean cancelled;
     private volatile boolean showDots = true;
@@ -222,9 +222,9 @@ extends RealmsScreen {
         new Thread(() -> {
             try {
                 if (!downloadLock.tryLock(1L, TimeUnit.SECONDS)) {
+                    this.status = new TranslatableText("mco.download.failed");
                     return;
                 }
-                this.status = new TranslatableText("mco.download.preparing");
                 if (this.cancelled) {
                     this.downloadCancelled();
                     return;

@@ -159,8 +159,8 @@ public abstract class PlayerManager {
         this.setGameMode(player, null, serverWorld2);
         ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player);
         GameRules gameRules = serverWorld2.getGameRules();
-        boolean bl = gameRules.getBoolean(GameRules.field_20638);
-        boolean bl2 = gameRules.getBoolean(GameRules.field_19401);
+        boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
+        boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
         serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getEntityId(), player.interactionManager.getGameMode(), player.interactionManager.method_30119(), BiomeAccess.hashSeed(serverWorld2.getSeed()), worldProperties.isHardcore(), this.server.getWorldRegistryKeys(), this.field_24626, serverWorld2.getDimensionRegistryKey(), serverWorld2.getRegistryKey(), this.getMaxPlayerCount(), this.viewDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat()));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));

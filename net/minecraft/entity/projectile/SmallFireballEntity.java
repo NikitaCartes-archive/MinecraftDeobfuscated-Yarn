@@ -60,7 +60,7 @@ extends AbstractFireballEntity {
             return;
         }
         Entity entity = this.getOwner();
-        if ((entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.field_19388)) && this.world.isAir(blockPos = (blockHitResult2 = blockHitResult).getBlockPos().offset(blockHitResult2.getSide()))) {
+        if ((entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) && this.world.isAir(blockPos = (blockHitResult2 = blockHitResult).getBlockPos().offset(blockHitResult2.getSide()))) {
             this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
         }
     }

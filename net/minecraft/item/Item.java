@@ -230,7 +230,7 @@ implements ItemConvertible {
         return new TranslatableText(this.getTranslationKey(stack));
     }
 
-    public boolean hasEnchantmentGlint(ItemStack stack) {
+    public boolean hasGlint(ItemStack stack) {
         return stack.hasEnchantments();
     }
 

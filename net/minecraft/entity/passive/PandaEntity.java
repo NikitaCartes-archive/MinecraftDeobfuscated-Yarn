@@ -459,7 +459,7 @@ extends AnimalEntity {
             if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isTouchingWater() || !pandaEntity.isIdle()) continue;
             pandaEntity.jump();
         }
-        if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
+        if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
             this.dropItem(Items.SLIME_BALL);
         }
     }

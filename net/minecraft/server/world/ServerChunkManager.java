@@ -326,7 +326,7 @@ extends ChunkManager {
         this.lastMobSpawningTime = l;
         WorldProperties worldProperties = this.world.getLevelProperties();
         boolean bl = this.world.isDebugWorld();
-        boolean bl2 = this.world.getGameRules().getBoolean(GameRules.field_19390);
+        boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
         if (!bl) {
             SpawnHelper.Info info;
             this.world.getProfiler().push("pollingChunks");

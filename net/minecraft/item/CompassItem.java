@@ -41,8 +41,8 @@ implements Vanishable {
     }
 
     @Override
-    public boolean hasEnchantmentGlint(ItemStack stack) {
-        return CompassItem.hasLodestone(stack) || super.hasEnchantmentGlint(stack);
+    public boolean hasGlint(ItemStack stack) {
+        return CompassItem.hasLodestone(stack) || super.hasGlint(stack);
     }
 
     public static Optional<RegistryKey<World>> getLodestoneDimension(CompoundTag tag) {

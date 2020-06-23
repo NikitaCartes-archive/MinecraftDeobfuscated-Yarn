@@ -62,7 +62,7 @@ implements Spawner {
             return 0;
         }
         this.spawnDelay = 24000;
-        if (!serverWorld.getGameRules().getBoolean(GameRules.field_19390)) {
+        if (!serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
             return 0;
         }
         int i = this.spawnChance;

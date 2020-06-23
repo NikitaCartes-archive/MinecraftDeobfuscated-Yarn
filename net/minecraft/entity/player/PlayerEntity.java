@@ -522,7 +522,7 @@ extends LivingEntity {
     @Override
     protected void dropInventory() {
         super.dropInventory();
-        if (!this.world.getGameRules().getBoolean(GameRules.field_19389)) {
+        if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             this.vanishCursedItems();
             this.inventory.dropAll();
         }
@@ -1486,7 +1486,7 @@ extends LivingEntity {
 
     @Override
     protected int getCurrentExperience(PlayerEntity player) {
-        if (this.world.getGameRules().getBoolean(GameRules.field_19389) || this.isSpectator()) {
+        if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || this.isSpectator()) {
             return 0;
         }
         int i = this.experienceLevel * 7;

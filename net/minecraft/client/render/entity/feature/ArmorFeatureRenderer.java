@@ -58,7 +58,7 @@ extends FeatureRenderer<T, M> {
         ((BipedEntityModel)this.getContextModel()).setAttributes(bipedEntityModel);
         this.setVisible(bipedEntityModel, equipmentSlot);
         boolean bl = this.usesSecondLayer(equipmentSlot);
-        boolean bl2 = itemStack.hasEnchantmentGlint();
+        boolean bl2 = itemStack.hasGlint();
         if (armorItem instanceof DyeableArmorItem) {
             int j = ((DyeableArmorItem)armorItem).getColor(itemStack);
             float f = (float)(j >> 16 & 0xFF) / 255.0f;

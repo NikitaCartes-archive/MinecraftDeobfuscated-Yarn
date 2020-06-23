@@ -69,14 +69,14 @@ extends Goal {
         }
         BlockPos blockPos = this.mob.getBlockPos();
         if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
-            if (this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+            if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 this.world.breakBlock(blockPos, false);
             }
             this.mob.onEatingGrass();
         } else {
             BlockPos blockPos2 = blockPos.down();
             if (this.world.getBlockState(blockPos2).isOf(Blocks.GRASS_BLOCK)) {
-                if (this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+                if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                     this.world.syncWorldEvent(2001, blockPos2, Block.getRawIdFromState(Blocks.GRASS_BLOCK.getDefaultState()));
                     this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), 2);
                 }

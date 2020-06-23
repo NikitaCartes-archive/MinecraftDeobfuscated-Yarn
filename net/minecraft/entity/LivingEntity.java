@@ -1107,7 +1107,7 @@ extends Entity {
         }
         boolean bl = false;
         if (adversary instanceof WitherEntity) {
-            if (this.world.getGameRules().getBoolean(GameRules.field_19388)) {
+            if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 BlockPos blockPos = this.getBlockPos();
                 BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
                 if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
@@ -1127,7 +1127,7 @@ extends Entity {
         Entity entity = source.getAttacker();
         int i = entity instanceof PlayerEntity ? EnchantmentHelper.getLooting((LivingEntity)entity) : 0;
         boolean bl2 = bl = this.playerHitTimer > 0;
-        if (this.shouldDropLoot() && this.world.getGameRules().getBoolean(GameRules.field_19391)) {
+        if (this.shouldDropLoot() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
             this.dropLoot(source, bl);
             this.dropEquipment(source, i, bl);
         }
@@ -1139,7 +1139,7 @@ extends Entity {
     }
 
     protected void dropXp() {
-        if (!this.world.isClient && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.field_19391))) {
+        if (!this.world.isClient && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
             int j;
             for (int i = this.getCurrentExperience(this.attackingPlayer); i > 0; i -= j) {
                 j = ExperienceOrbEntity.roundToOrbSize(i);
@@ -2229,7 +2229,7 @@ extends Entity {
         List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
         if (!list.isEmpty()) {
             int j;
-            int i = this.world.getGameRules().getInt(GameRules.field_19405);
+            int i = this.world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
             if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
                 j = 0;
                 for (int k = 0; k < list.size(); ++k) {

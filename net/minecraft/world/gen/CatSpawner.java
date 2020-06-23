@@ -27,7 +27,7 @@ implements Spawner {
 
     @Override
     public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-        if (!bl2 || !serverWorld.getGameRules().getBoolean(GameRules.field_19390)) {
+        if (!bl2 || !serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
             return 0;
         }
         --this.ticksUntilNextSpawn;

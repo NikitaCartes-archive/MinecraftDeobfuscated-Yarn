@@ -275,7 +275,7 @@ implements ItemConvertible {
     }
 
     public static void dropStack(World world, BlockPos pos, ItemStack stack) {
-        if (world.isClient || stack.isEmpty() || !world.getGameRules().getBoolean(GameRules.field_19392)) {
+        if (world.isClient || stack.isEmpty() || !world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             return;
         }
         float f = 0.5f;
@@ -288,7 +288,7 @@ implements ItemConvertible {
     }
 
     protected void dropExperience(World world, BlockPos pos, int size) {
-        if (!world.isClient && world.getGameRules().getBoolean(GameRules.field_19392)) {
+        if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             while (size > 0) {
                 int i = ExperienceOrbEntity.roundToOrbSize(size);
                 size -= i;

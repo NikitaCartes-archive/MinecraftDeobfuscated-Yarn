@@ -394,7 +394,7 @@ implements ServerWorldAccess {
         if (bl && this.isThundering() && this.random.nextInt(100000) == 0 && this.hasRain(blockPos = this.getSurface(this.getRandomPosInChunk(i, 0, j, 15)))) {
             boolean bl2;
             LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
-            boolean bl3 = bl2 = this.getGameRules().getBoolean(GameRules.field_19390) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
+            boolean bl3 = bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
             if (bl2) {
                 SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
                 skeletonHorseEntity.setTrapped(true);

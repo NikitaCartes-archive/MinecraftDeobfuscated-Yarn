@@ -235,7 +235,7 @@ extends BlockWithEntity {
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockEntity blockEntity;
-        if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.field_19392) && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
+        if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
             CompoundTag compoundTag;
             boolean bl;
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;

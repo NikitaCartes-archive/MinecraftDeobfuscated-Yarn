@@ -43,6 +43,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.Realms;
@@ -133,7 +134,7 @@ extends RealmsScreen {
         this.rateLimiter = RateLimiter.create(0.01666666753590107);
     }
 
-    public boolean shouldShowMessageInList() {
+    private boolean shouldShowMessageInList() {
         if (!RealmsMainScreen.hasParentalConsent() || !this.hasFetchedServers) {
             return false;
         }
@@ -310,7 +311,7 @@ extends RealmsScreen {
                 }
                 this.realmsServers = list;
                 if (this.shouldShowMessageInList()) {
-                    this.realmSelectionList.addEntry(new RealmSelectionListTrialEntry());
+                    this.realmSelectionList.method_30161(new RealmSelectionListTrialEntry());
                 }
                 for (RealmsServer realmsServer : this.realmsServers) {
                     this.realmSelectionList.addEntry(new RealmSelectionListEntry(realmsServer));
@@ -975,7 +976,9 @@ extends RealmsScreen {
     }
 
     public RealmsMainScreen newScreen() {
-        return new RealmsMainScreen(this.lastScreen);
+        RealmsMainScreen realmsMainScreen = new RealmsMainScreen(this.lastScreen);
+        realmsMainScreen.init(this.client, this.width, this.height);
+        return realmsMainScreen;
     }
 
     public static void method_23765(ResourceManager manager) {
@@ -1234,8 +1237,21 @@ extends RealmsScreen {
     @Environment(value=EnvType.CLIENT)
     class RealmSelectionList
     extends RealmsObjectSelectionList<Entry> {
+        private boolean field_25723;
+
         public RealmSelectionList() {
             super(RealmsMainScreen.this.width, RealmsMainScreen.this.height, 32, RealmsMainScreen.this.height - 40, 36);
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+            this.field_25723 = false;
+        }
+
+        public int method_30161(Entry entry) {
+            this.field_25723 = true;
+            return this.addEntry(entry);
         }
 
         @Override
@@ -1279,7 +1295,7 @@ extends RealmsScreen {
             if (index == -1) {
                 return;
             }
-            if (RealmsMainScreen.this.shouldShowMessageInList()) {
+            if (this.field_25723) {
                 if (index == 0) {
                     Realms.narrateNow(I18n.translate("mco.trial.message.line1", new Object[0]), I18n.translate("mco.trial.message.line2", new Object[0]));
                     realmsServer = null;
@@ -1317,14 +1333,14 @@ extends RealmsScreen {
         @Override
         public void setSelected(@Nullable Entry entry) {
             super.setSelected(entry);
-            RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(this.children().indexOf(entry) - (RealmsMainScreen.this.shouldShowMessageInList() ? 1 : 0));
+            RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(this.children().indexOf(entry) - (this.field_25723 ? 1 : 0));
             RealmsMainScreen.this.selectedServerId = realmsServer.id;
             RealmsMainScreen.this.updateButtonStates(realmsServer);
         }
 
         @Override
         public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
-            if (RealmsMainScreen.this.shouldShowMessageInList()) {
+            if (this.field_25723) {
                 if (selectionIndex == 0) {
                     RealmsMainScreen.this.popupOpenedByUser = true;
                     return;
@@ -1363,6 +1379,11 @@ extends RealmsScreen {
         @Override
         public int getRowWidth() {
             return 300;
+        }
+
+        @Override
+        public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
+            this.setSelected((Entry)entry);
         }
     }
 

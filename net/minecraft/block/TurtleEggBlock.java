@@ -167,7 +167,7 @@ extends Block {
             return false;
         }
         if (entity instanceof LivingEntity) {
-            return entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.field_19388);
+            return entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
         }
         return false;
     }

@@ -45,23 +45,23 @@ public class GameRules {
      * <li>Whether a wither killing an entity will place or drop a wither rose
      * </ul>
      */
-    public static final Key<BooleanRule> field_19388 = GameRules.register("mobGriefing", Category.MOBS, BooleanRule.method_20755(true));
+    public static final Key<BooleanRule> DO_MOB_GRIEFING = GameRules.register("mobGriefing", Category.MOBS, BooleanRule.method_20755(true));
     /**
      * A {@linkplain GameRule game rule} which regulates whether player inventories should be persist through respawning.
      */
-    public static final Key<BooleanRule> field_19389 = GameRules.register("keepInventory", Category.PLAYER, BooleanRule.method_20755(false));
+    public static final Key<BooleanRule> KEEP_INVENTORY = GameRules.register("keepInventory", Category.PLAYER, BooleanRule.method_20755(false));
     /**
      * A {@linkplain GameRule game rule} which regulates whether mobs can spawn naturally.
      */
-    public static final Key<BooleanRule> field_19390 = GameRules.register("doMobSpawning", Category.SPAWNING, BooleanRule.method_20755(true));
+    public static final Key<BooleanRule> DO_MOB_SPAWNING = GameRules.register("doMobSpawning", Category.SPAWNING, BooleanRule.method_20755(true));
     /**
      * A {@linkplain GameRule game rule} which regulates whether mobs should drop loot on death.
      */
-    public static final Key<BooleanRule> field_19391 = GameRules.register("doMobLoot", Category.DROPS, BooleanRule.method_20755(true));
+    public static final Key<BooleanRule> DO_MOB_LOOT = GameRules.register("doMobLoot", Category.DROPS, BooleanRule.method_20755(true));
     /**
      * A {@linkplain GameRule game rule} which regulates whether blocks should drop their items when broken.
      */
-    public static final Key<BooleanRule> field_19392 = GameRules.register("doTileDrops", Category.DROPS, BooleanRule.method_20755(true));
+    public static final Key<BooleanRule> DO_TILE_DROPS = GameRules.register("doTileDrops", Category.DROPS, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> DO_ENTITY_DROPS = GameRules.register("doEntityDrops", Category.DROPS, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> COMMAND_BLOCK_OUTPUT = GameRules.register("commandBlockOutput", Category.CHAT, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> NATURAL_REGENERATION = GameRules.register("naturalRegeneration", Category.PLAYER, BooleanRule.method_20755(true));
@@ -76,7 +76,7 @@ public class GameRules {
      * <p>When the value of this rule is changed, all connected clients will be notified to update their display.
      * In vanilla, this includes the visibility of coordinates on the clients' debug HUDs.
      */
-    public static final Key<BooleanRule> field_19401 = GameRules.register("reducedDebugInfo", Category.MISC, BooleanRule.method_20757(false, (server, rule) -> {
+    public static final Key<BooleanRule> REDUCED_DEBUG_INFO = GameRules.register("reducedDebugInfo", Category.MISC, BooleanRule.method_20757(false, (server, rule) -> {
         byte b = rule.get() ? (byte)22 : (byte)23;
         for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
             serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
@@ -88,25 +88,25 @@ public class GameRules {
     /**
      * A {@linkplain GameRule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
      */
-    public static final Key<IntRule> field_19405 = GameRules.register("maxEntityCramming", Category.MOBS, IntRule.method_20764(24));
+    public static final Key<IntRule> MAX_ENTITY_CRAMMING = GameRules.register("maxEntityCramming", Category.MOBS, IntRule.method_20764(24));
     public static final Key<BooleanRule> DO_WEATHER_CYCLE = GameRules.register("doWeatherCycle", Category.UPDATES, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> DO_LIMITED_CRAFTING = GameRules.register("doLimitedCrafting", Category.PLAYER, BooleanRule.method_20755(false));
     public static final Key<IntRule> MAX_COMMAND_CHAIN_LENGTH = GameRules.register("maxCommandChainLength", Category.MISC, IntRule.method_20764(65536));
     /**
      * A {@linkplain GameRule game rule} which regulates whether a player's advancements should be announced in chat.
      */
-    public static final Key<BooleanRule> field_19409 = GameRules.register("announceAdvancements", Category.CHAT, BooleanRule.method_20755(true));
+    public static final Key<BooleanRule> ANNOUNCE_ADVANCEMENTS = GameRules.register("announceAdvancements", Category.CHAT, BooleanRule.method_20755(true));
     /**
      * A {@linkplain GameRule game rule} which regulates whether raids should occur.
      * 
      * <p>If this rule is set to {@code true} while raids are occurring, the raids will be stopped.
      */
-    public static final Key<BooleanRule> field_19422 = GameRules.register("disableRaids", Category.MOBS, BooleanRule.method_20755(false));
+    public static final Key<BooleanRule> DISABLE_RAIDS = GameRules.register("disableRaids", Category.MOBS, BooleanRule.method_20755(false));
     public static final Key<BooleanRule> DO_INSOMNIA = GameRules.register("doInsomnia", Category.SPAWNING, BooleanRule.method_20755(true));
     /**
      * A {@linkplain GameRule game rule} which regulates whether a player should immediately respawn upon death.
      */
-    public static final Key<BooleanRule> field_20638 = GameRules.register("doImmediateRespawn", Category.PLAYER, BooleanRule.method_20757(false, (server, rule) -> {
+    public static final Key<BooleanRule> DO_IMMEDIATE_RESPAWN = GameRules.register("doImmediateRespawn", Category.PLAYER, BooleanRule.method_20757(false, (server, rule) -> {
         for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
             serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.IMMEDIATE_RESPAWN, rule.get() ? 1.0f : 0.0f));
         }
