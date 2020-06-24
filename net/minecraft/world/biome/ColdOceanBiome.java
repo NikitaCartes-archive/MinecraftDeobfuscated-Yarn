@@ -20,7 +20,7 @@ public class ColdOceanBiome
 extends Biome {
     public ColdOceanBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.OCEAN).depth(-1.0f).scale(0.1f).temperature(0.5f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(4020182).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
-        DefaultBiomeFeatures.method_28441(this);
+        DefaultBiomeFeatures.addOceanStructures(this);
         this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
         this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
         DefaultBiomeFeatures.addOceanCarvers(this);

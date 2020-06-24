@@ -43,7 +43,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AbstractTraderEntity;
@@ -96,7 +96,7 @@ extends HostileEntity {
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(4, new DestroyEggGoal((MobEntityWithAi)this, 1.0, 3));
+        this.goalSelector.add(4, new DestroyEggGoal((PathAwareEntity)this, 1.0, 3));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         this.goalSelector.add(8, new LookAroundGoal(this));
         this.initCustomGoals();
@@ -518,7 +518,7 @@ extends HostileEntity {
 
     class DestroyEggGoal
     extends StepAndDestroyBlockGoal {
-        DestroyEggGoal(MobEntityWithAi mob, double speed, int maxYDifference) {
+        DestroyEggGoal(PathAwareEntity mob, double speed, int maxYDifference) {
             super(Blocks.TURTLE_EGG, mob, speed, maxYDifference);
         }
 

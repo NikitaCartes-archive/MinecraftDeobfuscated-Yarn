@@ -313,7 +313,7 @@ public class Biome {
 
     public void generateFeatureStep(GenerationStep.Feature step, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ServerWorldAccess serverWorldAccess, long populationSeed, ChunkRandom chunkRandom, BlockPos pos) {
         int i = 0;
-        if (structureAccessor.method_27834()) {
+        if (structureAccessor.shouldGenerateStructures()) {
             for (StructureFeature structureFeature : Registry.STRUCTURE_FEATURE) {
                 if (structureFeature.method_28663() != step) continue;
                 chunkRandom.setDecoratorSeed(populationSeed, i, step.ordinal());

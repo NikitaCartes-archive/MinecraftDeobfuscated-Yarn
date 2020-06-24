@@ -12,12 +12,12 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public class WanderIndoorsTask
-extends Task<MobEntityWithAi> {
+extends Task<PathAwareEntity> {
     private final float speed;
 
     public WanderIndoorsTask(float speed) {
@@ -26,17 +26,17 @@ extends Task<MobEntityWithAi> {
     }
 
     @Override
-    protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-        return !serverWorld.isSkyVisible(mobEntityWithAi.getBlockPos());
+    protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+        return !serverWorld.isSkyVisible(pathAwareEntity.getBlockPos());
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-        BlockPos blockPos2 = mobEntityWithAi.getBlockPos();
+    protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+        BlockPos blockPos2 = pathAwareEntity.getBlockPos();
         List list = BlockPos.stream(blockPos2.add(-1, -1, -1), blockPos2.add(1, 1, 1)).map(BlockPos::toImmutable).collect(Collectors.toList());
         Collections.shuffle(list);
-        Optional<BlockPos> optional = list.stream().filter(blockPos -> !serverWorld.isSkyVisible((BlockPos)blockPos)).filter(blockPos -> serverWorld.isTopSolid((BlockPos)blockPos, mobEntityWithAi)).filter(blockPos -> serverWorld.doesNotCollide(mobEntityWithAi)).findFirst();
-        optional.ifPresent(blockPos -> mobEntityWithAi.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget((BlockPos)blockPos, this.speed, 0)));
+        Optional<BlockPos> optional = list.stream().filter(blockPos -> !serverWorld.isSkyVisible((BlockPos)blockPos)).filter(blockPos -> serverWorld.isTopSolid((BlockPos)blockPos, pathAwareEntity)).filter(blockPos -> serverWorld.doesNotCollide(pathAwareEntity)).findFirst();
+        optional.ifPresent(blockPos -> pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget((BlockPos)blockPos, this.speed, 0)));
     }
 }
 

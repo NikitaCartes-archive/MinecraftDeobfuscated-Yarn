@@ -57,10 +57,10 @@ implements CommandSource {
     private final Vec2f rotation;
 
     public ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String simpleName, Text name, MinecraftServer server, @Nullable Entity entity) {
-        this(output, pos, rot, world, level, simpleName, name, server, entity, false, (commandContext, bl, i) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET);
+        this(output, pos, rot, world, level, simpleName, name, server, entity, false, (context, success, result) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET);
     }
 
-    protected ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String simpleName, Text name, MinecraftServer server, @Nullable Entity entity, boolean silent, ResultConsumer<ServerCommandSource> resultConsumer, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
+    protected ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String simpleName, Text name, MinecraftServer server, @Nullable Entity entity, boolean silent, ResultConsumer<ServerCommandSource> consumer, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
         this.output = output;
         this.position = pos;
         this.world = world;
@@ -70,7 +70,7 @@ implements CommandSource {
         this.simpleName = simpleName;
         this.name = name;
         this.server = server;
-        this.resultConsumer = resultConsumer;
+        this.resultConsumer = consumer;
         this.entityAnchor = entityAnchor;
         this.rotation = rot;
     }
@@ -96,16 +96,16 @@ implements CommandSource {
         return new ServerCommandSource(this.output, this.position, rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
     }
 
-    public ServerCommandSource withConsumer(ResultConsumer<ServerCommandSource> resultConsumer) {
-        if (this.resultConsumer.equals(resultConsumer)) {
+    public ServerCommandSource withConsumer(ResultConsumer<ServerCommandSource> consumer) {
+        if (this.resultConsumer.equals(consumer)) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, consumer, this.entityAnchor);
     }
 
-    public ServerCommandSource mergeConsumers(ResultConsumer<ServerCommandSource> resultConsumer, BinaryOperator<ResultConsumer<ServerCommandSource>> binaryOperator) {
-        ResultConsumer resultConsumer2 = (ResultConsumer)binaryOperator.apply(this.resultConsumer, resultConsumer);
-        return this.withConsumer(resultConsumer2);
+    public ServerCommandSource mergeConsumers(ResultConsumer<ServerCommandSource> consumer, BinaryOperator<ResultConsumer<ServerCommandSource>> binaryOperator) {
+        ResultConsumer resultConsumer = (ResultConsumer)binaryOperator.apply(this.resultConsumer, consumer);
+        return this.withConsumer(resultConsumer);
     }
 
     public ServerCommandSource withSilent() {
@@ -184,6 +184,9 @@ implements CommandSource {
         return this.entity;
     }
 
+    /**
+     * Gets the entity from this command source or throws a command syntax exception if this command source is not an entity.
+     */
     public Entity getEntityOrThrow() throws CommandSyntaxException {
         if (this.entity == null) {
             throw REQUIRES_ENTITY_EXCEPTION.create();
@@ -191,6 +194,9 @@ implements CommandSource {
         return this.entity;
     }
 
+    /**
+     * Gets the player from this command source or throws a command syntax exception if this command source is not a player.
+     */
     public ServerPlayerEntity getPlayer() throws CommandSyntaxException {
         if (!(this.entity instanceof ServerPlayerEntity)) {
             throw REQUIRES_PLAYER_EXCEPTION.create();
@@ -270,7 +276,7 @@ implements CommandSource {
     }
 
     @Override
-    public Set<RegistryKey<World>> method_29310() {
+    public Set<RegistryKey<World>> getWorldKeys() {
         return this.server.getWorldRegistryKeys();
     }
 }

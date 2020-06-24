@@ -38,7 +38,7 @@ public interface Trader {
 
     public void setExperienceFromServer(int var1);
 
-    public boolean isLevelledTrader();
+    public boolean isLeveledTrader();
 
     public SoundEvent getYesSound();
 
@@ -50,7 +50,7 @@ public interface Trader {
         TraderOfferList traderOfferList;
         OptionalInt optionalInt = playerEntity2.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new MerchantScreenHandler(i, playerInventory, this), text));
         if (optionalInt.isPresent() && !(traderOfferList = this.getOffers()).isEmpty()) {
-            playerEntity2.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i2, this.getExperience(), this.isLevelledTrader(), this.canRefreshTrades());
+            playerEntity2.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i2, this.getExperience(), this.isLeveledTrader(), this.canRefreshTrades());
         }
     }
 }

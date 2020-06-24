@@ -1063,10 +1063,10 @@ CommandOutput {
     }
 
     public void method_29495(Vec3d vec3d) {
-        this.positAfterTeleport(vec3d.x, vec3d.y, vec3d.z);
+        this.refreshPositionAfterTeleport(vec3d.x, vec3d.y, vec3d.z);
     }
 
-    public void positAfterTeleport(double x, double y, double z) {
+    public void refreshPositionAfterTeleport(double x, double y, double z) {
         this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
     }
 
@@ -2174,7 +2174,7 @@ CommandOutput {
             serverWorld.checkChunk((Entity)entity);
             entity.teleportRequested = true;
             for (Entity entity2 : entity.passengerList) {
-                entity.updatePassengerPosition(entity2, Entity::positAfterTeleport);
+                entity.updatePassengerPosition(entity2, Entity::refreshPositionAfterTeleport);
             }
         });
     }

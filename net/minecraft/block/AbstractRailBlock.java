@@ -95,7 +95,7 @@ extends Block {
      * 
      * <p>This method will return true if:
      * <ul><li>The rail block is ascending.</li>
-     * <li>The block in the direction of ascension does not have a top rim.</li></ul>
+     * <li>The block in the direction of ascent does not have a top rim.</li></ul>
      */
     private static boolean shouldDropRail(BlockPos pos, World world, RailShape shape) {
         if (!AbstractRailBlock.hasTopRim(world, pos.down())) {

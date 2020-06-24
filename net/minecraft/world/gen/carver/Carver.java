@@ -45,20 +45,20 @@ public abstract class Carver<C extends CarverConfig> {
     protected static final FluidState LAVA = Fluids.LAVA.getDefaultState();
     protected Set<Block> alwaysCarvableBlocks = ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, new Block[]{Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.TERRACOTTA, Blocks.WHITE_TERRACOTTA, Blocks.ORANGE_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.YELLOW_TERRACOTTA, Blocks.LIME_TERRACOTTA, Blocks.PINK_TERRACOTTA, Blocks.GRAY_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA, Blocks.CYAN_TERRACOTTA, Blocks.PURPLE_TERRACOTTA, Blocks.BLUE_TERRACOTTA, Blocks.BROWN_TERRACOTTA, Blocks.GREEN_TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.BLACK_TERRACOTTA, Blocks.SANDSTONE, Blocks.RED_SANDSTONE, Blocks.MYCELIUM, Blocks.SNOW, Blocks.PACKED_ICE});
     protected Set<Fluid> carvableFluids = ImmutableSet.of(Fluids.WATER);
-    private final Codec<ConfiguredCarver<C>> field_24831;
+    private final Codec<ConfiguredCarver<C>> codec;
     protected final int heightLimit;
 
     private static <C extends CarverConfig, F extends Carver<C>> F register(String string, F carver) {
         return (F)Registry.register(Registry.CARVER, string, carver);
     }
 
-    public Carver(Codec<C> codec, int heightLimit) {
+    public Carver(Codec<C> configCodec, int heightLimit) {
         this.heightLimit = heightLimit;
-        this.field_24831 = ((MapCodec)codec.fieldOf("config")).xmap(carverConfig -> new ConfiguredCarver<CarverConfig>(this, (CarverConfig)carverConfig), configuredCarver -> configuredCarver.config).codec();
+        this.codec = ((MapCodec)configCodec.fieldOf("config")).xmap(carverConfig -> new ConfiguredCarver<CarverConfig>(this, (CarverConfig)carverConfig), configuredCarver -> configuredCarver.config).codec();
     }
 
-    public Codec<ConfiguredCarver<C>> method_28616() {
-        return this.field_24831;
+    public Codec<ConfiguredCarver<C>> getCodec() {
+        return this.codec;
     }
 
     public int getBranchFactor() {

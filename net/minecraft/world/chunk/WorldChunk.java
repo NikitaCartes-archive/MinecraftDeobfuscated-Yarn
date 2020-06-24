@@ -389,14 +389,14 @@ implements Chunk {
 
     @Override
     @Nullable
-    public CompoundTag method_20598(BlockPos blockPos) {
-        BlockEntity blockEntity = this.getBlockEntity(blockPos);
+    public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+        BlockEntity blockEntity = this.getBlockEntity(pos);
         if (blockEntity != null && !blockEntity.isRemoved()) {
             CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
             compoundTag.putBoolean("keepPacked", false);
             return compoundTag;
         }
-        CompoundTag compoundTag = this.pendingBlockEntityTags.get(blockPos);
+        CompoundTag compoundTag = this.pendingBlockEntityTags.get(pos);
         if (compoundTag != null) {
             compoundTag = compoundTag.copy();
             compoundTag.putBoolean("keepPacked", true);
@@ -447,7 +447,7 @@ implements Chunk {
         }
     }
 
-    public <T extends Entity> void getEntities(@Nullable EntityType<?> type, Box box, List<? super T> list, Predicate<? super T> predicate) {
+    public <T extends Entity> void getEntities(@Nullable EntityType<?> type, Box box, List<? super T> entityList, Predicate<? super T> predicate) {
         int i = MathHelper.floor((box.minY - 2.0) / 16.0);
         int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -457,12 +457,12 @@ implements Chunk {
                 if (type != null && entity.getType() != type) continue;
                 Entity entity2 = entity;
                 if (!entity.getBoundingBox().intersects(box) || !predicate.test(entity2)) continue;
-                list.add(entity2);
+                entityList.add(entity2);
             }
         }
     }
 
-    public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> result, @Nullable Predicate<? super T> predicate) {
+    public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> entityList, @Nullable Predicate<? super T> predicate) {
         int i = MathHelper.floor((box.minY - 2.0) / 16.0);
         int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -470,7 +470,7 @@ implements Chunk {
         for (int k = i; k <= j; ++k) {
             for (Entity entity : this.entitySections[k].getAllOfType(entityClass)) {
                 if (!entity.getBoundingBox().intersects(box) || predicate != null && !predicate.test(entity)) continue;
-                result.add(entity);
+                entityList.add(entity);
             }
         }
     }
@@ -485,19 +485,19 @@ implements Chunk {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int i) {
+    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask) {
         boolean bl = biomes != null;
-        Predicate<BlockPos> predicate = bl ? blockPos -> true : blockPos -> (i & 1 << (blockPos.getY() >> 4)) != 0;
+        Predicate<BlockPos> predicate = bl ? pos -> true : pos -> (verticalStripBitmask & 1 << (pos.getY() >> 4)) != 0;
         Sets.newHashSet(this.blockEntities.keySet()).stream().filter(predicate).forEach(this.world::removeBlockEntity);
-        for (int j = 0; j < this.sections.length; ++j) {
-            ChunkSection chunkSection = this.sections[j];
-            if ((i & 1 << j) == 0) {
+        for (int i = 0; i < this.sections.length; ++i) {
+            ChunkSection chunkSection = this.sections[i];
+            if ((verticalStripBitmask & 1 << i) == 0) {
                 if (!bl || chunkSection == EMPTY_SECTION) continue;
-                this.sections[j] = EMPTY_SECTION;
+                this.sections[i] = EMPTY_SECTION;
                 continue;
             }
             if (chunkSection == EMPTY_SECTION) {
-                this.sections[j] = chunkSection = new ChunkSection(j << 4);
+                this.sections[i] = chunkSection = new ChunkSection(i << 4);
             }
             chunkSection.fromPacket(buf);
         }
@@ -541,7 +541,7 @@ implements Chunk {
     }
 
     @Override
-    public CompoundTag getBlockEntityTagAt(BlockPos pos) {
+    public CompoundTag getBlockEntityTag(BlockPos pos) {
         return this.pendingBlockEntityTags.get(pos);
     }
 
@@ -581,13 +581,13 @@ implements Chunk {
 
     @Override
     @Nullable
-    public StructureStart<?> getStructureStart(StructureFeature<?> structureFeature) {
-        return this.structureStarts.get(structureFeature);
+    public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
+        return this.structureStarts.get(structure);
     }
 
     @Override
-    public void setStructureStart(StructureFeature<?> structureFeature, StructureStart<?> start) {
-        this.structureStarts.put(structureFeature, start);
+    public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
+        this.structureStarts.put(structure, start);
     }
 
     @Override
@@ -596,19 +596,19 @@ implements Chunk {
     }
 
     @Override
-    public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> map) {
+    public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
         this.structureStarts.clear();
-        this.structureStarts.putAll(map);
+        this.structureStarts.putAll(structureStarts);
     }
 
     @Override
-    public LongSet getStructureReferences(StructureFeature<?> structureFeature2) {
-        return this.structureReferences.computeIfAbsent(structureFeature2, structureFeature -> new LongOpenHashSet());
+    public LongSet getStructureReferences(StructureFeature<?> structure2) {
+        return this.structureReferences.computeIfAbsent(structure2, structure -> new LongOpenHashSet());
     }
 
     @Override
-    public void addStructureReference(StructureFeature<?> structureFeature2, long reference) {
-        this.structureReferences.computeIfAbsent(structureFeature2, structureFeature -> new LongOpenHashSet()).add(reference);
+    public void addStructureReference(StructureFeature<?> structure2, long reference) {
+        this.structureReferences.computeIfAbsent(structure2, structure -> new LongOpenHashSet()).add(reference);
     }
 
     @Override

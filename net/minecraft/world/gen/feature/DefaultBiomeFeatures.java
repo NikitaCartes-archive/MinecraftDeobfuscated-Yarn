@@ -236,8 +236,8 @@ public class DefaultBiomeFeatures {
     public static final RandomPatchFeatureConfig LILY_OF_THE_VALLEY_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(LILY_OF_THE_VALLEY), SimpleBlockPlacer.field_24871).tries(64).build();
     public static final RandomPatchFeatureConfig BLUE_ORCHID_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(BLUE_ORCHID), SimpleBlockPlacer.field_24871).tries(64).build();
     public static final RandomPatchFeatureConfig DEFAULT_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(new WeightedBlockStateProvider().addState(POPPY, 2).addState(DANDELION, 1), SimpleBlockPlacer.field_24871).tries(64).build();
-    public static final RandomPatchFeatureConfig PLAINS_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(PlainsFlowerBlockStateProvider.field_24943, SimpleBlockPlacer.field_24871).tries(64).build();
-    public static final RandomPatchFeatureConfig FOREST_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(ForestFlowerBlockStateProvider.field_24941, SimpleBlockPlacer.field_24871).tries(64).build();
+    public static final RandomPatchFeatureConfig PLAINS_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(PlainsFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.field_24871).tries(64).build();
+    public static final RandomPatchFeatureConfig FOREST_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(ForestFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.field_24871).tries(64).build();
     public static final RandomPatchFeatureConfig DEAD_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(DEAD_BUSH), SimpleBlockPlacer.field_24871).tries(4).build();
     public static final RandomPatchFeatureConfig MELON_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(MELON), SimpleBlockPlacer.field_24871).tries(64).whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock())).canReplace().cannotProject().build();
     public static final RandomPatchFeatureConfig PUMPKIN_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(new SimpleBlockStateProvider(PUMPKIN), SimpleBlockPlacer.field_24871).tries(64).whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock())).cannotProject().build();
@@ -281,17 +281,17 @@ public class DefaultBiomeFeatures {
     public static final BlockPileFeatureConfig WARPED_ROOTS_CONFIG = new BlockPileFeatureConfig(new WeightedBlockStateProvider().addState(Blocks.WARPED_ROOTS.getDefaultState(), 85).addState(Blocks.CRIMSON_ROOTS.getDefaultState(), 1).addState(Blocks.WARPED_FUNGUS.getDefaultState(), 13).addState(Blocks.CRIMSON_FUNGUS.getDefaultState(), 1));
     public static final BlockPileFeatureConfig NETHER_SPROUTS_CONFIG = new BlockPileFeatureConfig(new SimpleBlockStateProvider(Blocks.NETHER_SPROUTS.getDefaultState()));
 
-    public static void method_28437(Biome biome) {
+    public static void addBadlandsUndergroundStructures(Biome biome) {
         biome.addStructureFeature(MESA_MINESHAFT);
         biome.addStructureFeature(STRONGHOLD);
     }
 
-    public static void method_28440(Biome biome) {
+    public static void addDefaultUndergroundStructures(Biome biome) {
         biome.addStructureFeature(NORMAL_MINESHAFT);
         biome.addStructureFeature(STRONGHOLD);
     }
 
-    public static void method_28441(Biome biome) {
+    public static void addOceanStructures(Biome biome) {
         biome.addStructureFeature(NORMAL_MINESHAFT);
         biome.addStructureFeature(SUNKEN_SHIPWRECK);
     }

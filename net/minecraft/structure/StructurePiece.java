@@ -267,7 +267,7 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void fillWithOutlineUnderSealevel(WorldAccess worldAccess, BlockBox blockBox, Random random, float f, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState blockState2, boolean bl, boolean bl2) {
+    protected void fillWithOutlineUnderSeaLevel(WorldAccess worldAccess, BlockBox blockBox, Random random, float f, int i, int j, int k, int l, int m, int n, BlockState blockState, BlockState blockState2, boolean bl, boolean bl2) {
         for (int o = j; o <= m; ++o) {
             for (int p = i; p <= l; ++p) {
                 for (int q = k; q <= n; ++q) {
@@ -377,13 +377,13 @@ public abstract class StructurePiece {
         return true;
     }
 
-    protected boolean addDispenser(WorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTbaleId) {
+    protected boolean addDispenser(WorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId) {
         BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
         if (boundingBox.contains(blockPos) && !world.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
             this.addBlock(world, (BlockState)Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
             BlockEntity blockEntity = world.getBlockEntity(blockPos);
             if (blockEntity instanceof DispenserBlockEntity) {
-                ((DispenserBlockEntity)blockEntity).setLootTable(lootTbaleId, random.nextLong());
+                ((DispenserBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
             }
             return true;
         }

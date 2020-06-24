@@ -51,7 +51,7 @@ extends TreeDecorator {
         }
         BlockPos blockPos2 = (BlockPos)list.get(random.nextInt(list.size()));
         BlockPos blockPos22 = blockPos2.offset(direction);
-        if (!Feature.method_27370(world, blockPos22) || !Feature.method_27370(world, blockPos22.offset(Direction.SOUTH))) {
+        if (!Feature.isAir(world, blockPos22) || !Feature.isAir(world, blockPos22.offset(Direction.SOUTH))) {
             return;
         }
         BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);

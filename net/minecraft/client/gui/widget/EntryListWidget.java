@@ -57,8 +57,8 @@ implements Drawable {
         this.right = width;
     }
 
-    public void method_29344(boolean bl) {
-        this.renderSelection = bl;
+    public void setRenderSelection(boolean renderSelection) {
+        this.renderSelection = renderSelection;
     }
 
     protected void setRenderHeader(boolean renderHeader, int headerHeight) {
@@ -155,7 +155,7 @@ implements Drawable {
     protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
     }
 
-    protected void renderBackground(MatrixStack matrixStack) {
+    protected void renderBackground(MatrixStack matrices) {
     }
 
     protected void renderDecorations(MatrixStack matrixStack, int i, int j) {
@@ -348,18 +348,18 @@ implements Drawable {
             return true;
         }
         if (keyCode == 264) {
-            this.moveSelection(class_5403.field_25662);
+            this.moveSelection(MoveDirection.DOWN);
             return true;
         }
         if (keyCode == 265) {
-            this.moveSelection(class_5403.field_25661);
+            this.moveSelection(MoveDirection.UP);
             return true;
         }
         return false;
     }
 
-    protected void moveSelection(class_5403 arg) {
-        this.method_30013(arg, entry -> true);
+    protected void moveSelection(MoveDirection direction) {
+        this.moveSelectionIf(direction, entry -> true);
     }
 
     protected void method_30015() {
@@ -370,9 +370,14 @@ implements Drawable {
         }
     }
 
-    protected void method_30013(class_5403 arg, Predicate<E> predicate) {
+    /**
+     * Moves the selection in the specified direction until the predicate returns true.
+     * 
+     * @param direction The direction to move the selection.
+     */
+    protected void moveSelectionIf(MoveDirection direction, Predicate<E> predicate) {
         int i;
-        int n = i = arg == class_5403.field_25661 ? -1 : 1;
+        int n = i = direction == MoveDirection.UP ? -1 : 1;
         if (!this.children().isEmpty()) {
             int k;
             int j = this.children().indexOf(this.getSelected());
@@ -393,42 +398,42 @@ implements Drawable {
         return mouseY >= (double)this.top && mouseY <= (double)this.bottom && mouseX >= (double)this.left && mouseX <= (double)this.right;
     }
 
-    protected void renderList(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
-        int m = this.getItemCount();
+    protected void renderList(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+        int i = this.getItemCount();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        for (int n = 0; n < m; ++n) {
-            int t;
-            int o = this.getRowTop(n);
-            int p = this.getRowBottom(n);
-            if (p < this.top || o > this.bottom) continue;
-            int q = j + n * this.itemHeight + this.headerHeight;
-            int r = this.itemHeight - 4;
-            E entry = this.getEntry(n);
-            int s = this.getRowWidth();
-            if (this.renderSelection && this.isSelectedItem(n)) {
-                t = this.left + this.width / 2 - s / 2;
-                int u = this.left + this.width / 2 + s / 2;
+        for (int j = 0; j < i; ++j) {
+            int p;
+            int k = this.getRowTop(j);
+            int l = this.getRowBottom(j);
+            if (l < this.top || k > this.bottom) continue;
+            int m = y + j * this.itemHeight + this.headerHeight;
+            int n = this.itemHeight - 4;
+            E entry = this.getEntry(j);
+            int o = this.getRowWidth();
+            if (this.renderSelection && this.isSelectedItem(j)) {
+                p = this.left + this.width / 2 - o / 2;
+                int q = this.left + this.width / 2 + o / 2;
                 RenderSystem.disableTexture();
-                float g = this.isFocused() ? 1.0f : 0.5f;
-                RenderSystem.color4f(g, g, g, 1.0f);
+                float f = this.isFocused() ? 1.0f : 0.5f;
+                RenderSystem.color4f(f, f, f, 1.0f);
                 bufferBuilder.begin(7, VertexFormats.POSITION);
-                bufferBuilder.vertex(t, q + r + 2, 0.0).next();
-                bufferBuilder.vertex(u, q + r + 2, 0.0).next();
-                bufferBuilder.vertex(u, q - 2, 0.0).next();
-                bufferBuilder.vertex(t, q - 2, 0.0).next();
+                bufferBuilder.vertex(p, m + n + 2, 0.0).next();
+                bufferBuilder.vertex(q, m + n + 2, 0.0).next();
+                bufferBuilder.vertex(q, m - 2, 0.0).next();
+                bufferBuilder.vertex(p, m - 2, 0.0).next();
                 tessellator.draw();
                 RenderSystem.color4f(0.0f, 0.0f, 0.0f, 1.0f);
                 bufferBuilder.begin(7, VertexFormats.POSITION);
-                bufferBuilder.vertex(t + 1, q + r + 1, 0.0).next();
-                bufferBuilder.vertex(u - 1, q + r + 1, 0.0).next();
-                bufferBuilder.vertex(u - 1, q - 1, 0.0).next();
-                bufferBuilder.vertex(t + 1, q - 1, 0.0).next();
+                bufferBuilder.vertex(p + 1, m + n + 1, 0.0).next();
+                bufferBuilder.vertex(q - 1, m + n + 1, 0.0).next();
+                bufferBuilder.vertex(q - 1, m - 1, 0.0).next();
+                bufferBuilder.vertex(p + 1, m - 1, 0.0).next();
                 tessellator.draw();
                 RenderSystem.enableTexture();
             }
-            t = this.getRowLeft();
-            ((Entry)entry).render(matrixStack, n, o, t, s, r, k, l, this.isMouseOver(k, l) && Objects.equals(this.getEntryAtPosition(k, l), entry), f);
+            p = this.getRowLeft();
+            ((Entry)entry).render(matrices, j, k, p, o, n, mouseX, mouseY, this.isMouseOver(mouseX, mouseY) && Objects.equals(this.getEntryAtPosition(mouseX, mouseY), entry), delta);
         }
     }
 
@@ -546,9 +551,9 @@ implements Drawable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum class_5403 {
-        field_25661,
-        field_25662;
+    public static enum MoveDirection {
+        UP,
+        DOWN;
 
     }
 }

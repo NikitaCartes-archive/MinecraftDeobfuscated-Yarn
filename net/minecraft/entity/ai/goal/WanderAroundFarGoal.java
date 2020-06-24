@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.goal;
 
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,13 +13,13 @@ public class WanderAroundFarGoal
 extends WanderAroundGoal {
     protected final float probability;
 
-    public WanderAroundFarGoal(MobEntityWithAi mobEntityWithAi, double d) {
-        this(mobEntityWithAi, d, 0.001f);
+    public WanderAroundFarGoal(PathAwareEntity pathAwareEntity, double d) {
+        this(pathAwareEntity, d, 0.001f);
     }
 
-    public WanderAroundFarGoal(MobEntityWithAi mob, double speed, float probabiliity) {
+    public WanderAroundFarGoal(PathAwareEntity mob, double speed, float probability) {
         super(mob, speed);
-        this.probability = probabiliity;
+        this.probability = probability;
     }
 
     @Override

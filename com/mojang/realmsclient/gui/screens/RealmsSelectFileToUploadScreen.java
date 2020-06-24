@@ -38,7 +38,7 @@ public class RealmsSelectFileToUploadScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
-    private final RealmsResetWorldScreen lastScreen;
+    private final RealmsResetWorldScreen parent;
     private final long worldId;
     private final int slotId;
     private ButtonWidget uploadButton;
@@ -52,8 +52,8 @@ extends RealmsScreen {
     private RealmsLabel field_20063;
     private final Runnable field_22717;
 
-    public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen lastScreen, Runnable runnable) {
-        this.lastScreen = lastScreen;
+    public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, Runnable runnable) {
+        this.parent = parent;
         this.worldId = worldId;
         this.slotId = slotId;
         this.field_22717 = runnable;
@@ -82,7 +82,7 @@ extends RealmsScreen {
             this.loadLevelList();
         } catch (Exception exception) {
             LOGGER.error("Couldn't load level list", (Throwable)exception);
-            this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.method_30163(exception.getMessage()), this.lastScreen));
+            this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.method_30163(exception.getMessage()), this.parent));
             return;
         }
         this.worldLang = I18n.translate("selectWorld.world", new Object[0]);
@@ -90,7 +90,7 @@ extends RealmsScreen {
         this.addChild(this.worldSelectionList);
         this.uploadButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, new TranslatableText("mco.upload.button.name"), buttonWidget -> this.upload()));
         this.uploadButton.active = this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size();
-        this.addButton(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen)));
+        this.addButton(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
         this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.title"), this.width / 2, 13, 0xFFFFFF));
         this.subtitleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.subtitle"), this.width / 2, RealmsSelectFileToUploadScreen.row(-1), 0xA0A0A0));
         this.field_20063 = this.levelList.isEmpty() ? this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 0xFFFFFF)) : null;
@@ -105,7 +105,7 @@ extends RealmsScreen {
     private void upload() {
         if (this.selectedWorld != -1 && !this.levelList.get(this.selectedWorld).isHardcore()) {
             LevelSummary levelSummary = this.levelList.get(this.selectedWorld);
-            this.client.openScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.lastScreen, levelSummary, this.field_22717));
+            this.client.openScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.parent, levelSummary, this.field_22717));
         }
     }
 
@@ -124,7 +124,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 256) {
-            this.client.openScreen(this.lastScreen);
+            this.client.openScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -206,8 +206,8 @@ extends RealmsScreen {
         }
 
         @Override
-        public void renderBackground(MatrixStack matrixStack) {
-            RealmsSelectFileToUploadScreen.this.renderBackground(matrixStack);
+        public void renderBackground(MatrixStack matrices) {
+            RealmsSelectFileToUploadScreen.this.renderBackground(matrices);
         }
 
         @Override

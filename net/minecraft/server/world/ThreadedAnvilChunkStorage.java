@@ -123,7 +123,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final LongSet unloadedChunks = new LongOpenHashSet();
     private boolean chunkHolderListDirty;
     private final ChunkTaskPrioritySystem chunkTaskPrioritySystem;
-    private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldgenExecutor;
+    private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldGenExecutor;
     private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> mainExecutor;
     private final WorldGenerationProgressListener worldGenerationProgressListener;
     private final TicketManager ticketManager;
@@ -137,9 +137,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private int watchDistance;
 
     public ThreadedAnvilChunkStorage(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ThreadExecutor<Runnable> mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier, int i, boolean bl) {
-        super(new File(session.method_27424(serverWorld.getRegistryKey()), "region"), dataFixer, bl);
+        super(new File(session.getWorldDirectory(serverWorld.getRegistryKey()), "region"), dataFixer, bl);
         this.structureManager = structureManager;
-        this.saveDir = session.method_27424(serverWorld.getRegistryKey());
+        this.saveDir = session.getWorldDirectory(serverWorld.getRegistryKey());
         this.world = serverWorld;
         this.chunkGenerator = chunkGenerator;
         this.mainThreadExecutor = mainThreadExecutor;
@@ -148,7 +148,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.worldGenerationProgressListener = worldGenerationProgressListener;
         TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(workerExecutor, "light");
         this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), workerExecutor, Integer.MAX_VALUE);
-        this.worldgenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
+        this.worldGenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
         this.mainExecutor = this.chunkTaskPrioritySystem.createExecutor(messageListener, false);
         this.serverLightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false));
         this.ticketManager = new TicketManager(workerExecutor, mainThreadExecutor);
@@ -429,7 +429,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos);
             }
             if ((chunk2 = (Chunk)optional.get()).getStatus().isAtLeast(chunkStatus)) {
-                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus == ChunkStatus.LIGHT ? this.generateChunk(chunkHolder, chunkStatus) : chunkStatus.runNoGenTask(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), chunk2);
+                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus == ChunkStatus.LIGHT ? this.generateChunk(chunkHolder, chunkStatus) : chunkStatus.runLoadTask(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), chunk2);
                 this.worldGenerationProgressListener.setChunkStatus(chunkPos, chunkStatus);
                 return completableFuture;
             }
@@ -473,7 +473,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     private byte method_27053(ChunkPos chunkPos, ChunkStatus.ChunkType chunkType) {
-        return this.field_23786.put(chunkPos.toLong(), chunkType == ChunkStatus.ChunkType.PROTOCHUNK ? (byte)-1 : 1);
+        return this.field_23786.put(chunkPos.toLong(), chunkType == ChunkStatus.ChunkType.field_12808 ? (byte)-1 : 1);
     }
 
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> generateChunk(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
@@ -482,7 +482,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.world.getProfiler().visit(() -> "chunkGenerate " + chunkStatus.getId());
         return completableFuture.thenComposeAsync(either -> either.map(list -> {
             try {
-                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus.runTask(this.world, this.chunkGenerator, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), (List<Chunk>)list);
+                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus.runGenerationTask(this.world, this.chunkGenerator, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), (List<Chunk>)list);
                 this.worldGenerationProgressListener.setChunkStatus(chunkPos, chunkStatus);
                 return completableFuture;
             } catch (Exception exception) {
@@ -496,7 +496,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }, unloaded -> {
             this.releaseLightTicket(chunkPos);
             return CompletableFuture.completedFuture(Either.right(unloaded));
-        }), runnable -> this.worldgenExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
+        }), runnable -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable)));
     }
 
     protected void releaseLightTicket(ChunkPos pos) {
@@ -588,7 +588,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         ChunkPos chunkPos = chunk.getPos();
         try {
             ChunkStatus chunkStatus = chunk.getStatus();
-            if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
+            if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.field_12807) {
                 if (this.method_27055(chunkPos)) {
                     return false;
                 }

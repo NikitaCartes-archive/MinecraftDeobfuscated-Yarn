@@ -9,7 +9,7 @@ import java.util.function.ToDoubleFunction;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -18,68 +18,68 @@ import org.jetbrains.annotations.Nullable;
 
 public class TargetFinder {
     @Nullable
-    public static Vec3d findTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance) {
+    public static Vec3d findTarget(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance) {
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, 0, null, true, 1.5707963705062866, mob::getPathfindingFavor, false, 0, 0, true);
     }
 
     @Nullable
-    public static Vec3d findGroundTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, int preferredYDifference, @Nullable Vec3d preferredAngle, double maxAngleDifference) {
+    public static Vec3d findGroundTarget(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, int preferredYDifference, @Nullable Vec3d preferredAngle, double maxAngleDifference) {
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, preferredYDifference, preferredAngle, true, maxAngleDifference, mob::getPathfindingFavor, true, 0, 0, false);
     }
 
     @Nullable
-    public static Vec3d findGroundTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance) {
+    public static Vec3d findGroundTarget(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance) {
         return TargetFinder.findGroundTarget(mob, maxHorizontalDistance, maxVerticalDistance, mob::getPathfindingFavor);
     }
 
     @Nullable
-    public static Vec3d findGroundTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, ToDoubleFunction<BlockPos> pathfindingFavor) {
+    public static Vec3d findGroundTarget(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, ToDoubleFunction<BlockPos> pathfindingFavor) {
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, 0, null, false, 0.0, pathfindingFavor, true, 0, 0, true);
     }
 
     @Nullable
-    public static Vec3d findAirTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d preferredAngle, float maxAngleDifference, int distanceAboveGroundRange, int minDistanceAboveGround) {
+    public static Vec3d findAirTarget(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d preferredAngle, float maxAngleDifference, int distanceAboveGroundRange, int minDistanceAboveGround) {
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, 0, preferredAngle, false, maxAngleDifference, mob::getPathfindingFavor, true, distanceAboveGroundRange, minDistanceAboveGround, true);
     }
 
     @Nullable
-    public static Vec3d method_27929(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-        Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
-        return TargetFinder.findTarget(mobEntityWithAi, i, j, 0, vec3d2, false, 1.5707963705062866, mobEntityWithAi::getPathfindingFavor, true, 0, 0, true);
+    public static Vec3d method_27929(PathAwareEntity pathAwareEntity, int i, int j, Vec3d vec3d) {
+        Vec3d vec3d2 = vec3d.subtract(pathAwareEntity.getX(), pathAwareEntity.getY(), pathAwareEntity.getZ());
+        return TargetFinder.findTarget(pathAwareEntity, i, j, 0, vec3d2, false, 1.5707963705062866, pathAwareEntity::getPathfindingFavor, true, 0, 0, true);
     }
 
     @Nullable
-    public static Vec3d findTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
+    public static Vec3d findTargetTowards(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
         Vec3d vec3d = pos.subtract(mob.getX(), mob.getY(), mob.getZ());
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, 0, vec3d, true, 1.5707963705062866, mob::getPathfindingFavor, false, 0, 0, true);
     }
 
     @Nullable
-    public static Vec3d findTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos, double maxAngleDifference) {
+    public static Vec3d findTargetTowards(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos, double maxAngleDifference) {
         Vec3d vec3d = pos.subtract(mob.getX(), mob.getY(), mob.getZ());
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, 0, vec3d, true, maxAngleDifference, mob::getPathfindingFavor, false, 0, 0, true);
     }
 
     @Nullable
-    public static Vec3d findGroundTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, int preferredYDifference, Vec3d pos, double maxAngleDifference) {
+    public static Vec3d findGroundTargetTowards(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, int preferredYDifference, Vec3d pos, double maxAngleDifference) {
         Vec3d vec3d = pos.subtract(mob.getX(), mob.getY(), mob.getZ());
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, preferredYDifference, vec3d, false, maxAngleDifference, mob::getPathfindingFavor, true, 0, 0, false);
     }
 
     @Nullable
-    public static Vec3d findTargetAwayFrom(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
+    public static Vec3d findTargetAwayFrom(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
         Vec3d vec3d = mob.getPos().subtract(pos);
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, 0, vec3d, true, 1.5707963705062866, mob::getPathfindingFavor, false, 0, 0, true);
     }
 
     @Nullable
-    public static Vec3d findGroundTargetAwayFrom(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
+    public static Vec3d findGroundTargetAwayFrom(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
         Vec3d vec3d = mob.getPos().subtract(pos);
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, 0, vec3d, false, 1.5707963705062866, mob::getPathfindingFavor, true, 0, 0, true);
     }
 
     @Nullable
-    private static Vec3d findTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, int preferredYDifference, @Nullable Vec3d preferredAngle, boolean notInWater, double maxAngleDifference, ToDoubleFunction<BlockPos> favorProvider, boolean aboveGround, int distanceAboveGroundRange, int minDistanceAboveGround, boolean validPositionsOnly) {
+    private static Vec3d findTarget(PathAwareEntity mob, int maxHorizontalDistance, int maxVerticalDistance, int preferredYDifference, @Nullable Vec3d preferredAngle, boolean notInWater, double maxAngleDifference, ToDoubleFunction<BlockPos> favorProvider, boolean aboveGround, int distanceAboveGroundRange, int minDistanceAboveGround, boolean validPositionsOnly) {
         EntityNavigation entityNavigation = mob.getNavigation();
         Random random = mob.getRandom();
         boolean bl = mob.hasPositionTarget() ? mob.getPositionTarget().isWithinDistance(mob.getPos(), (double)(mob.getPositionTargetRange() + (float)maxHorizontalDistance) + 1.0) : false;
@@ -102,7 +102,7 @@ public class TargetFinder {
             }
             if ((blockPos3 = new BlockPos((double)j + mob.getX(), (double)k + mob.getY(), (double)l + mob.getZ())).getY() < 0 || blockPos3.getY() > mob.world.getHeight() || bl && !mob.isInWalkTargetRange(blockPos3) || validPositionsOnly && !entityNavigation.isValidPosition(blockPos3)) continue;
             if (aboveGround) {
-                blockPos3 = TargetFinder.findValidPositionAbove(blockPos3, random.nextInt(distanceAboveGroundRange + 1) + minDistanceAboveGround, mob.world.getHeight(), blockPos -> mobEntityWithAi.world.getBlockState((BlockPos)blockPos).getMaterial().isSolid());
+                blockPos3 = TargetFinder.findValidPositionAbove(blockPos3, random.nextInt(distanceAboveGroundRange + 1) + minDistanceAboveGround, mob.world.getHeight(), blockPos -> pathAwareEntity.world.getBlockState((BlockPos)blockPos).getMaterial().isSolid());
             }
             if (!notInWater && mob.world.getFluidState(blockPos3).isIn(FluidTags.WATER) || mob.getPathfindingPenalty(pathNodeType = LandPathNodeMaker.getLandNodeType(mob.world, blockPos3.mutableCopy())) != 0.0f || !((e = favorProvider.applyAsDouble(blockPos3)) > d)) continue;
             d = e;

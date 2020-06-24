@@ -43,7 +43,7 @@ extends TreeDecorator {
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 Direction direction2;
                 BlockPos blockPos2;
-                if (!(random.nextFloat() <= 0.25f) || !Feature.method_27370(world, blockPos2 = blockPos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
+                if (!(random.nextFloat() <= 0.25f) || !Feature.isAir(world, blockPos2 = blockPos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
                 BlockState blockState = (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, random.nextInt(3))).with(CocoaBlock.FACING, direction);
                 this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
             }

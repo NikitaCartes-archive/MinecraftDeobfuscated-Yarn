@@ -89,7 +89,7 @@ extends Feature<SingleStateFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 4; t < 8; ++t) {
                     BlockPos blockPos2;
-                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isDirt(serverWorldAccess.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || serverWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
+                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isSoil(serverWorldAccess.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || serverWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
                     Biome biome = serverWorldAccess.getBiome(blockPos2);
                     if (biome.getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
                         serverWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);

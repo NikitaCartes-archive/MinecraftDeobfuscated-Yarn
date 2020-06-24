@@ -133,8 +133,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Override
-    protected void moveSelection(EntryListWidget.class_5403 arg) {
-        this.method_30013(arg, entry -> !((Entry)entry).level.isLocked());
+    protected void moveSelection(EntryListWidget.MoveDirection direction) {
+        this.moveSelectionIf(direction, entry -> !((Entry)entry).level.isLocked());
     }
 
     public Optional<Entry> method_20159() {

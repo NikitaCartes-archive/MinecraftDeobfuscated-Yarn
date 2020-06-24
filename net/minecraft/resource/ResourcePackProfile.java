@@ -147,11 +147,11 @@ implements AutoCloseable {
         BOTTOM;
 
 
-        public <T, P extends ResourcePackProfile> int insert(List<T> items, T item, Function<T, P> profileGetter, boolean listInversed) {
+        public <T, P extends ResourcePackProfile> int insert(List<T> items, T item, Function<T, P> profileGetter, boolean listInverted) {
             ResourcePackProfile resourcePackProfile;
             int i;
             InsertionPosition insertionPosition;
-            InsertionPosition insertionPosition2 = insertionPosition = listInversed ? this.inverse() : this;
+            InsertionPosition insertionPosition2 = insertionPosition = listInverted ? this.inverse() : this;
             if (insertionPosition == BOTTOM) {
                 ResourcePackProfile resourcePackProfile2;
                 int i2;

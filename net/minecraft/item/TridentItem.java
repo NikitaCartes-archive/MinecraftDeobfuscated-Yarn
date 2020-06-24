@@ -98,7 +98,7 @@ implements Vanishable {
             float m = MathHelper.sqrt(h * h + k * k + l * l);
             float n = 3.0f * ((1.0f + (float)j) / 4.0f);
             playerEntity.addVelocity(h *= n / m, k *= n / m, l *= n / m);
-            playerEntity.setPushCooldown(20);
+            playerEntity.setRiptideTicks(20);
             if (playerEntity.isOnGround()) {
                 float o = 1.1999999f;
                 playerEntity.move(MovementType.SELF, new Vec3d(0.0, 1.1999999284744263, 0.0));

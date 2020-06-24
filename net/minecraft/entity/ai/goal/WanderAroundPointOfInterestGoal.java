@@ -6,7 +6,7 @@ package net.minecraft.entity.ai.goal;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class WanderAroundPointOfInterestGoal
 extends WanderAroundGoal {
-    public WanderAroundPointOfInterestGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
-        super(mobEntityWithAi, d, 10, bl);
+    public WanderAroundPointOfInterestGoal(PathAwareEntity pathAwareEntity, double d, boolean bl) {
+        super(pathAwareEntity, d, 10, bl);
     }
 
     @Override

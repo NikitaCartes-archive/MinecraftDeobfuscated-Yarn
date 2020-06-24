@@ -133,7 +133,7 @@ extends ServerBossBar {
         compoundTag.putBoolean("CreateWorldFog", this.getThickenFog());
         ListTag listTag = new ListTag();
         for (UUID uUID : this.playerUuids) {
-            listTag.add(NbtHelper.fromUuidNew(uUID));
+            listTag.add(NbtHelper.fromUuid(uUID));
         }
         compoundTag.put("Players", listTag);
         return compoundTag;
@@ -151,7 +151,7 @@ extends ServerBossBar {
         commandBossBar.setThickenFog(tag.getBoolean("CreateWorldFog"));
         ListTag listTag = tag.getList("Players", 11);
         for (int i = 0; i < listTag.size(); ++i) {
-            commandBossBar.addPlayer(NbtHelper.toUuidNew(listTag.get(i)));
+            commandBossBar.addPlayer(NbtHelper.toUuid(listTag.get(i)));
         }
         return commandBossBar;
     }

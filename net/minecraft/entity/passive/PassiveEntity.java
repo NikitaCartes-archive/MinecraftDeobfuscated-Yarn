@@ -9,7 +9,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.LocalDifficulty;
@@ -18,14 +18,14 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class PassiveEntity
-extends MobEntityWithAi {
+extends PathAwareEntity {
     private static final TrackedData<Boolean> CHILD = DataTracker.registerData(PassiveEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     protected int breedingAge;
     protected int forcedAge;
     protected int happyTicksRemaining;
 
     protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
-        super((EntityType<? extends MobEntityWithAi>)entityType, world);
+        super((EntityType<? extends PathAwareEntity>)entityType, world);
     }
 
     @Override

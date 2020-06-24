@@ -29,11 +29,11 @@ import net.minecraft.world.chunk.PaletteResizeListener;
 public class PalettedContainer<T>
 implements PaletteResizeListener<T> {
     private final Palette<T> fallbackPalette;
-    private final PaletteResizeListener<T> noOpPaletteResizeHandler = (i, object) -> 0;
+    private final PaletteResizeListener<T> noOpPaletteResizeHandler = (newSize, added) -> 0;
     private final IdList<T> idList;
     private final Function<CompoundTag, T> elementDeserializer;
     private final Function<T, CompoundTag> elementSerializer;
-    private final T field_12935;
+    private final T defaultValue;
     protected PackedIntegerArray data;
     private Palette<T> palette;
     private int paletteSize;
@@ -59,7 +59,7 @@ implements PaletteResizeListener<T> {
         this.idList = idList;
         this.elementDeserializer = elementDeserializer;
         this.elementSerializer = elementSerializer;
-        this.field_12935 = defaultElement;
+        this.defaultValue = defaultElement;
         this.setPaletteSize(4);
     }
 
@@ -81,7 +81,7 @@ implements PaletteResizeListener<T> {
             this.palette = this.fallbackPalette;
             this.paletteSize = MathHelper.log2DeBruijn(this.idList.size());
         }
-        this.palette.getIndex(this.field_12935);
+        this.palette.getIndex(this.defaultValue);
         this.data = new PackedIntegerArray(this.paletteSize, 4096);
     }
 
@@ -117,7 +117,7 @@ implements PaletteResizeListener<T> {
         int i = this.palette.getIndex(value);
         int j = this.data.setAndGetOldValue(index, i);
         T object = this.palette.getByIndex(j);
-        return object == null ? this.field_12935 : object;
+        return object == null ? this.defaultValue : object;
     }
 
     protected void set(int i, T object) {
@@ -131,7 +131,7 @@ implements PaletteResizeListener<T> {
 
     protected T get(int index) {
         T object = this.palette.getByIndex(this.data.get(index));
-        return object == null ? this.field_12935 : object;
+        return object == null ? this.defaultValue : object;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -183,8 +183,8 @@ implements PaletteResizeListener<T> {
     public void write(CompoundTag compoundTag, String string, String string2) {
         this.lock();
         BiMapPalette<T> biMapPalette = new BiMapPalette<T>(this.idList, this.paletteSize, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer);
-        T object = this.field_12935;
-        int i = biMapPalette.getIndex(this.field_12935);
+        T object = this.defaultValue;
+        int i = biMapPalette.getIndex(this.defaultValue);
         int[] is = new int[4096];
         for (int j = 0; j < 4096; ++j) {
             T object2 = this.get(j);

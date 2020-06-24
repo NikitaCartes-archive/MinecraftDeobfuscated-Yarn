@@ -15,7 +15,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -39,17 +39,17 @@ extends Task<LivingEntity> {
         if (world.getTime() - this.expiryTimeLimit < 20L) {
             return false;
         }
-        MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)entity;
+        PathAwareEntity pathAwareEntity = (PathAwareEntity)entity;
         PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
         Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(PointOfInterestType.HOME.getCompletionCondition(), entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
-        return optional.isPresent() && !(optional.get().getSquaredDistance(mobEntityWithAi.getBlockPos()) <= 4.0);
+        return optional.isPresent() && !(optional.get().getSquaredDistance(pathAwareEntity.getBlockPos()) <= 4.0);
     }
 
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
         this.tries = 0;
         this.expiryTimeLimit = world.getTime() + (long)world.getRandom().nextInt(20);
-        MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)entity;
+        PathAwareEntity pathAwareEntity = (PathAwareEntity)entity;
         PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
         Predicate<BlockPos> predicate = blockPos -> {
             long l = blockPos.asLong();
@@ -63,7 +63,7 @@ extends Task<LivingEntity> {
             return true;
         };
         Stream<BlockPos> stream = pointOfInterestStorage.getPositions(PointOfInterestType.HOME.getCompletionCondition(), predicate, entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
-        Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
+        Path path = pathAwareEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
         if (path != null && path.reachesTarget()) {
             BlockPos blockPos2 = path.getTarget();
             Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos2);

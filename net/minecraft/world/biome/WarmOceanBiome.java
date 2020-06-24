@@ -26,7 +26,7 @@ extends Biome {
     public WarmOceanBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_SAND_UNDERWATER_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.OCEAN).depth(-1.0f).scale(0.1f).temperature(0.5f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(4445678).waterFogColor(270131).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0f, 0.0f, -0.25f, 0.0f, 1.0f))));
         this.addStructureFeature(DefaultBiomeFeatures.WARM_OCEAN_RUIN);
-        DefaultBiomeFeatures.method_28441(this);
+        DefaultBiomeFeatures.addOceanStructures(this);
         this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
         DefaultBiomeFeatures.addOceanCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);

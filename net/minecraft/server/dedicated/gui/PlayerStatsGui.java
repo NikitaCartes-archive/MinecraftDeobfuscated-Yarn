@@ -18,7 +18,7 @@ public class PlayerStatsGui
 extends JComponent {
     private static final DecimalFormat AVG_TICK_FORMAT = Util.make(new DecimalFormat("########0.000"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     private final int[] memoryUsePercentage = new int[256];
-    private int memoryusePctPos;
+    private int memoryUsePercentagePos;
     private final String[] lines = new String[11];
     private final MinecraftServer server;
     private final Timer timer;
@@ -37,7 +37,7 @@ extends JComponent {
         long l = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         this.lines[0] = "Memory use: " + l / 1024L / 1024L + " mb (" + Runtime.getRuntime().freeMemory() * 100L / Runtime.getRuntime().maxMemory() + "% free)";
         this.lines[1] = "Avg tick: " + AVG_TICK_FORMAT.format(this.average(this.server.lastTickLengths) * 1.0E-6) + " ms";
-        this.memoryUsePercentage[this.memoryusePctPos++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
+        this.memoryUsePercentage[this.memoryUsePercentagePos++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
         this.repaint();
     }
 
@@ -55,7 +55,7 @@ extends JComponent {
         graphics.setColor(new Color(0xFFFFFF));
         graphics.fillRect(0, 0, 456, 246);
         for (i = 0; i < 256; ++i) {
-            int j = this.memoryUsePercentage[i + this.memoryusePctPos & 0xFF];
+            int j = this.memoryUsePercentage[i + this.memoryUsePercentagePos & 0xFF];
             graphics.setColor(new Color(j + 28 << 16));
             graphics.fillRect(i, 100 - j, 1, j);
         }

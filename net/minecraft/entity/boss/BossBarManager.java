@@ -60,7 +60,7 @@ public class BossBarManager {
         }
     }
 
-    public void onPlayerDisconnenct(ServerPlayerEntity player) {
+    public void onPlayerDisconnect(ServerPlayerEntity player) {
         for (CommandBossBar commandBossBar : this.commandBossBars.values()) {
             commandBossBar.onPlayerDisconnect(player);
         }

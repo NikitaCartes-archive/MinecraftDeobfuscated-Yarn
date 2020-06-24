@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class IronGolemWanderAroundGoal
 extends WanderAroundGoal {
-    public IronGolemWanderAroundGoal(MobEntityWithAi mobEntityWithAi, double d) {
-        super(mobEntityWithAi, d, 240, false);
+    public IronGolemWanderAroundGoal(PathAwareEntity pathAwareEntity, double d) {
+        super(pathAwareEntity, d, 240, false);
     }
 
     @Override

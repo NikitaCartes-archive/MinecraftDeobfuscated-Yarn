@@ -28,7 +28,7 @@ extends GiantTrunkPlacer {
     }
 
     @Override
-    protected TrunkPlacerType<?> method_28903() {
+    protected TrunkPlacerType<?> getType() {
         return TrunkPlacerType.MEGA_JUNGLE_TRUNK_PLACER;
     }
 

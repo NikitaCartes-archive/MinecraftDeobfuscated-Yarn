@@ -29,16 +29,16 @@ extends TreeDecorator {
     public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
         logPositions.forEach(blockPos -> {
             BlockPos blockPos2;
-            if (random.nextInt(3) > 0 && Feature.method_27370(world, blockPos2 = blockPos.west())) {
+            if (random.nextInt(3) > 0 && Feature.isAir(world, blockPos2 = blockPos.west())) {
                 this.placeVine(world, blockPos2, VineBlock.EAST, set, box);
             }
-            if (random.nextInt(3) > 0 && Feature.method_27370(world, blockPos2 = blockPos.east())) {
+            if (random.nextInt(3) > 0 && Feature.isAir(world, blockPos2 = blockPos.east())) {
                 this.placeVine(world, blockPos2, VineBlock.WEST, set, box);
             }
-            if (random.nextInt(3) > 0 && Feature.method_27370(world, blockPos2 = blockPos.north())) {
+            if (random.nextInt(3) > 0 && Feature.isAir(world, blockPos2 = blockPos.north())) {
                 this.placeVine(world, blockPos2, VineBlock.SOUTH, set, box);
             }
-            if (random.nextInt(3) > 0 && Feature.method_27370(world, blockPos2 = blockPos.south())) {
+            if (random.nextInt(3) > 0 && Feature.isAir(world, blockPos2 = blockPos.south())) {
                 this.placeVine(world, blockPos2, VineBlock.NORTH, set, box);
             }
         });

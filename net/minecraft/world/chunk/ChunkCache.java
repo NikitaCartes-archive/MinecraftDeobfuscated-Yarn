@@ -52,7 +52,7 @@ CollisionView {
         for (k = minPos.getX() >> 4; k <= maxPos.getX() >> 4; ++k) {
             for (l = minPos.getZ() >> 4; l <= maxPos.getZ() >> 4; ++l) {
                 Chunk chunk = this.chunks[k - this.minX][l - this.minZ];
-                if (chunk == null || chunk.method_12228(minPos.getY(), maxPos.getY())) continue;
+                if (chunk == null || chunk.areSectionsEmptyBetween(minPos.getY(), maxPos.getY())) continue;
                 this.empty = false;
                 return;
             }

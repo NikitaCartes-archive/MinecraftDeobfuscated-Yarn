@@ -10,13 +10,13 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 
 public class GoToIfNearbyTask
-extends Task<MobEntityWithAi> {
+extends Task<PathAwareEntity> {
     private final MemoryModuleType<GlobalPos> target;
     private long nextUpdateTime;
     private final int maxDistance;
@@ -28,16 +28,16 @@ extends Task<MobEntityWithAi> {
     }
 
     @Override
-    protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-        Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.target);
-        return optional.isPresent() && serverWorld.getRegistryKey() == optional.get().getDimension() && optional.get().getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
+    protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+        Optional<GlobalPos> optional = pathAwareEntity.getBrain().getOptionalMemory(this.target);
+        return optional.isPresent() && serverWorld.getRegistryKey() == optional.get().getDimension() && optional.get().getPos().isWithinDistance(pathAwareEntity.getPos(), (double)this.maxDistance);
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+    protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
         if (l > this.nextUpdateTime) {
-            Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(mobEntityWithAi, 8, 6));
-            mobEntityWithAi.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, 0.4f, 1)));
+            Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(pathAwareEntity, 8, 6));
+            pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, 0.4f, 1)));
             this.nextUpdateTime = l + 180L;
         }
     }

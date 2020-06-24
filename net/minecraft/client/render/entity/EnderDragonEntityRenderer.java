@@ -375,13 +375,13 @@ extends EntityRenderer<EnderDragonEntity> {
             matrices.pop();
         }
 
-        private void method_23838(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offse, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, ModelPart modelPart4, ModelPart modelPart5, ModelPart modelPart6, ModelPart modelPart7) {
-            modelPart5.pitch = 1.0f + offse * 0.1f;
-            modelPart6.pitch = 0.5f + offse * 0.1f;
-            modelPart7.pitch = 0.75f + offse * 0.1f;
-            modelPart2.pitch = 1.3f + offse * 0.1f;
-            modelPart3.pitch = -0.5f - offse * 0.1f;
-            modelPart4.pitch = 0.75f + offse * 0.1f;
+        private void method_23838(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offset, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, ModelPart modelPart4, ModelPart modelPart5, ModelPart modelPart6, ModelPart modelPart7) {
+            modelPart5.pitch = 1.0f + offset * 0.1f;
+            modelPart6.pitch = 0.5f + offset * 0.1f;
+            modelPart7.pitch = 0.75f + offset * 0.1f;
+            modelPart2.pitch = 1.3f + offset * 0.1f;
+            modelPart3.pitch = -0.5f - offset * 0.1f;
+            modelPart4.pitch = 0.75f + offset * 0.1f;
             modelPart.render(matrices, vertices, light, overlay);
             modelPart2.render(matrices, vertices, light, overlay);
             modelPart5.render(matrices, vertices, light, overlay);

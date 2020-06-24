@@ -36,7 +36,7 @@ extends Goal {
         this.skeletonHorse.setTame(true);
         this.skeletonHorse.setBreedingAge(0);
         LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.skeletonHorse.world);
-        lightningEntity.positAfterTeleport(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
+        lightningEntity.refreshPositionAfterTeleport(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
         lightningEntity.method_29498(true);
         this.skeletonHorse.world.spawnEntity(lightningEntity);
         SkeletonEntity skeletonEntity = this.getSkeleton(localDifficulty, this.skeletonHorse);

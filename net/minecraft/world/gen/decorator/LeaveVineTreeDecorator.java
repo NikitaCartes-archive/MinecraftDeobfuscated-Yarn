@@ -31,16 +31,16 @@ extends TreeDecorator {
     public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
         leavesPositions.forEach(blockPos -> {
             BlockPos blockPos2;
-            if (random.nextInt(4) == 0 && Feature.method_27370(world, blockPos2 = blockPos.west())) {
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos2 = blockPos.west())) {
                 this.method_23467(world, blockPos2, VineBlock.EAST, set, box);
             }
-            if (random.nextInt(4) == 0 && Feature.method_27370(world, blockPos2 = blockPos.east())) {
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos2 = blockPos.east())) {
                 this.method_23467(world, blockPos2, VineBlock.WEST, set, box);
             }
-            if (random.nextInt(4) == 0 && Feature.method_27370(world, blockPos2 = blockPos.north())) {
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos2 = blockPos.north())) {
                 this.method_23467(world, blockPos2, VineBlock.SOUTH, set, box);
             }
-            if (random.nextInt(4) == 0 && Feature.method_27370(world, blockPos2 = blockPos.south())) {
+            if (random.nextInt(4) == 0 && Feature.isAir(world, blockPos2 = blockPos.south())) {
                 this.method_23467(world, blockPos2, VineBlock.NORTH, set, box);
             }
         });
@@ -49,7 +49,7 @@ extends TreeDecorator {
     private void method_23467(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty, Set<BlockPos> set, BlockBox blockBox) {
         this.placeVine(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
         blockPos = blockPos.down();
-        for (int i = 4; Feature.method_27370(modifiableTestableWorld, blockPos) && i > 0; --i) {
+        for (int i = 4; Feature.isAir(modifiableTestableWorld, blockPos) && i > 0; --i) {
             this.placeVine(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
             blockPos = blockPos.down();
         }

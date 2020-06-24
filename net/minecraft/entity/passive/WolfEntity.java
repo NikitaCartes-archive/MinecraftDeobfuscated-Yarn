@@ -86,7 +86,7 @@ implements Angerable {
     private float shakeProgress;
     private float lastShakeProgress;
     private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
-    private UUID angryAt;
+    private UUID targetUuid;
 
     public WolfEntity(EntityType<? extends WolfEntity> entityType, World world) {
         super((EntityType<? extends TameableEntity>)entityType, world);
@@ -431,12 +431,12 @@ implements Angerable {
     @Override
     @Nullable
     public UUID getAngryAt() {
-        return this.angryAt;
+        return this.targetUuid;
     }
 
     @Override
     public void setAngryAt(@Nullable UUID uuid) {
-        this.angryAt = uuid;
+        this.targetUuid = uuid;
     }
 
     public DyeColor getCollarColor() {

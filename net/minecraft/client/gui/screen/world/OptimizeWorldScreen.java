@@ -54,7 +54,7 @@ extends Screen {
         try (MinecraftClient.IntegratedResourceManager integratedResourceManager = minecraftClient.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);){
             SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
             session.method_27425(modifiable, saveProperties);
-            ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().method_29575();
+            ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
             OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
             return optimizeWorldScreen;
         } catch (Exception exception) {

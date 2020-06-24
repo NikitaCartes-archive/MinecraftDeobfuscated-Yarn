@@ -105,7 +105,7 @@ extends World {
         this.clientWorldProperties = properties;
         this.netHandler = clientPlayNetworkHandler;
         this.worldRenderer = worldRenderer;
-        this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.method_29091().getDimensionTypeRegistry().getKey(dimensionType));
+        this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.getRegistryTracker().getDimensionTypeRegistry().getKey(dimensionType));
         this.setSpawnPos(new BlockPos(8, 64, 8));
         this.calculateAmbientDarkness();
         this.initWeatherGradients();

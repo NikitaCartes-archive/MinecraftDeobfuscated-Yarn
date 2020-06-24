@@ -241,7 +241,7 @@ AutoCloseable {
 
     public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
         AtomicReference<MinecraftServer> atomicReference = new AtomicReference<MinecraftServer>();
-        Thread thread2 = new Thread(() -> ((MinecraftServer)atomicReference.get()).method_29741(), "Server thread");
+        Thread thread2 = new Thread(() -> ((MinecraftServer)atomicReference.get()).runServer(), "Server thread");
         thread2.setUncaughtExceptionHandler((thread, throwable) -> LOGGER.error(throwable));
         MinecraftServer minecraftServer = (MinecraftServer)serverFactory.apply(thread2);
         atomicReference.set(minecraftServer);
@@ -445,7 +445,7 @@ AutoCloseable {
         serverWorldProperties.setRaining(false);
         serverWorldProperties.setThundering(false);
         serverWorldProperties.setClearWeatherTime(1000000000);
-        serverWorldProperties.method_29035(6000L);
+        serverWorldProperties.setTimeOfDay(6000L);
         serverWorldProperties.setGameMode(GameMode.SPECTATOR);
     }
 
@@ -590,7 +590,7 @@ AutoCloseable {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    protected void method_29741() {
+    protected void runServer() {
         try {
             if (this.setupServer()) {
                 this.timeReference = Util.getMeasuringTimeMs();
@@ -839,8 +839,8 @@ AutoCloseable {
     }
 
     @Nullable
-    public ServerWorld getWorld(RegistryKey<World> registryKey) {
-        return this.worlds.get(registryKey);
+    public ServerWorld getWorld(RegistryKey<World> key) {
+        return this.worlds.get(key);
     }
 
     public Set<RegistryKey<World>> getWorldRegistryKeys() {
@@ -871,11 +871,11 @@ AutoCloseable {
         return "vanilla";
     }
 
-    public CrashReport populateCrashReport(CrashReport crashReport) {
+    public CrashReport populateCrashReport(CrashReport report) {
         if (this.playerManager != null) {
-            crashReport.getSystemDetailsSection().add("Player Count", () -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList());
+            report.getSystemDetailsSection().add("Player Count", () -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList());
         }
-        crashReport.getSystemDetailsSection().add("Data Packs", () -> {
+        report.getSystemDetailsSection().add("Data Packs", () -> {
             StringBuilder stringBuilder = new StringBuilder();
             for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
                 if (stringBuilder.length() > 0) {
@@ -888,9 +888,9 @@ AutoCloseable {
             return stringBuilder.toString();
         });
         if (this.serverId != null) {
-            crashReport.getSystemDetailsSection().add("Server Id", () -> this.serverId);
+            report.getSystemDetailsSection().add("Server Id", () -> this.serverId);
         }
-        return crashReport;
+        return report;
     }
 
     public abstract Optional<String> getModdedStatusMessage();
@@ -1118,7 +1118,7 @@ AutoCloseable {
         return 16;
     }
 
-    public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
+    public boolean isSpawnProtected(ServerWorld world, BlockPos pos, PlayerEntity player) {
         return false;
     }
 
@@ -1221,9 +1221,9 @@ AutoCloseable {
         return completableFuture;
     }
 
-    public static DataPackSettings loadDataPacks(ResourcePackManager<ResourcePackProfile> resourcePackManager, DataPackSettings dataPackSettings, boolean safemode) {
+    public static DataPackSettings loadDataPacks(ResourcePackManager<ResourcePackProfile> resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
         resourcePackManager.scanPacks();
-        if (safemode) {
+        if (safeMode) {
             resourcePackManager.setEnabledProfiles(Collections.singleton("vanilla"));
             return new DataPackSettings(ImmutableList.of("vanilla"), ImmutableList.of());
         }

@@ -41,7 +41,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -152,7 +152,7 @@ Saddleable {
         this.escapeDangerGoal = new EscapeDangerGoal(this, 1.65);
         this.goalSelector.add(1, this.escapeDangerGoal);
         this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
-        this.temptGoal = new TemptGoal((MobEntityWithAi)this, 1.4, false, ATTRACTING_INGREDIENT);
+        this.temptGoal = new TemptGoal((PathAwareEntity)this, 1.4, false, ATTRACTING_INGREDIENT);
         this.goalSelector.add(4, this.temptGoal);
         this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
         this.goalSelector.add(7, new WanderAroundGoal(this, 1.0, 60));
@@ -453,7 +453,7 @@ Saddleable {
         } else {
             riderType = StriderData.RiderType.NO_RIDER;
         }
-        MobEntityWithAi mobEntity = null;
+        PathAwareEntity mobEntity = null;
         if (riderType == StriderData.RiderType.BABY_RIDER) {
             StriderEntity striderEntity = EntityType.STRIDER.create(world.getWorld());
             if (striderEntity != null) {

@@ -7,12 +7,12 @@ import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 
-public class GoToEntityTargetGoal
+public class WanderNearTargetGoal
 extends Goal {
-    private final MobEntityWithAi mob;
+    private final PathAwareEntity mob;
     private LivingEntity target;
     private double x;
     private double y;
@@ -20,7 +20,7 @@ extends Goal {
     private final double speed;
     private final float maxDistance;
 
-    public GoToEntityTargetGoal(MobEntityWithAi mob, double speed, float maxDistance) {
+    public WanderNearTargetGoal(PathAwareEntity mob, double speed, float maxDistance) {
         this.mob = mob;
         this.speed = speed;
         this.maxDistance = maxDistance;

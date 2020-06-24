@@ -22,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ProjectileEntity
 extends Entity {
     private UUID ownerUuid;
-    private int field_23739;
-    private boolean field_23740;
+    private int ownerEntityId;
+    private boolean leftOwner;
 
     ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
@@ -32,7 +32,7 @@ extends Entity {
     public void setOwner(@Nullable Entity entity) {
         if (entity != null) {
             this.ownerUuid = entity.getUuid();
-            this.field_23739 = entity.getEntityId();
+            this.ownerEntityId = entity.getEntityId();
         }
     }
 
@@ -41,8 +41,8 @@ extends Entity {
         if (this.ownerUuid != null && this.world instanceof ServerWorld) {
             return ((ServerWorld)this.world).getEntity(this.ownerUuid);
         }
-        if (this.field_23739 != 0) {
-            return this.world.getEntityById(this.field_23739);
+        if (this.ownerEntityId != 0) {
+            return this.world.getEntityById(this.ownerEntityId);
         }
         return null;
     }
@@ -52,7 +52,7 @@ extends Entity {
         if (this.ownerUuid != null) {
             tag.putUuid("Owner", this.ownerUuid);
         }
-        if (this.field_23740) {
+        if (this.leftOwner) {
             tag.putBoolean("LeftOwner", true);
         }
     }
@@ -62,13 +62,13 @@ extends Entity {
         if (tag.containsUuid("Owner")) {
             this.ownerUuid = tag.getUuid("Owner");
         }
-        this.field_23740 = tag.getBoolean("LeftOwner");
+        this.leftOwner = tag.getBoolean("LeftOwner");
     }
 
     @Override
     public void tick() {
-        if (!this.field_23740) {
-            this.field_23740 = this.method_26961();
+        if (!this.leftOwner) {
+            this.leftOwner = this.method_26961();
         }
         super.tick();
     }
@@ -140,7 +140,7 @@ extends Entity {
             return false;
         }
         Entity entity2 = this.getOwner();
-        return entity2 == null || this.field_23740 || !entity2.isConnectedThroughVehicle(entity);
+        return entity2 == null || this.leftOwner || !entity2.isConnectedThroughVehicle(entity);
     }
 
     protected void method_26962() {

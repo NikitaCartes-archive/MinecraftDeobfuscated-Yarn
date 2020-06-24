@@ -45,9 +45,9 @@ extends Option {
 
     @Override
     public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
-        return new OptionButtonWidget(x, y, width, 20, this, this.getDisplayString(options), buttonWidget -> {
+        return new OptionButtonWidget(x, y, width, 20, this, this.getDisplayString(options), button -> {
             this.set(options);
-            buttonWidget.setMessage(this.getDisplayString(options));
+            button.setMessage(this.getDisplayString(options));
         });
     }
 

@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
@@ -23,7 +23,7 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class FindPointOfInterestTask
-extends Task<MobEntityWithAi> {
+extends Task<PathAwareEntity> {
     private final PointOfInterestType poiType;
     private final MemoryModuleType<GlobalPos> targetMemoryModuleType;
     private final boolean onlyRunIfChild;
@@ -51,19 +51,19 @@ extends Task<MobEntityWithAi> {
     }
 
     @Override
-    protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-        if (this.onlyRunIfChild && mobEntityWithAi.isBaby()) {
+    protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+        if (this.onlyRunIfChild && pathAwareEntity.isBaby()) {
             return false;
         }
         if (this.positionExpireTimeLimit == 0L) {
-            this.positionExpireTimeLimit = mobEntityWithAi.world.getTime() + (long)serverWorld.random.nextInt(20);
+            this.positionExpireTimeLimit = pathAwareEntity.world.getTime() + (long)serverWorld.random.nextInt(20);
             return false;
         }
         return serverWorld.getTime() >= this.positionExpireTimeLimit;
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+    protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
         this.positionExpireTimeLimit = l + 20L + (long)serverWorld.getRandom().nextInt(20);
         PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
         this.foundPositionsToExpiry.long2ObjectEntrySet().removeIf(entry -> !((RetryMarker)entry.getValue()).method_29927(l));
@@ -78,19 +78,19 @@ extends Task<MobEntityWithAi> {
             retryMarker.method_29926(l);
             return true;
         };
-        Set<BlockPos> set = pointOfInterestStorage.getPositions(this.poiType.getCompletionCondition(), predicate, mobEntityWithAi.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE).limit(5L).collect(Collectors.toSet());
-        Path path = mobEntityWithAi.getNavigation().method_29934(set, this.poiType.getSearchDistance());
+        Set<BlockPos> set = pointOfInterestStorage.getPositions(this.poiType.getCompletionCondition(), predicate, pathAwareEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE).limit(5L).collect(Collectors.toSet());
+        Path path = pathAwareEntity.getNavigation().method_29934(set, this.poiType.getSearchDistance());
         if (path != null && path.reachesTarget()) {
             BlockPos blockPos2 = path.getTarget();
             pointOfInterestStorage.getType(blockPos2).ifPresent(pointOfInterestType -> {
                 pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos2), blockPos2, 1);
-                mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getRegistryKey(), blockPos2));
+                pathAwareEntity.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getRegistryKey(), blockPos2));
                 this.foundPositionsToExpiry.clear();
                 DebugInfoSender.sendPointOfInterest(serverWorld, blockPos2);
             });
         } else {
             for (BlockPos blockPos2 : set) {
-                this.foundPositionsToExpiry.computeIfAbsent(blockPos2.asLong(), m -> new RetryMarker(mobEntityWithAi.world.random, l));
+                this.foundPositionsToExpiry.computeIfAbsent(blockPos2.asLong(), m -> new RetryMarker(pathAwareEntity.world.random, l));
             }
         }
     }

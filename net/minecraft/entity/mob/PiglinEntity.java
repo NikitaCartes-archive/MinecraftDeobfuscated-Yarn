@@ -213,7 +213,7 @@ implements CrossbowUser {
             return actionResult;
         }
         if (this.world.isClient) {
-            boolean bl = PiglinBrain.method_27086(this, player.getStackInHand(hand)) && this.getActivity() != Activity.ADMIRING_ITEM;
+            boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != Activity.ADMIRING_ITEM;
             return bl ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         return PiglinBrain.playerInteract(this, player, hand);
@@ -294,7 +294,7 @@ implements CrossbowUser {
     }
 
     private void zombify(ServerWorld serverWorld) {
-        PiglinBrain.method_25948(this);
+        PiglinBrain.pickupItemWithOffHand(this);
         this.inventory.clearToList().forEach(this::dropStack);
         ZombifiedPiglinEntity zombifiedPiglinEntity = this.method_29243(EntityType.ZOMBIFIED_PIGLIN);
         zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));

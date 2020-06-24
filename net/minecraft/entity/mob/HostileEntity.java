@@ -11,8 +11,8 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,10 +28,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class HostileEntity
-extends MobEntityWithAi
+extends PathAwareEntity
 implements Monster {
     protected HostileEntity(EntityType<? extends HostileEntity> entityType, World world) {
-        super((EntityType<? extends MobEntityWithAi>)entityType, world);
+        super((EntityType<? extends PathAwareEntity>)entityType, world);
         this.experiencePoints = 5;
     }
 

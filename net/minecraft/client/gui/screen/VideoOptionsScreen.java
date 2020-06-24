@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5405;
 import net.minecraft.class_5407;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.GraphicsConfirmationScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
@@ -35,15 +35,15 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class VideoOptionsScreen
 extends GameOptionsScreen {
-    private static final Text field_25682 = new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC);
-    private static final Text field_25683 = new TranslatableText("options.graphics.warning.message", field_25682, field_25682);
-    private static final Text field_25684 = new TranslatableText("options.graphics.warning.title").formatted(Formatting.RED);
-    private static final Text field_25685 = new TranslatableText("options.graphics.warning.accept");
-    private static final Text field_25686 = new TranslatableText("options.graphics.warning.cancel");
-    private static final Text field_25687 = new LiteralText("\n");
+    private static final Text GRAPHICS_FABULOUS_TEXT = new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC);
+    private static final Text GRAPHICS_WARNING_MESSAGE_TEXT = new TranslatableText("options.graphics.warning.message", GRAPHICS_FABULOUS_TEXT, GRAPHICS_FABULOUS_TEXT);
+    private static final Text GRAPHICS_WARNING_TITLE_TEXT = new TranslatableText("options.graphics.warning.title").formatted(Formatting.RED);
+    private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = new TranslatableText("options.graphics.warning.accept");
+    private static final Text GRAPHICS_WARNING_CANCEL_TEXT = new TranslatableText("options.graphics.warning.cancel");
+    private static final Text NEWLINE_TEXT = new LiteralText("\n");
     private static final Option[] OPTIONS = new Option[]{Option.GRAPHICS, Option.RENDER_DISTANCE, Option.AO, Option.FRAMERATE_LIMIT, Option.VSYNC, Option.VIEW_BOBBING, Option.GUI_SCALE, Option.ATTACK_INDICATOR, Option.GAMMA, Option.CLOUDS, Option.FULLSCREEN, Option.PARTICLES, Option.MIPMAP_LEVELS, Option.ENTITY_SHADOWS, Option.ENTITY_DISTANCE_SCALING};
     @Nullable
-    private List<StringRenderable> field_25453;
+    private List<StringRenderable> tooltip;
     private ButtonListWidget list;
     private final class_5407 field_25688;
     private final int mipmapLevels;
@@ -82,36 +82,36 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button2) {
         int i = this.gameOptions.guiScale;
         GraphicsMode graphicsMode = this.gameOptions.graphicsMode;
-        if (super.mouseClicked(mouseX, mouseY, button)) {
+        if (super.mouseClicked(mouseX, mouseY, button2)) {
             if (this.gameOptions.guiScale != i) {
                 this.client.onResolutionChanged();
             }
             if (this.field_25688.method_30141()) {
                 String string3;
                 String string2;
-                ArrayList<StringRenderable> list = Lists.newArrayList(field_25683, field_25687);
+                ArrayList<StringRenderable> list = Lists.newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, NEWLINE_TEXT);
                 String string = this.field_25688.method_30060();
                 if (string != null) {
-                    list.add(field_25687);
+                    list.add(NEWLINE_TEXT);
                     list.add(new TranslatableText("options.graphics.warning.renderer", string).formatted(Formatting.GRAY));
                 }
                 if ((string2 = this.field_25688.method_30063()) != null) {
-                    list.add(field_25687);
+                    list.add(NEWLINE_TEXT);
                     list.add(new TranslatableText("options.graphics.warning.vendor", string2).formatted(Formatting.GRAY));
                 }
                 if ((string3 = this.field_25688.method_30062()) != null) {
-                    list.add(field_25687);
+                    list.add(NEWLINE_TEXT);
                     list.add(new TranslatableText("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
                 }
-                this.client.openScreen(new class_5405(field_25684, list, ImmutableList.of(new class_5405.class_5406(field_25685, buttonWidget -> {
+                this.client.openScreen(new GraphicsConfirmationScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new GraphicsConfirmationScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, button -> {
                     this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
                     MinecraftClient.getInstance().worldRenderer.reload();
                     this.field_25688.method_30139();
                     this.client.openScreen(this);
-                }), new class_5405.class_5406(field_25686, buttonWidget -> {
+                }), new GraphicsConfirmationScreen.ChoiceButton(GRAPHICS_WARNING_CANCEL_TEXT, button -> {
                     this.field_25688.method_30140();
                     this.client.openScreen(this);
                 }))));
@@ -138,20 +138,20 @@ extends GameOptionsScreen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.field_25453 = null;
-        Optional<AbstractButtonWidget> optional = this.list.method_29624(mouseX, mouseY);
+        this.tooltip = null;
+        Optional<AbstractButtonWidget> optional = this.list.getHoveredButton(mouseX, mouseY);
         if (optional.isPresent() && optional.get() instanceof OptionButtonWidget) {
-            Optional<List<StringRenderable>> optional2 = ((OptionButtonWidget)optional.get()).method_29623().method_29619();
-            optional2.ifPresent(list -> {
-                this.field_25453 = list;
+            Optional<List<StringRenderable>> optional2 = ((OptionButtonWidget)optional.get()).getOption().getTooltip();
+            optional2.ifPresent(tooltip -> {
+                this.tooltip = tooltip;
             });
         }
         this.renderBackground(matrices);
         this.list.render(matrices, mouseX, mouseY, delta);
         this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.field_25453 != null) {
-            this.renderTooltip(matrices, this.field_25453, mouseX, mouseY);
+        if (this.tooltip != null) {
+            this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
         }
     }
 }

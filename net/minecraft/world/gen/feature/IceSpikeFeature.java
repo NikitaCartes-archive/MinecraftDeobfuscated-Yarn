@@ -48,13 +48,13 @@ extends Feature<DefaultFeatureConfig> {
                     if ((m != 0 || n != 0) && g * g + h * h > f * f || (m == -l || m == l || n == -l || n == l) && random.nextFloat() > 0.75f) continue;
                     BlockState blockState = serverWorldAccess.getBlockState(blockPos.add(m, k, n));
                     Block block = blockState.getBlock();
-                    if (blockState.isAir() || IceSpikeFeature.isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+                    if (blockState.isAir() || IceSpikeFeature.isSoil(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
                         this.setBlockState(serverWorldAccess, blockPos.add(m, k, n), Blocks.PACKED_ICE.getDefaultState());
                     }
                     if (k == 0 || l <= 1) continue;
                     blockState = serverWorldAccess.getBlockState(blockPos.add(m, -k, n));
                     block = blockState.getBlock();
-                    if (!blockState.isAir() && !IceSpikeFeature.isDirt(block) && block != Blocks.SNOW_BLOCK && block != Blocks.ICE) continue;
+                    if (!blockState.isAir() && !IceSpikeFeature.isSoil(block) && block != Blocks.SNOW_BLOCK && block != Blocks.ICE) continue;
                     this.setBlockState(serverWorldAccess, blockPos.add(m, -k, n), Blocks.PACKED_ICE.getDefaultState());
                 }
             }
@@ -75,7 +75,7 @@ extends Feature<DefaultFeatureConfig> {
                 while (blockPos2.getY() > 50) {
                     BlockState blockState2 = serverWorldAccess.getBlockState(blockPos2);
                     Block block2 = blockState2.getBlock();
-                    if (!blockState2.isAir() && !IceSpikeFeature.isDirt(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) continue block5;
+                    if (!blockState2.isAir() && !IceSpikeFeature.isSoil(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) continue block5;
                     this.setBlockState(serverWorldAccess, blockPos2, Blocks.PACKED_ICE.getDefaultState());
                     blockPos2 = blockPos2.down();
                     if (--p > 0) continue;

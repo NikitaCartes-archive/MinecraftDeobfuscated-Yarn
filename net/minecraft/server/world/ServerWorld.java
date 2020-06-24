@@ -161,7 +161,7 @@ implements ServerWorldAccess {
     private final ServerChunkManager serverChunkManager;
     boolean inEntityTick;
     private final MinecraftServer server;
-    private final ServerWorldProperties field_24456;
+    private final ServerWorldProperties worldProperties;
     public boolean savingDisabled;
     private boolean allPlayersSleeping;
     private int idleTimeout;
@@ -183,7 +183,7 @@ implements ServerWorldAccess {
         this.field_25143 = bl2;
         this.server = server;
         this.field_25141 = list;
-        this.field_24456 = properties;
+        this.worldProperties = properties;
         this.serverChunkManager = new ServerChunkManager(this, session, server.getDataFixer(), server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), generationProgressListener, () -> server.getOverworld().getPersistentStateManager());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
@@ -197,12 +197,12 @@ implements ServerWorldAccess {
         this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, server.getSaveProperties().getGeneratorOptions().getSeed(), server.getSaveProperties().method_29036()) : null;
     }
 
-    public void method_27910(int i, int j, boolean bl, boolean bl2) {
-        this.field_24456.setClearWeatherTime(i);
-        this.field_24456.setRainTime(j);
-        this.field_24456.setThunderTime(j);
-        this.field_24456.setRaining(bl);
-        this.field_24456.setThundering(bl2);
+    public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
+        this.worldProperties.setClearWeatherTime(clearDuration);
+        this.worldProperties.setRainTime(rainDuration);
+        this.worldProperties.setThunderTime(rainDuration);
+        this.worldProperties.setRaining(raining);
+        this.worldProperties.setThundering(thundering);
     }
 
     @Override
@@ -224,9 +224,9 @@ implements ServerWorldAccess {
         boolean bl = this.isRaining();
         if (this.getDimension().hasSkyLight()) {
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
-                int i = this.field_24456.getClearWeatherTime();
-                int j = this.field_24456.getThunderTime();
-                int k = this.field_24456.getRainTime();
+                int i = this.worldProperties.getClearWeatherTime();
+                int j = this.worldProperties.getThunderTime();
+                int k = this.worldProperties.getRainTime();
                 boolean bl2 = this.properties.isThundering();
                 boolean bl3 = this.properties.isRaining();
                 if (i > 0) {
@@ -251,11 +251,11 @@ implements ServerWorldAccess {
                         k = bl3 ? this.random.nextInt(12000) + 12000 : this.random.nextInt(168000) + 12000;
                     }
                 }
-                this.field_24456.setThunderTime(j);
-                this.field_24456.setRainTime(k);
-                this.field_24456.setClearWeatherTime(i);
-                this.field_24456.setThundering(bl2);
-                this.field_24456.setRaining(bl3);
+                this.worldProperties.setThunderTime(j);
+                this.worldProperties.setRainTime(k);
+                this.worldProperties.setClearWeatherTime(i);
+                this.worldProperties.setThundering(bl2);
+                this.worldProperties.setRaining(bl3);
             }
             this.thunderGradientPrev = this.thunderGradient;
             this.thunderGradient = this.properties.isThundering() ? (float)((double)this.thunderGradient + 0.01) : (float)((double)this.thunderGradient - 0.01);
@@ -283,7 +283,7 @@ implements ServerWorldAccess {
             this.allPlayersSleeping = false;
             if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
                 long l = this.properties.getTimeOfDay() + 24000L;
-                this.method_29199(l - l % 24000L);
+                this.setTimeOfDay(l - l % 24000L);
             }
             this.wakeSleepingPlayers();
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
@@ -362,15 +362,15 @@ implements ServerWorldAccess {
             return;
         }
         long l = this.properties.getTime() + 1L;
-        this.field_24456.method_29034(l);
-        this.field_24456.getScheduledEvents().processEvents(this.server, l);
+        this.worldProperties.setTime(l);
+        this.worldProperties.getScheduledEvents().processEvents(this.server, l);
         if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-            this.method_29199(this.properties.getTimeOfDay() + 1L);
+            this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
         }
     }
 
-    public void method_29199(long l) {
-        this.field_24456.method_29035(l);
+    public void setTimeOfDay(long timeOfDay) {
+        this.worldProperties.setTimeOfDay(timeOfDay);
     }
 
     public void method_29202(boolean bl, boolean bl2) {
@@ -485,10 +485,10 @@ implements ServerWorldAccess {
     }
 
     private void resetWeather() {
-        this.field_24456.setRainTime(0);
-        this.field_24456.setRaining(false);
-        this.field_24456.setThunderTime(0);
-        this.field_24456.setThundering(false);
+        this.worldProperties.setRainTime(0);
+        this.worldProperties.setRaining(false);
+        this.worldProperties.setThunderTime(0);
+        this.worldProperties.setThundering(false);
     }
 
     public void resetIdleTimeout() {
@@ -1223,7 +1223,7 @@ implements ServerWorldAccess {
     }
 
     public String toString() {
-        return "ServerLevel[" + this.field_24456.getLevelName() + "]";
+        return "ServerLevel[" + this.worldProperties.getLevelName() + "]";
     }
 
     public boolean isFlat() {

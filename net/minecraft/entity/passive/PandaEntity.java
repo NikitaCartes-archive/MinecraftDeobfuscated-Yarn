@@ -41,7 +41,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -252,7 +252,7 @@ extends AnimalEntity {
         this.goalSelector.add(2, new ExtinguishFireGoal(this, 2.0));
         this.goalSelector.add(2, new PandaMateGoal(this, 1.0));
         this.goalSelector.add(3, new AttackGoal(this, (double)1.2f, true));
-        this.goalSelector.add(4, new TemptGoal((MobEntityWithAi)this, 1.0, Ingredient.ofItems(Blocks.BAMBOO.asItem()), false));
+        this.goalSelector.add(4, new TemptGoal((PathAwareEntity)this, 1.0, Ingredient.ofItems(Blocks.BAMBOO.asItem()), false));
         this.goalSelector.add(6, new PandaFleeGoal<PlayerEntity>(this, PlayerEntity.class, 8.0f, 2.0, 2.0));
         this.goalSelector.add(6, new PandaFleeGoal<HostileEntity>(this, HostileEntity.class, 4.0f, 2.0, 2.0));
         this.goalSelector.add(7, new PickUpFoodGoal());

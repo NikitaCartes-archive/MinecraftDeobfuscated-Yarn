@@ -140,7 +140,7 @@ public class ModelLoader {
     private final ResourceManager resourceManager;
     @Nullable
     private SpriteAtlasManager spriteAtlasManager;
-    private final BlockColors colorationManager;
+    private final BlockColors blockColors;
     private final Set<Identifier> modelsToLoad = Sets.newHashSet();
     private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
     private final Map<Identifier, UnbakedModel> unbakedModels = Maps.newHashMap();
@@ -153,7 +153,7 @@ public class ModelLoader {
 
     public ModelLoader(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int i) {
         this.resourceManager = resourceManager;
-        this.colorationManager = blockColors;
+        this.blockColors = blockColors;
         profiler.push("missing_model");
         try {
             this.unbakedModels.put(MISSING, this.loadModelFromJson(MISSING));
@@ -299,7 +299,7 @@ public class ModelLoader {
             Identifier identifier = new Identifier(id.getNamespace(), id.getPath());
             StateManager stateManager = Optional.ofNullable(STATIC_DEFINITIONS.get(identifier)).orElseGet(() -> Registry.BLOCK.get(identifier).getStateManager());
             this.variantMapDeserializationContext.setStateFactory(stateManager);
-            ImmutableList<Property<?>> list = ImmutableList.copyOf(this.colorationManager.getProperties((Block)stateManager.getOwner()));
+            ImmutableList<Property<?>> list = ImmutableList.copyOf(this.blockColors.getProperties((Block)stateManager.getOwner()));
             ImmutableList immutableList = stateManager.getStates();
             HashMap<ModelIdentifier, BlockState> map = Maps.newHashMap();
             immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier, blockState), (BlockState)blockState));

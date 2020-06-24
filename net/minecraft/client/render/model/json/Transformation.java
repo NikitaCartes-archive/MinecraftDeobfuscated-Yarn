@@ -68,7 +68,7 @@ public class Transformation {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<Transformation> {
-        private static final Vector3f DEFAULT_ROATATION = new Vector3f(0.0f, 0.0f, 0.0f);
+        private static final Vector3f DEFAULT_ROTATION = new Vector3f(0.0f, 0.0f, 0.0f);
         private static final Vector3f DEFAULT_TRANSLATION = new Vector3f(0.0f, 0.0f, 0.0f);
         private static final Vector3f DEFAULT_SCALE = new Vector3f(1.0f, 1.0f, 1.0f);
 
@@ -78,7 +78,7 @@ public class Transformation {
         @Override
         public Transformation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            Vector3f vector3f = this.parseVector3f(jsonObject, "rotation", DEFAULT_ROATATION);
+            Vector3f vector3f = this.parseVector3f(jsonObject, "rotation", DEFAULT_ROTATION);
             Vector3f vector3f2 = this.parseVector3f(jsonObject, "translation", DEFAULT_TRANSLATION);
             vector3f2.scale(0.0625f);
             vector3f2.clamp(-5.0f, 5.0f);

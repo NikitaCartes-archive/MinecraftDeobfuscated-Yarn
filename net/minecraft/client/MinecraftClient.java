@@ -351,7 +351,7 @@ WindowEventHandler {
     private static int currentFps;
     public String fpsDebugString = "";
     public boolean debugChunkInfo;
-    public boolean debugChunkOcculsion;
+    public boolean debugChunkOcclusion;
     public boolean chunkCullingEnabled = true;
     private boolean windowFocused;
     private final Queue<Runnable> renderTaskQueue = Queues.newConcurrentLinkedQueue();
@@ -488,7 +488,7 @@ WindowEventHandler {
         }
         SplashScreen.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
             if (SharedConstants.isDevelopment) {
                 this.checkGameData();
             }
@@ -531,7 +531,7 @@ WindowEventHandler {
         return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
     }
 
-    private void handleResourceReloadExecption(Throwable throwable) {
+    private void handleResourceReloadException(Throwable throwable) {
         if (this.resourcePackManager.getEnabledNames().size() > 1) {
             LiteralText text = throwable instanceof ReloadableResourceManagerImpl.PackAdditionFailedException ? new LiteralText(((ReloadableResourceManagerImpl.PackAdditionFailedException)throwable).getPack().getName()) : null;
             LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", throwable);
@@ -672,7 +672,7 @@ WindowEventHandler {
         }
         this.resourcePackManager.scanPacks();
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
             this.worldRenderer.reload();
             completableFuture.complete(null);
         }), true));
@@ -1449,7 +1449,7 @@ WindowEventHandler {
         }, false, WorldLoadAction.CREATE);
     }
 
-    private void startIntegratedServer(String worldName, RegistryTracker.Modifiable registryTracker, Function<LevelStorage.Session, DataPackSettings> function, Function4<LevelStorage.Session, RegistryTracker.Modifiable, ResourceManager, DataPackSettings, SaveProperties> function4, boolean safemode, WorldLoadAction worldLoadAction) {
+    private void startIntegratedServer(String worldName, RegistryTracker.Modifiable registryTracker, Function<LevelStorage.Session, DataPackSettings> function, Function4<LevelStorage.Session, RegistryTracker.Modifiable, ResourceManager, DataPackSettings, SaveProperties> function4, boolean safeMode, WorldLoadAction worldLoadAction) {
         boolean bl2;
         IntegratedResourceManager integratedResourceManager;
         LevelStorage.Session session;
@@ -1462,7 +1462,7 @@ WindowEventHandler {
             return;
         }
         try {
-            integratedResourceManager = this.method_29604(registryTracker, function, function4, safemode, session);
+            integratedResourceManager = this.method_29604(registryTracker, function, function4, safeMode, session);
         } catch (Exception exception) {
             LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)exception);
             this.openScreen(new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, registryTracker, function, function4, true, worldLoadAction)));
@@ -1477,7 +1477,7 @@ WindowEventHandler {
         boolean bl = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
         boolean bl3 = bl2 = saveProperties.method_29588() != Lifecycle.stable();
         if (worldLoadAction != WorldLoadAction.NONE && (bl || bl2)) {
-            this.method_29601(worldLoadAction, worldName, bl, () -> this.startIntegratedServer(worldName, registryTracker, function, function4, safemode, WorldLoadAction.NONE));
+            this.method_29601(worldLoadAction, worldName, bl, () -> this.startIntegratedServer(worldName, registryTracker, function, function4, safeMode, WorldLoadAction.NONE));
             integratedResourceManager.close();
             try {
                 session.close();
@@ -2194,7 +2194,7 @@ WindowEventHandler {
         int i = packResourceMetadata.getPackFormat();
         Supplier<ResourcePack> supplier2 = supplier;
         if (i <= 3) {
-            supplier2 = MinecraftClient.createV3ResoucePackFactory(supplier2);
+            supplier2 = MinecraftClient.createV3ResourcePackFactory(supplier2);
         }
         if (i <= 4) {
             supplier2 = MinecraftClient.createV4ResourcePackFactory(supplier2);
@@ -2202,7 +2202,7 @@ WindowEventHandler {
         return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
     }
 
-    private static Supplier<ResourcePack> createV3ResoucePackFactory(Supplier<ResourcePack> supplier) {
+    private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> supplier) {
         return () -> new Format3ResourcePack((ResourcePack)supplier.get(), Format3ResourcePack.NEW_TO_OLD_MAP);
     }
 

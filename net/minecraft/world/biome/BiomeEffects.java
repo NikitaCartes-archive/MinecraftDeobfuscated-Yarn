@@ -28,10 +28,10 @@ public class BiomeEffects {
     private final Optional<BiomeAdditionsSound> additionsSound;
     private final Optional<MusicSound> music;
 
-    private BiomeEffects(int fogColor, int waterColor, int waterFogCOlor, Optional<BiomeParticleConfig> particleConfig, Optional<SoundEvent> loopSound, Optional<BiomeMoodSound> moodSound, Optional<BiomeAdditionsSound> additionsSound, Optional<MusicSound> music) {
+    private BiomeEffects(int fogColor, int waterColor, int waterFogColor, Optional<BiomeParticleConfig> particleConfig, Optional<SoundEvent> loopSound, Optional<BiomeMoodSound> moodSound, Optional<BiomeAdditionsSound> additionsSound, Optional<MusicSound> music) {
         this.fogColor = fogColor;
         this.waterColor = waterColor;
-        this.waterFogColor = waterFogCOlor;
+        this.waterFogColor = waterFogColor;
         this.particleConfig = particleConfig;
         this.loopSound = loopSound;
         this.moodSound = moodSound;

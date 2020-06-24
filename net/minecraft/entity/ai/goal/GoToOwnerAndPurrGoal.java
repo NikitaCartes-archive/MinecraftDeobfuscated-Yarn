@@ -6,7 +6,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -35,7 +35,7 @@ extends MoveToTargetPosGoal {
     }
 
     @Override
-    protected int getInterval(MobEntityWithAi mob) {
+    protected int getInterval(PathAwareEntity mob) {
         return 40;
     }
 

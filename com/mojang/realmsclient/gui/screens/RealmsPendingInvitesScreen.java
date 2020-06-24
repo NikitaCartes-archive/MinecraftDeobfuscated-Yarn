@@ -37,9 +37,9 @@ import org.jetbrains.annotations.Nullable;
 public class RealmsPendingInvitesScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Identifier field_22702 = new Identifier("realms", "textures/gui/realms/accept_icon.png");
-    private static final Identifier field_22703 = new Identifier("realms", "textures/gui/realms/reject_icon.png");
-    private final Screen lastScreen;
+    private static final Identifier ACCEPT_ICON = new Identifier("realms", "textures/gui/realms/accept_icon.png");
+    private static final Identifier REJECT_ICON = new Identifier("realms", "textures/gui/realms/reject_icon.png");
+    private final Screen parent;
     private String toolTip;
     private boolean loaded;
     private PendingInvitationSelectionList pendingInvitationSelectionList;
@@ -48,8 +48,8 @@ extends RealmsScreen {
     private ButtonWidget acceptButton;
     private ButtonWidget rejectButton;
 
-    public RealmsPendingInvitesScreen(Screen screen) {
-        this.lastScreen = screen;
+    public RealmsPendingInvitesScreen(Screen parent) {
+        this.parent = parent;
     }
 
     @Override
@@ -81,7 +81,7 @@ extends RealmsScreen {
             this.selectedInvite = -1;
             this.updateButtonStates();
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 50, this.height - 32, 100, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(new RealmsMainScreen(this.lastScreen))));
+        this.addButton(new ButtonWidget(this.width / 2 - 50, this.height - 32, 100, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(new RealmsMainScreen(this.parent))));
         this.rejectButton = this.addButton(new ButtonWidget(this.width / 2 + 74, this.height - 32, 100, 20, new TranslatableText("mco.invites.button.reject"), buttonWidget -> {
             this.reject(this.selectedInvite);
             this.selectedInvite = -1;
@@ -96,7 +96,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 256) {
-            this.client.openScreen(new RealmsMainScreen(this.lastScreen));
+            this.client.openScreen(new RealmsMainScreen(this.parent));
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -220,7 +220,7 @@ extends RealmsScreen {
 
             @Override
             protected void render(MatrixStack matrixStack, int y, int i, boolean bl) {
-                RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(field_22703);
+                RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(REJECT_ICON);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = bl ? 19.0f : 0.0f;
                 DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0f, 18, 18, 37, 18);
@@ -244,7 +244,7 @@ extends RealmsScreen {
 
             @Override
             protected void render(MatrixStack matrixStack, int y, int i, boolean bl) {
-                RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(field_22702);
+                RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(ACCEPT_ICON);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = bl ? 19.0f : 0.0f;
                 DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0f, 18, 18, 37, 18);
@@ -287,8 +287,8 @@ extends RealmsScreen {
         }
 
         @Override
-        public void renderBackground(MatrixStack matrixStack) {
-            RealmsPendingInvitesScreen.this.renderBackground(matrixStack);
+        public void renderBackground(MatrixStack matrices) {
+            RealmsPendingInvitesScreen.this.renderBackground(matrices);
         }
 
         @Override

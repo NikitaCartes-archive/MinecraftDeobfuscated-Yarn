@@ -66,7 +66,7 @@ extends HandledScreen<MerchantScreenHandler> {
         int j;
         String string;
         int i = ((MerchantScreenHandler)this.handler).getLevelProgress();
-        if (i > 0 && i <= 5 && ((MerchantScreenHandler)this.handler).isLevelled()) {
+        if (i > 0 && i <= 5 && ((MerchantScreenHandler)this.handler).isLeveled()) {
             string = "- " + I18n.translate("merchant.level." + i, new Object[0]);
             j = this.textRenderer.getWidth(this.title);
             int k = this.textRenderer.getWidth(string);
@@ -185,7 +185,7 @@ extends HandledScreen<MerchantScreenHandler> {
             }
             int o = this.selectedIndex;
             tradeOffer2 = (TradeOffer)traderOfferList.get(o);
-            if (((MerchantScreenHandler)this.handler).isLevelled()) {
+            if (((MerchantScreenHandler)this.handler).isLeveled()) {
                 this.drawLevelInfo(matrices, i, j, tradeOffer2);
             }
             if (tradeOffer2.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, mouseX, mouseY) && ((MerchantScreenHandler)this.handler).canRefreshTrades()) {

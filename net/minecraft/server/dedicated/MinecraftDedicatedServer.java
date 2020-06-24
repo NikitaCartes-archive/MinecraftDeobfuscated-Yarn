@@ -249,11 +249,11 @@ implements DedicatedServer {
     }
 
     @Override
-    public CrashReport populateCrashReport(CrashReport crashReport) {
-        crashReport = super.populateCrashReport(crashReport);
-        crashReport.getSystemDetailsSection().add("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
-        crashReport.getSystemDetailsSection().add("Type", () -> "Dedicated Server (map_server.txt)");
-        return crashReport;
+    public CrashReport populateCrashReport(CrashReport report) {
+        report = super.populateCrashReport(report);
+        report.getSystemDetailsSection().add("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
+        report.getSystemDetailsSection().add("Type", () -> "Dedicated Server (map_server.txt)");
+        return report;
     }
 
     @Override
@@ -369,9 +369,9 @@ implements DedicatedServer {
     }
 
     @Override
-    public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
+    public boolean isSpawnProtected(ServerWorld world, BlockPos pos, PlayerEntity player) {
         int j;
-        if (serverWorld.getRegistryKey() != World.OVERWORLD) {
+        if (world.getRegistryKey() != World.OVERWORLD) {
             return false;
         }
         if (this.getPlayerManager().getOpList().isEmpty()) {
@@ -383,7 +383,7 @@ implements DedicatedServer {
         if (this.getSpawnProtectionRadius() <= 0) {
             return false;
         }
-        BlockPos blockPos = serverWorld.getSpawnPos();
+        BlockPos blockPos = world.getSpawnPos();
         int i = MathHelper.abs(pos.getX() - blockPos.getX());
         int k = Math.max(i, j = MathHelper.abs(pos.getZ() - blockPos.getZ()));
         return k <= this.getSpawnProtectionRadius();
@@ -495,7 +495,7 @@ implements DedicatedServer {
     @Override
     public String executeRconCommand(String command) {
         this.rconCommandOutput.clear();
-        this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), command));
+        this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createRconCommandSource(), command));
         return this.rconCommandOutput.asString();
     }
 

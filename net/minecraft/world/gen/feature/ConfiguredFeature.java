@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> {
     public static final ConfiguredFeature<?, ?> field_24832 = new ConfiguredFeature<DefaultFeatureConfig, Feature<DefaultFeatureConfig>>(Feature.NO_OP, DefaultFeatureConfig.DEFAULT);
-    public static final Codec<ConfiguredFeature<?, ?>> CODEC = Registry.FEATURE.dispatch("name", configuredFeature -> configuredFeature.feature, Feature::method_28627).withDefault(field_24832);
+    public static final Codec<ConfiguredFeature<?, ?>> CODEC = Registry.FEATURE.dispatch("name", configuredFeature -> configuredFeature.feature, Feature::getCodec).withDefault(field_24832);
     public static final Logger LOGGER = LogManager.getLogger();
     public final F feature;
     public final FC config;

@@ -37,7 +37,7 @@ public class TexturedModel {
     public static final Factory TEMPLATE_SEAGRASS = TexturedModel.makeFactory(Texture::texture, Models.TEMPLATE_SEAGRASS);
     public static final Factory END_FOR_TOP_CUBE_COLUMN = TexturedModel.makeFactory(Texture::sideAndEndForTop, Models.CUBE_COLUMN);
     public static final Factory END_FOR_TOP_CUBE_COLUMN_HORIZONTAL = TexturedModel.makeFactory(Texture::sideAndEndForTop, Models.CUBE_COLUMN_HORIZONTAL);
-    public static final Factory WALL_CUBE_BUTTOM_TOP = TexturedModel.makeFactory(Texture::wallSideTopBottom, Models.CUBE_BOTTOM_TOP);
+    public static final Factory WALL_CUBE_BOTTOM_TOP = TexturedModel.makeFactory(Texture::wallSideTopBottom, Models.CUBE_BOTTOM_TOP);
     public static final Factory field_23959 = TexturedModel.makeFactory(Texture::method_27168, Models.CUBE_COLUMN);
     private final Texture texture;
     private final Model model;

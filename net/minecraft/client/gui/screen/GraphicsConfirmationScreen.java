@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
@@ -15,40 +15,40 @@ import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
-public class class_5405
+public class GraphicsConfirmationScreen
 extends Screen {
-    private final StringRenderable field_25675;
-    private final ImmutableList<class_5406> field_25676;
-    private List<StringRenderable> field_25677;
+    private final StringRenderable message;
+    private final ImmutableList<ChoiceButton> choiceButtons;
+    private List<StringRenderable> lines;
     private int field_25678;
     private int field_25679;
 
-    protected class_5405(Text text, List<StringRenderable> list, ImmutableList<class_5406> immutableList) {
-        super(text);
-        this.field_25675 = StringRenderable.concat(list);
-        this.field_25676 = immutableList;
+    protected GraphicsConfirmationScreen(Text title, List<StringRenderable> messageParts, ImmutableList<ChoiceButton> choiceButtons) {
+        super(title);
+        this.message = StringRenderable.concat(messageParts);
+        this.choiceButtons = choiceButtons;
     }
 
     @Override
     public String getNarrationMessage() {
-        return super.getNarrationMessage() + ". " + this.field_25675.getString();
+        return super.getNarrationMessage() + ". " + this.message.getString();
     }
 
     @Override
     public void init(MinecraftClient client, int width, int height) {
         super.init(client, width, height);
-        for (class_5406 lv : this.field_25676) {
-            this.field_25679 = Math.max(this.field_25679, 20 + this.textRenderer.getWidth(lv.field_25680) + 20);
+        for (ChoiceButton choiceButton : this.choiceButtons) {
+            this.field_25679 = Math.max(this.field_25679, 20 + this.textRenderer.getWidth(choiceButton.message) + 20);
         }
         int i = 5 + this.field_25679 + 5;
-        int j = i * this.field_25676.size();
-        this.field_25677 = this.textRenderer.wrapLines(this.field_25675, j);
-        int k = this.field_25677.size() * this.textRenderer.fontHeight;
+        int j = i * this.choiceButtons.size();
+        this.lines = this.textRenderer.wrapLines(this.message, j);
+        int k = this.lines.size() * this.textRenderer.fontHeight;
         this.field_25678 = (int)((double)height / 2.0 - (double)k / 2.0);
         int l = this.field_25678 + k + this.textRenderer.fontHeight * 2;
         int m = (int)((double)width / 2.0 - (double)j / 2.0);
-        for (class_5406 lv2 : this.field_25676) {
-            this.addButton(new ButtonWidget(m, l, this.field_25679, 20, lv2.field_25680, lv2.field_25681));
+        for (ChoiceButton choiceButton2 : this.choiceButtons) {
+            this.addButton(new ButtonWidget(m, l, this.field_25679, 20, choiceButton2.message, choiceButton2.pressAction));
             m += i;
         }
     }
@@ -58,7 +58,7 @@ extends Screen {
         this.renderBackgroundTexture(0);
         this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.field_25678 - this.textRenderer.fontHeight * 2, -1);
         int i = this.field_25678;
-        for (StringRenderable stringRenderable : this.field_25677) {
+        for (StringRenderable stringRenderable : this.lines) {
             this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, -1);
             i += this.textRenderer.fontHeight;
         }
@@ -71,13 +71,13 @@ extends Screen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static final class class_5406 {
-        private final Text field_25680;
-        private final ButtonWidget.PressAction field_25681;
+    public static final class ChoiceButton {
+        private final Text message;
+        private final ButtonWidget.PressAction pressAction;
 
-        public class_5406(Text text, ButtonWidget.PressAction pressAction) {
-            this.field_25680 = text;
-            this.field_25681 = pressAction;
+        public ChoiceButton(Text message, ButtonWidget.PressAction pressAction) {
+            this.message = message;
+            this.pressAction = pressAction;
         }
     }
 }

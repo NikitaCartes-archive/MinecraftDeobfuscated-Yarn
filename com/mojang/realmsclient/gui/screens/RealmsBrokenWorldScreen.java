@@ -44,7 +44,7 @@ import org.apache.logging.log4j.Logger;
 public class RealmsBrokenWorldScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Screen lastScreen;
+    private final Screen parent;
     private final RealmsMainScreen mainScreen;
     private RealmsServer field_20492;
     private final long serverId;
@@ -55,8 +55,8 @@ extends RealmsScreen {
     private final List<Integer> slotsThatHasBeenDownloaded = Lists.newArrayList();
     private int animTick;
 
-    public RealmsBrokenWorldScreen(Screen screen, RealmsMainScreen mainScreen, long serverId, boolean bl) {
-        this.lastScreen = screen;
+    public RealmsBrokenWorldScreen(Screen parent, RealmsMainScreen mainScreen, long serverId, boolean bl) {
+        this.parent = parent;
         this.mainScreen = mainScreen;
         this.serverId = serverId;
         this.field_24204 = bl ? new TranslatableText("mco.brokenworld.minigame.title") : new TranslatableText("mco.brokenworld.title");
@@ -90,7 +90,7 @@ extends RealmsScreen {
                     realmsResetWorldScreen.setResetTitle(I18n.translate("mco.create.world.reset.title", new Object[0]));
                     this.client.openScreen(realmsResetWorldScreen);
                 } else {
-                    this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new SwitchSlotTask(this.field_20492.id, i, this::method_25123)));
+                    this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.field_20492.id, i, this::method_25123)));
                 }
             }) : new ButtonWidget(this.getFramePositionX(i), RealmsBrokenWorldScreen.row(8), 80, 20, new TranslatableText("mco.brokenworld.download"), buttonWidget -> {
                 TranslatableText text = new TranslatableText("mco.configure.world.restore.download.question.line1");
@@ -165,7 +165,7 @@ extends RealmsScreen {
     }
 
     private void backButtonClicked() {
-        this.client.openScreen(this.lastScreen);
+        this.client.openScreen(this.parent);
     }
 
     private void fetchServerData(long worldId) {
@@ -176,7 +176,7 @@ extends RealmsScreen {
                 this.addButtons();
             } catch (RealmsServiceException realmsServiceException) {
                 LOGGER.error("Couldn't get own world");
-                this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(realmsServiceException.getMessage()), this.lastScreen));
+                this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(realmsServiceException.getMessage()), this.parent));
             }
         }).start();
     }
@@ -191,7 +191,7 @@ extends RealmsScreen {
                     this.mainScreen.newScreen().play(realmsClient.getOwnWorld(this.serverId), this);
                 } catch (RealmsServiceException realmsServiceException) {
                     LOGGER.error("Couldn't get own world");
-                    this.client.execute(() -> this.client.openScreen(this.lastScreen));
+                    this.client.execute(() -> this.client.openScreen(this.parent));
                 }
             }
         }).start();

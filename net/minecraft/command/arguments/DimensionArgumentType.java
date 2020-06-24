@@ -36,7 +36,7 @@ implements ArgumentType<Identifier> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         if (context.getSource() instanceof CommandSource) {
-            return CommandSource.suggestIdentifiers(((CommandSource)context.getSource()).method_29310().stream().map(RegistryKey::getValue), builder);
+            return CommandSource.suggestIdentifiers(((CommandSource)context.getSource()).getWorldKeys().stream().map(RegistryKey::getValue), builder);
         }
         return Suggestions.empty();
     }

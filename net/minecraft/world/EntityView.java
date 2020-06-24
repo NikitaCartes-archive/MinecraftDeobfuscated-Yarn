@@ -152,11 +152,11 @@ public interface EntityView {
         return list;
     }
 
-    default public <T extends LivingEntity> List<T> getTargets(Class<? extends T> entityClass, TargetPredicate targetPredicate, LivingEntity targettingEntity, Box box) {
+    default public <T extends LivingEntity> List<T> getTargets(Class<? extends T> entityClass, TargetPredicate targetPredicate, LivingEntity targetingEntity, Box box) {
         List<T> list = this.getEntities(entityClass, box, null);
         ArrayList<LivingEntity> list2 = Lists.newArrayList();
         for (LivingEntity livingEntity : list) {
-            if (!targetPredicate.test(targettingEntity, livingEntity)) continue;
+            if (!targetPredicate.test(targetingEntity, livingEntity)) continue;
             list2.add(livingEntity);
         }
         return list2;

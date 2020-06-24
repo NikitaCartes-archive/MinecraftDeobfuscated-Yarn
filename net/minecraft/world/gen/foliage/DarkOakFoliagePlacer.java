@@ -23,7 +23,7 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected FoliagePlacerType<?> method_28843() {
+    protected FoliagePlacerType<?> getType() {
         return FoliagePlacerType.DARK_OAK_FOLIAGE_PLACER;
     }
 

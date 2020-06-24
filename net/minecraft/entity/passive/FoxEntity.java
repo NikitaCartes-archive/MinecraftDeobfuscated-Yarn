@@ -143,7 +143,7 @@ extends AnimalEntity {
         this.followFishGoal = new FollowTargetGoal<FishEntity>(this, FishEntity.class, 20, false, false, livingEntity -> livingEntity instanceof SchoolingFishEntity);
         this.goalSelector.add(0, new FoxSwimGoal());
         this.goalSelector.add(1, new StopWanderingGoal());
-        this.goalSelector.add(2, new EscapeWhenNotAggresiveGoal(2.2));
+        this.goalSelector.add(2, new EscapeWhenNotAggressiveGoal(2.2));
         this.goalSelector.add(3, new MateGoal(1.0));
         this.goalSelector.add(4, new FleeEntityGoal<PlayerEntity>(this, PlayerEntity.class, 16.0f, 1.6, 1.4, livingEntity -> NOTICEABLE_PLAYER_FILTER.test((Entity)livingEntity) && !this.canTrust(livingEntity.getUuid()) && !this.isAggressive()));
         this.goalSelector.add(4, new FleeEntityGoal<WolfEntity>(this, WolfEntity.class, 8.0f, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed() && !this.isAggressive()));
@@ -331,7 +331,7 @@ extends AnimalEntity {
         ListTag listTag = new ListTag();
         for (UUID uUID : list) {
             if (uUID == null) continue;
-            listTag.add(NbtHelper.fromUuidNew(uUID));
+            listTag.add(NbtHelper.fromUuid(uUID));
         }
         tag.put("Trusted", listTag);
         tag.putBoolean("Sleeping", this.isSleeping());
@@ -345,7 +345,7 @@ extends AnimalEntity {
         super.readCustomDataFromTag(tag);
         ListTag listTag = tag.getList("Trusted", 11);
         for (int i = 0; i < listTag.size(); ++i) {
-            this.addTrustedUuid(NbtHelper.toUuidNew(listTag.get(i)));
+            this.addTrustedUuid(NbtHelper.toUuid(listTag.get(i)));
         }
         this.setSleeping(tag.getBoolean("Sleeping"));
         this.setType(Type.byName(tag.getString("Type")));
@@ -828,9 +828,9 @@ extends AnimalEntity {
         }
     }
 
-    class EscapeWhenNotAggresiveGoal
+    class EscapeWhenNotAggressiveGoal
     extends EscapeDangerGoal {
-        public EscapeWhenNotAggresiveGoal(double speed) {
+        public EscapeWhenNotAggressiveGoal(double speed) {
             super(FoxEntity.this, speed);
         }
 
@@ -888,8 +888,8 @@ extends AnimalEntity {
     extends MoveToTargetPosGoal {
         protected int timer;
 
-        public EatSweetBerriesGoal(double speed, int rannge, int maxYDifference) {
-            super(FoxEntity.this, speed, rannge, maxYDifference);
+        public EatSweetBerriesGoal(double speed, int range, int maxYDifference) {
+            super(FoxEntity.this, speed, range, maxYDifference);
         }
 
         @Override

@@ -648,12 +648,12 @@ extends RealmsScreen {
         }
     }
 
-    private void drawRealmsLogo(MatrixStack matrixStack, int i, int j) {
+    private void drawRealmsLogo(MatrixStack matrices, int x, int y) {
         this.client.getTextureManager().bindTexture(REALMS);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-        DrawableHelper.drawTexture(matrixStack, i * 2, j * 2 - 5, 0.0f, 0.0f, 200, 50, 200, 50);
+        DrawableHelper.drawTexture(matrices, x * 2, y * 2 - 5, 0.0f, 0.0f, 200, 50, 200, 50);
         RenderSystem.popMatrix();
     }
 
@@ -673,9 +673,9 @@ extends RealmsScreen {
         return xm < (double)(i - 5) || xm > (double)(i + 315) || ym < (double)(j - 5) || ym > (double)(j + 171);
     }
 
-    private void drawPopup(MatrixStack matrixStack, int i, int j) {
-        int k = this.popupX0();
-        int l = this.popupY0();
+    private void drawPopup(MatrixStack matrices, int mouseX, int mouseY) {
+        int i = this.popupX0();
+        int j = this.popupY0();
         TranslatableText text = new TranslatableText("mco.selectServer.popup");
         List<StringRenderable> list = this.textRenderer.wrapLines(text, 100);
         if (!this.showingPopup) {
@@ -695,17 +695,17 @@ extends RealmsScreen {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 0.7f);
         RenderSystem.enableBlend();
         this.client.getTextureManager().bindTexture(DARKEN);
-        boolean m = false;
-        int n = 32;
-        DrawableHelper.drawTexture(matrixStack, 0, 32, 0.0f, 0.0f, this.width, this.height - 40 - 32, 310, 166);
+        boolean k = false;
+        int l = 32;
+        DrawableHelper.drawTexture(matrices, 0, 32, 0.0f, 0.0f, this.width, this.height - 40 - 32, 310, 166);
         RenderSystem.disableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(POPUP);
-        DrawableHelper.drawTexture(matrixStack, k, l, 0.0f, 0.0f, 310, 166, 310, 166);
+        DrawableHelper.drawTexture(matrices, i, j, 0.0f, 0.0f, 310, 166, 310, 166);
         if (!IMAGES.isEmpty()) {
             this.client.getTextureManager().bindTexture(IMAGES.get(this.carouselIndex));
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.drawTexture(matrixStack, k + 7, l + 7, 0.0f, 0.0f, 195, 152, 195, 152);
+            DrawableHelper.drawTexture(matrices, i + 7, j + 7, 0.0f, 0.0f, 195, 152, 195, 152);
             if (this.carouselTick % 95 < 5) {
                 if (!this.hasSwitchedCarouselImage) {
                     this.carouselIndex = (this.carouselIndex + 1) % IMAGES.size();
@@ -715,10 +715,10 @@ extends RealmsScreen {
                 this.hasSwitchedCarouselImage = false;
             }
         }
-        int o = 0;
+        int m = 0;
         for (StringRenderable stringRenderable : list) {
-            int p = l + 10 * ++o - 3;
-            this.textRenderer.draw(matrixStack, stringRenderable, (float)(this.width / 2 + 52), (float)p, 0x4C4C4C);
+            int n = j + 10 * ++m - 3;
+            this.textRenderer.draw(matrices, stringRenderable, (float)(this.width / 2 + 52), (float)n, 0x4C4C4C);
         }
     }
 
@@ -1208,21 +1208,21 @@ extends RealmsScreen {
             return true;
         }
 
-        private void renderTrialItem(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
-            int n = k + 8;
-            int o = 0;
+        private void renderTrialItem(MatrixStack matrices, int index, int x, int y, int mouseX, int mouseY) {
+            int i = y + 8;
+            int j = 0;
             String string = I18n.translate("mco.trial.message.line1", new Object[0]) + "\\n" + I18n.translate("mco.trial.message.line2", new Object[0]);
             boolean bl = false;
-            if (j <= l && l <= (int)RealmsMainScreen.this.realmSelectionList.getScrollAmount() && k <= m && m <= k + 32) {
+            if (x <= mouseX && mouseX <= (int)RealmsMainScreen.this.realmSelectionList.getScrollAmount() && y <= mouseY && mouseY <= y + 32) {
                 bl = true;
             }
-            int p = 0x7FFF7F;
+            int k = 0x7FFF7F;
             if (bl && !RealmsMainScreen.this.shouldShowPopup()) {
-                p = 6077788;
+                k = 6077788;
             }
             for (String string2 : string.split("\\\\n")) {
-                RealmsMainScreen.this.drawCenteredString(matrixStack, RealmsMainScreen.this.textRenderer, string2, RealmsMainScreen.this.width / 2, n + o, p);
-                o += 10;
+                RealmsMainScreen.this.drawCenteredString(matrices, RealmsMainScreen.this.textRenderer, string2, RealmsMainScreen.this.width / 2, i + j, k);
+                j += 10;
             }
         }
     }
@@ -1333,9 +1333,12 @@ extends RealmsScreen {
         @Override
         public void setSelected(@Nullable Entry entry) {
             super.setSelected(entry);
-            RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(this.children().indexOf(entry) - (this.field_25723 ? 1 : 0));
-            RealmsMainScreen.this.selectedServerId = realmsServer.id;
-            RealmsMainScreen.this.updateButtonStates(realmsServer);
+            int i = this.children().indexOf(entry);
+            if (!this.field_25723 || i > 0) {
+                RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(i - (this.field_25723 ? 1 : 0));
+                RealmsMainScreen.this.selectedServerId = realmsServer.id;
+                RealmsMainScreen.this.updateButtonStates(realmsServer);
+            }
         }
 
         @Override

@@ -39,7 +39,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.RabbitEntity;
@@ -103,7 +103,7 @@ extends TameableEntity {
     private float tailCurlAnimation;
     private float prevTailCurlAnimation;
     private float headDownAnimation;
-    private float prevHeadDownAniamtion;
+    private float prevHeadDownAnimation;
 
     public CatEntity(EntityType<? extends CatEntity> entityType, World world) {
         super((EntityType<? extends TameableEntity>)entityType, world);
@@ -126,7 +126,7 @@ extends TameableEntity {
         this.goalSelector.add(8, new PounceAtTargetGoal(this, 0.3f));
         this.goalSelector.add(9, new AttackGoal(this));
         this.goalSelector.add(10, new AnimalMateGoal(this, 0.8));
-        this.goalSelector.add(11, new WanderAroundFarGoal((MobEntityWithAi)this, 0.8, 1.0000001E-5f));
+        this.goalSelector.add(11, new WanderAroundFarGoal((PathAwareEntity)this, 0.8, 1.0000001E-5f));
         this.goalSelector.add(12, new LookAtEntityGoal(this, PlayerEntity.class, 10.0f));
         this.targetSelector.add(1, new FollowTargetIfTamedGoal<RabbitEntity>(this, RabbitEntity.class, false, null));
         this.targetSelector.add(1, new FollowTargetIfTamedGoal<TurtleEntity>(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
@@ -302,7 +302,7 @@ extends TameableEntity {
     }
 
     private void updateHeadDownAnimation() {
-        this.prevHeadDownAniamtion = this.headDownAnimation;
+        this.prevHeadDownAnimation = this.headDownAnimation;
         this.headDownAnimation = this.isHeadDown() ? Math.min(1.0f, this.headDownAnimation + 0.1f) : Math.max(0.0f, this.headDownAnimation - 0.13f);
     }
 
@@ -318,7 +318,7 @@ extends TameableEntity {
 
     @Environment(value=EnvType.CLIENT)
     public float getHeadDownAnimation(float tickDelta) {
-        return MathHelper.lerp(tickDelta, this.prevHeadDownAniamtion, this.headDownAnimation);
+        return MathHelper.lerp(tickDelta, this.prevHeadDownAnimation, this.headDownAnimation);
     }
 
     @Override
@@ -577,7 +577,7 @@ extends TameableEntity {
         private final CatEntity cat;
 
         public TemptGoal(CatEntity cat, double speed, Ingredient food, boolean canBeScared) {
-            super((MobEntityWithAi)cat, speed, food, canBeScared);
+            super((PathAwareEntity)cat, speed, food, canBeScared);
             this.cat = cat;
         }
 

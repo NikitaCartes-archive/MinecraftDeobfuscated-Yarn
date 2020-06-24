@@ -109,22 +109,22 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<NopeDecoratorConfig> END_ISLAND = Decorator.register("end_island", new EndIslandDecorator(NopeDecoratorConfig.field_24891));
     public static final Decorator<NopeDecoratorConfig> CHORUS_PLANT = Decorator.register("chorus_plant", new ChorusPlantDecorator(NopeDecoratorConfig.field_24891));
     public static final Decorator<NopeDecoratorConfig> END_GATEWAY = Decorator.register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig.field_24891));
-    private final Codec<ConfiguredDecorator<DC>> field_24983;
+    private final Codec<ConfiguredDecorator<DC>> codec;
 
     private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String registryName, G decorator) {
         return (G)Registry.register(Registry.DECORATOR, registryName, decorator);
     }
 
-    public Decorator(Codec<DC> codec) {
-        this.field_24983 = ((MapCodec)codec.fieldOf("config")).xmap(decoratorConfig -> new ConfiguredDecorator<DecoratorConfig>(this, (DecoratorConfig)decoratorConfig), configuredDecorator -> configuredDecorator.config).codec();
+    public Decorator(Codec<DC> configCodec) {
+        this.codec = ((MapCodec)configCodec.fieldOf("config")).xmap(decoratorConfig -> new ConfiguredDecorator<DecoratorConfig>(this, (DecoratorConfig)decoratorConfig), configuredDecorator -> configuredDecorator.config).codec();
     }
 
-    public ConfiguredDecorator<DC> configure(DC decoratorConfig) {
-        return new ConfiguredDecorator<DC>(this, decoratorConfig);
+    public ConfiguredDecorator<DC> configure(DC config) {
+        return new ConfiguredDecorator<DC>(this, config);
     }
 
-    public Codec<ConfiguredDecorator<DC>> method_28928() {
-        return this.field_24983;
+    public Codec<ConfiguredDecorator<DC>> getCodec() {
+        return this.codec;
     }
 
     protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {

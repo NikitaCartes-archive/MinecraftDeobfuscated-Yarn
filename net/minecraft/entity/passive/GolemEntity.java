@@ -5,15 +5,15 @@ package net.minecraft.entity.passive;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class GolemEntity
-extends MobEntityWithAi {
+extends PathAwareEntity {
     protected GolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
-        super((EntityType<? extends MobEntityWithAi>)entityType, world);
+        super((EntityType<? extends PathAwareEntity>)entityType, world);
     }
 
     @Override

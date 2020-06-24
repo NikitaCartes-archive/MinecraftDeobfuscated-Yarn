@@ -30,7 +30,7 @@ implements ArgumentType<Integer> {
         return new ScoreboardSlotArgumentType();
     }
 
-    public static int getScorebordSlot(CommandContext<ServerCommandSource> context, String name) {
+    public static int getScoreboardSlot(CommandContext<ServerCommandSource> context, String name) {
         return context.getArgument(name, Integer.class);
     }
 

@@ -11,13 +11,13 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class GoToRememberedPositionTask<T>
-extends Task<MobEntityWithAi> {
+extends Task<PathAwareEntity> {
     private final MemoryModuleType<T> entityMemory;
     private final float speed;
     private final int range;
@@ -40,36 +40,36 @@ extends Task<MobEntityWithAi> {
     }
 
     @Override
-    protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-        if (this.isWalkTargetPresentAndFar(mobEntityWithAi)) {
+    protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+        if (this.isWalkTargetPresentAndFar(pathAwareEntity)) {
             return false;
         }
-        return mobEntityWithAi.getPos().isInRange(this.getPos(mobEntityWithAi), this.range);
+        return pathAwareEntity.getPos().isInRange(this.getPos(pathAwareEntity), this.range);
     }
 
-    private Vec3d getPos(MobEntityWithAi entity) {
+    private Vec3d getPos(PathAwareEntity entity) {
         return this.posRetriever.apply(entity.getBrain().getOptionalMemory(this.entityMemory).get());
     }
 
-    private boolean isWalkTargetPresentAndFar(MobEntityWithAi mobEntityWithAi) {
+    private boolean isWalkTargetPresentAndFar(PathAwareEntity pathAwareEntity) {
         Vec3d vec3d2;
-        if (!mobEntityWithAi.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
+        if (!pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
             return false;
         }
-        WalkTarget walkTarget = mobEntityWithAi.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+        WalkTarget walkTarget = pathAwareEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
         if (walkTarget.getSpeed() != this.speed) {
             return false;
         }
-        Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(mobEntityWithAi.getPos());
-        return vec3d.dotProduct(vec3d2 = this.getPos(mobEntityWithAi).subtract(mobEntityWithAi.getPos())) < 0.0;
+        Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(pathAwareEntity.getPos());
+        return vec3d.dotProduct(vec3d2 = this.getPos(pathAwareEntity).subtract(pathAwareEntity.getPos())) < 0.0;
     }
 
     @Override
-    protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-        GoToRememberedPositionTask.setWalkTarget(mobEntityWithAi, this.getPos(mobEntityWithAi), this.speed);
+    protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+        GoToRememberedPositionTask.setWalkTarget(pathAwareEntity, this.getPos(pathAwareEntity), this.speed);
     }
 
-    private static void setWalkTarget(MobEntityWithAi entity, Vec3d pos, float speed) {
+    private static void setWalkTarget(PathAwareEntity entity, Vec3d pos, float speed) {
         for (int i = 0; i < 10; ++i) {
             Vec3d vec3d = TargetFinder.findGroundTargetAwayFrom(entity, 16, 7, pos);
             if (vec3d == null) continue;

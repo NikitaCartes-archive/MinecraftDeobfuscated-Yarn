@@ -21,10 +21,10 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class RealmsParentalConsentScreen
 extends RealmsScreen {
-    private final Screen field_22701;
+    private final Screen parent;
 
-    public RealmsParentalConsentScreen(Screen screen) {
-        this.field_22701 = screen;
+    public RealmsParentalConsentScreen(Screen parent) {
+        this.parent = parent;
     }
 
     @Override
@@ -37,7 +37,7 @@ extends RealmsScreen {
         int j = (int)((double)this.textRenderer.getWidth(text3) * 1.2);
         this.addButton(new ButtonWidget(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20, text3, buttonWidget -> Util.getOperatingSystem().open("https://minecraft.net/privacy/gdpr/")));
         this.addButton(new ButtonWidget(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20, text, buttonWidget -> Util.getOperatingSystem().open("https://minecraft.net/update-account")));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, RealmsParentalConsentScreen.row(13), i, 20, text2, buttonWidget -> this.client.openScreen(this.field_22701)));
+        this.addButton(new ButtonWidget(this.width / 2 + 5, RealmsParentalConsentScreen.row(13), i, 20, text2, buttonWidget -> this.client.openScreen(this.parent)));
     }
 
     @Override

@@ -205,7 +205,7 @@ implements Tickable {
         BlockState blockState = this.getCachedState();
         while (iterator.hasNext()) {
             Bee bee = iterator.next();
-            if (bee.ticksInHive > bee.minOccupationTIcks) {
+            if (bee.ticksInHive > bee.minOccupationTicks) {
                 BeeState beeState;
                 BeeState beeState2 = beeState = bee.entityData.getBoolean("HasNectar") ? BeeState.HONEY_DELIVERED : BeeState.BEE_RELEASED;
                 if (this.releaseBee(blockState, bee, null, beeState)) {
@@ -265,7 +265,7 @@ implements Tickable {
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.put("EntityData", bee.entityData);
             compoundTag.putInt("TicksInHive", bee.ticksInHive);
-            compoundTag.putInt("MinOccupationTicks", bee.minOccupationTIcks);
+            compoundTag.putInt("MinOccupationTicks", bee.minOccupationTicks);
             listTag.add(compoundTag);
         }
         return listTag;
@@ -274,13 +274,13 @@ implements Tickable {
     static class Bee {
         private final CompoundTag entityData;
         private int ticksInHive;
-        private final int minOccupationTIcks;
+        private final int minOccupationTicks;
 
         private Bee(CompoundTag entityData, int ticksInHive, int minOccupationTicks) {
             entityData.remove("UUID");
             this.entityData = entityData;
             this.ticksInHive = ticksInHive;
-            this.minOccupationTIcks = minOccupationTicks;
+            this.minOccupationTicks = minOccupationTicks;
         }
     }
 

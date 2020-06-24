@@ -30,7 +30,7 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -130,9 +130,9 @@ implements RangedAttackMob {
     @Override
     public void tickRiding() {
         super.tickRiding();
-        if (this.getVehicle() instanceof MobEntityWithAi) {
-            MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)this.getVehicle();
-            this.bodyYaw = mobEntityWithAi.bodyYaw;
+        if (this.getVehicle() instanceof PathAwareEntity) {
+            PathAwareEntity pathAwareEntity = (PathAwareEntity)this.getVehicle();
+            this.bodyYaw = pathAwareEntity.bodyYaw;
         }
     }
 

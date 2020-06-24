@@ -83,7 +83,7 @@ extends ChunkManager {
         this.mainThreadExecutor = new MainThreadExecutor(serverWorld);
         this.chunkGenerator = chunkGenerator;
         this.serverThread = Thread.currentThread();
-        File file = session.method_27424(serverWorld.getRegistryKey());
+        File file = session.getWorldDirectory(serverWorld.getRegistryKey());
         File file2 = new File(file, "data");
         file2.mkdirs();
         this.persistentStateManager = new PersistentStateManager(file2, dataFixer);

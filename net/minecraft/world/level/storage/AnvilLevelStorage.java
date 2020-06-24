@@ -43,9 +43,9 @@ public class AnvilLevelStorage {
         ArrayList<File> list = Lists.newArrayList();
         ArrayList<File> list2 = Lists.newArrayList();
         ArrayList<File> list3 = Lists.newArrayList();
-        File file = session.method_27424(World.OVERWORLD);
-        File file2 = session.method_27424(World.NETHER);
-        File file3 = session.method_27424(World.END);
+        File file = session.getWorldDirectory(World.OVERWORLD);
+        File file2 = session.getWorldDirectory(World.NETHER);
+        File file3 = session.getWorldDirectory(World.END);
         LOGGER.info("Scanning folders...");
         AnvilLevelStorage.addRegionFiles(file, list);
         if (file2.exists()) {

@@ -245,13 +245,13 @@ SaveProperties {
     }
 
     @Override
-    public void method_29034(long l) {
-        this.time = l;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     @Override
-    public void method_29035(long l) {
-        this.timeOfDay = l;
+    public void setTimeOfDay(long time) {
+        this.timeOfDay = time;
     }
 
     @Override

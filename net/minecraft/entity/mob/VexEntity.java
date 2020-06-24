@@ -26,7 +26,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
@@ -201,7 +201,7 @@ extends HostileEntity {
     extends TrackTargetGoal {
         private final TargetPredicate TRACK_OWNER_PREDICATE;
 
-        public TrackOwnerTargetGoal(MobEntityWithAi mob) {
+        public TrackOwnerTargetGoal(PathAwareEntity mob) {
             super(mob, false);
             this.TRACK_OWNER_PREDICATE = new TargetPredicate().includeHidden().ignoreDistanceScalingFactor();
         }

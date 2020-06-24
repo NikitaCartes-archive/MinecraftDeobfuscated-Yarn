@@ -29,7 +29,7 @@ extends ScreenHandler {
     @Environment(value=EnvType.CLIENT)
     private int levelProgress;
     @Environment(value=EnvType.CLIENT)
-    private boolean levelled;
+    private boolean leveled;
     @Environment(value=EnvType.CLIENT)
     private boolean canRefreshTrades;
 
@@ -57,7 +57,7 @@ extends ScreenHandler {
 
     @Environment(value=EnvType.CLIENT)
     public void setCanLevel(boolean canLevel) {
-        this.levelled = canLevel;
+        this.leveled = canLevel;
     }
 
     @Override
@@ -96,8 +96,8 @@ extends ScreenHandler {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setLevelProgress(int porgress) {
-        this.levelProgress = porgress;
+    public void setLevelProgress(int progress) {
+        this.levelProgress = progress;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -230,8 +230,8 @@ extends ScreenHandler {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isLevelled() {
-        return this.levelled;
+    public boolean isLeveled() {
+        return this.leveled;
     }
 }
 

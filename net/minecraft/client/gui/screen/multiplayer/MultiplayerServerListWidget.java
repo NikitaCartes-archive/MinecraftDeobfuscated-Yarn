@@ -83,8 +83,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Override
-    protected void moveSelection(EntryListWidget.class_5403 arg) {
-        this.method_30013(arg, entry -> !(entry instanceof ScanningEntry));
+    protected void moveSelection(EntryListWidget.MoveDirection direction) {
+        this.moveSelectionIf(direction, entry -> !(entry instanceof ScanningEntry));
     }
 
     public void setServers(ServerList servers) {

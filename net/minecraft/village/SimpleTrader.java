@@ -74,7 +74,7 @@ implements Trader {
     }
 
     @Override
-    public boolean isLevelledTrader() {
+    public boolean isLeveledTrader() {
         return true;
     }
 

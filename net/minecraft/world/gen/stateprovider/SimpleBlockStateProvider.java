@@ -13,7 +13,7 @@ import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
 public class SimpleBlockStateProvider
 extends BlockStateProvider {
-    public static final Codec<SimpleBlockStateProvider> field_24945 = ((MapCodec)BlockState.CODEC.fieldOf("state")).xmap(SimpleBlockStateProvider::new, simpleBlockStateProvider -> simpleBlockStateProvider.state).codec();
+    public static final Codec<SimpleBlockStateProvider> CODEC = ((MapCodec)BlockState.CODEC.fieldOf("state")).xmap(SimpleBlockStateProvider::new, simpleBlockStateProvider -> simpleBlockStateProvider.state).codec();
     private final BlockState state;
 
     public SimpleBlockStateProvider(BlockState blockState) {
@@ -21,7 +21,7 @@ extends BlockStateProvider {
     }
 
     @Override
-    protected BlockStateProviderType<?> method_28862() {
+    protected BlockStateProviderType<?> getType() {
         return BlockStateProviderType.SIMPLE_STATE_PROVIDER;
     }
 

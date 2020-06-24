@@ -15,9 +15,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public abstract class MobEntityWithAi
+public abstract class PathAwareEntity
 extends MobEntity {
-    protected MobEntityWithAi(EntityType<? extends MobEntityWithAi> entityType, World world) {
+    protected PathAwareEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super((EntityType<? extends MobEntity>)entityType, world);
     }
 

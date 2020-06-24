@@ -21,8 +21,8 @@ extends Goal {
     private float xOffset;
     private float zOffset;
 
-    public DoorInteractGoal(MobEntity mobEntity) {
-        this.mob = mobEntity;
+    public DoorInteractGoal(MobEntity mob) {
+        this.mob = mob;
         if (!this.method_30146()) {
             throw new IllegalArgumentException("Unsupported mob type for DoorInteractGoal");
         }

@@ -8,7 +8,7 @@ import java.util.Random;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -18,12 +18,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class GoToVillageGoal
 extends Goal {
-    private final MobEntityWithAi mob;
+    private final PathAwareEntity mob;
     private final int searchRange;
     @Nullable
     private BlockPos targetPosition;
 
-    public GoToVillageGoal(MobEntityWithAi mob, int searchRange) {
+    public GoToVillageGoal(PathAwareEntity mob, int searchRange) {
         this.mob = mob;
         this.searchRange = searchRange;
         this.setControls(EnumSet.of(Goal.Control.MOVE));

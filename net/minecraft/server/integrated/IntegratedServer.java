@@ -124,11 +124,11 @@ extends MinecraftServer {
     }
 
     @Override
-    public CrashReport populateCrashReport(CrashReport crashReport) {
-        crashReport = super.populateCrashReport(crashReport);
-        crashReport.getSystemDetailsSection().add("Type", "Integrated Server (map_client.txt)");
-        crashReport.getSystemDetailsSection().add("Is Modded", () -> this.getModdedStatusMessage().orElse("Probably not. Jar signature remains and both client + server brands are untouched."));
-        return crashReport;
+    public CrashReport populateCrashReport(CrashReport report) {
+        report = super.populateCrashReport(report);
+        report.getSystemDetailsSection().add("Type", "Integrated Server (map_client.txt)");
+        report.getSystemDetailsSection().add("Is Modded", () -> this.getModdedStatusMessage().orElse("Probably not. Jar signature remains and both client + server brands are untouched."));
+        return report;
     }
 
     @Override

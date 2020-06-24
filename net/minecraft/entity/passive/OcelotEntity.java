@@ -30,7 +30,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -103,7 +103,7 @@ extends AnimalEntity {
         this.goalSelector.add(7, new PounceAtTargetGoal(this, 0.3f));
         this.goalSelector.add(8, new AttackGoal(this));
         this.goalSelector.add(9, new AnimalMateGoal(this, 0.8));
-        this.goalSelector.add(10, new WanderAroundFarGoal((MobEntityWithAi)this, 0.8, 1.0000001E-5f));
+        this.goalSelector.add(10, new WanderAroundFarGoal((PathAwareEntity)this, 0.8, 1.0000001E-5f));
         this.goalSelector.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 10.0f));
         this.targetSelector.add(1, new FollowTargetGoal<ChickenEntity>((MobEntity)this, ChickenEntity.class, false));
         this.targetSelector.add(1, new FollowTargetGoal<TurtleEntity>(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
@@ -291,7 +291,7 @@ extends AnimalEntity {
         private final OcelotEntity ocelot;
 
         public OcelotTemptGoal(OcelotEntity ocelot, double speed, Ingredient food, boolean canBeScared) {
-            super((MobEntityWithAi)ocelot, speed, food, canBeScared);
+            super((PathAwareEntity)ocelot, speed, food, canBeScared);
             this.ocelot = ocelot;
         }
 

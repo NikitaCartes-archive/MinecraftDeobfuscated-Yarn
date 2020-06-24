@@ -29,8 +29,8 @@ public class EmptyChunk
 extends WorldChunk {
     private static final Biome[] BIOMES = Util.make(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
 
-    public EmptyChunk(World world, ChunkPos chunkPos) {
-        super(world, chunkPos, new BiomeArray(BIOMES));
+    public EmptyChunk(World world, ChunkPos pos) {
+        super(world, pos, new BiomeArray(BIOMES));
     }
 
     @Override
@@ -99,7 +99,7 @@ extends WorldChunk {
     }
 
     @Override
-    public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> result, Predicate<? super T> predicate) {
+    public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> entityList, Predicate<? super T> predicate) {
     }
 
     @Override
@@ -108,7 +108,7 @@ extends WorldChunk {
     }
 
     @Override
-    public boolean method_12228(int i, int j) {
+    public boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
         return true;
     }
 

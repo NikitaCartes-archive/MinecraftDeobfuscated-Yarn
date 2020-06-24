@@ -15,17 +15,17 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class RealmsClientOutdatedScreen
 extends RealmsScreen {
-    private final Screen lastScreen;
+    private final Screen parent;
     private final boolean outdated;
 
-    public RealmsClientOutdatedScreen(Screen screen, boolean outdated) {
-        this.lastScreen = screen;
+    public RealmsClientOutdatedScreen(Screen parent, boolean outdated) {
+        this.parent = parent;
         this.outdated = outdated;
     }
 
     @Override
     public void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 100, RealmsClientOutdatedScreen.row(12), 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, RealmsClientOutdatedScreen.row(12), 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
     }
 
     @Override
@@ -44,7 +44,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 257 || keyCode == 335 || keyCode == 256) {
-            this.client.openScreen(this.lastScreen);
+            this.client.openScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

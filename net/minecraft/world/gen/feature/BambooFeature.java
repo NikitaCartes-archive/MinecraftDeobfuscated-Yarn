@@ -46,7 +46,7 @@ extends Feature<ProbabilityConfig> {
                             int n = l - blockPos.getX();
                             if (n * n + (o = m - blockPos.getZ()) * o > k * k) continue;
                             mutable2.set(l, serverWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
-                            if (!BambooFeature.isDirt(serverWorldAccess.getBlockState(mutable2).getBlock())) continue;
+                            if (!BambooFeature.isSoil(serverWorldAccess.getBlockState(mutable2).getBlock())) continue;
                             serverWorldAccess.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
                         }
                     }

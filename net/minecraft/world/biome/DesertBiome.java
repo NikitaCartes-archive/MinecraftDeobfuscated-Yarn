@@ -20,7 +20,7 @@ extends Biome {
         this.addStructureFeature(DefaultBiomeFeatures.PILLAGER_OUTPOST);
         this.addStructureFeature(DefaultBiomeFeatures.DESERT_PYRAMID);
         DefaultBiomeFeatures.addFossils(this);
-        DefaultBiomeFeatures.method_28440(this);
+        DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
         this.addStructureFeature(DefaultBiomeFeatures.DESERT_RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDesertLakes(this);

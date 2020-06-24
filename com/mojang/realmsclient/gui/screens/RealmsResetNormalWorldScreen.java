@@ -19,7 +19,7 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class RealmsResetNormalWorldScreen
 extends RealmsScreen {
-    private final RealmsResetWorldScreen lastScreen;
+    private final RealmsResetWorldScreen parent;
     private RealmsLabel titleLabel;
     private TextFieldWidget seedEdit;
     private Boolean generateStructures = true;
@@ -27,8 +27,8 @@ extends RealmsScreen {
     private Text[] field_24205 = new Text[]{new TranslatableText("generator.default"), new TranslatableText("generator.flat"), new TranslatableText("generator.large_biomes"), new TranslatableText("generator.amplified")};
     private Text field_24206;
 
-    public RealmsResetNormalWorldScreen(RealmsResetWorldScreen realmsResetWorldScreen, Text text) {
-        this.lastScreen = realmsResetWorldScreen;
+    public RealmsResetNormalWorldScreen(RealmsResetWorldScreen parent, Text text) {
+        this.parent = parent;
         this.field_24206 = text;
     }
 
@@ -55,8 +55,8 @@ extends RealmsScreen {
             this.generateStructures = this.generateStructures == false;
             buttonWidget.setMessage(this.method_27459());
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(12), 97, 20, this.field_24206, buttonWidget -> this.lastScreen.resetWorld(new RealmsResetWorldScreen.ResetWorldInfo(this.seedEdit.getText(), this.levelTypeIndex, this.generateStructures))));
-        this.addButton(new ButtonWidget(this.width / 2 + 8, RealmsResetNormalWorldScreen.row(12), 97, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen)));
+        this.addButton(new ButtonWidget(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(12), 97, 20, this.field_24206, buttonWidget -> this.parent.resetWorld(new RealmsResetWorldScreen.ResetWorldInfo(this.seedEdit.getText(), this.levelTypeIndex, this.generateStructures))));
+        this.addButton(new ButtonWidget(this.width / 2 + 8, RealmsResetNormalWorldScreen.row(12), 97, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
         this.narrateLabels();
     }
 
@@ -68,7 +68,7 @@ extends RealmsScreen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 256) {
-            this.client.openScreen(this.lastScreen);
+            this.client.openScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

@@ -211,7 +211,7 @@ AutoCloseable {
     private boolean shouldCaptureFrustum;
     @Nullable
     private Frustum capturedFrustum;
-    private final Vector4f[] capturedFrustrumOrientation = new Vector4f[8];
+    private final Vector4f[] capturedFrustumOrientation = new Vector4f[8];
     private final Vector3d capturedFrustumPosition = new Vector3d(0.0, 0.0, 0.0);
     private double lastTranslucentSortX;
     private double lastTranslucentSortY;
@@ -811,17 +811,17 @@ AutoCloseable {
         this.capturedFrustumPosition.x = x;
         this.capturedFrustumPosition.y = y;
         this.capturedFrustumPosition.z = z;
-        this.capturedFrustrumOrientation[0] = new Vector4f(-1.0f, -1.0f, -1.0f, 1.0f);
-        this.capturedFrustrumOrientation[1] = new Vector4f(1.0f, -1.0f, -1.0f, 1.0f);
-        this.capturedFrustrumOrientation[2] = new Vector4f(1.0f, 1.0f, -1.0f, 1.0f);
-        this.capturedFrustrumOrientation[3] = new Vector4f(-1.0f, 1.0f, -1.0f, 1.0f);
-        this.capturedFrustrumOrientation[4] = new Vector4f(-1.0f, -1.0f, 1.0f, 1.0f);
-        this.capturedFrustrumOrientation[5] = new Vector4f(1.0f, -1.0f, 1.0f, 1.0f);
-        this.capturedFrustrumOrientation[6] = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.capturedFrustrumOrientation[7] = new Vector4f(-1.0f, 1.0f, 1.0f, 1.0f);
+        this.capturedFrustumOrientation[0] = new Vector4f(-1.0f, -1.0f, -1.0f, 1.0f);
+        this.capturedFrustumOrientation[1] = new Vector4f(1.0f, -1.0f, -1.0f, 1.0f);
+        this.capturedFrustumOrientation[2] = new Vector4f(1.0f, 1.0f, -1.0f, 1.0f);
+        this.capturedFrustumOrientation[3] = new Vector4f(-1.0f, 1.0f, -1.0f, 1.0f);
+        this.capturedFrustumOrientation[4] = new Vector4f(-1.0f, -1.0f, 1.0f, 1.0f);
+        this.capturedFrustumOrientation[5] = new Vector4f(1.0f, -1.0f, 1.0f, 1.0f);
+        this.capturedFrustumOrientation[6] = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+        this.capturedFrustumOrientation[7] = new Vector4f(-1.0f, 1.0f, 1.0f, 1.0f);
         for (int i = 0; i < 8; ++i) {
-            this.capturedFrustrumOrientation[i].transform(matrix4f2);
-            this.capturedFrustrumOrientation[i].normalizeProjectiveCoordinates();
+            this.capturedFrustumOrientation[i].transform(matrix4f2);
+            this.capturedFrustumOrientation[i].normalizeProjectiveCoordinates();
         }
     }
 
@@ -1147,7 +1147,7 @@ AutoCloseable {
     private void renderChunkDebugInfo(Camera camera) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        if (this.client.debugChunkInfo || this.client.debugChunkOcculsion) {
+        if (this.client.debugChunkInfo || this.client.debugChunkOcclusion) {
             double d = camera.getPos().getX();
             double e = camera.getPos().getY();
             double f = camera.getPos().getZ();
@@ -1177,7 +1177,7 @@ AutoCloseable {
                     tessellator.draw();
                     RenderSystem.lineWidth(1.0f);
                 }
-                if (this.client.debugChunkOcculsion && !builtChunk.getData().isEmpty()) {
+                if (this.client.debugChunkOcclusion && !builtChunk.getData().isEmpty()) {
                     bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
                     RenderSystem.lineWidth(10.0f);
                     i = 0;
@@ -1285,15 +1285,15 @@ AutoCloseable {
     }
 
     private void method_22984(VertexConsumer vertexConsumer, int i) {
-        vertexConsumer.vertex(this.capturedFrustrumOrientation[i].getX(), this.capturedFrustrumOrientation[i].getY(), this.capturedFrustrumOrientation[i].getZ()).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[i].getX(), this.capturedFrustumOrientation[i].getY(), this.capturedFrustumOrientation[i].getZ()).next();
     }
 
     private void method_22985(VertexConsumer vertexConsumer, int i, int j, int k, int l, int m, int n, int o) {
         float f = 0.25f;
-        vertexConsumer.vertex(this.capturedFrustrumOrientation[i].getX(), this.capturedFrustrumOrientation[i].getY(), this.capturedFrustrumOrientation[i].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
-        vertexConsumer.vertex(this.capturedFrustrumOrientation[j].getX(), this.capturedFrustrumOrientation[j].getY(), this.capturedFrustrumOrientation[j].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
-        vertexConsumer.vertex(this.capturedFrustrumOrientation[k].getX(), this.capturedFrustrumOrientation[k].getY(), this.capturedFrustrumOrientation[k].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
-        vertexConsumer.vertex(this.capturedFrustrumOrientation[l].getX(), this.capturedFrustrumOrientation[l].getY(), this.capturedFrustrumOrientation[l].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[i].getX(), this.capturedFrustumOrientation[i].getY(), this.capturedFrustumOrientation[i].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[j].getX(), this.capturedFrustumOrientation[j].getY(), this.capturedFrustumOrientation[j].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[k].getX(), this.capturedFrustumOrientation[k].getY(), this.capturedFrustumOrientation[k].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[l].getX(), this.capturedFrustumOrientation[l].getY(), this.capturedFrustumOrientation[l].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
     }
 
     public void tick() {

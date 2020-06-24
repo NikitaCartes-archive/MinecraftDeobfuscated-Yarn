@@ -22,7 +22,7 @@ extends Feature<ForestRockFeatureConfig> {
     @Override
     public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ForestRockFeatureConfig forestRockFeatureConfig) {
         Block block;
-        while (blockPos.getY() > 3 && (serverWorldAccess.isAir(blockPos.down()) || !ForestRockFeature.isDirt(block = serverWorldAccess.getBlockState(blockPos.down()).getBlock()) && !ForestRockFeature.isStone(block))) {
+        while (blockPos.getY() > 3 && (serverWorldAccess.isAir(blockPos.down()) || !ForestRockFeature.isSoil(block = serverWorldAccess.getBlockState(blockPos.down()).getBlock()) && !ForestRockFeature.isStone(block))) {
             blockPos = blockPos.down();
         }
         if (blockPos.getY() <= 3) {

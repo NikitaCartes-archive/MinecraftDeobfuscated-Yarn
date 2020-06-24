@@ -138,7 +138,7 @@ Trader {
     protected abstract void afterUsing(TradeOffer var1);
 
     @Override
-    public boolean isLevelledTrader() {
+    public boolean isLeveledTrader() {
         return true;
     }
 

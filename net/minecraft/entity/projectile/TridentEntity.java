@@ -149,7 +149,7 @@ extends PersistentProjectileEntity {
         if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack) && this.world.isSkyVisible(blockPos = entity.getBlockPos())) {
             LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);
             lightningEntity.method_29495(Vec3d.ofBottomCenter(blockPos));
-            lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
+            lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
             this.world.spawnEntity(lightningEntity);
             soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;
             g = 5.0f;

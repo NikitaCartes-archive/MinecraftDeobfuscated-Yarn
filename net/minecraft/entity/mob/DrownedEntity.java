@@ -29,7 +29,7 @@ import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AbstractTraderEntity;
@@ -323,14 +323,14 @@ implements RangedAttackMob {
 
     static class WanderAroundOnSurfaceGoal
     extends Goal {
-        private final MobEntityWithAi mob;
+        private final PathAwareEntity mob;
         private double x;
         private double y;
         private double z;
         private final double speed;
         private final World world;
 
-        public WanderAroundOnSurfaceGoal(MobEntityWithAi mob, double speed) {
+        public WanderAroundOnSurfaceGoal(PathAwareEntity mob, double speed) {
             this.mob = mob;
             this.speed = speed;
             this.world = mob.world;

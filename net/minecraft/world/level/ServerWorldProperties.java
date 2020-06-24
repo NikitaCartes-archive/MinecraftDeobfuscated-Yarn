@@ -63,8 +63,8 @@ extends MutableWorldProperties {
 
     public Timer<MinecraftServer> getScheduledEvents();
 
-    public void method_29034(long var1);
+    public void setTime(long var1);
 
-    public void method_29035(long var1);
+    public void setTimeOfDay(long var1);
 }
 

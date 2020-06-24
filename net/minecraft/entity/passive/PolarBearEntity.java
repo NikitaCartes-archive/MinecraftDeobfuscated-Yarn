@@ -63,8 +63,8 @@ implements Angerable {
     private float warningAnimationProgress;
     private int warningSoundCooldown;
     private static final IntRange field_25369 = Durations.betweenSeconds(20, 39);
-    private int field_25370;
-    private UUID field_25368;
+    private int angerTime;
+    private UUID targetUuid;
 
     public PolarBearEntity(EntityType<? extends PolarBearEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -128,22 +128,22 @@ implements Angerable {
 
     @Override
     public void setAngerTime(int ticks) {
-        this.field_25370 = ticks;
+        this.angerTime = ticks;
     }
 
     @Override
     public int getAngerTime() {
-        return this.field_25370;
+        return this.angerTime;
     }
 
     @Override
     public void setAngryAt(@Nullable UUID uuid) {
-        this.field_25368 = uuid;
+        this.targetUuid = uuid;
     }
 
     @Override
     public UUID getAngryAt() {
-        return this.field_25368;
+        return this.targetUuid;
     }
 
     @Override

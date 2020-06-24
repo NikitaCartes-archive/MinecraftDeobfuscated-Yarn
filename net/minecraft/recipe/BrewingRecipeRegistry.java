@@ -67,12 +67,12 @@ public class BrewingRecipeRegistry {
         return BrewingRecipeRegistry.hasItemRecipe(input, ingredient) || BrewingRecipeRegistry.hasPotionRecipe(input, ingredient);
     }
 
-    protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredien) {
+    protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredient) {
         Item item = input.getItem();
         int j = ITEM_RECIPES.size();
         for (int i = 0; i < j; ++i) {
             Recipe<Item> recipe = ITEM_RECIPES.get(i);
-            if (((Recipe)recipe).input != item || !((Recipe)recipe).ingredient.test(ingredien)) continue;
+            if (((Recipe)recipe).input != item || !((Recipe)recipe).ingredient.test(ingredient)) continue;
             return true;
         }
         return false;

@@ -160,23 +160,23 @@ implements ResourcePackProvider {
         }
     }
 
-    private boolean verifyFile(String expectedSha1, File rfile) {
+    private boolean verifyFile(String expectedSha1, File file) {
         try {
             String string;
-            try (FileInputStream fileInputStream = new FileInputStream(rfile);){
+            try (FileInputStream fileInputStream = new FileInputStream(file);){
                 string = DigestUtils.sha1Hex(fileInputStream);
             }
             if (expectedSha1.isEmpty()) {
-                LOGGER.info("Found file {} without verification hash", (Object)rfile);
+                LOGGER.info("Found file {} without verification hash", (Object)file);
                 return true;
             }
             if (string.toLowerCase(Locale.ROOT).equals(expectedSha1.toLowerCase(Locale.ROOT))) {
-                LOGGER.info("Found file {} matching requested hash {}", (Object)rfile, (Object)expectedSha1);
+                LOGGER.info("Found file {} matching requested hash {}", (Object)file, (Object)expectedSha1);
                 return true;
             }
-            LOGGER.warn("File {} had wrong hash (expected {}, found {}).", (Object)rfile, (Object)expectedSha1, (Object)string);
+            LOGGER.warn("File {} had wrong hash (expected {}, found {}).", (Object)file, (Object)expectedSha1, (Object)string);
         } catch (IOException iOException) {
-            LOGGER.warn("File {} couldn't be hashed.", (Object)rfile, (Object)iOException);
+            LOGGER.warn("File {} couldn't be hashed.", (Object)file, (Object)iOException);
         }
         return false;
     }

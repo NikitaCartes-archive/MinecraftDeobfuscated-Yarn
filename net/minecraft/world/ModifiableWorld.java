@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a modifable world where block states can be changed and entities spawned.
+ * Represents a modifiable world where block states can be changed and entities spawned.
  */
 public interface ModifiableWorld {
     /**
@@ -72,10 +72,10 @@ public interface ModifiableWorld {
     }
 
     default public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity) {
-        return this.method_30093(pos, drop, breakingEntity, 512);
+        return this.breakBlock(pos, drop, breakingEntity, 512);
     }
 
-    public boolean method_30093(BlockPos var1, boolean var2, @Nullable Entity var3, int var4);
+    public boolean breakBlock(BlockPos var1, boolean var2, @Nullable Entity var3, int var4);
 
     default public boolean spawnEntity(Entity entity) {
         return false;

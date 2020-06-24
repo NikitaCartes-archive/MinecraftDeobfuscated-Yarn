@@ -63,7 +63,7 @@ extends Feature<TreeFeatureConfig> {
     private static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> {
             Block block = state.getBlock();
-            return TreeFeature.isDirt(block) || block == Blocks.FARMLAND;
+            return TreeFeature.isSoil(block) || block == Blocks.FARMLAND;
         });
     }
 

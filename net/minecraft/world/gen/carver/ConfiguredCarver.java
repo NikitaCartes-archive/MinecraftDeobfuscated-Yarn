@@ -15,7 +15,7 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverConfig;
 
 public class ConfiguredCarver<WC extends CarverConfig> {
-    public static final Codec<ConfiguredCarver<?>> field_24828 = Registry.CARVER.dispatch("name", configuredCarver -> configuredCarver.carver, Carver::method_28616);
+    public static final Codec<ConfiguredCarver<?>> field_24828 = Registry.CARVER.dispatch("name", configuredCarver -> configuredCarver.carver, Carver::getCodec);
     public final Carver<WC> carver;
     public final WC config;
 

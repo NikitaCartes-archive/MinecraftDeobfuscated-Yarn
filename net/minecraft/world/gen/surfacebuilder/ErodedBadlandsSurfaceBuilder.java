@@ -18,7 +18,7 @@ public class ErodedBadlandsSurfaceBuilder
 extends BadlandsSurfaceBuilder {
     private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
     private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
-    private static final BlockState TERACOTTA = Blocks.TERRACOTTA.getDefaultState();
+    private static final BlockState TERRACOTTA = Blocks.TERRACOTTA.getDefaultState();
 
     public ErodedBadlandsSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
         super(codec);
@@ -73,7 +73,7 @@ extends BadlandsSurfaceBuilder {
                 r = q + Math.max(0, s - l);
                 if (s >= l - 1) {
                     if (s > l + 3 + q) {
-                        BlockState blockState6 = s < 64 || s > 127 ? ORANGE_TERRACOTTA : (bl ? TERACOTTA : this.calculateLayerBlockState(i, s, j));
+                        BlockState blockState6 = s < 64 || s > 127 ? ORANGE_TERRACOTTA : (bl ? TERRACOTTA : this.calculateLayerBlockState(i, s, j));
                         chunk.setBlockState(mutable, blockState6, false);
                         continue;
                     }

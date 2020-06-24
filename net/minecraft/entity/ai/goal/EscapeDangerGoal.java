@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -16,14 +16,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class EscapeDangerGoal
 extends Goal {
-    protected final MobEntityWithAi mob;
+    protected final PathAwareEntity mob;
     protected final double speed;
     protected double targetX;
     protected double targetY;
     protected double targetZ;
     protected boolean active;
 
-    public EscapeDangerGoal(MobEntityWithAi mob, double speed) {
+    public EscapeDangerGoal(PathAwareEntity mob, double speed) {
         this.mob = mob;
         this.speed = speed;
         this.setControls(EnumSet.of(Goal.Control.MOVE));

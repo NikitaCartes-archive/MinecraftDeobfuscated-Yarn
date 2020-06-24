@@ -79,15 +79,15 @@ StructureHolder {
 
     public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> var1);
 
-    default public boolean method_12228(int i, int j) {
-        if (i < 0) {
-            i = 0;
+    default public boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
+        if (lowerHeight < 0) {
+            lowerHeight = 0;
         }
-        if (j >= 256) {
-            j = 255;
+        if (upperHeight >= 256) {
+            upperHeight = 255;
         }
-        for (int k = i; k <= j; k += 16) {
-            if (ChunkSection.isEmpty(this.getSectionArray()[k >> 4])) continue;
+        for (int i = lowerHeight; i <= upperHeight; i += 16) {
+            if (ChunkSection.isEmpty(this.getSectionArray()[i >> 4])) continue;
             return false;
         }
         return true;
@@ -119,10 +119,10 @@ StructureHolder {
     }
 
     @Nullable
-    public CompoundTag getBlockEntityTagAt(BlockPos var1);
+    public CompoundTag getBlockEntityTag(BlockPos var1);
 
     @Nullable
-    public CompoundTag method_20598(BlockPos var1);
+    public CompoundTag getPackedBlockEntityTag(BlockPos var1);
 
     public Stream<BlockPos> getLightSourcesStream();
 

@@ -156,18 +156,18 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<RandomBooleanFeatureConfig> RANDOM_BOOLEAN_SELECTOR = Feature.register("random_boolean_selector", new RandomBooleanFeature(RandomBooleanFeatureConfig.CODEC));
     public static final Feature<DecoratedFeatureConfig> DECORATED = Feature.register("decorated", new DecoratedFeature(DecoratedFeatureConfig.CODEC));
     public static final Feature<DecoratedFeatureConfig> DECORATED_FLOWER = Feature.register("decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig.CODEC));
-    private final Codec<ConfiguredFeature<FC, Feature<FC>>> field_24837;
+    private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
     private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
         return (F)Registry.register(Registry.FEATURE, name, feature);
     }
 
-    public Feature(Codec<FC> codec) {
-        this.field_24837 = ((MapCodec)codec.fieldOf("config")).xmap(featureConfig -> new ConfiguredFeature<FeatureConfig, Feature>(this, (FeatureConfig)featureConfig), configuredFeature -> configuredFeature.config).codec();
+    public Feature(Codec<FC> configCodec) {
+        this.codec = ((MapCodec)configCodec.fieldOf("config")).xmap(featureConfig -> new ConfiguredFeature<FeatureConfig, Feature>(this, (FeatureConfig)featureConfig), configuredFeature -> configuredFeature.config).codec();
     }
 
-    public Codec<ConfiguredFeature<FC, Feature<FC>>> method_28627() {
-        return this.field_24837;
+    public Codec<ConfiguredFeature<FC, Feature<FC>>> getCodec() {
+        return this.codec;
     }
 
     public ConfiguredFeature<FC, ?> configure(FC config) {
@@ -184,16 +184,16 @@ public abstract class Feature<FC extends FeatureConfig> {
         return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
     }
 
-    public static boolean isDirt(Block block) {
+    public static boolean isSoil(Block block) {
         return block == Blocks.DIRT || block == Blocks.GRASS_BLOCK || block == Blocks.PODZOL || block == Blocks.COARSE_DIRT || block == Blocks.MYCELIUM;
     }
 
-    public static boolean method_27368(TestableWorld testableWorld, BlockPos blockPos) {
-        return testableWorld.testBlockState(blockPos, blockState -> Feature.isDirt(blockState.getBlock()));
+    public static boolean isSoil(TestableWorld world, BlockPos pos) {
+        return world.testBlockState(pos, state -> Feature.isSoil(state.getBlock()));
     }
 
-    public static boolean method_27370(TestableWorld testableWorld, BlockPos blockPos) {
-        return testableWorld.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir);
+    public static boolean isAir(TestableWorld world, BlockPos pos) {
+        return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
     }
 }
 

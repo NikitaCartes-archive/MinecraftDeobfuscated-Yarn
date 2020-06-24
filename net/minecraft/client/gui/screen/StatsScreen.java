@@ -163,8 +163,8 @@ implements StatsListener {
         }
 
         @Override
-        protected void renderBackground(MatrixStack matrixStack) {
-            StatsScreen.this.renderBackground(matrixStack);
+        protected void renderBackground(MatrixStack matrices) {
+            StatsScreen.this.renderBackground(matrices);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -285,8 +285,8 @@ implements StatsListener {
         }
 
         @Override
-        protected void renderBackground(MatrixStack matrixStack) {
-            StatsScreen.this.renderBackground(matrixStack);
+        protected void renderBackground(MatrixStack matrices) {
+            StatsScreen.this.renderBackground(matrices);
         }
 
         @Override
@@ -451,8 +451,8 @@ implements StatsListener {
         }
 
         @Override
-        protected void renderBackground(MatrixStack matrixStack) {
-            StatsScreen.this.renderBackground(matrixStack);
+        protected void renderBackground(MatrixStack matrices) {
+            StatsScreen.this.renderBackground(matrices);
         }
 
         @Environment(value=EnvType.CLIENT)
