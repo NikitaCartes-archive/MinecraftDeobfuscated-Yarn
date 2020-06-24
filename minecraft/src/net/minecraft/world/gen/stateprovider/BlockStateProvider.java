@@ -8,9 +8,9 @@ import net.minecraft.util.registry.Registry;
 
 public abstract class BlockStateProvider {
 	public static final Codec<BlockStateProvider> CODEC = Registry.BLOCK_STATE_PROVIDER_TYPE
-		.dispatch(BlockStateProvider::method_28862, BlockStateProviderType::method_28863);
+		.dispatch(BlockStateProvider::getType, BlockStateProviderType::getCodec);
 
-	protected abstract BlockStateProviderType<?> method_28862();
+	protected abstract BlockStateProviderType<?> getType();
 
 	public abstract BlockState getBlockState(Random random, BlockPos pos);
 }

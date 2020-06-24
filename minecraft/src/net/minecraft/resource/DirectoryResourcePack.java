@@ -77,7 +77,7 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 				if (string.equals(string.toLowerCase(Locale.ROOT))) {
 					set.add(string.substring(0, string.length() - 1));
 				} else {
-					this.warnNonLowercaseNamespace(string);
+					this.warnNonLowerCaseNamespace(string);
 				}
 			}
 		}

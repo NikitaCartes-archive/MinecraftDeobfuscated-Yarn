@@ -35,7 +35,7 @@ public class DimensionArgumentType implements ArgumentType<Identifier> {
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		return context.getSource() instanceof CommandSource
-			? CommandSource.suggestIdentifiers(((CommandSource)context.getSource()).method_29310().stream().map(RegistryKey::getValue), builder)
+			? CommandSource.suggestIdentifiers(((CommandSource)context.getSource()).getWorldKeys().stream().map(RegistryKey::getValue), builder)
 			: Suggestions.empty();
 	}
 

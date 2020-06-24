@@ -72,8 +72,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private int lastAngrySoundAge = Integer.MIN_VALUE;
 	private int ageWhenTargetSet;
 	private static final IntRange field_25378 = Durations.betweenSeconds(20, 39);
-	private int field_25376;
-	private UUID field_25377;
+	private int angerTime;
+	private UUID targetUuid;
 
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
 		super(entityType, world);
@@ -139,22 +139,22 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	@Override
 	public void setAngerTime(int ticks) {
-		this.field_25376 = ticks;
+		this.angerTime = ticks;
 	}
 
 	@Override
 	public int getAngerTime() {
-		return this.field_25376;
+		return this.angerTime;
 	}
 
 	@Override
 	public void setAngryAt(@Nullable UUID uuid) {
-		this.field_25377 = uuid;
+		this.targetUuid = uuid;
 	}
 
 	@Override
 	public UUID getAngryAt() {
-		return this.field_25377;
+		return this.targetUuid;
 	}
 
 	public void playAngrySound() {

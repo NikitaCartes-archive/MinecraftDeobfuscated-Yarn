@@ -15,10 +15,10 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class RealmsNotificationsScreen extends RealmsScreen {
-	private static final Identifier field_22698 = new Identifier("realms", "textures/gui/realms/invite_icon.png");
-	private static final Identifier field_22699 = new Identifier("realms", "textures/gui/realms/trial_icon.png");
+	private static final Identifier INVITE_ICON = new Identifier("realms", "textures/gui/realms/invite_icon.png");
+	private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
 	private static final Identifier field_22700 = new Identifier("realms", "textures/gui/realms/news_notification_mainscreen.png");
-	private static final RealmsDataFetcher realmsDataFetcher = new RealmsDataFetcher();
+	private static final RealmsDataFetcher REALMS_DATA_FETCHER = new RealmsDataFetcher();
 	private volatile int numberOfPendingInvites;
 	private static boolean checkedMcoAvailability;
 	private static boolean trialAvailable;
@@ -33,23 +33,23 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 
 	@Override
 	public void tick() {
-		if ((!this.method_25169() || !this.method_25170() || !validClient) && !realmsDataFetcher.isStopped()) {
-			realmsDataFetcher.stop();
+		if ((!this.method_25169() || !this.method_25170() || !validClient) && !REALMS_DATA_FETCHER.isStopped()) {
+			REALMS_DATA_FETCHER.stop();
 		} else if (validClient && this.method_25169()) {
-			realmsDataFetcher.initWithSpecificTaskList();
-			if (realmsDataFetcher.isFetchedSinceLastTry(RealmsDataFetcher.Task.PENDING_INVITE)) {
-				this.numberOfPendingInvites = realmsDataFetcher.getPendingInvitesCount();
+			REALMS_DATA_FETCHER.initWithSpecificTaskList();
+			if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.PENDING_INVITE)) {
+				this.numberOfPendingInvites = REALMS_DATA_FETCHER.getPendingInvitesCount();
 			}
 
-			if (realmsDataFetcher.isFetchedSinceLastTry(RealmsDataFetcher.Task.TRIAL_AVAILABLE)) {
-				trialAvailable = realmsDataFetcher.isTrialAvailable();
+			if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.TRIAL_AVAILABLE)) {
+				trialAvailable = REALMS_DATA_FETCHER.isTrialAvailable();
 			}
 
-			if (realmsDataFetcher.isFetchedSinceLastTry(RealmsDataFetcher.Task.UNREAD_NEWS)) {
-				hasUnreadNews = realmsDataFetcher.hasUnreadNews();
+			if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.UNREAD_NEWS)) {
+				hasUnreadNews = REALMS_DATA_FETCHER.hasUnreadNews();
 			}
 
-			realmsDataFetcher.markClean();
+			REALMS_DATA_FETCHER.markClean();
 		}
 	}
 
@@ -96,44 +96,44 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private void drawIcons(MatrixStack matrixStack, int i, int j) {
-		int k = this.numberOfPendingInvites;
-		int l = 24;
-		int m = this.height / 4 + 48;
-		int n = this.width / 2 + 80;
-		int o = m + 48 + 2;
-		int p = 0;
+	private void drawIcons(MatrixStack matrices, int mouseX, int mouseY) {
+		int i = this.numberOfPendingInvites;
+		int j = 24;
+		int k = this.height / 4 + 48;
+		int l = this.width / 2 + 80;
+		int m = k + 48 + 2;
+		int n = 0;
 		if (hasUnreadNews) {
 			this.client.getTextureManager().bindTexture(field_22700);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(0.4F, 0.4F, 0.4F);
-			DrawableHelper.drawTexture(matrixStack, (int)((double)(n + 2 - p) * 2.5), (int)((double)o * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
+			DrawableHelper.drawTexture(matrices, (int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
 			RenderSystem.popMatrix();
-			p += 14;
+			n += 14;
 		}
 
-		if (k != 0) {
-			this.client.getTextureManager().bindTexture(field_22698);
+		if (i != 0) {
+			this.client.getTextureManager().bindTexture(INVITE_ICON);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			DrawableHelper.drawTexture(matrixStack, n - p, o - 6, 0.0F, 0.0F, 15, 25, 31, 25);
-			p += 16;
+			DrawableHelper.drawTexture(matrices, l - n, m - 6, 0.0F, 0.0F, 15, 25, 31, 25);
+			n += 16;
 		}
 
 		if (trialAvailable) {
-			this.client.getTextureManager().bindTexture(field_22699);
+			this.client.getTextureManager().bindTexture(TRIAL_ICON);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			int q = 0;
+			int o = 0;
 			if ((Util.getMeasuringTimeMs() / 800L & 1L) == 1L) {
-				q = 8;
+				o = 8;
 			}
 
-			DrawableHelper.drawTexture(matrixStack, n + 4 - p, o + 4, 0.0F, (float)q, 8, 8, 8, 16);
+			DrawableHelper.drawTexture(matrices, l + 4 - n, m + 4, 0.0F, (float)o, 8, 8, 8, 16);
 		}
 	}
 
 	@Override
 	public void removed() {
-		realmsDataFetcher.stop();
+		REALMS_DATA_FETCHER.stop();
 	}
 }

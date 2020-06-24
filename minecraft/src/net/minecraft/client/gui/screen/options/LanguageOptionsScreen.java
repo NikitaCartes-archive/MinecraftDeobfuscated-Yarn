@@ -112,8 +112,8 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		}
 
 		@Override
-		protected void renderBackground(MatrixStack matrixStack) {
-			LanguageOptionsScreen.this.renderBackground(matrixStack);
+		protected void renderBackground(MatrixStack matrices) {
+			LanguageOptionsScreen.this.renderBackground(matrices);
 		}
 
 		@Override

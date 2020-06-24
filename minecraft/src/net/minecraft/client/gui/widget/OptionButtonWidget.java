@@ -14,7 +14,7 @@ public class OptionButtonWidget extends ButtonWidget {
 		this.option = option;
 	}
 
-	public Option method_29623() {
+	public Option getOption() {
 		return this.option;
 	}
 }

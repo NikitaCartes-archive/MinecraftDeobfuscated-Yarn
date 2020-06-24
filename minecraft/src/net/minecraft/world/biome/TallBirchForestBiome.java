@@ -20,7 +20,7 @@ public final class TallBirchForestBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent("birch_forest")
 		);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

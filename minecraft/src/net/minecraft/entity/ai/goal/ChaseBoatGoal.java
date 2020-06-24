@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.BlockPos;
@@ -13,11 +13,11 @@ import net.minecraft.util.math.Vec3d;
 
 public class ChaseBoatGoal extends Goal {
 	private int updateCountdownTicks;
-	private final MobEntityWithAi mob;
+	private final PathAwareEntity mob;
 	private PlayerEntity passenger;
 	private ChaseBoatState state;
 
-	public ChaseBoatGoal(MobEntityWithAi mob) {
+	public ChaseBoatGoal(PathAwareEntity mob) {
 		this.mob = mob;
 	}
 

@@ -45,7 +45,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 			if (!list.isEmpty()) {
 				BlockPos blockPos = (BlockPos)list.get(random.nextInt(list.size()));
 				BlockPos blockPos2 = blockPos.offset(direction);
-				if (Feature.method_27370(world, blockPos2) && Feature.method_27370(world, blockPos2.offset(Direction.SOUTH))) {
+				if (Feature.isAir(world, blockPos2) && Feature.isAir(world, blockPos2.offset(Direction.SOUTH))) {
 					BlockState blockState = Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
 					this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
 					BlockEntity blockEntity = world.getBlockEntity(blockPos2);

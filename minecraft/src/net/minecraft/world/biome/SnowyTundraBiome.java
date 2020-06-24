@@ -24,7 +24,7 @@ public final class SnowyTundraBiome extends Biome {
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.SNOWY_VILLAGE);
 		this.addStructureFeature(DefaultBiomeFeatures.IGLOO);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.PILLAGER_OUTPOST);
 		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);

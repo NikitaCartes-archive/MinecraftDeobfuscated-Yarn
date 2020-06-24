@@ -29,7 +29,7 @@ public final class DarkForestHillsBiome extends Biome {
 				.parent("dark_forest")
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.MANSION);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

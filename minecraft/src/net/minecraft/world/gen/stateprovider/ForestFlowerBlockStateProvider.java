@@ -10,10 +10,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 
 public class ForestFlowerBlockStateProvider extends BlockStateProvider {
-	public static final Codec<ForestFlowerBlockStateProvider> field_24940 = Codec.unit(
-		(Supplier<ForestFlowerBlockStateProvider>)(() -> ForestFlowerBlockStateProvider.field_24941)
+	public static final Codec<ForestFlowerBlockStateProvider> CODEC = Codec.unit(
+		(Supplier<ForestFlowerBlockStateProvider>)(() -> ForestFlowerBlockStateProvider.INSTANCE)
 	);
-	private static final BlockState[] flowers = new BlockState[]{
+	private static final BlockState[] FLOWERS = new BlockState[]{
 		Blocks.DANDELION.getDefaultState(),
 		Blocks.POPPY.getDefaultState(),
 		Blocks.ALLIUM.getDefaultState(),
@@ -26,16 +26,16 @@ public class ForestFlowerBlockStateProvider extends BlockStateProvider {
 		Blocks.CORNFLOWER.getDefaultState(),
 		Blocks.LILY_OF_THE_VALLEY.getDefaultState()
 	};
-	public static final ForestFlowerBlockStateProvider field_24941 = new ForestFlowerBlockStateProvider();
+	public static final ForestFlowerBlockStateProvider INSTANCE = new ForestFlowerBlockStateProvider();
 
 	@Override
-	protected BlockStateProviderType<?> method_28862() {
+	protected BlockStateProviderType<?> getType() {
 		return BlockStateProviderType.FOREST_FLOWER_PROVIDER;
 	}
 
 	@Override
 	public BlockState getBlockState(Random random, BlockPos pos) {
 		double d = MathHelper.clamp((1.0 + Biome.FOLIAGE_NOISE.sample((double)pos.getX() / 48.0, (double)pos.getZ() / 48.0, false)) / 2.0, 0.0, 0.9999);
-		return flowers[(int)(d * (double)flowers.length)];
+		return FLOWERS[(int)(d * (double)FLOWERS.length)];
 	}
 }

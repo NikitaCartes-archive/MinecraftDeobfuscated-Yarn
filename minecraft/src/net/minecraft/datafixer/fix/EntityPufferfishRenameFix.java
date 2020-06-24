@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class EntityPufferfishRenameFix extends EntityRenameFix {
-	public static final Map<String, String> RENAMED_FISHES = ImmutableMap.builder()
+	public static final Map<String, String> RENAMED_FISH = ImmutableMap.builder()
 		.put("minecraft:puffer_fish_spawn_egg", "minecraft:pufferfish_spawn_egg")
 		.build();
 

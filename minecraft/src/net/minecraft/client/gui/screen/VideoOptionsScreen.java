@@ -7,7 +7,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5405;
 import net.minecraft.class_5407;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
@@ -28,12 +27,14 @@ import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class VideoOptionsScreen extends GameOptionsScreen {
-	private static final Text field_25682 = new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC);
-	private static final Text field_25683 = new TranslatableText("options.graphics.warning.message", field_25682, field_25682);
-	private static final Text field_25684 = new TranslatableText("options.graphics.warning.title").formatted(Formatting.RED);
-	private static final Text field_25685 = new TranslatableText("options.graphics.warning.accept");
-	private static final Text field_25686 = new TranslatableText("options.graphics.warning.cancel");
-	private static final Text field_25687 = new LiteralText("\n");
+	private static final Text GRAPHICS_FABULOUS_TEXT = new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC);
+	private static final Text GRAPHICS_WARNING_MESSAGE_TEXT = new TranslatableText(
+		"options.graphics.warning.message", GRAPHICS_FABULOUS_TEXT, GRAPHICS_FABULOUS_TEXT
+	);
+	private static final Text GRAPHICS_WARNING_TITLE_TEXT = new TranslatableText("options.graphics.warning.title").formatted(Formatting.RED);
+	private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = new TranslatableText("options.graphics.warning.accept");
+	private static final Text GRAPHICS_WARNING_CANCEL_TEXT = new TranslatableText("options.graphics.warning.cancel");
+	private static final Text NEWLINE_TEXT = new LiteralText("\n");
 	private static final Option[] OPTIONS = new Option[]{
 		Option.GRAPHICS,
 		Option.RENDER_DISTANCE,
@@ -52,7 +53,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.ENTITY_DISTANCE_SCALING
 	};
 	@Nullable
-	private List<StringRenderable> field_25453;
+	private List<StringRenderable> tooltip;
 	private ButtonListWidget list;
 	private final class_5407 field_25688;
 	private final int mipmapLevels;
@@ -102,34 +103,39 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			}
 
 			if (this.field_25688.method_30141()) {
-				List<StringRenderable> list = Lists.<StringRenderable>newArrayList(field_25683, field_25687);
+				List<StringRenderable> list = Lists.<StringRenderable>newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, NEWLINE_TEXT);
 				String string = this.field_25688.method_30060();
 				if (string != null) {
-					list.add(field_25687);
+					list.add(NEWLINE_TEXT);
 					list.add(new TranslatableText("options.graphics.warning.renderer", string).formatted(Formatting.GRAY));
 				}
 
 				String string2 = this.field_25688.method_30063();
 				if (string2 != null) {
-					list.add(field_25687);
+					list.add(NEWLINE_TEXT);
 					list.add(new TranslatableText("options.graphics.warning.vendor", string2).formatted(Formatting.GRAY));
 				}
 
 				String string3 = this.field_25688.method_30062();
 				if (string3 != null) {
-					list.add(field_25687);
+					list.add(NEWLINE_TEXT);
 					list.add(new TranslatableText("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
 				}
 
-				this.client.openScreen(new class_5405(field_25684, list, ImmutableList.of(new class_5405.class_5406(field_25685, buttonWidget -> {
-					this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
-					MinecraftClient.getInstance().worldRenderer.reload();
-					this.field_25688.method_30139();
-					this.client.openScreen(this);
-				}), new class_5405.class_5406(field_25686, buttonWidget -> {
-					this.field_25688.method_30140();
-					this.client.openScreen(this);
-				}))));
+				this.client
+					.openScreen(
+						new GraphicsConfirmationScreen(
+							GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new GraphicsConfirmationScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, buttonx -> {
+								this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
+								MinecraftClient.getInstance().worldRenderer.reload();
+								this.field_25688.method_30139();
+								this.client.openScreen(this);
+							}), new GraphicsConfirmationScreen.ChoiceButton(GRAPHICS_WARNING_CANCEL_TEXT, buttonx -> {
+								this.field_25688.method_30140();
+								this.client.openScreen(this);
+							}))
+						)
+					);
 			}
 
 			return true;
@@ -156,19 +162,19 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.field_25453 = null;
-		Optional<AbstractButtonWidget> optional = this.list.method_29624((double)mouseX, (double)mouseY);
+		this.tooltip = null;
+		Optional<AbstractButtonWidget> optional = this.list.getHoveredButton((double)mouseX, (double)mouseY);
 		if (optional.isPresent() && optional.get() instanceof OptionButtonWidget) {
-			Optional<List<StringRenderable>> optional2 = ((OptionButtonWidget)optional.get()).method_29623().method_29619();
-			optional2.ifPresent(list -> this.field_25453 = list);
+			Optional<List<StringRenderable>> optional2 = ((OptionButtonWidget)optional.get()).getOption().getTooltip();
+			optional2.ifPresent(tooltip -> this.tooltip = tooltip);
 		}
 
 		this.renderBackground(matrices);
 		this.list.render(matrices, mouseX, mouseY, delta);
 		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
-		if (this.field_25453 != null) {
-			this.renderTooltip(matrices, this.field_25453, mouseX, mouseY);
+		if (this.tooltip != null) {
+			this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
 		}
 	}
 }

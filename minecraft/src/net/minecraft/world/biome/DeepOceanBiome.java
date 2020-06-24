@@ -26,7 +26,7 @@ public final class DeepOceanBiome extends Biome {
 				.parent(null)
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.MONUMENT);
-		DefaultBiomeFeatures.method_28441(this);
+		DefaultBiomeFeatures.addOceanStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
 		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);

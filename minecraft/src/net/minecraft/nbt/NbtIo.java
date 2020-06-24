@@ -107,8 +107,8 @@ public class NbtIo {
 		return read(stream, PositionTracker.DEFAULT);
 	}
 
-	public static CompoundTag read(DataInput input, PositionTracker trakcer) throws IOException {
-		Tag tag = read(input, 0, trakcer);
+	public static CompoundTag read(DataInput input, PositionTracker tracker) throws IOException {
+		Tag tag = read(input, 0, tracker);
 		if (tag instanceof CompoundTag) {
 			return (CompoundTag)tag;
 		} else {

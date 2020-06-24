@@ -89,7 +89,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				if (bl) {
 					player.openHandledScreen(shulkerBoxBlockEntity);
 					player.incrementStat(Stats.OPEN_SHULKER_BOX);
-					PiglinBrain.onGoldBlockBroken(player, true);
+					PiglinBrain.onGuardedBlockBroken(player, true);
 				}
 
 				return ActionResult.CONSUME;

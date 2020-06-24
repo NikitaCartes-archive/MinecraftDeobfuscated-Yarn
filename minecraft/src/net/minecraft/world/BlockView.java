@@ -74,11 +74,11 @@ public interface BlockView {
 		return blockHitResult;
 	}
 
-	static <T> T rayTrace(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> context, Function<RayTraceContext, T> blockRaytracer) {
+	static <T> T rayTrace(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> context, Function<RayTraceContext, T> blockRayTracer) {
 		Vec3d vec3d = rayTraceContext.getStart();
 		Vec3d vec3d2 = rayTraceContext.getEnd();
 		if (vec3d.equals(vec3d2)) {
-			return (T)blockRaytracer.apply(rayTraceContext);
+			return (T)blockRayTracer.apply(rayTraceContext);
 		} else {
 			double d = MathHelper.lerp(-1.0E-7, vec3d2.x, vec3d.x);
 			double e = MathHelper.lerp(-1.0E-7, vec3d2.y, vec3d.y);
@@ -130,7 +130,7 @@ public interface BlockView {
 					}
 				}
 
-				return (T)blockRaytracer.apply(rayTraceContext);
+				return (T)blockRayTracer.apply(rayTraceContext);
 			}
 		}
 	}

@@ -1,14 +1,14 @@
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class MoveIntoWaterGoal extends Goal {
-	private final MobEntityWithAi mob;
+	private final PathAwareEntity mob;
 
-	public MoveIntoWaterGoal(MobEntityWithAi mob) {
+	public MoveIntoWaterGoal(PathAwareEntity mob) {
 		this.mob = mob;
 	}
 

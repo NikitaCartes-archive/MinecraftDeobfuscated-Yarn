@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * Represents a modifable world where block states can be changed and entities spawned.
+ * Represents a modifiable world where block states can be changed and entities spawned.
  */
 public interface ModifiableWorld {
 	/**
@@ -69,10 +69,10 @@ public interface ModifiableWorld {
 	}
 
 	default boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity) {
-		return this.method_30093(pos, drop, breakingEntity, 512);
+		return this.breakBlock(pos, drop, breakingEntity, 512);
 	}
 
-	boolean method_30093(BlockPos blockPos, boolean bl, @Nullable Entity entity, int i);
+	boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth);
 
 	default boolean spawnEntity(Entity entity) {
 		return false;

@@ -14,7 +14,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.Durations;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
-import net.minecraft.entity.ai.goal.GoToEntityTargetGoal;
 import net.minecraft.entity.ai.goal.IronGolemLookGoal;
 import net.minecraft.entity.ai.goal.IronGolemWanderAroundGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -24,6 +23,7 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.TrackIronGolemTargetGoal;
 import net.minecraft.entity.ai.goal.UniversalAngerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundPointOfInterestGoal;
+import net.minecraft.entity.ai.goal.WanderNearTargetGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -71,7 +71,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0, true));
-		this.goalSelector.add(2, new GoToEntityTargetGoal(this, 0.9, 32.0F));
+		this.goalSelector.add(2, new WanderNearTargetGoal(this, 0.9, 32.0F));
 		this.goalSelector.add(2, new WanderAroundPointOfInterestGoal(this, 0.6, false));
 		this.goalSelector.add(4, new IronGolemWanderAroundGoal(this, 0.6));
 		this.goalSelector.add(5, new IronGolemLookGoal(this));

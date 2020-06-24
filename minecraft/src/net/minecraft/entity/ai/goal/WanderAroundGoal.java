@@ -3,11 +3,11 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.TargetFinder;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundGoal extends Goal {
-	protected final MobEntityWithAi mob;
+	protected final PathAwareEntity mob;
 	protected double targetX;
 	protected double targetY;
 	protected double targetZ;
@@ -16,16 +16,16 @@ public class WanderAroundGoal extends Goal {
 	protected boolean ignoringChance;
 	private boolean field_24463;
 
-	public WanderAroundGoal(MobEntityWithAi mob, double speed) {
+	public WanderAroundGoal(PathAwareEntity mob, double speed) {
 		this(mob, speed, 120);
 	}
 
-	public WanderAroundGoal(MobEntityWithAi mob, double speed, int chance) {
+	public WanderAroundGoal(PathAwareEntity mob, double speed, int chance) {
 		this(mob, speed, chance, true);
 	}
 
-	public WanderAroundGoal(MobEntityWithAi mobEntityWithAi, double d, int i, boolean bl) {
-		this.mob = mobEntityWithAi;
+	public WanderAroundGoal(PathAwareEntity pathAwareEntity, double d, int i, boolean bl) {
+		this.mob = pathAwareEntity;
 		this.speed = d;
 		this.chance = i;
 		this.field_24463 = bl;

@@ -73,7 +73,7 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public void copyAbilities(PlayerEntity player) {
-		this.gameMode.setAbilitites(player.abilities);
+		this.gameMode.setAbilities(player.abilities);
 	}
 
 	public void method_30108(GameMode gameMode) {
@@ -86,7 +86,7 @@ public class ClientPlayerInteractionManager {
 		}
 
 		this.gameMode = gameMode;
-		this.gameMode.setAbilitites(this.client.player.abilities);
+		this.gameMode.setAbilities(this.client.player.abilities);
 	}
 
 	public boolean hasStatusBars() {

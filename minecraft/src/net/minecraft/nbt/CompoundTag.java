@@ -132,14 +132,14 @@ public class CompoundTag implements Tag {
 	 * Writes a {@link UUID} to its NBT representation in this {@code CompoundTag}.
 	 */
 	public void putUuid(String key, UUID value) {
-		this.tags.put(key, NbtHelper.fromUuidNew(value));
+		this.tags.put(key, NbtHelper.fromUuid(value));
 	}
 
 	/**
 	 * Reads a {@link UUID} from its NBT representation in this {@code CompoundTag}.
 	 */
 	public UUID getUuid(String key) {
-		return NbtHelper.toUuidNew(this.get(key));
+		return NbtHelper.toUuid(this.get(key));
 	}
 
 	/**

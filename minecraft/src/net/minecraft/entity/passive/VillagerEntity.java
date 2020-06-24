@@ -96,7 +96,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		Items.BREAD, Items.POTATO, Items.CARROT, Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT, Items.BEETROOT_SEEDS
 	);
 	private int levelUpTimer;
-	private boolean levellingUp;
+	private boolean levelingUp;
 	@Nullable
 	private PlayerEntity lastCustomer;
 	private byte foodLevel;
@@ -259,9 +259,9 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		if (!this.hasCustomer() && this.levelUpTimer > 0) {
 			--this.levelUpTimer;
 			if (this.levelUpTimer <= 0) {
-				if (this.levellingUp) {
+				if (this.levelingUp) {
 					this.levelUp();
-					this.levellingUp = false;
+					this.levelingUp = false;
 				}
 
 				this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0));
@@ -560,7 +560,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		this.lastCustomer = this.getCurrentCustomer();
 		if (this.canLevelUp()) {
 			this.levelUpTimer = 40;
-			this.levellingUp = true;
+			this.levelingUp = true;
 			i += 5;
 		}
 

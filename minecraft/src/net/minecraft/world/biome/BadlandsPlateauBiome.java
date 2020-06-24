@@ -24,7 +24,7 @@ public final class BadlandsPlateauBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(-0.25F, -0.5F, 0.65F, 0.2F, 1.0F)))
 		);
-		DefaultBiomeFeatures.method_28437(this);
+		DefaultBiomeFeatures.addBadlandsUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.MOUNTAIN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

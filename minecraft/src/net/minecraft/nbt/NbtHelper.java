@@ -157,18 +157,18 @@ public final class NbtHelper {
 	 * 
 	 * @since 20w10a
 	 */
-	public static IntArrayTag fromUuidNew(UUID uuid) {
+	public static IntArrayTag fromUuid(UUID uuid) {
 		return new IntArrayTag(DynamicSerializableUuid.toIntArray(uuid));
 	}
 
 	/**
 	 * Deserializes a tag into a {@link UUID}.
-	 * The tag's data must have the same structure as the output of {@link #fromUuidNew}.
+	 * The tag's data must have the same structure as the output of {@link #fromUuid}.
 	 * 
 	 * @throws IllegalArgumentException if {@code tag} is not a valid representation of a UUID
 	 * @since 20w10a
 	 */
-	public static UUID toUuidNew(Tag tag) {
+	public static UUID toUuid(Tag tag) {
 		if (tag.getReader() != IntArrayTag.READER) {
 			throw new IllegalArgumentException(
 				"Expected UUID-Tag to be of type " + IntArrayTag.READER.getCrashReportName() + ", but found " + tag.getReader().getCrashReportName() + "."

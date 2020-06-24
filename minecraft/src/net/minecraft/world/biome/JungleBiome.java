@@ -23,7 +23,7 @@ public final class JungleBiome extends Biome {
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.5F, 0.5F, 0.0F, 0.0F, 1.0F)))
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_PYRAMID);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

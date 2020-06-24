@@ -94,7 +94,7 @@ public class CatEntity extends TameableEntity {
 	private float tailCurlAnimation;
 	private float prevTailCurlAnimation;
 	private float headDownAnimation;
-	private float prevHeadDownAniamtion;
+	private float prevHeadDownAnimation;
 
 	public CatEntity(EntityType<? extends CatEntity> entityType, World world) {
 		super(entityType, world);
@@ -299,7 +299,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	private void updateHeadDownAnimation() {
-		this.prevHeadDownAniamtion = this.headDownAnimation;
+		this.prevHeadDownAnimation = this.headDownAnimation;
 		if (this.isHeadDown()) {
 			this.headDownAnimation = Math.min(1.0F, this.headDownAnimation + 0.1F);
 		} else {
@@ -319,7 +319,7 @@ public class CatEntity extends TameableEntity {
 
 	@Environment(EnvType.CLIENT)
 	public float getHeadDownAnimation(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevHeadDownAniamtion, this.headDownAnimation);
+		return MathHelper.lerp(tickDelta, this.prevHeadDownAnimation, this.headDownAnimation);
 	}
 
 	public CatEntity createChild(PassiveEntity passiveEntity) {

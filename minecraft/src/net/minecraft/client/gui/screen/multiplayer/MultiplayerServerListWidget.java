@@ -81,8 +81,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	}
 
 	@Override
-	protected void moveSelection(EntryListWidget.class_5403 arg) {
-		this.method_30013(arg, entry -> !(entry instanceof MultiplayerServerListWidget.ScanningEntry));
+	protected void moveSelection(EntryListWidget.MoveDirection direction) {
+		this.moveSelectionIf(direction, entry -> !(entry instanceof MultiplayerServerListWidget.ScanningEntry));
 	}
 
 	public void setServers(ServerList servers) {

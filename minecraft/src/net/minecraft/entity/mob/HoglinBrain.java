@@ -65,7 +65,7 @@ public class HoglinBrain {
 				new BreedTask(EntityType.HOGLIN, 0.6F),
 				GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, 1.0F, 8, true),
 				new UpdateAttackTargetTask(HoglinBrain::getNearestVisibleTargetablePlayer),
-				new ConditionalTask<MobEntityWithAi>(
+				new ConditionalTask<PathAwareEntity>(
 					HoglinEntity::isAdult, GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4F, 8, false)
 				),
 				new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0F), IntRange.between(30, 60)),

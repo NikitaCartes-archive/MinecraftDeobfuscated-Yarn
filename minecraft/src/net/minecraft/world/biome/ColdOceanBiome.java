@@ -25,7 +25,7 @@ public class ColdOceanBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4020182).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		DefaultBiomeFeatures.method_28441(this);
+		DefaultBiomeFeatures.addOceanStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
 		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);

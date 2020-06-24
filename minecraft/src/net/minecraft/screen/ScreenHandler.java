@@ -69,7 +69,7 @@ public abstract class ScreenHandler {
 	/**
 	 * Checks that the size of the provided inventory is at least as large as the {@code expectedSize}.
 	 * 
-	 * @throws IllegalArgumentException if the inventory size is smaller than {@code exceptedSize}
+	 * @throws IllegalArgumentException if the inventory size is smaller than {@code expectedSize}
 	 */
 	protected static void checkSize(Inventory inventory, int expectedSize) {
 		int i = inventory.size();
@@ -79,9 +79,9 @@ public abstract class ScreenHandler {
 	}
 
 	/**
-	 * Checks that the size of the {@code data} is at least as large as the {@code exceptedCount}.
+	 * Checks that the size of the {@code data} is at least as large as the {@code expectedCount}.
 	 * 
-	 * @throws IllegalArgumentException if the {@code data} has a smaller size than {@code exceptedCount}
+	 * @throws IllegalArgumentException if the {@code data} has a smaller size than {@code expectedCount}
 	 */
 	protected static void checkDataCount(PropertyDelegate data, int expectedCount) {
 		int i = data.size();
@@ -609,8 +609,8 @@ public abstract class ScreenHandler {
 		}
 	}
 
-	public static void calculateStackSize(Set<Slot> slots, int rmode, ItemStack stack, int stackSize) {
-		switch(rmode) {
+	public static void calculateStackSize(Set<Slot> slots, int mode, ItemStack stack, int stackSize) {
+		switch(mode) {
 			case 0:
 				stack.setCount(MathHelper.floor((float)stack.getCount() / (float)slots.size()));
 				break;

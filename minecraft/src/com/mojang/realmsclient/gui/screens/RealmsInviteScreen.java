@@ -22,13 +22,13 @@ public class RealmsInviteScreen extends RealmsScreen {
 	private TextFieldWidget field_22696;
 	private final RealmsServer serverData;
 	private final RealmsConfigureWorldScreen configureScreen;
-	private final Screen lastScreen;
+	private final Screen parent;
 	private String errorMsg;
 	private boolean showError;
 
-	public RealmsInviteScreen(RealmsConfigureWorldScreen configureScreen, Screen screen, RealmsServer serverData) {
+	public RealmsInviteScreen(RealmsConfigureWorldScreen configureScreen, Screen parent, RealmsServer serverData) {
 		this.configureScreen = configureScreen;
-		this.lastScreen = screen;
+		this.parent = parent;
 		this.serverData = serverData;
 	}
 
@@ -48,7 +48,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.buttons.invite"), buttonWidget -> this.onInvite())
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.lastScreen)));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 256) {
-			this.client.openScreen(this.lastScreen);
+			this.client.openScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);

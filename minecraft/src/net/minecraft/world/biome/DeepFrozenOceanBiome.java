@@ -28,7 +28,7 @@ public class DeepFrozenOceanBiome extends Biome {
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
 		this.addStructureFeature(DefaultBiomeFeatures.MONUMENT);
-		DefaultBiomeFeatures.method_28441(this);
+		DefaultBiomeFeatures.addOceanStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

@@ -1687,7 +1687,7 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void registorSmoothStone() {
+	private void registerSmoothStone() {
 		Texture texture = Texture.all(Blocks.SMOOTH_STONE);
 		Texture texture2 = Texture.sideEnd(Texture.getSubId(Blocks.SMOOTH_STONE_SLAB, "_side"), texture.getTexture(TextureKey.TOP));
 		Identifier identifier = Models.SLAB.upload(Blocks.SMOOTH_STONE_SLAB, texture2, this.modelCollector);
@@ -3970,7 +3970,7 @@ public class BlockStateModelGenerator {
 		this.registerCubeAllModelTexturePool(Blocks.PRISMARINE).wall(Blocks.PRISMARINE_WALL).stairs(Blocks.PRISMARINE_STAIRS).slab(Blocks.PRISMARINE_SLAB);
 		this.registerCubeAllModelTexturePool(Blocks.PRISMARINE_BRICKS).stairs(Blocks.PRISMARINE_BRICK_STAIRS).slab(Blocks.PRISMARINE_BRICK_SLAB);
 		this.registerCubeAllModelTexturePool(Blocks.DARK_PRISMARINE).stairs(Blocks.DARK_PRISMARINE_STAIRS).slab(Blocks.DARK_PRISMARINE_SLAB);
-		this.registerTexturePool(Blocks.SANDSTONE, TexturedModel.WALL_CUBE_BUTTOM_TOP)
+		this.registerTexturePool(Blocks.SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP)
 			.wall(Blocks.SANDSTONE_WALL)
 			.stairs(Blocks.SANDSTONE_STAIRS)
 			.slab(Blocks.SANDSTONE_SLAB);
@@ -3982,7 +3982,7 @@ public class BlockStateModelGenerator {
 				TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_SANDSTONE)))
 			)
 			.slab(Blocks.CUT_SANDSTONE_SLAB);
-		this.registerTexturePool(Blocks.RED_SANDSTONE, TexturedModel.WALL_CUBE_BUTTOM_TOP)
+		this.registerTexturePool(Blocks.RED_SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP)
 			.wall(Blocks.RED_SANDSTONE_WALL)
 			.stairs(Blocks.RED_SANDSTONE_STAIRS)
 			.slab(Blocks.RED_SANDSTONE_SLAB);
@@ -4033,7 +4033,7 @@ public class BlockStateModelGenerator {
 			.button(Blocks.POLISHED_BLACKSTONE_BUTTON)
 			.stairs(Blocks.POLISHED_BLACKSTONE_STAIRS)
 			.slab(Blocks.POLISHED_BLACKSTONE_SLAB);
-		this.registorSmoothStone();
+		this.registerSmoothStone();
 		this.registerTurnableRail(Blocks.RAIL);
 		this.registerStraightRail(Blocks.POWERED_RAIL);
 		this.registerStraightRail(Blocks.DETECTOR_RAIL);

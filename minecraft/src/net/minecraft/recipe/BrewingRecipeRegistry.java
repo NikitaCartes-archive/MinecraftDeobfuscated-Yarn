@@ -74,13 +74,13 @@ public class BrewingRecipeRegistry {
 		}
 	}
 
-	protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredien) {
+	protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredient) {
 		Item item = input.getItem();
 		int i = 0;
 
 		for(int j = ITEM_RECIPES.size(); i < j; ++i) {
 			BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i);
-			if (recipe.input == item && recipe.ingredient.test(ingredien)) {
+			if (recipe.input == item && recipe.ingredient.test(ingredient)) {
 				return true;
 			}
 		}

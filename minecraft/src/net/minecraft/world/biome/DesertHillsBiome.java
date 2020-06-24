@@ -21,7 +21,7 @@ public final class DesertHillsBiome extends Biome {
 				.parent(null)
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.DESERT_PYRAMID);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.DESERT_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDesertLakes(this);

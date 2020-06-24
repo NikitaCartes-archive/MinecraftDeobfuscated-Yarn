@@ -157,8 +157,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Override
-	protected void moveSelection(EntryListWidget.class_5403 arg) {
-		this.method_30013(arg, entry -> !entry.level.isLocked());
+	protected void moveSelection(EntryListWidget.MoveDirection direction) {
+		this.moveSelectionIf(direction, entry -> !entry.level.isLocked());
 	}
 
 	public Optional<WorldListWidget.Entry> method_20159() {

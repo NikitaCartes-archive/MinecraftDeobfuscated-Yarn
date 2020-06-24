@@ -27,7 +27,7 @@ public final class FrozenOceanBiome extends Biome {
 				.parent(null)
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
-		DefaultBiomeFeatures.method_28441(this);
+		DefaultBiomeFeatures.addOceanStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

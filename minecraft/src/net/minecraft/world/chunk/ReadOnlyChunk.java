@@ -24,6 +24,9 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.StructureFeature;
 
+/**
+ * Represents a read only view of a world chunk used in world generation.
+ */
 public class ReadOnlyChunk extends ProtoChunk {
 	private final WorldChunk wrapped;
 
@@ -111,12 +114,12 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public StructureStart<?> getStructureStart(StructureFeature<?> structureFeature) {
-		return this.wrapped.getStructureStart(structureFeature);
+	public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
+		return this.wrapped.getStructureStart(structure);
 	}
 
 	@Override
-	public void setStructureStart(StructureFeature<?> structureFeature, StructureStart<?> start) {
+	public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
 	}
 
 	@Override
@@ -125,16 +128,16 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> map) {
+	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
 	}
 
 	@Override
-	public LongSet getStructureReferences(StructureFeature<?> structureFeature) {
-		return this.wrapped.getStructureReferences(structureFeature);
+	public LongSet getStructureReferences(StructureFeature<?> structure) {
+		return this.wrapped.getStructureReferences(structure);
 	}
 
 	@Override
-	public void addStructureReference(StructureFeature<?> structureFeature, long reference) {
+	public void addStructureReference(StructureFeature<?> structure, long reference) {
 	}
 
 	@Override
@@ -179,18 +182,18 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public CompoundTag getBlockEntityTagAt(BlockPos pos) {
-		return this.wrapped.getBlockEntityTagAt(pos);
+	public CompoundTag getBlockEntityTag(BlockPos pos) {
+		return this.wrapped.getBlockEntityTag(pos);
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag method_20598(BlockPos blockPos) {
-		return this.wrapped.method_20598(blockPos);
+	public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+		return this.wrapped.getPackedBlockEntityTag(pos);
 	}
 
 	@Override
-	public void setBiomes(BiomeArray biomeArray) {
+	public void setBiomes(BiomeArray biomes) {
 	}
 
 	@Override
@@ -214,7 +217,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public BitSet method_28510(GenerationStep.Carver carver) {
+	public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver) {
 		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
 	}
 

@@ -6,11 +6,11 @@ import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
-public class StrollTask extends Task<MobEntityWithAi> {
+public class StrollTask extends Task<PathAwareEntity> {
 	private final float speed;
 	private final int horizontalRadius;
 	private final int verticalRadius;
@@ -26,8 +26,8 @@ public class StrollTask extends Task<MobEntityWithAi> {
 		this.verticalRadius = verticalRadius;
 	}
 
-	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-		Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(mobEntityWithAi, this.horizontalRadius, this.verticalRadius));
-		mobEntityWithAi.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+		Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(pathAwareEntity, this.horizontalRadius, this.verticalRadius));
+		pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
 	}
 }

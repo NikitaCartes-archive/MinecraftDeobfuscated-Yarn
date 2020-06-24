@@ -910,7 +910,7 @@ public abstract class RenderLayer extends RenderPhase {
 			private RenderPhase.Target target = RenderPhase.MAIN_TARGET;
 			private RenderPhase.Texturing texturing = RenderPhase.DEFAULT_TEXTURING;
 			private RenderPhase.WriteMaskState writeMaskState = RenderPhase.ALL_MASK;
-			private RenderPhase.LineWidth lineWidth = RenderPhase.FULL_LINEWIDTH;
+			private RenderPhase.LineWidth lineWidth = RenderPhase.FULL_LINE_WIDTH;
 
 			private Builder() {
 			}

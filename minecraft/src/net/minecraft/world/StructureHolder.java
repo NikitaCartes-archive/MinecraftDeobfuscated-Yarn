@@ -8,13 +8,13 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public interface StructureHolder {
 	@Nullable
-	StructureStart<?> getStructureStart(StructureFeature<?> structureFeature);
+	StructureStart<?> getStructureStart(StructureFeature<?> structure);
 
-	void setStructureStart(StructureFeature<?> structureFeature, StructureStart<?> start);
+	void setStructureStart(StructureFeature<?> structure, StructureStart<?> start);
 
-	LongSet getStructureReferences(StructureFeature<?> structureFeature);
+	LongSet getStructureReferences(StructureFeature<?> structure);
 
-	void addStructureReference(StructureFeature<?> structureFeature, long reference);
+	void addStructureReference(StructureFeature<?> structure, long reference);
 
 	Map<StructureFeature<?>, LongSet> getStructureReferences();
 

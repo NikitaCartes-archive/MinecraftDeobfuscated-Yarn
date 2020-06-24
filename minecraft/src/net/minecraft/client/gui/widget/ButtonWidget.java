@@ -16,9 +16,9 @@ public class ButtonWidget extends AbstractPressableButtonWidget {
 		this(x, y, width, height, message, onPress, EMPTY);
 	}
 
-	public ButtonWidget(int i, int j, int k, int l, Text text, ButtonWidget.PressAction pressAction, ButtonWidget.TooltipSupplier tooltipSupplier) {
-		super(i, j, k, l, text);
-		this.onPress = pressAction;
+	public ButtonWidget(int x, int y, int width, int height, Text message, ButtonWidget.PressAction onPress, ButtonWidget.TooltipSupplier tooltipSupplier) {
+		super(x, y, width, height, message);
+		this.onPress = onPress;
 		this.tooltipSupplier = tooltipSupplier;
 	}
 

@@ -34,7 +34,7 @@ public class EndSpikeFeatureConfig implements FeatureConfig {
 		this.crystalBeamTarget = (BlockPos)optional.orElse(null);
 	}
 
-	public boolean isCrystalInvulerable() {
+	public boolean isCrystalInvulnerable() {
 		return this.crystalInvulnerable;
 	}
 

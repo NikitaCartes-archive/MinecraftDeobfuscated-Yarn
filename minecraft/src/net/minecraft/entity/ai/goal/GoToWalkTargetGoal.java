@@ -2,17 +2,17 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.ai.TargetFinder;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class GoToWalkTargetGoal extends Goal {
-	private final MobEntityWithAi mob;
+	private final PathAwareEntity mob;
 	private double x;
 	private double y;
 	private double z;
 	private final double speed;
 
-	public GoToWalkTargetGoal(MobEntityWithAi mob, double speed) {
+	public GoToWalkTargetGoal(PathAwareEntity mob, double speed) {
 		this.mob = mob;
 		this.speed = speed;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));

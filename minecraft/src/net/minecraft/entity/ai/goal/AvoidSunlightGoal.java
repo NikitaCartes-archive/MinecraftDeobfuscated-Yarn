@@ -2,12 +2,12 @@ package net.minecraft.entity.ai.goal;
 
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 
 public class AvoidSunlightGoal extends Goal {
-	private final MobEntityWithAi mob;
+	private final PathAwareEntity mob;
 
-	public AvoidSunlightGoal(MobEntityWithAi mob) {
+	public AvoidSunlightGoal(PathAwareEntity mob) {
 		this.mob = mob;
 	}
 

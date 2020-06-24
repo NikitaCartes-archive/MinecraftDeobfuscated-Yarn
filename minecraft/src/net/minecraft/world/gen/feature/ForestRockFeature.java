@@ -24,7 +24,7 @@ public class ForestRockFeature extends Feature<ForestRockFeatureConfig> {
 		for(; blockPos.getY() > 3; blockPos = blockPos.down()) {
 			if (!serverWorldAccess.isAir(blockPos.down())) {
 				Block block = serverWorldAccess.getBlockState(blockPos.down()).getBlock();
-				if (isDirt(block) || isStone(block)) {
+				if (isSoil(block) || isStone(block)) {
 					break;
 				}
 			}
