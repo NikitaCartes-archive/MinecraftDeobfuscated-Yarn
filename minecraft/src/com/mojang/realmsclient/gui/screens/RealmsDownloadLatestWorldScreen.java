@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ReentrantLock downloadLock = new ReentrantLock();
-	private final Screen lastScreen;
+	private final Screen parent;
 	private final WorldDownload worldDownload;
 	private final Text downloadTitle;
 	private final RateLimiter narrationRateLimiter;
@@ -57,9 +57,9 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private boolean checked;
 	private final BooleanConsumer field_22693;
 
-	public RealmsDownloadLatestWorldScreen(Screen screen, WorldDownload worldDownload, String worldName, BooleanConsumer booleanConsumer) {
+	public RealmsDownloadLatestWorldScreen(Screen parent, WorldDownload worldDownload, String worldName, BooleanConsumer booleanConsumer) {
 		this.field_22693 = booleanConsumer;
-		this.lastScreen = screen;
+		this.parent = parent;
 		this.worldName = worldName;
 		this.worldDownload = worldDownload;
 		this.downloadStatus = new RealmsDownloadLatestWorldScreen.DownloadStatus();
@@ -136,7 +136,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 			this.field_22693.accept(true);
 		}
 
-		this.client.openScreen(this.lastScreen);
+		this.client.openScreen(this.parent);
 	}
 
 	@Override

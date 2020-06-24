@@ -73,19 +73,19 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	Map<StructureFeature<?>, StructureStart<?>> getStructureStarts();
 
-	void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> map);
+	void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts);
 
-	default boolean method_12228(int i, int j) {
-		if (i < 0) {
-			i = 0;
+	default boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
+		if (lowerHeight < 0) {
+			lowerHeight = 0;
 		}
 
-		if (j >= 256) {
-			j = 255;
+		if (upperHeight >= 256) {
+			upperHeight = 255;
 		}
 
-		for (int k = i; k <= j; k += 16) {
-			if (!ChunkSection.isEmpty(this.getSectionArray()[k >> 4])) {
+		for (int i = lowerHeight; i <= upperHeight; i += 16) {
+			if (!ChunkSection.isEmpty(this.getSectionArray()[i >> 4])) {
 				return false;
 			}
 		}
@@ -119,10 +119,10 @@ public interface Chunk extends BlockView, StructureHolder {
 	}
 
 	@Nullable
-	CompoundTag getBlockEntityTagAt(BlockPos pos);
+	CompoundTag getBlockEntityTag(BlockPos pos);
 
 	@Nullable
-	CompoundTag method_20598(BlockPos blockPos);
+	CompoundTag getPackedBlockEntityTag(BlockPos pos);
 
 	Stream<BlockPos> getLightSourcesStream();
 

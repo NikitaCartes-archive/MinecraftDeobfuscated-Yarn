@@ -25,7 +25,7 @@ public class LightningEntity extends Entity {
 	private int remainingActions;
 	private boolean cosmetic;
 	@Nullable
-	private ServerPlayerEntity channeller;
+	private ServerPlayerEntity channeler;
 
 	public LightningEntity(EntityType<? extends LightningEntity> entityType, World world) {
 		super(entityType, world);
@@ -44,8 +44,8 @@ public class LightningEntity extends Entity {
 		return SoundCategory.WEATHER;
 	}
 
-	public void setChanneller(@Nullable ServerPlayerEntity channeller) {
-		this.channeller = channeller;
+	public void setChanneler(@Nullable ServerPlayerEntity channeler) {
+		this.channeler = channeler;
 	}
 
 	@Override
@@ -100,8 +100,8 @@ public class LightningEntity extends Entity {
 					entity.onStruckByLightning(this);
 				}
 
-				if (this.channeller != null) {
-					Criteria.CHANNELED_LIGHTNING.trigger(this.channeller, list);
+				if (this.channeler != null) {
+					Criteria.CHANNELED_LIGHTNING.trigger(this.channeler, list);
 				}
 			}
 		}

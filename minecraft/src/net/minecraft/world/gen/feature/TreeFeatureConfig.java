@@ -16,9 +16,9 @@ public class TreeFeatureConfig implements FeatureConfig {
 		instance -> instance.group(
 					BlockStateProvider.CODEC.fieldOf("trunk_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkProvider),
 					BlockStateProvider.CODEC.fieldOf("leaves_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.leavesProvider),
-					FoliagePlacer.field_24931.fieldOf("foliage_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.foliagePlacer),
-					TrunkPlacer.field_24972.fieldOf("trunk_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkPlacer),
-					FeatureSize.field_24922.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.minimumSize),
+					FoliagePlacer.CODEC.fieldOf("foliage_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.foliagePlacer),
+					TrunkPlacer.CODEC.fieldOf("trunk_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkPlacer),
+					FeatureSize.CODEC.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.minimumSize),
 					TreeDecorator.field_24962.listOf().fieldOf("decorators").forGetter(treeFeatureConfig -> treeFeatureConfig.decorators),
 					Codec.INT.fieldOf("max_water_depth").withDefault(0).forGetter(treeFeatureConfig -> treeFeatureConfig.maxWaterDepth),
 					Codec.BOOL.fieldOf("ignore_vines").withDefault(false).forGetter(treeFeatureConfig -> treeFeatureConfig.ignoreVines),

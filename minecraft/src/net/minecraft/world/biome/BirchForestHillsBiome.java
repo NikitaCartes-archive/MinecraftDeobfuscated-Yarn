@@ -22,7 +22,7 @@ public final class BirchForestHillsBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(-0.1F, 0.2F, 0.25F, 0.0F, 1.0F)))
 		);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

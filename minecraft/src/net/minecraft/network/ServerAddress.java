@@ -58,7 +58,7 @@ public class ServerAddress {
 			String string3 = strings[0];
 			int j = strings.length > 1 ? portOrDefault(strings[1], 25565) : 25565;
 			if (j == 25565) {
-				Pair<String, Integer> pair = resolveSrv(string3);
+				Pair<String, Integer> pair = resolveServer(string3);
 				string3 = pair.getFirst();
 				j = pair.getSecond();
 			}
@@ -67,7 +67,7 @@ public class ServerAddress {
 		}
 	}
 
-	private static Pair<String, Integer> resolveSrv(String address) {
+	private static Pair<String, Integer> resolveServer(String address) {
 		try {
 			String string = "com.sun.jndi.dns.DnsContextFactory";
 			Class.forName("com.sun.jndi.dns.DnsContextFactory");

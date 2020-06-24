@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 
 public abstract class ProjectileEntity extends Entity {
 	private UUID ownerUuid;
-	private int field_23739;
-	private boolean field_23740;
+	private int ownerEntityId;
+	private boolean leftOwner;
 
 	public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -28,7 +28,7 @@ public abstract class ProjectileEntity extends Entity {
 	public void setOwner(@Nullable Entity entity) {
 		if (entity != null) {
 			this.ownerUuid = entity.getUuid();
-			this.field_23739 = entity.getEntityId();
+			this.ownerEntityId = entity.getEntityId();
 		}
 	}
 
@@ -37,7 +37,7 @@ public abstract class ProjectileEntity extends Entity {
 		if (this.ownerUuid != null && this.world instanceof ServerWorld) {
 			return ((ServerWorld)this.world).getEntity(this.ownerUuid);
 		} else {
-			return this.field_23739 != 0 ? this.world.getEntityById(this.field_23739) : null;
+			return this.ownerEntityId != 0 ? this.world.getEntityById(this.ownerEntityId) : null;
 		}
 	}
 
@@ -47,7 +47,7 @@ public abstract class ProjectileEntity extends Entity {
 			tag.putUuid("Owner", this.ownerUuid);
 		}
 
-		if (this.field_23740) {
+		if (this.leftOwner) {
 			tag.putBoolean("LeftOwner", true);
 		}
 	}
@@ -58,13 +58,13 @@ public abstract class ProjectileEntity extends Entity {
 			this.ownerUuid = tag.getUuid("Owner");
 		}
 
-		this.field_23740 = tag.getBoolean("LeftOwner");
+		this.leftOwner = tag.getBoolean("LeftOwner");
 	}
 
 	@Override
 	public void tick() {
-		if (!this.field_23740) {
-			this.field_23740 = this.method_26961();
+		if (!this.leftOwner) {
+			this.leftOwner = this.method_26961();
 		}
 
 		super.tick();
@@ -144,7 +144,7 @@ public abstract class ProjectileEntity extends Entity {
 	protected boolean method_26958(Entity entity) {
 		if (!entity.isSpectator() && entity.isAlive() && entity.collides()) {
 			Entity entity2 = this.getOwner();
-			return entity2 == null || this.field_23740 || !entity2.isConnectedThroughVehicle(entity);
+			return entity2 == null || this.leftOwner || !entity2.isConnectedThroughVehicle(entity);
 		} else {
 			return false;
 		}

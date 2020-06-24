@@ -10,17 +10,17 @@ public class TrunkPlacerType<P extends TrunkPlacer> {
 	public static final TrunkPlacerType<MegaJungleTrunkPlacer> MEGA_JUNGLE_TRUNK_PLACER = register("mega_jungle_trunk_placer", MegaJungleTrunkPlacer.CODEC);
 	public static final TrunkPlacerType<DarkOakTrunkPlacer> DARK_OAK_TRUNK_PLACER = register("dark_oak_trunk_placer", DarkOakTrunkPlacer.CODEC);
 	public static final TrunkPlacerType<LargeOakTrunkPlacer> FANCY_TRUNK_PLACER = register("fancy_trunk_placer", LargeOakTrunkPlacer.CODEC);
-	private final Codec<P> field_24973;
+	private final Codec<P> codec;
 
 	private static <P extends TrunkPlacer> TrunkPlacerType<P> register(String id, Codec<P> codec) {
 		return Registry.register(Registry.TRUNK_PLACER_TYPE, id, new TrunkPlacerType<>(codec));
 	}
 
 	private TrunkPlacerType(Codec<P> codec) {
-		this.field_24973 = codec;
+		this.codec = codec;
 	}
 
-	public Codec<P> method_28908() {
-		return this.field_24973;
+	public Codec<P> getCodec() {
+		return this.codec;
 	}
 }

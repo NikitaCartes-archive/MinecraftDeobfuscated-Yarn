@@ -87,12 +87,12 @@ public class GlyphRenderer {
 		protected final float blue;
 		protected final float alpha;
 
-		public Rectangle(float xMin, float yMin, float xMax, float yMax, float zndex, float red, float green, float blue, float alpha) {
+		public Rectangle(float xMin, float yMin, float xMax, float yMax, float zIndex, float red, float green, float blue, float alpha) {
 			this.xMin = xMin;
 			this.yMin = yMin;
 			this.xMax = xMax;
 			this.yMax = yMax;
-			this.zIndex = zndex;
+			this.zIndex = zIndex;
 			this.red = red;
 			this.green = green;
 			this.blue = blue;

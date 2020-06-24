@@ -20,7 +20,7 @@ public class StraightTrunkPlacer extends TrunkPlacer {
 	}
 
 	@Override
-	protected TrunkPlacerType<?> method_28903() {
+	protected TrunkPlacerType<?> getType() {
 		return TrunkPlacerType.STRAIGHT_TRUNK_PLACER;
 	}
 

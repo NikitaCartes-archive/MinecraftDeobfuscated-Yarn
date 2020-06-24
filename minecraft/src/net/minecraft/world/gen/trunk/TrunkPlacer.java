@@ -22,7 +22,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public abstract class TrunkPlacer {
-	public static final Codec<TrunkPlacer> field_24972 = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::method_28903, TrunkPlacerType::method_28908);
+	public static final Codec<TrunkPlacer> CODEC = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::getType, TrunkPlacerType::getCodec);
 	protected final int baseHeight;
 	protected final int firstRandomHeight;
 	protected final int secondRandomHeight;
@@ -41,7 +41,7 @@ public abstract class TrunkPlacer {
 		this.secondRandomHeight = secondRandomHeight;
 	}
 
-	protected abstract TrunkPlacerType<?> method_28903();
+	protected abstract TrunkPlacerType<?> getType();
 
 	/**
 	 * Generates the trunk blocks and return a list of tree nodes to place foliage around
@@ -62,7 +62,7 @@ public abstract class TrunkPlacer {
 	private static boolean method_27403(TestableWorld testableWorld, BlockPos blockPos) {
 		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
-			return Feature.isDirt(block) && !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.MYCELIUM);
+			return Feature.isSoil(block) && !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.MYCELIUM);
 		});
 	}
 

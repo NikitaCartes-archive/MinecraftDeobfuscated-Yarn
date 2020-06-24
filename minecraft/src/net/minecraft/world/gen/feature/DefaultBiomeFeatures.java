@@ -386,12 +386,12 @@ public class DefaultBiomeFeatures {
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig PLAINS_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			PlainsFlowerBlockStateProvider.field_24943, SimpleBlockPlacer.field_24871
+			PlainsFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.field_24871
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig FOREST_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			ForestFlowerBlockStateProvider.field_24941, SimpleBlockPlacer.field_24871
+			ForestFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.field_24871
 		)
 		.tries(64)
 		.build();
@@ -571,17 +571,17 @@ public class DefaultBiomeFeatures {
 		new SimpleBlockStateProvider(Blocks.NETHER_SPROUTS.getDefaultState())
 	);
 
-	public static void method_28437(Biome biome) {
+	public static void addBadlandsUndergroundStructures(Biome biome) {
 		biome.addStructureFeature(MESA_MINESHAFT);
 		biome.addStructureFeature(STRONGHOLD);
 	}
 
-	public static void method_28440(Biome biome) {
+	public static void addDefaultUndergroundStructures(Biome biome) {
 		biome.addStructureFeature(NORMAL_MINESHAFT);
 		biome.addStructureFeature(STRONGHOLD);
 	}
 
-	public static void method_28441(Biome biome) {
+	public static void addOceanStructures(Biome biome) {
 		biome.addStructureFeature(NORMAL_MINESHAFT);
 		biome.addStructureFeature(SUNKEN_SHIPWRECK);
 	}

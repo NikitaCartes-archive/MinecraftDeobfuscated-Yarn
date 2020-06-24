@@ -132,7 +132,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	protected abstract void afterUsing(TradeOffer offer);
 
 	@Override
-	public boolean isLevelledTrader() {
+	public boolean isLeveledTrader() {
 		return true;
 	}
 

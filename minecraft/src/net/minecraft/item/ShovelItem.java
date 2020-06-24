@@ -51,7 +51,7 @@ public class ShovelItem extends MiningToolItem {
 		Blocks.BLACK_CONCRETE_POWDER,
 		Blocks.SOUL_SOIL
 	);
-	protected static final Map<Block, BlockState> PATH_BLOCKSTATES = Maps.<Block, BlockState>newHashMap(
+	protected static final Map<Block, BlockState> PATH_STATES = Maps.<Block, BlockState>newHashMap(
 		ImmutableMap.of(Blocks.GRASS_BLOCK, Blocks.GRASS_PATH.getDefaultState())
 	);
 
@@ -73,7 +73,7 @@ public class ShovelItem extends MiningToolItem {
 			return ActionResult.PASS;
 		} else {
 			PlayerEntity playerEntity = context.getPlayer();
-			BlockState blockState2 = (BlockState)PATH_BLOCKSTATES.get(blockState.getBlock());
+			BlockState blockState2 = (BlockState)PATH_STATES.get(blockState.getBlock());
 			BlockState blockState3 = null;
 			if (blockState2 != null && world.getBlockState(blockPos.up()).isAir()) {
 				world.playSound(playerEntity, blockPos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0F, 1.0F);

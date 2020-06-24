@@ -42,7 +42,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	private static final Identifier LINK_ICONS = new Identifier("realms", "textures/gui/realms/link_icons.png");
 	private static final Identifier TRAILER_ICONS = new Identifier("realms", "textures/gui/realms/trailer_icons.png");
 	private static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
-	private final RealmsScreenWithCallback lastScreen;
+	private final RealmsScreenWithCallback parent;
 	private RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList templateList;
 	private int selectedTemplate = -1;
 	private Text title;
@@ -60,12 +60,12 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	private boolean hoverWarning;
 	private List<TextRenderingUtils.Line> noTemplatesMessage;
 
-	public RealmsSelectWorldTemplateScreen(RealmsScreenWithCallback callback, RealmsServer.WorldType worldType) {
-		this(callback, worldType, null);
+	public RealmsSelectWorldTemplateScreen(RealmsScreenWithCallback parent, RealmsServer.WorldType worldType) {
+		this(parent, worldType, null);
 	}
 
-	public RealmsSelectWorldTemplateScreen(RealmsScreenWithCallback callback, RealmsServer.WorldType worldType, @Nullable WorldTemplatePaginatedList list) {
-		this.lastScreen = callback;
+	public RealmsSelectWorldTemplateScreen(RealmsScreenWithCallback parent, RealmsServer.WorldType worldType, @Nullable WorldTemplatePaginatedList list) {
+		this.parent = parent;
 		this.worldType = worldType;
 		if (list == null) {
 			this.templateList = new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList();
@@ -78,8 +78,8 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		this.title = new TranslatableText("mco.template.title");
 	}
 
-	public void setTitle(Text text) {
-		this.title = text;
+	public void setTitle(Text title) {
+		this.title = title;
 	}
 
 	public void setWarning(Text... texts) {
@@ -168,13 +168,13 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	}
 
 	private void backButtonClicked() {
-		this.lastScreen.callback(null);
-		this.client.openScreen(this.lastScreen);
+		this.parent.callback(null);
+		this.client.openScreen(this.parent);
 	}
 
 	private void selectTemplate() {
 		if (this.method_25247()) {
-			this.lastScreen.callback(this.method_21434());
+			this.parent.callback(this.method_21434());
 		}
 	}
 
@@ -412,8 +412,8 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderBackground(MatrixStack matrixStack) {
-			RealmsSelectWorldTemplateScreen.this.renderBackground(matrixStack);
+		public void renderBackground(MatrixStack matrices) {
+			RealmsSelectWorldTemplateScreen.this.renderBackground(matrices);
 		}
 
 		@Override

@@ -199,7 +199,7 @@ public abstract class RenderPhase {
 			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 		}
 	});
-	protected static final RenderPhase.LineWidth FULL_LINEWIDTH = new RenderPhase.LineWidth(OptionalDouble.of(1.0));
+	protected static final RenderPhase.LineWidth FULL_LINE_WIDTH = new RenderPhase.LineWidth(OptionalDouble.of(1.0));
 
 	public RenderPhase(String name, Runnable beginAction, Runnable endAction) {
 		this.name = name;

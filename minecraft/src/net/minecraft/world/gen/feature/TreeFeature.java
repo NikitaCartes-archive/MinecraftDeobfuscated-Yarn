@@ -55,7 +55,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 	private static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(pos, state -> {
 			Block block = state.getBlock();
-			return isDirt(block) || block == Blocks.FARMLAND;
+			return isSoil(block) || block == Blocks.FARMLAND;
 		});
 	}
 

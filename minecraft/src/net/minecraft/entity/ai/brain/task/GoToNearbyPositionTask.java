@@ -6,11 +6,11 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
 
-public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
+public class GoToNearbyPositionTask extends Task<PathAwareEntity> {
 	private final MemoryModuleType<GlobalPos> memoryModuleType;
 	private final int completionRange;
 	private final int maxDistance;
@@ -23,16 +23,16 @@ public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
 		this.maxDistance = maxDistance;
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.memoryModuleType);
+	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+		Optional<GlobalPos> optional = pathAwareEntity.getBrain().getOptionalMemory(this.memoryModuleType);
 		return optional.isPresent()
 			&& serverWorld.getRegistryKey() == ((GlobalPos)optional.get()).getDimension()
-			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
+			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(pathAwareEntity.getPos(), (double)this.maxDistance);
 	}
 
-	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
+	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		if (l > this.nextRunTime) {
-			Brain<?> brain = mobEntityWithAi.getBrain();
+			Brain<?> brain = pathAwareEntity.getBrain();
 			Optional<GlobalPos> optional = brain.getOptionalMemory(this.memoryModuleType);
 			optional.ifPresent(globalPos -> brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), 0.4F, this.completionRange)));
 			this.nextRunTime = l + 80L;

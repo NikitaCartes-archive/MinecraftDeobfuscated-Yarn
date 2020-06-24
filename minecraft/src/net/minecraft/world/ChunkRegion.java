@@ -168,17 +168,17 @@ public class ChunkRegion implements ServerWorldAccess {
 	}
 
 	@Override
-	public boolean method_30093(BlockPos blockPos, boolean bl, @Nullable Entity entity, int i) {
-		BlockState blockState = this.getBlockState(blockPos);
+	public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth) {
+		BlockState blockState = this.getBlockState(pos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
-			if (bl) {
-				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(blockPos) : null;
-				Block.dropStacks(blockState, this.world, blockPos, blockEntity, entity, ItemStack.EMPTY);
+			if (drop) {
+				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(pos) : null;
+				Block.dropStacks(blockState, this.world, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3, i);
+			return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3, maxUpdateDepth);
 		}
 	}
 
@@ -190,7 +190,7 @@ public class ChunkRegion implements ServerWorldAccess {
 		if (blockEntity != null) {
 			return blockEntity;
 		} else {
-			CompoundTag compoundTag = chunk.getBlockEntityTagAt(pos);
+			CompoundTag compoundTag = chunk.getBlockEntityTag(pos);
 			BlockState blockState = chunk.getBlockState(pos);
 			if (compoundTag != null) {
 				if ("DUMMY".equals(compoundTag.getString("id"))) {
@@ -228,7 +228,7 @@ public class ChunkRegion implements ServerWorldAccess {
 
 		Block block = state.getBlock();
 		if (block.hasBlockEntity()) {
-			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
 				chunk.setBlockEntity(pos, ((BlockEntityProvider)block).createBlockEntity(this));
 			} else {
 				CompoundTag compoundTag = new CompoundTag();

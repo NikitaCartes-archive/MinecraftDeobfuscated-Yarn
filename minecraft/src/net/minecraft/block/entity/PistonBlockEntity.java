@@ -282,7 +282,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 				BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
 				if (blockState.isAir()) {
 					this.world.setBlockState(this.pos, this.pushedBlock, 84);
-					Block.method_30094(this.pushedBlock, blockState, this.world, this.pos, 3);
+					Block.replaced(this.pushedBlock, blockState, this.world, this.pos, 3);
 				} else {
 					if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
 						blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));

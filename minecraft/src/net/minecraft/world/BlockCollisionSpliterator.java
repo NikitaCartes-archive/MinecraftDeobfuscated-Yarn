@@ -54,10 +54,10 @@ public class BlockCollisionSpliterator extends AbstractSpliterator<VoxelShape> {
 	}
 
 	public boolean tryAdvance(Consumer<? super VoxelShape> consumer) {
-		return this.checkEntity && this.offerEntityShape(consumer) || this.offerEntitylessShape(consumer);
+		return this.checkEntity && this.offerEntityShape(consumer) || this.offerBlockShape(consumer);
 	}
 
-	boolean offerEntitylessShape(Consumer<? super VoxelShape> consumer) {
+	boolean offerBlockShape(Consumer<? super VoxelShape> consumer) {
 		while (this.blockIterator.step()) {
 			int i = this.blockIterator.getX();
 			int j = this.blockIterator.getY();

@@ -8,8 +8,8 @@ import net.minecraft.entity.raid.RaiderEntity;
 public class RaidGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
 	private int cooldown = 0;
 
-	public RaidGoal(RaiderEntity raider, Class<T> targetEntityClass, boolean checkVisibility, @Nullable Predicate<LivingEntity> tragetPredicate) {
-		super(raider, targetEntityClass, 500, checkVisibility, false, tragetPredicate);
+	public RaidGoal(RaiderEntity raider, Class<T> targetEntityClass, boolean checkVisibility, @Nullable Predicate<LivingEntity> targetPredicate) {
+		super(raider, targetEntityClass, 500, checkVisibility, false, targetPredicate);
 	}
 
 	public int getCooldown() {

@@ -20,7 +20,7 @@ public final class SnowyTaigaMountainsBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4020182).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent("snowy_taiga")
 		);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.MOUNTAIN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

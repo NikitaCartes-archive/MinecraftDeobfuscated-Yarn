@@ -26,9 +26,9 @@ public class CyclingOption extends Option {
 
 	@Override
 	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
-		return new OptionButtonWidget(x, y, width, 20, this, this.getMessage(options), buttonWidget -> {
+		return new OptionButtonWidget(x, y, width, 20, this, this.getMessage(options), button -> {
 			this.cycle(options, 1);
-			buttonWidget.setMessage(this.getMessage(options));
+			button.setMessage(this.getMessage(options));
 		});
 	}
 

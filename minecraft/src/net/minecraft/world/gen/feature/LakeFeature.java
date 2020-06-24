@@ -106,7 +106,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 						for (int txx = 4; txx < 8; txx++) {
 							if (bls[(j * 16 + s) * 8 + txx]) {
 								BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
-								if (isDirt(serverWorldAccess.getBlockState(blockPos2).getBlock()) && serverWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
+								if (isSoil(serverWorldAccess.getBlockState(blockPos2).getBlock()) && serverWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
 									Biome biome = serverWorldAccess.getBiome(blockPos2);
 									if (biome.getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
 										serverWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);

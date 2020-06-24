@@ -21,7 +21,7 @@ public abstract class RealmsAcceptRejectButton {
 		this.y = y;
 	}
 
-	public void render(MatrixStack matrixStack, int i, int j, int k, int l) {
+	public void render(MatrixStack matrices, int i, int j, int k, int l) {
 		int m = i + this.x;
 		int n = j + this.y;
 		boolean bl = false;
@@ -29,7 +29,7 @@ public abstract class RealmsAcceptRejectButton {
 			bl = true;
 		}
 
-		this.render(matrixStack, m, n, bl);
+		this.render(matrices, m, n, bl);
 	}
 
 	protected abstract void render(MatrixStack matrixStack, int y, int i, boolean bl);
@@ -45,11 +45,11 @@ public abstract class RealmsAcceptRejectButton {
 	public abstract void handleClick(int index);
 
 	public static void render(
-		MatrixStack matrixStack, List<RealmsAcceptRejectButton> list, RealmsObjectSelectionList<?> realmsObjectSelectionList, int i, int j, int k, int l
+		MatrixStack matrices, List<RealmsAcceptRejectButton> list, RealmsObjectSelectionList<?> realmsObjectSelectionList, int i, int j, int k, int l
 	) {
 		for (RealmsAcceptRejectButton realmsAcceptRejectButton : list) {
 			if (realmsObjectSelectionList.getRowWidth() > realmsAcceptRejectButton.getRight()) {
-				realmsAcceptRejectButton.render(matrixStack, i, j, k, l);
+				realmsAcceptRejectButton.render(matrices, i, j, k, l);
 			}
 		}
 	}

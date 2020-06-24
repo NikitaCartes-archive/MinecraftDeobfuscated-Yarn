@@ -82,15 +82,17 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int i, boolean bl) {
+	public WorldChunk loadChunkFromPacket(
+		int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask, boolean complete
+	) {
 		if (!this.chunks.isInRadius(x, z)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", x, z);
 			return null;
 		} else {
-			int j = this.chunks.getIndex(x, z);
-			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(j);
-			if (!bl && positionEquals(worldChunk, x, z)) {
-				worldChunk.loadFromPacket(biomes, buf, tag, i);
+			int i = this.chunks.getIndex(x, z);
+			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(i);
+			if (!complete && positionEquals(worldChunk, x, z)) {
+				worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
 			} else {
 				if (biomes == null) {
 					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", x, z);
@@ -98,17 +100,17 @@ public class ClientChunkManager extends ChunkManager {
 				}
 
 				worldChunk = new WorldChunk(this.world, new ChunkPos(x, z), biomes);
-				worldChunk.loadFromPacket(biomes, buf, tag, i);
-				this.chunks.set(j, worldChunk);
+				worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
+				this.chunks.set(i, worldChunk);
 			}
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();
 			lightingProvider.setLightEnabled(new ChunkPos(x, z), true);
 
-			for (int k = 0; k < chunkSections.length; k++) {
-				ChunkSection chunkSection = chunkSections[k];
-				lightingProvider.updateSectionStatus(ChunkSectionPos.from(x, k, z), ChunkSection.isEmpty(chunkSection));
+			for (int j = 0; j < chunkSections.length; j++) {
+				ChunkSection chunkSection = chunkSections[j];
+				lightingProvider.updateSectionStatus(ChunkSectionPos.from(x, j, z), ChunkSection.isEmpty(chunkSection));
 			}
 
 			this.world.resetChunkColor(x, z);

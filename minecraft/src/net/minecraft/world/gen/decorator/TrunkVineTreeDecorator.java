@@ -25,28 +25,28 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 		logPositions.forEach(blockPos -> {
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.west();
-				if (Feature.method_27370(world, blockPos2)) {
+				if (Feature.isAir(world, blockPos2)) {
 					this.placeVine(world, blockPos2, VineBlock.EAST, set, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.east();
-				if (Feature.method_27370(world, blockPos2)) {
+				if (Feature.isAir(world, blockPos2)) {
 					this.placeVine(world, blockPos2, VineBlock.WEST, set, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.north();
-				if (Feature.method_27370(world, blockPos2)) {
+				if (Feature.isAir(world, blockPos2)) {
 					this.placeVine(world, blockPos2, VineBlock.SOUTH, set, box);
 				}
 			}
 
 			if (random.nextInt(3) > 0) {
 				BlockPos blockPos2 = blockPos.south();
-				if (Feature.method_27370(world, blockPos2)) {
+				if (Feature.isAir(world, blockPos2)) {
 					this.placeVine(world, blockPos2, VineBlock.NORTH, set, box);
 				}
 			}

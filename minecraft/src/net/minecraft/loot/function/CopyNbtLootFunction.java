@@ -144,14 +144,14 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	public static enum Operator {
 		REPLACE("replace") {
 			@Override
-			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
-				tragetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				targetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
 			}
 		},
 		APPEND("append") {
 			@Override
-			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
-				List<Tag> list = tragetPath.getOrInit(itemTag, ListTag::new);
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				List<Tag> list = targetPath.getOrInit(itemTag, ListTag::new);
 				list.forEach(foundTag -> {
 					if (foundTag instanceof ListTag) {
 						sourceTags.forEach(listTag -> ((ListTag)foundTag).add(listTag.copy()));
@@ -161,8 +161,8 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		},
 		MERGE("merge") {
 			@Override
-			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
-				List<Tag> list = tragetPath.getOrInit(itemTag, CompoundTag::new);
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				List<Tag> list = targetPath.getOrInit(itemTag, CompoundTag::new);
 				list.forEach(foundTag -> {
 					if (foundTag instanceof CompoundTag) {
 						sourceTags.forEach(compoundTag -> {
@@ -177,7 +177,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		private final String name;
 
-		public abstract void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException;
+		public abstract void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException;
 
 		private Operator(String name) {
 			this.name = name;

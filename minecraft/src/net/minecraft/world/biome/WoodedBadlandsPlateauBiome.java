@@ -22,7 +22,7 @@ public final class WoodedBadlandsPlateauBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		DefaultBiomeFeatures.method_28437(this);
+		DefaultBiomeFeatures.addBadlandsUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.MOUNTAIN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

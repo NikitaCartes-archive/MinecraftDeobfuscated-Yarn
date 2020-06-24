@@ -301,7 +301,7 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected void fillWithOutlineUnderSealevel(
+	protected void fillWithOutlineUnderSeaLevel(
 		WorldAccess worldAccess,
 		BlockBox blockBox,
 		Random random,
@@ -445,13 +445,13 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addDispenser(WorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTbaleId) {
+	protected boolean addDispenser(WorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
 		if (boundingBox.contains(blockPos) && !world.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
 			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				((DispenserBlockEntity)blockEntity).setLootTable(lootTbaleId, random.nextLong());
+				((DispenserBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());
 			}
 
 			return true;

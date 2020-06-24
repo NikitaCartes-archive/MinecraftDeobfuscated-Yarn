@@ -124,9 +124,9 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	public void tickRiding() {
 		super.tickRiding();
-		if (this.getVehicle() instanceof MobEntityWithAi) {
-			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)this.getVehicle();
-			this.bodyYaw = mobEntityWithAi.bodyYaw;
+		if (this.getVehicle() instanceof PathAwareEntity) {
+			PathAwareEntity pathAwareEntity = (PathAwareEntity)this.getVehicle();
+			this.bodyYaw = pathAwareEntity.bodyYaw;
 		}
 	}
 

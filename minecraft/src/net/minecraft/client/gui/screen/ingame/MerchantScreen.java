@@ -60,7 +60,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		int i = this.handler.getLevelProgress();
-		if (i > 0 && i <= 5 && this.handler.isLevelled()) {
+		if (i > 0 && i <= 5 && this.handler.isLeveled()) {
 			String string = "- " + I18n.translate("merchant.level." + i);
 			int j = this.textRenderer.getWidth(this.title);
 			int k = this.textRenderer.getWidth(string);
@@ -182,7 +182,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 
 			int o = this.selectedIndex;
 			TradeOffer tradeOfferx = (TradeOffer)traderOfferList.get(o);
-			if (this.handler.isLevelled()) {
+			if (this.handler.isLeveled()) {
 				this.drawLevelInfo(matrices, i, j, tradeOfferx);
 			}
 

@@ -27,7 +27,7 @@ public class RconCommandOutput implements CommandOutput {
 		return this.buffer.toString();
 	}
 
-	public ServerCommandSource createReconCommandSource() {
+	public ServerCommandSource createRconCommandSource() {
 		ServerWorld serverWorld = this.server.getOverworld();
 		return new ServerCommandSource(this, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Rcon", RCON_NAME, this.server, null);
 	}

@@ -422,14 +422,14 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	static class WanderAroundOnSurfaceGoal extends Goal {
-		private final MobEntityWithAi mob;
+		private final PathAwareEntity mob;
 		private double x;
 		private double y;
 		private double z;
 		private final double speed;
 		private final World world;
 
-		public WanderAroundOnSurfaceGoal(MobEntityWithAi mob, double speed) {
+		public WanderAroundOnSurfaceGoal(PathAwareEntity mob, double speed) {
 			this.mob = mob;
 			this.speed = speed;
 			this.world = mob.world;

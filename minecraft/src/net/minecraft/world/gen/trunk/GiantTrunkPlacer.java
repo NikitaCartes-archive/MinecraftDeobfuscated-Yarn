@@ -20,7 +20,7 @@ public class GiantTrunkPlacer extends TrunkPlacer {
 	}
 
 	@Override
-	protected TrunkPlacerType<?> method_28903() {
+	protected TrunkPlacerType<?> getType() {
 		return TrunkPlacerType.GIANT_TRUNK_PLACER;
 	}
 

@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class LootTableRanges {
-	private static final Map<Identifier, Class<? extends LootTableRange>> types = Maps.<Identifier, Class<? extends LootTableRange>>newHashMap();
+	private static final Map<Identifier, Class<? extends LootTableRange>> TYPES = Maps.<Identifier, Class<? extends LootTableRange>>newHashMap();
 
 	public static LootTableRange fromJson(JsonElement json, JsonDeserializationContext context) throws JsonParseException {
 		if (json.isJsonPrimitive()) {
@@ -19,7 +19,7 @@ public class LootTableRanges {
 		} else {
 			JsonObject jsonObject = json.getAsJsonObject();
 			String string = JsonHelper.getString(jsonObject, "type", LootTableRange.UNIFORM.toString());
-			Class<? extends LootTableRange> class_ = (Class<? extends LootTableRange>)types.get(new Identifier(string));
+			Class<? extends LootTableRange> class_ = (Class<? extends LootTableRange>)TYPES.get(new Identifier(string));
 			if (class_ == null) {
 				throw new JsonParseException("Unknown generator: " + string);
 			} else {
@@ -38,8 +38,8 @@ public class LootTableRanges {
 	}
 
 	static {
-		types.put(LootTableRange.UNIFORM, UniformLootTableRange.class);
-		types.put(LootTableRange.BINOMIAL, BinomialLootTableRange.class);
-		types.put(LootTableRange.CONSTANT, ConstantLootTableRange.class);
+		TYPES.put(LootTableRange.UNIFORM, UniformLootTableRange.class);
+		TYPES.put(LootTableRange.BINOMIAL, BinomialLootTableRange.class);
+		TYPES.put(LootTableRange.CONSTANT, ConstantLootTableRange.class);
 	}
 }

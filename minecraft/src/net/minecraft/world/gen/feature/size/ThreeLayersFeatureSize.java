@@ -12,7 +12,7 @@ public class ThreeLayersFeatureSize extends FeatureSize {
 					Codec.INT.fieldOf("lower_size").withDefault(0).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.lowerSize),
 					Codec.INT.fieldOf("middle_size").withDefault(1).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.middleSize),
 					Codec.INT.fieldOf("upper_size").withDefault(1).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.upperSize),
-					method_28820()
+					createCodecBuilder()
 				)
 				.apply(instance, ThreeLayersFeatureSize::new)
 	);
@@ -22,17 +22,17 @@ public class ThreeLayersFeatureSize extends FeatureSize {
 	private final int middleSize;
 	private final int upperSize;
 
-	public ThreeLayersFeatureSize(int i, int j, int k, int l, int m, OptionalInt optionalInt) {
-		super(optionalInt);
-		this.limit = i;
-		this.upperLimit = j;
-		this.lowerSize = k;
-		this.middleSize = l;
-		this.upperSize = m;
+	public ThreeLayersFeatureSize(int limit, int upperLimit, int lowerSize, int middleSize, int upperSize, OptionalInt minClippedHeight) {
+		super(minClippedHeight);
+		this.limit = limit;
+		this.upperLimit = upperLimit;
+		this.lowerSize = lowerSize;
+		this.middleSize = middleSize;
+		this.upperSize = upperSize;
 	}
 
 	@Override
-	protected FeatureSizeType<?> method_28824() {
+	protected FeatureSizeType<?> getType() {
 		return FeatureSizeType.THREE_LAYERS_FEATURE_SIZE;
 	}
 

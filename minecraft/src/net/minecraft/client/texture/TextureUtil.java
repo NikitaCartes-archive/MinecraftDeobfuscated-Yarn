@@ -45,7 +45,7 @@ public class TextureUtil {
 
 	/**
 	 * Allocate uninitialized backing memory for {@code maxLevel+1}
-	 * miplevels to texture {@code id}.
+	 * mip levels to texture {@code id}.
 	 */
 	public static void allocate(NativeImage.GLFormat internalFormat, int id, int maxLevel, int width, int height) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);

@@ -220,7 +220,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 
 		while (iterator.hasNext()) {
 			BeehiveBlockEntity.Bee bee = (BeehiveBlockEntity.Bee)iterator.next();
-			if (bee.ticksInHive > bee.minOccupationTIcks) {
+			if (bee.ticksInHive > bee.minOccupationTicks) {
 				BeehiveBlockEntity.BeeState beeState = bee.entityData.getBoolean("HasNectar")
 					? BeehiveBlockEntity.BeeState.HONEY_DELIVERED
 					: BeehiveBlockEntity.BeeState.BEE_RELEASED;
@@ -288,7 +288,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 			CompoundTag compoundTag = new CompoundTag();
 			compoundTag.put("EntityData", bee.entityData);
 			compoundTag.putInt("TicksInHive", bee.ticksInHive);
-			compoundTag.putInt("MinOccupationTicks", bee.minOccupationTIcks);
+			compoundTag.putInt("MinOccupationTicks", bee.minOccupationTicks);
 			listTag.add(compoundTag);
 		}
 
@@ -298,13 +298,13 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 	static class Bee {
 		private final CompoundTag entityData;
 		private int ticksInHive;
-		private final int minOccupationTIcks;
+		private final int minOccupationTicks;
 
 		private Bee(CompoundTag entityData, int ticksInHive, int minOccupationTicks) {
 			entityData.remove("UUID");
 			this.entityData = entityData;
 			this.ticksInHive = ticksInHive;
-			this.minOccupationTIcks = minOccupationTicks;
+			this.minOccupationTicks = minOccupationTicks;
 		}
 	}
 

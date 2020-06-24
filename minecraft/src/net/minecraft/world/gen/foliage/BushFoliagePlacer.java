@@ -17,7 +17,7 @@ public class BushFoliagePlacer extends BlobFoliagePlacer {
 	}
 
 	@Override
-	protected FoliagePlacerType<?> method_28843() {
+	protected FoliagePlacerType<?> getType() {
 		return FoliagePlacerType.BUSH_FOLIAGE_PLACER;
 	}
 

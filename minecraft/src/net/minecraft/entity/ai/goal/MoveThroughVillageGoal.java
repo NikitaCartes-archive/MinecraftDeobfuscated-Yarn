@@ -11,7 +11,7 @@ import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -19,7 +19,7 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class MoveThroughVillageGoal extends Goal {
-	protected final MobEntityWithAi mob;
+	protected final PathAwareEntity mob;
 	private final double speed;
 	private Path targetPath;
 	private BlockPos target;
@@ -28,8 +28,8 @@ public class MoveThroughVillageGoal extends Goal {
 	private final int distance;
 	private final BooleanSupplier doorPassingThroughGetter;
 
-	public MoveThroughVillageGoal(MobEntityWithAi mobEntityWithAi, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
-		this.mob = mobEntityWithAi;
+	public MoveThroughVillageGoal(PathAwareEntity pathAwareEntity, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
+		this.mob = pathAwareEntity;
 		this.speed = speed;
 		this.requiresNighttime = requiresNighttime;
 		this.distance = distance;

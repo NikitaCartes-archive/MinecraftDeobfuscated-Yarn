@@ -30,7 +30,7 @@ public class HuntHoglinTask<E extends PiglinEntity> extends Task<E> {
 
 	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
 		HoglinEntity hoglinEntity = (HoglinEntity)piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN).get();
-		PiglinBrain.angerAt(piglinEntity, hoglinEntity);
+		PiglinBrain.becomeAngryWith(piglinEntity, hoglinEntity);
 		PiglinBrain.rememberHunting(piglinEntity);
 		PiglinBrain.angerAtCloserTargets(piglinEntity, hoglinEntity);
 		PiglinBrain.rememberGroupHunting(piglinEntity);

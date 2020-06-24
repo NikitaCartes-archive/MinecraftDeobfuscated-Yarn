@@ -657,7 +657,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	/**
-	 * @param throwRandomly If true, the item will be thrown in a random direction from the entity regardless of which direction the tntity is facing
+	 * @param throwRandomly If true, the item will be thrown in a random direction from the entity regardless of which direction the entity is facing
 	 */
 	@Nullable
 	public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {

@@ -15,23 +15,23 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsGenericErrorScreen extends RealmsScreen {
-	private final Screen field_22695;
+	private final Screen parent;
 	private Text line1;
 	private Text line2;
 
-	public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, Screen screen) {
-		this.field_22695 = screen;
+	public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, Screen parent) {
+		this.parent = parent;
 		this.errorMessage(realmsServiceException);
 	}
 
-	public RealmsGenericErrorScreen(Text text, Screen screen) {
-		this.field_22695 = screen;
-		this.errorMessage(text);
+	public RealmsGenericErrorScreen(Text line2, Screen parent) {
+		this.parent = parent;
+		this.errorMessage(line2);
 	}
 
-	public RealmsGenericErrorScreen(Text text, Text text2, Screen screen) {
-		this.field_22695 = screen;
-		this.errorMessage(text, text2);
+	public RealmsGenericErrorScreen(Text line1, Text line2, Screen parent) {
+		this.parent = parent;
+		this.errorMessage(line1, line2);
 	}
 
 	private void errorMessage(RealmsServiceException realmsServiceException) {
@@ -45,22 +45,20 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 		}
 	}
 
-	private void errorMessage(Text text) {
+	private void errorMessage(Text line2) {
 		this.line1 = new LiteralText("An error occurred: ");
-		this.line2 = text;
+		this.line2 = line2;
 	}
 
-	private void errorMessage(Text text, Text text2) {
-		this.line1 = text;
-		this.line2 = text2;
+	private void errorMessage(Text line1, Text line2) {
+		this.line1 = line1;
+		this.line2 = line2;
 	}
 
 	@Override
 	public void init() {
 		Realms.narrateNow(this.line1.getString() + ": " + this.line2.getString());
-		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), buttonWidget -> this.client.openScreen(this.field_22695))
-		);
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), buttonWidget -> this.client.openScreen(this.parent)));
 	}
 
 	@Override

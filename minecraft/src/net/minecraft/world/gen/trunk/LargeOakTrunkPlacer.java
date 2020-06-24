@@ -25,7 +25,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	}
 
 	@Override
-	protected TrunkPlacerType<?> method_28903() {
+	protected TrunkPlacerType<?> getType() {
 		return TrunkPlacerType.FANCY_TRUNK_PLACER;
 	}
 

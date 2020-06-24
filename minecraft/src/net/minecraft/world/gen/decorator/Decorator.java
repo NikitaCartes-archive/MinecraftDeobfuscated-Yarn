@@ -93,24 +93,24 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NopeDecoratorConfig> END_ISLAND = register("end_island", new EndIslandDecorator(NopeDecoratorConfig.field_24891));
 	public static final Decorator<NopeDecoratorConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantDecorator(NopeDecoratorConfig.field_24891));
 	public static final Decorator<NopeDecoratorConfig> END_GATEWAY = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig.field_24891));
-	private final Codec<ConfiguredDecorator<DC>> field_24983;
+	private final Codec<ConfiguredDecorator<DC>> codec;
 
 	private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String registryName, G decorator) {
 		return Registry.register(Registry.DECORATOR, registryName, decorator);
 	}
 
-	public Decorator(Codec<DC> codec) {
-		this.field_24983 = codec.fieldOf("config")
+	public Decorator(Codec<DC> configCodec) {
+		this.codec = configCodec.fieldOf("config")
 			.<ConfiguredDecorator<DC>>xmap(decoratorConfig -> new ConfiguredDecorator<>(this, (DC)decoratorConfig), configuredDecorator -> configuredDecorator.config)
 			.codec();
 	}
 
-	public ConfiguredDecorator<DC> configure(DC decoratorConfig) {
-		return new ConfiguredDecorator<>(this, decoratorConfig);
+	public ConfiguredDecorator<DC> configure(DC config) {
+		return new ConfiguredDecorator<>(this, config);
 	}
 
-	public Codec<ConfiguredDecorator<DC>> method_28928() {
-		return this.field_24983;
+	public Codec<ConfiguredDecorator<DC>> getCodec() {
+		return this.codec;
 	}
 
 	protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(

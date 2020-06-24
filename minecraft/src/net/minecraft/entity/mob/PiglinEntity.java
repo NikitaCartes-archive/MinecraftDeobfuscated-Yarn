@@ -264,7 +264,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		} else if (!this.world.isClient) {
 			return PiglinBrain.playerInteract(this, player, hand);
 		} else {
-			boolean bl = PiglinBrain.method_27086(this, player.getStackInHand(hand)) && this.getActivity() != PiglinEntity.Activity.ADMIRING_ITEM;
+			boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != PiglinEntity.Activity.ADMIRING_ITEM;
 			return bl ? ActionResult.SUCCESS : ActionResult.PASS;
 		}
 	}
@@ -349,7 +349,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	private void zombify(ServerWorld serverWorld) {
-		PiglinBrain.method_25948(this);
+		PiglinBrain.pickupItemWithOffHand(this);
 		this.inventory.clearToList().forEach(this::dropStack);
 		ZombifiedPiglinEntity zombifiedPiglinEntity = this.method_29243(EntityType.ZOMBIFIED_PIGLIN);
 		zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));

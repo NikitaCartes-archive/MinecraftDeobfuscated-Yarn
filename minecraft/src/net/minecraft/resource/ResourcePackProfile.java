@@ -193,8 +193,8 @@ public class ResourcePackProfile implements AutoCloseable {
 		TOP,
 		BOTTOM;
 
-		public <T, P extends ResourcePackProfile> int insert(List<T> items, T item, Function<T, P> profileGetter, boolean listInversed) {
-			ResourcePackProfile.InsertionPosition insertionPosition = listInversed ? this.inverse() : this;
+		public <T, P extends ResourcePackProfile> int insert(List<T> items, T item, Function<T, P> profileGetter, boolean listInverted) {
+			ResourcePackProfile.InsertionPosition insertionPosition = listInverted ? this.inverse() : this;
 			if (insertionPosition == BOTTOM) {
 				int i;
 				for (i = 0; i < items.size(); i++) {

@@ -140,8 +140,8 @@ public class CommandFunctionManager {
 		private final ServerCommandSource source;
 		private final CommandFunction.Element element;
 
-		public Entry(CommandFunctionManager manger, ServerCommandSource source, CommandFunction.Element element) {
-			this.manager = manger;
+		public Entry(CommandFunctionManager manager, ServerCommandSource source, CommandFunction.Element element) {
+			this.manager = manager;
 			this.source = source;
 			this.element = element;
 		}

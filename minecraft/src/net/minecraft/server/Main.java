@@ -171,7 +171,7 @@ public class Main {
 			}
 
 			if (optionSet.has(optionSpec5)) {
-				method_29173(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions().method_29575());
+				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions().getWorlds());
 			}
 
 			session.method_27425(modifiable, saveProperties);
@@ -216,11 +216,11 @@ public class Main {
 		}
 	}
 
-	private static void method_29173(
-		LevelStorage.Session session, DataFixer dataFixer, boolean bl, BooleanSupplier booleanSupplier, ImmutableSet<RegistryKey<World>> immutableSet
+	private static void forceUpgradeWorld(
+		LevelStorage.Session session, DataFixer dataFixer, boolean eraseCache, BooleanSupplier booleanSupplier, ImmutableSet<RegistryKey<World>> worlds
 	) {
 		LOGGER.info("Forcing world upgrade!");
-		WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, immutableSet, bl);
+		WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, worlds, eraseCache);
 		Text text = null;
 
 		while (!worldUpdater.isDone()) {

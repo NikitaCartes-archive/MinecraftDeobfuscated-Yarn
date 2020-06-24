@@ -83,7 +83,7 @@ public class ToastManager extends DrawableHelper {
 			return this.instance;
 		}
 
-		private float getDissapearProgress(long time) {
+		private float getDisappearProgress(long time) {
 			float f = MathHelper.clamp((float)(time - this.field_2243) / 600.0F, 0.0F, 1.0F);
 			f *= f;
 			return this.visibility == Toast.Visibility.HIDE ? 1.0F - f : f;
@@ -102,12 +102,12 @@ public class ToastManager extends DrawableHelper {
 
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(
-				(float)x - (float)this.instance.method_29049() * this.getDissapearProgress(l), (float)(y * this.instance.method_29050()), (float)(800 + y)
+				(float)x - (float)this.instance.method_29049() * this.getDisappearProgress(l), (float)(y * this.instance.method_29050()), (float)(800 + y)
 			);
 			Toast.Visibility visibility = this.instance.draw(matrices, ToastManager.this, l - this.field_2242);
 			RenderSystem.popMatrix();
 			if (visibility != this.visibility) {
-				this.field_2243 = l - (long)((int)((1.0F - this.getDissapearProgress(l)) * 600.0F));
+				this.field_2243 = l - (long)((int)((1.0F - this.getDisappearProgress(l)) * 600.0F));
 				this.visibility = visibility;
 				this.visibility.playSound(ToastManager.this.client.getSoundManager());
 			}

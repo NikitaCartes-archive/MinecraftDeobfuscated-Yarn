@@ -116,13 +116,13 @@ public class ScoreboardCommand {
 							CommandManager.literal("setdisplay")
 								.then(
 									CommandManager.argument("slot", ScoreboardSlotArgumentType.scoreboardSlot())
-										.executes(commandContext -> executeClearDisplay(commandContext.getSource(), ScoreboardSlotArgumentType.getScorebordSlot(commandContext, "slot")))
+										.executes(commandContext -> executeClearDisplay(commandContext.getSource(), ScoreboardSlotArgumentType.getScoreboardSlot(commandContext, "slot")))
 										.then(
 											CommandManager.argument("objective", ObjectiveArgumentType.objective())
 												.executes(
 													commandContext -> executeSetDisplay(
 															commandContext.getSource(),
-															ScoreboardSlotArgumentType.getScorebordSlot(commandContext, "slot"),
+															ScoreboardSlotArgumentType.getScoreboardSlot(commandContext, "slot"),
 															ObjectiveArgumentType.getObjective(commandContext, "objective")
 														)
 												)

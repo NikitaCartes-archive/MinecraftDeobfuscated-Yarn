@@ -43,7 +43,7 @@ public interface CommandSource {
 		return Collections.singleton(CommandSource.RelativePosition.ZERO_WORLD);
 	}
 
-	Set<RegistryKey<World>> method_29310();
+	Set<RegistryKey<World>> getWorldKeys();
 
 	boolean hasPermissionLevel(int level);
 
@@ -77,9 +77,9 @@ public interface CommandSource {
 		}
 	}
 
-	static CompletableFuture<Suggestions> suggestIdentifiers(Iterable<Identifier> candiates, SuggestionsBuilder builder, String string) {
+	static CompletableFuture<Suggestions> suggestIdentifiers(Iterable<Identifier> candidates, SuggestionsBuilder builder, String string) {
 		String string2 = builder.getRemaining().toLowerCase(Locale.ROOT);
-		forEachMatching(candiates, string2, string, identifier -> identifier, identifier -> builder.suggest(string + identifier));
+		forEachMatching(candidates, string2, string, identifier -> identifier, identifier -> builder.suggest(string + identifier));
 		return builder.buildFuture();
 	}
 

@@ -296,22 +296,22 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Override
-	public boolean method_30093(BlockPos blockPos, boolean bl, @Nullable Entity entity, int i) {
-		BlockState blockState = this.getBlockState(blockPos);
+	public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth) {
+		BlockState blockState = this.getBlockState(pos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
-			FluidState fluidState = this.getFluidState(blockPos);
+			FluidState fluidState = this.getFluidState(pos);
 			if (!(blockState.getBlock() instanceof AbstractFireBlock)) {
-				this.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+				this.syncWorldEvent(2001, pos, Block.getRawIdFromState(blockState));
 			}
 
-			if (bl) {
-				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(blockPos) : null;
-				Block.dropStacks(blockState, this, blockPos, blockEntity, entity, ItemStack.EMPTY);
+			if (drop) {
+				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(pos) : null;
+				Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			return this.setBlockState(blockPos, fluidState.getBlockState(), 3, i);
+			return this.setBlockState(pos, fluidState.getBlockState(), 3, maxUpdateDepth);
 		}
 	}
 

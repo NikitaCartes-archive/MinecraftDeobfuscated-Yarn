@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 public class DebugCommand {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final SimpleCommandExceptionType NOT_RUNNING_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning"));
+	private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning"));
 	private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.debug.alreadyRunning")
 	);
@@ -59,7 +59,7 @@ public class DebugCommand {
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = source.getMinecraftServer();
 		if (!minecraftServer.isDebugRunning()) {
-			throw NOT_RUNNING_EXCPETION.create();
+			throw NOT_RUNNING_EXCEPTION.create();
 		} else {
 			ProfileResult profileResult = minecraftServer.stopDebug();
 			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");

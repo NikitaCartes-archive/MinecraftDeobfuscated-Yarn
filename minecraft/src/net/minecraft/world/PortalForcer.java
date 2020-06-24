@@ -45,7 +45,7 @@ public class PortalForcer {
 			Vec3d vec3d3 = teleportTarget.velocity;
 			entity.setVelocity(vec3d3);
 			entity.yaw = yawOffset + (float)teleportTarget.yaw;
-			entity.positAfterTeleport(vec3d2.x, vec3d2.y, vec3d2.z);
+			entity.refreshPositionAfterTeleport(vec3d2.x, vec3d2.y, vec3d2.z);
 			return true;
 		}
 	}

@@ -128,7 +128,7 @@ public abstract class ChunkGenerator {
 		int j = chunkPos.x;
 		int k = chunkPos.z;
 		Biome biome = this.biomeSource.getBiomeForNoiseGen(chunkPos.x << 2, 0, chunkPos.z << 2);
-		BitSet bitSet = ((ProtoChunk)chunk).method_28510(carver);
+		BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
 
 		for (int l = j - 8; l <= j + 8; l++) {
 			for (int m = k - 8; m <= k + 8; m++) {

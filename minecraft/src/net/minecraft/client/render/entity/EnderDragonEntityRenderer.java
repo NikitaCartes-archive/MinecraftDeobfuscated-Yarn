@@ -419,7 +419,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			VertexConsumer vertices,
 			int light,
 			int overlay,
-			float offse,
+			float offset,
 			ModelPart modelPart,
 			ModelPart modelPart2,
 			ModelPart modelPart3,
@@ -428,12 +428,12 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			ModelPart modelPart6,
 			ModelPart modelPart7
 		) {
-			modelPart5.pitch = 1.0F + offse * 0.1F;
-			modelPart6.pitch = 0.5F + offse * 0.1F;
-			modelPart7.pitch = 0.75F + offse * 0.1F;
-			modelPart2.pitch = 1.3F + offse * 0.1F;
-			modelPart3.pitch = -0.5F - offse * 0.1F;
-			modelPart4.pitch = 0.75F + offse * 0.1F;
+			modelPart5.pitch = 1.0F + offset * 0.1F;
+			modelPart6.pitch = 0.5F + offset * 0.1F;
+			modelPart7.pitch = 0.75F + offset * 0.1F;
+			modelPart2.pitch = 1.3F + offset * 0.1F;
+			modelPart3.pitch = -0.5F - offset * 0.1F;
+			modelPart4.pitch = 0.75F + offset * 0.1F;
 			modelPart.render(matrices, vertices, light, overlay);
 			modelPart2.render(matrices, vertices, light, overlay);
 			modelPart5.render(matrices, vertices, light, overlay);

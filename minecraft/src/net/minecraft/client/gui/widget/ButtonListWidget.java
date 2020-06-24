@@ -43,10 +43,10 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		return super.getScrollbarPositionX() + 32;
 	}
 
-	public Optional<AbstractButtonWidget> method_29624(double d, double e) {
+	public Optional<AbstractButtonWidget> getHoveredButton(double mouseX, double mouseY) {
 		for (ButtonListWidget.ButtonEntry buttonEntry : this.children()) {
 			for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
-				if (abstractButtonWidget.isMouseOver(d, e)) {
+				if (abstractButtonWidget.isMouseOver(mouseX, mouseY)) {
 					return Optional.of(abstractButtonWidget);
 				}
 			}
@@ -76,9 +76,9 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.buttons.forEach(abstractButtonWidget -> {
-				abstractButtonWidget.y = y;
-				abstractButtonWidget.render(matrices, mouseX, mouseY, tickDelta);
+			this.buttons.forEach(button -> {
+				button.y = y;
+				button.render(matrices, mouseX, mouseY, tickDelta);
 			});
 		}
 

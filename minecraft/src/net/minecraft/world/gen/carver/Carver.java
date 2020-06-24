@@ -65,22 +65,22 @@ public abstract class Carver<C extends CarverConfig> {
 		Blocks.PACKED_ICE
 	);
 	protected Set<Fluid> carvableFluids = ImmutableSet.of(Fluids.WATER);
-	private final Codec<ConfiguredCarver<C>> field_24831;
+	private final Codec<ConfiguredCarver<C>> codec;
 	protected final int heightLimit;
 
 	private static <C extends CarverConfig, F extends Carver<C>> F register(String string, F carver) {
 		return Registry.register(Registry.CARVER, string, carver);
 	}
 
-	public Carver(Codec<C> codec, int heightLimit) {
+	public Carver(Codec<C> configCodec, int heightLimit) {
 		this.heightLimit = heightLimit;
-		this.field_24831 = codec.fieldOf("config")
+		this.codec = configCodec.fieldOf("config")
 			.<ConfiguredCarver<C>>xmap(carverConfig -> new ConfiguredCarver<>(this, (C)carverConfig), configuredCarver -> configuredCarver.config)
 			.codec();
 	}
 
-	public Codec<ConfiguredCarver<C>> method_28616() {
-		return this.field_24831;
+	public Codec<ConfiguredCarver<C>> getCodec() {
+		return this.codec;
 	}
 
 	public int getBranchFactor() {

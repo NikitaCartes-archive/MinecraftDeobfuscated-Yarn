@@ -131,7 +131,7 @@ public class FoxEntity extends AnimalEntity {
 		this.followFishGoal = new FollowTargetGoal(this, FishEntity.class, 20, false, false, livingEntity -> livingEntity instanceof SchoolingFishEntity);
 		this.goalSelector.add(0, new FoxEntity.FoxSwimGoal());
 		this.goalSelector.add(1, new FoxEntity.StopWanderingGoal());
-		this.goalSelector.add(2, new FoxEntity.EscapeWhenNotAggresiveGoal(2.2));
+		this.goalSelector.add(2, new FoxEntity.EscapeWhenNotAggressiveGoal(2.2));
 		this.goalSelector.add(3, new FoxEntity.MateGoal(1.0));
 		this.goalSelector
 			.add(
@@ -373,7 +373,7 @@ public class FoxEntity extends AnimalEntity {
 
 		for (UUID uUID : list) {
 			if (uUID != null) {
-				listTag.add(NbtHelper.fromUuidNew(uUID));
+				listTag.add(NbtHelper.fromUuid(uUID));
 			}
 		}
 
@@ -390,7 +390,7 @@ public class FoxEntity extends AnimalEntity {
 		ListTag listTag = tag.getList("Trusted", 11);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			this.addTrustedUuid(NbtHelper.toUuidNew(listTag.get(i)));
+			this.addTrustedUuid(NbtHelper.toUuid(listTag.get(i)));
 		}
 
 		this.setSleeping(tag.getBoolean("Sleeping"));
@@ -873,8 +873,8 @@ public class FoxEntity extends AnimalEntity {
 	public class EatSweetBerriesGoal extends MoveToTargetPosGoal {
 		protected int timer;
 
-		public EatSweetBerriesGoal(double speed, int rannge, int maxYDifference) {
-			super(FoxEntity.this, speed, rannge, maxYDifference);
+		public EatSweetBerriesGoal(double speed, int range, int maxYDifference) {
+			super(FoxEntity.this, speed, range, maxYDifference);
 		}
 
 		@Override
@@ -944,8 +944,8 @@ public class FoxEntity extends AnimalEntity {
 		}
 	}
 
-	class EscapeWhenNotAggresiveGoal extends EscapeDangerGoal {
-		public EscapeWhenNotAggresiveGoal(double speed) {
+	class EscapeWhenNotAggressiveGoal extends EscapeDangerGoal {
+		public EscapeWhenNotAggressiveGoal(double speed) {
 			super(FoxEntity.this, speed);
 		}
 

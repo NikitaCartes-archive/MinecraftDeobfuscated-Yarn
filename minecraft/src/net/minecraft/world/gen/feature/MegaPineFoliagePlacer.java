@@ -32,7 +32,7 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected FoliagePlacerType<?> method_28843() {
+	protected FoliagePlacerType<?> getType() {
 		return FoliagePlacerType.MEGA_PINE_FOLIAGE_PLACER;
 	}
 

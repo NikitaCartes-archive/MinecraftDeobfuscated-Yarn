@@ -52,8 +52,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.right = width;
 	}
 
-	public void method_29344(boolean bl) {
-		this.renderSelection = bl;
+	public void setRenderSelection(boolean renderSelection) {
+		this.renderSelection = renderSelection;
 	}
 
 	protected void setRenderHeader(boolean renderHeader, int headerHeight) {
@@ -150,7 +150,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
 	}
 
-	protected void renderBackground(MatrixStack matrixStack) {
+	protected void renderBackground(MatrixStack matrices) {
 	}
 
 	protected void renderDecorations(MatrixStack matrixStack, int i, int j) {
@@ -375,18 +375,18 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else if (keyCode == 264) {
-			this.moveSelection(EntryListWidget.class_5403.field_25662);
+			this.moveSelection(EntryListWidget.MoveDirection.DOWN);
 			return true;
 		} else if (keyCode == 265) {
-			this.moveSelection(EntryListWidget.class_5403.field_25661);
+			this.moveSelection(EntryListWidget.MoveDirection.UP);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected void moveSelection(EntryListWidget.class_5403 arg) {
-		this.method_30013(arg, entry -> true);
+	protected void moveSelection(EntryListWidget.MoveDirection direction) {
+		this.moveSelectionIf(direction, entry -> true);
 	}
 
 	protected void method_30015() {
@@ -397,8 +397,13 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 	}
 
-	protected void method_30013(EntryListWidget.class_5403 arg, Predicate<E> predicate) {
-		int i = arg == EntryListWidget.class_5403.field_25661 ? -1 : 1;
+	/**
+	 * Moves the selection in the specified direction until the predicate returns true.
+	 * 
+	 * @param direction The direction to move the selection.
+	 */
+	protected void moveSelectionIf(EntryListWidget.MoveDirection direction, Predicate<E> predicate) {
+		int i = direction == EntryListWidget.MoveDirection.UP ? -1 : 1;
 		if (!this.children().isEmpty()) {
 			int j = this.children().indexOf(this.getSelected());
 
@@ -425,44 +430,53 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return mouseY >= (double)this.top && mouseY <= (double)this.bottom && mouseX >= (double)this.left && mouseX <= (double)this.right;
 	}
 
-	protected void renderList(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
-		int m = this.getItemCount();
+	protected void renderList(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+		int i = this.getItemCount();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 
-		for (int n = 0; n < m; n++) {
-			int o = this.getRowTop(n);
-			int p = this.getRowBottom(n);
-			if (p >= this.top && o <= this.bottom) {
-				int q = j + n * this.itemHeight + this.headerHeight;
-				int r = this.itemHeight - 4;
-				E entry = this.getEntry(n);
-				int s = this.getRowWidth();
-				if (this.renderSelection && this.isSelectedItem(n)) {
-					int t = this.left + this.width / 2 - s / 2;
-					int u = this.left + this.width / 2 + s / 2;
+		for (int j = 0; j < i; j++) {
+			int k = this.getRowTop(j);
+			int l = this.getRowBottom(j);
+			if (l >= this.top && k <= this.bottom) {
+				int m = y + j * this.itemHeight + this.headerHeight;
+				int n = this.itemHeight - 4;
+				E entry = this.getEntry(j);
+				int o = this.getRowWidth();
+				if (this.renderSelection && this.isSelectedItem(j)) {
+					int p = this.left + this.width / 2 - o / 2;
+					int q = this.left + this.width / 2 + o / 2;
 					RenderSystem.disableTexture();
-					float g = this.isFocused() ? 1.0F : 0.5F;
-					RenderSystem.color4f(g, g, g, 1.0F);
+					float f = this.isFocused() ? 1.0F : 0.5F;
+					RenderSystem.color4f(f, f, f, 1.0F);
 					bufferBuilder.begin(7, VertexFormats.POSITION);
-					bufferBuilder.vertex((double)t, (double)(q + r + 2), 0.0).next();
-					bufferBuilder.vertex((double)u, (double)(q + r + 2), 0.0).next();
-					bufferBuilder.vertex((double)u, (double)(q - 2), 0.0).next();
-					bufferBuilder.vertex((double)t, (double)(q - 2), 0.0).next();
+					bufferBuilder.vertex((double)p, (double)(m + n + 2), 0.0).next();
+					bufferBuilder.vertex((double)q, (double)(m + n + 2), 0.0).next();
+					bufferBuilder.vertex((double)q, (double)(m - 2), 0.0).next();
+					bufferBuilder.vertex((double)p, (double)(m - 2), 0.0).next();
 					tessellator.draw();
 					RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
 					bufferBuilder.begin(7, VertexFormats.POSITION);
-					bufferBuilder.vertex((double)(t + 1), (double)(q + r + 1), 0.0).next();
-					bufferBuilder.vertex((double)(u - 1), (double)(q + r + 1), 0.0).next();
-					bufferBuilder.vertex((double)(u - 1), (double)(q - 1), 0.0).next();
-					bufferBuilder.vertex((double)(t + 1), (double)(q - 1), 0.0).next();
+					bufferBuilder.vertex((double)(p + 1), (double)(m + n + 1), 0.0).next();
+					bufferBuilder.vertex((double)(q - 1), (double)(m + n + 1), 0.0).next();
+					bufferBuilder.vertex((double)(q - 1), (double)(m - 1), 0.0).next();
+					bufferBuilder.vertex((double)(p + 1), (double)(m - 1), 0.0).next();
 					tessellator.draw();
 					RenderSystem.enableTexture();
 				}
 
-				int t = this.getRowLeft();
+				int p = this.getRowLeft();
 				entry.render(
-					matrixStack, n, o, t, s, r, k, l, this.isMouseOver((double)k, (double)l) && Objects.equals(this.getEntryAtPosition((double)k, (double)l), entry), f
+					matrices,
+					j,
+					k,
+					p,
+					o,
+					n,
+					mouseX,
+					mouseY,
+					this.isMouseOver((double)mouseX, (double)mouseY) && Objects.equals(this.getEntryAtPosition((double)mouseX, (double)mouseY), entry),
+					delta
 				);
 			}
 		}
@@ -548,9 +562,12 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 	}
 
+	/**
+	 * Represents the direction in which the selection is moved.
+	 */
 	@Environment(EnvType.CLIENT)
-	public static enum class_5403 {
-		field_25661,
-		field_25662;
+	public static enum MoveDirection {
+		UP,
+		DOWN;
 	}
 }

@@ -33,7 +33,7 @@ public interface Trader {
 
 	void setExperienceFromServer(int experience);
 
-	boolean isLevelledTrader();
+	boolean isLeveledTrader();
 
 	SoundEvent getYesSound();
 
@@ -48,7 +48,7 @@ public interface Trader {
 		if (optionalInt.isPresent()) {
 			TraderOfferList traderOfferList = this.getOffers();
 			if (!traderOfferList.isEmpty()) {
-				playerEntity.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i, this.getExperience(), this.isLevelledTrader(), this.canRefreshTrades());
+				playerEntity.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i, this.getExperience(), this.isLeveledTrader(), this.canRefreshTrades());
 			}
 		}
 	}

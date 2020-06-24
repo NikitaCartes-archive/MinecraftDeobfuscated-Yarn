@@ -138,18 +138,18 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return blockState;
 	}
 
-	public static void method_30094(BlockState blockState, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, int i) {
-		replaceBlock(blockState, blockState2, worldAccess, blockPos, i, 512);
+	public static void replaced(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags) {
+		replaceBlock(state, newState, world, pos, flags, 512);
 	}
 
-	public static void replaceBlock(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags, int i) {
+	public static void replaceBlock(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
 		if (newState != state) {
 			if (newState.isAir()) {
 				if (!world.isClient()) {
-					world.method_30093(pos, (flags & 32) == 0, null, i);
+					world.breakBlock(pos, (flags & 32) == 0, null, maxUpdateDepth);
 				}
 			} else {
-				world.setBlockState(pos, newState, flags & -33, i);
+				world.setBlockState(pos, newState, flags & -33, maxUpdateDepth);
 			}
 		}
 	}
@@ -381,7 +381,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		world.syncWorldEvent(player, 2001, pos, getRawIdFromState(state));
 		if (this.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
-			PiglinBrain.onGoldBlockBroken(player, false);
+			PiglinBrain.onGuardedBlockBroken(player, false);
 		}
 	}
 

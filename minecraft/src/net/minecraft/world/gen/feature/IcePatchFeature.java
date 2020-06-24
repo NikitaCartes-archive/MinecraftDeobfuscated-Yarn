@@ -42,7 +42,7 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 						for (int o = blockPos.getY() - 1; o <= blockPos.getY() + 1; o++) {
 							BlockPos blockPos2 = new BlockPos(k, o, l);
 							Block block = serverWorldAccess.getBlockState(blockPos2).getBlock();
-							if (isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+							if (isSoil(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
 								serverWorldAccess.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
 							}
 						}

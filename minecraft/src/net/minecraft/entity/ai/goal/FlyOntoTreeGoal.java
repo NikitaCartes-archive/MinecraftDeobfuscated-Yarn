@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.ai.TargetFinder;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -12,8 +12,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class FlyOntoTreeGoal extends WanderAroundFarGoal {
-	public FlyOntoTreeGoal(MobEntityWithAi mobEntityWithAi, double d) {
-		super(mobEntityWithAi, d);
+	public FlyOntoTreeGoal(PathAwareEntity pathAwareEntity, double d) {
+		super(pathAwareEntity, d);
 	}
 
 	@Nullable

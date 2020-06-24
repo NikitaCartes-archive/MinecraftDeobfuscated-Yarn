@@ -85,7 +85,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 		buildDoor(hashMap, "acacia_door", 3136);
 		buildDoor(hashMap, "dark_oak_door", 3152);
 	});
-	private static final Map<String, Dynamic<?>> noteblock = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
+	private static final Map<String, Dynamic<?>> noteBlock = DataFixUtils.make(Maps.<String, Dynamic<?>>newHashMap(), hashMap -> {
 		for (int i = 0; i < 26; i++) {
 			hashMap.put("true" + i, BlockStateFlattening.parseState("{Name:'minecraft:note_block',Properties:{powered:'true',note:'" + i + "'}}"));
 			hashMap.put("false" + i, BlockStateFlattening.parseState("{Name:'minecraft:note_block',Properties:{powered:'false',note:'" + i + "'}}"));
@@ -655,7 +655,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 									Dynamic<?> dynamic2 = this.removeBlockEntity(jxxxxx);
 									if (dynamic2 != null) {
 										String string = Boolean.toString(dynamic2.get("powered").asBoolean(false)) + (byte)Math.min(Math.max(dynamic2.get("note").asInt(0), 0), 24);
-										this.setBlock(jxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.noteblock.getOrDefault(string, ChunkPalettedStorageFix.noteblock.get("false0")));
+										this.setBlock(jxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.noteBlock.getOrDefault(string, ChunkPalettedStorageFix.noteBlock.get("false0")));
 									}
 								}
 								break;

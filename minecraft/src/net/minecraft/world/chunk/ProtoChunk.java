@@ -64,32 +64,32 @@ public class ProtoChunk implements Chunk {
 	private final Map<GenerationStep.Carver, BitSet> carvingMasks = new Object2ObjectArrayMap<>();
 	private volatile boolean lightOn;
 
-	public ProtoChunk(ChunkPos chunkPos, UpgradeData upgradeData) {
+	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData) {
 		this(
-			chunkPos,
+			pos,
 			upgradeData,
 			null,
-			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), chunkPos),
-			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, chunkPos)
+			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), pos),
+			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos)
 		);
 	}
 
 	public ProtoChunk(
-		ChunkPos chunkPos,
+		ChunkPos pos,
 		UpgradeData upgradeData,
-		@Nullable ChunkSection[] chunkSections,
+		@Nullable ChunkSection[] sections,
 		ChunkTickScheduler<Block> blockTickScheduler,
 		ChunkTickScheduler<Fluid> fluidTickScheduler
 	) {
-		this.pos = chunkPos;
+		this.pos = pos;
 		this.upgradeData = upgradeData;
 		this.blockTickScheduler = blockTickScheduler;
 		this.fluidTickScheduler = fluidTickScheduler;
-		if (chunkSections != null) {
-			if (this.sections.length == chunkSections.length) {
-				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
+		if (sections != null) {
+			if (this.sections.length == sections.length) {
+				System.arraycopy(sections, 0, this.sections, 0, this.sections.length);
 			} else {
-				LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", chunkSections.length, this.sections.length);
+				LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", sections.length, this.sections.length);
 			}
 		}
 	}
@@ -244,8 +244,8 @@ public class ProtoChunk implements Chunk {
 		return this.entities;
 	}
 
-	public void setBiomes(BiomeArray biomeArray) {
-		this.biomes = biomeArray;
+	public void setBiomes(BiomeArray biomes) {
+		this.biomes = biomes;
 	}
 
 	@Nullable
@@ -321,13 +321,13 @@ public class ProtoChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public StructureStart<?> getStructureStart(StructureFeature<?> structureFeature) {
-		return (StructureStart<?>)this.structureStarts.get(structureFeature);
+	public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
+		return (StructureStart<?>)this.structureStarts.get(structure);
 	}
 
 	@Override
-	public void setStructureStart(StructureFeature<?> structureFeature, StructureStart<?> start) {
-		this.structureStarts.put(structureFeature, start);
+	public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
+		this.structureStarts.put(structure, start);
 		this.shouldSave = true;
 	}
 
@@ -337,20 +337,20 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> map) {
+	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
 		this.structureStarts.clear();
-		this.structureStarts.putAll(map);
+		this.structureStarts.putAll(structureStarts);
 		this.shouldSave = true;
 	}
 
 	@Override
-	public LongSet getStructureReferences(StructureFeature<?> structureFeature) {
-		return (LongSet)this.structureReferences.computeIfAbsent(structureFeature, structureFeaturex -> new LongOpenHashSet());
+	public LongSet getStructureReferences(StructureFeature<?> structure) {
+		return (LongSet)this.structureReferences.computeIfAbsent(structure, structurex -> new LongOpenHashSet());
 	}
 
 	@Override
-	public void addStructureReference(StructureFeature<?> structureFeature, long reference) {
-		((LongSet)this.structureReferences.computeIfAbsent(structureFeature, structureFeaturex -> new LongOpenHashSet())).add(reference);
+	public void addStructureReference(StructureFeature<?> structure, long reference) {
+		((LongSet)this.structureReferences.computeIfAbsent(structure, structurex -> new LongOpenHashSet())).add(reference);
 		this.shouldSave = true;
 	}
 
@@ -433,15 +433,15 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public CompoundTag getBlockEntityTagAt(BlockPos pos) {
+	public CompoundTag getBlockEntityTag(BlockPos pos) {
 		return (CompoundTag)this.blockEntityTags.get(pos);
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag method_20598(BlockPos blockPos) {
-		BlockEntity blockEntity = this.getBlockEntity(blockPos);
-		return blockEntity != null ? blockEntity.toTag(new CompoundTag()) : (CompoundTag)this.blockEntityTags.get(blockPos);
+	public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+		BlockEntity blockEntity = this.getBlockEntity(pos);
+		return blockEntity != null ? blockEntity.toTag(new CompoundTag()) : (CompoundTag)this.blockEntityTags.get(pos);
 	}
 
 	@Override
@@ -455,7 +455,7 @@ public class ProtoChunk implements Chunk {
 		return (BitSet)this.carvingMasks.get(carver);
 	}
 
-	public BitSet method_28510(GenerationStep.Carver carver) {
+	public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver) {
 		return (BitSet)this.carvingMasks.computeIfAbsent(carver, carverx -> new BitSet(65536));
 	}
 

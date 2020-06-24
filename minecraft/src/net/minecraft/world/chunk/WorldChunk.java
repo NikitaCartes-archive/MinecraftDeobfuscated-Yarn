@@ -440,14 +440,14 @@ public class WorldChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public CompoundTag method_20598(BlockPos blockPos) {
-		BlockEntity blockEntity = this.getBlockEntity(blockPos);
+	public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+		BlockEntity blockEntity = this.getBlockEntity(pos);
 		if (blockEntity != null && !blockEntity.isRemoved()) {
 			CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 			compoundTag.putBoolean("keepPacked", false);
 			return compoundTag;
 		} else {
-			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.get(blockPos);
+			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.get(pos);
 			if (compoundTag != null) {
 				compoundTag = compoundTag.copy();
 				compoundTag.putBoolean("keepPacked", true);
@@ -508,7 +508,7 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public <T extends Entity> void getEntities(@Nullable EntityType<?> type, Box box, List<? super T> list, Predicate<? super T> predicate) {
+	public <T extends Entity> void getEntities(@Nullable EntityType<?> type, Box box, List<? super T> entityList, Predicate<? super T> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -517,13 +517,13 @@ public class WorldChunk implements Chunk {
 		for (int k = i; k <= j; k++) {
 			for (Entity entity : this.entitySections[k].getAllOfType(Entity.class)) {
 				if ((type == null || entity.getType() == type) && entity.getBoundingBox().intersects(box) && predicate.test(entity)) {
-					list.add(entity);
+					entityList.add(entity);
 				}
 			}
 		}
 	}
 
-	public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> result, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> entityList, @Nullable Predicate<? super T> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -532,7 +532,7 @@ public class WorldChunk implements Chunk {
 		for (int k = i; k <= j; k++) {
 			for (T entity : this.entitySections[k].getAllOfType(entityClass)) {
 				if (entity.getBoundingBox().intersects(box) && (predicate == null || predicate.test(entity))) {
-					result.add(entity);
+					entityList.add(entity);
 				}
 			}
 		}
@@ -548,21 +548,21 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int i) {
+	public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask) {
 		boolean bl = biomes != null;
-		Predicate<BlockPos> predicate = bl ? blockPos -> true : blockPos -> (i & 1 << (blockPos.getY() >> 4)) != 0;
+		Predicate<BlockPos> predicate = bl ? pos -> true : pos -> (verticalStripBitmask & 1 << (pos.getY() >> 4)) != 0;
 		Sets.newHashSet(this.blockEntities.keySet()).stream().filter(predicate).forEach(this.world::removeBlockEntity);
 
-		for (int j = 0; j < this.sections.length; j++) {
-			ChunkSection chunkSection = this.sections[j];
-			if ((i & 1 << j) == 0) {
+		for (int i = 0; i < this.sections.length; i++) {
+			ChunkSection chunkSection = this.sections[i];
+			if ((verticalStripBitmask & 1 << i) == 0) {
 				if (bl && chunkSection != EMPTY_SECTION) {
-					this.sections[j] = EMPTY_SECTION;
+					this.sections[i] = EMPTY_SECTION;
 				}
 			} else {
 				if (chunkSection == EMPTY_SECTION) {
-					chunkSection = new ChunkSection(j << 4);
-					this.sections[j] = chunkSection;
+					chunkSection = new ChunkSection(i << 4);
+					this.sections[i] = chunkSection;
 				}
 
 				chunkSection.fromPacket(buf);
@@ -612,7 +612,7 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public CompoundTag getBlockEntityTagAt(BlockPos pos) {
+	public CompoundTag getBlockEntityTag(BlockPos pos) {
 		return (CompoundTag)this.pendingBlockEntityTags.get(pos);
 	}
 
@@ -653,13 +653,13 @@ public class WorldChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public StructureStart<?> getStructureStart(StructureFeature<?> structureFeature) {
-		return (StructureStart<?>)this.structureStarts.get(structureFeature);
+	public StructureStart<?> getStructureStart(StructureFeature<?> structure) {
+		return (StructureStart<?>)this.structureStarts.get(structure);
 	}
 
 	@Override
-	public void setStructureStart(StructureFeature<?> structureFeature, StructureStart<?> start) {
-		this.structureStarts.put(structureFeature, start);
+	public void setStructureStart(StructureFeature<?> structure, StructureStart<?> start) {
+		this.structureStarts.put(structure, start);
 	}
 
 	@Override
@@ -668,19 +668,19 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> map) {
+	public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
 		this.structureStarts.clear();
-		this.structureStarts.putAll(map);
+		this.structureStarts.putAll(structureStarts);
 	}
 
 	@Override
-	public LongSet getStructureReferences(StructureFeature<?> structureFeature) {
-		return (LongSet)this.structureReferences.computeIfAbsent(structureFeature, structureFeaturex -> new LongOpenHashSet());
+	public LongSet getStructureReferences(StructureFeature<?> structure) {
+		return (LongSet)this.structureReferences.computeIfAbsent(structure, structurex -> new LongOpenHashSet());
 	}
 
 	@Override
-	public void addStructureReference(StructureFeature<?> structureFeature, long reference) {
-		((LongSet)this.structureReferences.computeIfAbsent(structureFeature, structureFeaturex -> new LongOpenHashSet())).add(reference);
+	public void addStructureReference(StructureFeature<?> structure, long reference) {
+		((LongSet)this.structureReferences.computeIfAbsent(structure, structurex -> new LongOpenHashSet())).add(reference);
 	}
 
 	@Override

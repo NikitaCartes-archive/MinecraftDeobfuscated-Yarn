@@ -39,7 +39,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 		int i = pos.getY();
 		if (i >= 1 && i + height + 1 < 256) {
 			Block block = world.getBlockState(pos.down()).getBlock();
-			if (!isDirt(block)) {
+			if (!isSoil(block)) {
 				return false;
 			} else {
 				for (int j = 0; j <= height; j++) {

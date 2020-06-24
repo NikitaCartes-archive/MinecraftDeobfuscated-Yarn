@@ -4,20 +4,20 @@ import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EscapeSunlightGoal extends Goal {
-	protected final MobEntityWithAi mob;
+	protected final PathAwareEntity mob;
 	private double targetX;
 	private double targetY;
 	private double targetZ;
 	private final double speed;
 	private final World world;
 
-	public EscapeSunlightGoal(MobEntityWithAi mob, double speed) {
+	public EscapeSunlightGoal(PathAwareEntity mob, double speed) {
 		this.mob = mob;
 		this.speed = speed;
 		this.world = mob.world;

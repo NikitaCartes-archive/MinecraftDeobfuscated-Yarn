@@ -57,7 +57,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
@@ -89,7 +89,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	private static final TrackedData<Byte> multipleByteTracker = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Integer> anger = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final IntRange field_25363 = Durations.betweenSeconds(20, 39);
-	private UUID field_25364;
+	private UUID targetUuid;
 	private float currentPitch;
 	private float lastPitch;
 	private int ticksSinceSting;
@@ -361,12 +361,12 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	@Override
 	public UUID getAngryAt() {
-		return this.field_25364;
+		return this.targetUuid;
 	}
 
 	@Override
 	public void setAngryAt(@Nullable UUID uuid) {
-		this.field_25364 = uuid;
+		this.targetUuid = uuid;
 	}
 
 	@Override
@@ -1215,7 +1215,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	class StingGoal extends MeleeAttackGoal {
-		StingGoal(MobEntityWithAi mob, double speed, boolean pauseWhenMobIdle) {
+		StingGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
 			super(mob, speed, pauseWhenMobIdle);
 		}
 

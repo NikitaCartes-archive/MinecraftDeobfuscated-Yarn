@@ -6,7 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 
 public class SimpleBlockStateProvider extends BlockStateProvider {
-	public static final Codec<SimpleBlockStateProvider> field_24945 = BlockState.CODEC
+	public static final Codec<SimpleBlockStateProvider> CODEC = BlockState.CODEC
 		.fieldOf("state")
 		.<SimpleBlockStateProvider>xmap(SimpleBlockStateProvider::new, simpleBlockStateProvider -> simpleBlockStateProvider.state)
 		.codec();
@@ -17,7 +17,7 @@ public class SimpleBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	protected BlockStateProviderType<?> method_28862() {
+	protected BlockStateProviderType<?> getType() {
 		return BlockStateProviderType.SIMPLE_STATE_PROVIDER;
 	}
 

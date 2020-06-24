@@ -113,7 +113,7 @@ public class Raid {
 			ListTag listTag = tag.getList("HeroesOfTheVillage", 11);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				this.heroesOfTheVillage.add(NbtHelper.toUuidNew(listTag.get(i)));
+				this.heroesOfTheVillage.add(NbtHelper.toUuid(listTag.get(i)));
 			}
 		}
 	}
@@ -712,7 +712,7 @@ public class Raid {
 		ListTag listTag = new ListTag();
 
 		for (UUID uUID : this.heroesOfTheVillage) {
-			listTag.add(NbtHelper.fromUuidNew(uUID));
+			listTag.add(NbtHelper.fromUuid(uUID));
 		}
 
 		tag.put("HeroesOfTheVillage", listTag);

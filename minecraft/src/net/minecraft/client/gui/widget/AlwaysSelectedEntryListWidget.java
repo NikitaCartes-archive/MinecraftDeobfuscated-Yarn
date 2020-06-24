@@ -19,7 +19,7 @@ public abstract class AlwaysSelectedEntryListWidget<E extends EntryListWidget.En
 		} else {
 			this.inFocus = !this.inFocus;
 			if (this.inFocus && this.getSelected() == null && this.getItemCount() > 0) {
-				this.moveSelection(EntryListWidget.class_5403.field_25662);
+				this.moveSelection(EntryListWidget.MoveDirection.DOWN);
 			} else if (this.inFocus && this.getSelected() != null) {
 				this.method_30015();
 			}

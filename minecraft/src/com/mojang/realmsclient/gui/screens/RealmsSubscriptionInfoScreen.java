@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Screen lastScreen;
+	private final Screen parent;
 	private final RealmsServer serverData;
 	private final Screen mainScreen;
 	private final String subscriptionTitle;
@@ -38,10 +38,10 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private String startDate;
 	private Subscription.SubscriptionType type;
 
-	public RealmsSubscriptionInfoScreen(Screen screen, RealmsServer serverData, Screen screen2) {
-		this.lastScreen = screen;
+	public RealmsSubscriptionInfoScreen(Screen parent, RealmsServer serverData, Screen mainScreen) {
+		this.parent = parent;
 		this.serverData = serverData;
-		this.mainScreen = screen2;
+		this.mainScreen = mainScreen;
 		this.subscriptionTitle = I18n.translate("mco.configure.world.subscription.title");
 		this.subscriptionStartLabelText = I18n.translate("mco.configure.world.subscription.start");
 		this.timeLeftLabelText = I18n.translate("mco.configure.world.subscription.timeleft");
@@ -70,7 +70,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				}
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen)));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
 		if (this.serverData.expired) {
 			this.addButton(new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.delete.button"), buttonWidget -> {
 				Text text = new TranslatableText("mco.configure.world.delete.question.line1");
@@ -110,7 +110,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 			this.type = subscription.type;
 		} catch (RealmsServiceException var5) {
 			LOGGER.error("Couldn't get subscription");
-			this.client.openScreen(new RealmsGenericErrorScreen(var5, this.lastScreen));
+			this.client.openScreen(new RealmsGenericErrorScreen(var5, this.parent));
 		}
 	}
 
@@ -128,7 +128,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 256) {
-			this.client.openScreen(this.lastScreen);
+			this.client.openScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);

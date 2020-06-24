@@ -21,7 +21,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 	}
 
 	@Override
-	protected TrunkPlacerType<?> method_28903() {
+	protected TrunkPlacerType<?> getType() {
 		return TrunkPlacerType.FORKING_TRUNK_PLACER;
 	}
 

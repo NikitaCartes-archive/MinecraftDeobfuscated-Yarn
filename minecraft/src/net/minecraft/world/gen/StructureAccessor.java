@@ -14,33 +14,29 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class StructureAccessor {
-	private final WorldAccess field_24404;
-	private final GeneratorOptions field_24497;
+	private final WorldAccess world;
+	private final GeneratorOptions options;
 
-	public StructureAccessor(WorldAccess worldAccess, GeneratorOptions generatorOptions) {
-		this.field_24404 = worldAccess;
-		this.field_24497 = generatorOptions;
+	public StructureAccessor(WorldAccess world, GeneratorOptions options) {
+		this.world = world;
+		this.options = options;
 	}
 
-	public StructureAccessor method_29951(ChunkRegion chunkRegion) {
-		if (chunkRegion.getWorld() != this.field_24404) {
-			throw new IllegalStateException("Using invalid feature manager (source level: " + chunkRegion.getWorld() + ", region: " + chunkRegion);
+	public StructureAccessor method_29951(ChunkRegion region) {
+		if (region.getWorld() != this.world) {
+			throw new IllegalStateException("Using invalid feature manager (source level: " + region.getWorld() + ", region: " + region);
 		} else {
-			return new StructureAccessor(chunkRegion, this.field_24497);
+			return new StructureAccessor(region, this.options);
 		}
 	}
 
 	public Stream<? extends StructureStart<?>> getStructuresWithChildren(ChunkSectionPos pos, StructureFeature<?> feature) {
-		return this.field_24404
+		return this.world
 			.getChunk(pos.getSectionX(), pos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES)
 			.getStructureReferences(feature)
 			.stream()
-			.map(long_ -> ChunkSectionPos.from(new ChunkPos(long_), 0))
-			.map(
-				chunkSectionPos -> this.getStructureStart(
-						chunkSectionPos, feature, this.field_24404.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS)
-					)
-			)
+			.map(posx -> ChunkSectionPos.from(new ChunkPos(posx), 0))
+			.map(posx -> this.getStructureStart(posx, feature, this.world.getChunk(posx.getSectionX(), posx.getSectionZ(), ChunkStatus.STRUCTURE_STARTS)))
 			.filter(structureStart -> structureStart != null && structureStart.hasChildren());
 	}
 
@@ -57,15 +53,15 @@ public class StructureAccessor {
 		holder.addStructureReference(feature, reference);
 	}
 
-	public boolean method_27834() {
-		return this.field_24497.shouldGenerateStructures();
+	public boolean shouldGenerateStructures() {
+		return this.options.shouldGenerateStructures();
 	}
 
 	public StructureStart<?> method_28388(BlockPos blockPos, boolean bl, StructureFeature<?> structureFeature) {
 		return DataFixUtils.orElse(
 			this.getStructuresWithChildren(ChunkSectionPos.from(blockPos), structureFeature)
 				.filter(structureStart -> structureStart.getBoundingBox().contains(blockPos))
-				.filter(structureStart -> !bl || structureStart.getChildren().stream().anyMatch(structurePiece -> structurePiece.getBoundingBox().contains(blockPos)))
+				.filter(structureStart -> !bl || structureStart.getChildren().stream().anyMatch(piece -> piece.getBoundingBox().contains(blockPos)))
 				.findFirst(),
 			StructureStart.DEFAULT
 		);

@@ -38,7 +38,7 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 					if (random.nextFloat() <= 0.25F) {
 						Direction direction2 = direction.getOpposite();
 						BlockPos blockPos2 = blockPos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
-						if (Feature.method_27370(world, blockPos2)) {
+						if (Feature.isAir(world, blockPos2)) {
 							BlockState blockState = Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction);
 							this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
 						}

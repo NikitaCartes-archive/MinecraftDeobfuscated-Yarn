@@ -405,7 +405,7 @@ public class Biome {
 		BlockPos pos
 	) {
 		int i = 0;
-		if (structureAccessor.method_27834()) {
+		if (structureAccessor.shouldGenerateStructures()) {
 			for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE) {
 				if (structureFeature.method_28663() == step) {
 					chunkRandom.setDecoratorSeed(populationSeed, i, step.ordinal());

@@ -12,7 +12,7 @@ import net.minecraft.world.chunk.Chunk;
 public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
 	private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
-	private static final BlockState TERACOTTA = Blocks.TERRACOTTA.getDefaultState();
+	private static final BlockState TERRACOTTA = Blocks.TERRACOTTA.getDefaultState();
 
 	public ErodedBadlandsSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
 		super(codec);
@@ -88,7 +88,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 							if (s < 64 || s > 127) {
 								blockState6 = ORANGE_TERRACOTTA;
 							} else if (bl) {
-								blockState6 = TERACOTTA;
+								blockState6 = TERRACOTTA;
 							} else {
 								blockState6 = this.calculateLayerBlockState(i, s, j);
 							}

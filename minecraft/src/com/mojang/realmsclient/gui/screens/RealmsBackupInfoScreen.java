@@ -17,12 +17,12 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupInfoScreen extends RealmsScreen {
-	private final Screen lastScreen;
+	private final Screen parent;
 	private final Backup backup;
 	private RealmsBackupInfoScreen.BackupInfoList backupInfoList;
 
-	public RealmsBackupInfoScreen(Screen screen, Backup backup) {
-		this.lastScreen = screen;
+	public RealmsBackupInfoScreen(Screen parent, Backup backup) {
+		this.parent = parent;
 		this.backup = backup;
 	}
 
@@ -34,7 +34,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	public void init() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen))
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent))
 		);
 		this.backupInfoList = new RealmsBackupInfoScreen.BackupInfoList(this.client);
 		this.addChild(this.backupInfoList);
@@ -49,7 +49,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 256) {
-			this.client.openScreen(this.lastScreen);
+			this.client.openScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -93,7 +93,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	class BackupInfoList extends AlwaysSelectedEntryListWidget<RealmsBackupInfoScreen.class_5344> {
 		public BackupInfoList(MinecraftClient minecraftClient) {
 			super(minecraftClient, RealmsBackupInfoScreen.this.width, RealmsBackupInfoScreen.this.height, 32, RealmsBackupInfoScreen.this.height - 64, 36);
-			this.method_29344(false);
+			this.setRenderSelection(false);
 			if (RealmsBackupInfoScreen.this.backup.changeList != null) {
 				RealmsBackupInfoScreen.this.backup.changeList.forEach((string, string2) -> this.addEntry(RealmsBackupInfoScreen.this.new class_5344(string, string2)));
 			}

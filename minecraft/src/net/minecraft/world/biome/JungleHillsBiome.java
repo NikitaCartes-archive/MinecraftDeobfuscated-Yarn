@@ -21,7 +21,7 @@ public final class JungleHillsBiome extends Biome {
 				.parent(null)
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_PYRAMID);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.JUNGLE_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

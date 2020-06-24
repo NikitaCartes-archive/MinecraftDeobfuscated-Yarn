@@ -233,11 +233,11 @@ public abstract class Option {
 		(gameOptions, integer) -> gameOptions.chatVisibility = ChatVisibility.byId((gameOptions.chatVisibility.getId() + integer) % 3),
 		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.chatVisibility.getTranslationKey()))
 	);
-	private static final Text field_25672 = new TranslatableText("options.graphics.fast.tooltip");
-	private static final Text field_25673 = new TranslatableText(
+	private static final Text FAST_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fast.tooltip");
+	private static final Text FABULOUS_GRAPHICS_TOOLTIP = new TranslatableText(
 		"options.graphics.fabulous.tooltip", new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC)
 	);
-	private static final Text field_25674 = new TranslatableText("options.graphics.fancy.tooltip");
+	private static final Text FANCY_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fancy.tooltip");
 	public static final CyclingOption GRAPHICS = new CyclingOption(
 		"options.graphics",
 		(options, count) -> {
@@ -257,13 +257,13 @@ public abstract class Option {
 		(options, cyclingOption) -> {
 			switch (options.graphicsMode) {
 				case FAST:
-					cyclingOption.method_29618(MinecraftClient.getInstance().textRenderer.wrapLines(field_25672, 200));
+					cyclingOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FAST_GRAPHICS_TOOLTIP, 200));
 					break;
 				case FANCY:
-					cyclingOption.method_29618(MinecraftClient.getInstance().textRenderer.wrapLines(field_25674, 200));
+					cyclingOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FANCY_GRAPHICS_TOOLTIP, 200));
 					break;
 				case FABULOUS:
-					cyclingOption.method_29618(MinecraftClient.getInstance().textRenderer.wrapLines(field_25673, 200));
+					cyclingOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FABULOUS_GRAPHICS_TOOLTIP, 200));
 			}
 
 			TranslatableText translatableText = new TranslatableText(options.graphicsMode.getTranslationKey());
@@ -407,11 +407,11 @@ public abstract class Option {
 		"options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, boolean_) -> gameOptions.bobView = boolean_
 	);
 	private final String key;
-	private Optional<List<StringRenderable>> field_25442;
+	private Optional<List<StringRenderable>> tooltip;
 
 	public Option(String key) {
 		this.key = key;
-		this.field_25442 = Optional.empty();
+		this.tooltip = Optional.empty();
 	}
 
 	public abstract AbstractButtonWidget createButton(GameOptions options, int x, int y, int width);
@@ -420,11 +420,11 @@ public abstract class Option {
 		return new TranslatableText(this.key).append(": ");
 	}
 
-	public void method_29618(List<StringRenderable> list) {
-		this.field_25442 = Optional.of(list);
+	public void setTooltip(List<StringRenderable> tooltip) {
+		this.tooltip = Optional.of(tooltip);
 	}
 
-	public Optional<List<StringRenderable>> method_29619() {
-		return this.field_25442;
+	public Optional<List<StringRenderable>> getTooltip() {
+		return this.tooltip;
 	}
 }

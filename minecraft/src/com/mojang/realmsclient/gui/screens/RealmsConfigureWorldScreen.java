@@ -35,7 +35,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	private static final Identifier EXPIRED_ICON = new Identifier("realms", "textures/gui/realms/expired_icon.png");
 	private static final Identifier EXPIRES_SOON_ICON = new Identifier("realms", "textures/gui/realms/expires_soon_icon.png");
 	private Text toolTip;
-	private final RealmsMainScreen lastScreen;
+	private final RealmsMainScreen parent;
 	@Nullable
 	private RealmsServer server;
 	private final long serverId;
@@ -52,8 +52,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	private int animTick;
 	private int clicks;
 
-	public RealmsConfigureWorldScreen(RealmsMainScreen lastScreen, long serverId) {
-		this.lastScreen = lastScreen;
+	public RealmsConfigureWorldScreen(RealmsMainScreen parent, long serverId) {
+		this.parent = parent;
 		this.serverId = serverId;
 	}
 
@@ -93,7 +93,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				100,
 				20,
 				new TranslatableText("mco.configure.world.buttons.subscription"),
-				buttonWidget -> this.client.openScreen(new RealmsSubscriptionInfoScreen(this, this.server.clone(), this.lastScreen))
+				buttonWidget -> this.client.openScreen(new RealmsSubscriptionInfoScreen(this, this.server.clone(), this.parent))
 			)
 		);
 
@@ -270,10 +270,10 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 
 	private void backButtonClicked() {
 		if (this.stateChanged) {
-			this.lastScreen.removeSelection();
+			this.parent.removeSelection();
 		}
 
-		this.client.openScreen(this.lastScreen);
+		this.client.openScreen(this.parent);
 	}
 
 	private void fetchServerData(long worldId) {
@@ -292,7 +292,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				}
 			} catch (RealmsServiceException var5) {
 				LOGGER.error("Couldn't get own world");
-				this.client.execute(() -> this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(var5.getMessage()), this.lastScreen)));
+				this.client.execute(() -> this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(var5.getMessage()), this.parent)));
 			}
 		}).start();
 	}
@@ -308,9 +308,9 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 
 	private void joinRealm(RealmsServer serverData) {
 		if (this.server.state == RealmsServer.State.OPEN) {
-			this.lastScreen.play(serverData, new RealmsConfigureWorldScreen(this.lastScreen.newScreen(), this.serverId));
+			this.parent.play(serverData, new RealmsConfigureWorldScreen(this.parent.newScreen(), this.serverId));
 		} else {
-			this.openTheWorld(true, new RealmsConfigureWorldScreen(this.lastScreen.newScreen(), this.serverId));
+			this.openTheWorld(true, new RealmsConfigureWorldScreen(this.parent.newScreen(), this.serverId));
 		}
 	}
 
@@ -331,7 +331,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 						if (bl) {
 							this.client
 								.openScreen(
-									new RealmsLongRunningMcoTaskScreen(this.lastScreen, new SwitchSlotTask(serverData.id, selectedSlot, () -> this.client.openScreen(this.getNewScreen())))
+									new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(serverData.id, selectedSlot, () -> this.client.openScreen(this.getNewScreen())))
 								);
 						} else {
 							this.client.openScreen(this);
@@ -512,7 +512,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	}
 
 	public void openTheWorld(boolean join, Screen screen) {
-		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(screen, new OpenServerTask(this.server, this, this.lastScreen, join)));
+		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(screen, new OpenServerTask(this.server, this, this.parent, join)));
 	}
 
 	public void closeTheWorld(Screen screen) {
@@ -527,12 +527,12 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	protected void callback(@Nullable WorldTemplate template) {
 		if (template != null) {
 			if (WorldTemplate.WorldTemplateType.MINIGAME == template.type) {
-				this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new SwitchMinigameTask(this.server.id, template, this.getNewScreen())));
+				this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchMinigameTask(this.server.id, template, this.getNewScreen())));
 			}
 		}
 	}
 
 	public RealmsConfigureWorldScreen getNewScreen() {
-		return new RealmsConfigureWorldScreen(this.lastScreen, this.serverId);
+		return new RealmsConfigureWorldScreen(this.parent, this.serverId);
 	}
 }

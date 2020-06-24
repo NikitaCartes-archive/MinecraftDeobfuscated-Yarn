@@ -45,16 +45,16 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final ReentrantLock uploadLock = new ReentrantLock();
+	private static final ReentrantLock UPLOAD_LOCK = new ReentrantLock();
 	private static final String[] DOTS = new String[]{"", ".", ". .", ". . ."};
-	private final RealmsResetWorldScreen lastScreen;
+	private final RealmsResetWorldScreen parent;
 	private final LevelSummary selectedLevel;
 	private final long worldId;
 	private final int slotId;
 	private final UploadStatus uploadStatus;
 	private final RateLimiter narrationRateLimiter;
 	private volatile Text[] field_20503;
-	private volatile Text status;
+	private volatile Text status = new TranslatableText("mco.upload.preparing");
 	private volatile String progress;
 	private volatile boolean cancelled;
 	private volatile boolean uploadFinished;
@@ -68,10 +68,10 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private long bytesPersSecond;
 	private final Runnable field_22728;
 
-	public RealmsUploadScreen(long worldId, int slotId, RealmsResetWorldScreen lastScreen, LevelSummary levelSummary, Runnable runnable) {
+	public RealmsUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, LevelSummary levelSummary, Runnable runnable) {
 		this.worldId = worldId;
 		this.slotId = slotId;
-		this.lastScreen = lastScreen;
+		this.parent = parent;
 		this.selectedLevel = levelSummary;
 		this.uploadStatus = new UploadStatus();
 		this.narrationRateLimiter = RateLimiter.create(0.1F);
@@ -84,10 +84,10 @@ public class RealmsUploadScreen extends RealmsScreen {
 		this.backButton = new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.BACK, buttonWidget -> this.onBack());
 		this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 42, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCancel()));
 		if (!this.uploadStarted) {
-			if (this.lastScreen.slot == -1) {
+			if (this.parent.slot == -1) {
 				this.upload();
 			} else {
-				this.lastScreen.switchSlot(() -> {
+				this.parent.switchSlot(() -> {
 					if (!this.uploadStarted) {
 						this.uploadStarted = true;
 						this.client.openScreen(this);
@@ -109,7 +109,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 
 	private void onCancel() {
 		this.cancelled = true;
-		this.client.openScreen(this.lastScreen);
+		this.client.openScreen(this.parent);
 	}
 
 	@Override
@@ -241,8 +241,9 @@ public class RealmsUploadScreen extends RealmsScreen {
 					long l = this.worldId;
 
 					try {
-						if (uploadLock.tryLock(1L, TimeUnit.SECONDS)) {
-							this.status = new TranslatableText("mco.upload.preparing");
+						if (!UPLOAD_LOCK.tryLock(1L, TimeUnit.SECONDS)) {
+							this.status = new TranslatableText("mco.upload.close.failure");
+						} else {
 							UploadInfo uploadInfo = null;
 
 							for (int i = 0; i < 20; i++) {
@@ -331,8 +332,8 @@ public class RealmsUploadScreen extends RealmsScreen {
 						LOGGER.error("Could not acquire upload lock");
 					} finally {
 						this.uploadFinished = true;
-						if (uploadLock.isHeldByCurrentThread()) {
-							uploadLock.unlock();
+						if (UPLOAD_LOCK.isHeldByCurrentThread()) {
+							UPLOAD_LOCK.unlock();
 							this.showDots = false;
 							this.children.clear();
 							this.addButton(this.backButton);

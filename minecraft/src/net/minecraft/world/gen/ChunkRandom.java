@@ -86,7 +86,7 @@ public class ChunkRandom extends Random {
 
 	/**
 	 * Seeds the randomizer to generate larger features such as caves, ravines, mineshafts
-	 * and strongholds. It is also used to initiate structure start behaviour such as rotation.
+	 * and strongholds. It is also used to initiate structure start behavior such as rotation.
 	 * 
 	 * <p>Similar to the population seed, only the 48 lowest bits of the world seed affect the
 	 * output since it the upper 16 bits are truncated in the setSeed() call.</p>

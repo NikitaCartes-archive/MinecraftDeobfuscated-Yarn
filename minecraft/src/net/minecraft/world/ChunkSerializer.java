@@ -109,7 +109,7 @@ public class ChunkSerializer {
 		long l = compoundTag.getLong("InhabitedTime");
 		ChunkStatus.ChunkType chunkType = getChunkType(tag);
 		Chunk chunk;
-		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
+		if (chunkType == ChunkStatus.ChunkType.field_12807) {
 			TickScheduler<Block> tickScheduler;
 			if (compoundTag.contains("TileTicks", 9)) {
 				tickScheduler = SimpleTickScheduler.fromNbt(compoundTag.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get);
@@ -125,7 +125,7 @@ public class ChunkSerializer {
 			}
 
 			chunk = new WorldChunk(
-				world.getWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, worldChunk -> writeEntities(compoundTag, worldChunk)
+				world.getWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, chunkx -> writeEntities(compoundTag, chunkx)
 			);
 		} else {
 			ProtoChunk protoChunk = new ProtoChunk(pos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
@@ -177,7 +177,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
+		if (chunkType == ChunkStatus.ChunkType.field_12807) {
 			return new ReadOnlyChunk((WorldChunk)chunk);
 		} else {
 			ProtoChunk protoChunk2 = (ProtoChunk)chunk;
@@ -276,7 +276,7 @@ public class ChunkSerializer {
 		ListTag listTag2 = new ListTag();
 
 		for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
-			CompoundTag compoundTag4 = chunk.method_20598(blockPos);
+			CompoundTag compoundTag4 = chunk.getPackedBlockEntityTag(blockPos);
 			if (compoundTag4 != null) {
 				listTag2.add(compoundTag4);
 			}
@@ -284,7 +284,7 @@ public class ChunkSerializer {
 
 		compoundTag2.put("TileEntities", listTag2);
 		ListTag listTag3 = new ListTag();
-		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
+		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
 			WorldChunk worldChunk = (WorldChunk)chunk;
 			worldChunk.setUnsaved(false);
 
@@ -354,7 +354,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		return ChunkStatus.ChunkType.PROTOCHUNK;
+		return ChunkStatus.ChunkType.field_12808;
 	}
 
 	private static void writeEntities(CompoundTag tag, WorldChunk chunk) {

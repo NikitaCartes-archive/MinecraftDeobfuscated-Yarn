@@ -44,8 +44,8 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final IntRange field_25382 = Durations.betweenSeconds(0, 1);
 	private int angrySoundDelay;
 	private static final IntRange field_25379 = Durations.betweenSeconds(20, 39);
-	private int field_25380;
-	private UUID field_25381;
+	private int angerTime;
+	private UUID targetUuid;
 	private static final IntRange field_25609 = Durations.betweenSeconds(4, 6);
 	private int field_25608;
 
@@ -56,7 +56,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	public void setAngryAt(@Nullable UUID uuid) {
-		this.field_25381 = uuid;
+		this.targetUuid = uuid;
 	}
 
 	@Override
@@ -189,12 +189,12 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	public void setAngerTime(int ticks) {
-		this.field_25380 = ticks;
+		this.angerTime = ticks;
 	}
 
 	@Override
 	public int getAngerTime() {
-		return this.field_25380;
+		return this.angerTime;
 	}
 
 	@Override
@@ -234,7 +234,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	public UUID getAngryAt() {
-		return this.field_25381;
+		return this.targetUuid;
 	}
 
 	@Override

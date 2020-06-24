@@ -357,7 +357,7 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema55, "Add conduit", TypeReferences.BLOCK_ENTITY));
 		Schema schema56 = builder.addSchema(1483, Schema1483::new);
 		builder.addFixer(new EntityPufferfishRenameFix(schema56, true));
-		builder.addFixer(ItemNameFix.create(schema56, "Rename pufferfish egg item", method_30070(EntityPufferfishRenameFix.RENAMED_FISHES)));
+		builder.addFixer(ItemNameFix.create(schema56, "Rename pufferfish egg item", method_30070(EntityPufferfishRenameFix.RENAMED_FISH)));
 		Schema schema57 = builder.addSchema(1484, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			ItemNameFix.create(

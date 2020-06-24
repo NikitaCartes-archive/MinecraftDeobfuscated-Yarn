@@ -222,7 +222,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
 		AtomicReference<S> atomicReference = new AtomicReference();
-		Thread thread = new Thread(() -> ((MinecraftServer)atomicReference.get()).method_29741(), "Server thread");
+		Thread thread = new Thread(() -> ((MinecraftServer)atomicReference.get()).runServer(), "Server thread");
 		thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable));
 		S minecraftServer = (S)serverFactory.apply(thread);
 		atomicReference.set(minecraftServer);
@@ -494,7 +494,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		serverWorldProperties.setRaining(false);
 		serverWorldProperties.setThundering(false);
 		serverWorldProperties.setClearWeatherTime(1000000000);
-		serverWorldProperties.method_29035(6000L);
+		serverWorldProperties.setTimeOfDay(6000L);
 		serverWorldProperties.setGameMode(GameMode.SPECTATOR);
 	}
 
@@ -656,7 +656,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	protected void method_29741() {
+	protected void runServer() {
 		try {
 			if (this.setupServer()) {
 				this.timeReference = Util.getMeasuringTimeMs();
@@ -931,8 +931,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	@Nullable
-	public ServerWorld getWorld(RegistryKey<World> registryKey) {
-		return (ServerWorld)this.worlds.get(registryKey);
+	public ServerWorld getWorld(RegistryKey<World> key) {
+		return (ServerWorld)this.worlds.get(key);
 	}
 
 	public Set<RegistryKey<World>> getWorldRegistryKeys() {
@@ -963,9 +963,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return "vanilla";
 	}
 
-	public CrashReport populateCrashReport(CrashReport crashReport) {
+	public CrashReport populateCrashReport(CrashReport report) {
 		if (this.playerManager != null) {
-			crashReport.getSystemDetailsSection()
+			report.getSystemDetailsSection()
 				.add(
 					"Player Count",
 					(CrashCallable<String>)(() -> this.playerManager.getCurrentPlayerCount()
@@ -976,7 +976,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				);
 		}
 
-		crashReport.getSystemDetailsSection().add("Data Packs", (CrashCallable<String>)(() -> {
+		report.getSystemDetailsSection().add("Data Packs", (CrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
@@ -993,10 +993,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			return stringBuilder.toString();
 		}));
 		if (this.serverId != null) {
-			crashReport.getSystemDetailsSection().add("Server Id", (CrashCallable<String>)(() -> this.serverId));
+			report.getSystemDetailsSection().add("Server Id", (CrashCallable<String>)(() -> this.serverId));
 		}
 
-		return crashReport;
+		return report;
 	}
 
 	public abstract Optional<String> getModdedStatusMessage();
@@ -1227,7 +1227,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return 16;
 	}
 
-	public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
+	public boolean isSpawnProtected(ServerWorld world, BlockPos pos, PlayerEntity player) {
 		return false;
 	}
 
@@ -1345,9 +1345,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return completableFuture;
 	}
 
-	public static DataPackSettings loadDataPacks(ResourcePackManager<ResourcePackProfile> resourcePackManager, DataPackSettings dataPackSettings, boolean safemode) {
+	public static DataPackSettings loadDataPacks(ResourcePackManager<ResourcePackProfile> resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
 		resourcePackManager.scanPacks();
-		if (safemode) {
+		if (safeMode) {
 			resourcePackManager.setEnabledProfiles(Collections.singleton("vanilla"));
 			return new DataPackSettings(ImmutableList.of("vanilla"), ImmutableList.of());
 		} else {

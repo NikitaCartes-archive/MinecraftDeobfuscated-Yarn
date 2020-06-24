@@ -7,12 +7,12 @@ import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Vec3d;
 
 public class FleeEntityGoal<T extends LivingEntity> extends Goal {
-	protected final MobEntityWithAi mob;
+	protected final PathAwareEntity mob;
 	private final double slowSpeed;
 	private final double fastSpeed;
 	protected T targetEntity;
@@ -24,12 +24,12 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	protected final Predicate<LivingEntity> inclusionSelector;
 	private final TargetPredicate withinRangePredicate;
 
-	public FleeEntityGoal(MobEntityWithAi mob, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
+	public FleeEntityGoal(PathAwareEntity mob, Class<T> fleeFromType, float distance, double slowSpeed, double fastSpeed) {
 		this(mob, fleeFromType, livingEntity -> true, distance, slowSpeed, fastSpeed, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
 	}
 
 	public FleeEntityGoal(
-		MobEntityWithAi mob,
+		PathAwareEntity mob,
 		Class<T> fleeFromType,
 		Predicate<LivingEntity> extraInclusionSelector,
 		float distance,
@@ -50,7 +50,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	}
 
 	public FleeEntityGoal(
-		MobEntityWithAi fleeingEntity,
+		PathAwareEntity fleeingEntity,
 		Class<T> classToFleeFrom,
 		float fleeDistance,
 		double fleeSlowSpeed,

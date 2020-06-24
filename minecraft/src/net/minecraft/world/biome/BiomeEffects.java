@@ -37,7 +37,7 @@ public class BiomeEffects {
 	private BiomeEffects(
 		int fogColor,
 		int waterColor,
-		int waterFogCOlor,
+		int waterFogColor,
 		Optional<BiomeParticleConfig> particleConfig,
 		Optional<SoundEvent> loopSound,
 		Optional<BiomeMoodSound> moodSound,
@@ -46,7 +46,7 @@ public class BiomeEffects {
 	) {
 		this.fogColor = fogColor;
 		this.waterColor = waterColor;
-		this.waterFogColor = waterFogCOlor;
+		this.waterFogColor = waterFogColor;
 		this.particleConfig = particleConfig;
 		this.loopSound = loopSound;
 		this.moodSound = moodSound;

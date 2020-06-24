@@ -86,7 +86,7 @@ public class WanderingTraderManager implements Spawner {
 			);
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.getNearbySpawnPos(serverWorld, blockPos2, 48);
-			if (blockPos3 != null && this.wontSuffocateAt(serverWorld, blockPos3)) {
+			if (blockPos3 != null && this.doesNotSuffocateAt(serverWorld, blockPos3)) {
 				if (serverWorld.getBiome(blockPos3) == Biomes.THE_VOID) {
 					return false;
 				}
@@ -137,7 +137,7 @@ public class WanderingTraderManager implements Spawner {
 		return blockPos2;
 	}
 
-	private boolean wontSuffocateAt(BlockView blockView, BlockPos blockPos) {
+	private boolean doesNotSuffocateAt(BlockView blockView, BlockPos blockPos) {
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(1, 2, 1))) {
 			if (!blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2).isEmpty()) {
 				return false;

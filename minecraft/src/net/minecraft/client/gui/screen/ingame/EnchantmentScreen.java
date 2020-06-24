@@ -31,7 +31,7 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(EnvType.CLIENT)
 public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
-	private static final Identifier BOOK_TEXURE = new Identifier("textures/entity/enchanting_table_book.png");
+	private static final Identifier BOOK_TEXTURE = new Identifier("textures/entity/enchanting_table_book.png");
 	private static final BookModel BOOK_MODEL = new BookModel();
 	private final Random random = new Random();
 	public int ticks;
@@ -123,7 +123,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		RenderSystem.enableRescaleNormal();
 		BOOK_MODEL.setPageAngles(0.0F, l, m, g);
 		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-		VertexConsumer vertexConsumer = immediate.getBuffer(BOOK_MODEL.getLayer(BOOK_TEXURE));
+		VertexConsumer vertexConsumer = immediate.getBuffer(BOOK_MODEL.getLayer(BOOK_TEXTURE));
 		BOOK_MODEL.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		immediate.draw();
 		matrices.pop();

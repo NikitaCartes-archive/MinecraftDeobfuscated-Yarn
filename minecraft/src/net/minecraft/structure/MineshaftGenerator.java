@@ -272,9 +272,9 @@ public class MineshaftGenerator {
 				int m = this.length * 5 - 1;
 				BlockState blockState = this.getPlanksType();
 				this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 2, 1, m, AIR, AIR, false);
-				this.fillWithOutlineUnderSealevel(serverWorldAccess, boundingBox, random, 0.8F, 0, 2, 0, 2, 2, m, AIR, AIR, false, false);
+				this.fillWithOutlineUnderSeaLevel(serverWorldAccess, boundingBox, random, 0.8F, 0, 2, 0, 2, 2, m, AIR, AIR, false, false);
 				if (this.hasCobwebs) {
-					this.fillWithOutlineUnderSealevel(serverWorldAccess, boundingBox, random, 0.6F, 0, 0, 0, 2, 1, m, Blocks.COBWEB.getDefaultState(), AIR, false, true);
+					this.fillWithOutlineUnderSeaLevel(serverWorldAccess, boundingBox, random, 0.6F, 0, 0, 0, 2, 1, m, Blocks.COBWEB.getDefaultState(), AIR, false, true);
 				}
 
 				for (int n = 0; n < this.length; n++) {

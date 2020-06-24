@@ -53,7 +53,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.MobEntityWithAi;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -196,7 +196,7 @@ public abstract class LivingEntity extends Entity {
 	private Optional<BlockPos> climbingPos = Optional.empty();
 	private DamageSource lastDamageSource;
 	private long lastDamageTime;
-	protected int pushCooldown;
+	protected int riptideTicks;
 	private float leaningPitch;
 	private float lastLeaningPitch;
 	protected Brain<?> brain;
@@ -1231,7 +1231,7 @@ public abstract class LivingEntity extends Entity {
 	/**
 	 * Performs secondary effects after this mob has been killed.
 	 * 
-	 * <p> The default behaviour spawns a wither rose if {@code adversary} is a {@code WitherEntity}.
+	 * <p> The default behavior spawns a wither rose if {@code adversary} is a {@code WitherEntity}.
 	 * 
 	 * @param adversary the main adversary responsible for this entity's death
 	 */
@@ -2475,9 +2475,9 @@ public abstract class LivingEntity extends Entity {
 		this.travel(new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed));
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("push");
-		if (this.pushCooldown > 0) {
-			this.pushCooldown--;
-			this.push(box, this.getBoundingBox());
+		if (this.riptideTicks > 0) {
+			this.riptideTicks--;
+			this.tickRiptide(box, this.getBoundingBox());
 		}
 
 		this.tickCramming();
@@ -2540,7 +2540,7 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	protected void push(Box a, Box b) {
+	protected void tickRiptide(Box a, Box b) {
 		Box box = a.union(b);
 		List<Entity> list = this.world.getEntities(this, box);
 		if (!list.isEmpty()) {
@@ -2548,16 +2548,16 @@ public abstract class LivingEntity extends Entity {
 				Entity entity = (Entity)list.get(i);
 				if (entity instanceof LivingEntity) {
 					this.attackLivingEntity((LivingEntity)entity);
-					this.pushCooldown = 0;
+					this.riptideTicks = 0;
 					this.setVelocity(this.getVelocity().multiply(-0.2));
 					break;
 				}
 			}
 		} else if (this.horizontalCollision) {
-			this.pushCooldown = 0;
+			this.riptideTicks = 0;
 		}
 
-		if (!this.world.isClient && this.pushCooldown <= 0) {
+		if (!this.world.isClient && this.riptideTicks <= 0) {
 			this.setLivingFlag(4, false);
 		}
 	}
@@ -2569,8 +2569,8 @@ public abstract class LivingEntity extends Entity {
 	protected void attackLivingEntity(LivingEntity target) {
 	}
 
-	public void setPushCooldown(int i) {
-		this.pushCooldown = i;
+	public void setRiptideTicks(int i) {
+		this.riptideTicks = i;
 		if (!this.world.isClient) {
 			this.setLivingFlag(4, true);
 		}
@@ -2948,8 +2948,8 @@ public abstract class LivingEntity extends Entity {
 				world.sendEntityStatus(this, (byte)46);
 			}
 
-			if (this instanceof MobEntityWithAi) {
-				((MobEntityWithAi)this).getNavigation().stop();
+			if (this instanceof PathAwareEntity) {
+				((PathAwareEntity)this).getNavigation().stop();
 			}
 
 			return true;

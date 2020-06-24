@@ -8,7 +8,7 @@ import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.math.BlockPos;
 
 public class WeightedBlockStateProvider extends BlockStateProvider {
-	public static final Codec<WeightedBlockStateProvider> field_24946 = WeightedList.method_28338(BlockState.CODEC)
+	public static final Codec<WeightedBlockStateProvider> CODEC = WeightedList.method_28338(BlockState.CODEC)
 		.<WeightedBlockStateProvider>comapFlatMap(WeightedBlockStateProvider::method_28868, weightedBlockStateProvider -> weightedBlockStateProvider.states)
 		.fieldOf("entries")
 		.codec();
@@ -25,7 +25,7 @@ public class WeightedBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	protected BlockStateProviderType<?> method_28862() {
+	protected BlockStateProviderType<?> getType() {
 		return BlockStateProviderType.WEIGHTED_STATE_PROVIDER;
 	}
 

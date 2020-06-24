@@ -60,12 +60,12 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 	private void method_23463(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
 		for (int i = 2; i >= -3; i--) {
 			BlockPos blockPos2 = blockPos.up(i);
-			if (Feature.method_27368(modifiableTestableWorld, blockPos2)) {
+			if (Feature.isSoil(modifiableTestableWorld, blockPos2)) {
 				modifiableTestableWorld.setBlockState(blockPos2, this.field_21316.getBlockState(random, blockPos), 19);
 				break;
 			}
 
-			if (!Feature.method_27370(modifiableTestableWorld, blockPos2) && i < 0) {
+			if (!Feature.isAir(modifiableTestableWorld, blockPos2) && i < 0) {
 				break;
 			}
 		}

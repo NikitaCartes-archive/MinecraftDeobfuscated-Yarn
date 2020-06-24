@@ -24,8 +24,8 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private int offerIndex;
 	private int ticksLeft;
 
-	public HoldTradeOffersTask(int rminRunTime, int maxRunTime) {
-		super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT), rminRunTime, maxRunTime);
+	public HoldTradeOffersTask(int minRunTime, int maxRunTime) {
+		super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT), minRunTime, maxRunTime);
 	}
 
 	public boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
@@ -50,14 +50,14 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 
 	public void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		super.run(serverWorld, villagerEntity, l);
-		this.findPotentialCuatomer(villagerEntity);
+		this.findPotentialCustomer(villagerEntity);
 		this.offerShownTicks = 0;
 		this.offerIndex = 0;
 		this.ticksLeft = 40;
 	}
 
 	public void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		LivingEntity livingEntity = this.findPotentialCuatomer(villagerEntity);
+		LivingEntity livingEntity = this.findPotentialCustomer(villagerEntity);
 		this.setupOffers(livingEntity, villagerEntity);
 		if (!this.offers.isEmpty()) {
 			this.refreshShownOffer(villagerEntity);
@@ -111,7 +111,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 			|| ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getSecondBuyItem());
 	}
 
-	private LivingEntity findPotentialCuatomer(VillagerEntity villager) {
+	private LivingEntity findPotentialCustomer(VillagerEntity villager) {
 		Brain<?> brain = villager.getBrain();
 		LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));

@@ -55,7 +55,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 		for (int k = blockPos.getX() >> 4; k <= blockPos2.getX() >> 4; k++) {
 			for (int l = blockPos.getZ() >> 4; l <= blockPos2.getZ() >> 4; l++) {
 				WorldChunk worldChunk = worldChunks[k - i][l - j];
-				if (!worldChunk.method_12228(blockPos.getY(), blockPos2.getY())) {
+				if (!worldChunk.areSectionsEmptyBetween(blockPos.getY(), blockPos2.getY())) {
 					return false;
 				}
 			}

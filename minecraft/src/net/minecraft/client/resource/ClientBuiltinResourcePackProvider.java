@@ -160,9 +160,9 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		}
 	}
 
-	private boolean verifyFile(String expectedSha1, File rfile) {
+	private boolean verifyFile(String expectedSha1, File file) {
 		try {
-			FileInputStream fileInputStream = new FileInputStream(rfile);
+			FileInputStream fileInputStream = new FileInputStream(file);
 			Throwable var5 = null;
 
 			String string;
@@ -186,18 +186,18 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			}
 
 			if (expectedSha1.isEmpty()) {
-				LOGGER.info("Found file {} without verification hash", rfile);
+				LOGGER.info("Found file {} without verification hash", file);
 				return true;
 			}
 
 			if (string.toLowerCase(Locale.ROOT).equals(expectedSha1.toLowerCase(Locale.ROOT))) {
-				LOGGER.info("Found file {} matching requested hash {}", rfile, expectedSha1);
+				LOGGER.info("Found file {} matching requested hash {}", file, expectedSha1);
 				return true;
 			}
 
-			LOGGER.warn("File {} had wrong hash (expected {}, found {}).", rfile, expectedSha1, string);
+			LOGGER.warn("File {} had wrong hash (expected {}, found {}).", file, expectedSha1, string);
 		} catch (IOException var17) {
-			LOGGER.warn("File {} couldn't be hashed.", rfile, var17);
+			LOGGER.warn("File {} couldn't be hashed.", file, var17);
 		}
 
 		return false;

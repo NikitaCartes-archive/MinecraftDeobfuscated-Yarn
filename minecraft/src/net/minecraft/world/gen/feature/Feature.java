@@ -85,20 +85,20 @@ public abstract class Feature<FC extends FeatureConfig> {
 	);
 	public static final Feature<DecoratedFeatureConfig> DECORATED = register("decorated", new DecoratedFeature(DecoratedFeatureConfig.CODEC));
 	public static final Feature<DecoratedFeatureConfig> DECORATED_FLOWER = register("decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig.CODEC));
-	private final Codec<ConfiguredFeature<FC, Feature<FC>>> field_24837;
+	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
 		return Registry.register(Registry.FEATURE, name, feature);
 	}
 
-	public Feature(Codec<FC> codec) {
-		this.field_24837 = codec.fieldOf("config")
+	public Feature(Codec<FC> configCodec) {
+		this.codec = configCodec.fieldOf("config")
 			.<ConfiguredFeature<FC, Feature<FC>>>xmap(featureConfig -> new ConfiguredFeature<>(this, featureConfig), configuredFeature -> configuredFeature.config)
 			.codec();
 	}
 
-	public Codec<ConfiguredFeature<FC, Feature<FC>>> method_28627() {
-		return this.field_24837;
+	public Codec<ConfiguredFeature<FC, Feature<FC>>> getCodec() {
+		return this.codec;
 	}
 
 	public ConfiguredFeature<FC, ?> configure(FC config) {
@@ -110,22 +110,22 @@ public abstract class Feature<FC extends FeatureConfig> {
 	}
 
 	public abstract boolean generate(
-		ServerWorldAccess serverWorldAccess, StructureAccessor accessor, ChunkGenerator generator, Random random, BlockPos pos, FC config
+		ServerWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator generator, Random random, BlockPos pos, FC config
 	);
 
 	protected static boolean isStone(Block block) {
 		return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
 	}
 
-	public static boolean isDirt(Block block) {
+	public static boolean isSoil(Block block) {
 		return block == Blocks.DIRT || block == Blocks.GRASS_BLOCK || block == Blocks.PODZOL || block == Blocks.COARSE_DIRT || block == Blocks.MYCELIUM;
 	}
 
-	public static boolean method_27368(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.testBlockState(blockPos, blockState -> isDirt(blockState.getBlock()));
+	public static boolean isSoil(TestableWorld world, BlockPos pos) {
+		return world.testBlockState(pos, state -> isSoil(state.getBlock()));
 	}
 
-	public static boolean method_27370(TestableWorld testableWorld, BlockPos blockPos) {
-		return testableWorld.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir);
+	public static boolean isAir(TestableWorld world, BlockPos pos) {
+		return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
 	}
 }

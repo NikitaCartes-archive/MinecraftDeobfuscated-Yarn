@@ -347,7 +347,7 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 		.stream()
 		.map(string -> string.substring(0, string.indexOf(46)))
 		.collect(Collectors.toSet());
-	private static final Set<String> DAMAGABLE_ITEMS = Sets.<String>newHashSet(
+	private static final Set<String> DAMAGEABLE_ITEMS = Sets.<String>newHashSet(
 		"minecraft:bow",
 		"minecraft:carrot_on_a_stick",
 		"minecraft:chainmail_boots",
@@ -426,7 +426,7 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 					typed2 = typed.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), string));
 				}
 
-				if (DAMAGABLE_ITEMS.contains(((Pair)optional.get()).getSecond())) {
+				if (DAMAGEABLE_ITEMS.contains(((Pair)optional.get()).getSecond())) {
 					Typed<?> typed3 = typed.getOrCreateTyped(opticFinder2);
 					Dynamic<?> dynamic2 = typed3.get(DSL.remainderFinder());
 					dynamic2 = dynamic2.set("Damage", dynamic2.createInt(i));

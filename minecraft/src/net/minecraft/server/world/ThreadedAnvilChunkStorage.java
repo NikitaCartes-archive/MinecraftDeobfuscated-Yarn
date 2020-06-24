@@ -108,7 +108,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final LongSet unloadedChunks = new LongOpenHashSet();
 	private boolean chunkHolderListDirty;
 	private final ChunkTaskPrioritySystem chunkTaskPrioritySystem;
-	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldgenExecutor;
+	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> worldGenExecutor;
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> mainExecutor;
 	private final WorldGenerationProgressListener worldGenerationProgressListener;
 	private final ThreadedAnvilChunkStorage.TicketManager ticketManager;
@@ -135,9 +135,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		int i,
 		boolean bl
 	) {
-		super(new File(session.method_27424(serverWorld.getRegistryKey()), "region"), dataFixer, bl);
+		super(new File(session.getWorldDirectory(serverWorld.getRegistryKey()), "region"), dataFixer, bl);
 		this.structureManager = structureManager;
-		this.saveDir = session.method_27424(serverWorld.getRegistryKey());
+		this.saveDir = session.getWorldDirectory(serverWorld.getRegistryKey());
 		this.world = serverWorld;
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
@@ -146,7 +146,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.worldGenerationProgressListener = worldGenerationProgressListener;
 		TaskExecutor<Runnable> taskExecutor2 = TaskExecutor.create(workerExecutor, "light");
 		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(taskExecutor, messageListener, taskExecutor2), workerExecutor, Integer.MAX_VALUE);
-		this.worldgenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
+		this.worldGenExecutor = this.chunkTaskPrioritySystem.createExecutor(taskExecutor, false);
 		this.mainExecutor = this.chunkTaskPrioritySystem.createExecutor(messageListener, false);
 		this.serverLightingProvider = new ServerLightingProvider(
 			chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false)
@@ -460,7 +460,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 							if (chunkStatus == ChunkStatus.LIGHT) {
 								completableFuturex = this.generateChunk(chunkHolder, chunkStatus);
 							} else {
-								completableFuturex = chunkStatus.runNoGenTask(
+								completableFuturex = chunkStatus.runLoadTask(
 									this.world, this.structureManager, this.serverLightingProvider, chunkx -> this.convertToFullChunk(chunkHolder), chunk
 								);
 							}
@@ -515,7 +515,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private byte method_27053(ChunkPos chunkPos, ChunkStatus.ChunkType chunkType) {
-		return this.field_23786.put(chunkPos.toLong(), (byte)(chunkType == ChunkStatus.ChunkType.PROTOCHUNK ? -1 : 1));
+		return this.field_23786.put(chunkPos.toLong(), (byte)(chunkType == ChunkStatus.ChunkType.field_12808 ? -1 : 1));
 	}
 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> generateChunk(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
@@ -528,7 +528,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			either -> (CompletableFuture)either.map(
 					list -> {
 						try {
-							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = chunkStatus.runTask(
+							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = chunkStatus.runGenerationTask(
 								this.world, this.chunkGenerator, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), list
 							);
 							this.worldGenerationProgressListener.setChunkStatus(chunkPos, chunkStatus);
@@ -547,7 +547,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 						return CompletableFuture.completedFuture(Either.right(unloaded));
 					}
 				),
-			runnable -> this.worldgenExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable))
+			runnable -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable))
 		);
 	}
 
@@ -657,7 +657,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 			try {
 				ChunkStatus chunkStatus = chunk.getStatus();
-				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
+				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.field_12807) {
 					if (this.method_27055(chunkPos)) {
 						return false;
 					}

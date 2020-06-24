@@ -17,10 +17,10 @@ public class RealmsConfirmScreen extends RealmsScreen {
 	private final Text title2;
 	private int delayTicker;
 
-	public RealmsConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2) {
+	public RealmsConfirmScreen(BooleanConsumer booleanConsumer, Text title1, Text title2) {
 		this.field_22692 = booleanConsumer;
-		this.title1 = text;
-		this.title2 = text2;
+		this.title1 = title1;
+		this.title2 = title2;
 	}
 
 	@Override

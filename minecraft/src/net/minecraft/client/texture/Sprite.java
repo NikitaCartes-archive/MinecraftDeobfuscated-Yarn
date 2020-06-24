@@ -313,7 +313,7 @@ public class Sprite implements AutoCloseable {
 		}
 
 		/**
-		 * Linearly interpolate between the current and next frame on all miplevels
+		 * Linearly interpolate between the current and next frame on all mip levels
 		 * based on the tick position within the current frame,
 		 * and upload the results to the currently bound texture to the frame slot at position (0,0).
 		 */

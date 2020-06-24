@@ -24,7 +24,7 @@ public final class PlainsBiome extends Biome {
 		);
 		this.addStructureFeature(DefaultBiomeFeatures.PLAINS_VILLAGE);
 		this.addStructureFeature(DefaultBiomeFeatures.PILLAGER_OUTPOST);
-		DefaultBiomeFeatures.method_28440(this);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

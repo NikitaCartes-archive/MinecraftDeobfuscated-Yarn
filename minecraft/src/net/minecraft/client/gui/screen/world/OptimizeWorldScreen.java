@@ -52,7 +52,7 @@ public class OptimizeWorldScreen extends Screen {
 			)) {
 			SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
 			session.method_27425(modifiable, saveProperties);
-			ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().method_29575();
+			ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
 			return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
 		} catch (Exception var22) {
 			field_25482.warn("Failed to load datapacks, can't optimize world", (Throwable)var22);

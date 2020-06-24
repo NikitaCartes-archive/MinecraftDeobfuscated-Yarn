@@ -325,16 +325,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID sessionId = UUID.randomUUID();
-	private Set<RegistryKey<World>> field_25273;
-	private RegistryTracker dimensionTracker = RegistryTracker.create();
+	private Set<RegistryKey<World>> worldKeys;
+	private RegistryTracker registryTracker = RegistryTracker.create();
 
-	public ClientPlayNetworkHandler(MinecraftClient minecraftClient, Screen screen, ClientConnection connection, GameProfile profile) {
-		this.client = minecraftClient;
+	public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile) {
+		this.client = client;
 		this.loginScreen = screen;
 		this.connection = connection;
 		this.profile = profile;
-		this.advancementHandler = new ClientAdvancementManager(minecraftClient);
-		this.commandSource = new ClientCommandSource(this, minecraftClient);
+		this.advancementHandler = new ClientAdvancementManager(client);
+		this.commandSource = new ClientCommandSource(this, client);
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -362,11 +362,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 		ArrayList<RegistryKey<World>> arrayList = Lists.newArrayList(packet.method_29443());
 		Collections.shuffle(arrayList);
-		this.field_25273 = Sets.<RegistryKey<World>>newLinkedHashSet(arrayList);
-		this.dimensionTracker = packet.getDimension();
+		this.worldKeys = Sets.<RegistryKey<World>>newLinkedHashSet(arrayList);
+		this.registryTracker = packet.getDimension();
 		RegistryKey<DimensionType> registryKey = packet.method_29444();
 		RegistryKey<World> registryKey2 = packet.getDimensionId();
-		DimensionType dimensionType = this.dimensionTracker.getDimensionTypeRegistry().get(registryKey);
+		DimensionType dimensionType = this.registryTracker.getDimensionTypeRegistry().get(registryKey);
 		this.chunkLoadDistance = packet.getChunkLoadDistance();
 		boolean bl = packet.isDebugWorld();
 		boolean bl2 = packet.isFlatWorld();
@@ -514,7 +514,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (entity != null) {
 			int i = packet.getId();
 			entity.updateTrackedPosition(d, e, f);
-			entity.positAfterTeleport(d, e, f);
+			entity.refreshPositionAfterTeleport(d, e, f);
 			entity.pitch = (float)(packet.getPitch() * 360) / 256.0F;
 			entity.yaw = (float)(packet.getYaw() * 360) / 256.0F;
 			entity.setEntityId(i);
@@ -1054,7 +1054,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		RegistryKey<DimensionType> registryKey = packet.method_29445();
 		RegistryKey<World> registryKey2 = packet.getDimension();
-		DimensionType dimensionType = this.dimensionTracker.getDimensionTypeRegistry().get(registryKey);
+		DimensionType dimensionType = this.registryTracker.getDimensionTypeRegistry().get(registryKey);
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getEntityId();
 		this.positionLookSetup = false;
@@ -1863,7 +1863,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				this.client.debugRenderer.caveDebugRenderer.method_3704(blockPos2, list, list2);
 			} else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
-				DimensionType dimensionType = this.dimensionTracker.getDimensionTypeRegistry().get(packetByteBuf.readIdentifier());
+				DimensionType dimensionType = this.registryTracker.getDimensionTypeRegistry().get(packetByteBuf.readIdentifier());
 				BlockBox blockBox = new BlockBox(
 					packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()
 				);
@@ -2350,11 +2350,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		return this.sessionId;
 	}
 
-	public Set<RegistryKey<World>> method_29356() {
-		return this.field_25273;
+	public Set<RegistryKey<World>> getWorldKeys() {
+		return this.worldKeys;
 	}
 
-	public RegistryTracker method_29091() {
-		return this.dimensionTracker;
+	public RegistryTracker getRegistryTracker() {
+		return this.registryTracker;
 	}
 }

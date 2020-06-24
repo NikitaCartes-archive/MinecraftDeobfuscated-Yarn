@@ -275,11 +275,11 @@ public class LevelStorage {
 		private final SessionLock lock;
 		private final Path directory;
 		private final String directoryName;
-		private final Map<WorldSavePath, Path> field_24190 = Maps.<WorldSavePath, Path>newHashMap();
+		private final Map<WorldSavePath, Path> paths = Maps.<WorldSavePath, Path>newHashMap();
 
-		public Session(String string) throws IOException {
-			this.directoryName = string;
-			this.directory = LevelStorage.this.savesDirectory.resolve(string);
+		public Session(String directoryName) throws IOException {
+			this.directoryName = directoryName;
+			this.directory = LevelStorage.this.savesDirectory.resolve(directoryName);
 			this.lock = SessionLock.create(this.directory);
 		}
 
@@ -287,12 +287,12 @@ public class LevelStorage {
 			return this.directoryName;
 		}
 
-		public Path getDirectory(WorldSavePath worldSavePath) {
-			return (Path)this.field_24190.computeIfAbsent(worldSavePath, worldSavePathx -> this.directory.resolve(worldSavePathx.getRelativePath()));
+		public Path getDirectory(WorldSavePath savePath) {
+			return (Path)this.paths.computeIfAbsent(savePath, path -> this.directory.resolve(path.getRelativePath()));
 		}
 
-		public File method_27424(RegistryKey<World> registryKey) {
-			return DimensionType.getSaveDirectory(registryKey, this.directory.toFile());
+		public File getWorldDirectory(RegistryKey<World> key) {
+			return DimensionType.getSaveDirectory(key, this.directory.toFile());
 		}
 
 		private void checkValid() {

@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
-	private final RealmsResetWorldScreen lastScreen;
+	private final RealmsResetWorldScreen parent;
 	private final long worldId;
 	private final int slotId;
 	private ButtonWidget uploadButton;
@@ -45,8 +45,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private RealmsLabel field_20063;
 	private final Runnable field_22717;
 
-	public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen lastScreen, Runnable runnable) {
-		this.lastScreen = lastScreen;
+	public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, Runnable runnable) {
+		this.parent = parent;
 		this.worldId = worldId;
 		this.slotId = slotId;
 		this.field_22717 = runnable;
@@ -75,7 +75,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			this.loadLevelList();
 		} catch (Exception var2) {
 			LOGGER.error("Couldn't load level list", (Throwable)var2);
-			this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.method_30163(var2.getMessage()), this.lastScreen));
+			this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.method_30163(var2.getMessage()), this.parent));
 			return;
 		}
 
@@ -86,7 +86,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, new TranslatableText("mco.upload.button.name"), buttonWidget -> this.upload())
 		);
 		this.uploadButton.active = this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size();
-		this.addButton(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen)));
+		this.addButton(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
 		this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.title"), this.width / 2, 13, 16777215));
 		this.subtitleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.subtitle"), this.width / 2, row(-1), 10526880));
 		if (this.levelList.isEmpty()) {
@@ -106,7 +106,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private void upload() {
 		if (this.selectedWorld != -1 && !((LevelSummary)this.levelList.get(this.selectedWorld)).isHardcore()) {
 			LevelSummary levelSummary = (LevelSummary)this.levelList.get(this.selectedWorld);
-			this.client.openScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.lastScreen, levelSummary, this.field_22717));
+			this.client.openScreen(new RealmsUploadScreen(this.worldId, this.slotId, this.parent, levelSummary, this.field_22717));
 		}
 	}
 
@@ -126,7 +126,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 256) {
-			this.client.openScreen(this.lastScreen);
+			this.client.openScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -216,8 +216,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderBackground(MatrixStack matrixStack) {
-			RealmsSelectFileToUploadScreen.this.renderBackground(matrixStack);
+		public void renderBackground(MatrixStack matrices) {
+			RealmsSelectFileToUploadScreen.this.renderBackground(matrices);
 		}
 
 		@Override

@@ -61,7 +61,7 @@ public class GeneratorOptions {
 	private final long seed;
 	private final boolean generateStructures;
 	private final boolean bonusChest;
-	private final SimpleRegistry<DimensionOptions> field_24827;
+	private final SimpleRegistry<DimensionOptions> options;
 	private final Optional<String> legacyCustomOptions;
 
 	private DataResult<GeneratorOptions> method_28610() {
@@ -69,7 +69,7 @@ public class GeneratorOptions {
 	}
 
 	private boolean method_28611() {
-		return DimensionOptions.method_29567(this.seed, this.field_24827);
+		return DimensionOptions.method_29567(this.seed, this.options);
 	}
 
 	public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> simpleRegistry) {
@@ -82,7 +82,7 @@ public class GeneratorOptions {
 		this.seed = seed;
 		this.generateStructures = generateStructures;
 		this.bonusChest = bonusChest;
-		this.field_24827 = simpleRegistry;
+		this.options = simpleRegistry;
 		this.legacyCustomOptions = legacyCustomOptions;
 	}
 
@@ -134,15 +134,15 @@ public class GeneratorOptions {
 	}
 
 	public SimpleRegistry<DimensionOptions> getDimensionMap() {
-		return this.field_24827;
+		return this.options;
 	}
 
 	public ChunkGenerator getChunkGenerator() {
-		DimensionOptions dimensionOptions = this.field_24827.get(DimensionOptions.OVERWORLD);
+		DimensionOptions dimensionOptions = this.options.get(DimensionOptions.OVERWORLD);
 		return (ChunkGenerator)(dimensionOptions == null ? createOverworldGenerator(new Random().nextLong()) : dimensionOptions.getChunkGenerator());
 	}
 
-	public ImmutableSet<RegistryKey<World>> method_29575() {
+	public ImmutableSet<RegistryKey<World>> getWorlds() {
 		return (ImmutableSet<RegistryKey<World>>)this.getDimensionMap()
 			.getEntries()
 			.stream()
@@ -164,17 +164,17 @@ public class GeneratorOptions {
 	}
 
 	public GeneratorOptions withBonusChest() {
-		return new GeneratorOptions(this.seed, this.generateStructures, true, this.field_24827, this.legacyCustomOptions);
+		return new GeneratorOptions(this.seed, this.generateStructures, true, this.options, this.legacyCustomOptions);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public GeneratorOptions toggleGenerateStructures() {
-		return new GeneratorOptions(this.seed, !this.generateStructures, this.bonusChest, this.field_24827);
+		return new GeneratorOptions(this.seed, !this.generateStructures, this.bonusChest, this.options);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public GeneratorOptions toggleBonusChest() {
-		return new GeneratorOptions(this.seed, this.generateStructures, !this.bonusChest, this.field_24827);
+		return new GeneratorOptions(this.seed, this.generateStructures, !this.bonusChest, this.options);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -257,18 +257,18 @@ public class GeneratorOptions {
 			simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
 			long m = seed.getAsLong();
 
-			for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : this.field_24827.getEntries()) {
+			for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : this.options.getEntries()) {
 				RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 				simpleRegistry.add(
 					registryKey,
 					new DimensionOptions(((DimensionOptions)entry.getValue()).getDimensionTypeSupplier(), ((DimensionOptions)entry.getValue()).getChunkGenerator().withSeed(m))
 				);
-				if (this.field_24827.isLoaded(registryKey)) {
+				if (this.options.isLoaded(registryKey)) {
 					simpleRegistry.markLoaded(registryKey);
 				}
 			}
 		} else {
-			simpleRegistry = this.field_24827;
+			simpleRegistry = this.options;
 		}
 
 		GeneratorOptions generatorOptions;

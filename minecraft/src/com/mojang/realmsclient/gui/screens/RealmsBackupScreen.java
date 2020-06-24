@@ -38,7 +38,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	private static final Identifier field_22686 = new Identifier("realms", "textures/gui/realms/plus_icon.png");
 	private static final Identifier field_22687 = new Identifier("realms", "textures/gui/realms/restore_icon.png");
 	private static int lastScrollPosition = -1;
-	private final RealmsConfigureWorldScreen lastScreen;
+	private final RealmsConfigureWorldScreen parent;
 	private List<Backup> backups = Collections.emptyList();
 	private String toolTip;
 	private RealmsBackupScreen.BackupObjectSelectionList backupObjectSelectionList;
@@ -51,8 +51,8 @@ public class RealmsBackupScreen extends RealmsScreen {
 	private final RealmsServer serverData;
 	private RealmsLabel titleLabel;
 
-	public RealmsBackupScreen(RealmsConfigureWorldScreen lastscreen, RealmsServer serverData, int slotId) {
-		this.lastScreen = lastscreen;
+	public RealmsBackupScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData, int slotId) {
+		this.parent = parent;
 		this.serverData = serverData;
 		this.slotId = slotId;
 	}
@@ -99,7 +99,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 			this.client.openScreen(new RealmsBackupInfoScreen(this, (Backup)this.backups.get(this.selectedBackup)));
 			this.selectedBackup = -1;
 		}));
-		this.addButton(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen)));
+		this.addButton(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.parent)));
 		this.addChild(this.backupObjectSelectionList);
 		this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.configure.world.backup"), this.width / 2, 12, 16777215));
 		this.focusOn(this.backupObjectSelectionList);
@@ -153,7 +153,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 256) {
-			this.client.openScreen(this.lastScreen);
+			this.client.openScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -195,7 +195,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 		this.client
 			.openScreen(
 				new RealmsLongRunningMcoTaskScreen(
-					this.lastScreen.getNewScreen(),
+					this.parent.getNewScreen(),
 					new DownloadTask(
 						this.serverData.id,
 						this.slotId,
@@ -209,7 +209,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	private void restore() {
 		Backup backup = (Backup)this.backups.get(this.selectedBackup);
 		this.selectedBackup = -1;
-		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen.getNewScreen(), new RestoreTask(backup, this.serverData.id, this.lastScreen)));
+		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent.getNewScreen(), new RestoreTask(backup, this.serverData.id, this.parent)));
 	}
 
 	@Override
@@ -266,8 +266,8 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderBackground(MatrixStack matrixStack) {
-			RealmsBackupScreen.this.renderBackground(matrixStack);
+		public void renderBackground(MatrixStack matrices) {
+			RealmsBackupScreen.this.renderBackground(matrices);
 		}
 
 		@Override

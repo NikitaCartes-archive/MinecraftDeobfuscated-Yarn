@@ -70,13 +70,13 @@ public class BrewingRecipeRegistry {
 		return !POTION_TYPE_PREDICATE.test(input) ? false : hasItemRecipe(input, ingredient) || hasPotionRecipe(input, ingredient);
 	}
 
-	protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredien) {
+	protected static boolean hasItemRecipe(ItemStack input, ItemStack ingredient) {
 		Item item = input.getItem();
 		int i = 0;
 
 		for (int j = ITEM_RECIPES.size(); i < j; i++) {
 			BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe<Item>)ITEM_RECIPES.get(i);
-			if (recipe.input == item && recipe.ingredient.test(ingredien)) {
+			if (recipe.input == item && recipe.ingredient.test(ingredient)) {
 				return true;
 			}
 		}

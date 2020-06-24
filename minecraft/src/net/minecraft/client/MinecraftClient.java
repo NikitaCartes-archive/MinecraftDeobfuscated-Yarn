@@ -341,7 +341,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private static int currentFps;
 	public String fpsDebugString = "";
 	public boolean debugChunkInfo;
-	public boolean debugChunkOcculsion;
+	public boolean debugChunkOcclusion;
 	public boolean chunkCullingEnabled = true;
 	private boolean windowFocused;
 	private final Queue<Runnable> renderTaskQueue = Queues.<Runnable>newConcurrentLinkedQueue();
@@ -501,7 +501,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			new SplashScreen(
 				this,
 				this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
-				optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+				optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
 						if (SharedConstants.isDevelopment) {
 							this.checkGameData();
 						}
@@ -549,7 +549,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
 	}
 
-	private void handleResourceReloadExecption(Throwable throwable) {
+	private void handleResourceReloadException(Throwable throwable) {
 		if (this.resourcePackManager.getEnabledNames().size() > 1) {
 			Text text;
 			if (throwable instanceof ReloadableResourceManagerImpl.PackAdditionFailedException) {
@@ -724,7 +724,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					new SplashScreen(
 						this,
 						this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
-						optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
+						optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
 								this.worldRenderer.reload();
 								completableFuture.complete(null);
 							}),
@@ -1631,7 +1631,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		RegistryTracker.Modifiable registryTracker,
 		Function<LevelStorage.Session, DataPackSettings> function,
 		Function4<LevelStorage.Session, RegistryTracker.Modifiable, ResourceManager, DataPackSettings, SaveProperties> function4,
-		boolean safemode,
+		boolean safeMode,
 		MinecraftClient.WorldLoadAction worldLoadAction
 	) {
 		LevelStorage.Session session;
@@ -1646,7 +1646,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		MinecraftClient.IntegratedResourceManager integratedResourceManager;
 		try {
-			integratedResourceManager = this.method_29604(registryTracker, function, function4, safemode, session);
+			integratedResourceManager = this.method_29604(registryTracker, function, function4, safeMode, session);
 		} catch (Exception var20) {
 			LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)var20);
 			this.openScreen(new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, registryTracker, function, function4, true, worldLoadAction)));
@@ -1742,7 +1742,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				worldLoadAction,
 				worldName,
 				bl,
-				() -> this.startIntegratedServer(worldName, registryTracker, function, function4, safemode, MinecraftClient.WorldLoadAction.NONE)
+				() -> this.startIntegratedServer(worldName, registryTracker, function, function4, safeMode, MinecraftClient.WorldLoadAction.NONE)
 			);
 			integratedResourceManager.close();
 
@@ -2458,7 +2458,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		int i = packResourceMetadata.getPackFormat();
 		Supplier<ResourcePack> supplier2 = supplier;
 		if (i <= 3) {
-			supplier2 = createV3ResoucePackFactory(supplier);
+			supplier2 = createV3ResourcePackFactory(supplier);
 		}
 
 		if (i <= 4) {
@@ -2468,7 +2468,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
 	}
 
-	private static Supplier<ResourcePack> createV3ResoucePackFactory(Supplier<ResourcePack> supplier) {
+	private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> supplier) {
 		return () -> new Format3ResourcePack((ResourcePack)supplier.get(), Format3ResourcePack.NEW_TO_OLD_MAP);
 	}
 

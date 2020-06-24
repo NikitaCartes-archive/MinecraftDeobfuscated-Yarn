@@ -38,11 +38,11 @@ import org.apache.logging.log4j.Logger;
 public class WorldUpdater {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
-	private final ImmutableSet<RegistryKey<World>> field_25354;
+	private final ImmutableSet<RegistryKey<World>> worlds;
 	private final boolean eraseCache;
-	private final LevelStorage.Session field_24083;
+	private final LevelStorage.Session session;
 	private final Thread updateThread;
-	private final DataFixer field_24084;
+	private final DataFixer dataFixer;
 	private volatile boolean keepUpgradingChunks = true;
 	private volatile boolean isDone;
 	private volatile float progress;
@@ -56,12 +56,12 @@ public class WorldUpdater {
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
-	public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, ImmutableSet<RegistryKey<World>> immutableSet, boolean bl) {
-		this.field_25354 = immutableSet;
-		this.eraseCache = bl;
-		this.field_24084 = dataFixer;
-		this.field_24083 = session;
-		this.persistentStateManager = new PersistentStateManager(new File(this.field_24083.method_27424(World.OVERWORLD), "data"), dataFixer);
+	public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, ImmutableSet<RegistryKey<World>> worlds, boolean eraseCache) {
+		this.worlds = worlds;
+		this.eraseCache = eraseCache;
+		this.dataFixer = dataFixer;
+		this.session = session;
+		this.persistentStateManager = new PersistentStateManager(new File(this.session.getWorldDirectory(World.OVERWORLD), "data"), dataFixer);
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
@@ -84,7 +84,7 @@ public class WorldUpdater {
 		this.totalChunkCount = 0;
 		Builder<RegistryKey<World>, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
 
-		for (RegistryKey<World> registryKey : this.field_25354) {
+		for (RegistryKey<World> registryKey : this.worlds) {
 			List<ChunkPos> list = this.getChunkPositions(registryKey);
 			builder.put(registryKey, list.listIterator());
 			this.totalChunkCount = this.totalChunkCount + list.size();
@@ -97,9 +97,9 @@ public class WorldUpdater {
 			ImmutableMap<RegistryKey<World>, ListIterator<ChunkPos>> immutableMap = builder.build();
 			Builder<RegistryKey<World>, VersionedChunkStorage> builder2 = ImmutableMap.builder();
 
-			for (RegistryKey<World> registryKey2 : this.field_25354) {
-				File file = this.field_24083.method_27424(registryKey2);
-				builder2.put(registryKey2, new VersionedChunkStorage(new File(file, "region"), this.field_24084, true));
+			for (RegistryKey<World> registryKey2 : this.worlds) {
+				File file = this.session.getWorldDirectory(registryKey2);
+				builder2.put(registryKey2, new VersionedChunkStorage(new File(file, "region"), this.dataFixer, true));
 			}
 
 			ImmutableMap<RegistryKey<World>, VersionedChunkStorage> immutableMap2 = builder2.build();
@@ -110,7 +110,7 @@ public class WorldUpdater {
 				boolean bl = false;
 				float g = 0.0F;
 
-				for (RegistryKey<World> registryKey3 : this.field_25354) {
+				for (RegistryKey<World> registryKey3 : this.worlds) {
 					ListIterator<ChunkPos> listIterator = immutableMap.get(registryKey3);
 					VersionedChunkStorage versionedChunkStorage = immutableMap2.get(registryKey3);
 					if (listIterator.hasNext()) {
@@ -190,7 +190,7 @@ public class WorldUpdater {
 	}
 
 	private List<ChunkPos> getChunkPositions(RegistryKey<World> registryKey) {
-		File file = this.field_24083.method_27424(registryKey);
+		File file = this.session.getWorldDirectory(registryKey);
 		File file2 = new File(file, "region");
 		File[] files = file2.listFiles((filex, string) -> string.endsWith(".mca"));
 		if (files == null) {
@@ -228,7 +228,7 @@ public class WorldUpdater {
 
 	@Environment(EnvType.CLIENT)
 	public ImmutableSet<RegistryKey<World>> method_28304() {
-		return this.field_25354;
+		return this.worlds;
 	}
 
 	@Environment(EnvType.CLIENT)

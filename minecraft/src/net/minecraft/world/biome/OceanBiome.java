@@ -27,7 +27,7 @@ public final class OceanBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.0F, -0.5F, 0.0F, 1.0F)))
 		);
-		DefaultBiomeFeatures.method_28441(this);
+		DefaultBiomeFeatures.addOceanStructures(this);
 		this.addStructureFeature(DefaultBiomeFeatures.COLD_OCEAN_RUIN);
 		this.addStructureFeature(DefaultBiomeFeatures.OCEAN_RUINED_PORTAL);
 		DefaultBiomeFeatures.addOceanCarvers(this);
