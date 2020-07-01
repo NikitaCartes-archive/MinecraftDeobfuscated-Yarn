@@ -10,6 +10,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
 
 public class SkeletonHorseTrapTriggerGoal extends Goal {
@@ -47,7 +48,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
 		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
-		skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
+		skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
 		skeletonHorseEntity.updatePosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
 		skeletonHorseEntity.timeUntilRegen = 60;
 		skeletonHorseEntity.setPersistent();
@@ -59,7 +60,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity vehicle) {
 		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.world);
-		skeletonEntity.initialize(vehicle.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
+		skeletonEntity.initialize((ServerWorld)vehicle.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
 		skeletonEntity.updatePosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
 		skeletonEntity.timeUntilRegen = 60;
 		skeletonEntity.setPersistent();

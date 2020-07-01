@@ -55,8 +55,8 @@ public class VillagerTaskListProvider {
 				new RandomTask<>(
 					ImmutableList.of(
 						Pair.of(villagerWorkTask, 7),
-						Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 4), 2),
-						Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 1, 10), 5),
+						Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 0.4F, 4), 2),
+						Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 0.4F, 1, 10), 5),
 						Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, f, 1, 6, MemoryModuleType.JOB_SITE), 5),
 						Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5),
 						Pair.of(new BoneMealTask(), profession == VillagerProfession.FARMER ? 4 : 7)
@@ -115,7 +115,9 @@ public class VillagerTaskListProvider {
 
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createMeetTasks(VillagerProfession profession, float f) {
 		return ImmutableList.of(
-			Pair.of(2, new RandomTask<>(ImmutableList.of(Pair.of(new GoToIfNearbyTask(MemoryModuleType.MEETING_POINT, 40), 2), Pair.of(new MeetVillagerTask(), 2)))),
+			Pair.of(
+				2, new RandomTask<>(ImmutableList.of(Pair.of(new GoToIfNearbyTask(MemoryModuleType.MEETING_POINT, 0.4F, 40), 2), Pair.of(new MeetVillagerTask(), 2)))
+			),
 			Pair.of(10, new HoldTradeOffersTask(400, 1600)),
 			Pair.of(10, new FindInteractionTargetTask(EntityType.PLAYER, 4)),
 			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.MEETING_POINT, f, 6, 100, 200)),

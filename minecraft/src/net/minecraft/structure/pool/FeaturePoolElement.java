@@ -86,7 +86,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		Random random,
 		boolean keepJigsaws
 	) {
-		return this.feature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
+		return this.feature.generate(serverWorldAccess, chunkGenerator, random, blockPos);
 	}
 
 	@Override

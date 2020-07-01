@@ -454,8 +454,8 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		this.dataTracker.set(COLLAR_COLOR, color.getId());
 	}
 
-	public WolfEntity createChild(PassiveEntity passiveEntity) {
-		WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
+	public WolfEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		WolfEntity wolfEntity = EntityType.WOLF.create(serverWorld);
 		UUID uUID = this.getOwnerUuid();
 		if (uUID != null) {
 			wolfEntity.setOwnerUuid(uUID);

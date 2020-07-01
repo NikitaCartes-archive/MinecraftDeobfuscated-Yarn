@@ -24,7 +24,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	public ModelPart leftLeg;
 	public BipedEntityModel.ArmPose leftArmPose = BipedEntityModel.ArmPose.EMPTY;
 	public BipedEntityModel.ArmPose rightArmPose = BipedEntityModel.ArmPose.EMPTY;
-	public boolean isSneaking;
+	public boolean sneaking;
 	public float leaningPitch;
 
 	public BipedEntityModel(float scale) {
@@ -145,7 +145,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		}
 
 		this.method_29353(livingEntity, h);
-		if (this.isSneaking) {
+		if (this.sneaking) {
 			this.torso.pitch = 0.5F;
 			this.rightArm.pitch += 0.4F;
 			this.leftArm.pitch += 0.4F;
@@ -321,7 +321,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		super.copyStateTo(bipedEntityModel);
 		bipedEntityModel.leftArmPose = this.leftArmPose;
 		bipedEntityModel.rightArmPose = this.rightArmPose;
-		bipedEntityModel.isSneaking = this.isSneaking;
+		bipedEntityModel.sneaking = this.sneaking;
 		bipedEntityModel.head.copyPositionAndRotation(this.head);
 		bipedEntityModel.helmet.copyPositionAndRotation(this.helmet);
 		bipedEntityModel.torso.copyPositionAndRotation(this.torso);

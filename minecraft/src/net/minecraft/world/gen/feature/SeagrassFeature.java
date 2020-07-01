@@ -9,7 +9,6 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SeagrassFeature extends Feature<SeagrassFeatureConfig> {
@@ -18,12 +17,7 @@ public class SeagrassFeature extends Feature<SeagrassFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		SeagrassFeatureConfig seagrassFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SeagrassFeatureConfig seagrassFeatureConfig
 	) {
 		int i = 0;
 

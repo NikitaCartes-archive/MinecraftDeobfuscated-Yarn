@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,10 +23,12 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
@@ -36,6 +39,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -291,7 +295,7 @@ public class ChunkRegion implements ServerWorldAccess {
 		if (!this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4)) {
 			throw new RuntimeException("We are asking a region for a chunk out of bound");
 		} else {
-			return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.getMoonSize());
+			return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.method_30272());
 		}
 	}
 
@@ -365,5 +369,10 @@ public class ChunkRegion implements ServerWorldAccess {
 	@Override
 	public List<PlayerEntity> getPlayers() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Stream<? extends StructureStart<?>> method_30275(ChunkSectionPos chunkSectionPos, StructureFeature<?> structureFeature) {
+		return this.world.method_30275(chunkSectionPos, structureFeature);
 	}
 }

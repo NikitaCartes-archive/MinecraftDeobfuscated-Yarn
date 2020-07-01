@@ -8,7 +8,6 @@ import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SeaPickleFeature extends Feature<SeaPickleFeatureConfig> {
@@ -17,12 +16,7 @@ public class SeaPickleFeature extends Feature<SeaPickleFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		SeaPickleFeatureConfig seaPickleFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SeaPickleFeatureConfig seaPickleFeatureConfig
 	) {
 		int i = 0;
 

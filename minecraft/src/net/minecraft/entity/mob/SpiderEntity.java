@@ -2,6 +2,7 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -39,7 +40,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 public class SpiderEntity extends HostileEntity {
 	private static final TrackedData<Byte> SPIDER_FLAGS = DataTracker.registerData(SpiderEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -149,21 +149,21 @@ public class SpiderEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
-		if (world.getRandom().nextInt(100) == 0) {
+		entityData = super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		if (arg.getRandom().nextInt(100) == 0) {
 			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-			skeletonEntity.initialize(world, difficulty, spawnReason, null, null);
+			skeletonEntity.initialize(arg, difficulty, spawnReason, null, null);
 			skeletonEntity.startRiding(this);
-			world.spawnEntity(skeletonEntity);
+			arg.spawnEntity(skeletonEntity);
 		}
 
 		if (entityData == null) {
 			entityData = new SpiderEntity.SpiderData();
-			if (world.getDifficulty() == Difficulty.HARD && world.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
-				((SpiderEntity.SpiderData)entityData).setEffect(world.getRandom());
+			if (arg.getDifficulty() == Difficulty.HARD && arg.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
+				((SpiderEntity.SpiderData)entityData).setEffect(arg.getRandom());
 			}
 		}
 

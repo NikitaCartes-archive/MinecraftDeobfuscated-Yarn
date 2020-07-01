@@ -11,15 +11,19 @@ public class ItemUsage {
 		return TypedActionResult.consume(playerEntity.getStackInHand(hand));
 	}
 
-	public static ItemStack method_30012(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
-		if (playerEntity.abilities.creativeMode) {
+	public static ItemStack method_30270(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2, boolean bl) {
+		boolean bl2 = playerEntity.abilities.creativeMode;
+		if (bl && bl2) {
 			if (!playerEntity.inventory.contains(itemStack2)) {
 				playerEntity.inventory.insertStack(itemStack2);
 			}
 
 			return itemStack;
 		} else {
-			itemStack.decrement(1);
+			if (!bl2) {
+				itemStack.decrement(1);
+			}
+
 			if (itemStack.isEmpty()) {
 				return itemStack2;
 			} else {
@@ -30,5 +34,9 @@ public class ItemUsage {
 				return itemStack;
 			}
 		}
+	}
+
+	public static ItemStack method_30012(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
+		return method_30270(itemStack, playerEntity, itemStack2, true);
 	}
 }

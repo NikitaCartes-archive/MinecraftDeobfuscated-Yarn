@@ -26,7 +26,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(ScreenHandlerType.SMITHING, syncId, playerInventory, context);
 		this.field_25385 = playerInventory.player.world;
-		this.field_25668 = this.field_25385.getRecipeManager().method_30027(RecipeType.SMITHING);
+		this.field_25668 = this.field_25385.getRecipeManager().listAllOfType(RecipeType.SMITHING);
 	}
 
 	@Override

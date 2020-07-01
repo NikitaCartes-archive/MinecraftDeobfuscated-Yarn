@@ -16,18 +16,28 @@ import java.util.stream.Stream;
 public interface StringIdentifiable {
 	String asString();
 
-	static <E extends Enum<E> & StringIdentifiable> Codec<E> method_28140(Supplier<E[]> supplier, Function<? super String, ? extends E> function) {
-		E[] enums = (E[])supplier.get();
-		return method_28141(Enum::ordinal, i -> enums[i], function);
+	/**
+	 * Creates a codec that serializes an enum implementing this interface either
+	 * using its ordinals (when compressed) or using it's {@link #asString()} method
+	 * and a given decode function.
+	 */
+	static <E extends Enum<E> & StringIdentifiable> Codec<E> createCodec(Supplier<E[]> enumValues, Function<? super String, ? extends E> fromString) {
+		E[] enums = (E[])enumValues.get();
+		return createCodec(Enum::ordinal, ordinal -> enums[ordinal], fromString);
 	}
 
-	static <E extends StringIdentifiable> Codec<E> method_28141(
-		ToIntFunction<E> toIntFunction, IntFunction<E> intFunction, Function<? super String, ? extends E> function
+	/**
+	 * Creates a codec that serializes a class implementing this interface using either
+	 * the given toInt and fromInt mapping functions (when compressed output is
+	 * requested), or its {@link #asString()} method and a given fromString function.
+	 */
+	static <E extends StringIdentifiable> Codec<E> createCodec(
+		ToIntFunction<E> compressedEncoder, IntFunction<E> compressedDecoder, Function<? super String, ? extends E> decoder
 	) {
 		return new Codec<E>() {
 			public <T> DataResult<T> encode(E stringIdentifiable, DynamicOps<T> dynamicOps, T object) {
 				return dynamicOps.compressMaps()
-					? dynamicOps.mergeToPrimitive(object, dynamicOps.createInt(toIntFunction.applyAsInt(stringIdentifiable)))
+					? dynamicOps.mergeToPrimitive(object, dynamicOps.createInt(compressedEncoder.applyAsInt(stringIdentifiable)))
 					: dynamicOps.mergeToPrimitive(object, dynamicOps.createString(stringIdentifiable.asString()));
 			}
 
@@ -36,14 +46,14 @@ public interface StringIdentifiable {
 				return dynamicOps.compressMaps()
 					? dynamicOps.getNumberValue(object)
 						.flatMap(
-							number -> (DataResult)Optional.ofNullable(intFunction.apply(number.intValue()))
+							number -> (DataResult)Optional.ofNullable(compressedDecoder.apply(number.intValue()))
 									.map(DataResult::success)
 									.orElseGet(() -> DataResult.error("Unknown element id: " + number))
 						)
 						.map(stringIdentifiable -> com.mojang.datafixers.util.Pair.of(stringIdentifiable, dynamicOps.empty()))
 					: dynamicOps.getStringValue(object)
 						.flatMap(
-							string -> (DataResult)Optional.ofNullable(function.apply(string))
+							string -> (DataResult)Optional.ofNullable(decoder.apply(string))
 									.map(DataResult::success)
 									.orElseGet(() -> DataResult.error("Unknown element name: " + string))
 						)
@@ -51,7 +61,7 @@ public interface StringIdentifiable {
 			}
 
 			public String toString() {
-				return "StringRepresentable[" + toIntFunction + "]";
+				return "StringRepresentable[" + compressedEncoder + "]";
 			}
 		};
 	}

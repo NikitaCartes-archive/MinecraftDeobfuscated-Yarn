@@ -1,13 +1,10 @@
 package net.minecraft.tag;
 
-import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 
-public class ItemTags {
-	private static final GlobalTagAccessor<Item> ACCESSOR = new GlobalTagAccessor<>();
+public final class ItemTags {
+	protected static final RequiredTagList<Item> REQUIRED_TAGS = RequiredTagListRegistry.register(new Identifier("item"), TagManager::getItems);
 	public static final Tag.Identified<Item> WOOL = register("wool");
 	public static final Tag.Identified<Item> PLANKS = register("planks");
 	public static final Tag.Identified<Item> STONE_BRICKS = register("stone_bricks");
@@ -64,23 +61,10 @@ public class ItemTags {
 	public static final Tag.Identified<Item> FURNACE_MATERIALS = register("furnace_materials");
 
 	private static Tag.Identified<Item> register(String id) {
-		return ACCESSOR.get(id);
+		return REQUIRED_TAGS.add(id);
 	}
 
-	public static void setContainer(TagContainer<Item> container) {
-		ACCESSOR.setContainer(container);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static void markReady() {
-		ACCESSOR.markReady();
-	}
-
-	public static TagContainer<Item> getContainer() {
-		return ACCESSOR.getContainer();
-	}
-
-	public static Set<Identifier> method_29217(TagContainer<Item> tagContainer) {
-		return ACCESSOR.method_29224(tagContainer);
+	public static TagGroup<Item> getTagGroup() {
+		return REQUIRED_TAGS.getGroup();
 	}
 }

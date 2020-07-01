@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
@@ -33,12 +32,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		BasaltColumnsFeatureConfig basaltColumnsFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BasaltColumnsFeatureConfig basaltColumnsFeatureConfig
 	) {
 		int i = chunkGenerator.getSeaLevel();
 		BlockPos blockPos2 = method_27094(

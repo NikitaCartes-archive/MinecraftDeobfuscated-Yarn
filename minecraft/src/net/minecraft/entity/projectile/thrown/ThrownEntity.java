@@ -60,7 +60,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 				bl = true;
 			} else if (blockState.isOf(Blocks.END_GATEWAY)) {
 				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-				if (blockEntity instanceof EndGatewayBlockEntity) {
+				if (blockEntity instanceof EndGatewayBlockEntity && EndGatewayBlockEntity.method_30276(this)) {
 					((EndGatewayBlockEntity)blockEntity).tryTeleportingEntity(this);
 				}
 

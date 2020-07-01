@@ -29,7 +29,7 @@ public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 		WARM("warm"),
 		COLD("cold");
 
-		public static final Codec<OceanRuinFeature.BiomeType> field_24990 = StringIdentifiable.method_28140(
+		public static final Codec<OceanRuinFeature.BiomeType> field_24990 = StringIdentifiable.createCodec(
 			OceanRuinFeature.BiomeType::values, OceanRuinFeature.BiomeType::byName
 		);
 		private static final Map<String, OceanRuinFeature.BiomeType> nameMap = (Map<String, OceanRuinFeature.BiomeType>)Arrays.stream(values())

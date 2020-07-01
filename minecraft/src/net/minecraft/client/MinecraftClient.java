@@ -114,7 +114,6 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
-import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
@@ -284,7 +283,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final boolean onlineChatEnabled;
 	private final ReloadableResourceManager resourceManager;
 	private final ClientBuiltinResourcePackProvider builtinPackProvider;
-	private final ResourcePackManager<ClientResourcePackProfile> resourcePackManager;
+	private final ResourcePackManager resourcePackManager;
 	private final LanguageManager languageManager;
 	private final BlockColors blockColors;
 	private final ItemColors itemColors;
@@ -366,7 +365,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.versionType = args.game.versionType;
 		this.sessionPropertyMap = args.network.profileProperties;
 		this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
-		this.resourcePackManager = new ResourcePackManager<>(
+		this.resourcePackManager = new ResourcePackManager(
 			MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.field_25347)
 		);
 		this.netProxy = args.network.netProxy;
@@ -632,7 +631,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem()))
 		);
 		IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<>(
-			itemStack -> ItemTags.getContainer().getTagsFor(itemStack.getItem()).stream()
+			itemStack -> ItemTags.getTagGroup().getTagsFor(itemStack.getItem()).stream()
 		);
 		DefaultedList<ItemStack> defaultedList = DefaultedList.of();
 
@@ -1808,10 +1807,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		LevelStorage.Session session
 	) throws InterruptedException, ExecutionException {
 		DataPackSettings dataPackSettings = (DataPackSettings)function.apply(session);
-		ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<>(
-			ResourcePackProfile::new,
-			new VanillaDataPackProvider(),
-			new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
+		ResourcePackManager resourcePackManager = new ResourcePackManager(
+			new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 		);
 
 		try {
@@ -2163,9 +2160,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		snooper.addInfo("touch", this.options.touchscreen ? "touch" : "mouse");
 		int i = 0;
 
-		for(ClientResourcePackProfile clientResourcePackProfile : this.resourcePackManager.getEnabledProfiles()) {
-			if (!clientResourcePackProfile.isAlwaysEnabled() && !clientResourcePackProfile.isPinned()) {
-				snooper.addInfo("resource_pack[" + i++ + "]", clientResourcePackProfile.getName());
+		for(ResourcePackProfile resourcePackProfile : this.resourcePackManager.getEnabledProfiles()) {
+			if (!resourcePackProfile.isAlwaysEnabled() && !resourcePackProfile.isPinned()) {
+				snooper.addInfo("resource_pack[" + i++ + "]", resourcePackProfile.getName());
 			}
 		}
 
@@ -2241,7 +2238,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.resourceManager;
 	}
 
-	public ResourcePackManager<ClientResourcePackProfile> getResourcePackManager() {
+	public ResourcePackManager getResourcePackManager() {
 		return this.resourcePackManager;
 	}
 
@@ -2451,7 +2448,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.bufferBuilders;
 	}
 
-	private static ClientResourcePackProfile createResourcePackProfile(
+	private static ResourcePackProfile createResourcePackProfile(
 		String string,
 		boolean bl,
 		Supplier<ResourcePack> supplier,
@@ -2470,7 +2467,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			supplier2 = createV4ResourcePackFactory(supplier2);
 		}
 
-		return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
+		return new ResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
 	}
 
 	private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> supplier) {
@@ -2487,19 +2484,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	@Environment(EnvType.CLIENT)
 	public static final class IntegratedResourceManager implements AutoCloseable {
-		private final ResourcePackManager<ResourcePackProfile> resourcePackManager;
+		private final ResourcePackManager resourcePackManager;
 		private final ServerResourceManager serverResourceManager;
 		private final SaveProperties saveProperties;
 
-		private IntegratedResourceManager(
-			ResourcePackManager<ResourcePackProfile> resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties
-		) {
+		private IntegratedResourceManager(ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties) {
 			this.resourcePackManager = resourcePackManager;
 			this.serverResourceManager = serverResourceManager;
 			this.saveProperties = saveProperties;
 		}
 
-		public ResourcePackManager<ResourcePackProfile> getResourcePackManager() {
+		public ResourcePackManager getResourcePackManager() {
 			return this.resourcePackManager;
 		}
 

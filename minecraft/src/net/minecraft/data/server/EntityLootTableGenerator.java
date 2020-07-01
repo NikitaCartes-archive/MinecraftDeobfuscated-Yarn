@@ -1034,6 +1034,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 		);
 		this.register(EntityType.PIGLIN, LootTable.builder());
+		this.register(EntityType.PIGLIN_BRUTE, LootTable.builder());
 		this.register(
 			EntityType.ZOMBIE_VILLAGER,
 			LootTable.builder()

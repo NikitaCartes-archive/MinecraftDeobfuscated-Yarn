@@ -767,7 +767,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightning) {
+	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
 	}
 
 	@Override

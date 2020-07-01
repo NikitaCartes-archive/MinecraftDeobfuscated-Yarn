@@ -42,7 +42,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.Util;
@@ -546,7 +546,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public RegistryTagManager getTagManager() {
+	public TagManager getTagManager() {
 		return this.netHandler.getTagManager();
 	}
 
@@ -622,7 +622,7 @@ public class ClientWorld extends World {
 	}
 
 	public float method_23783(float f) {
-		float g = this.getSkyAngle(f);
+		float g = this.method_30274(f);
 		float h = 1.0F - (MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.2F);
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
 		h = 1.0F - h;
@@ -632,7 +632,7 @@ public class ClientWorld extends World {
 	}
 
 	public Vec3d method_23777(BlockPos blockPos, float f) {
-		float g = this.getSkyAngle(f);
+		float g = this.method_30274(f);
 		float h = MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
 		Biome biome = this.getBiome(blockPos);
@@ -677,7 +677,7 @@ public class ClientWorld extends World {
 	}
 
 	public Vec3d getCloudsColor(float tickDelta) {
-		float f = this.getSkyAngle(tickDelta);
+		float f = this.method_30274(tickDelta);
 		float g = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
 		float h = 1.0F;
@@ -708,7 +708,7 @@ public class ClientWorld extends World {
 	}
 
 	public float method_23787(float f) {
-		float g = this.getSkyAngle(f);
+		float g = this.method_30274(f);
 		float h = 1.0F - (MathHelper.cos(g * (float) (Math.PI * 2)) * 2.0F + 0.25F);
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
 		return h * h * 0.5F;

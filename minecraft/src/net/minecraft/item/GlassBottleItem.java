@@ -58,17 +58,8 @@ public class GlassBottleItem extends Item {
 		}
 	}
 
-	protected ItemStack fill(ItemStack emptyBottle, PlayerEntity player, ItemStack filledBottle) {
-		emptyBottle.decrement(1);
-		player.incrementStat(Stats.USED.getOrCreateStat(this));
-		if (emptyBottle.isEmpty()) {
-			return filledBottle;
-		} else {
-			if (!player.inventory.insertStack(filledBottle)) {
-				player.dropItem(filledBottle, false);
-			}
-
-			return emptyBottle;
-		}
+	protected ItemStack fill(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
+		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+		return ItemUsage.method_30012(itemStack, playerEntity, itemStack2);
 	}
 }

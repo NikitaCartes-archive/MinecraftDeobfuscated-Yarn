@@ -1,39 +1,23 @@
 package net.minecraft.tag;
 
 import java.util.List;
-import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.util.Identifier;
 
-public class FluidTags {
-	private static final GlobalTagAccessor<Fluid> ACCESSOR = new GlobalTagAccessor<>();
+public final class FluidTags {
+	protected static final RequiredTagList<Fluid> REQUIRED_TAGS = RequiredTagListRegistry.register(new Identifier("fluid"), TagManager::getFluids);
 	public static final Tag.Identified<Fluid> WATER = register("water");
 	public static final Tag.Identified<Fluid> LAVA = register("lava");
 
 	private static Tag.Identified<Fluid> register(String id) {
-		return ACCESSOR.get(id);
+		return REQUIRED_TAGS.add(id);
 	}
 
-	public static void setContainer(TagContainer<Fluid> container) {
-		ACCESSOR.setContainer(container);
+	public static TagGroup<Fluid> getTagGroup() {
+		return REQUIRED_TAGS.getGroup();
 	}
 
-	@Environment(EnvType.CLIENT)
-	public static void markReady() {
-		ACCESSOR.markReady();
-	}
-
-	public static TagContainer<Fluid> getContainer() {
-		return ACCESSOR.getContainer();
-	}
-
-	public static List<GlobalTagAccessor.CachedTag<Fluid>> method_29897() {
-		return ACCESSOR.method_29902();
-	}
-
-	public static Set<Identifier> method_29216(TagContainer<Fluid> tagContainer) {
-		return ACCESSOR.method_29224(tagContainer);
+	public static List<? extends Tag<Fluid>> all() {
+		return REQUIRED_TAGS.getTags();
 	}
 }

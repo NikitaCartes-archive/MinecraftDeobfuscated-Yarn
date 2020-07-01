@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -47,6 +48,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -380,8 +382,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		return world.getBlockState(pos).getFluidState().isIn(FluidTags.LAVA) ? 10.0F : 0.0F;
 	}
 
-	public StriderEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.STRIDER.create(this.world);
+	public StriderEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.STRIDER.create(serverWorld);
 	}
 
 	@Override
@@ -400,7 +402,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		boolean bl = this.isBreedingItem(player.getStackInHand(hand));
-		if (!bl && this.isSaddled() && !this.hasPassengers()) {
+		if (!bl && this.isSaddled() && !this.hasPassengers() && !player.shouldCancelInteraction()) {
 			if (!this.world.isClient) {
 				player.startRiding(this);
 			}
@@ -440,7 +442,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Nullable
 	@Override
 	public EntityData initialize(
-		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		EntityData entityData2 = null;
 		StriderEntity.StriderData.RiderType riderType;
@@ -464,13 +466,13 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		MobEntity mobEntity = null;
 		if (riderType == StriderEntity.StriderData.RiderType.BABY_RIDER) {
-			StriderEntity striderEntity = EntityType.STRIDER.create(world.getWorld());
+			StriderEntity striderEntity = EntityType.STRIDER.create(arg.getWorld());
 			if (striderEntity != null) {
 				mobEntity = striderEntity;
 				striderEntity.setBreedingAge(-24000);
 			}
 		} else if (riderType == StriderEntity.StriderData.RiderType.PIGLIN_RIDER) {
-			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.getWorld());
+			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(arg.getWorld());
 			if (zombifiedPiglinEntity != null) {
 				mobEntity = zombifiedPiglinEntity;
 				this.saddle(null);
@@ -479,12 +481,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		if (mobEntity != null) {
 			mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-			mobEntity.initialize(world, difficulty, SpawnReason.JOCKEY, entityData2, null);
+			mobEntity.initialize(arg, difficulty, SpawnReason.JOCKEY, entityData2, null);
 			mobEntity.startRiding(this, true);
-			world.spawnEntity(mobEntity);
+			arg.spawnEntity(mobEntity);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	static class Navigation extends MobNavigation {

@@ -100,7 +100,7 @@ public class Biome {
 						)
 						.fieldOf("features")
 						.forGetter(biome -> biome.features),
-					ConfiguredStructureFeature.field_24834
+					ConfiguredStructureFeature.TYPE_CODEC
 						.listOf()
 						.promotePartial(Util.method_29188("Structure start: ", LOGGER::error))
 						.fieldOf("starts")
@@ -108,7 +108,7 @@ public class Biome {
 							biome -> (List)biome.structureFeatures
 									.values()
 									.stream()
-									.sorted(Comparator.comparing(configuredStructureFeature -> Registry.STRUCTURE_FEATURE.getId(configuredStructureFeature.field_24835)))
+									.sorted(Comparator.comparing(configuredStructureFeature -> Registry.STRUCTURE_FEATURE.getId(configuredStructureFeature.feature)))
 									.collect(Collectors.toList())
 						),
 					Codec.simpleMap(
@@ -232,8 +232,7 @@ public class Biome {
 		this.surfaceBuilder = configuredSurfaceBuilder;
 		this.carvers = map;
 		this.features = map2;
-		this.structureFeatures = (Map)list.stream()
-			.collect(Collectors.toMap(configuredStructureFeature -> configuredStructureFeature.field_24835, Function.identity()));
+		this.structureFeatures = (Map)list.stream().collect(Collectors.toMap(configuredStructureFeature -> configuredStructureFeature.feature, Function.identity()));
 		this.spawns = map3;
 		this.noisePoints = list2;
 		this.parent = (String)optional.orElse(null);
@@ -374,7 +373,7 @@ public class Biome {
 	}
 
 	public void addStructureFeature(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		this.structureFeatures.put(configuredStructureFeature.field_24835, configuredStructureFeature);
+		this.structureFeatures.put(configuredStructureFeature.feature, configuredStructureFeature);
 	}
 
 	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
@@ -386,7 +385,7 @@ public class Biome {
 	}
 
 	public ConfiguredStructureFeature<?, ?> method_28405(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		return (ConfiguredStructureFeature<?, ?>)this.structureFeatures.getOrDefault(configuredStructureFeature.field_24835, configuredStructureFeature);
+		return (ConfiguredStructureFeature<?, ?>)this.structureFeatures.getOrDefault(configuredStructureFeature.feature, configuredStructureFeature);
 	}
 
 	public List<ConfiguredFeature<?, ?>> getFlowerFeatures() {
@@ -440,7 +439,7 @@ public class Biome {
 			chunkRandom.setDecoratorSeed(populationSeed, i, step.ordinal());
 
 			try {
-				configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, chunkRandom, pos);
+				configuredFeature.generate(serverWorldAccess, chunkGenerator, chunkRandom, pos);
 			} catch (Exception var18) {
 				CrashReport crashReport2 = CrashReport.create(var18, "Feature placement");
 				crashReport2.addElement("Feature")
@@ -598,7 +597,7 @@ public class Biome {
 		MUSHROOM("mushroom"),
 		NETHER("nether");
 
-		public static final Codec<Biome.Category> field_24678 = StringIdentifiable.method_28140(Biome.Category::values, Biome.Category::method_28424);
+		public static final Codec<Biome.Category> field_24678 = StringIdentifiable.createCodec(Biome.Category::values, Biome.Category::method_28424);
 		private static final Map<String, Biome.Category> NAME_MAP = (Map<String, Biome.Category>)Arrays.stream(values())
 			.collect(Collectors.toMap(Biome.Category::getName, category -> category));
 		private final String name;
@@ -716,7 +715,7 @@ public class Biome {
 		RAIN("rain"),
 		SNOW("snow");
 
-		public static final Codec<Biome.Precipitation> field_24680 = StringIdentifiable.method_28140(Biome.Precipitation::values, Biome.Precipitation::method_28431);
+		public static final Codec<Biome.Precipitation> field_24680 = StringIdentifiable.createCodec(Biome.Precipitation::values, Biome.Precipitation::method_28431);
 		private static final Map<String, Biome.Precipitation> NAME_MAP = (Map<String, Biome.Precipitation>)Arrays.stream(values())
 			.collect(Collectors.toMap(Biome.Precipitation::getName, precipitation -> precipitation));
 		private final String name;

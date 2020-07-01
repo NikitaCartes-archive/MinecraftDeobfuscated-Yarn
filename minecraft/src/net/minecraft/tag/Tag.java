@@ -31,13 +31,13 @@ import net.minecraft.util.JsonHelper;
  * or unordered, depending on the configuration from the tag builder.
  */
 public interface Tag<T> {
-	static <T> Codec<Tag<T>> method_28134(Supplier<TagContainer<T>> supplier) {
+	static <T> Codec<Tag<T>> codec(Supplier<TagGroup<T>> groupGetter) {
 		return Identifier.CODEC
 			.flatXmap(
-				identifier -> (DataResult)Optional.ofNullable(((TagContainer)supplier.get()).get(identifier))
+				identifier -> (DataResult)Optional.ofNullable(((TagGroup)groupGetter.get()).getTag(identifier))
 						.map(DataResult::success)
 						.orElseGet(() -> DataResult.error("Unknown tag: " + identifier)),
-				tag -> (DataResult)Optional.ofNullable(((TagContainer)supplier.get()).getId(tag))
+				tag -> (DataResult)Optional.ofNullable(((TagGroup)groupGetter.get()).getUncheckedTagId(tag))
 						.map(DataResult::success)
 						.orElseGet(() -> DataResult.error("Unknown tag: " + tag))
 			);
@@ -52,8 +52,8 @@ public interface Tag<T> {
 		return (T)list.get(random.nextInt(list.size()));
 	}
 
-	static <T> Tag<T> of(Set<T> set) {
-		return SetTag.method_29900(set);
+	static <T> Tag<T> of(Set<T> values) {
+		return SetTag.of(values);
 	}
 
 	/**

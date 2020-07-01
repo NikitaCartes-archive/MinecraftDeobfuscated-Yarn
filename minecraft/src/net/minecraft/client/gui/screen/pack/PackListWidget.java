@@ -73,7 +73,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 				DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
 			}
 
-			this.pack.render(this.client.getTextureManager());
+			this.client.getTextureManager().bindTexture(this.pack.method_30286());
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			Text text = this.pack.getDisplayName();

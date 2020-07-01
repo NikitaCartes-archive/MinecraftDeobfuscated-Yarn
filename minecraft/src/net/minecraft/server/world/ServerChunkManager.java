@@ -391,7 +391,7 @@ public class ServerChunkManager extends ChunkManager {
 			});
 			this.world.getProfiler().push("customSpawners");
 			if (bl2) {
-				this.world.method_29202(this.spawnMonsters, this.spawnAnimals);
+				this.world.tickSpawners(this.spawnMonsters, this.spawnAnimals);
 			}
 
 			this.world.getProfiler().pop();

@@ -1,6 +1,5 @@
 package net.minecraft.client.font;
 
-import java.io.Closeable;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,7 +11,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
+public class GlyphAtlasTexture extends AbstractTexture {
 	private final Identifier id;
 	private final RenderLayer field_21690;
 	private final RenderLayer field_21691;
@@ -32,6 +31,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 	public void load(ResourceManager manager) {
 	}
 
+	@Override
 	public void close() {
 		this.clearGlId();
 	}

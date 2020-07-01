@@ -15,11 +15,13 @@ public class GoToIfNearbyTask extends Task<PathAwareEntity> {
 	private final MemoryModuleType<GlobalPos> target;
 	private long nextUpdateTime;
 	private final int maxDistance;
+	private float field_25752;
 
-	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, int maxDistance) {
+	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float f, int i) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, target, MemoryModuleState.VALUE_PRESENT));
 		this.target = target;
-		this.maxDistance = maxDistance;
+		this.field_25752 = f;
+		this.maxDistance = i;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
@@ -32,7 +34,7 @@ public class GoToIfNearbyTask extends Task<PathAwareEntity> {
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		if (l > this.nextUpdateTime) {
 			Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(pathAwareEntity, 8, 6));
-			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, 0.4F, 1)));
+			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.field_25752, 1)));
 			this.nextUpdateTime = l + 180L;
 		}
 	}

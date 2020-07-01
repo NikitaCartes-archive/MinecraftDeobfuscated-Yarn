@@ -23,15 +23,9 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
-	public BlockState getRandomGrowthState(WorldAccess world) {
-		return this.getDefaultState().with(AGE, Integer.valueOf(world.getRandom().nextInt(25)));
-	}
-
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (!state.canPlaceAt(world, pos)) {
-			world.breakBlock(pos, true);
-		}
+	public BlockState getRandomGrowthState(WorldAccess worldAccess) {
+		return this.getDefaultState().with(AGE, Integer.valueOf(worldAccess.getRandom().nextInt(25)));
 	}
 
 	@Override
@@ -55,14 +49,14 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		if (direction == this.growthDirection && newState.isOf(this)) {
-			return this.getPlant().getDefaultState();
-		} else {
+		if (direction != this.growthDirection || !newState.isOf(this) && !newState.isOf(this.getPlant())) {
 			if (this.tickWater) {
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
 			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+		} else {
+			return this.getPlant().getDefaultState();
 		}
 	}
 

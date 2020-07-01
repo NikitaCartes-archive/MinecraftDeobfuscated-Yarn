@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -23,13 +22,8 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 	}
 
 	public <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(
-		ServerWorldAccess serverWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		ConfiguredFeature<FC, F> configuredFeature
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ConfiguredFeature<FC, F> configuredFeature
 	) {
-		return this.decorator.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos, this.config, configuredFeature);
+		return this.decorator.generate(serverWorldAccess, chunkGenerator, random, blockPos, this.config, configuredFeature);
 	}
 }

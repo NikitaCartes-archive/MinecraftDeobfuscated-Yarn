@@ -32,7 +32,7 @@ public class DatapackCommand {
 			suggestionsBuilder
 		);
 	private static final SuggestionProvider<ServerCommandSource> DISABLED_CONTAINERS_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
-		ResourcePackManager<?> resourcePackManager = commandContext.getSource().getMinecraftServer().getDataPackManager();
+		ResourcePackManager resourcePackManager = commandContext.getSource().getMinecraftServer().getDataPackManager();
 		Collection<String> collection = resourcePackManager.getEnabledNames();
 		return CommandSource.suggestMatching(
 			resourcePackManager.getNames().stream().filter(string -> !collection.contains(string)).map(StringArgumentType::escapeIfRequired), suggestionsBuilder
@@ -118,7 +118,7 @@ public class DatapackCommand {
 	}
 
 	private static int executeEnable(ServerCommandSource source, ResourcePackProfile container, DatapackCommand.PackAdder packAdder) throws CommandSyntaxException {
-		ResourcePackManager<?> resourcePackManager = source.getMinecraftServer().getDataPackManager();
+		ResourcePackManager resourcePackManager = source.getMinecraftServer().getDataPackManager();
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		packAdder.apply(list, container);
 		source.sendFeedback(new TranslatableText("commands.datapack.modify.enable", container.getInformationText(true)), true);
@@ -127,7 +127,7 @@ public class DatapackCommand {
 	}
 
 	private static int executeDisable(ServerCommandSource source, ResourcePackProfile container) {
-		ResourcePackManager<?> resourcePackManager = source.getMinecraftServer().getDataPackManager();
+		ResourcePackManager resourcePackManager = source.getMinecraftServer().getDataPackManager();
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		list.remove(container);
 		source.sendFeedback(new TranslatableText("commands.datapack.modify.disable", container.getInformationText(true)), true);
@@ -140,7 +140,7 @@ public class DatapackCommand {
 	}
 
 	private static int executeListAvailable(ServerCommandSource source) {
-		ResourcePackManager<?> resourcePackManager = source.getMinecraftServer().getDataPackManager();
+		ResourcePackManager resourcePackManager = source.getMinecraftServer().getDataPackManager();
 		resourcePackManager.scanPacks();
 		Collection<? extends ResourcePackProfile> collection = resourcePackManager.getEnabledProfiles();
 		Collection<? extends ResourcePackProfile> collection2 = resourcePackManager.getProfiles();
@@ -162,7 +162,7 @@ public class DatapackCommand {
 	}
 
 	private static int executeListEnabled(ServerCommandSource source) {
-		ResourcePackManager<?> resourcePackManager = source.getMinecraftServer().getDataPackManager();
+		ResourcePackManager resourcePackManager = source.getMinecraftServer().getDataPackManager();
 		resourcePackManager.scanPacks();
 		Collection<? extends ResourcePackProfile> collection = resourcePackManager.getEnabledProfiles();
 		if (collection.isEmpty()) {
@@ -181,7 +181,7 @@ public class DatapackCommand {
 
 	private static ResourcePackProfile getPackContainer(CommandContext<ServerCommandSource> context, String name, boolean enable) throws CommandSyntaxException {
 		String string = StringArgumentType.getString(context, name);
-		ResourcePackManager<?> resourcePackManager = context.getSource().getMinecraftServer().getDataPackManager();
+		ResourcePackManager resourcePackManager = context.getSource().getMinecraftServer().getDataPackManager();
 		ResourcePackProfile resourcePackProfile = resourcePackManager.getProfile(string);
 		if (resourcePackProfile == null) {
 			throw UNKNOWN_DATAPACK_EXCEPTION.create(string);

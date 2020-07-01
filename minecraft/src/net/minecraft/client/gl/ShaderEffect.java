@@ -177,11 +177,11 @@ public class ShaderEffect implements AutoCloseable {
 								RenderSystem.texParameter(3553, 10240, 9728);
 							}
 
-							postProcessShader.addAuxTarget(string4, abstractTexture.getGlId(), j, k);
+							postProcessShader.addAuxTarget(string4, abstractTexture::getGlId, j, k);
 						} else if (bl) {
-							postProcessShader.addAuxTarget(string4, framebuffer3.depthAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
+							postProcessShader.addAuxTarget(string4, framebuffer3::method_30278, framebuffer3.textureWidth, framebuffer3.textureHeight);
 						} else {
-							postProcessShader.addAuxTarget(string4, framebuffer3, framebuffer3.textureWidth, framebuffer3.textureHeight);
+							postProcessShader.addAuxTarget(string4, framebuffer3::method_30277, framebuffer3.textureWidth, framebuffer3.textureHeight);
 						}
 					} catch (Exception var33) {
 						ShaderParseException shaderParseException = ShaderParseException.wrap(var33);

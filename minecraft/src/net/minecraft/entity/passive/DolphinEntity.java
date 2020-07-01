@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -87,11 +88,11 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.setAir(this.getMaxAir());
 		this.pitch = 0.0F;
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override

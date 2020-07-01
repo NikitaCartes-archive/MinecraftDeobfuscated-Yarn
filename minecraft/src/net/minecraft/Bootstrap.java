@@ -17,6 +17,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.logging.DebugLoggerPrintStream;
@@ -47,6 +48,7 @@ public class Bootstrap {
 					EntitySelectorOptions.register();
 					DispenserBehavior.registerDefaults();
 					ArgumentTypes.register();
+					RequiredTagListRegistry.validateRegistrations();
 					setOutputStreams();
 				}
 			}

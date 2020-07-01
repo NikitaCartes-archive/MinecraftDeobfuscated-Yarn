@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SpringFeature extends Feature<SpringFeatureConfig> {
@@ -14,12 +13,7 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		SpringFeatureConfig springFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
 	) {
 		if (!springFeatureConfig.validBlocks.contains(serverWorldAccess.getBlockState(blockPos.up()).getBlock())) {
 			return false;

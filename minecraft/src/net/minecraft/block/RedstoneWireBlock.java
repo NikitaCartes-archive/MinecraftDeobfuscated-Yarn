@@ -212,7 +212,7 @@ public class RedstoneWireBlock extends Block {
 				if (!blockState.isOf(Blocks.OBSERVER)) {
 					BlockPos blockPos = mutable.offset(direction.getOpposite());
 					BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos), world, mutable, blockPos);
-					replaceBlock(blockState, blockState2, world, mutable, flags, i);
+					replace(blockState, blockState2, world, mutable, flags, i);
 				}
 
 				mutable.set(pos, direction).move(Direction.UP);
@@ -220,7 +220,7 @@ public class RedstoneWireBlock extends Block {
 				if (!blockState3.isOf(Blocks.OBSERVER)) {
 					BlockPos blockPos2 = mutable.offset(direction.getOpposite());
 					BlockState blockState4 = blockState3.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos2), world, mutable, blockPos2);
-					replaceBlock(blockState3, blockState4, world, mutable, flags, i);
+					replace(blockState3, blockState4, world, mutable, flags, i);
 				}
 			}
 		}

@@ -72,7 +72,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		NORMAL("normal"),
 		MESA("mesa");
 
-		public static final Codec<MineshaftFeature.Type> field_24839 = StringIdentifiable.method_28140(MineshaftFeature.Type::values, MineshaftFeature.Type::byName);
+		public static final Codec<MineshaftFeature.Type> field_24839 = StringIdentifiable.createCodec(MineshaftFeature.Type::values, MineshaftFeature.Type::byName);
 		private static final Map<String, MineshaftFeature.Type> nameMap = (Map<String, MineshaftFeature.Type>)Arrays.stream(values())
 			.collect(Collectors.toMap(MineshaftFeature.Type::getName, type -> type));
 		private final String name;

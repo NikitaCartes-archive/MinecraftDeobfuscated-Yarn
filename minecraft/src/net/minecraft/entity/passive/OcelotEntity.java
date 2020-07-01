@@ -4,6 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -36,6 +37,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
@@ -231,8 +233,8 @@ public class OcelotEntity extends AnimalEntity {
 		}
 	}
 
-	public OcelotEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.OCELOT.create(this.world);
+	public OcelotEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.OCELOT.create(serverWorld);
 	}
 
 	@Override
@@ -264,14 +266,14 @@ public class OcelotEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData();
 			((PassiveEntity.PassiveData)entityData).setBabyChance(1.0F);
 		}
 
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Environment(EnvType.CLIENT)

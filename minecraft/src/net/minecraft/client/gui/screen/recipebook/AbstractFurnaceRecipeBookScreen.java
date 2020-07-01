@@ -28,36 +28,6 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	private float frameTime;
 
 	@Override
-	protected boolean toggleFilteringCraftable() {
-		boolean bl = !this.isFilteringCraftable();
-		this.setFilteringCraftable(bl);
-		return bl;
-	}
-
-	protected abstract boolean isFilteringCraftable();
-
-	protected abstract void setFilteringCraftable(boolean filteringCraftable);
-
-	@Override
-	public boolean isOpen() {
-		return this.isGuiOpen();
-	}
-
-	protected abstract boolean isGuiOpen();
-
-	@Override
-	protected void setOpen(boolean opened) {
-		this.setGuiOpen(opened);
-		if (!opened) {
-			this.recipesArea.hideAlternates();
-		}
-
-		this.sendBookDataPacket();
-	}
-
-	protected abstract void setGuiOpen(boolean opened);
-
-	@Override
 	protected void setBookButtonTexture() {
 		this.toggleCraftableButton.setTextureUV(152, 182, 28, 18, TEXTURE);
 	}

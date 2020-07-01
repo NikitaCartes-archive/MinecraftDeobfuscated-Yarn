@@ -207,9 +207,9 @@ public class TextRenderer {
 		int underlineColor,
 		int light
 	) {
-		TextRenderer.ShadowDrawer shadowDrawer = new TextRenderer.ShadowDrawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
-		TextVisitFactory.visitFormatted(text, Style.EMPTY, shadowDrawer);
-		return shadowDrawer.drawLayer(underlineColor, x);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
+		TextVisitFactory.visitFormatted(text, Style.EMPTY, drawer);
+		return drawer.drawLayer(underlineColor, x);
 	}
 
 	private float drawLayer(
@@ -224,9 +224,9 @@ public class TextRenderer {
 		int underlineColor,
 		int light
 	) {
-		TextRenderer.ShadowDrawer shadowDrawer = new TextRenderer.ShadowDrawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
-		TextVisitFactory.visitFormatted(text, Style.EMPTY, shadowDrawer);
-		return shadowDrawer.drawLayer(underlineColor, x);
+		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
+		TextVisitFactory.visitFormatted(text, Style.EMPTY, drawer);
+		return drawer.drawLayer(underlineColor, x);
 	}
 
 	private void drawGlyph(
@@ -296,7 +296,7 @@ public class TextRenderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class ShadowDrawer implements TextVisitFactory.CharacterVisitor {
+	class Drawer implements TextVisitFactory.CharacterVisitor {
 		final VertexConsumerProvider vertexConsumers;
 		private final boolean shadow;
 		private final float brightnessMultiplier;
@@ -320,7 +320,7 @@ public class TextRenderer {
 			this.rectangles.add(rectangle);
 		}
 
-		public ShadowDrawer(VertexConsumerProvider vertexConsumers, float x, float y, int color, boolean shadow, Matrix4f matrix, boolean seeThrough, int light) {
+		public Drawer(VertexConsumerProvider vertexConsumers, float x, float y, int color, boolean shadow, Matrix4f matrix, boolean seeThrough, int light) {
 			this.vertexConsumers = vertexConsumers;
 			this.x = x;
 			this.y = y;

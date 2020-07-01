@@ -70,7 +70,7 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 
 	Timer<MinecraftServer> getScheduledEvents();
 
-	void setTime(long time);
+	void method_29034(long l);
 
-	void setTimeOfDay(long time);
+	void method_29035(long l);
 }

@@ -11,6 +11,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -56,8 +57,8 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(PassiveEntity mate) {
-		return EntityType.ZOMBIE_HORSE.create(this.world);
+	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.ZOMBIE_HORSE.create(serverWorld);
 	}
 
 	@Override

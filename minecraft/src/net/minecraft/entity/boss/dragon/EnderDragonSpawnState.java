@@ -72,13 +72,7 @@ public enum EnderDragonSpawnState {
 						EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
 						Feature.END_SPIKE
 							.configure(endSpikeFeatureConfig)
-							.generate(
-								world,
-								world.getStructureAccessor(),
-								world.getChunkManager().getChunkGenerator(),
-								new Random(),
-								new BlockPos(spike.getCenterX(), 45, spike.getCenterZ())
-							);
+							.generate(world, world.getChunkManager().getChunkGenerator(), new Random(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
 					}
 				} else if (bl) {
 					fight.setSpawnState(SUMMONING_DRAGON);
