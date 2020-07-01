@@ -24,6 +24,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.entity.mob.RavagerEntity;
@@ -108,6 +109,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.PHANTOM, HostileEntity.createHostileAttributes().build())
 		.put(EntityType.PIG, PigEntity.createPigAttributes().build())
 		.put(EntityType.PIGLIN, PiglinEntity.createPiglinAttributes().build())
+		.put(EntityType.PIGLIN_BRUTE, PiglinBruteEntity.createPiglinBruteAttributes().build())
 		.put(EntityType.PILLAGER, PillagerEntity.createPillagerAttributes().build())
 		.put(EntityType.PLAYER, PlayerEntity.createPlayerAttributes().build())
 		.put(EntityType.POLAR_BEAR, PolarBearEntity.createPolarBearAttributes().build())

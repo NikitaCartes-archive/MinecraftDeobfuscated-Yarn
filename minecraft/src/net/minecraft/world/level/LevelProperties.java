@@ -347,13 +347,13 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setTime(long time) {
-		this.time = time;
+	public void method_29034(long l) {
+		this.time = l;
 	}
 
 	@Override
-	public void setTimeOfDay(long time) {
-		this.timeOfDay = time;
+	public void method_29035(long l) {
+		this.timeOfDay = l;
 	}
 
 	@Override
@@ -494,9 +494,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection reportSection) {
-		ServerWorldProperties.super.populateCrashReport(reportSection);
-		SaveProperties.super.populateCrashReport(reportSection);
+	public void populateCrashReport(CrashReportSection crashReportSection) {
+		ServerWorldProperties.super.populateCrashReport(crashReportSection);
+		SaveProperties.super.populateCrashReport(crashReportSection);
 	}
 
 	@Override

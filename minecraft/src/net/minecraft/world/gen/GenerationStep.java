@@ -12,7 +12,7 @@ public class GenerationStep {
 		AIR("air"),
 		LIQUID("liquid");
 
-		public static final Codec<GenerationStep.Carver> field_24770 = StringIdentifiable.method_28140(
+		public static final Codec<GenerationStep.Carver> field_24770 = StringIdentifiable.createCodec(
 			GenerationStep.Carver::values, GenerationStep.Carver::method_28546
 		);
 		private static final Map<String, GenerationStep.Carver> BY_NAME = (Map<String, GenerationStep.Carver>)Arrays.stream(values())
@@ -50,9 +50,7 @@ public class GenerationStep {
 		VEGETAL_DECORATION("vegetal_decoration"),
 		TOP_LAYER_MODIFICATION("top_layer_modification");
 
-		public static final Codec<GenerationStep.Feature> CODEC = StringIdentifiable.method_28140(
-			GenerationStep.Feature::values, GenerationStep.Feature::method_28547
-		);
+		public static final Codec<GenerationStep.Feature> CODEC = StringIdentifiable.createCodec(GenerationStep.Feature::values, GenerationStep.Feature::method_28547);
 		private static final Map<String, GenerationStep.Feature> BY_NAME = (Map<String, GenerationStep.Feature>)Arrays.stream(values())
 			.collect(Collectors.toMap(GenerationStep.Feature::getName, feature -> feature));
 		private final String name;

@@ -14,7 +14,7 @@ import net.minecraft.util.StringIdentifiable;
 public class OreFeatureConfig implements FeatureConfig {
 	public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					OreFeatureConfig.Target.field_24898.fieldOf("target").forGetter(oreFeatureConfig -> oreFeatureConfig.target),
+					OreFeatureConfig.Target.CODEC.fieldOf("target").forGetter(oreFeatureConfig -> oreFeatureConfig.target),
 					BlockState.CODEC.fieldOf("state").forGetter(oreFeatureConfig -> oreFeatureConfig.state),
 					Codec.INT.fieldOf("size").withDefault(0).forGetter(oreFeatureConfig -> oreFeatureConfig.size)
 				)
@@ -43,9 +43,7 @@ public class OreFeatureConfig implements FeatureConfig {
 			blockState -> blockState == null ? false : blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.BASALT) || blockState.isOf(Blocks.BLACKSTONE)
 		);
 
-		public static final Codec<OreFeatureConfig.Target> field_24898 = StringIdentifiable.method_28140(
-			OreFeatureConfig.Target::values, OreFeatureConfig.Target::byName
-		);
+		public static final Codec<OreFeatureConfig.Target> CODEC = StringIdentifiable.createCodec(OreFeatureConfig.Target::values, OreFeatureConfig.Target::byName);
 		private static final Map<String, OreFeatureConfig.Target> nameMap = (Map<String, OreFeatureConfig.Target>)Arrays.stream(values())
 			.collect(Collectors.toMap(OreFeatureConfig.Target::getName, target -> target));
 		private final String name;

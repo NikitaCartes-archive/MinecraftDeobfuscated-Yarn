@@ -60,8 +60,8 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightning) {
-		UUID uUID = lightning.getUuid();
+	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+		UUID uUID = lightningEntity.getUuid();
 		if (!uUID.equals(this.lightningId)) {
 			this.setType(this.getMooshroomType() == MooshroomEntity.Type.RED ? MooshroomEntity.Type.BROWN : MooshroomEntity.Type.RED);
 			this.lightningId = uUID;
@@ -91,7 +91,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 				itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
 			}
 
-			ItemStack itemStack3 = ItemUsage.method_30012(itemStack, player, itemStack2);
+			ItemStack itemStack3 = ItemUsage.method_30270(itemStack, player, itemStack2, false);
 			player.setStackInHand(hand, itemStack3);
 			SoundEvent soundEvent;
 			if (bl) {
@@ -236,8 +236,8 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		return MooshroomEntity.Type.fromName(this.dataTracker.get(TYPE));
 	}
 
-	public MooshroomEntity createChild(PassiveEntity passiveEntity) {
-		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(this.world);
+	public MooshroomEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(serverWorld);
 		mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
 		return mooshroomEntity;
 	}

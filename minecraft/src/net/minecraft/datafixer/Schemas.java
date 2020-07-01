@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5404;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
@@ -107,6 +106,7 @@ import net.minecraft.datafixer.fix.ObjectiveDisplayNameFix;
 import net.minecraft.datafixer.fix.ObjectiveRenderTypeFix;
 import net.minecraft.datafixer.fix.OminousBannerBlockEntityRenameFix;
 import net.minecraft.datafixer.fix.OminousBannerItemRenameFix;
+import net.minecraft.datafixer.fix.OptionFix;
 import net.minecraft.datafixer.fix.OptionsAddTextBackgroundFix;
 import net.minecraft.datafixer.fix.OptionsForceVBOFix;
 import net.minecraft.datafixer.fix.OptionsKeyLwjgl3Fix;
@@ -181,6 +181,7 @@ import net.minecraft.datafixer.schema.Schema2509;
 import net.minecraft.datafixer.schema.Schema2519;
 import net.minecraft.datafixer.schema.Schema2522;
 import net.minecraft.datafixer.schema.Schema2551;
+import net.minecraft.datafixer.schema.Schema2568;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -644,7 +645,9 @@ public class Schemas {
 		builder.addFixer(new BiomesFix(schema122, false));
 		Schema schema123 = builder.addSchema(2558, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new MissingDimensionFix(schema123, false));
-		builder.addFixer(new class_5404(schema123, false, "Rename swapHands setting", "key_key.swapHands", "key_key.swapOffhand"));
+		builder.addFixer(new OptionFix(schema123, false, "Rename swapHands setting", "key_key.swapHands", "key_key.swapOffhand"));
+		Schema schema124 = builder.addSchema(2568, Schema2568::new);
+		builder.addFixer(new ChoiceTypesFix(schema124, "Added Piglin Brute", TypeReferences.ENTITY));
 	}
 
 	private static UnaryOperator<String> method_30070(Map<String, String> map) {

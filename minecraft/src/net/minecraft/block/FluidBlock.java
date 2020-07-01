@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -20,7 +19,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -167,17 +165,6 @@ public class FluidBlock extends Block implements FluidDrainable {
 			return this.fluid;
 		} else {
 			return Fluids.EMPTY;
-		}
-	}
-
-	@Override
-	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (this.fluid.isIn(FluidTags.LAVA)) {
-			float f = (float)pos.getY() + state.getFluidState().getHeight(world, pos);
-			Box box = entity.getBoundingBox();
-			if (box.minY < (double)f || (double)f > box.maxY) {
-				entity.setInLava();
-			}
 		}
 	}
 }

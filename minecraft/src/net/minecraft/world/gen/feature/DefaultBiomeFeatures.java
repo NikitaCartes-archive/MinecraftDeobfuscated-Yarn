@@ -223,7 +223,7 @@ public class DefaultBiomeFeatures {
 			new StraightTrunkPlacer(4, 8, 0),
 			new TwoLayersFeatureSize(1, 0, 1)
 		)
-		.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.field_24965, LeaveVineTreeDecorator.field_24961))
+		.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.INSTANCE, LeaveVineTreeDecorator.INSTANCE))
 		.ignoreVines()
 		.build();
 	public static final TreeFeatureConfig JUNGLE_SAPLING_TREE_CONFIG = new TreeFeatureConfig.Builder(
@@ -292,7 +292,7 @@ public class DefaultBiomeFeatures {
 			new TwoLayersFeatureSize(1, 0, 1)
 		)
 		.maxWaterDepth(1)
-		.decorators(ImmutableList.of(LeaveVineTreeDecorator.field_24961))
+		.decorators(ImmutableList.of(LeaveVineTreeDecorator.INSTANCE))
 		.build();
 	public static final TreeFeatureConfig FANCY_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(OAK_LOG),
@@ -352,56 +352,56 @@ public class DefaultBiomeFeatures {
 			new MegaJungleTrunkPlacer(10, 2, 19),
 			new TwoLayersFeatureSize(1, 1, 2)
 		)
-		.decorators(ImmutableList.of(TrunkVineTreeDecorator.field_24965, LeaveVineTreeDecorator.field_24961))
+		.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, LeaveVineTreeDecorator.INSTANCE))
 		.build();
 	public static final RandomPatchFeatureConfig GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(GRASS), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(GRASS), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(32)
 		.build();
 	public static final RandomPatchFeatureConfig TAIGA_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new WeightedBlockStateProvider().addState(GRASS, 1).addState(FERN, 4), SimpleBlockPlacer.field_24871
+			new WeightedBlockStateProvider().addState(GRASS, 1).addState(FERN, 4), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(32)
 		.build();
 	public static final RandomPatchFeatureConfig LUSH_GRASS_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new WeightedBlockStateProvider().addState(GRASS, 3).addState(FERN, 1), SimpleBlockPlacer.field_24871
+			new WeightedBlockStateProvider().addState(GRASS, 3).addState(FERN, 1), SimpleBlockPlacer.INSTANCE
 		)
 		.blacklist(ImmutableSet.of(PODZOL))
 		.tries(32)
 		.build();
 	public static final RandomPatchFeatureConfig LILY_OF_THE_VALLEY_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(LILY_OF_THE_VALLEY), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(LILY_OF_THE_VALLEY), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig BLUE_ORCHID_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(BLUE_ORCHID), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(BLUE_ORCHID), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig DEFAULT_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new WeightedBlockStateProvider().addState(POPPY, 2).addState(DANDELION, 1), SimpleBlockPlacer.field_24871
+			new WeightedBlockStateProvider().addState(POPPY, 2).addState(DANDELION, 1), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig PLAINS_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			PlainsFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.field_24871
+			PlainsFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig FOREST_FLOWER_CONFIG = new RandomPatchFeatureConfig.Builder(
-			ForestFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.field_24871
+			ForestFlowerBlockStateProvider.INSTANCE, SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.build();
 	public static final RandomPatchFeatureConfig DEAD_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(DEAD_BUSH), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(DEAD_BUSH), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(4)
 		.build();
 	public static final RandomPatchFeatureConfig MELON_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(MELON), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(MELON), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
@@ -409,21 +409,21 @@ public class DefaultBiomeFeatures {
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig PUMPKIN_PATCH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(PUMPKIN), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(PUMPKIN), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig SWEET_BERRY_BUSH_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(SWEET_BERRY_BUSH), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(SWEET_BERRY_BUSH), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.whitelist(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig NETHER_FIRE_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(FIRE), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(FIRE), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.whitelist(ImmutableSet.of(NETHERRACK.getBlock()))
@@ -437,18 +437,18 @@ public class DefaultBiomeFeatures {
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig LILY_PAD_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(LILY_PAD), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(LILY_PAD), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(10)
 		.build();
 	public static final RandomPatchFeatureConfig RED_MUSHROOM_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(RED_MUSHROOM), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(RED_MUSHROOM), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.cannotProject()
 		.build();
 	public static final RandomPatchFeatureConfig BROWN_MUSHROOM_CONFIG = new RandomPatchFeatureConfig.Builder(
-			new SimpleBlockStateProvider(BROWN_MUSHROOM), SimpleBlockPlacer.field_24871
+			new SimpleBlockStateProvider(BROWN_MUSHROOM), SimpleBlockPlacer.INSTANCE
 		)
 		.tries(64)
 		.cannotProject()

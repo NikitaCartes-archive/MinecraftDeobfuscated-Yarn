@@ -16,6 +16,7 @@ import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -175,5 +176,11 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	@Override
 	public int getCraftingSlotCount() {
 		return 10;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public RecipeBookCategory getCategory() {
+		return RecipeBookCategory.CRAFTING;
 	}
 }

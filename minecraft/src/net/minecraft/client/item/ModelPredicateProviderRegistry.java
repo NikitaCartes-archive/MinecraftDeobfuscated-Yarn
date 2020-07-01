@@ -115,7 +115,7 @@ public class ModelPredicateProviderRegistry {
 					} else {
 						double d;
 						if (clientWorld.getDimension().isNatural()) {
-							d = (double)clientWorld.getSkyAngle(1.0F);
+							d = (double)clientWorld.method_30274(1.0F);
 						} else {
 							d = Math.random();
 						}

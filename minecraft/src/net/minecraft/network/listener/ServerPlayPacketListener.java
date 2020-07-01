@@ -27,6 +27,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
+import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
@@ -104,6 +105,8 @@ public interface ServerPlayPacketListener extends PacketListener {
 	void onTeleportConfirm(TeleportConfirmC2SPacket packet);
 
 	void onRecipeBookData(RecipeBookDataC2SPacket packet);
+
+	void onRecipeCategoryOptions(RecipeCategoryOptionsC2SPacket packet);
 
 	void onAdvancementTab(AdvancementTabC2SPacket packet);
 

@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class RandomFeatureEntry<FC extends FeatureConfig> {
@@ -24,9 +23,7 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 		this.chance = chance;
 	}
 
-	public boolean generate(
-		ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos
-	) {
-		return this.feature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
+	public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos) {
+		return this.feature.generate(serverWorldAccess, chunkGenerator, random, blockPos);
 	}
 }

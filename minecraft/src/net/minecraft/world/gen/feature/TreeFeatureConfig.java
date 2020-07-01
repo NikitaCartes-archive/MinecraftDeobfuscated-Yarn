@@ -19,7 +19,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 					FoliagePlacer.CODEC.fieldOf("foliage_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.foliagePlacer),
 					TrunkPlacer.CODEC.fieldOf("trunk_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkPlacer),
 					FeatureSize.CODEC.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.minimumSize),
-					TreeDecorator.field_24962.listOf().fieldOf("decorators").forGetter(treeFeatureConfig -> treeFeatureConfig.decorators),
+					TreeDecorator.TYPE_CODEC.listOf().fieldOf("decorators").forGetter(treeFeatureConfig -> treeFeatureConfig.decorators),
 					Codec.INT.fieldOf("max_water_depth").withDefault(0).forGetter(treeFeatureConfig -> treeFeatureConfig.maxWaterDepth),
 					Codec.BOOL.fieldOf("ignore_vines").withDefault(false).forGetter(treeFeatureConfig -> treeFeatureConfig.ignoreVines),
 					Heightmap.Type.field_24772.fieldOf("heightmap").forGetter(treeFeatureConfig -> treeFeatureConfig.heightmap)

@@ -4,6 +4,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5425;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -40,6 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -301,9 +303,9 @@ public class RabbitEntity extends AnimalEntity {
 		return item == Items.CARROT || item == Items.GOLDEN_CARROT || item == Blocks.DANDELION.asItem();
 	}
 
-	public RabbitEntity createChild(PassiveEntity passiveEntity) {
-		RabbitEntity rabbitEntity = EntityType.RABBIT.create(this.world);
-		int i = this.chooseType(this.world);
+	public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld);
+		int i = this.chooseType(serverWorld);
 		if (this.random.nextInt(20) != 0) {
 			if (passiveEntity instanceof RabbitEntity && this.random.nextBoolean()) {
 				i = ((RabbitEntity)passiveEntity).getRabbitType();
@@ -343,9 +345,9 @@ public class RabbitEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		int i = this.chooseType(world);
+		int i = this.chooseType(arg);
 		if (entityData instanceof RabbitEntity.RabbitData) {
 			i = ((RabbitEntity.RabbitData)entityData).type;
 		} else {
@@ -353,7 +355,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		this.setRabbitType(i);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private int chooseType(WorldAccess world) {

@@ -23,7 +23,7 @@ public abstract class SaplingGenerator {
 		} else {
 			serverWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
 			configuredFeature.config.ignoreFluidCheck();
-			if (configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), chunkGenerator, random, blockPos)) {
+			if (configuredFeature.generate(serverWorld, chunkGenerator, random, blockPos)) {
 				return true;
 			} else {
 				serverWorld.setBlockState(blockPos, blockState, 4);

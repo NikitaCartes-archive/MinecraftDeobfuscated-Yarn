@@ -81,7 +81,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.tag.TagManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -204,7 +204,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private boolean waitingForNextTick;
 	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
-	private final ResourcePackManager<ResourcePackProfile> dataPackManager;
+	private final ResourcePackManager dataPackManager;
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
 	@Nullable
 	private DataCommandStorage dataCommandStorage;
@@ -235,7 +235,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		RegistryTracker.Modifiable modifiable,
 		LevelStorage.Session session,
 		SaveProperties saveProperties,
-		ResourcePackManager<ResourcePackProfile> resourcePackManager,
+		ResourcePackManager resourcePackManager,
 		Proxy proxy,
 		DataFixer dataFixer,
 		ServerResourceManager serverResourceManager,
@@ -478,7 +478,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				ConfiguredFeature<?, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
 				configuredFeature.generate(
 					serverWorld,
-					serverWorld.getStructureAccessor(),
 					chunkGenerator,
 					serverWorld.random,
 					new BlockPos(serverWorldProperties.getSpawnX(), serverWorldProperties.getSpawnY(), serverWorldProperties.getSpawnZ())
@@ -494,7 +493,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		serverWorldProperties.setRaining(false);
 		serverWorldProperties.setThundering(false);
 		serverWorldProperties.setClearWeatherTime(1000000000);
-		serverWorldProperties.setTimeOfDay(6000L);
+		serverWorldProperties.method_29035(6000L);
 		serverWorldProperties.setGameMode(GameMode.SPECTATOR);
 	}
 
@@ -1345,7 +1344,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return completableFuture;
 	}
 
-	public static DataPackSettings loadDataPacks(ResourcePackManager<ResourcePackProfile> resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
+	public static DataPackSettings loadDataPacks(ResourcePackManager resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
 		resourcePackManager.scanPacks();
 		if (safeMode) {
 			resourcePackManager.setEnabledProfiles(Collections.singleton("vanilla"));
@@ -1379,7 +1378,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	private static DataPackSettings method_29735(ResourcePackManager<?> resourcePackManager) {
+	private static DataPackSettings method_29735(ResourcePackManager resourcePackManager) {
 		Collection<String> collection = resourcePackManager.getEnabledNames();
 		List<String> list = ImmutableList.copyOf(collection);
 		List<String> list2 = (List<String>)resourcePackManager.getNames()
@@ -1402,7 +1401,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	public ResourcePackManager<ResourcePackProfile> getDataPackManager() {
+	public ResourcePackManager getDataPackManager() {
 		return this.dataPackManager;
 	}
 
@@ -1431,7 +1430,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.serverResourceManager.getRecipeManager();
 	}
 
-	public RegistryTagManager getTagManager() {
+	public TagManager getTagManager() {
 		return this.serverResourceManager.getRegistryTagManager();
 	}
 

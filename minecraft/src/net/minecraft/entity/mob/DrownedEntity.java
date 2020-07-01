@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_5425;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -80,9 +81,9 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	@Override
 	public EntityData initialize(
-		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		entityData = super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
 		if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && this.random.nextFloat() < 0.03F) {
 			this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
 			this.handDropChances[EquipmentSlot.OFFHAND.getEntitySlotId()] = 2.0F;
@@ -91,12 +92,12 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		return entityData;
 	}
 
-	public static boolean canSpawn(EntityType<DrownedEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		Biome biome = world.getBiome(pos);
-		boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
-			&& isSpawnDark(world, pos, random)
-			&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
-		return biome != Biomes.RIVER && biome != Biomes.FROZEN_RIVER ? random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl : random.nextInt(15) == 0 && bl;
+	public static boolean canSpawn(EntityType<DrownedEntity> type, class_5425 arg, SpawnReason spawnReason, BlockPos pos, Random random) {
+		Biome biome = arg.getBiome(pos);
+		boolean bl = arg.getDifficulty() != Difficulty.PEACEFUL
+			&& isSpawnDark(arg, pos, random)
+			&& (spawnReason == SpawnReason.SPAWNER || arg.getFluidState(pos).isIn(FluidTags.WATER));
+		return biome != Biomes.RIVER && biome != Biomes.FROZEN_RIVER ? random.nextInt(40) == 0 && isValidSpawnDepth(arg, pos) && bl : random.nextInt(15) == 0 && bl;
 	}
 
 	private static boolean isValidSpawnDepth(WorldAccess world, BlockPos pos) {

@@ -14,10 +14,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -32,7 +32,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	private static final Uniform dummyUniform = new Uniform();
 	private static JsonGlProgram activeProgram;
 	private static int activeProgramRef = -1;
-	private final Map<String, Object> samplerBinds = Maps.<String, Object>newHashMap();
+	private final Map<String, IntSupplier> samplerBinds = Maps.<String, IntSupplier>newHashMap();
 	private final List<String> samplerNames = Lists.<String>newArrayList();
 	private final List<Integer> samplerShaderLocs = Lists.<Integer>newArrayList();
 	private final List<GlUniform> uniformData = Lists.<GlUniform>newArrayList();
@@ -244,19 +244,12 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		}
 
 		for (int i = 0; i < this.samplerShaderLocs.size(); i++) {
-			if (this.samplerBinds.get(this.samplerNames.get(i)) != null) {
+			String string = (String)this.samplerNames.get(i);
+			IntSupplier intSupplier = (IntSupplier)this.samplerBinds.get(string);
+			if (intSupplier != null) {
 				RenderSystem.activeTexture(33984 + i);
 				RenderSystem.enableTexture();
-				Object object = this.samplerBinds.get(this.samplerNames.get(i));
-				int j = -1;
-				if (object instanceof Framebuffer) {
-					j = ((Framebuffer)object).colorAttachment;
-				} else if (object instanceof AbstractTexture) {
-					j = ((AbstractTexture)object).getGlId();
-				} else if (object instanceof Integer) {
-					j = (Integer)object;
-				}
-
+				int j = intSupplier.getAsInt();
 				if (j != -1) {
 					RenderSystem.bindTexture(j);
 					GlUniform.uniform1((Integer)this.samplerShaderLocs.get(i), i);
@@ -330,12 +323,12 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		}
 	}
 
-	public void bindSampler(String samplerName, Object object) {
+	public void bindSampler(String samplerName, IntSupplier intSupplier) {
 		if (this.samplerBinds.containsKey(samplerName)) {
 			this.samplerBinds.remove(samplerName);
 		}
 
-		this.samplerBinds.put(samplerName, object);
+		this.samplerBinds.put(samplerName, intSupplier);
 		this.markUniformsDirty();
 	}
 

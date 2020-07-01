@@ -54,14 +54,14 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	private ItemStack touchDropReturningStack = ItemStack.EMPTY;
 	private long touchDropTimer;
 	protected final Set<Slot> cursorDragSlots = Sets.<Slot>newHashSet();
-	protected boolean isCursorDragging;
+	protected boolean cursorDragging;
 	private int heldButtonType;
 	private int heldButtonCode;
 	private boolean cancelNextRelease;
 	private int draggedStackRemainder;
 	private long lastButtonClickTime;
 	private int lastClickedButton;
-	private boolean isDoubleClicking;
+	private boolean doubleClicking;
 	private ItemStack quickMovingStack = ItemStack.EMPTY;
 
 	public HandledScreen(T handler, PlayerInventory inventory, Text title) {
@@ -128,7 +128,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			if (!this.touchDragStack.isEmpty() && this.touchIsRightClickDrag) {
 				itemStack = itemStack.copy();
 				itemStack.setCount(MathHelper.ceil((float)itemStack.getCount() / 2.0F));
-			} else if (this.isCursorDragging && this.cursorDragSlots.size() > 1) {
+			} else if (this.cursorDragging && this.cursorDragSlots.size() > 1) {
 				itemStack = itemStack.copy();
 				itemStack.setCount(this.draggedStackRemainder);
 				if (itemStack.isEmpty()) {
@@ -191,7 +191,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		if (slot == this.touchDragSlotStart && !this.touchDragStack.isEmpty() && this.touchIsRightClickDrag && !itemStack.isEmpty()) {
 			itemStack = itemStack.copy();
 			itemStack.setCount(itemStack.getCount() / 2);
-		} else if (this.isCursorDragging && this.cursorDragSlots.contains(slot) && !itemStack2.isEmpty()) {
+		} else if (this.cursorDragging && this.cursorDragSlots.contains(slot) && !itemStack2.isEmpty()) {
 			if (this.cursorDragSlots.size() == 1) {
 				return;
 			}
@@ -239,7 +239,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	private void calculateOffset() {
 		ItemStack itemStack = this.client.player.inventory.getCursorStack();
-		if (!itemStack.isEmpty() && this.isCursorDragging) {
+		if (!itemStack.isEmpty() && this.cursorDragging) {
 			if (this.heldButtonType == 2) {
 				this.draggedStackRemainder = itemStack.getMaxCount();
 			} else {
@@ -281,7 +281,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			boolean bl = this.client.options.keyPickItem.matchesMouse(button);
 			Slot slot = this.getSlotAt(mouseX, mouseY);
 			long l = Util.getMeasuringTimeMs();
-			this.isDoubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
+			this.doubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
 			this.cancelNextRelease = false;
 			if (button != 0 && button != 1 && !bl) {
 				this.method_30107(button);
@@ -312,7 +312,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 						} else {
 							this.touchDragSlotStart = null;
 						}
-					} else if (!this.isCursorDragging) {
+					} else if (!this.cursorDragging) {
 						if (this.client.player.inventory.getCursorStack().isEmpty()) {
 							if (this.client.options.keyPickItem.matchesMouse(button)) {
 								this.onMouseClick(slot, k, button, SlotActionType.CLONE);
@@ -335,7 +335,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 							this.cancelNextRelease = true;
 						} else {
-							this.isCursorDragging = true;
+							this.cursorDragging = true;
 							this.heldButtonCode = button;
 							this.cursorDragSlots.clear();
 							if (button == 0) {
@@ -402,7 +402,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 					}
 				}
 			}
-		} else if (this.isCursorDragging
+		} else if (this.cursorDragging
 			&& slot != null
 			&& !itemStack.isEmpty()
 			&& (itemStack.getCount() > this.cursorDragSlots.size() || this.heldButtonType == 2)
@@ -431,7 +431,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			k = -999;
 		}
 
-		if (this.isDoubleClicking && slot != null && button == 0 && this.handler.canInsertIntoSlot(ItemStack.EMPTY, slot)) {
+		if (this.doubleClicking && slot != null && button == 0 && this.handler.canInsertIntoSlot(ItemStack.EMPTY, slot)) {
 			if (hasShiftDown()) {
 				if (!this.quickMovingStack.isEmpty()) {
 					for (Slot slot2 : this.handler.slots) {
@@ -448,11 +448,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				this.onMouseClick(slot, k, button, SlotActionType.PICKUP_ALL);
 			}
 
-			this.isDoubleClicking = false;
+			this.doubleClicking = false;
 			this.lastButtonClickTime = 0L;
 		} else {
-			if (this.isCursorDragging && this.heldButtonCode != button) {
-				this.isCursorDragging = false;
+			if (this.cursorDragging && this.heldButtonCode != button) {
+				this.cursorDragging = false;
 				this.cursorDragSlots.clear();
 				this.cancelNextRelease = true;
 				return true;
@@ -494,7 +494,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 					this.touchDragStack = ItemStack.EMPTY;
 					this.touchDragSlotStart = null;
 				}
-			} else if (this.isCursorDragging && !this.cursorDragSlots.isEmpty()) {
+			} else if (this.cursorDragging && !this.cursorDragSlots.isEmpty()) {
 				this.onMouseClick(null, -999, ScreenHandler.packQuickCraftData(0, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 
 				for (Slot slot2x : this.cursorDragSlots) {
@@ -524,7 +524,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			this.lastButtonClickTime = 0L;
 		}
 
-		this.isCursorDragging = false;
+		this.cursorDragging = false;
 		return true;
 	}
 
@@ -561,9 +561,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers)) {
+		if (keyCode == 256 || this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
+			this.client.player.closeHandledScreen();
 			return true;
-		} else if (keyCode != 256 && !this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
+		} else if (super.keyPressed(keyCode, scanCode, modifiers)) {
+			return true;
+		} else {
 			this.handleHotbarKeyPressed(keyCode, scanCode);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
 				if (this.client.options.keyPickItem.matchesKey(keyCode, scanCode)) {
@@ -573,9 +576,6 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				}
 			}
 
-			return true;
-		} else {
-			this.client.player.closeHandledScreen();
 			return true;
 		}
 	}

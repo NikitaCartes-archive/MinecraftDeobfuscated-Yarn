@@ -51,6 +51,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
@@ -523,15 +524,15 @@ public interface DispenserBehavior {
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 					this.setSuccess(false);
-					WorldAccess worldAccess = pointer.getWorld();
+					ServerWorld serverWorld = pointer.getWorld();
 					BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-					BlockState blockState = worldAccess.getBlockState(blockPos);
+					BlockState blockState = serverWorld.getBlockState(blockPos);
 					if (blockState.method_27851(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))
 						&& (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
-						((BeehiveBlock)blockState.getBlock()).takeHoney(worldAccess.getWorld(), blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
+						((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 						this.setSuccess(true);
 						return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
-					} else if (worldAccess.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+					} else if (serverWorld.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						this.setSuccess(true);
 						return this.method_22141(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
 					} else {

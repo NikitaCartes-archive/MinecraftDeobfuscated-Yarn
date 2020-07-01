@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.IntSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -19,7 +20,7 @@ public class PostProcessShader implements AutoCloseable {
 	private final JsonGlProgram program;
 	public final Framebuffer input;
 	public final Framebuffer output;
-	private final List<Object> samplerValues = Lists.<Object>newArrayList();
+	private final List<IntSupplier> samplerValues = Lists.<IntSupplier>newArrayList();
 	private final List<String> samplerNames = Lists.<String>newArrayList();
 	private final List<Integer> samplerWidths = Lists.<Integer>newArrayList();
 	private final List<Integer> samplerHeights = Lists.<Integer>newArrayList();
@@ -35,9 +36,9 @@ public class PostProcessShader implements AutoCloseable {
 		this.program.close();
 	}
 
-	public void addAuxTarget(String name, Object target, int width, int height) {
+	public void addAuxTarget(String name, IntSupplier intSupplier, int width, int height) {
 		this.samplerNames.add(this.samplerNames.size(), name);
-		this.samplerValues.add(this.samplerValues.size(), target);
+		this.samplerValues.add(this.samplerValues.size(), intSupplier);
 		this.samplerWidths.add(this.samplerWidths.size(), width);
 		this.samplerHeights.add(this.samplerHeights.size(), height);
 	}
@@ -51,10 +52,10 @@ public class PostProcessShader implements AutoCloseable {
 		float f = (float)this.output.textureWidth;
 		float g = (float)this.output.textureHeight;
 		RenderSystem.viewport(0, 0, (int)f, (int)g);
-		this.program.bindSampler("DiffuseSampler", this.input);
+		this.program.bindSampler("DiffuseSampler", this.input::method_30277);
 
 		for (int i = 0; i < this.samplerValues.size(); i++) {
-			this.program.bindSampler((String)this.samplerNames.get(i), this.samplerValues.get(i));
+			this.program.bindSampler((String)this.samplerNames.get(i), (IntSupplier)this.samplerValues.get(i));
 			this.program
 				.getUniformByNameOrDummy("AuxSize" + i)
 				.set((float)((Integer)this.samplerWidths.get(i)).intValue(), (float)((Integer)this.samplerHeights.get(i)).intValue());

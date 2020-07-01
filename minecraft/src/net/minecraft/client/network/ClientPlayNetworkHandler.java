@@ -2,6 +2,7 @@ package net.minecraft.client.network;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
@@ -67,6 +68,8 @@ import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
+import net.minecraft.client.realms.DisconnectedRealmsScreen;
+import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
@@ -252,8 +255,6 @@ import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.realms.DisconnectedRealmsScreen;
-import net.minecraft.realms.RealmsScreen;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -270,11 +271,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.tag.RequiredTagListRegistry;
+import net.minecraft.tag.TagManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -318,7 +316,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final Map<UUID, PlayerListEntry> playerListEntries = Maps.<UUID, PlayerListEntry>newHashMap();
 	private final ClientAdvancementManager advancementHandler;
 	private final ClientCommandSource commandSource;
-	private RegistryTagManager tagManager = new RegistryTagManager();
+	private TagManager tagManager = TagManager.EMPTY;
 	private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
 	private int chunkLoadDistance = 3;
 	private final Random random = new Random();
@@ -354,10 +352,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
 		if (!this.connection.isLocal()) {
-			BlockTags.markReady();
-			ItemTags.markReady();
-			FluidTags.markReady();
-			EntityTypeTags.markReady();
+			RequiredTagListRegistry.clearAllTags();
 		}
 
 		ArrayList<RegistryKey<World>> arrayList = Lists.newArrayList(packet.method_29443());
@@ -386,7 +381,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		);
 		this.client.joinWorld(this.world);
 		if (this.client.player == null) {
-			this.client.player = this.client.interactionManager.method_29357(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
+			this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook());
 			this.client.player.yaw = -180.0F;
 			if (this.client.getServer() != null) {
 				this.client.getServer().setLocalPlayerUuid(this.client.player.getUuid());
@@ -596,12 +591,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			if (!entity.isLogicalSideForUpdatingMovement()) {
 				float g = (float)(packet.getYaw() * 360) / 256.0F;
 				float h = (float)(packet.getPitch() * 360) / 256.0F;
-				if (!(Math.abs(entity.getX() - d) >= 0.03125) && !(Math.abs(entity.getY() - e) >= 0.015625) && !(Math.abs(entity.getZ() - f) >= 0.03125)) {
-					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 3, true);
-				} else {
-					entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
-				}
-
+				entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
 				entity.setOnGround(packet.isOnGround());
 			}
 		}
@@ -622,13 +612,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (entity != null) {
 			if (!entity.isLogicalSideForUpdatingMovement()) {
 				if (packet.isPositionChanged()) {
-					entity.trackedX = entity.trackedX + (long)packet.getDeltaXShort();
-					entity.trackedY = entity.trackedY + (long)packet.getDeltaYShort();
-					entity.trackedZ = entity.trackedZ + (long)packet.getDeltaZShort();
-					Vec3d vec3d = EntityS2CPacket.decodePacketCoordinates(entity.trackedX, entity.trackedY, entity.trackedZ);
+					Vec3d vec3d = packet.method_30302(entity.method_30227());
+					entity.method_30228(vec3d);
 					float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0F : entity.yaw;
 					float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0F : entity.pitch;
-					entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
+					entity.updateTrackedPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), f, g, 3, false);
 				} else if (packet.hasRotation()) {
 					float h = (float)(packet.getYaw() * 360) / 256.0F;
 					float f = (float)(packet.getPitch() * 360) / 256.0F;
@@ -1440,7 +1428,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		SearchableContainer<RecipeResultCollection> searchableContainer = this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT);
 		searchableContainer.clear();
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.reload();
+		clientRecipeBook.reload(this.recipeManager.values());
 		clientRecipeBook.getOrderedResults().forEach(searchableContainer::add);
 		searchableContainer.reload();
 	}
@@ -1481,10 +1469,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onUnlockRecipes(UnlockRecipesS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.setGuiOpen(packet.isGuiOpen());
-		clientRecipeBook.setFilteringCraftable(packet.isFilteringCraftable());
-		clientRecipeBook.setFurnaceGuiOpen(packet.isFurnaceGuiOpen());
-		clientRecipeBook.setFurnaceFilteringCraftable(packet.isFurnaceFilteringCraftable());
+		clientRecipeBook.setOptions(packet.isFurnaceFilteringCraftable());
 		UnlockRecipesS2CPacket.Action action = packet.getAction();
 		switch (action) {
 			case REMOVE:
@@ -1536,12 +1521,19 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.tagManager = packet.getTagManager();
-		if (!this.connection.isLocal()) {
-			this.tagManager.apply();
-		}
+		TagManager tagManager = packet.getTagManager();
+		Multimap<Identifier, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
+		if (!multimap.isEmpty()) {
+			LOGGER.warn("Incomplete server tags, disconnecting. Missing: {}", multimap);
+			this.connection.disconnect(new TranslatableText("multiplayer.disconnect.missing_tags"));
+		} else {
+			this.tagManager = tagManager;
+			if (!this.connection.isLocal()) {
+				tagManager.apply();
+			}
 
-		this.client.getSearchableContainer(SearchManager.ITEM_TAG).reload();
+			this.client.getSearchableContainer(SearchManager.ITEM_TAG).reload();
+		}
 	}
 
 	@Override
@@ -2338,7 +2330,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		return this.world;
 	}
 
-	public RegistryTagManager getTagManager() {
+	public TagManager getTagManager() {
 		return this.tagManager;
 	}
 

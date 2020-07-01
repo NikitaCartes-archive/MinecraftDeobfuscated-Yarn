@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainers;
 
 public class TagMatchRuleTest extends RuleTest {
-	public static final Codec<TagMatchRuleTest> field_25014 = Tag.method_28134(TagContainers.instance()::blocks)
+	public static final Codec<TagMatchRuleTest> field_25014 = Tag.codec(ServerTagManagerHolder.getTagManager()::getBlocks)
 		.fieldOf("tag")
 		.<TagMatchRuleTest>xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag)
 		.codec();

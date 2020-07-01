@@ -401,17 +401,16 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 	}
 
-	public boolean loadStructure() {
-		return this.loadStructure(true);
+	public boolean loadStructure(ServerWorld serverWorld) {
+		return this.loadStructure(serverWorld, true);
 	}
 
 	private static Random createRandom(long seed) {
 		return seed == 0L ? new Random(Util.getMeasuringTimeMs()) : new Random(seed);
 	}
 
-	public boolean loadStructure(boolean resizeDisabled) {
-		if (this.mode == StructureBlockMode.LOAD && !this.world.isClient && this.structureName != null) {
-			ServerWorld serverWorld = (ServerWorld)this.world;
+	public boolean loadStructure(ServerWorld serverWorld, boolean bl) {
+		if (this.mode == StructureBlockMode.LOAD && this.structureName != null) {
 			StructureManager structureManager = serverWorld.getStructureManager();
 
 			Structure structure;
@@ -421,28 +420,28 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				return false;
 			}
 
-			return structure == null ? false : this.place(resizeDisabled, structure);
+			return structure == null ? false : this.place(serverWorld, bl, structure);
 		} else {
 			return false;
 		}
 	}
 
-	public boolean place(boolean resizeDisabled, Structure structure) {
+	public boolean place(ServerWorld serverWorld, boolean bl, Structure structure) {
 		BlockPos blockPos = this.getPos();
 		if (!ChatUtil.isEmpty(structure.getAuthor())) {
 			this.author = structure.getAuthor();
 		}
 
 		BlockPos blockPos2 = structure.getSize();
-		boolean bl = this.size.equals(blockPos2);
-		if (!bl) {
+		boolean bl2 = this.size.equals(blockPos2);
+		if (!bl2) {
 			this.size = blockPos2;
 			this.markDirty();
-			BlockState blockState = this.world.getBlockState(blockPos);
-			this.world.updateListeners(blockPos, blockState, blockState, 3);
+			BlockState blockState = serverWorld.getBlockState(blockPos);
+			serverWorld.updateListeners(blockPos, blockState, blockState, 3);
 		}
 
-		if (resizeDisabled && !bl) {
+		if (bl && !bl2) {
 			return false;
 		} else {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
@@ -457,7 +456,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			}
 
 			BlockPos blockPos3 = blockPos.add(this.offset);
-			structure.place(this.world, blockPos3, structurePlacementData, createRandom(this.seed));
+			structure.place(serverWorld, blockPos3, structurePlacementData, createRandom(this.seed));
 			return true;
 		}
 	}

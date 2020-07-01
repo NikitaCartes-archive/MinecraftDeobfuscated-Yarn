@@ -1009,6 +1009,9 @@ public class Items {
 	public static final Item PIGLIN_SPAWN_EGG = register(
 		"piglin_spawn_egg", new SpawnEggItem(EntityType.PIGLIN, 10051392, 16380836, new Item.Settings().group(ItemGroup.MISC))
 	);
+	public static final Item PIGLIN_BRUTE_SPAWN_EGG = register(
+		"piglin_brute_spawn_egg", new SpawnEggItem(EntityType.PIGLIN_BRUTE, 5843472, 16380836, new Item.Settings().group(ItemGroup.MISC))
+	);
 	public static final Item PILLAGER_SPAWN_EGG = register(
 		"pillager_spawn_egg", new SpawnEggItem(EntityType.PILLAGER, 5451574, 9804699, new Item.Settings().group(ItemGroup.MISC))
 	);

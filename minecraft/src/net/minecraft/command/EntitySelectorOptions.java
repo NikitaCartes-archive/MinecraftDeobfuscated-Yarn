@@ -279,47 +279,54 @@ public class EntitySelectorOptions {
 					entitySelectorReader.setSelectsTeam(true);
 				}
 			}, entitySelectorReader -> !entitySelectorReader.selectsTeam(), new TranslatableText("argument.entity.options.team.description"));
-			putOption("type", entitySelectorReader -> {
-				entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> {
-					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder, String.valueOf('!'));
-					CommandSource.suggestIdentifiers(EntityTypeTags.getContainer().getKeys(), suggestionsBuilder, "!#");
-					if (!entitySelectorReader.excludesEntityType()) {
-						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder);
-						CommandSource.suggestIdentifiers(EntityTypeTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
-					}
+			putOption(
+				"type",
+				entitySelectorReader -> {
+					entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> {
+						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder, String.valueOf('!'));
+						CommandSource.suggestIdentifiers(EntityTypeTags.getTagGroup().getTagIds(), suggestionsBuilder, "!#");
+						if (!entitySelectorReader.excludesEntityType()) {
+							CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder);
+							CommandSource.suggestIdentifiers(EntityTypeTags.getTagGroup().getTagIds(), suggestionsBuilder, String.valueOf('#'));
+						}
 
-					return suggestionsBuilder.buildFuture();
-				});
-				int i = entitySelectorReader.getReader().getCursor();
-				boolean bl = entitySelectorReader.readNegationCharacter();
-				if (entitySelectorReader.excludesEntityType() && !bl) {
-					entitySelectorReader.getReader().setCursor(i);
-					throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), "type");
-				} else {
-					if (bl) {
-						entitySelectorReader.setExcludesEntityType();
-					}
-
-					if (entitySelectorReader.readTagCharacter()) {
-						Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
-						entitySelectorReader.setPredicate(entity -> entity.getServer().getTagManager().entityTypes().getOrCreate(identifier).contains(entity.getType()) != bl);
+						return suggestionsBuilder.buildFuture();
+					});
+					int i = entitySelectorReader.getReader().getCursor();
+					boolean bl = entitySelectorReader.readNegationCharacter();
+					if (entitySelectorReader.excludesEntityType() && !bl) {
+						entitySelectorReader.getReader().setCursor(i);
+						throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), "type");
 					} else {
-						Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
-						EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
-							entitySelectorReader.getReader().setCursor(i);
-							return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
-						});
-						if (Objects.equals(EntityType.PLAYER, entityType) && !bl) {
-							entitySelectorReader.setIncludesNonPlayers(false);
+						if (bl) {
+							entitySelectorReader.setExcludesEntityType();
 						}
 
-						entitySelectorReader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
-						if (!bl) {
-							entitySelectorReader.setEntityType(entityType);
+						if (entitySelectorReader.readTagCharacter()) {
+							Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
+							entitySelectorReader.setPredicate(
+								entity -> entity.getServer().getTagManager().getEntityTypes().getTagOrEmpty(identifier).contains(entity.getType()) != bl
+							);
+						} else {
+							Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
+							EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
+								entitySelectorReader.getReader().setCursor(i);
+								return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
+							});
+							if (Objects.equals(EntityType.PLAYER, entityType) && !bl) {
+								entitySelectorReader.setIncludesNonPlayers(false);
+							}
+
+							entitySelectorReader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
+							if (!bl) {
+								entitySelectorReader.setEntityType(entityType);
+							}
 						}
 					}
-				}
-			}, entitySelectorReader -> !entitySelectorReader.selectsEntityType(), new TranslatableText("argument.entity.options.type.description"));
+				},
+				entitySelectorReader -> !entitySelectorReader.selectsEntityType(),
+				new TranslatableText("argument.entity.options.type.description")
+			);
 			putOption(
 				"tag",
 				entitySelectorReader -> {

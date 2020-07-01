@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.GlobalPos;
+import net.minecraft.util.math.BlockPos;
 
 public class FarmerWorkTask extends VillagerWorkTask {
 	private static final List<Item> COMPOSTABLES = ImmutableList.of(Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS);
@@ -32,8 +33,9 @@ public class FarmerWorkTask extends VillagerWorkTask {
 	}
 
 	private void compostSeeds(ServerWorld world, VillagerEntity entity, GlobalPos pos, BlockState composterState) {
+		BlockPos blockPos = pos.getPos();
 		if ((Integer)composterState.get(ComposterBlock.LEVEL) == 8) {
-			composterState = ComposterBlock.emptyFullComposter(composterState, world, pos.getPos());
+			composterState = ComposterBlock.emptyFullComposter(composterState, world, blockPos);
 		}
 
 		int i = 20;
@@ -41,6 +43,7 @@ public class FarmerWorkTask extends VillagerWorkTask {
 		int[] is = new int[COMPOSTABLES.size()];
 		SimpleInventory simpleInventory = entity.getInventory();
 		int k = simpleInventory.size();
+		BlockState blockState = composterState;
 
 		for (int l = k - 1; l >= 0 && i > 0; l--) {
 			ItemStack itemStack = simpleInventory.getStack(l);
@@ -54,14 +57,21 @@ public class FarmerWorkTask extends VillagerWorkTask {
 					i -= p;
 
 					for (int q = 0; q < p; q++) {
-						composterState = ComposterBlock.compost(composterState, world, itemStack, pos.getPos());
-						if ((Integer)composterState.get(ComposterBlock.LEVEL) == 7) {
+						blockState = ComposterBlock.compost(blockState, world, itemStack, blockPos);
+						if ((Integer)blockState.get(ComposterBlock.LEVEL) == 7) {
+							this.method_30232(world, composterState, blockPos, blockState);
 							return;
 						}
 					}
 				}
 			}
 		}
+
+		this.method_30232(world, composterState, blockPos, blockState);
+	}
+
+	private void method_30232(ServerWorld serverWorld, BlockState blockState, BlockPos blockPos, BlockState blockState2) {
+		serverWorld.syncWorldEvent(1500, blockPos, blockState2 != blockState ? 1 : 0);
 	}
 
 	private void craftAndDropBread(VillagerEntity entity) {

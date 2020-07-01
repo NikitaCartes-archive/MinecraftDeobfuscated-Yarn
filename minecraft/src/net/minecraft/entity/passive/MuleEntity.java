@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
@@ -48,7 +49,7 @@ public class MuleEntity extends AbstractDonkeyEntity {
 	}
 
 	@Override
-	public PassiveEntity createChild(PassiveEntity mate) {
-		return EntityType.MULE.create(this.world);
+	public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.MULE.create(serverWorld);
 	}
 }

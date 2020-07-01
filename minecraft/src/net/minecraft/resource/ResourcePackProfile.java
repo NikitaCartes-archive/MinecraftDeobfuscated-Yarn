@@ -36,11 +36,11 @@ public class ResourcePackProfile implements AutoCloseable {
 	private final ResourcePackSource source;
 
 	@Nullable
-	public static <T extends ResourcePackProfile> T of(
+	public static ResourcePackProfile of(
 		String name,
 		boolean alwaysEnabled,
 		Supplier<ResourcePack> packFactory,
-		ResourcePackProfile.Factory<T> containerFactory,
+		ResourcePackProfile.Factory containerFactory,
 		ResourcePackProfile.InsertionPosition insertionPosition,
 		ResourcePackSource resourcePackSource
 	) {
@@ -176,9 +176,9 @@ public class ResourcePackProfile implements AutoCloseable {
 	}
 
 	@FunctionalInterface
-	public interface Factory<T extends ResourcePackProfile> {
+	public interface Factory {
 		@Nullable
-		T create(
+		ResourcePackProfile create(
 			String name,
 			boolean alwaysEnabled,
 			Supplier<ResourcePack> packFactory,
@@ -193,12 +193,12 @@ public class ResourcePackProfile implements AutoCloseable {
 		TOP,
 		BOTTOM;
 
-		public <T, P extends ResourcePackProfile> int insert(List<T> items, T item, Function<T, P> profileGetter, boolean listInverted) {
+		public <T> int insert(List<T> items, T item, Function<T, ResourcePackProfile> profileGetter, boolean listInverted) {
 			ResourcePackProfile.InsertionPosition insertionPosition = listInverted ? this.inverse() : this;
 			if (insertionPosition == BOTTOM) {
 				int i;
 				for (i = 0; i < items.size(); i++) {
-					P resourcePackProfile = (P)profileGetter.apply(items.get(i));
+					ResourcePackProfile resourcePackProfile = (ResourcePackProfile)profileGetter.apply(items.get(i));
 					if (!resourcePackProfile.isPinned() || resourcePackProfile.getInitialPosition() != this) {
 						break;
 					}
@@ -209,7 +209,7 @@ public class ResourcePackProfile implements AutoCloseable {
 			} else {
 				int i;
 				for (i = items.size() - 1; i >= 0; i--) {
-					P resourcePackProfile = (P)profileGetter.apply(items.get(i));
+					ResourcePackProfile resourcePackProfile = (ResourcePackProfile)profileGetter.apply(items.get(i));
 					if (!resourcePackProfile.isPinned() || resourcePackProfile.getInitialPosition() != this) {
 						break;
 					}

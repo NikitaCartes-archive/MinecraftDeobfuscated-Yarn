@@ -19,6 +19,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -49,7 +50,7 @@ public class SpawnEggItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		World world = context.getWorld();
-		if (world.isClient) {
+		if (!(world instanceof ServerWorld)) {
 			return ActionResult.SUCCESS;
 		} else {
 			ItemStack itemStack = context.getStack();
@@ -78,7 +79,13 @@ public class SpawnEggItem extends Item {
 
 			EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
 			if (entityType2.spawnFromItemStack(
-					world, itemStack, context.getPlayer(), blockPos2, SpawnReason.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
+					(ServerWorld)world,
+					itemStack,
+					context.getPlayer(),
+					blockPos2,
+					SpawnReason.SPAWN_EGG,
+					true,
+					!Objects.equals(blockPos, blockPos2) && direction == Direction.UP
 				)
 				!= null) {
 				itemStack.decrement(1);
@@ -94,7 +101,7 @@ public class SpawnEggItem extends Item {
 		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
 		if (hitResult.getType() != HitResult.Type.BLOCK) {
 			return TypedActionResult.pass(itemStack);
-		} else if (world.isClient) {
+		} else if (!(world instanceof ServerWorld)) {
 			return TypedActionResult.success(itemStack);
 		} else {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
@@ -103,7 +110,7 @@ public class SpawnEggItem extends Item {
 				return TypedActionResult.pass(itemStack);
 			} else if (world.canPlayerModifyAt(user, blockPos) && user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 				EntityType<?> entityType = this.getEntityType(itemStack.getTag());
-				if (entityType.spawnFromItemStack(world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
+				if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
 					return TypedActionResult.pass(itemStack);
 				} else {
 					if (!user.abilities.creativeMode) {
@@ -150,16 +157,16 @@ public class SpawnEggItem extends Item {
 	}
 
 	public Optional<MobEntity> spawnBaby(
-		PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, World world, Vec3d vec3d, ItemStack itemStack
+		PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, ServerWorld serverWorld, Vec3d vec3d, ItemStack itemStack
 	) {
 		if (!this.isOfSameEntityType(itemStack.getTag(), entityType)) {
 			return Optional.empty();
 		} else {
 			MobEntity mobEntity2;
 			if (mobEntity instanceof PassiveEntity) {
-				mobEntity2 = ((PassiveEntity)mobEntity).createChild((PassiveEntity)mobEntity);
+				mobEntity2 = ((PassiveEntity)mobEntity).createChild(serverWorld, (PassiveEntity)mobEntity);
 			} else {
-				mobEntity2 = entityType.create(world);
+				mobEntity2 = entityType.create(serverWorld);
 			}
 
 			if (mobEntity2 == null) {
@@ -170,7 +177,7 @@ public class SpawnEggItem extends Item {
 					return Optional.empty();
 				} else {
 					mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
-					world.spawnEntity(mobEntity2);
+					serverWorld.spawnEntity(mobEntity2);
 					if (itemStack.hasCustomName()) {
 						mobEntity2.setCustomName(itemStack.getName());
 					}

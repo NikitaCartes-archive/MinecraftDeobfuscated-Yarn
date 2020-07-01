@@ -16,7 +16,6 @@ import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.LanServerPinger;
 import net.minecraft.server.MinecraftServer;
@@ -48,7 +47,7 @@ public class IntegratedServer extends MinecraftServer {
 		MinecraftClient minecraftClient,
 		RegistryTracker.Modifiable modifiable,
 		LevelStorage.Session session,
-		ResourcePackManager<ResourcePackProfile> resourcePackManager,
+		ResourcePackManager resourcePackManager,
 		ServerResourceManager serverResourceManager,
 		SaveProperties saveProperties,
 		MinecraftSessionService minecraftSessionService,

@@ -19,7 +19,8 @@ import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainer;
+import net.minecraft.tag.TagGroup;
+import net.minecraft.tag.TagGroupLoader;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
@@ -34,7 +35,8 @@ public class FunctionLoader implements ResourceReloadListener {
 	private static final int PATH_PREFIX_LENGTH = "functions/".length();
 	private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
-	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::get, "tags/functions", "function");
+	private final TagGroupLoader<CommandFunction> tags = new TagGroupLoader<>(this::get, "tags/functions", "function");
+	private volatile TagGroup<CommandFunction> field_25801 = TagGroup.createEmpty();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;
 
@@ -46,12 +48,12 @@ public class FunctionLoader implements ResourceReloadListener {
 		return this.functions;
 	}
 
-	public TagContainer<CommandFunction> getTags() {
-		return this.tags;
+	public TagGroup<CommandFunction> getTags() {
+		return this.field_25801;
 	}
 
 	public Tag<CommandFunction> getOrCreateTag(Identifier id) {
-		return this.tags.getOrCreate(id);
+		return this.field_25801.getTagOrEmpty(id);
 	}
 
 	public FunctionLoader(int level, CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -105,7 +107,7 @@ public class FunctionLoader implements ResourceReloadListener {
 					return null;
 				}).join());
 			this.functions = builder.build();
-			this.tags.applyReload((Map<Identifier, Tag.Builder>)pair.getFirst());
+			this.field_25801 = this.tags.applyReload((Map<Identifier, Tag.Builder>)pair.getFirst());
 		}, applyExecutor);
 	}
 

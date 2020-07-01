@@ -7,8 +7,8 @@ import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.realms.RealmsBridge;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.realms.RealmsBridge;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 

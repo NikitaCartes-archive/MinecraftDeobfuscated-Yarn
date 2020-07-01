@@ -24,18 +24,18 @@ public class ZombieSiegeManager implements Spawner {
 	private int startZ;
 
 	@Override
-	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-		if (!serverWorld.isDay() && bl) {
-			float f = serverWorld.getSkyAngle(0.0F);
+	public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
+		if (!world.isDay() && spawnMonsters) {
+			float f = world.method_30274(0.0F);
 			if ((double)f == 0.5) {
-				this.state = serverWorld.random.nextInt(10) == 0 ? ZombieSiegeManager.State.SIEGE_TONIGHT : ZombieSiegeManager.State.SIEGE_DONE;
+				this.state = world.random.nextInt(10) == 0 ? ZombieSiegeManager.State.SIEGE_TONIGHT : ZombieSiegeManager.State.SIEGE_DONE;
 			}
 
 			if (this.state == ZombieSiegeManager.State.SIEGE_DONE) {
 				return 0;
 			} else {
 				if (!this.spawned) {
-					if (!this.spawn(serverWorld)) {
+					if (!this.spawn(world)) {
 						return 0;
 					}
 
@@ -48,7 +48,7 @@ public class ZombieSiegeManager implements Spawner {
 				} else {
 					this.countdown = 2;
 					if (this.remaining > 0) {
-						this.trySpawnZombie(serverWorld);
+						this.trySpawnZombie(world);
 						this.remaining--;
 					} else {
 						this.state = ZombieSiegeManager.State.SIEGE_DONE;

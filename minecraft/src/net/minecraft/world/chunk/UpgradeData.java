@@ -103,7 +103,7 @@ public class UpgradeData {
 					blockState2 = applyAdjacentBlock(blockState2, direction, world, blockPos, mutable);
 				}
 
-				Block.replaced(blockState, blockState2, world, blockPos, 18);
+				Block.replace(blockState, blockState2, world, blockPos, 18);
 			}
 		}
 	}
@@ -142,7 +142,7 @@ public class UpgradeData {
 						}
 					}
 
-					Block.replaced(blockState, blockState2, worldAccess, mutable, 18);
+					Block.replace(blockState, blockState2, worldAccess, mutable, 18);
 				}
 			}
 		}

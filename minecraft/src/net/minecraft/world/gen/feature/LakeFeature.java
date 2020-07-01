@@ -10,7 +10,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
@@ -21,12 +20,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		SingleStateFeatureConfig singleStateFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
 	) {
 		while (blockPos.getY() > 5 && serverWorldAccess.isAir(blockPos)) {
 			blockPos = blockPos.down();
@@ -36,7 +30,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 			return false;
 		} else {
 			blockPos = blockPos.down(4);
-			if (structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), StructureFeature.VILLAGE).findAny().isPresent()) {
+			if (serverWorldAccess.method_30275(ChunkSectionPos.from(blockPos), StructureFeature.VILLAGE).findAny().isPresent()) {
 				return false;
 			} else {
 				boolean[] bls = new boolean[2048];

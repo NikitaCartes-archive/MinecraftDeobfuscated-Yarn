@@ -111,7 +111,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 			for (LevelSummary levelSummary : this.levels) {
 				if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
-					this.addEntry(new WorldListWidget.Entry(this, levelSummary, this.client.getLevelStorage()));
+					this.addEntry(new WorldListWidget.Entry(this, levelSummary));
 				}
 			}
 		}
@@ -180,11 +180,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final NativeImageBackedTexture icon;
 		private long time;
 
-		public Entry(WorldListWidget levelList, LevelSummary level, LevelStorage levelStorage) {
+		public Entry(WorldListWidget levelList, LevelSummary level) {
 			this.screen = levelList.getParent();
 			this.level = level;
 			this.client = MinecraftClient.getInstance();
-			this.iconLocation = new Identifier("worlds/" + Hashing.sha1().hashUnencodedChars(level.getName()) + "/icon");
+			String string = level.getName();
+			this.iconLocation = new Identifier("worlds/" + Util.method_30309(string) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon");
 			this.iconFile = level.getFile();
 			if (!this.iconFile.isFile()) {
 				this.iconFile = null;

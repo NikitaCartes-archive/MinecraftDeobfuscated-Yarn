@@ -1,6 +1,7 @@
 package net.minecraft.structure;
 
 import java.util.Random;
+import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
@@ -15,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -112,18 +112,18 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 		}
 	}
 
-	private void method_16181(WorldAccess worldAccess, BlockBox blockBox) {
+	private void method_16181(class_5425 arg, BlockBox blockBox) {
 		if (!this.hasCat) {
 			int i = this.applyXTransform(2, 5);
 			int j = this.applyYTransform(2);
 			int k = this.applyZTransform(2, 5);
 			if (blockBox.contains(new BlockPos(i, j, k))) {
 				this.hasCat = true;
-				CatEntity catEntity = EntityType.CAT.create(worldAccess.getWorld());
+				CatEntity catEntity = EntityType.CAT.create(arg.getWorld());
 				catEntity.setPersistent();
 				catEntity.refreshPositionAndAngles((double)i + 0.5, (double)j, (double)k + 0.5, 0.0F, 0.0F);
-				catEntity.initialize(worldAccess, worldAccess.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
-				worldAccess.spawnEntity(catEntity);
+				catEntity.initialize(arg, arg.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
+				arg.spawnEntity(catEntity);
 			}
 		}
 	}

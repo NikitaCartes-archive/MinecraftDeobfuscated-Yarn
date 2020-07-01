@@ -21,7 +21,7 @@ public class ReloadCommand {
 		});
 	}
 
-	private static Collection<String> method_29478(ResourcePackManager<?> resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
+	private static Collection<String> method_29478(ResourcePackManager resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
 		resourcePackManager.scanPacks();
 		Collection<String> collection2 = Lists.<String>newArrayList(collection);
 		Collection<String> collection3 = saveProperties.method_29589().getDisabled();
@@ -39,7 +39,7 @@ public class ReloadCommand {
 		dispatcher.register(CommandManager.literal("reload").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).executes(commandContext -> {
 			ServerCommandSource serverCommandSource = commandContext.getSource();
 			MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-			ResourcePackManager<?> resourcePackManager = minecraftServer.getDataPackManager();
+			ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
 			SaveProperties saveProperties = minecraftServer.getSaveProperties();
 			Collection<String> collection = resourcePackManager.getEnabledNames();
 			Collection<String> collection2 = method_29478(resourcePackManager, saveProperties, collection);

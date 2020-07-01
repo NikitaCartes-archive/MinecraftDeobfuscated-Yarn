@@ -8,17 +8,17 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.VideoOptionsScreen;
-import net.minecraft.client.gui.screen.pack.ResourcePackScreen;
+import net.minecraft.client.gui.screen.pack.AbstractPackScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
@@ -170,7 +170,11 @@ public class OptionsScreen extends Screen {
 				20,
 				new TranslatableText("options.resourcepack"),
 				buttonWidget -> this.client
-						.openScreen(new ResourcePackScreen(this, this.client.getResourcePackManager(), this::method_29975, this.client.getResourcePackDir()))
+						.openScreen(
+							new AbstractPackScreen(
+								this, this.client.getResourcePackManager(), this::method_29975, this.client.getResourcePackDir(), new TranslatableText("resourcePack.title")
+							)
+						)
 			)
 		);
 		this.addButton(
@@ -186,16 +190,16 @@ public class OptionsScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
 	}
 
-	private void method_29975(ResourcePackManager<ClientResourcePackProfile> resourcePackManager) {
+	private void method_29975(ResourcePackManager resourcePackManager) {
 		List<String> list = ImmutableList.copyOf(this.settings.resourcePacks);
 		this.settings.resourcePacks.clear();
 		this.settings.incompatibleResourcePacks.clear();
 
-		for (ClientResourcePackProfile clientResourcePackProfile : resourcePackManager.getEnabledProfiles()) {
-			if (!clientResourcePackProfile.isPinned()) {
-				this.settings.resourcePacks.add(clientResourcePackProfile.getName());
-				if (!clientResourcePackProfile.getCompatibility().isCompatible()) {
-					this.settings.incompatibleResourcePacks.add(clientResourcePackProfile.getName());
+		for (ResourcePackProfile resourcePackProfile : resourcePackManager.getEnabledProfiles()) {
+			if (!resourcePackProfile.isPinned()) {
+				this.settings.resourcePacks.add(resourcePackProfile.getName());
+				if (!resourcePackProfile.getCompatibility().isCompatible()) {
+					this.settings.incompatibleResourcePacks.add(resourcePackProfile.getName());
 				}
 			}
 		}

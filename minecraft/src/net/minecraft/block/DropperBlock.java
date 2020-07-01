@@ -8,11 +8,11 @@ import net.minecraft.block.entity.DropperBlockEntity;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPointerImpl;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 
 public class DropperBlock extends DispenserBlock {
 	private static final DispenserBehavior BEHAVIOR = new ItemDispenserBehavior();
@@ -32,17 +32,17 @@ public class DropperBlock extends DispenserBlock {
 	}
 
 	@Override
-	protected void dispense(World world, BlockPos pos) {
-		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
+	protected void dispense(ServerWorld serverWorld, BlockPos pos) {
+		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(serverWorld, pos);
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.syncWorldEvent(1001, pos, 0);
+			serverWorld.syncWorldEvent(1001, pos, 0);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			if (!itemStack.isEmpty()) {
-				Direction direction = world.getBlockState(pos).get(FACING);
-				Inventory inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
+				Direction direction = serverWorld.getBlockState(pos).get(FACING);
+				Inventory inventory = HopperBlockEntity.getInventoryAt(serverWorld, pos.offset(direction));
 				ItemStack itemStack2;
 				if (inventory == null) {
 					itemStack2 = BEHAVIOR.dispense(blockPointerImpl, itemStack);

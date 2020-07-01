@@ -23,8 +23,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -165,7 +165,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (json.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-			Tag<Item> tag = TagContainers.instance().items().get(identifier);
+			Tag<Item> tag = ServerTagManagerHolder.getTagManager().getItems().getTag(identifier);
 			if (tag == null) {
 				throw new JsonSyntaxException("Unknown item tag '" + identifier + "'");
 			} else {
@@ -223,7 +223,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("tag", TagContainers.instance().items().checkId(this.tag).toString());
+			jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getItems().getTagId(this.tag).toString());
 			return jsonObject;
 		}
 	}

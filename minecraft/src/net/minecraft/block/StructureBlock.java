@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -69,7 +70,7 @@ public class StructureBlock extends BlockWithEntity {
 
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-		if (!world.isClient) {
+		if (world instanceof ServerWorld) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
@@ -77,7 +78,7 @@ public class StructureBlock extends BlockWithEntity {
 				boolean bl2 = structureBlockBlockEntity.isPowered();
 				if (bl && !bl2) {
 					structureBlockBlockEntity.setPowered(true);
-					this.doAction(structureBlockBlockEntity);
+					this.doAction((ServerWorld)world, structureBlockBlockEntity);
 				} else if (!bl && bl2) {
 					structureBlockBlockEntity.setPowered(false);
 				}
@@ -85,16 +86,16 @@ public class StructureBlock extends BlockWithEntity {
 		}
 	}
 
-	private void doAction(StructureBlockBlockEntity blockEntity) {
-		switch (blockEntity.getMode()) {
+	private void doAction(ServerWorld serverWorld, StructureBlockBlockEntity structureBlockBlockEntity) {
+		switch (structureBlockBlockEntity.getMode()) {
 			case SAVE:
-				blockEntity.saveStructure(false);
+				structureBlockBlockEntity.saveStructure(false);
 				break;
 			case LOAD:
-				blockEntity.loadStructure(false);
+				structureBlockBlockEntity.loadStructure(serverWorld, false);
 				break;
 			case CORNER:
-				blockEntity.unloadStructure();
+				structureBlockBlockEntity.unloadStructure();
 			case DATA:
 		}
 	}

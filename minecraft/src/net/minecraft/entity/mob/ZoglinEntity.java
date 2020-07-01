@@ -38,6 +38,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.DebugInfoSender;
@@ -168,6 +169,11 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 			this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 			return Hoglin.tryAttack(this, (LivingEntity)target);
 		}
+	}
+
+	@Override
+	public boolean canBeLeashedBy(PlayerEntity player) {
+		return !this.isLeashed();
 	}
 
 	@Override

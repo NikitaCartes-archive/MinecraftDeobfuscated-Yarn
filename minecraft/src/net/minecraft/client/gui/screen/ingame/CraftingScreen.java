@@ -19,7 +19,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/crafting_table.png");
 	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	private final RecipeBookWidget recipeBook = new RecipeBookWidget();
-	private boolean isNarrow;
+	private boolean narrow;
 
 	public CraftingScreen(CraftingScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
@@ -28,15 +28,15 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 	@Override
 	protected void init() {
 		super.init();
-		this.isNarrow = this.width < 379;
-		this.recipeBook.initialize(this.width, this.height, this.client, this.isNarrow, this.handler);
-		this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.backgroundWidth);
+		this.narrow = this.width < 379;
+		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
+		this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
 		this.children.add(this.recipeBook);
 		this.setInitialFocus(this.recipeBook);
 		this.addButton(new TexturedButtonWidget(this.x + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
-			this.recipeBook.reset(this.isNarrow);
+			this.recipeBook.reset(this.narrow);
 			this.recipeBook.toggleOpen();
-			this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.backgroundWidth);
+			this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
 			((TexturedButtonWidget)buttonWidget).setPos(this.x + 5, this.height / 2 - 49);
 		}));
 		this.titleX = 29;
@@ -51,7 +51,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		if (this.recipeBook.isOpen() && this.isNarrow) {
+		if (this.recipeBook.isOpen() && this.narrow) {
 			this.drawBackground(matrices, delta, mouseX, mouseY);
 			this.recipeBook.render(matrices, mouseX, mouseY, delta);
 		} else {
@@ -75,7 +75,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 
 	@Override
 	protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
-		return (!this.isNarrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(xPosition, yPosition, width, height, pointX, pointY);
+		return (!this.narrow || !this.recipeBook.isOpen()) && super.isPointWithinBounds(xPosition, yPosition, width, height, pointX, pointY);
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 			this.setFocused(this.recipeBook);
 			return true;
 		} else {
-			return this.isNarrow && this.recipeBook.isOpen() ? true : super.mouseClicked(mouseX, mouseY, button);
+			return this.narrow && this.recipeBook.isOpen() ? true : super.mouseClicked(mouseX, mouseY, button);
 		}
 	}
 

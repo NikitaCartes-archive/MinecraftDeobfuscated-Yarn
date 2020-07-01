@@ -317,12 +317,12 @@ public class ClientPlayerInteractionManager {
 		}
 	}
 
-	public ClientPlayerEntity method_29357(ClientWorld clientWorld, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
-		return this.createPlayer(clientWorld, statHandler, clientRecipeBook, false, false);
+	public ClientPlayerEntity createPlayer(ClientWorld world, StatHandler statHandler, ClientRecipeBook recipeBook) {
+		return this.createPlayer(world, statHandler, recipeBook, false, false);
 	}
 
-	public ClientPlayerEntity createPlayer(ClientWorld world, StatHandler stateHandler, ClientRecipeBook recipeBook, boolean bl, boolean bl2) {
-		return new ClientPlayerEntity(this.client, world, this.networkHandler, stateHandler, recipeBook, bl, bl2);
+	public ClientPlayerEntity createPlayer(ClientWorld world, StatHandler statHandler, ClientRecipeBook recipeBook, boolean lastSneaking, boolean lastSprinting) {
+		return new ClientPlayerEntity(this.client, world, this.networkHandler, statHandler, recipeBook, lastSneaking, lastSprinting);
 	}
 
 	public void attackEntity(PlayerEntity player, Entity target) {

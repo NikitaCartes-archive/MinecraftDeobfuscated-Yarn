@@ -309,7 +309,7 @@ public class DebugHud extends DrawableHelper {
 							long l = 0L;
 							float h = 0.0F;
 							if (worldChunk2 != null) {
-								h = world.getMoonSize();
+								h = world.method_30272();
 								l = worldChunk2.getInhabitedTime();
 							}
 
@@ -441,7 +441,7 @@ public class DebugHud extends DrawableHelper {
 					list.add(this.propertyToString(entry));
 				}
 
-				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().blocks().getTagsFor(blockState.getBlock())) {
+				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getBlocks().getTagsFor(blockState.getBlock())) {
 					list.add("#" + identifier);
 				}
 			}
@@ -457,7 +457,7 @@ public class DebugHud extends DrawableHelper {
 					list.add(this.propertyToString(entry));
 				}
 
-				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().fluids().getTagsFor(fluidState.getFluid())) {
+				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getFluids().getTagsFor(fluidState.getFluid())) {
 					list.add("#" + identifier);
 				}
 			}

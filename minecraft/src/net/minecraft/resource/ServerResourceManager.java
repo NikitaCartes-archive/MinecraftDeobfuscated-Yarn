@@ -9,7 +9,8 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.function.FunctionLoader;
-import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.tag.TagManager;
+import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Unit;
 
 public class ServerResourceManager implements AutoCloseable {
@@ -17,7 +18,7 @@ public class ServerResourceManager implements AutoCloseable {
 	private final ReloadableResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA);
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
-	private final RegistryTagManager registryTagManager = new RegistryTagManager();
+	private final TagManagerLoader registryTagManager = new TagManagerLoader();
 	private final LootConditionManager lootConditionManager = new LootConditionManager();
 	private final LootManager lootManager = new LootManager(this.lootConditionManager);
 	private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootConditionManager);
@@ -46,8 +47,8 @@ public class ServerResourceManager implements AutoCloseable {
 		return this.lootManager;
 	}
 
-	public RegistryTagManager getRegistryTagManager() {
-		return this.registryTagManager;
+	public TagManager getRegistryTagManager() {
+		return this.registryTagManager.getTagManager();
 	}
 
 	public RecipeManager getRecipeManager() {
@@ -79,7 +80,7 @@ public class ServerResourceManager implements AutoCloseable {
 	}
 
 	public void loadRegistryTags() {
-		this.registryTagManager.apply();
+		this.registryTagManager.getTagManager().apply();
 	}
 
 	public void close() {

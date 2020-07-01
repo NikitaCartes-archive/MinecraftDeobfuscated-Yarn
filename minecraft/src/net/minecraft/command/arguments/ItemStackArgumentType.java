@@ -38,7 +38,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return itemStringReader.getSuggestions(builder, ItemTags.getContainer());
+		return itemStringReader.getSuggestions(builder, ItemTags.getTagGroup());
 	}
 
 	@Override

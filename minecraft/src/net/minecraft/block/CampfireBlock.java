@@ -188,7 +188,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public static void extinguish(WorldAccess world, BlockPos pos, BlockState state) {
 		if (world.isClient()) {
 			for (int i = 0; i < 20; i++) {
-				spawnSmokeParticle(world.getWorld(), pos, (Boolean)state.get(SIGNAL_FIRE), true);
+				spawnSmokeParticle((World)world, pos, (Boolean)state.get(SIGNAL_FIRE), true);
 			}
 		}
 

@@ -400,7 +400,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	/**
 	 * Moves the selection in the specified direction until the predicate returns true.
 	 * 
-	 * @param direction The direction to move the selection.
+	 * @param direction the direction to move the selection
 	 */
 	protected void moveSelectionIf(EntryListWidget.MoveDirection direction, Predicate<E> predicate) {
 		int i = direction == EntryListWidget.MoveDirection.UP ? -1 : 1;

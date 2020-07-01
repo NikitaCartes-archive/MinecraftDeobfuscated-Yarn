@@ -38,6 +38,7 @@ import net.minecraft.entity.mob.IllusionerEntity;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PhantomEntity;
+import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.entity.mob.RavagerEntity;
@@ -118,6 +119,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
@@ -371,6 +373,9 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<PiglinEntity> PIGLIN = register(
 		"piglin", EntityType.Builder.create(PiglinEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
+	public static final EntityType<PiglinBruteEntity> PIGLIN_BRUTE = register(
+		"piglin_brute", EntityType.Builder.create(PiglinBruteEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
+	);
 	public static final EntityType<PillagerEntity> PILLAGER = register(
 		"pillager", EntityType.Builder.create(PillagerEntity::new, SpawnGroup.MONSTER).spawnableFarFromPlayer().setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
@@ -613,10 +618,16 @@ public class EntityType<T extends Entity> {
 
 	@Nullable
 	public Entity spawnFromItemStack(
-		World world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY
+		ServerWorld serverWorld,
+		@Nullable ItemStack stack,
+		@Nullable PlayerEntity player,
+		BlockPos pos,
+		SpawnReason spawnReason,
+		boolean alignPosition,
+		boolean invertY
 	) {
 		return this.spawn(
-			world,
+			serverWorld,
 			stack == null ? null : stack.getTag(),
 			stack != null && stack.hasCustomName() ? stack.getName() : null,
 			player,
@@ -629,7 +640,7 @@ public class EntityType<T extends Entity> {
 
 	@Nullable
 	public T spawn(
-		World world,
+		ServerWorld serverWorld,
 		@Nullable CompoundTag itemTag,
 		@Nullable Text name,
 		@Nullable PlayerEntity player,
@@ -638,14 +649,14 @@ public class EntityType<T extends Entity> {
 		boolean alignPosition,
 		boolean invertY
 	) {
-		T entity = this.create(world, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
-		world.spawnEntity(entity);
+		T entity = this.create(serverWorld, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
+		serverWorld.spawnEntity(entity);
 		return entity;
 	}
 
 	@Nullable
 	public T create(
-		World world,
+		ServerWorld serverWorld,
 		@Nullable CompoundTag itemTag,
 		@Nullable Text name,
 		@Nullable PlayerEntity player,
@@ -654,26 +665,26 @@ public class EntityType<T extends Entity> {
 		boolean alignPosition,
 		boolean invertY
 	) {
-		T entity = this.create(world);
+		T entity = this.create(serverWorld);
 		if (entity == null) {
 			return null;
 		} else {
 			double d;
 			if (alignPosition) {
 				entity.updatePosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
-				d = getOriginY(world, pos, invertY, entity.getBoundingBox());
+				d = getOriginY(serverWorld, pos, invertY, entity.getBoundingBox());
 			} else {
 				d = 0.0;
 			}
 
 			entity.refreshPositionAndAngles(
-				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0F), 0.0F
+				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(serverWorld.random.nextFloat() * 360.0F), 0.0F
 			);
 			if (entity instanceof MobEntity) {
 				MobEntity mobEntity = (MobEntity)entity;
 				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.bodyYaw = mobEntity.yaw;
-				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
+				mobEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
 				mobEntity.playAmbientSound();
 			}
 
@@ -681,7 +692,7 @@ public class EntityType<T extends Entity> {
 				entity.setCustomName(name);
 			}
 
-			loadFromEntityTag(world, player, entity, itemTag);
+			loadFromEntityTag(serverWorld, player, entity, itemTag);
 			return entity;
 		}
 	}

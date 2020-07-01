@@ -24,8 +24,8 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
@@ -45,11 +45,11 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 			BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
 				blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData()
 			);
-			return registryTagManager -> statePredicate;
+			return tagManager -> statePredicate;
 		} else {
 			Identifier identifier = blockArgumentParser.getTagId();
-			return registryTagManager -> {
-				Tag<Block> tag = registryTagManager.blocks().get(identifier);
+			return tagManager -> {
+				Tag<Block> tag = tagManager.getBlocks().getTag(identifier);
 				if (tag == null) {
 					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
 				} else {
@@ -75,7 +75,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return blockArgumentParser.getSuggestions(builder, BlockTags.getContainer());
+		return blockArgumentParser.getSuggestions(builder, BlockTags.getTagGroup());
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 	}
 
 	public interface BlockPredicate {
-		Predicate<CachedBlockPosition> create(RegistryTagManager registryTagManager) throws CommandSyntaxException;
+		Predicate<CachedBlockPosition> create(TagManager tagManager) throws CommandSyntaxException;
 	}
 
 	static class StatePredicate implements Predicate<CachedBlockPosition> {

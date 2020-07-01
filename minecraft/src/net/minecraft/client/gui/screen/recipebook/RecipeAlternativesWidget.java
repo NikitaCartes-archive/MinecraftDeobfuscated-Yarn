@@ -194,15 +194,15 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	@Environment(EnvType.CLIENT)
 	class AlternativeButtonWidget extends AbstractButtonWidget implements RecipeGridAligner<Ingredient> {
 		private final Recipe<?> recipe;
-		private final boolean isCraftable;
+		private final boolean craftable;
 		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList();
 
-		public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean isCraftable) {
+		public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean craftable) {
 			super(x, y, 200, 20, LiteralText.EMPTY);
 			this.width = 24;
 			this.height = 24;
 			this.recipe = recipe;
-			this.isCraftable = isCraftable;
+			this.craftable = craftable;
 			this.alignRecipe(recipe);
 		}
 
@@ -223,7 +223,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			RenderSystem.enableAlphaTest();
 			RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(RecipeAlternativesWidget.BG_TEX);
 			int i = 152;
-			if (!this.isCraftable) {
+			if (!this.craftable) {
 				i += 26;
 			}
 

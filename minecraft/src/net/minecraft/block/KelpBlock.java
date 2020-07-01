@@ -54,7 +54,7 @@ public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-		return fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8 ? this.getRandomGrowthState(ctx.getWorld()) : null;
+		return fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8 ? super.getPlacementState(ctx) : null;
 	}
 
 	@Override

@@ -203,7 +203,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		OCEAN("ocean"),
 		NETHER("nether");
 
-		public static final Codec<RuinedPortalFeature.Type> field_24840 = StringIdentifiable.method_28140(
+		public static final Codec<RuinedPortalFeature.Type> field_24840 = StringIdentifiable.createCodec(
 			RuinedPortalFeature.Type::values, RuinedPortalFeature.Type::byName
 		);
 		private static final Map<String, RuinedPortalFeature.Type> BY_NAME = (Map<String, RuinedPortalFeature.Type>)Arrays.stream(values())

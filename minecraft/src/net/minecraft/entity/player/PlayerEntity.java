@@ -1014,7 +1014,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
-		if ((type == MovementType.SELF || type == MovementType.PLAYER) && this.onGround && this.clipAtLedge()) {
+		if ((type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.method_30263()) {
 			double d = movement.x;
 			double e = movement.z;
 			double f = 0.05;
@@ -1061,6 +1061,12 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		return movement;
+	}
+
+	private boolean method_30263() {
+		return this.onGround
+			|| this.fallDistance < this.stepHeight
+				&& !this.world.doesNotCollide(this, this.getBoundingBox().offset(0.0, (double)(this.fallDistance - this.stepHeight), 0.0));
 	}
 
 	public void attack(Entity target) {
@@ -1542,8 +1548,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onKilledOther(LivingEntity other) {
-		this.incrementStat(Stats.KILLED.getOrCreateStat(other.getType()));
+	public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
+		this.incrementStat(Stats.KILLED.getOrCreateStat(livingEntity.getType()));
 	}
 
 	@Override

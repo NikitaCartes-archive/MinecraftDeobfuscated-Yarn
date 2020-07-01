@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -45,6 +46,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -57,7 +59,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 public class SheepEntity extends AnimalEntity implements Shearable {
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -330,9 +331,9 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		}
 	}
 
-	public SheepEntity createChild(PassiveEntity passiveEntity) {
+	public SheepEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		SheepEntity sheepEntity = (SheepEntity)passiveEntity;
-		SheepEntity sheepEntity2 = EntityType.SHEEP.create(this.world);
+		SheepEntity sheepEntity2 = EntityType.SHEEP.create(serverWorld);
 		sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
 		return sheepEntity2;
 	}
@@ -348,10 +349,10 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		this.setColor(generateDefaultColor(world.getRandom()));
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		this.setColor(generateDefaultColor(arg.getRandom()));
+		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {

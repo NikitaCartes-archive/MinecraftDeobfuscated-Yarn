@@ -18,6 +18,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -201,8 +202,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 		}
 	}
 
-	public void breed(World world, AnimalEntity other) {
-		PassiveEntity passiveEntity = this.createChild(other);
+	public void breed(ServerWorld serverWorld, AnimalEntity other) {
+		PassiveEntity passiveEntity = this.createChild(serverWorld, other);
 		if (passiveEntity != null) {
 			ServerPlayerEntity serverPlayerEntity = this.getLovingPlayer();
 			if (serverPlayerEntity == null && other.getLovingPlayer() != null) {
@@ -220,10 +221,10 @@ public abstract class AnimalEntity extends PassiveEntity {
 			other.resetLoveTicks();
 			passiveEntity.setBaby(true);
 			passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
-			world.spawnEntity(passiveEntity);
-			world.sendEntityStatus(this, (byte)18);
-			if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-				world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
+			serverWorld.spawnEntity(passiveEntity);
+			serverWorld.sendEntityStatus(this, (byte)18);
+			if (serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+				serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
 			}
 		}
 	}

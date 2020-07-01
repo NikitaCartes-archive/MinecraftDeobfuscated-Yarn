@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ForestRockFeature extends Feature<ForestRockFeatureConfig> {
@@ -14,12 +13,7 @@ public class ForestRockFeature extends Feature<ForestRockFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		ForestRockFeatureConfig forestRockFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ForestRockFeatureConfig forestRockFeatureConfig
 	) {
 		while (blockPos.getY() > 3) {
 			if (!serverWorldAccess.isAir(blockPos.down())) {

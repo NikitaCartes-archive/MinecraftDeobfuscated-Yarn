@@ -1208,17 +1208,17 @@ public abstract class LivingEntity extends Entity {
 				livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
 			}
 
-			if (entity != null) {
-				entity.onKilledOther(this);
-			}
-
 			if (this.isSleeping()) {
 				this.wakeUp();
 			}
 
 			this.dead = true;
 			this.getDamageTracker().update();
-			if (!this.world.isClient) {
+			if (this.world instanceof ServerWorld) {
+				if (entity != null) {
+					entity.onKilledOther((ServerWorld)this.world, this);
+				}
+
 				this.drop(source);
 				this.onKilledBy(livingEntity);
 			}
@@ -2836,12 +2836,17 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void consumeItem() {
-		if (!this.activeItemStack.equals(this.getStackInHand(this.getActiveHand()))) {
+		Hand hand = this.getActiveHand();
+		if (!this.activeItemStack.equals(this.getStackInHand(hand))) {
 			this.stopUsingItem();
 		} else {
 			if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
 				this.spawnConsumptionEffects(this.activeItemStack, 16);
-				this.setStackInHand(this.getActiveHand(), this.activeItemStack.finishUsing(this.world, this));
+				ItemStack itemStack = this.activeItemStack.finishUsing(this.world, this);
+				if (itemStack != this.activeItemStack) {
+					this.setStackInHand(hand, itemStack);
+				}
+
 				this.clearActiveItem();
 			}
 		}
@@ -3139,5 +3144,16 @@ public abstract class LivingEntity extends Entity {
 
 	public void sendToolBreakStatus(Hand hand) {
 		this.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Box getVisibilityBoundingBox() {
+		if (this.getEquippedStack(EquipmentSlot.HEAD).getItem() == Items.DRAGON_HEAD) {
+			float f = 0.5F;
+			return this.getBoundingBox().expand(0.5, 0.5, 0.5);
+		} else {
+			return super.getVisibilityBoundingBox();
+		}
 	}
 }

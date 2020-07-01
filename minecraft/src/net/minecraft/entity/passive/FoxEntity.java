@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5425;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -74,7 +75,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -280,8 +280,8 @@ public class FoxEntity extends AnimalEntity {
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
 	}
 
-	public FoxEntity createChild(PassiveEntity passiveEntity) {
-		FoxEntity foxEntity = EntityType.FOX.create(this.world);
+	public FoxEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		FoxEntity foxEntity = EntityType.FOX.create(serverWorld);
 		foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
 		return foxEntity;
 	}
@@ -289,9 +289,9 @@ public class FoxEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		Biome biome = world.getBiome(this.getBlockPos());
+		Biome biome = arg.getBiome(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
@@ -308,12 +308,12 @@ public class FoxEntity extends AnimalEntity {
 			this.setBreedingAge(-24000);
 		}
 
-		if (world instanceof ServerWorld) {
+		if (arg instanceof ServerWorld) {
 			this.addTypeSpecificGoals();
 		}
 
 		this.initEquipment(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private void addTypeSpecificGoals() {
@@ -1190,7 +1190,7 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		protected void breed() {
-			FoxEntity foxEntity = (FoxEntity)this.animal.createChild(this.mate);
+			FoxEntity foxEntity = (FoxEntity)this.animal.createChild((ServerWorld)this.world, this.mate);
 			if (foxEntity != null) {
 				ServerPlayerEntity serverPlayerEntity = this.animal.getLovingPlayer();
 				ServerPlayerEntity serverPlayerEntity2 = this.mate.getLovingPlayer();

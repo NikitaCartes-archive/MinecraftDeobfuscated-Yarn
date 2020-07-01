@@ -135,6 +135,7 @@ public class EntityRenderDispatcher {
 		this.register(EntityType.PHANTOM, new PhantomEntityRenderer(this));
 		this.register(EntityType.PIG, new PigEntityRenderer(this));
 		this.register(EntityType.PIGLIN, new PiglinEntityRenderer(this, false));
+		this.register(EntityType.PIGLIN_BRUTE, new PiglinEntityRenderer(this, false));
 		this.register(EntityType.PILLAGER, new PillagerEntityRenderer(this));
 		this.register(EntityType.POLAR_BEAR, new PolarBearEntityRenderer(this));
 		this.register(EntityType.POTION, new FlyingItemEntityRenderer<>(this, itemRenderer));

@@ -10,11 +10,11 @@ import net.minecraft.block.CocoaBlock;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class CocoaBeansTreeDecorator extends TreeDecorator {
-	public static final Codec<CocoaBeansTreeDecorator> field_24959 = Codec.FLOAT
+	public static final Codec<CocoaBeansTreeDecorator> CODEC = Codec.FLOAT
 		.fieldOf("probability")
 		.<CocoaBeansTreeDecorator>xmap(CocoaBeansTreeDecorator::new, cocoaBeansTreeDecorator -> cocoaBeansTreeDecorator.field_21318)
 		.codec();
@@ -30,7 +30,9 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+	public void generate(
+		ServerWorldAccess serverWorldAccess, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box
+	) {
 		if (!(random.nextFloat() >= this.field_21318)) {
 			int i = ((BlockPos)logPositions.get(0)).getY();
 			logPositions.stream().filter(blockPos -> blockPos.getY() - i <= 2).forEach(blockPos -> {
@@ -38,9 +40,9 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 					if (random.nextFloat() <= 0.25F) {
 						Direction direction2 = direction.getOpposite();
 						BlockPos blockPos2 = blockPos.add(direction2.getOffsetX(), 0, direction2.getOffsetZ());
-						if (Feature.isAir(world, blockPos2)) {
+						if (Feature.isAir(serverWorldAccess, blockPos2)) {
 							BlockState blockState = Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, Integer.valueOf(random.nextInt(3))).with(CocoaBlock.FACING, direction);
-							this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
+							this.setBlockStateAndEncompassPosition(serverWorldAccess, blockPos2, blockState, set, box);
 						}
 					}
 				}

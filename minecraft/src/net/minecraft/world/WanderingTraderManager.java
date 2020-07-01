@@ -20,47 +20,47 @@ import net.minecraft.world.poi.PointOfInterestType;
 
 public class WanderingTraderManager implements Spawner {
 	private final Random random = new Random();
-	private final ServerWorldProperties field_24387;
+	private final ServerWorldProperties properties;
 	private int spawnTimer;
 	private int spawnDelay;
 	private int spawnChance;
 
-	public WanderingTraderManager(ServerWorldProperties serverWorldProperties) {
-		this.field_24387 = serverWorldProperties;
+	public WanderingTraderManager(ServerWorldProperties properties) {
+		this.properties = properties;
 		this.spawnTimer = 1200;
-		this.spawnDelay = serverWorldProperties.getWanderingTraderSpawnDelay();
-		this.spawnChance = serverWorldProperties.getWanderingTraderSpawnChance();
+		this.spawnDelay = properties.getWanderingTraderSpawnDelay();
+		this.spawnChance = properties.getWanderingTraderSpawnChance();
 		if (this.spawnDelay == 0 && this.spawnChance == 0) {
 			this.spawnDelay = 24000;
-			serverWorldProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
+			properties.setWanderingTraderSpawnDelay(this.spawnDelay);
 			this.spawnChance = 25;
-			serverWorldProperties.setWanderingTraderSpawnChance(this.spawnChance);
+			properties.setWanderingTraderSpawnChance(this.spawnChance);
 		}
 	}
 
 	@Override
-	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-		if (!serverWorld.getGameRules().getBoolean(GameRules.DO_TRADER_SPAWNING)) {
+	public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
+		if (!world.getGameRules().getBoolean(GameRules.DO_TRADER_SPAWNING)) {
 			return 0;
 		} else if (--this.spawnTimer > 0) {
 			return 0;
 		} else {
 			this.spawnTimer = 1200;
 			this.spawnDelay -= 1200;
-			this.field_24387.setWanderingTraderSpawnDelay(this.spawnDelay);
+			this.properties.setWanderingTraderSpawnDelay(this.spawnDelay);
 			if (this.spawnDelay > 0) {
 				return 0;
 			} else {
 				this.spawnDelay = 24000;
-				if (!serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+				if (!world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 					return 0;
 				} else {
 					int i = this.spawnChance;
 					this.spawnChance = MathHelper.clamp(this.spawnChance + 25, 25, 75);
-					this.field_24387.setWanderingTraderSpawnChance(this.spawnChance);
+					this.properties.setWanderingTraderSpawnChance(this.spawnChance);
 					if (this.random.nextInt(100) > i) {
 						return 0;
-					} else if (this.method_18018(serverWorld)) {
+					} else if (this.method_18018(world)) {
 						this.spawnChance = 25;
 						return 1;
 					} else {
@@ -94,10 +94,10 @@ public class WanderingTraderManager implements Spawner {
 				WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(serverWorld, null, null, null, blockPos3, SpawnReason.EVENT, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {
-						this.spawnLlama(wanderingTraderEntity, 4);
+						this.spawnLlama(serverWorld, wanderingTraderEntity, 4);
 					}
 
-					this.field_24387.setWanderingTraderId(wanderingTraderEntity.getUuid());
+					this.properties.setWanderingTraderId(wanderingTraderEntity.getUuid());
 					wanderingTraderEntity.setDespawnDelay(48000);
 					wanderingTraderEntity.setWanderTarget(blockPos2);
 					wanderingTraderEntity.setPositionTarget(blockPos2, 16);
@@ -109,12 +109,12 @@ public class WanderingTraderManager implements Spawner {
 		}
 	}
 
-	private void spawnLlama(WanderingTraderEntity wanderingTrader, int range) {
-		BlockPos blockPos = this.getNearbySpawnPos(wanderingTrader.world, wanderingTrader.getBlockPos(), range);
+	private void spawnLlama(ServerWorld serverWorld, WanderingTraderEntity wanderingTraderEntity, int i) {
+		BlockPos blockPos = this.getNearbySpawnPos(serverWorld, wanderingTraderEntity.getBlockPos(), i);
 		if (blockPos != null) {
-			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(wanderingTrader.world, null, null, null, blockPos, SpawnReason.EVENT, false, false);
+			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(serverWorld, null, null, null, blockPos, SpawnReason.EVENT, false, false);
 			if (traderLlamaEntity != null) {
-				traderLlamaEntity.attachLeash(wanderingTrader, true);
+				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
 			}
 		}
 	}

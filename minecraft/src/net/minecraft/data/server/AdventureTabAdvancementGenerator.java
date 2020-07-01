@@ -96,6 +96,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		EntityType.MAGMA_CUBE,
 		EntityType.PHANTOM,
 		EntityType.PIGLIN,
+		EntityType.PIGLIN_BRUTE,
 		EntityType.PILLAGER,
 		EntityType.RAVAGER,
 		EntityType.SHULKER,

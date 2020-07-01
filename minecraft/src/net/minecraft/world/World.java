@@ -36,7 +36,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.crash.CrashCallable;
@@ -98,22 +98,22 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final RegistryKey<DimensionType> dimensionRegistryKey;
 
 	protected World(
-		MutableWorldProperties mutableWorldProperties,
+		MutableWorldProperties properties,
 		RegistryKey<World> registryKey,
-		RegistryKey<DimensionType> registryKey2,
-		DimensionType dimensionType,
+		RegistryKey<DimensionType> dimensionRegistryKey,
+		DimensionType dimension,
 		Supplier<Profiler> profiler,
-		boolean bl,
-		boolean bl2,
-		long l
+		boolean isClient,
+		boolean debugWorld,
+		long seed
 	) {
 		this.profiler = profiler;
-		this.properties = mutableWorldProperties;
-		this.dimension = dimensionType;
+		this.properties = properties;
+		this.dimension = dimension;
 		this.registryKey = registryKey;
-		this.dimensionRegistryKey = registryKey2;
-		this.isClient = bl;
-		if (dimensionType.isShrunk()) {
+		this.dimensionRegistryKey = dimensionRegistryKey;
+		this.isClient = isClient;
+		if (dimension.isShrunk()) {
 			this.border = new WorldBorder() {
 				@Override
 				public double getCenterX() {
@@ -130,8 +130,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 
 		this.thread = Thread.currentThread();
-		this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
-		this.debugWorld = bl2;
+		this.biomeAccess = new BiomeAccess(this, seed, dimension.getBiomeAccessType());
+		this.debugWorld = debugWorld;
 	}
 
 	@Override
@@ -461,7 +461,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public float getSkyAngleRadians(float tickDelta) {
-		float f = this.getSkyAngle(tickDelta);
+		float f = this.method_30274(tickDelta);
 		return f * (float) (Math.PI * 2);
 	}
 
@@ -703,7 +703,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public void calculateAmbientDarkness() {
 		double d = 1.0 - (double)(this.getRainGradient(1.0F) * 5.0F) / 16.0;
 		double e = 1.0 - (double)(this.getThunderGradient(1.0F) * 5.0F) / 16.0;
-		double f = 0.5 + 2.0 * MathHelper.clamp((double)MathHelper.cos(this.getSkyAngle(1.0F) * (float) (Math.PI * 2)), -0.25, 0.25);
+		double f = 0.5 + 2.0 * MathHelper.clamp((double)MathHelper.cos(this.method_30274(1.0F) * (float) (Math.PI * 2)), -0.25, 0.25);
 		this.ambientDarkness = (int)((1.0 - f * d * e) * 11.0);
 	}
 
@@ -828,11 +828,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public int getSeaLevel() {
 		return 63;
-	}
-
-	@Override
-	public World getWorld() {
-		return this;
 	}
 
 	public int getReceivedStrongRedstonePower(BlockPos pos) {
@@ -1041,7 +1036,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		long l = 0L;
 		float f = 0.0F;
 		if (this.isChunkLoaded(pos)) {
-			f = this.getMoonSize();
+			f = this.method_30272();
 			l = this.getWorldChunk(pos).getInhabitedTime();
 		}
 
@@ -1090,7 +1085,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public abstract RecipeManager getRecipeManager();
 
-	public abstract RegistryTagManager getTagManager();
+	public abstract TagManager getTagManager();
 
 	public BlockPos getRandomPosInChunk(int x, int y, int z, int i) {
 		this.lcgBlockSeed = this.lcgBlockSeed * 3 + 1013904223;

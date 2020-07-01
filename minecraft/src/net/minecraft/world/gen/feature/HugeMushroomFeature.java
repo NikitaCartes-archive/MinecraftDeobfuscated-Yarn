@@ -9,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureConfig> {
@@ -39,7 +38,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 		int i = pos.getY();
 		if (i >= 1 && i + height + 1 < 256) {
 			Block block = world.getBlockState(pos.down()).getBlock();
-			if (!isSoil(block)) {
+			if (!isSoil(block) && !block.isIn(BlockTags.MUSHROOM_GROW_BLOCK)) {
 				return false;
 			} else {
 				for (int j = 0; j <= height; j++) {
@@ -63,12 +62,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
-		StructureAccessor structureAccessor,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		HugeMushroomFeatureConfig hugeMushroomFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig
 	) {
 		int i = this.getHeight(random);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();

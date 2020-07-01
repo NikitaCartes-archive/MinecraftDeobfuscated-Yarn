@@ -14,15 +14,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
-public class ResourcePackManager<T extends ResourcePackProfile> implements AutoCloseable {
+public class ResourcePackManager implements AutoCloseable {
 	private final Set<ResourcePackProvider> providers;
-	private Map<String, T> profiles = ImmutableMap.of();
-	private List<T> enabled = ImmutableList.of();
-	private final ResourcePackProfile.Factory<T> profileFactory;
+	private Map<String, ResourcePackProfile> profiles = ImmutableMap.of();
+	private List<ResourcePackProfile> enabled = ImmutableList.of();
+	private final ResourcePackProfile.Factory profileFactory;
 
-	public ResourcePackManager(ResourcePackProfile.Factory<T> profileFactory, ResourcePackProvider... providers) {
+	public ResourcePackManager(ResourcePackProfile.Factory profileFactory, ResourcePackProvider... providers) {
 		this.profileFactory = profileFactory;
 		this.providers = ImmutableSet.copyOf(providers);
+	}
+
+	public ResourcePackManager(ResourcePackProvider... resourcePackProviders) {
+		this(ResourcePackProfile::new, resourcePackProviders);
 	}
 
 	public void scanPacks() {
@@ -32,8 +36,8 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		this.enabled = this.buildEnabledProfiles(list);
 	}
 
-	private Map<String, T> providePackProfiles() {
-		Map<String, T> map = Maps.newTreeMap();
+	private Map<String, ResourcePackProfile> providePackProfiles() {
+		Map<String, ResourcePackProfile> map = Maps.newTreeMap();
 
 		for (ResourcePackProvider resourcePackProvider : this.providers) {
 			resourcePackProvider.register(resourcePackProfile -> {
@@ -48,10 +52,10 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		this.enabled = this.buildEnabledProfiles(enabled);
 	}
 
-	private List<T> buildEnabledProfiles(Collection<String> enabledNames) {
-		List<T> list = (List<T>)this.streamProfilesByName(enabledNames).collect(Collectors.toList());
+	private List<ResourcePackProfile> buildEnabledProfiles(Collection<String> enabledNames) {
+		List<ResourcePackProfile> list = (List<ResourcePackProfile>)this.streamProfilesByName(enabledNames).collect(Collectors.toList());
 
-		for (T resourcePackProfile : this.profiles.values()) {
+		for (ResourcePackProfile resourcePackProfile : this.profiles.values()) {
 			if (resourcePackProfile.isAlwaysEnabled() && !list.contains(resourcePackProfile)) {
 				resourcePackProfile.getInitialPosition().insert(list, resourcePackProfile, Functions.identity(), false);
 			}
@@ -60,7 +64,7 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		return ImmutableList.copyOf(list);
 	}
 
-	private Stream<T> streamProfilesByName(Collection<String> names) {
+	private Stream<ResourcePackProfile> streamProfilesByName(Collection<String> names) {
 		return names.stream().map(this.profiles::get).filter(Objects::nonNull);
 	}
 
@@ -68,7 +72,7 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		return this.profiles.keySet();
 	}
 
-	public Collection<T> getProfiles() {
+	public Collection<ResourcePackProfile> getProfiles() {
 		return this.profiles.values();
 	}
 
@@ -76,13 +80,13 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		return (Collection<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableSet.toImmutableSet());
 	}
 
-	public Collection<T> getEnabledProfiles() {
+	public Collection<ResourcePackProfile> getEnabledProfiles() {
 		return this.enabled;
 	}
 
 	@Nullable
-	public T getProfile(String name) {
-		return (T)this.profiles.get(name);
+	public ResourcePackProfile getProfile(String name) {
+		return (ResourcePackProfile)this.profiles.get(name);
 	}
 
 	public void close() {

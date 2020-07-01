@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,7 +15,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Tickable;
@@ -117,50 +117,61 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			if (!list.isEmpty()) {
 				List<Box> list2 = voxelShape.getBoundingBoxes();
 				boolean bl = this.pushedBlock.isOf(Blocks.SLIME_BLOCK);
+				Iterator var10 = list.iterator();
 
-				for (Entity entity : list) {
-					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
-						if (bl) {
-							Vec3d vec3d = entity.getVelocity();
-							double e = vec3d.x;
-							double f = vec3d.y;
-							double g = vec3d.z;
-							switch (direction.getAxis()) {
-								case X:
-									e = (double)direction.getOffsetX();
-									break;
-								case Y:
-									f = (double)direction.getOffsetY();
-									break;
-								case Z:
-									g = (double)direction.getOffsetZ();
-							}
-
-							entity.setVelocity(e, f, g);
-							if (entity instanceof ServerPlayerEntity) {
-								((ServerPlayerEntity)entity).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(entity));
-							}
+				while (true) {
+					Entity entity;
+					while (true) {
+						if (!var10.hasNext()) {
+							return;
 						}
 
-						double h = 0.0;
+						entity = (Entity)var10.next();
+						if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
+							if (!bl) {
+								break;
+							}
 
-						for (Box box2 : list2) {
-							Box box3 = Boxes.stretch(this.offsetHeadBox(box2), direction, d);
-							Box box4 = entity.getBoundingBox();
-							if (box3.intersects(box4)) {
-								h = Math.max(h, getIntersectionSize(box3, direction, box4));
-								if (h >= d) {
-									break;
+							if (!(entity instanceof ServerPlayerEntity)) {
+								Vec3d vec3d = entity.getVelocity();
+								double e = vec3d.x;
+								double f = vec3d.y;
+								double g = vec3d.z;
+								switch (direction.getAxis()) {
+									case X:
+										e = (double)direction.getOffsetX();
+										break;
+									case Y:
+										f = (double)direction.getOffsetY();
+										break;
+									case Z:
+										g = (double)direction.getOffsetZ();
 								}
+
+								entity.setVelocity(e, f, g);
+								break;
 							}
 						}
+					}
 
-						if (!(h <= 0.0)) {
-							h = Math.min(h, d) + 0.01;
-							method_23672(direction, entity, h, direction);
-							if (!this.extending && this.source) {
-								this.push(entity, direction, d);
+					double h = 0.0;
+
+					for (Box box2 : list2) {
+						Box box3 = Boxes.stretch(this.offsetHeadBox(box2), direction, d);
+						Box box4 = entity.getBoundingBox();
+						if (box3.intersects(box4)) {
+							h = Math.max(h, getIntersectionSize(box3, direction, box4));
+							if (h >= d) {
+								break;
 							}
+						}
+					}
+
+					if (!(h <= 0.0)) {
+						h = Math.min(h, d) + 0.01;
+						method_23672(direction, entity, h, direction);
+						if (!this.extending && this.source) {
+							this.push(entity, direction, d);
 						}
 					}
 				}
@@ -282,7 +293,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 				BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
 				if (blockState.isAir()) {
 					this.world.setBlockState(this.pos, this.pushedBlock, 84);
-					Block.replaced(this.pushedBlock, blockState, this.world, this.pos, 3);
+					Block.replace(this.pushedBlock, blockState, this.world, this.pos, 3);
 				} else {
 					if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
 						blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));

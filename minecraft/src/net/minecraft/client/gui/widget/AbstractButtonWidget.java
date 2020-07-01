@@ -49,11 +49,11 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		return this.height;
 	}
 
-	protected int getYImage(boolean isHovered) {
+	protected int getYImage(boolean hovered) {
 		int i = 1;
 		if (!this.active) {
 			i = 0;
-		} else if (isHovered) {
+		} else if (hovered) {
 			i = 2;
 		}
 

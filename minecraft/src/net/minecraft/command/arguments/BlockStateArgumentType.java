@@ -39,7 +39,7 @@ public class BlockStateArgumentType implements ArgumentType<BlockStateArgument> 
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return blockArgumentParser.getSuggestions(builder, BlockTags.getContainer());
+		return blockArgumentParser.getSuggestions(builder, BlockTags.getTagGroup());
 	}
 
 	@Override

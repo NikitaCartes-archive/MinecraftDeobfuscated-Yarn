@@ -1155,7 +1155,9 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		immediate.draw(RenderLayer.getArmorGlint());
 		immediate.draw(RenderLayer.getArmorEntityGlint());
 		immediate.draw(RenderLayer.getGlint());
+		immediate.draw(RenderLayer.getGlintDirect());
 		immediate.draw(RenderLayer.getEntityGlint());
+		immediate.draw(RenderLayer.getEntityGlintDirect());
 		immediate.draw(RenderLayer.getWaterMask());
 		this.bufferBuilders.getEffectVertexConsumers().draw();
 		immediate.draw(RenderLayer.getLines());
@@ -1572,7 +1574,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.disableAlphaTest();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			float[] fs = this.world.getSkyProperties().getSkyColor(this.world.getSkyAngle(tickDelta), tickDelta);
+			float[] fs = this.world.getSkyProperties().getSkyColor(this.world.method_30274(tickDelta), tickDelta);
 			if (fs != null) {
 				RenderSystem.disableTexture();
 				RenderSystem.shadeModel(7425);
@@ -1608,7 +1610,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			float i = 1.0F - this.world.getRainGradient(tickDelta);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, i);
 			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(tickDelta) * 360.0F));
+			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.method_30274(tickDelta) * 360.0F));
 			Matrix4f matrix4f2 = matrices.peek().getModel();
 			float k = 30.0F;
 			this.textureManager.bindTexture(SUN);
@@ -1621,7 +1623,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			BufferRenderer.draw(bufferBuilder);
 			k = 20.0F;
 			this.textureManager.bindTexture(MOON_PHASES);
-			int r = this.world.getMoonPhase();
+			int r = this.world.method_30273();
 			int s = r % 4;
 			int m = r / 4 % 2;
 			float t = (float)(s + 0) / 4.0F;

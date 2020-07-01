@@ -35,6 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -142,7 +143,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		boolean bl = this.isBreedingItem(player.getStackInHand(hand));
-		if (!bl && this.isSaddled() && !this.hasPassengers()) {
+		if (!bl && this.isSaddled() && !this.hasPassengers() && !player.shouldCancelInteraction()) {
 			if (!this.world.isClient) {
 				player.startRiding(this);
 			}
@@ -216,9 +217,9 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightning) {
-		if (this.world.getDifficulty() != Difficulty.PEACEFUL) {
-			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world);
+	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+		if (serverWorld.getDifficulty() != Difficulty.PEACEFUL) {
+			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorld);
 			zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 			zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 			zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
@@ -229,10 +230,10 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 			}
 
 			zombifiedPiglinEntity.setPersistent();
-			this.world.spawnEntity(zombifiedPiglinEntity);
+			serverWorld.spawnEntity(zombifiedPiglinEntity);
 			this.remove();
 		} else {
-			super.onStruckByLightning(lightning);
+			super.onStruckByLightning(serverWorld, lightningEntity);
 		}
 	}
 
@@ -256,8 +257,8 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		return this.saddledComponent.boost(this.getRandom());
 	}
 
-	public PigEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.PIG.create(this.world);
+	public PigEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.PIG.create(serverWorld);
 	}
 
 	@Override

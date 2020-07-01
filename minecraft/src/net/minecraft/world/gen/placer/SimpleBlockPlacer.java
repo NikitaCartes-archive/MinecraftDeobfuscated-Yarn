@@ -8,8 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 
 public class SimpleBlockPlacer extends BlockPlacer {
-	public static final Codec<SimpleBlockPlacer> field_24870 = Codec.unit((Supplier<SimpleBlockPlacer>)(() -> SimpleBlockPlacer.field_24871));
-	public static final SimpleBlockPlacer field_24871 = new SimpleBlockPlacer();
+	public static final Codec<SimpleBlockPlacer> CODEC = Codec.unit((Supplier<SimpleBlockPlacer>)(() -> SimpleBlockPlacer.INSTANCE));
+	public static final SimpleBlockPlacer INSTANCE = new SimpleBlockPlacer();
 
 	@Override
 	protected BlockPlacerType<?> method_28673() {

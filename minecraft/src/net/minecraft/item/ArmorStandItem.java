@@ -4,13 +4,16 @@ import java.util.Random;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ArmorStandItem extends Item {
@@ -28,10 +31,17 @@ public class ArmorStandItem extends Item {
 			ItemPlacementContext itemPlacementContext = new ItemPlacementContext(context);
 			BlockPos blockPos = itemPlacementContext.getBlockPos();
 			ItemStack itemStack = context.getStack();
-			ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND
-				.create(world, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
-			if (world.doesNotCollide(armorStandEntity) && world.getEntities(armorStandEntity, armorStandEntity.getBoundingBox()).isEmpty()) {
-				if (!world.isClient) {
+			Vec3d vec3d = Vec3d.ofBottomCenter(blockPos);
+			Box box = EntityType.ARMOR_STAND.getDimensions().method_30231(vec3d.getX(), vec3d.getY(), vec3d.getZ());
+			if (world.doesNotCollide(null, box, entity -> true) && world.getEntities(null, box).isEmpty()) {
+				if (world instanceof ServerWorld) {
+					ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND
+						.create((ServerWorld)world, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
+					if (armorStandEntity == null) {
+						return ActionResult.FAIL;
+					}
+
+					world.spawnEntity(armorStandEntity);
 					float f = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
 					armorStandEntity.refreshPositionAndAngles(armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), f, 0.0F);
 					this.setRotations(armorStandEntity, world.random);

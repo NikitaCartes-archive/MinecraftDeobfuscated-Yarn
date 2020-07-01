@@ -91,6 +91,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 		return this.type;
 	}
 
+	@Nullable
 	public Hand getHand() {
 		return this.hand;
 	}

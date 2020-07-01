@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import net.minecraft.class_5425;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -164,7 +165,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
+	protected void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox) {
 	}
 
 	private void generateVines(Random random, WorldAccess world, BlockPos pos) {
@@ -252,6 +253,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		BlockState blockState = world.getBlockState(pos);
 		return !blockState.isOf(Blocks.AIR)
 			&& !blockState.isOf(Blocks.OBSIDIAN)
+			&& !blockState.isOf(Blocks.CHEST)
 			&& (this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER || !blockState.isOf(Blocks.LAVA));
 	}
 

@@ -94,7 +94,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		"Bastion_Remnant", new BastionRemnantFeature(BastionRemnantFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
 	public static final List<StructureFeature<?>> field_24861 = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
-	private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> field_24863;
+	private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
 	private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
 		STRUCTURES.put(name.toLowerCase(Locale.ROOT), structureFeature);
@@ -103,9 +103,9 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	}
 
 	public StructureFeature(Codec<C> codec) {
-		this.field_24863 = codec.fieldOf("config")
+		this.codec = codec.fieldOf("config")
 			.<ConfiguredStructureFeature<C, StructureFeature<C>>>xmap(
-				featureConfig -> new ConfiguredStructureFeature<>(this, (C)featureConfig), configuredStructureFeature -> configuredStructureFeature.field_24836
+				featureConfig -> new ConfiguredStructureFeature<>(this, (C)featureConfig), configuredStructureFeature -> configuredStructureFeature.config
 			)
 			.codec();
 	}
@@ -162,8 +162,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		}
 	}
 
-	public Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> method_28665() {
-		return this.field_24863;
+	public Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> getCodec() {
+		return this.codec;
 	}
 
 	public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config) {

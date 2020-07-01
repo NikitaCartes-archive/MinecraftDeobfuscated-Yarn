@@ -39,7 +39,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainer;
+import net.minecraft.tag.TagGroup;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -368,9 +368,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			predicate = identifier -> identifier.getNamespace().contains(string2) && identifier.getPath().contains(string3);
 		}
 
-		TagContainer<Item> tagContainer = ItemTags.getContainer();
-		tagContainer.getKeys().stream().filter(predicate).forEach(identifier -> {
-			Tag var10000 = (Tag)this.searchResultTags.put(identifier, tagContainer.get(identifier));
+		TagGroup<Item> tagGroup = ItemTags.getTagGroup();
+		tagGroup.getTagIds().stream().filter(predicate).forEach(identifier -> {
+			Tag var10000 = (Tag)this.searchResultTags.put(identifier, tagGroup.getTag(identifier));
 		});
 	}
 

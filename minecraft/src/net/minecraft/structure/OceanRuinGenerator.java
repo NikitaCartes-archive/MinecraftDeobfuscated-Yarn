@@ -3,6 +3,7 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -29,7 +30,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
@@ -240,24 +240,24 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
-				world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(world.getFluidState(pos).isIn(FluidTags.WATER))), 2);
-				BlockEntity blockEntity = world.getBlockEntity(pos);
+				arg.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(arg.getFluidState(pos).isIn(FluidTags.WATER))), 2);
+				BlockEntity blockEntity = arg.getBlockEntity(pos);
 				if (blockEntity instanceof ChestBlockEntity) {
 					((ChestBlockEntity)blockEntity)
 						.setLootTable(this.large ? LootTables.UNDERWATER_RUIN_BIG_CHEST : LootTables.UNDERWATER_RUIN_SMALL_CHEST, random.nextLong());
 				}
 			} else if ("drowned".equals(metadata)) {
-				DrownedEntity drownedEntity = EntityType.DROWNED.create(world.getWorld());
+				DrownedEntity drownedEntity = EntityType.DROWNED.create(arg.getWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-				drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
-				world.spawnEntity(drownedEntity);
-				if (pos.getY() > world.getSeaLevel()) {
-					world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+				drownedEntity.initialize(arg, arg.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+				arg.spawnEntity(drownedEntity);
+				if (pos.getY() > arg.getSeaLevel()) {
+					arg.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 				} else {
-					world.setBlockState(pos, Blocks.WATER.getDefaultState(), 2);
+					arg.setBlockState(pos, Blocks.WATER.getDefaultState(), 2);
 				}
 			}
 		}

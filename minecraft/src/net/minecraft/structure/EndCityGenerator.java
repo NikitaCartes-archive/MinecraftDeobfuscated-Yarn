@@ -3,6 +3,7 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_5425;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -18,7 +19,6 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
 
 public class EndCityGenerator {
 	private static final StructurePlacementData PLACEMENT_DATA = new StructurePlacementData()
@@ -298,21 +298,21 @@ public class EndCityGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox) {
 			if (metadata.startsWith("Chest")) {
 				BlockPos blockPos = pos.down();
 				if (boundingBox.contains(blockPos)) {
-					LootableContainerBlockEntity.setLootTable(world, random, blockPos, LootTables.END_CITY_TREASURE_CHEST);
+					LootableContainerBlockEntity.setLootTable(arg, random, blockPos, LootTables.END_CITY_TREASURE_CHEST);
 				}
 			} else if (metadata.startsWith("Sentry")) {
-				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(world.getWorld());
+				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(arg.getWorld());
 				shulkerEntity.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 				shulkerEntity.setAttachedBlock(pos);
-				world.spawnEntity(shulkerEntity);
+				arg.spawnEntity(shulkerEntity);
 			} else if (metadata.startsWith("Elytra")) {
-				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(world.getWorld(), pos, this.rotation.rotate(Direction.SOUTH));
+				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(arg.getWorld(), pos, this.rotation.rotate(Direction.SOUTH));
 				itemFrameEntity.setHeldItemStack(new ItemStack(Items.ELYTRA), false);
-				world.spawnEntity(itemFrameEntity);
+				arg.spawnEntity(itemFrameEntity);
 			}
 		}
 	}

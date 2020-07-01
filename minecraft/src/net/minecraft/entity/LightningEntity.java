@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -87,7 +88,7 @@ public class LightningEntity extends Entity {
 		}
 
 		if (this.ambientTick >= 0) {
-			if (this.world.isClient) {
+			if (!(this.world instanceof ServerWorld)) {
 				this.world.setLightningTicksLeft(2);
 			} else if (!this.cosmetic) {
 				double d = 3.0;
@@ -97,7 +98,7 @@ public class LightningEntity extends Entity {
 					);
 
 				for (Entity entity : list) {
-					entity.onStruckByLightning(this);
+					entity.onStruckByLightning((ServerWorld)this.world, this);
 				}
 
 				if (this.channeler != null) {

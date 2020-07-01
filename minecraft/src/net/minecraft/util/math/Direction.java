@@ -318,7 +318,7 @@ public enum Direction implements StringIdentifiable {
 		};
 
 		private static final Direction.Axis[] field_23780 = values();
-		public static final Codec<Direction.Axis> field_25065 = StringIdentifiable.method_28140(Direction.Axis::values, Direction.Axis::fromName);
+		public static final Codec<Direction.Axis> field_25065 = StringIdentifiable.createCodec(Direction.Axis::values, Direction.Axis::fromName);
 		private static final Map<String, Direction.Axis> BY_NAME = (Map<String, Direction.Axis>)Arrays.stream(field_23780)
 			.collect(Collectors.toMap(Direction.Axis::getName, axis -> axis));
 		private final String name;

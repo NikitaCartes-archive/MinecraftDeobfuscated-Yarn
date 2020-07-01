@@ -205,12 +205,12 @@ public class StructureTestUtil {
 		structureBlockBlockEntity.setRotation(blockRotation);
 		structureBlockBlockEntity.setIgnoreEntities(false);
 		structureBlockBlockEntity.setStructureName(new Identifier(name));
-		structureBlockBlockEntity.loadStructure(bl);
+		structureBlockBlockEntity.loadStructure(serverWorld, bl);
 		if (structureBlockBlockEntity.getSize() != BlockPos.ORIGIN) {
 			return structureBlockBlockEntity;
 		} else {
 			Structure structure = createStructure(name, serverWorld);
-			structureBlockBlockEntity.place(bl, structure);
+			structureBlockBlockEntity.place(serverWorld, bl, structure);
 			if (structureBlockBlockEntity.getSize() == BlockPos.ORIGIN) {
 				throw new RuntimeException("Failed to load structure " + name);
 			} else {

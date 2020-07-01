@@ -20,7 +20,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 	}
 
 	@Override
-	public <T extends ResourcePackProfile> void register(Consumer<T> consumer, ResourcePackProfile.Factory<T> factory) {
+	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
 		if (!this.packsFolder.isDirectory()) {
 			this.packsFolder.mkdirs();
 		}
@@ -29,7 +29,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 		if (files != null) {
 			for (File file : files) {
 				String string = "file/" + file.getName();
-				T resourcePackProfile = ResourcePackProfile.of(
+				ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
 					string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.field_25345
 				);
 				if (resourcePackProfile != null) {

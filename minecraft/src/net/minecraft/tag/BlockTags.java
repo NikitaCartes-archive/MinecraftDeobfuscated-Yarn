@@ -1,13 +1,10 @@
 package net.minecraft.tag;
 
-import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 
-public class BlockTags {
-	private static final GlobalTagAccessor<Block> ACCESSOR = new GlobalTagAccessor<>();
+public final class BlockTags {
+	protected static final RequiredTagList<Block> REQUIRED_TAGS = RequiredTagListRegistry.register(new Identifier("block"), TagManager::getBlocks);
 	public static final Tag.Identified<Block> WOOL = register("wool");
 	public static final Tag.Identified<Block> PLANKS = register("planks");
 	public static final Tag.Identified<Block> STONE_BRICKS = register("stone_bricks");
@@ -88,28 +85,16 @@ public class BlockTags {
 	public static final Tag.Identified<Block> PREVENT_MOB_SPAWNING_INSIDE = register("prevent_mob_spawning_inside");
 	public static final Tag.Identified<Block> FENCE_GATES = register("fence_gates");
 	public static final Tag.Identified<Block> UNSTABLE_BOTTOM_CENTER = register("unstable_bottom_center");
+	public static final Tag.Identified<Block> MUSHROOM_GROW_BLOCK = register("mushroom_grow_block");
 	public static final Tag.Identified<Block> INFINIBURN_OVERWORLD = register("infiniburn_overworld");
 	public static final Tag.Identified<Block> INFINIBURN_NETHER = register("infiniburn_nether");
 	public static final Tag.Identified<Block> INFINIBURN_END = register("infiniburn_end");
 
 	private static Tag.Identified<Block> register(String id) {
-		return ACCESSOR.get(id);
+		return REQUIRED_TAGS.add(id);
 	}
 
-	public static void setContainer(TagContainer<Block> container) {
-		ACCESSOR.setContainer(container);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static void markReady() {
-		ACCESSOR.markReady();
-	}
-
-	public static TagContainer<Block> getContainer() {
-		return ACCESSOR.getContainer();
-	}
-
-	public static Set<Identifier> method_29214(TagContainer<Block> tagContainer) {
-		return ACCESSOR.method_29224(tagContainer);
+	public static TagGroup<Block> getTagGroup() {
+		return REQUIRED_TAGS.getGroup();
 	}
 }

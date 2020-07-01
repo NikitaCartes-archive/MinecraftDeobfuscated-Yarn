@@ -26,7 +26,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerConfigHandler;
@@ -71,7 +70,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		Thread thread,
 		RegistryTracker.Modifiable modifiable,
 		LevelStorage.Session session,
-		ResourcePackManager<ResourcePackProfile> resourcePackManager,
+		ResourcePackManager resourcePackManager,
 		ServerResourceManager serverResourceManager,
 		SaveProperties saveProperties,
 		ServerPropertiesLoader serverPropertiesLoader,

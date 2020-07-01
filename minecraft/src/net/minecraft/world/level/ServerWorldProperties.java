@@ -23,16 +23,16 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 	int getThunderTime();
 
 	@Override
-	default void populateCrashReport(CrashReportSection reportSection) {
-		MutableWorldProperties.super.populateCrashReport(reportSection);
-		reportSection.add("Level name", this::getLevelName);
-		reportSection.add(
+	default void populateCrashReport(CrashReportSection crashReportSection) {
+		MutableWorldProperties.super.populateCrashReport(crashReportSection);
+		crashReportSection.add("Level name", this::getLevelName);
+		crashReportSection.add(
 			"Level game mode",
 			(CrashCallable<String>)(() -> String.format(
 					"Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.getGameMode().getName(), this.getGameMode().getId(), this.isHardcore(), this.areCommandsAllowed()
 				))
 		);
-		reportSection.add(
+		crashReportSection.add(
 			"Level weather",
 			(CrashCallable<String>)(() -> String.format(
 					"Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()
@@ -70,7 +70,7 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 
 	Timer<MinecraftServer> getScheduledEvents();
 
-	void setTime(long time);
+	void method_29034(long l);
 
-	void setTimeOfDay(long time);
+	void method_29035(long l);
 }

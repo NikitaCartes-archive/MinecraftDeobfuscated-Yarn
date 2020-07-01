@@ -32,6 +32,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -204,8 +205,8 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightning) {
-		super.onStruckByLightning(lightning);
+	public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+		super.onStruckByLightning(serverWorld, lightningEntity);
 		this.dataTracker.set(CHARGED, true);
 	}
 

@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -281,7 +282,7 @@ public final class SpawnHelper {
 		return new BlockPos(i, l, j);
 	}
 
-	public static boolean isClearForSpawn(BlockView blockView, BlockPos pos, BlockState state, FluidState fluidState, EntityType entityType) {
+	public static boolean isClearForSpawn(BlockView blockView, BlockPos pos, BlockState state, FluidState fluidState, EntityType<?> entityType) {
 		if (state.isFullCube(blockView, pos)) {
 			return false;
 		} else if (state.emitsRedstonePower()) {
@@ -321,7 +322,7 @@ public final class SpawnHelper {
 		}
 	}
 
-	public static void populateEntities(WorldAccess world, Biome biome, int chunkX, int chunkZ, Random random) {
+	public static void populateEntities(class_5425 arg, Biome biome, int chunkX, int chunkZ, Random random) {
 		List<Biome.SpawnEntry> list = biome.getEntitySpawnList(SpawnGroup.CREATURE);
 		if (!list.isEmpty()) {
 			int i = chunkX << 4;
@@ -340,19 +341,19 @@ public final class SpawnHelper {
 					boolean bl = false;
 
 					for (int q = 0; !bl && q < 4; q++) {
-						BlockPos blockPos = getEntitySpawnPos(world, spawnEntry.type, l, m);
-						if (spawnEntry.type.isSummonable() && canSpawn(SpawnRestriction.getLocation(spawnEntry.type), world, blockPos, spawnEntry.type)) {
+						BlockPos blockPos = getEntitySpawnPos(arg, spawnEntry.type, l, m);
+						if (spawnEntry.type.isSummonable() && canSpawn(SpawnRestriction.getLocation(spawnEntry.type), arg, blockPos, spawnEntry.type)) {
 							float f = spawnEntry.type.getWidth();
 							double d = MathHelper.clamp((double)l, (double)i + (double)f, (double)i + 16.0 - (double)f);
 							double e = MathHelper.clamp((double)m, (double)j + (double)f, (double)j + 16.0 - (double)f);
-							if (!world.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))
-								|| !SpawnRestriction.canSpawn(spawnEntry.type, world, SpawnReason.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), world.getRandom())) {
+							if (!arg.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))
+								|| !SpawnRestriction.canSpawn(spawnEntry.type, arg, SpawnReason.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), arg.getRandom())) {
 								continue;
 							}
 
 							Entity entity;
 							try {
-								entity = spawnEntry.type.create(world.getWorld());
+								entity = spawnEntry.type.create(arg.getWorld());
 							} catch (Exception var26) {
 								LOGGER.warn("Failed to create mob", (Throwable)var26);
 								continue;
@@ -361,9 +362,9 @@ public final class SpawnHelper {
 							entity.refreshPositionAndAngles(d, (double)blockPos.getY(), e, random.nextFloat() * 360.0F, 0.0F);
 							if (entity instanceof MobEntity) {
 								MobEntity mobEntity = (MobEntity)entity;
-								if (mobEntity.canSpawn(world, SpawnReason.CHUNK_GENERATION) && mobEntity.canSpawn(world)) {
-									entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.CHUNK_GENERATION, entityData, null);
-									world.spawnEntity(mobEntity);
+								if (mobEntity.canSpawn(arg, SpawnReason.CHUNK_GENERATION) && mobEntity.canSpawn(arg)) {
+									entityData = mobEntity.initialize(arg, arg.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.CHUNK_GENERATION, entityData, null);
+									arg.spawnEntity(mobEntity);
 									bl = true;
 								}
 							}

@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,15 +14,14 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 public class HuskEntity extends ZombieEntity {
 	public HuskEntity(EntityType<? extends HuskEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public static boolean canSpawn(EntityType<HuskEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return canSpawnInDark(type, world, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.isSkyVisible(pos));
+	public static boolean canSpawn(EntityType<HuskEntity> type, class_5425 arg, SpawnReason spawnReason, BlockPos pos, Random random) {
+		return canSpawnInDark(type, arg, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || arg.isSkyVisible(pos));
 	}
 
 	@Override

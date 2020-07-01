@@ -93,8 +93,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private float lastYaw;
 	private float lastPitch;
 	private boolean lastOnGround;
-	private boolean field_23093;
-	private boolean lastIsHoldingSneakKey;
+	private boolean inSneakingPose;
+	private boolean lastSneaking;
 	private boolean lastSprinting;
 	private int ticksSinceLastPositionPacketSent;
 	private boolean healthInitialized;
@@ -121,24 +121,24 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean showsDeathScreen = true;
 
 	public ClientPlayerEntity(
-		MinecraftClient minecraftClient,
-		ClientWorld clientWorld,
-		ClientPlayNetworkHandler clientPlayNetworkHandler,
+		MinecraftClient client,
+		ClientWorld world,
+		ClientPlayNetworkHandler networkHandler,
 		StatHandler stats,
 		ClientRecipeBook recipeBook,
-		boolean bl,
-		boolean bl2
+		boolean lastSneaking,
+		boolean lastSprinting
 	) {
-		super(clientWorld, clientPlayNetworkHandler.getProfile());
-		this.client = minecraftClient;
-		this.networkHandler = clientPlayNetworkHandler;
+		super(world, networkHandler.getProfile());
+		this.client = client;
+		this.networkHandler = networkHandler;
 		this.statHandler = stats;
 		this.recipeBook = recipeBook;
-		this.lastIsHoldingSneakKey = bl;
-		this.lastSprinting = bl2;
-		this.tickables.add(new AmbientSoundPlayer(this, minecraftClient.getSoundManager()));
+		this.lastSneaking = lastSneaking;
+		this.lastSprinting = lastSprinting;
+		this.tickables.add(new AmbientSoundPlayer(this, client.getSoundManager()));
 		this.tickables.add(new BubbleColumnSoundPlayer(this));
-		this.tickables.add(new BiomeEffectSoundPlayer(this, minecraftClient.getSoundManager(), clientWorld.getBiomeAccess()));
+		this.tickables.add(new BiomeEffectSoundPlayer(this, client.getSoundManager(), world.getBiomeAccess()));
 	}
 
 	@Override
@@ -229,10 +229,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		boolean bl2 = this.isSneaking();
-		if (bl2 != this.lastIsHoldingSneakKey) {
+		if (bl2 != this.lastSneaking) {
 			ClientCommandC2SPacket.Mode mode2 = bl2 ? ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY : ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY;
 			this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, mode2));
-			this.lastIsHoldingSneakKey = bl2;
+			this.lastSneaking = bl2;
 		}
 
 		if (this.isCamera()) {
@@ -630,10 +630,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public boolean isInSneakingPose() {
-		return this.field_23093;
+		return this.inSneakingPose;
 	}
 
-	public boolean isHoldingSneakKey() {
+	public boolean shouldSlowDown() {
 		return this.isInSneakingPose() || this.shouldLeaveSwimmingPose();
 	}
 
@@ -666,11 +666,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl = this.input.jumping;
 		boolean bl2 = this.input.sneaking;
 		boolean bl3 = this.isWalking();
-		this.field_23093 = !this.abilities.flying
+		this.inSneakingPose = !this.abilities.flying
 			&& !this.isSwimming()
 			&& this.wouldPoseNotCollide(EntityPose.CROUCHING)
 			&& (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
-		this.input.tick(this.isHoldingSneakKey());
+		this.input.tick(this.shouldSlowDown());
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
 			this.input.movementSideways *= 0.2F;

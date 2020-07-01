@@ -20,7 +20,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ProgressScreen;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.DirectoryResourcePack;
@@ -52,7 +51,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	@Nullable
 	private CompletableFuture<?> downloadTask;
 	@Nullable
-	private ClientResourcePackProfile serverContainer;
+	private ResourcePackProfile serverContainer;
 
 	public ClientBuiltinResourcePackProvider(File serverPacksRoot, ResourceIndex index) {
 		this.serverPacksRoot = serverPacksRoot;
@@ -61,8 +60,8 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	}
 
 	@Override
-	public <T extends ResourcePackProfile> void register(Consumer<T> consumer, ResourcePackProfile.Factory<T> factory) {
-		T resourcePackProfile = ResourcePackProfile.of(
+	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
+		ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
 			"vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN
 		);
 		if (resourcePackProfile != null) {
@@ -73,7 +72,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			consumer.accept(this.serverContainer);
 		}
 
-		T resourcePackProfile2 = this.method_25454(factory);
+		ResourcePackProfile resourcePackProfile2 = this.method_25454(factory);
 		if (resourcePackProfile2 != null) {
 			consumer.accept(resourcePackProfile2);
 		}
@@ -83,7 +82,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		return this.pack;
 	}
 
-	public static Map<String, String> getDownloadHeaders() {
+	private static Map<String, String> getDownloadHeaders() {
 		Map<String, String> map = Maps.<String, String>newHashMap();
 		map.put("X-Minecraft-Username", MinecraftClient.getInstance().getSession().getUsername());
 		map.put("X-Minecraft-UUID", MinecraftClient.getInstance().getSession().getUuid());
@@ -222,16 +221,14 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 
 	public CompletableFuture<Void> loadServerPack(File packZip, ResourcePackSource resourcePackSource) {
 		PackResourceMetadata packResourceMetadata;
-		NativeImage nativeImage;
 		try (ZipResourcePack zipResourcePack = new ZipResourcePack(packZip)) {
 			packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
-			nativeImage = ClientResourcePackProfile.method_29713(zipResourcePack);
-		} catch (IOException var18) {
-			return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), var18));
+		} catch (IOException var17) {
+			return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), var17));
 		}
 
 		LOGGER.info("Applying server pack {}", packZip);
-		this.serverContainer = new ClientResourcePackProfile(
+		this.serverContainer = new ResourcePackProfile(
 			"server",
 			true,
 			() -> new ZipResourcePack(packZip),
@@ -240,15 +237,14 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),
 			ResourcePackProfile.InsertionPosition.TOP,
 			true,
-			resourcePackSource,
-			nativeImage
+			resourcePackSource
 		);
 		return MinecraftClient.getInstance().reloadResourcesConcurrently();
 	}
 
 	@Nullable
-	private <T extends ResourcePackProfile> T method_25454(ResourcePackProfile.Factory<T> factory) {
-		T resourcePackProfile = null;
+	private ResourcePackProfile method_25454(ResourcePackProfile.Factory factory) {
+		ResourcePackProfile resourcePackProfile = null;
 		File file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"));
 		if (file != null && file.isFile()) {
 			resourcePackProfile = method_25453(factory, () -> method_16048(file));
@@ -265,7 +261,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	}
 
 	@Nullable
-	private static <T extends ResourcePackProfile> T method_25453(ResourcePackProfile.Factory<T> factory, Supplier<ResourcePack> supplier) {
+	private static ResourcePackProfile method_25453(ResourcePackProfile.Factory factory, Supplier<ResourcePack> supplier) {
 		return ResourcePackProfile.of("programer_art", false, supplier, factory, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN);
 	}
 

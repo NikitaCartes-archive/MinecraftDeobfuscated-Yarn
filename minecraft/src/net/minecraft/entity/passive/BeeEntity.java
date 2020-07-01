@@ -546,8 +546,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		return 0.4F;
 	}
 
-	public BeeEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.BEE.create(this.world);
+	public BeeEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+		return EntityType.BEE.create(serverWorld);
 	}
 
 	@Override

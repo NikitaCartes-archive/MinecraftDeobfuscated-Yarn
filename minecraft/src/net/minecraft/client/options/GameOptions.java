@@ -25,7 +25,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.VideoMode;
@@ -34,6 +33,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
@@ -770,28 +770,28 @@ public class GameOptions {
 		return this.useNativeTransport;
 	}
 
-	public void addResourcePackProfilesToManager(ResourcePackManager<ClientResourcePackProfile> manager) {
+	public void addResourcePackProfilesToManager(ResourcePackManager manager) {
 		Set<String> set = Sets.<String>newLinkedHashSet();
 		Iterator<String> iterator = this.resourcePacks.iterator();
 
 		while (iterator.hasNext()) {
 			String string = (String)iterator.next();
-			ClientResourcePackProfile clientResourcePackProfile = manager.getProfile(string);
-			if (clientResourcePackProfile == null && !string.startsWith("file/")) {
-				clientResourcePackProfile = manager.getProfile("file/" + string);
+			ResourcePackProfile resourcePackProfile = manager.getProfile(string);
+			if (resourcePackProfile == null && !string.startsWith("file/")) {
+				resourcePackProfile = manager.getProfile("file/" + string);
 			}
 
-			if (clientResourcePackProfile == null) {
+			if (resourcePackProfile == null) {
 				LOGGER.warn("Removed resource pack {} from options because it doesn't seem to exist anymore", string);
 				iterator.remove();
-			} else if (!clientResourcePackProfile.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(string)) {
+			} else if (!resourcePackProfile.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(string)) {
 				LOGGER.warn("Removed resource pack {} from options because it is no longer compatible", string);
 				iterator.remove();
-			} else if (clientResourcePackProfile.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(string)) {
+			} else if (resourcePackProfile.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(string)) {
 				LOGGER.info("Removed resource pack {} from incompatibility list because it's now compatible", string);
 				this.incompatibleResourcePacks.remove(string);
 			} else {
-				set.add(clientResourcePackProfile.getName());
+				set.add(resourcePackProfile.getName());
 			}
 		}
 

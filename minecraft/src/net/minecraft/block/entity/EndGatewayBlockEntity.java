@@ -14,6 +14,7 @@ import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Tickable;
@@ -84,7 +85,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (bl2) {
 			this.teleportCooldown--;
 		} else if (!this.world.isClient) {
-			List<Entity> list = this.world.getNonSpectatingEntities(Entity.class, new Box(this.getPos()));
+			List<Entity> list = this.world.getEntities(Entity.class, new Box(this.getPos()), EndGatewayBlockEntity::method_30276);
 			if (!list.isEmpty()) {
 				this.tryTeleportingEntity((Entity)list.get(this.world.random.nextInt(list.size())));
 			}
@@ -97,6 +98,10 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (bl != this.isRecentlyGenerated() || bl2 != this.needsCooldownBeforeTeleporting()) {
 			this.markDirty();
 		}
+	}
+
+	public static boolean method_30276(Entity entity) {
+		return EntityPredicates.EXCEPT_SPECTATOR.test(entity) && !entity.getRootVehicle().method_30230();
 	}
 
 	public boolean isRecentlyGenerated() {
@@ -172,6 +177,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 					entity3 = entity.getRootVehicle();
 				}
 
+				entity3.method_30229();
 				entity3.teleport((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
 			}
 
@@ -180,7 +186,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	private BlockPos findBestPortalExitPos() {
-		BlockPos blockPos = findExitPortalPos(this.world, this.exitPortalPos, 5, false);
+		BlockPos blockPos = findExitPortalPos(this.world, this.exitPortalPos.add(0, 2, 0), 5, false);
 		LOGGER.debug("Best exit position for portal at {} is {}", this.exitPortalPos, blockPos);
 		return blockPos.up();
 	}
@@ -205,7 +211,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
 			Feature.END_ISLAND
 				.configure(FeatureConfig.DEFAULT)
-				.generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), new Random(this.exitPortalPos.asLong()), this.exitPortalPos);
+				.generate(world, world.getChunkManager().getChunkGenerator(), new Random(this.exitPortalPos.asLong()), this.exitPortalPos);
 		} else {
 			LOGGER.debug("Found block at {}", this.exitPortalPos);
 		}
@@ -272,7 +278,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	private void createPortal(ServerWorld world, BlockPos pos) {
 		Feature.END_GATEWAY
 			.configure(EndGatewayFeatureConfig.createConfig(this.getPos(), false))
-			.generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), new Random(), pos);
+			.generate(world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
 	}
 
 	@Environment(EnvType.CLIENT)

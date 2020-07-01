@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +18,7 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.screen.pack.DataPackScreen;
+import net.minecraft.client.gui.screen.pack.AbstractPackScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -27,7 +28,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
@@ -67,6 +67,8 @@ public class CreateWorldScreen extends Screen {
 	protected DataPackSettings field_25479 = DataPackSettings.SAFE_MODE;
 	@Nullable
 	private Path field_25477;
+	@Nullable
+	private ResourcePackManager field_25792;
 	private boolean moreOptionsOpen;
 	private ButtonWidget createLevelButton;
 	private ButtonWidget gameModeSwitchButton;
@@ -227,10 +229,7 @@ public class CreateWorldScreen extends Screen {
 			new ButtonWidget(i, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.createLevel())
 		);
 		this.createLevelButton.active = !this.levelName.isEmpty();
-		this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> {
-			this.method_29695();
-			this.client.openScreen(this.parent);
-		}));
+		this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.method_30297()));
 		this.setMoreOptionsOpen();
 		this.setInitialFocus(this.levelNameField);
 		this.tweakDefaultsTo(this.currentMode);
@@ -269,6 +268,7 @@ public class CreateWorldScreen extends Screen {
 	private void createLevel() {
 		this.client.method_29970(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
 		if (this.method_29696()) {
+			this.method_30298();
 			GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptions(this.hardcore);
 			LevelInfo levelInfo;
 			if (generatorOptions.isDebugWorld()) {
@@ -373,7 +373,18 @@ public class CreateWorldScreen extends Screen {
 		if (this.moreOptionsOpen) {
 			this.setMoreOptionsOpen(false);
 		} else {
-			this.client.openScreen(this.parent);
+			this.method_30297();
+		}
+	}
+
+	public void method_30297() {
+		this.client.openScreen(this.parent);
+		this.method_30298();
+	}
+
+	private void method_30298() {
+		if (this.field_25792 != null) {
+			this.field_25792.close();
 		}
 
 		this.method_29695();
@@ -421,7 +432,7 @@ public class CreateWorldScreen extends Screen {
 			} catch (IOException var2) {
 				field_25480.warn("Failed to create temporary dir", (Throwable)var2);
 				SystemToast.method_29627(this.client, this.saveDirectoryName);
-				this.client.openScreen(this.parent);
+				this.method_30297();
 			}
 		}
 
@@ -429,19 +440,13 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void method_29694() {
-		Path path = this.method_29693();
-		if (path != null) {
-			File file = path.toFile();
-			ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<>(
-				ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(file, ResourcePackSource.field_25347)
-			);
-			resourcePackManager.scanPacks();
-			resourcePackManager.setEnabledProfiles(this.field_25479.getEnabled());
-			this.client.openScreen(new DataPackScreen(this, resourcePackManager, this::method_29682, file));
+		Pair<File, ResourcePackManager> pair = this.method_30296();
+		if (pair != null) {
+			this.client.openScreen(new AbstractPackScreen(this, pair.getSecond(), this::method_29682, pair.getFirst(), new TranslatableText("dataPack.title")));
 		}
 	}
 
-	private void method_29682(ResourcePackManager<ResourcePackProfile> resourcePackManager) {
+	private void method_29682(ResourcePackManager resourcePackManager) {
 		List<String> list = ImmutableList.copyOf(resourcePackManager.getEnabledNames());
 		List<String> list2 = (List<String>)resourcePackManager.getNames().stream().filter(string -> !list.contains(string)).collect(ImmutableList.toImmutableList());
 		DataPackSettings dataPackSettings = new DataPackSettings(list, list2);
@@ -565,12 +570,9 @@ public class CreateWorldScreen extends Screen {
 			} catch (CreateWorldScreen.WorldCreationException | IOException var33) {
 				field_25480.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
 				SystemToast.method_29627(this.client, this.saveDirectoryName);
-				this.client.openScreen(this.parent);
-				this.method_29695();
+				this.method_30297();
 				return false;
 			}
-
-			this.method_29695();
 		}
 
 		return true;
@@ -623,6 +625,23 @@ public class CreateWorldScreen extends Screen {
 		}
 
 		return mutableObject.getValue();
+	}
+
+	@Nullable
+	private Pair<File, ResourcePackManager> method_30296() {
+		Path path = this.method_29693();
+		if (path != null) {
+			File file = path.toFile();
+			if (this.field_25792 == null) {
+				this.field_25792 = new ResourcePackManager(new VanillaDataPackProvider(), new FileResourcePackProvider(file, ResourcePackSource.field_25347));
+				this.field_25792.scanPacks();
+			}
+
+			this.field_25792.setEnabledProfiles(this.field_25479.getEnabled());
+			return Pair.of(file, this.field_25792);
+		} else {
+			return null;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

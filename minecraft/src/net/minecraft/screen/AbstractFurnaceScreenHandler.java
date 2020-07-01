@@ -14,6 +14,7 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.FurnaceFuelSlot;
 import net.minecraft.screen.slot.FurnaceOutputSlot;
 import net.minecraft.screen.slot.Slot;
@@ -25,23 +26,30 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	private final PropertyDelegate propertyDelegate;
 	protected final World world;
 	private final RecipeType<? extends AbstractCookingRecipe> recipeType;
+	private final RecipeBookCategory field_25762;
 
 	protected AbstractFurnaceScreenHandler(
-		ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory
+		ScreenHandlerType<?> type,
+		RecipeType<? extends AbstractCookingRecipe> recipeType,
+		RecipeBookCategory recipeBookCategory,
+		int i,
+		PlayerInventory playerInventory
 	) {
-		this(type, recipeType, syncId, playerInventory, new SimpleInventory(3), new ArrayPropertyDelegate(4));
+		this(type, recipeType, recipeBookCategory, i, playerInventory, new SimpleInventory(3), new ArrayPropertyDelegate(4));
 	}
 
 	protected AbstractFurnaceScreenHandler(
 		ScreenHandlerType<?> type,
 		RecipeType<? extends AbstractCookingRecipe> recipeType,
-		int syncId,
+		RecipeBookCategory recipeBookCategory,
+		int i,
 		PlayerInventory playerInventory,
 		Inventory inventory,
 		PropertyDelegate propertyDelegate
 	) {
-		super(type, syncId);
+		super(type, i);
 		this.recipeType = recipeType;
+		this.field_25762 = recipeBookCategory;
 		checkSize(inventory, 3);
 		checkDataCount(propertyDelegate, 4);
 		this.inventory = inventory;
@@ -51,14 +59,14 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 		this.addSlot(new FurnaceFuelSlot(this, inventory, 1, 56, 53));
 		this.addSlot(new FurnaceOutputSlot(playerInventory.player, inventory, 2, 116, 35));
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 9; j++) {
-				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+		for (int j = 0; j < 3; j++) {
+			for (int k = 0; k < 9; k++) {
+				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
-		for (int i = 0; i < 9; i++) {
-			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+		for (int j = 0; j < 9; j++) {
+			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
 		this.addProperties(propertyDelegate);
@@ -189,5 +197,11 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	@Environment(EnvType.CLIENT)
 	public boolean isBurning() {
 		return this.propertyDelegate.get(0) > 0;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public RecipeBookCategory getCategory() {
+		return this.field_25762;
 	}
 }

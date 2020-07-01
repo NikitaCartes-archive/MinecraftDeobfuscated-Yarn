@@ -35,7 +35,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorType;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
@@ -190,10 +189,8 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 					String string = TinyFileDialogs.tinyfd_openFileDialog(translatableText.getString(), null, null, null, false);
 					if (string != null) {
 						RegistryTracker.Modifiable modifiable = RegistryTracker.create();
-						ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<>(
-							ResourcePackProfile::new,
-							new VanillaDataPackProvider(),
-							new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
+						ResourcePackManager resourcePackManager = new ResourcePackManager(
+							new VanillaDataPackProvider(), new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 						);
 
 						ServerResourceManager serverResourceManager;

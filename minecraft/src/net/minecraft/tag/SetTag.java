@@ -7,46 +7,46 @@ import java.util.List;
 import java.util.Set;
 
 public class SetTag<T> implements Tag<T> {
-	private final ImmutableList<T> values;
-	private final Set<T> field_25594;
+	private final ImmutableList<T> valueList;
+	private final Set<T> valueSet;
 	@VisibleForTesting
-	protected final Class<?> field_25591;
+	protected final Class<?> type;
 
-	protected SetTag(Set<T> set, Class<?> class_) {
-		this.field_25591 = class_;
-		this.field_25594 = set;
-		this.values = ImmutableList.copyOf(set);
+	protected SetTag(Set<T> values, Class<?> type) {
+		this.type = type;
+		this.valueSet = values;
+		this.valueList = ImmutableList.copyOf(values);
 	}
 
 	public static <T> SetTag<T> empty() {
 		return new SetTag<>(ImmutableSet.of(), Void.class);
 	}
 
-	public static <T> SetTag<T> method_29900(Set<T> set) {
-		return new SetTag<>(set, method_29901(set));
+	public static <T> SetTag<T> of(Set<T> values) {
+		return new SetTag<>(values, getCommonType(values));
 	}
 
 	@Override
 	public boolean contains(T entry) {
-		return this.field_25591.isInstance(entry) && this.field_25594.contains(entry);
+		return this.type.isInstance(entry) && this.valueSet.contains(entry);
 	}
 
 	@Override
 	public List<T> values() {
-		return this.values;
+		return this.valueList;
 	}
 
-	private static <T> Class<?> method_29901(Set<T> set) {
-		if (set.isEmpty()) {
+	private static <T> Class<?> getCommonType(Set<T> values) {
+		if (values.isEmpty()) {
 			return Void.class;
 		} else {
 			Class<?> class_ = null;
 
-			for (T object : set) {
+			for (T object : values) {
 				if (class_ == null) {
 					class_ = object.getClass();
 				} else {
-					class_ = method_29899(class_, object.getClass());
+					class_ = getCommonType(class_, object.getClass());
 				}
 			}
 
@@ -54,11 +54,11 @@ public class SetTag<T> implements Tag<T> {
 		}
 	}
 
-	private static Class<?> method_29899(Class<?> class_, Class<?> class2) {
-		while (!class_.isAssignableFrom(class2)) {
-			class_ = class_.getSuperclass();
+	private static Class<?> getCommonType(Class<?> first, Class<?> second) {
+		while (!first.isAssignableFrom(second)) {
+			first = first.getSuperclass();
 		}
 
-		return class_;
+		return first;
 	}
 }

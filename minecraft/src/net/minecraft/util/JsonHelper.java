@@ -284,6 +284,7 @@ public class JsonHelper {
 	}
 
 	@Nullable
+	@Environment(EnvType.CLIENT)
 	public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken, boolean lenient) {
 		try {
 			JsonReader jsonReader = new JsonReader(reader);
@@ -306,6 +307,7 @@ public class JsonHelper {
 	}
 
 	@Nullable
+	@Environment(EnvType.CLIENT)
 	public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken) {
 		return deserialize(gson, reader, typeToken, false);
 	}
