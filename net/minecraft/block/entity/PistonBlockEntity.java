@@ -20,7 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Tickable;
@@ -131,6 +130,7 @@ implements Tickable {
             Box box3;
             if (entity.getPistonBehavior() == PistonBehavior.IGNORE) continue;
             if (bl) {
+                if (entity instanceof ServerPlayerEntity) continue;
                 Vec3d vec3d = entity.getVelocity();
                 double e = vec3d.x;
                 double f = vec3d.y;
@@ -149,9 +149,6 @@ implements Tickable {
                     }
                 }
                 entity.setVelocity(e, f, g);
-                if (entity instanceof ServerPlayerEntity) {
-                    ((ServerPlayerEntity)entity).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(entity));
-                }
             }
             double h = 0.0;
             Iterator<Box> iterator = list2.iterator();
@@ -267,7 +264,7 @@ implements Tickable {
                 BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
                 if (blockState.isAir()) {
                     this.world.setBlockState(this.pos, this.pushedBlock, 84);
-                    Block.replaced(this.pushedBlock, blockState, this.world, this.pos, 3);
+                    Block.replace(this.pushedBlock, blockState, this.world, this.pos, 3);
                 } else {
                     if (blockState.contains(Properties.WATERLOGGED) && blockState.get(Properties.WATERLOGGED).booleanValue()) {
                         blockState = (BlockState)blockState.with(Properties.WATERLOGGED, false);

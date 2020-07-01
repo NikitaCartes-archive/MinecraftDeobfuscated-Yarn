@@ -79,12 +79,12 @@ extends BlockWithEntity {
         return ActionResult.CONSUME;
     }
 
-    protected void dispense(World world, BlockPos pos) {
-        BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
+    protected void dispense(ServerWorld serverWorld, BlockPos pos) {
+        BlockPointerImpl blockPointerImpl = new BlockPointerImpl(serverWorld, pos);
         DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)blockPointerImpl.getBlockEntity();
         int i = dispenserBlockEntity.chooseNonEmptySlot();
         if (i < 0) {
-            world.syncWorldEvent(1001, pos, 0);
+            serverWorld.syncWorldEvent(1001, pos, 0);
             return;
         }
         ItemStack itemStack = dispenserBlockEntity.getStack(i);

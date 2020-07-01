@@ -6,6 +6,7 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -75,7 +76,7 @@ extends HostileEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (spawnReason != SpawnReason.PATROL && spawnReason != SpawnReason.EVENT && spawnReason != SpawnReason.STRUCTURE && this.random.nextFloat() < 0.06f && this.canLead()) {
             this.patrolLeader = true;
         }
@@ -86,7 +87,7 @@ extends HostileEntity {
         if (spawnReason == SpawnReason.PATROL) {
             this.patrolling = true;
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

@@ -13,6 +13,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -43,25 +44,25 @@ extends Block {
         return REGULAR_TO_INFESTED.containsKey(block.getBlock());
     }
 
-    private void spawnSilverfish(World world, BlockPos pos) {
-        SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
+    private void spawnSilverfish(ServerWorld serverWorld, BlockPos pos) {
+        SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(serverWorld);
         silverfishEntity.refreshPositionAndAngles((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, 0.0f, 0.0f);
-        world.spawnEntity(silverfishEntity);
+        serverWorld.spawnEntity(silverfishEntity);
         silverfishEntity.playSpawnEffects();
     }
 
     @Override
-    public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
-        super.onStacksDropped(state, world, pos, stack);
-        if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-            this.spawnSilverfish(world, pos);
+    public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
+        super.onStacksDropped(state, serverWorld, pos, stack);
+        if (serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+            this.spawnSilverfish(serverWorld, pos);
         }
     }
 
     @Override
     public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
-        if (!world.isClient) {
-            this.spawnSilverfish(world, pos);
+        if (world instanceof ServerWorld) {
+            this.spawnSilverfish((ServerWorld)world, pos);
         }
     }
 

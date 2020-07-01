@@ -32,7 +32,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
@@ -210,32 +209,32 @@ public class StrongholdGenerator {
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
             int j;
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 10, 7, 15, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 10, 7, 15, false, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, Piece.EntranceType.GRATES, 4, 1, 0);
             int i = 6;
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, i, 1, 1, i, 14, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 9, i, 1, 9, i, 14, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 2, i, 1, 8, i, 2, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 2, i, 14, 8, i, 14, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 1, 1, 2, 1, 4, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 8, 1, 1, 9, 1, 4, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 1, 1, 1, 1, 3, Blocks.LAVA.getDefaultState(), Blocks.LAVA.getDefaultState(), false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 9, 1, 1, 9, 1, 3, Blocks.LAVA.getDefaultState(), Blocks.LAVA.getDefaultState(), false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 3, 1, 8, 7, 1, 12, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 9, 6, 1, 11, Blocks.LAVA.getDefaultState(), Blocks.LAVA.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, i, 1, 1, i, 14, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 9, i, 1, 9, i, 14, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 2, i, 1, 8, i, 2, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 2, i, 14, 8, i, 14, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, 1, 1, 2, 1, 4, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 8, 1, 1, 9, 1, 4, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, 1, 1, 1, 1, 3, Blocks.LAVA.getDefaultState(), Blocks.LAVA.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 9, 1, 1, 9, 1, 3, Blocks.LAVA.getDefaultState(), Blocks.LAVA.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 3, 1, 8, 7, 1, 12, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 9, 6, 1, 11, Blocks.LAVA.getDefaultState(), Blocks.LAVA.getDefaultState(), false);
             BlockState blockState = (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, true)).with(PaneBlock.SOUTH, true);
             BlockState blockState2 = (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.WEST, true)).with(PaneBlock.EAST, true);
             for (j = 3; j < 14; j += 2) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 3, j, 0, 4, j, blockState, blockState, false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 10, 3, j, 10, 4, j, blockState, blockState, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 0, 3, j, 0, 4, j, blockState, blockState, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 10, 3, j, 10, 4, j, blockState, blockState, false);
             }
             for (j = 2; j < 9; j += 2) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, j, 3, 15, j, 4, 15, blockState2, blockState2, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, j, 3, 15, j, 4, 15, blockState2, blockState2, false);
             }
             BlockState blockState3 = (BlockState)Blocks.STONE_BRICK_STAIRS.getDefaultState().with(StairsBlock.FACING, Direction.NORTH);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 5, 6, 1, 7, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 2, 6, 6, 2, 7, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 3, 7, 6, 3, 7, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 5, 6, 1, 7, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 2, 6, 6, 2, 7, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 3, 7, 6, 3, 7, false, random, STONE_BRICK_RANDOMIZER);
             for (int k = 4; k <= 6; ++k) {
                 this.addBlock(serverWorldAccess, blockState3, k, 1, 4, boundingBox);
                 this.addBlock(serverWorldAccess, blockState3, k, 2, 5, boundingBox);
@@ -360,34 +359,34 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 9, 8, 10, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 9, 8, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 4, 3, 0);
             if (this.lowerLeftExists) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 3, 1, 0, 5, 3, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 0, 3, 1, 0, 5, 3, AIR, AIR, false);
             }
             if (this.lowerRightExists) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 9, 3, 1, 9, 5, 3, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 9, 3, 1, 9, 5, 3, AIR, AIR, false);
             }
             if (this.upperLeftExists) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 5, 7, 0, 7, 9, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 0, 5, 7, 0, 7, 9, AIR, AIR, false);
             }
             if (this.upperRightExists) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 9, 5, 7, 9, 7, 9, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 9, 5, 7, 9, 7, 9, AIR, AIR, false);
             }
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 5, 1, 10, 7, 3, 10, AIR, AIR, false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 2, 1, 8, 2, 6, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 5, 4, 4, 9, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 8, 1, 5, 8, 4, 9, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 4, 7, 3, 4, 9, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 3, 5, 3, 3, 6, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 3, 4, 3, 3, 4, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 4, 6, 3, 4, 6, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 5, 1, 7, 7, 1, 8, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 5, 1, 9, 7, 1, 9, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 5, 2, 7, 7, 2, 7, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 5, 7, 4, 5, 9, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 8, 5, 7, 8, 5, 9, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 5, 5, 7, 7, 5, 9, (BlockState)Blocks.SMOOTH_STONE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE), (BlockState)Blocks.SMOOTH_STONE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 5, 1, 10, 7, 3, 10, AIR, AIR, false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, 2, 1, 8, 2, 6, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 5, 4, 4, 9, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 8, 1, 5, 8, 4, 9, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, 4, 7, 3, 4, 9, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, 3, 5, 3, 3, 6, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, 3, 4, 3, 3, 4, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, 4, 6, 3, 4, 6, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 5, 1, 7, 7, 1, 8, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 5, 1, 9, 7, 1, 9, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 5, 2, 7, 7, 2, 7, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 5, 7, 4, 5, 9, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 8, 5, 7, 8, 5, 9, Blocks.SMOOTH_STONE_SLAB.getDefaultState(), Blocks.SMOOTH_STONE_SLAB.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 5, 5, 7, 7, 5, 9, (BlockState)Blocks.SMOOTH_STONE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE), (BlockState)Blocks.SMOOTH_STONE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE), false);
             this.addBlock(serverWorldAccess, (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), 6, 5, 6, boundingBox);
             return true;
         }
@@ -431,47 +430,47 @@ public class StrongholdGenerator {
             if (!this.tall) {
                 i = 6;
             }
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 13, i - 1, 14, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 13, i - 1, 14, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 4, 1, 0);
             this.fillWithOutlineUnderSeaLevel(serverWorldAccess, boundingBox, random, 0.07f, 2, 1, 1, 11, 4, 13, Blocks.COBWEB.getDefaultState(), Blocks.COBWEB.getDefaultState(), false, false);
             boolean j = true;
             int k = 12;
             for (l = 1; l <= 13; ++l) {
                 if ((l - 1) % 4 == 0) {
-                    this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 1, l, 1, 4, l, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
-                    this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 12, 1, l, 12, 4, l, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
+                    this.fillWithOutline(serverWorldAccess, boundingBox, 1, 1, l, 1, 4, l, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
+                    this.fillWithOutline(serverWorldAccess, boundingBox, 12, 1, l, 12, 4, l, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
                     this.addBlock(serverWorldAccess, (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST), 2, 3, l, boundingBox);
                     this.addBlock(serverWorldAccess, (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.WEST), 11, 3, l, boundingBox);
                     if (!this.tall) continue;
-                    this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 6, l, 1, 9, l, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
-                    this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 12, 6, l, 12, 9, l, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
+                    this.fillWithOutline(serverWorldAccess, boundingBox, 1, 6, l, 1, 9, l, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
+                    this.fillWithOutline(serverWorldAccess, boundingBox, 12, 6, l, 12, 9, l, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
                     continue;
                 }
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 1, l, 1, 4, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 12, 1, l, 12, 4, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 1, 1, l, 1, 4, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 12, 1, l, 12, 4, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
                 if (!this.tall) continue;
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 6, l, 1, 9, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 12, 6, l, 12, 9, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 1, 6, l, 1, 9, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 12, 6, l, 12, 9, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
             }
             for (l = 3; l < 12; l += 2) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 3, 1, l, 4, 3, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 6, 1, l, 7, 3, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 9, 1, l, 10, 3, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 3, 1, l, 4, 3, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 6, 1, l, 7, 3, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 9, 1, l, 10, 3, l, Blocks.BOOKSHELF.getDefaultState(), Blocks.BOOKSHELF.getDefaultState(), false);
             }
             if (this.tall) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 5, 1, 3, 5, 13, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 10, 5, 1, 12, 5, 13, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 5, 1, 9, 5, 2, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 5, 12, 9, 5, 13, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 1, 5, 1, 3, 5, 13, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 10, 5, 1, 12, 5, 13, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 4, 5, 1, 9, 5, 2, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 4, 5, 12, 9, 5, 13, Blocks.OAK_PLANKS.getDefaultState(), Blocks.OAK_PLANKS.getDefaultState(), false);
                 this.addBlock(serverWorldAccess, Blocks.OAK_PLANKS.getDefaultState(), 9, 5, 11, boundingBox);
                 this.addBlock(serverWorldAccess, Blocks.OAK_PLANKS.getDefaultState(), 8, 5, 11, boundingBox);
                 this.addBlock(serverWorldAccess, Blocks.OAK_PLANKS.getDefaultState(), 9, 5, 10, boundingBox);
                 BlockState blockState = (BlockState)((BlockState)Blocks.OAK_FENCE.getDefaultState().with(FenceBlock.WEST, true)).with(FenceBlock.EAST, true);
                 BlockState blockState2 = (BlockState)((BlockState)Blocks.OAK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.SOUTH, true);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 3, 6, 3, 3, 6, 11, blockState2, blockState2, false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 10, 6, 3, 10, 6, 9, blockState2, blockState2, false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 6, 2, 9, 6, 2, blockState, blockState, false);
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 6, 12, 7, 6, 12, blockState, blockState, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 3, 6, 3, 3, 6, 11, blockState2, blockState2, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 10, 6, 3, 10, 6, 9, blockState2, blockState2, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 4, 6, 2, 9, 6, 2, blockState, blockState, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 4, 6, 12, 7, 6, 12, blockState, blockState, false);
                 this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.OAK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.EAST, true), 3, 6, 2, boundingBox);
                 this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.OAK_FENCE.getDefaultState().with(FenceBlock.SOUTH, true)).with(FenceBlock.EAST, true), 3, 6, 12, boundingBox);
                 this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.OAK_FENCE.getDefaultState().with(FenceBlock.NORTH, true)).with(FenceBlock.WEST, true), 10, 6, 2, boundingBox);
@@ -550,13 +549,13 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 8, 4, 10, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 8, 4, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 1, 1, 0);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 1, 10, 3, 3, 10, AIR, AIR, false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 1, 4, 3, 1, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 3, 4, 3, 3, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 7, 4, 3, 7, false, random, STONE_BRICK_RANDOMIZER);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 9, 4, 3, 9, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 1, 1, 10, 3, 3, 10, AIR, AIR, false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 1, 4, 3, 1, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 3, 4, 3, 3, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 7, 4, 3, 7, false, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 9, 4, 3, 9, false, random, STONE_BRICK_RANDOMIZER);
             for (int i = 1; i <= 3; ++i) {
                 this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, true)).with(PaneBlock.SOUTH, true), 4, i, 4, boundingBox);
                 this.addBlock(serverWorldAccess, (BlockState)((BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, true)).with(PaneBlock.SOUTH, true)).with(PaneBlock.EAST, true), 4, i, 5, boundingBox);
@@ -617,11 +616,11 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 10, 6, 10, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 10, 6, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 4, 1, 0);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 10, 6, 3, 10, AIR, AIR, false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 1, 4, 0, 3, 6, AIR, AIR, false);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 10, 1, 4, 10, 3, 6, AIR, AIR, false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 10, 6, 3, 10, AIR, AIR, false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 1, 4, 0, 3, 6, AIR, AIR, false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 10, 1, 4, 10, 3, 6, AIR, AIR, false);
             switch (this.roomType) {
                 default: {
                     break;
@@ -737,13 +736,13 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 4, 4, 4, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 4, 4, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 1, 1, 0);
             Direction direction = this.getFacing();
             if (direction == Direction.NORTH || direction == Direction.EAST) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 1, 4, 3, 3, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 1, 4, 3, 3, AIR, AIR, false);
             } else {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 1, 1, 0, 3, 3, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 0, 1, 1, 0, 3, 3, AIR, AIR, false);
             }
             return true;
         }
@@ -782,13 +781,13 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 4, 4, 4, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 4, 4, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 1, 1, 0);
             Direction direction = this.getFacing();
             if (direction == Direction.NORTH || direction == Direction.EAST) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 1, 1, 0, 3, 3, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 0, 1, 1, 0, 3, 3, AIR, AIR, false);
             } else {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 1, 4, 3, 3, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 1, 4, 3, 3, AIR, AIR, false);
             }
             return true;
         }
@@ -833,7 +832,7 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 4, 10, 7, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 4, 10, 7, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateEntrance(serverWorldAccess, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 7);
             BlockState blockState = (BlockState)Blocks.COBBLESTONE_STAIRS.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
@@ -887,10 +886,10 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 4, 4, 6, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 4, 4, 6, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateEntrance(serverWorldAccess, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 6);
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 3, 1, 2, 3, 1, 4, Blocks.STONE_BRICKS.getDefaultState(), Blocks.STONE_BRICKS.getDefaultState(), false);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 3, 1, 2, 3, 1, 4, Blocks.STONE_BRICKS.getDefaultState(), Blocks.STONE_BRICKS.getDefaultState(), false);
             this.addBlock(serverWorldAccess, Blocks.STONE_BRICK_SLAB.getDefaultState(), 3, 1, 1, boundingBox);
             this.addBlock(serverWorldAccess, Blocks.STONE_BRICK_SLAB.getDefaultState(), 3, 1, 5, boundingBox);
             this.addBlock(serverWorldAccess, Blocks.STONE_BRICK_SLAB.getDefaultState(), 3, 2, 2, boundingBox);
@@ -954,7 +953,7 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 4, 4, 6, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 4, 4, 6, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 1, 1, 0);
             this.generateEntrance(serverWorldAccess, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 6);
             BlockState blockState = (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.EAST);
@@ -964,10 +963,10 @@ public class StrongholdGenerator {
             this.addBlockWithRandomThreshold(serverWorldAccess, boundingBox, random, 0.1f, 1, 2, 5, blockState);
             this.addBlockWithRandomThreshold(serverWorldAccess, boundingBox, random, 0.1f, 3, 2, 5, blockState2);
             if (this.leftExitExists) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 1, 2, 0, 3, 4, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 0, 1, 2, 0, 3, 4, AIR, AIR, false);
             }
             if (this.rightExitExists) {
-                this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 4, 1, 2, 4, 3, 4, AIR, AIR, false);
+                this.fillWithOutline(serverWorldAccess, boundingBox, 4, 1, 2, 4, 3, 4, AIR, AIR, false);
             }
             return true;
         }
@@ -1042,7 +1041,7 @@ public class StrongholdGenerator {
 
         @Override
         public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 0, 0, 4, 10, 4, true, random, STONE_BRICK_RANDOMIZER);
+            this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 4, 10, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(serverWorldAccess, random, boundingBox, this.entryDoor, 1, 7, 0);
             this.generateEntrance(serverWorldAccess, random, boundingBox, Piece.EntranceType.OPENING, 1, 1, 4);
             this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), 2, 6, 1, boundingBox);
@@ -1148,48 +1147,48 @@ public class StrongholdGenerator {
             tag.putString("EntryDoor", this.entryDoor.name());
         }
 
-        protected void generateEntrance(WorldAccess world, Random random, BlockBox boundingBox, EntranceType type, int x, int y, int z) {
+        protected void generateEntrance(ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox, EntranceType type, int x, int y, int z) {
             switch (type) {
                 case OPENING: {
-                    this.fillWithOutline(world, boundingBox, x, y, z, x + 3 - 1, y + 3 - 1, z, AIR, AIR, false);
+                    this.fillWithOutline(serverWorldAccess, boundingBox, x, y, z, x + 3 - 1, y + 3 - 1, z, AIR, AIR, false);
                     break;
                 }
                 case WOOD_DOOR: {
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x, y, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x, y + 1, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x, y + 2, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x + 1, y + 2, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y + 2, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y + 1, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y, z, boundingBox);
-                    this.addBlock(world, Blocks.OAK_DOOR.getDefaultState(), x + 1, y, z, boundingBox);
-                    this.addBlock(world, (BlockState)Blocks.OAK_DOOR.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.UPPER), x + 1, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x + 1, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.OAK_DOOR.getDefaultState(), x + 1, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)Blocks.OAK_DOOR.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.UPPER), x + 1, y + 1, z, boundingBox);
                     break;
                 }
                 case GRATES: {
-                    this.addBlock(world, Blocks.CAVE_AIR.getDefaultState(), x + 1, y, z, boundingBox);
-                    this.addBlock(world, Blocks.CAVE_AIR.getDefaultState(), x + 1, y + 1, z, boundingBox);
-                    this.addBlock(world, (BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.WEST, true), x, y, z, boundingBox);
-                    this.addBlock(world, (BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.WEST, true), x, y + 1, z, boundingBox);
-                    this.addBlock(world, (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true)).with(PaneBlock.WEST, true), x, y + 2, z, boundingBox);
-                    this.addBlock(world, (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true)).with(PaneBlock.WEST, true), x + 1, y + 2, z, boundingBox);
-                    this.addBlock(world, (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true)).with(PaneBlock.WEST, true), x + 2, y + 2, z, boundingBox);
-                    this.addBlock(world, (BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true), x + 2, y + 1, z, boundingBox);
-                    this.addBlock(world, (BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true), x + 2, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.CAVE_AIR.getDefaultState(), x + 1, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.CAVE_AIR.getDefaultState(), x + 1, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.WEST, true), x, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.WEST, true), x, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true)).with(PaneBlock.WEST, true), x, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true)).with(PaneBlock.WEST, true), x + 1, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true)).with(PaneBlock.WEST, true), x + 2, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true), x + 2, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.EAST, true), x + 2, y, z, boundingBox);
                     break;
                 }
                 case IRON_DOOR: {
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x, y, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x, y + 1, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x, y + 2, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x + 1, y + 2, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y + 2, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y + 1, z, boundingBox);
-                    this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y, z, boundingBox);
-                    this.addBlock(world, Blocks.IRON_DOOR.getDefaultState(), x + 1, y, z, boundingBox);
-                    this.addBlock(world, (BlockState)Blocks.IRON_DOOR.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.UPPER), x + 1, y + 1, z, boundingBox);
-                    this.addBlock(world, (BlockState)Blocks.STONE_BUTTON.getDefaultState().with(AbstractButtonBlock.FACING, Direction.NORTH), x + 2, y + 1, z + 1, boundingBox);
-                    this.addBlock(world, (BlockState)Blocks.STONE_BUTTON.getDefaultState().with(AbstractButtonBlock.FACING, Direction.SOUTH), x + 2, y + 1, z - 1, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x + 1, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y + 2, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.STONE_BRICKS.getDefaultState(), x + 2, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, Blocks.IRON_DOOR.getDefaultState(), x + 1, y, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)Blocks.IRON_DOOR.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.UPPER), x + 1, y + 1, z, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)Blocks.STONE_BUTTON.getDefaultState().with(AbstractButtonBlock.FACING, Direction.NORTH), x + 2, y + 1, z + 1, boundingBox);
+                    this.addBlock(serverWorldAccess, (BlockState)Blocks.STONE_BUTTON.getDefaultState().with(AbstractButtonBlock.FACING, Direction.SOUTH), x + 2, y + 1, z - 1, boundingBox);
                 }
             }
         }

@@ -26,8 +26,8 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -46,11 +46,11 @@ implements ArgumentType<BlockPredicate> {
         BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
         if (blockArgumentParser.getBlockState() != null) {
             StatePredicate statePredicate = new StatePredicate(blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData());
-            return registryTagManager -> statePredicate;
+            return tagManager -> statePredicate;
         }
         Identifier identifier = blockArgumentParser.getTagId();
-        return registryTagManager -> {
-            Tag tag = registryTagManager.blocks().get(identifier);
+        return tagManager -> {
+            Tag<Block> tag = tagManager.getBlocks().getTag(identifier);
             if (tag == null) {
                 throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
             }
@@ -72,7 +72,7 @@ implements ArgumentType<BlockPredicate> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return blockArgumentParser.getSuggestions(builder, BlockTags.getContainer());
+        return blockArgumentParser.getSuggestions(builder, BlockTags.getTagGroup());
     }
 
     @Override
@@ -166,7 +166,7 @@ implements ArgumentType<BlockPredicate> {
     }
 
     public static interface BlockPredicate {
-        public Predicate<CachedBlockPosition> create(RegistryTagManager var1) throws CommandSyntaxException;
+        public Predicate<CachedBlockPosition> create(TagManager var1) throws CommandSyntaxException;
     }
 }
 

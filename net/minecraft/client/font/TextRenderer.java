@@ -147,15 +147,15 @@ public class TextRenderer {
     }
 
     private float drawLayer(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light) {
-        ShadowDrawer shadowDrawer = new ShadowDrawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
-        TextVisitFactory.visitFormatted(text, Style.EMPTY, (TextVisitFactory.CharacterVisitor)shadowDrawer);
-        return shadowDrawer.drawLayer(underlineColor, x);
+        Drawer drawer = new Drawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
+        TextVisitFactory.visitFormatted(text, Style.EMPTY, (TextVisitFactory.CharacterVisitor)drawer);
+        return drawer.drawLayer(underlineColor, x);
     }
 
     private float drawLayer(StringRenderable text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int underlineColor, int light) {
-        ShadowDrawer shadowDrawer = new ShadowDrawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
-        TextVisitFactory.visitFormatted(text, Style.EMPTY, (TextVisitFactory.CharacterVisitor)shadowDrawer);
-        return shadowDrawer.drawLayer(underlineColor, x);
+        Drawer drawer = new Drawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
+        TextVisitFactory.visitFormatted(text, Style.EMPTY, (TextVisitFactory.CharacterVisitor)drawer);
+        return drawer.drawLayer(underlineColor, x);
     }
 
     private void drawGlyph(GlyphRenderer glyphRenderer, boolean bold, boolean italic, float weight, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
@@ -210,7 +210,7 @@ public class TextRenderer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class ShadowDrawer
+    class Drawer
     implements TextVisitFactory.CharacterVisitor {
         final VertexConsumerProvider vertexConsumers;
         private final boolean shadow;
@@ -234,7 +234,7 @@ public class TextRenderer {
             this.rectangles.add(rectangle);
         }
 
-        public ShadowDrawer(VertexConsumerProvider vertexConsumers, float x, float y, int color, boolean shadow, Matrix4f matrix, boolean seeThrough, int light) {
+        public Drawer(VertexConsumerProvider vertexConsumers, float x, float y, int color, boolean shadow, Matrix4f matrix, boolean seeThrough, int light) {
             this.vertexConsumers = vertexConsumers;
             this.x = x;
             this.y = y;

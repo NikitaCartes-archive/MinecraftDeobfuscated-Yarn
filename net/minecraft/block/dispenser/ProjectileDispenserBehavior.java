@@ -7,6 +7,7 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
@@ -16,7 +17,7 @@ public abstract class ProjectileDispenserBehavior
 extends ItemDispenserBehavior {
     @Override
     public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-        World world = pointer.getWorld();
+        ServerWorld world = pointer.getWorld();
         Position position = DispenserBlock.getOutputLocation(pointer);
         Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
         ProjectileEntity projectileEntity = this.createProjectile(world, position, stack);

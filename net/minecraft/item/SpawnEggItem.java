@@ -24,6 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -57,7 +58,7 @@ extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         BlockEntity blockEntity;
         World world = context.getWorld();
-        if (world.isClient) {
+        if (!(world instanceof ServerWorld)) {
             return ActionResult.SUCCESS;
         }
         ItemStack itemStack = context.getStack();
@@ -75,7 +76,7 @@ extends Item {
         }
         BlockPos blockPos2 = blockState.getCollisionShape(world, blockPos).isEmpty() ? blockPos : blockPos.offset(direction);
         EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
-        if (entityType2.spawnFromItemStack(world, itemStack, context.getPlayer(), blockPos2, SpawnReason.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP) != null) {
+        if (entityType2.spawnFromItemStack((ServerWorld)world, itemStack, context.getPlayer(), blockPos2, SpawnReason.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP) != null) {
             itemStack.decrement(1);
         }
         return ActionResult.CONSUME;
@@ -88,7 +89,7 @@ extends Item {
         if (((HitResult)hitResult).getType() != HitResult.Type.BLOCK) {
             return TypedActionResult.pass(itemStack);
         }
-        if (world.isClient) {
+        if (!(world instanceof ServerWorld)) {
             return TypedActionResult.success(itemStack);
         }
         BlockHitResult blockHitResult = hitResult;
@@ -100,7 +101,7 @@ extends Item {
             return TypedActionResult.fail(itemStack);
         }
         EntityType<?> entityType = this.getEntityType(itemStack.getTag());
-        if (entityType.spawnFromItemStack(world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
+        if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
             return TypedActionResult.pass(itemStack);
         }
         if (!user.abilities.creativeMode) {
@@ -137,11 +138,11 @@ extends Item {
         return this.type;
     }
 
-    public Optional<MobEntity> spawnBaby(PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, World world, Vec3d vec3d, ItemStack itemStack) {
+    public Optional<MobEntity> spawnBaby(PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, ServerWorld serverWorld, Vec3d vec3d, ItemStack itemStack) {
         if (!this.isOfSameEntityType(itemStack.getTag(), entityType)) {
             return Optional.empty();
         }
-        MobEntity mobEntity2 = mobEntity instanceof PassiveEntity ? ((PassiveEntity)mobEntity).createChild((PassiveEntity)mobEntity) : entityType.create(world);
+        MobEntity mobEntity2 = mobEntity instanceof PassiveEntity ? ((PassiveEntity)mobEntity).createChild(serverWorld, (PassiveEntity)mobEntity) : entityType.create(serverWorld);
         if (mobEntity2 == null) {
             return Optional.empty();
         }
@@ -150,7 +151,7 @@ extends Item {
             return Optional.empty();
         }
         mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0f, 0.0f);
-        world.spawnEntity(mobEntity2);
+        serverWorld.spawnEntity(mobEntity2);
         if (itemStack.hasCustomName()) {
             mobEntity2.setCustomName(itemStack.getName());
         }

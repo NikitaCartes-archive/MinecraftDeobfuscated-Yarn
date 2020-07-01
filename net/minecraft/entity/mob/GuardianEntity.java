@@ -125,8 +125,8 @@ extends HostileEntity {
         return 80;
     }
 
-    private void setBeamTarget(int progress) {
-        this.dataTracker.set(BEAM_TARGET_ID, progress);
+    private void setBeamTarget(int entityId) {
+        this.dataTracker.set(BEAM_TARGET_ID, entityId);
     }
 
     public boolean hasBeamTarget() {

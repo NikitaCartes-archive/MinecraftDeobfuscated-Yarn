@@ -16,26 +16,6 @@ import net.minecraft.text.TranslatableText;
 public class FurnaceRecipeBookScreen
 extends AbstractFurnaceRecipeBookScreen {
     @Override
-    protected boolean isFilteringCraftable() {
-        return this.recipeBook.isFurnaceFilteringCraftable();
-    }
-
-    @Override
-    protected void setFilteringCraftable(boolean filteringCraftable) {
-        this.recipeBook.setFurnaceFilteringCraftable(filteringCraftable);
-    }
-
-    @Override
-    protected boolean isGuiOpen() {
-        return this.recipeBook.isFurnaceGuiOpen();
-    }
-
-    @Override
-    protected void setGuiOpen(boolean opened) {
-        this.recipeBook.setFurnaceGuiOpen(opened);
-    }
-
-    @Override
     protected Text getToggleCraftableButtonText() {
         return new TranslatableText("gui.recipebook.toggleRecipes.smeltable");
     }

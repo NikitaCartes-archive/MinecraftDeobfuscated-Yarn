@@ -21,6 +21,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -87,7 +88,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -242,16 +242,16 @@ extends AnimalEntity {
     }
 
     @Override
-    public FoxEntity createChild(PassiveEntity passiveEntity) {
-        FoxEntity foxEntity = EntityType.FOX.create(this.world);
+    public FoxEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        FoxEntity foxEntity = EntityType.FOX.create(serverWorld);
         foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
         return foxEntity;
     }
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        Biome biome = world.getBiome(this.getBlockPos());
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        Biome biome = arg.getBiome(this.getBlockPos());
         Type type = Type.fromBiome(biome);
         boolean bl = false;
         if (entityData instanceof FoxData) {
@@ -266,11 +266,11 @@ extends AnimalEntity {
         if (bl) {
             this.setBreedingAge(-24000);
         }
-        if (world instanceof ServerWorld) {
+        if (arg instanceof ServerWorld) {
             this.addTypeSpecificGoals();
         }
         this.initEquipment(difficulty);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     private void addTypeSpecificGoals() {
@@ -632,8 +632,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 
     class LookAtEntityGoal
@@ -1194,7 +1194,7 @@ extends AnimalEntity {
 
         @Override
         protected void breed() {
-            FoxEntity foxEntity = (FoxEntity)this.animal.createChild(this.mate);
+            FoxEntity foxEntity = (FoxEntity)this.animal.createChild((ServerWorld)this.world, this.mate);
             if (foxEntity == null) {
                 return;
             }

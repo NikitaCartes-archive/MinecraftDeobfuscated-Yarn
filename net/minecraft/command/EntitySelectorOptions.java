@@ -242,10 +242,10 @@ public class EntitySelectorOptions {
         EntitySelectorOptions.putOption("type", entitySelectorReader -> {
             entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> {
                 CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder, String.valueOf('!'));
-                CommandSource.suggestIdentifiers(EntityTypeTags.getContainer().getKeys(), suggestionsBuilder, "!#");
+                CommandSource.suggestIdentifiers(EntityTypeTags.getTagGroup().getTagIds(), suggestionsBuilder, "!#");
                 if (!entitySelectorReader.excludesEntityType()) {
                     CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder);
-                    CommandSource.suggestIdentifiers(EntityTypeTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
+                    CommandSource.suggestIdentifiers(EntityTypeTags.getTagGroup().getTagIds(), suggestionsBuilder, String.valueOf('#'));
                 }
                 return suggestionsBuilder.buildFuture();
             });
@@ -260,7 +260,7 @@ public class EntitySelectorOptions {
             }
             if (entitySelectorReader.readTagCharacter()) {
                 Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
-                entitySelectorReader.setPredicate(entity -> entity.getServer().getTagManager().entityTypes().getOrCreate(identifier).contains(entity.getType()) != bl);
+                entitySelectorReader.setPredicate(entity -> entity.getServer().getTagManager().getEntityTypes().getTagOrEmpty(identifier).contains(entity.getType()) != bl);
             } else {
                 Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
                 EntityType entityType = (EntityType)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {

@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarpetBlock;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -46,6 +47,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
@@ -54,7 +56,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class LlamaEntity
@@ -234,7 +235,7 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int i;
         this.initializeStrength();
         if (entityData instanceof LlamaData) {
@@ -244,7 +245,7 @@ implements RangedAttackMob {
             entityData = new LlamaData(i);
         }
         this.setVariant(i);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -366,7 +367,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    public LlamaEntity createChild(PassiveEntity passiveEntity) {
+    public LlamaEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         LlamaEntity llamaEntity = this.createChild();
         this.setChildAttributes(passiveEntity, llamaEntity);
         LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
@@ -467,8 +468,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 
     static class ChaseWolvesGoal

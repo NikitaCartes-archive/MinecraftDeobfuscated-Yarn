@@ -13,6 +13,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -28,6 +29,19 @@ implements Packet<ClientPlayPacketListener> {
 
     public static long encodePacketCoordinate(double coord) {
         return MathHelper.lfloor(coord * 4096.0);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static double method_30301(long l) {
+        return (double)l / 4096.0;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Vec3d method_30302(Vec3d vec3d) {
+        double d = this.deltaX == 0 ? vec3d.x : EntityS2CPacket.method_30301(EntityS2CPacket.encodePacketCoordinate(vec3d.x) + (long)this.deltaX);
+        double e = this.deltaY == 0 ? vec3d.y : EntityS2CPacket.method_30301(EntityS2CPacket.encodePacketCoordinate(vec3d.y) + (long)this.deltaY);
+        double f = this.deltaZ == 0 ? vec3d.z : EntityS2CPacket.method_30301(EntityS2CPacket.encodePacketCoordinate(vec3d.z) + (long)this.deltaZ);
+        return new Vec3d(d, e, f);
     }
 
     public static Vec3d decodePacketCoordinates(long x, long y, long z) {
@@ -60,24 +74,10 @@ implements Packet<ClientPlayPacketListener> {
         return "Entity_" + super.toString();
     }
 
+    @Nullable
     @Environment(value=EnvType.CLIENT)
     public Entity getEntity(World world) {
         return world.getEntityById(this.id);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public short getDeltaXShort() {
-        return this.deltaX;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public short getDeltaYShort() {
-        return this.deltaY;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public short getDeltaZShort() {
-        return this.deltaZ;
     }
 
     @Environment(value=EnvType.CLIENT)

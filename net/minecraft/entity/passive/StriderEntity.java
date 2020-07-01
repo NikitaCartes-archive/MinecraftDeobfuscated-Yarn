@@ -12,6 +12,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -52,6 +53,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -387,8 +389,8 @@ Saddleable {
     }
 
     @Override
-    public StriderEntity createChild(PassiveEntity passiveEntity) {
-        return EntityType.STRIDER.create(this.world);
+    public StriderEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return EntityType.STRIDER.create(serverWorld);
     }
 
     @Override
@@ -407,7 +409,7 @@ Saddleable {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         boolean bl = this.isBreedingItem(player.getStackInHand(hand));
-        if (!bl && this.isSaddled() && !this.hasPassengers()) {
+        if (!bl && this.isSaddled() && !this.hasPassengers() && !player.shouldCancelInteraction()) {
             if (!this.world.isClient) {
                 player.startRiding(this);
             }
@@ -435,7 +437,7 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         ZombifiedPiglinEntity zombifiedPiglinEntity;
         StriderData.RiderType riderType;
         ZombieEntity.ZombieData entityData2 = null;
@@ -455,27 +457,27 @@ Saddleable {
         }
         PathAwareEntity mobEntity = null;
         if (riderType == StriderData.RiderType.BABY_RIDER) {
-            StriderEntity striderEntity = EntityType.STRIDER.create(world.getWorld());
+            StriderEntity striderEntity = EntityType.STRIDER.create(arg.getWorld());
             if (striderEntity != null) {
                 mobEntity = striderEntity;
                 striderEntity.setBreedingAge(-24000);
             }
-        } else if (riderType == StriderData.RiderType.PIGLIN_RIDER && (zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.getWorld())) != null) {
+        } else if (riderType == StriderData.RiderType.PIGLIN_RIDER && (zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(arg.getWorld())) != null) {
             mobEntity = zombifiedPiglinEntity;
             this.saddle(null);
         }
         if (mobEntity != null) {
             mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
-            mobEntity.initialize(world, difficulty, SpawnReason.JOCKEY, entityData2, null);
+            mobEntity.initialize(arg, difficulty, SpawnReason.JOCKEY, entityData2, null);
             mobEntity.startRiding(this, true);
-            world.spawnEntity(mobEntity);
+            arg.spawnEntity(mobEntity);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 
     static class Navigation

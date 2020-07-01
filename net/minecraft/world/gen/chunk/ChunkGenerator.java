@@ -28,6 +28,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -82,7 +83,7 @@ public abstract class ChunkGenerator {
             return;
         }
         ArrayList<Biome> list = Lists.newArrayList();
-        for (Biome biome : this.biomeSource.method_28443()) {
+        for (Biome biome : this.biomeSource.getBiomes()) {
             if (!biome.hasStructureFeature(StructureFeature.STRONGHOLD)) continue;
             list.add(biome);
         }
@@ -229,13 +230,13 @@ public abstract class ChunkGenerator {
     }
 
     private void method_28508(ConfiguredStructureFeature<?, ?> configuredStructureFeature, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long l, ChunkPos chunkPos, Biome biome) {
-        StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), (StructureFeature<?>)configuredStructureFeature.field_24835, chunk);
+        StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), (StructureFeature<?>)configuredStructureFeature.feature, chunk);
         int i = structureStart != null ? structureStart.getReferences() : 0;
-        StructureStart<?> structureStart2 = configuredStructureFeature.method_28622(this, this.biomeSource, structureManager, l, chunkPos, biome, i, this.config.method_28600((StructureFeature<?>)configuredStructureFeature.field_24835));
-        structureAccessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), (StructureFeature<?>)configuredStructureFeature.field_24835, structureStart2, chunk);
+        StructureStart<?> structureStart2 = configuredStructureFeature.method_28622(this, this.biomeSource, structureManager, l, chunkPos, biome, i, this.config.method_28600((StructureFeature<?>)configuredStructureFeature.feature));
+        structureAccessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), (StructureFeature<?>)configuredStructureFeature.feature, structureStart2, chunk);
     }
 
-    public void addStructureReferences(WorldAccess world, StructureAccessor accessor, Chunk chunk) {
+    public void addStructureReferences(ServerWorldAccess serverWorldAccess, StructureAccessor accessor, Chunk chunk) {
         int i = 8;
         int j = chunk.getPos().x;
         int k = chunk.getPos().z;
@@ -245,11 +246,11 @@ public abstract class ChunkGenerator {
         for (int n = j - 8; n <= j + 8; ++n) {
             for (int o = k - 8; o <= k + 8; ++o) {
                 long p = ChunkPos.toLong(n, o);
-                for (StructureStart<?> structureStart : world.getChunk(n, o).getStructureStarts().values()) {
+                for (StructureStart<?> structureStart : serverWorldAccess.getChunk(n, o).getStructureStarts().values()) {
                     try {
                         if (structureStart == StructureStart.DEFAULT || !structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) continue;
                         accessor.addStructureReference(chunkSectionPos, structureStart.getFeature(), p, chunk);
-                        DebugInfoSender.sendStructureStart(world, structureStart);
+                        DebugInfoSender.sendStructureStart(serverWorldAccess, structureStart);
                     } catch (Exception exception) {
                         CrashReport crashReport = CrashReport.create(exception, "Generating structure reference");
                         CrashReportSection crashReportSection = crashReport.addElement("Structure");

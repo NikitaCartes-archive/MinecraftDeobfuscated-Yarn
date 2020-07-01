@@ -4,6 +4,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.Random;
+import net.minecraft.class_5425;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
@@ -17,7 +18,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 public class StrayEntity
 extends AbstractSkeletonEntity {
@@ -25,8 +25,8 @@ extends AbstractSkeletonEntity {
         super((EntityType<? extends AbstractSkeletonEntity>)entityType, world);
     }
 
-    public static boolean canSpawn(EntityType<StrayEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return StrayEntity.canSpawnInDark(type, world, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.isSkyVisible(pos));
+    public static boolean canSpawn(EntityType<StrayEntity> type, class_5425 arg, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return StrayEntity.canSpawnInDark(type, arg, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || arg.isSkyVisible(pos));
     }
 
     @Override

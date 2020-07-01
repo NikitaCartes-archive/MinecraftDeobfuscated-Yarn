@@ -433,6 +433,11 @@ public class Util {
         Files.copy(path3, path5, new CopyOption[0]);
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public static String method_30309(String string) {
+        return string.toLowerCase(Locale.ROOT).chars().mapToObj(i -> Identifier.isCharValid((char)i) ? Character.toString((char)i) : "_").collect(Collectors.joining());
+    }
+
     static enum IdentityHashStrategy implements Hash.Strategy<Object>
     {
         INSTANCE;

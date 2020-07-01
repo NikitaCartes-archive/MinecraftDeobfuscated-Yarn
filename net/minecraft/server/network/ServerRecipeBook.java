@@ -18,6 +18,7 @@ import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.recipe.book.RecipeBookOptions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -59,19 +60,12 @@ extends RecipeBook {
     }
 
     private void sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action action, ServerPlayerEntity player, List<Identifier> recipeIds) {
-        player.networkHandler.sendPacket(new UnlockRecipesS2CPacket(action, recipeIds, Collections.emptyList(), this.guiOpen, this.filteringCraftable, this.furnaceGuiOpen, this.furnaceFilteringCraftable));
+        player.networkHandler.sendPacket(new UnlockRecipesS2CPacket(action, recipeIds, Collections.emptyList(), this.getOptions()));
     }
 
     public CompoundTag toTag() {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putBoolean("isGuiOpen", this.guiOpen);
-        compoundTag.putBoolean("isFilteringCraftable", this.filteringCraftable);
-        compoundTag.putBoolean("isFurnaceGuiOpen", this.furnaceGuiOpen);
-        compoundTag.putBoolean("isFurnaceFilteringCraftable", this.furnaceFilteringCraftable);
-        compoundTag.putBoolean("isBlastingFurnaceGuiOpen", this.blastFurnaceGuiOpen);
-        compoundTag.putBoolean("isBlastingFurnaceFilteringCraftable", this.blastFurnaceFilteringCraftable);
-        compoundTag.putBoolean("isSmokerGuiOpen", this.smokerGuiOpen);
-        compoundTag.putBoolean("isSmokerFilteringCraftable", this.smokerFilteringCraftable);
+        this.getOptions().toTag(compoundTag);
         ListTag listTag = new ListTag();
         for (Identifier identifier : this.recipes) {
             listTag.add(StringTag.of(identifier.toString()));
@@ -86,14 +80,7 @@ extends RecipeBook {
     }
 
     public void fromTag(CompoundTag tag, RecipeManager recipeManager) {
-        this.guiOpen = tag.getBoolean("isGuiOpen");
-        this.filteringCraftable = tag.getBoolean("isFilteringCraftable");
-        this.furnaceGuiOpen = tag.getBoolean("isFurnaceGuiOpen");
-        this.furnaceFilteringCraftable = tag.getBoolean("isFurnaceFilteringCraftable");
-        this.blastFurnaceGuiOpen = tag.getBoolean("isBlastingFurnaceGuiOpen");
-        this.blastFurnaceFilteringCraftable = tag.getBoolean("isBlastingFurnaceFilteringCraftable");
-        this.smokerGuiOpen = tag.getBoolean("isSmokerGuiOpen");
-        this.smokerFilteringCraftable = tag.getBoolean("isSmokerFilteringCraftable");
+        this.setOptions(RecipeBookOptions.fromTag(tag));
         ListTag listTag = tag.getList("recipes", 8);
         this.handleList(listTag, this::add, recipeManager);
         ListTag listTag2 = tag.getList("toBeDisplayed", 8);
@@ -119,7 +106,7 @@ extends RecipeBook {
     }
 
     public void sendInitRecipesPacket(ServerPlayerEntity player) {
-        player.networkHandler.sendPacket(new UnlockRecipesS2CPacket(UnlockRecipesS2CPacket.Action.INIT, this.recipes, this.toBeDisplayed, this.guiOpen, this.filteringCraftable, this.furnaceGuiOpen, this.furnaceFilteringCraftable));
+        player.networkHandler.sendPacket(new UnlockRecipesS2CPacket(UnlockRecipesS2CPacket.Action.INIT, this.recipes, this.toBeDisplayed, this.getOptions()));
     }
 }
 

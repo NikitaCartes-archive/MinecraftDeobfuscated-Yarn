@@ -365,6 +365,10 @@ extends Entity {
             }
         }
         this.updateWaterState();
+        if (this.isInLava()) {
+            this.setOnFireFromLava();
+            this.fallDistance *= 0.5f;
+        }
     }
 
     protected double getMaxOffRailSpeed() {

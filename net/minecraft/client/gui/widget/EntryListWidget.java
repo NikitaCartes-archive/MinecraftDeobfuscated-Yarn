@@ -373,7 +373,7 @@ implements Drawable {
     /**
      * Moves the selection in the specified direction until the predicate returns true.
      * 
-     * @param direction The direction to move the selection.
+     * @param direction the direction to move the selection
      */
     protected void moveSelectionIf(MoveDirection direction, Predicate<E> predicate) {
         int i;

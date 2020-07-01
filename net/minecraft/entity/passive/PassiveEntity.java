@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import net.minecraft.class_5425;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -12,9 +13,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class PassiveEntity
@@ -29,7 +30,7 @@ extends PathAwareEntity {
     }
 
     @Override
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         PassiveData passiveData;
         if (entityData == null) {
             entityData = new PassiveData();
@@ -38,11 +39,11 @@ extends PathAwareEntity {
             this.setBreedingAge(-24000);
         }
         passiveData.countSpawned();
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Nullable
-    public abstract PassiveEntity createChild(PassiveEntity var1);
+    public abstract PassiveEntity createChild(ServerWorld var1, PassiveEntity var2);
 
     @Override
     protected void initDataTracker() {

@@ -495,7 +495,7 @@ public enum Direction implements StringIdentifiable
 
         static {
             field_23780 = Axis.values();
-            field_25065 = StringIdentifiable.method_28140(Axis::values, Axis::fromName);
+            field_25065 = StringIdentifiable.createCodec(Axis::values, Axis::fromName);
             BY_NAME = Arrays.stream(field_23780).collect(Collectors.toMap(Axis::getName, axis -> axis));
         }
     }

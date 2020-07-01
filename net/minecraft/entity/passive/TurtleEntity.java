@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
+import net.minecraft.class_5425;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -50,6 +51,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -171,10 +173,10 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setHomePos(this.getBlockPos());
         this.setTravelPos(BlockPos.ORIGIN);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     public static boolean canSpawn(EntityType<TurtleEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -283,8 +285,8 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(PassiveEntity mate) {
-        return EntityType.TURTLE.create(this.world);
+    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return EntityType.TURTLE.create(serverWorld);
     }
 
     @Override
@@ -340,7 +342,7 @@ extends AnimalEntity {
     }
 
     @Override
-    public void onStruckByLightning(LightningEntity lightning) {
+    public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
         this.damage(DamageSource.LIGHTNING_BOLT, Float.MAX_VALUE);
     }
 

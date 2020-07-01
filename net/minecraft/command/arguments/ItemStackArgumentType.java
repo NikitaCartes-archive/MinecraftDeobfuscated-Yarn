@@ -44,7 +44,7 @@ implements ArgumentType<ItemStackArgument> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return itemStringReader.getSuggestions(builder, ItemTags.getContainer());
+        return itemStringReader.getSuggestions(builder, ItemTags.getTagGroup());
     }
 
     @Override

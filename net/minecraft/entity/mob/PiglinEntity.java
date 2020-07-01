@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.UUID;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5425;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.Entity;
@@ -25,8 +26,6 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -35,19 +34,17 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.AbstractPiglinEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PiglinActivity;
 import net.minecraft.entity.mob.PiglinBrain;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.item.ToolItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -63,27 +60,26 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class PiglinEntity
-extends HostileEntity
+extends AbstractPiglinEntity
 implements CrossbowUser {
     private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    /**
+     * Unused as of 1.16.2, superseded by {@link AbstractPiglinEntity#IMMUNE_TO_ZOMBIFICATION}.
+     */
+    private static final TrackedData<Boolean> OLD_IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> dancing = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> DANCING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
     private static final EntityAttributeModifier BABY_SPEED_BOOST = new EntityAttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", (double)0.2f, EntityAttributeModifier.Operation.MULTIPLY_BASE);
     private int conversionTicks = 0;
     private final SimpleInventory inventory = new SimpleInventory(8);
     private boolean cannotHunt = false;
     protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.INTERACTABLE_DOORS, SensorType.PIGLIN_SPECIFIC_SENSOR);
-    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEAREST_ADULT_PIGLINS, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, new MemoryModuleType[]{MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.PATH, MemoryModuleType.ANGRY_AT, MemoryModuleType.UNIVERSAL_ANGER, MemoryModuleType.AVOID_TARGET, MemoryModuleType.ADMIRING_ITEM, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleType.DANCING, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_BABY_PIGLIN, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.RIDE_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.NEAREST_REPELLENT});
+    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEARBY_ADULT_PIGLINS, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, new MemoryModuleType[]{MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.PATH, MemoryModuleType.ANGRY_AT, MemoryModuleType.UNIVERSAL_ANGER, MemoryModuleType.AVOID_TARGET, MemoryModuleType.ADMIRING_ITEM, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleType.DANCING, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.RIDE_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.NEAREST_REPELLENT});
 
-    public PiglinEntity(EntityType<? extends HostileEntity> entityType, World world) {
+    public PiglinEntity(EntityType<? extends AbstractPiglinEntity> entityType, World world) {
         super(entityType, world);
-        this.setCanPickUpLoot(true);
-        ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         this.experiencePoints = 5;
-        this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0f);
-        this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0f);
     }
 
     @Override
@@ -92,13 +88,9 @@ implements CrossbowUser {
         if (this.isBaby()) {
             tag.putBoolean("IsBaby", true);
         }
-        if (this.isImmuneToZombification()) {
-            tag.putBoolean("IsImmuneToZombification", true);
-        }
         if (this.cannotHunt) {
             tag.putBoolean("CannotHunt", true);
         }
-        tag.putInt("TimeInOverworld", this.conversionTicks);
         tag.put("Inventory", this.inventory.getTags());
     }
 
@@ -106,9 +98,7 @@ implements CrossbowUser {
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         this.setBaby(tag.getBoolean("IsBaby"));
-        this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
         this.setCannotHunt(tag.getBoolean("CannotHunt"));
-        this.conversionTicks = tag.getInt("TimeInOverworld");
         this.inventory.readTags(tag.getList("Inventory", 10));
     }
 
@@ -131,8 +121,8 @@ implements CrossbowUser {
         super.initDataTracker();
         this.dataTracker.startTracking(BABY, false);
         this.dataTracker.startTracking(CHARGING, false);
-        this.dataTracker.startTracking(IMMUNE_TO_ZOMBIFICATION, false);
-        this.dataTracker.startTracking(dancing, false);
+        this.dataTracker.startTracking(OLD_IMMUNE_TO_ZOMBIFICATION, false);
+        this.dataTracker.startTracking(DANCING, false);
     }
 
     @Override
@@ -153,9 +143,9 @@ implements CrossbowUser {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (spawnReason != SpawnReason.STRUCTURE) {
-            if (world.getRandom().nextFloat() < 0.2f) {
+            if (arg.getRandom().nextFloat() < 0.2f) {
                 this.setBaby(true);
             } else if (this.isAdult()) {
                 this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
@@ -164,7 +154,7 @@ implements CrossbowUser {
         PiglinBrain.setHuntedRecently(this);
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -213,7 +203,7 @@ implements CrossbowUser {
             return actionResult;
         }
         if (this.world.isClient) {
-            boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != Activity.ADMIRING_ITEM;
+            boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != PiglinActivity.ADMIRING_ITEM;
             return bl ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         return PiglinBrain.playerInteract(this, player, hand);
@@ -251,39 +241,25 @@ implements CrossbowUser {
         return this.getDataTracker().get(BABY);
     }
 
-    public boolean isAdult() {
-        return !this.isBaby();
-    }
-
-    public void setImmuneToZombification(boolean immuneToZombification) {
-        this.getDataTracker().set(IMMUNE_TO_ZOMBIFICATION, immuneToZombification);
-    }
-
-    private boolean isImmuneToZombification() {
-        return this.getDataTracker().get(IMMUNE_TO_ZOMBIFICATION);
-    }
-
     private void setCannotHunt(boolean cannotHunt) {
         this.cannotHunt = cannotHunt;
     }
 
+    @Override
     protected boolean canHunt() {
         return !this.cannotHunt;
     }
 
-    public boolean canConvert() {
-        return !this.world.getDimension().isPiglinSafe() && !this.isImmuneToZombification() && !this.isAiDisabled();
-    }
-
     @Override
     protected void mobTick() {
+        super.mobTick();
         this.world.getProfiler().push("piglinBrain");
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
         PiglinBrain.tickActivities(this);
-        this.conversionTicks = this.canConvert() ? ++this.conversionTicks : 0;
+        this.conversionTicks = this.shouldZombify() ? ++this.conversionTicks : 0;
         if (this.conversionTicks > 300) {
-            this.method_30086(SoundEvents.ENTITY_PIGLIN_CONVERTED_TO_ZOMBIFIED);
+            this.playZombificationSound();
             this.zombify((ServerWorld)this.world);
         }
     }
@@ -293,17 +269,11 @@ implements CrossbowUser {
         return this.experiencePoints;
     }
 
-    private void zombify(ServerWorld serverWorld) {
+    @Override
+    protected void zombify(ServerWorld world) {
         PiglinBrain.pickupItemWithOffHand(this);
         this.inventory.clearToList().forEach(this::dropStack);
-        ZombifiedPiglinEntity zombifiedPiglinEntity = this.method_29243(EntityType.ZOMBIFIED_PIGLIN);
-        zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-    }
-
-    @Override
-    @Nullable
-    public LivingEntity getTarget() {
-        return this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+        super.zombify(world);
     }
 
     private ItemStack makeInitialWeapon() {
@@ -327,35 +297,32 @@ implements CrossbowUser {
         this.despawnCounter = 0;
     }
 
-    public Activity getActivity() {
+    @Override
+    public PiglinActivity getActivity() {
         if (this.isDancing()) {
-            return Activity.DANCING;
+            return PiglinActivity.DANCING;
         }
         if (PiglinBrain.isGoldenItem(this.getOffHandStack().getItem())) {
-            return Activity.ADMIRING_ITEM;
+            return PiglinActivity.ADMIRING_ITEM;
         }
         if (this.isAttacking() && this.isHoldingTool()) {
-            return Activity.ATTACKING_WITH_MELEE_WEAPON;
+            return PiglinActivity.ATTACKING_WITH_MELEE_WEAPON;
         }
         if (this.isCharging()) {
-            return Activity.CROSSBOW_CHARGE;
+            return PiglinActivity.CROSSBOW_CHARGE;
         }
         if (this.isAttacking() && this.isHolding(Items.CROSSBOW)) {
-            return Activity.CROSSBOW_HOLD;
+            return PiglinActivity.CROSSBOW_HOLD;
         }
-        return Activity.DEFAULT;
+        return PiglinActivity.DEFAULT;
     }
 
     public boolean isDancing() {
-        return this.dataTracker.get(dancing);
+        return this.dataTracker.get(DANCING);
     }
 
     public void setDancing(boolean dancing) {
-        this.dataTracker.set(PiglinEntity.dancing, dancing);
-    }
-
-    private boolean isHoldingTool() {
-        return this.getMainHandStack().getItem() instanceof ToolItem;
+        this.dataTracker.set(DANCING, dancing);
     }
 
     @Override
@@ -474,8 +441,8 @@ implements CrossbowUser {
         this.playSound(SoundEvents.ENTITY_PIGLIN_STEP, 0.15f, 1.0f);
     }
 
-    protected void method_30086(SoundEvent soundEvent) {
-        this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+    protected void playSound(SoundEvent sound) {
+        this.playSound(sound, this.getSoundVolume(), this.getSoundPitch());
     }
 
     @Override
@@ -484,14 +451,9 @@ implements CrossbowUser {
         DebugInfoSender.sendBrainDebugData(this);
     }
 
-    public static enum Activity {
-        ATTACKING_WITH_MELEE_WEAPON,
-        CROSSBOW_HOLD,
-        CROSSBOW_CHARGE,
-        ADMIRING_ITEM,
-        DANCING,
-        DEFAULT;
-
+    @Override
+    protected void playZombificationSound() {
+        this.playSound(SoundEvents.ENTITY_PIGLIN_CONVERTED_TO_ZOMBIFIED);
     }
 }
 

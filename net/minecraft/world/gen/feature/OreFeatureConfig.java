@@ -19,7 +19,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class OreFeatureConfig
 implements FeatureConfig {
-    public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Target.field_24898.fieldOf("target")).forGetter(oreFeatureConfig -> oreFeatureConfig.target), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(oreFeatureConfig -> oreFeatureConfig.state), ((MapCodec)Codec.INT.fieldOf("size")).withDefault(0).forGetter(oreFeatureConfig -> oreFeatureConfig.size)).apply((Applicative<OreFeatureConfig, ?>)instance, OreFeatureConfig::new));
+    public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Target.CODEC.fieldOf("target")).forGetter(oreFeatureConfig -> oreFeatureConfig.target), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(oreFeatureConfig -> oreFeatureConfig.state), ((MapCodec)Codec.INT.fieldOf("size")).withDefault(0).forGetter(oreFeatureConfig -> oreFeatureConfig.size)).apply((Applicative<OreFeatureConfig, ?>)instance, OreFeatureConfig::new));
     public final Target target;
     public final int size;
     public final BlockState state;
@@ -46,7 +46,7 @@ implements FeatureConfig {
             return false;
         });
 
-        public static final Codec<Target> field_24898;
+        public static final Codec<Target> CODEC;
         private static final Map<String, Target> nameMap;
         private final String name;
         private final Predicate<BlockState> predicate;
@@ -74,7 +74,7 @@ implements FeatureConfig {
         }
 
         static {
-            field_24898 = StringIdentifiable.method_28140(Target::values, Target::byName);
+            CODEC = StringIdentifiable.createCodec(Target::values, Target::byName);
             nameMap = Arrays.stream(Target.values()).collect(Collectors.toMap(Target::getName, target -> target));
         }
     }

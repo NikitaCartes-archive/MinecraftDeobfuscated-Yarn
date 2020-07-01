@@ -448,8 +448,8 @@ implements Angerable {
     }
 
     @Override
-    public WolfEntity createChild(PassiveEntity passiveEntity) {
-        WolfEntity wolfEntity = EntityType.WOLF.create(this.world);
+    public WolfEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        WolfEntity wolfEntity = EntityType.WOLF.create(serverWorld);
         UUID uUID = this.getOwnerUuid();
         if (uUID != null) {
             wolfEntity.setOwnerUuid(uUID);
@@ -517,8 +517,8 @@ implements Angerable {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 
     class AvoidLlamaGoal<T extends LivingEntity>

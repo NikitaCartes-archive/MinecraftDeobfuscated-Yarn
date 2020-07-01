@@ -188,7 +188,7 @@ extends Item {
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
-        this.getBlock().buildTooltip(stack, world, tooltip, context);
+        this.getBlock().appendTooltip(stack, world, tooltip, context);
     }
 
     public Block getBlock() {

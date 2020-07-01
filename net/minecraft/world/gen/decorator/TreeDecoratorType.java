@@ -13,23 +13,23 @@ import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TrunkVineTreeDecorator;
 
 public class TreeDecoratorType<P extends TreeDecorator> {
-    public static final TreeDecoratorType<TrunkVineTreeDecorator> TRUNK_VINE = TreeDecoratorType.method_28895("trunk_vine", TrunkVineTreeDecorator.field_24964);
-    public static final TreeDecoratorType<LeaveVineTreeDecorator> LEAVE_VINE = TreeDecoratorType.method_28895("leave_vine", LeaveVineTreeDecorator.field_24960);
-    public static final TreeDecoratorType<CocoaBeansTreeDecorator> COCOA = TreeDecoratorType.method_28895("cocoa", CocoaBeansTreeDecorator.field_24959);
-    public static final TreeDecoratorType<BeehiveTreeDecorator> BEEHIVE = TreeDecoratorType.method_28895("beehive", BeehiveTreeDecorator.field_24958);
-    public static final TreeDecoratorType<AlterGroundTreeDecorator> ALTER_GROUND = TreeDecoratorType.method_28895("alter_ground", AlterGroundTreeDecorator.field_24957);
-    private final Codec<P> field_24963;
+    public static final TreeDecoratorType<TrunkVineTreeDecorator> TRUNK_VINE = TreeDecoratorType.register("trunk_vine", TrunkVineTreeDecorator.CODEC);
+    public static final TreeDecoratorType<LeaveVineTreeDecorator> LEAVE_VINE = TreeDecoratorType.register("leave_vine", LeaveVineTreeDecorator.CODEC);
+    public static final TreeDecoratorType<CocoaBeansTreeDecorator> COCOA = TreeDecoratorType.register("cocoa", CocoaBeansTreeDecorator.CODEC);
+    public static final TreeDecoratorType<BeehiveTreeDecorator> BEEHIVE = TreeDecoratorType.register("beehive", BeehiveTreeDecorator.CODEC);
+    public static final TreeDecoratorType<AlterGroundTreeDecorator> ALTER_GROUND = TreeDecoratorType.register("alter_ground", AlterGroundTreeDecorator.CODEC);
+    private final Codec<P> codec;
 
-    private static <P extends TreeDecorator> TreeDecoratorType<P> method_28895(String string, Codec<P> codec) {
-        return Registry.register(Registry.TREE_DECORATOR_TYPE, string, new TreeDecoratorType<P>(codec));
+    private static <P extends TreeDecorator> TreeDecoratorType<P> register(String type, Codec<P> codec) {
+        return Registry.register(Registry.TREE_DECORATOR_TYPE, type, new TreeDecoratorType<P>(codec));
     }
 
     private TreeDecoratorType(Codec<P> codec) {
-        this.field_24963 = codec;
+        this.codec = codec;
     }
 
-    public Codec<P> method_28894() {
-        return this.field_24963;
+    public Codec<P> getCodec() {
+        return this.codec;
     }
 }
 

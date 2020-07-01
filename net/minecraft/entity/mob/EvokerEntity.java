@@ -31,6 +31,7 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
@@ -153,7 +154,12 @@ extends SpellcastingIllagerEntity {
 
     public class WololoGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
-        private final TargetPredicate convertibleSheepPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
+        private final TargetPredicate convertibleSheepPredicate;
+
+        public WololoGoal() {
+            super(EvokerEntity.this);
+            this.convertibleSheepPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
+        }
 
         @Override
         public boolean canStart() {
@@ -224,9 +230,11 @@ extends SpellcastingIllagerEntity {
 
     class SummonVexGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
-        private final TargetPredicate closeVexPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeHidden().ignoreDistanceScalingFactor().includeInvulnerable().includeTeammates();
+        private final TargetPredicate closeVexPredicate;
 
         private SummonVexGoal() {
+            super(EvokerEntity.this);
+            this.closeVexPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeHidden().ignoreDistanceScalingFactor().includeInvulnerable().includeTeammates();
         }
 
         @Override
@@ -254,7 +262,7 @@ extends SpellcastingIllagerEntity {
                 BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
                 VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
                 vexEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
-                vexEntity.initialize(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
+                vexEntity.initialize((ServerWorld)EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
                 vexEntity.setOwner(EvokerEntity.this);
                 vexEntity.setBounds(blockPos);
                 vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
@@ -276,6 +284,7 @@ extends SpellcastingIllagerEntity {
     class ConjureFangsGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
         private ConjureFangsGoal() {
+            super(EvokerEntity.this);
         }
 
         @Override
@@ -349,6 +358,7 @@ extends SpellcastingIllagerEntity {
     class LookAtTargetOrWololoTarget
     extends SpellcastingIllagerEntity.LookAtTargetGoal {
         private LookAtTargetOrWololoTarget() {
+            super(EvokerEntity.this);
         }
 
         @Override

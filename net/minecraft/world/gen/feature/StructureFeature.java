@@ -90,7 +90,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = StructureFeature.register("Nether_Fossil", new NetherFossilFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION);
     public static final StructureFeature<BastionRemnantFeatureConfig> BASTION_REMNANT = StructureFeature.register("Bastion_Remnant", new BastionRemnantFeature(BastionRemnantFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final List<StructureFeature<?>> field_24861 = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
-    private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> field_24863;
+    private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
     private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
         STRUCTURES.put(name.toLowerCase(Locale.ROOT), structureFeature);
@@ -99,7 +99,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     }
 
     public StructureFeature(Codec<C> codec) {
-        this.field_24863 = ((MapCodec)codec.fieldOf("config")).xmap(featureConfig -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)featureConfig), configuredStructureFeature -> configuredStructureFeature.field_24836).codec();
+        this.codec = ((MapCodec)codec.fieldOf("config")).xmap(featureConfig -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)featureConfig), configuredStructureFeature -> configuredStructureFeature.config).codec();
     }
 
     public GenerationStep.Feature method_28663() {
@@ -150,8 +150,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         }
     }
 
-    public Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> method_28665() {
-        return this.field_24863;
+    public Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> getCodec() {
+        return this.codec;
     }
 
     public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config) {

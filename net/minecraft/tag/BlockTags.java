@@ -3,17 +3,16 @@
  */
 package net.minecraft.tag;
 
-import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.tag.GlobalTagAccessor;
+import net.minecraft.tag.RequiredTagList;
+import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainer;
+import net.minecraft.tag.TagGroup;
+import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
 
-public class BlockTags {
-    private static final GlobalTagAccessor<Block> ACCESSOR = new GlobalTagAccessor();
+public final class BlockTags {
+    protected static final RequiredTagList<Block> REQUIRED_TAGS = RequiredTagListRegistry.register(new Identifier("block"), TagManager::getBlocks);
     public static final Tag.Identified<Block> WOOL = BlockTags.register("wool");
     public static final Tag.Identified<Block> PLANKS = BlockTags.register("planks");
     public static final Tag.Identified<Block> STONE_BRICKS = BlockTags.register("stone_bricks");
@@ -94,29 +93,17 @@ public class BlockTags {
     public static final Tag.Identified<Block> PREVENT_MOB_SPAWNING_INSIDE = BlockTags.register("prevent_mob_spawning_inside");
     public static final Tag.Identified<Block> FENCE_GATES = BlockTags.register("fence_gates");
     public static final Tag.Identified<Block> UNSTABLE_BOTTOM_CENTER = BlockTags.register("unstable_bottom_center");
+    public static final Tag.Identified<Block> MUSHROOM_GROW_BLOCK = BlockTags.register("mushroom_grow_block");
     public static final Tag.Identified<Block> INFINIBURN_OVERWORLD = BlockTags.register("infiniburn_overworld");
     public static final Tag.Identified<Block> INFINIBURN_NETHER = BlockTags.register("infiniburn_nether");
     public static final Tag.Identified<Block> INFINIBURN_END = BlockTags.register("infiniburn_end");
 
     private static Tag.Identified<Block> register(String id) {
-        return ACCESSOR.get(id);
+        return REQUIRED_TAGS.add(id);
     }
 
-    public static void setContainer(TagContainer<Block> container) {
-        ACCESSOR.setContainer(container);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static void markReady() {
-        ACCESSOR.markReady();
-    }
-
-    public static TagContainer<Block> getContainer() {
-        return ACCESSOR.getContainer();
-    }
-
-    public static Set<Identifier> method_29214(TagContainer<Block> tagContainer) {
-        return ACCESSOR.method_29224(tagContainer);
+    public static TagGroup<Block> getTagGroup() {
+        return REQUIRED_TAGS.getGroup();
     }
 }
 

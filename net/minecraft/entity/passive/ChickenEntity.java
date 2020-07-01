@@ -30,6 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -123,8 +124,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public ChickenEntity createChild(PassiveEntity passiveEntity) {
-        return EntityType.CHICKEN.create(this.world);
+    public ChickenEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return EntityType.CHICKEN.create(serverWorld);
     }
 
     @Override
@@ -183,8 +184,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 }
 

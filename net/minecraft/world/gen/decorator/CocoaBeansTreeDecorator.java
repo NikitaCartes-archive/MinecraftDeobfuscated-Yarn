@@ -14,14 +14,14 @@ import net.minecraft.block.CocoaBlock;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class CocoaBeansTreeDecorator
 extends TreeDecorator {
-    public static final Codec<CocoaBeansTreeDecorator> field_24959 = ((MapCodec)Codec.FLOAT.fieldOf("probability")).xmap(CocoaBeansTreeDecorator::new, cocoaBeansTreeDecorator -> Float.valueOf(cocoaBeansTreeDecorator.field_21318)).codec();
+    public static final Codec<CocoaBeansTreeDecorator> CODEC = ((MapCodec)Codec.FLOAT.fieldOf("probability")).xmap(CocoaBeansTreeDecorator::new, cocoaBeansTreeDecorator -> Float.valueOf(cocoaBeansTreeDecorator.field_21318)).codec();
     private final float field_21318;
 
     public CocoaBeansTreeDecorator(float f) {
@@ -34,7 +34,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+    public void generate(ServerWorldAccess serverWorldAccess, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
         if (random.nextFloat() >= this.field_21318) {
             return;
         }
@@ -43,9 +43,9 @@ extends TreeDecorator {
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 Direction direction2;
                 BlockPos blockPos2;
-                if (!(random.nextFloat() <= 0.25f) || !Feature.isAir(world, blockPos2 = blockPos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
+                if (!(random.nextFloat() <= 0.25f) || !Feature.isAir(serverWorldAccess, blockPos2 = blockPos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
                 BlockState blockState = (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, random.nextInt(3))).with(CocoaBlock.FACING, direction);
-                this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
+                this.setBlockStateAndEncompassPosition(serverWorldAccess, blockPos2, blockState, set, box);
             }
         });
     }

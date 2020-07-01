@@ -13,6 +13,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -53,6 +54,7 @@ import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -63,7 +65,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class PandaEntity
@@ -237,10 +238,10 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(PassiveEntity mate) {
-        PandaEntity pandaEntity = EntityType.PANDA.create(this.world);
-        if (mate instanceof PandaEntity) {
-            pandaEntity.initGenes(this, (PandaEntity)mate);
+    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        PandaEntity pandaEntity = EntityType.PANDA.create(serverWorld);
+        if (passiveEntity instanceof PandaEntity) {
+            pandaEntity.initGenes(this, (PandaEntity)passiveEntity);
         }
         pandaEntity.resetAttributes();
         return pandaEntity;
@@ -484,7 +485,7 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setMainGene(Gene.createRandom(this.random));
         this.setHiddenGene(Gene.createRandom(this.random));
         this.resetAttributes();
@@ -492,7 +493,7 @@ extends AnimalEntity {
             entityData = new PassiveEntity.PassiveData();
             ((PassiveEntity.PassiveData)entityData).setBabyChance(0.2f);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     public void initGenes(PandaEntity mother, @Nullable PandaEntity father) {

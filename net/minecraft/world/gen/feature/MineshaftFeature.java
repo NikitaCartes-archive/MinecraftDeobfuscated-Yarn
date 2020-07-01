@@ -98,7 +98,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
         }
 
         static {
-            field_24839 = StringIdentifiable.method_28140(Type::values, Type::byName);
+            field_24839 = StringIdentifiable.createCodec(Type::values, Type::byName);
             nameMap = Arrays.stream(Type.values()).collect(Collectors.toMap(Type::getName, type -> type));
         }
     }

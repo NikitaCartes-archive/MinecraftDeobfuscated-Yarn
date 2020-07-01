@@ -216,7 +216,6 @@ implements InventoryProvider {
         if (i < 7 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem())) {
             BlockState blockState = ComposterBlock.addToComposter(state, world, pos, stack);
             stack.decrement(1);
-            world.syncWorldEvent(1500, pos, state != blockState ? 1 : 0);
             return blockState;
         }
         return state;

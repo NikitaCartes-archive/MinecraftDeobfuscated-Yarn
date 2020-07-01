@@ -20,18 +20,28 @@ import java.util.stream.Stream;
 public interface StringIdentifiable {
     public String asString();
 
-    public static <E extends Enum<E>> Codec<E> method_28140(Supplier<E[]> supplier, Function<? super String, ? extends E> function) {
-        Enum[] enums = (Enum[])supplier.get();
-        return StringIdentifiable.method_28141(Enum::ordinal, i -> enums[i], function);
+    /**
+     * Creates a codec that serializes an enum implementing this interface either
+     * using its ordinals (when compressed) or using it's {@link #asString()} method
+     * and a given decode function.
+     */
+    public static <E extends Enum<E>> Codec<E> createCodec(Supplier<E[]> enumValues, Function<? super String, ? extends E> fromString) {
+        Enum[] enums = (Enum[])enumValues.get();
+        return StringIdentifiable.createCodec(Enum::ordinal, ordinal -> enums[ordinal], fromString);
     }
 
-    public static <E extends StringIdentifiable> Codec<E> method_28141(final ToIntFunction<E> toIntFunction, final IntFunction<E> intFunction, final Function<? super String, ? extends E> function) {
+    /**
+     * Creates a codec that serializes a class implementing this interface using either
+     * the given toInt and fromInt mapping functions (when compressed output is
+     * requested), or its {@link #asString()} method and a given fromString function.
+     */
+    public static <E extends StringIdentifiable> Codec<E> createCodec(final ToIntFunction<E> compressedEncoder, final IntFunction<E> compressedDecoder, final Function<? super String, ? extends E> decoder) {
         return new Codec<E>(){
 
             @Override
             public <T> DataResult<T> encode(E stringIdentifiable, DynamicOps<T> dynamicOps, T object) {
                 if (dynamicOps.compressMaps()) {
-                    return dynamicOps.mergeToPrimitive(object, dynamicOps.createInt(toIntFunction.applyAsInt(stringIdentifiable)));
+                    return dynamicOps.mergeToPrimitive(object, dynamicOps.createInt(compressedEncoder.applyAsInt(stringIdentifiable)));
                 }
                 return dynamicOps.mergeToPrimitive(object, dynamicOps.createString(stringIdentifiable.asString()));
             }
@@ -39,18 +49,18 @@ public interface StringIdentifiable {
             @Override
             public <T> DataResult<Pair<E, T>> decode(DynamicOps<T> dynamicOps, T object) {
                 if (dynamicOps.compressMaps()) {
-                    return dynamicOps.getNumberValue(object).flatMap((? super R number) -> Optional.ofNullable(intFunction.apply(number.intValue())).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element id: " + number))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
+                    return dynamicOps.getNumberValue(object).flatMap((? super R number) -> Optional.ofNullable(compressedDecoder.apply(number.intValue())).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element id: " + number))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
                 }
-                return dynamicOps.getStringValue(object).flatMap((? super R string) -> Optional.ofNullable(function.apply(string)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name: " + string))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
+                return dynamicOps.getStringValue(object).flatMap((? super R string) -> Optional.ofNullable(decoder.apply(string)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name: " + string))).map((? super R stringIdentifiable) -> Pair.of(stringIdentifiable, dynamicOps.empty()));
             }
 
             public String toString() {
-                return "StringRepresentable[" + toIntFunction + "]";
+                return "StringRepresentable[" + compressedEncoder + "]";
             }
 
             @Override
-            public /* synthetic */ DataResult encode(Object object, DynamicOps dynamicOps, Object object2) {
-                return this.encode((E)((StringIdentifiable)object), (DynamicOps<T>)dynamicOps, (T)object2);
+            public /* synthetic */ DataResult encode(Object value, DynamicOps dynamicOps, Object object) {
+                return this.encode((E)((StringIdentifiable)value), (DynamicOps<T>)dynamicOps, (T)object);
             }
         };
     }

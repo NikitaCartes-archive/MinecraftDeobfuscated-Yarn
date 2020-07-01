@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -163,8 +164,8 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    public PassiveEntity createChild(PassiveEntity mate) {
-        return EntityType.SKELETON_HORSE.create(this.world);
+    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return EntityType.SKELETON_HORSE.create(serverWorld);
     }
 
     @Override

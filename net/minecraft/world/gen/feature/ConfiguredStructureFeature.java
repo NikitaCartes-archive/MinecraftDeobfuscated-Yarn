@@ -17,17 +17,17 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
-    public static final Codec<ConfiguredStructureFeature<?, ?>> field_24834 = Registry.STRUCTURE_FEATURE.dispatch("name", configuredStructureFeature -> configuredStructureFeature.field_24835, StructureFeature::method_28665);
-    public final F field_24835;
-    public final FC field_24836;
+    public static final Codec<ConfiguredStructureFeature<?, ?>> TYPE_CODEC = Registry.STRUCTURE_FEATURE.dispatch("name", configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
+    public final F feature;
+    public final FC config;
 
     public ConfiguredStructureFeature(F structureFeature, FC featureConfig) {
-        this.field_24835 = structureFeature;
-        this.field_24836 = featureConfig;
+        this.feature = structureFeature;
+        this.config = featureConfig;
     }
 
     public StructureStart<?> method_28622(ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long l, ChunkPos chunkPos, Biome biome, int i, StructureConfig structureConfig) {
-        return ((StructureFeature)this.field_24835).method_28657(chunkGenerator, biomeSource, structureManager, l, chunkPos, biome, i, new ChunkRandom(), structureConfig, this.field_24836);
+        return ((StructureFeature)this.feature).method_28657(chunkGenerator, biomeSource, structureManager, l, chunkPos, biome, i, new ChunkRandom(), structureConfig, this.config);
     }
 }
 

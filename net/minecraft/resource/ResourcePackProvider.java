@@ -7,6 +7,6 @@ import java.util.function.Consumer;
 import net.minecraft.resource.ResourcePackProfile;
 
 public interface ResourcePackProvider {
-    public <T extends ResourcePackProfile> void register(Consumer<T> var1, ResourcePackProfile.Factory<T> var2);
+    public void register(Consumer<ResourcePackProfile> var1, ResourcePackProfile.Factory var2);
 }
 

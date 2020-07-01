@@ -115,7 +115,7 @@ public class StructurePool {
         }
 
         static {
-            field_24956 = StringIdentifiable.method_28140(Projection::values, Projection::getById);
+            field_24956 = StringIdentifiable.createCodec(Projection::values, Projection::getById);
             PROJECTIONS_BY_ID = Arrays.stream(Projection.values()).collect(Collectors.toMap(Projection::getId, projection -> projection));
         }
     }

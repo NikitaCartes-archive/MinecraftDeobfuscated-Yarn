@@ -11,6 +11,7 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.class_5425;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.IllagerEntity;
@@ -29,7 +30,6 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class WoodlandMansionGenerator {
@@ -948,7 +948,7 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox) {
             if (metadata.startsWith("Chest")) {
                 BlockRotation blockRotation = this.placementData.getRotation();
                 BlockState blockState = Blocks.CHEST.getDefaultState();
@@ -961,16 +961,16 @@ public class WoodlandMansionGenerator {
                 } else if ("ChestNorth".equals(metadata)) {
                     blockState = (BlockState)blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.NORTH));
                 }
-                this.addChest(world, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
+                this.addChest(arg, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
             } else {
                 IllagerEntity illagerEntity;
                 switch (metadata) {
                     case "Mage": {
-                        illagerEntity = EntityType.EVOKER.create(world.getWorld());
+                        illagerEntity = EntityType.EVOKER.create(arg.getWorld());
                         break;
                     }
                     case "Warrior": {
-                        illagerEntity = EntityType.VINDICATOR.create(world.getWorld());
+                        illagerEntity = EntityType.VINDICATOR.create(arg.getWorld());
                         break;
                     }
                     default: {
@@ -979,9 +979,9 @@ public class WoodlandMansionGenerator {
                 }
                 illagerEntity.setPersistent();
                 illagerEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-                illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
-                world.spawnEntity(illagerEntity);
-                world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+                illagerEntity.initialize(arg, arg.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+                arg.spawnEntity(illagerEntity);
+                arg.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
             }
         }
     }

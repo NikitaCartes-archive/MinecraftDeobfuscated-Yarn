@@ -45,7 +45,7 @@ implements ArgumentType<BlockStateArgument> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return blockArgumentParser.getSuggestions(builder, BlockTags.getContainer());
+        return blockArgumentParser.getSuggestions(builder, BlockTags.getTagGroup());
     }
 
     @Override

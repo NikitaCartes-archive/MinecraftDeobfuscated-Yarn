@@ -28,21 +28,21 @@ implements Spawner {
     private int startZ;
 
     @Override
-    public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-        if (serverWorld.isDay() || !bl) {
+    public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
+        if (world.isDay() || !spawnMonsters) {
             this.state = State.SIEGE_DONE;
             this.spawned = false;
             return 0;
         }
-        float f = serverWorld.getSkyAngle(0.0f);
+        float f = world.method_30274(0.0f);
         if ((double)f == 0.5) {
-            State state = this.state = serverWorld.random.nextInt(10) == 0 ? State.SIEGE_TONIGHT : State.SIEGE_DONE;
+            State state = this.state = world.random.nextInt(10) == 0 ? State.SIEGE_TONIGHT : State.SIEGE_DONE;
         }
         if (this.state == State.SIEGE_DONE) {
             return 0;
         }
         if (!this.spawned) {
-            if (this.spawn(serverWorld)) {
+            if (this.spawn(world)) {
                 this.spawned = true;
             } else {
                 return 0;
@@ -54,7 +54,7 @@ implements Spawner {
         }
         this.countdown = 2;
         if (this.remaining > 0) {
-            this.trySpawnZombie(serverWorld);
+            this.trySpawnZombie(world);
             --this.remaining;
         } else {
             this.state = State.SIEGE_DONE;

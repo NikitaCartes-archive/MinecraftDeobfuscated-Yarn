@@ -19,14 +19,14 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class BeehiveTreeDecorator
 extends TreeDecorator {
-    public static final Codec<BeehiveTreeDecorator> field_24958 = ((MapCodec)Codec.FLOAT.fieldOf("probability")).xmap(BeehiveTreeDecorator::new, beehiveTreeDecorator -> Float.valueOf(beehiveTreeDecorator.chance)).codec();
+    public static final Codec<BeehiveTreeDecorator> CODEC = ((MapCodec)Codec.FLOAT.fieldOf("probability")).xmap(BeehiveTreeDecorator::new, beehiveTreeDecorator -> Float.valueOf(beehiveTreeDecorator.chance)).codec();
     private final float chance;
 
     public BeehiveTreeDecorator(float f) {
@@ -39,7 +39,7 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+    public void generate(ServerWorldAccess serverWorldAccess, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
         if (random.nextFloat() >= this.chance) {
             return;
         }
@@ -51,17 +51,17 @@ extends TreeDecorator {
         }
         BlockPos blockPos2 = (BlockPos)list.get(random.nextInt(list.size()));
         BlockPos blockPos22 = blockPos2.offset(direction);
-        if (!Feature.isAir(world, blockPos22) || !Feature.isAir(world, blockPos22.offset(Direction.SOUTH))) {
+        if (!Feature.isAir(serverWorldAccess, blockPos22) || !Feature.isAir(serverWorldAccess, blockPos22.offset(Direction.SOUTH))) {
             return;
         }
         BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
-        this.setBlockStateAndEncompassPosition(world, blockPos22, blockState, set, box);
-        BlockEntity blockEntity = world.getBlockEntity(blockPos22);
+        this.setBlockStateAndEncompassPosition(serverWorldAccess, blockPos22, blockState, set, box);
+        BlockEntity blockEntity = serverWorldAccess.getBlockEntity(blockPos22);
         if (blockEntity instanceof BeehiveBlockEntity) {
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
             int j = 2 + random.nextInt(2);
             for (int k = 0; k < j; ++k) {
-                BeeEntity beeEntity = new BeeEntity((EntityType<? extends BeeEntity>)EntityType.BEE, world.getWorld());
+                BeeEntity beeEntity = new BeeEntity((EntityType<? extends BeeEntity>)EntityType.BEE, serverWorldAccess.getWorld());
                 beehiveBlockEntity.tryEnterHive(beeEntity, false, random.nextInt(599));
             }
         }

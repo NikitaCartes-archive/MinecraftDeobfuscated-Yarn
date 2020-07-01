@@ -14,8 +14,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainers;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
@@ -74,7 +74,7 @@ public class BlockPredicate {
         Tag<Block> tag = null;
         if (jsonObject.has("tag")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-            tag = TagContainers.instance().blocks().get(identifier2);
+            tag = ServerTagManagerHolder.getTagManager().getBlocks().getTag(identifier2);
             if (tag == null) {
                 throw new JsonSyntaxException("Unknown block tag '" + identifier2 + "'");
             }
@@ -92,7 +92,7 @@ public class BlockPredicate {
             jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
         }
         if (this.tag != null) {
-            jsonObject.addProperty("tag", TagContainers.instance().blocks().checkId(this.tag).toString());
+            jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getBlocks().getTagId(this.tag).toString());
         }
         jsonObject.add("nbt", this.nbt.toJson());
         jsonObject.add("state", this.state.toJson());

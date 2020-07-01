@@ -17,6 +17,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
@@ -194,6 +195,12 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
 
     public CraftingInventory method_29281() {
         return this.craftingInput;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public RecipeBookCategory getCategory() {
+        return RecipeBookCategory.CRAFTING;
     }
 }
 

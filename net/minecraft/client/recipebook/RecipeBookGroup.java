@@ -4,16 +4,19 @@
 package net.minecraft.client.recipebook;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
+import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.recipe.book.RecipeBookCategory;
 
 @Environment(value=EnvType.CLIENT)
 public enum RecipeBookGroup {
-    SEARCH(new ItemStack(Items.COMPASS)),
+    CRAFTING_SEARCH(new ItemStack(Items.COMPASS)),
     CRAFTING_BUILDING_BLOCKS(new ItemStack(Blocks.BRICKS)),
     CRAFTING_REDSTONE(new ItemStack(Items.REDSTONE)),
     CRAFTING_EQUIPMENT(new ItemStack(Items.IRON_AXE), new ItemStack(Items.GOLDEN_SWORD)),
@@ -32,14 +35,45 @@ public enum RecipeBookGroup {
     CAMPFIRE(new ItemStack(Items.PORKCHOP)),
     UNKNOWN(new ItemStack(Items.BARRIER));
 
+    public static final List<RecipeBookGroup> SMOKER;
+    public static final List<RecipeBookGroup> BLAST_FURNACE;
+    public static final List<RecipeBookGroup> FURNACE;
+    public static final List<RecipeBookGroup> CRAFTING;
+    public static final Map<RecipeBookGroup, List<RecipeBookGroup>> field_25783;
     private final List<ItemStack> icons;
 
     private RecipeBookGroup(ItemStack ... entries) {
         this.icons = ImmutableList.copyOf(entries);
     }
 
+    public static List<RecipeBookGroup> method_30285(RecipeBookCategory recipeBookCategory) {
+        switch (recipeBookCategory) {
+            case CRAFTING: {
+                return CRAFTING;
+            }
+            case FURNACE: {
+                return FURNACE;
+            }
+            case BLAST_FURNACE: {
+                return BLAST_FURNACE;
+            }
+            case SMOKER: {
+                return SMOKER;
+            }
+        }
+        return ImmutableList.of();
+    }
+
     public List<ItemStack> getIcons() {
         return this.icons;
+    }
+
+    static {
+        SMOKER = ImmutableList.of(SMOKER_SEARCH, SMOKER_FOOD);
+        BLAST_FURNACE = ImmutableList.of(BLAST_FURNACE_SEARCH, BLAST_FURNACE_BLOCKS, BLAST_FURNACE_MISC);
+        FURNACE = ImmutableList.of(FURNACE_SEARCH, FURNACE_FOOD, FURNACE_BLOCKS, FURNACE_MISC);
+        CRAFTING = ImmutableList.of(CRAFTING_SEARCH, CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE);
+        field_25783 = ImmutableMap.of(CRAFTING_SEARCH, ImmutableList.of(CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE), FURNACE_SEARCH, ImmutableList.of(FURNACE_FOOD, FURNACE_BLOCKS, FURNACE_MISC), BLAST_FURNACE_SEARCH, ImmutableList.of(BLAST_FURNACE_BLOCKS, BLAST_FURNACE_MISC), SMOKER_SEARCH, ImmutableList.of(SMOKER_FOOD));
     }
 }
 

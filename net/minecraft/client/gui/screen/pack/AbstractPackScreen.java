@@ -3,13 +3,21 @@
  */
 package net.minecraft.client.gui.screen.pack;
 
+import com.google.common.collect.Maps;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
@@ -21,50 +29,64 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.pack.PackListWidget;
 import net.minecraft.client.gui.screen.pack.ResourcePackOrganizer;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class AbstractPackScreen
+public class AbstractPackScreen
 extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.DARK_GRAY);
     private static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");
-    private final ResourcePackOrganizer<?> organizer;
+    private static final Identifier field_25786 = new Identifier("textures/misc/unknown_pack.png");
+    private final ResourcePackOrganizer organizer;
     private final Screen parent;
-    private boolean shouldSave;
+    @Nullable
+    private class_5426 field_25787;
+    private long field_25788;
     private PackListWidget availablePackList;
     private PackListWidget selectedPackList;
     private final File field_25474;
     private ButtonWidget doneButton;
+    private final Map<String, Identifier> field_25789 = Maps.newHashMap();
 
-    public AbstractPackScreen(Screen parent, TranslatableText title, Function<Runnable, ResourcePackOrganizer<?>> function, File file) {
-        super(title);
-        this.parent = parent;
-        this.organizer = function.apply(this::updatePackLists);
+    public AbstractPackScreen(Screen screen, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> consumer, File file, TranslatableText translatableText) {
+        super(translatableText);
+        this.parent = screen;
+        this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, resourcePackManager, consumer);
         this.field_25474 = file;
-    }
-
-    @Override
-    public void removed() {
-        if (this.shouldSave) {
-            this.shouldSave = false;
-            this.organizer.apply();
-        }
+        this.field_25787 = class_5426.method_30293(file);
     }
 
     @Override
     public void onClose() {
-        this.shouldSave = true;
+        this.organizer.apply();
         this.client.openScreen(this.parent);
+        this.method_30291();
+    }
+
+    private void method_30291() {
+        if (this.field_25787 != null) {
+            try {
+                this.field_25787.close();
+                this.field_25787 = null;
+            } catch (Exception exception) {
+                // empty catch block
+            }
+        }
     }
 
     @Override
@@ -77,7 +99,24 @@ extends Screen {
         this.selectedPackList = new PackListWidget(this.client, 200, this.height, new TranslatableText("pack.selected.title"));
         this.selectedPackList.setLeftPos(this.width / 2 + 4);
         this.children.add(this.selectedPackList);
-        this.updatePackLists();
+        this.method_29680();
+    }
+
+    @Override
+    public void tick() {
+        if (this.field_25787 != null) {
+            try {
+                if (this.field_25787.method_30292()) {
+                    this.field_25788 = 20L;
+                }
+            } catch (IOException iOException) {
+                LOGGER.warn("Failed to poll for directory {} changes, stopping", (Object)this.field_25474);
+                this.method_30291();
+            }
+        }
+        if (this.field_25788 > 0L && --this.field_25788 == 0L) {
+            this.method_29680();
+        }
     }
 
     private void updatePackLists() {
@@ -94,7 +133,8 @@ extends Screen {
     private void method_29680() {
         this.organizer.method_29981();
         this.updatePackLists();
-        this.shouldSave = true;
+        this.field_25788 = 0L;
+        this.field_25789.clear();
     }
 
     @Override
@@ -139,6 +179,122 @@ extends Screen {
             }
             this.client.openScreen(this);
         }, new TranslatableText("pack.dropConfirm"), new LiteralText(string)));
+    }
+
+    /*
+     * Exception decompiling
+     */
+    private Identifier method_30289(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {
+        /*
+         * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
+         * 
+         * org.benf.cfr.reader.util.ConfusedCFRException: Started 2 blocks at once
+         *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.getStartingBlocks(Op04StructuredStatement.java:412)
+         *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:487)
+         *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:736)
+         *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisInner(CodeAnalyser.java:850)
+         *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisOrWrapFail(CodeAnalyser.java:278)
+         *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysis(CodeAnalyser.java:201)
+         *     at org.benf.cfr.reader.entities.attributes.AttributeCode.analyse(AttributeCode.java:94)
+         *     at org.benf.cfr.reader.entities.Method.analyse(Method.java:538)
+         *     at org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:1055)
+         *     at org.benf.cfr.reader.entities.ClassFile.analyseTop(ClassFile.java:942)
+         *     at org.benf.cfr.reader.Driver.doJarVersionTypes(Driver.java:261)
+         *     at org.benf.cfr.reader.Driver.doJar(Driver.java:143)
+         *     at net.fabricmc.loom.decompilers.cfr.LoomCFRDecompiler.decompile(LoomCFRDecompiler.java:89)
+         *     at net.fabricmc.loom.task.GenerateSourcesTask$DecompileAction.doDecompile(GenerateSourcesTask.java:269)
+         *     at net.fabricmc.loom.task.GenerateSourcesTask$DecompileAction.execute(GenerateSourcesTask.java:234)
+         *     at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)
+         *     at org.gradle.workers.internal.AbstractClassLoaderWorker$1.create(AbstractClassLoaderWorker.java:49)
+         *     at org.gradle.workers.internal.AbstractClassLoaderWorker$1.create(AbstractClassLoaderWorker.java:43)
+         *     at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)
+         *     at org.gradle.workers.internal.AbstractClassLoaderWorker.executeInClassLoader(AbstractClassLoaderWorker.java:43)
+         *     at org.gradle.workers.internal.IsolatedClassloaderWorker.run(IsolatedClassloaderWorker.java:49)
+         *     at org.gradle.workers.internal.IsolatedClassloaderWorker.run(IsolatedClassloaderWorker.java:30)
+         *     at org.gradle.workers.internal.WorkerDaemonServer.run(WorkerDaemonServer.java:87)
+         *     at org.gradle.workers.internal.WorkerDaemonServer.run(WorkerDaemonServer.java:56)
+         *     at org.gradle.process.internal.worker.request.WorkerAction$1.call(WorkerAction.java:138)
+         *     at org.gradle.process.internal.worker.child.WorkerLogEventListener.withWorkerLoggingProtocol(WorkerLogEventListener.java:41)
+         *     at org.gradle.process.internal.worker.request.WorkerAction.run(WorkerAction.java:135)
+         *     at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+         *     at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+         *     at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+         *     at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+         *     at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+         *     at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+         *     at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+         *     at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+         *     at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+         *     at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+         *     at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:49)
+         *     at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+         *     at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+         *     at java.base/java.lang.Thread.run(Thread.java:833)
+         */
+        throw new IllegalStateException("Decompilation failed");
+    }
+
+    private Identifier method_30287(ResourcePackProfile resourcePackProfile) {
+        return this.field_25789.computeIfAbsent(resourcePackProfile.getName(), string -> this.method_30289(this.client.getTextureManager(), resourcePackProfile));
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class class_5426
+    implements AutoCloseable {
+        private final WatchService field_25790;
+        private final Path field_25791;
+
+        public class_5426(File file) throws IOException {
+            this.field_25791 = file.toPath();
+            this.field_25790 = this.field_25791.getFileSystem().newWatchService();
+            try {
+                this.method_30294(this.field_25791);
+                try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(this.field_25791);){
+                    for (Path path : directoryStream) {
+                        if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) continue;
+                        this.method_30294(path);
+                    }
+                }
+            } catch (Exception exception) {
+                this.field_25790.close();
+                throw exception;
+            }
+        }
+
+        @Nullable
+        public static class_5426 method_30293(File file) {
+            try {
+                return new class_5426(file);
+            } catch (IOException iOException) {
+                LOGGER.warn("Failed to initialize pack directory {} monitoring", (Object)file, (Object)iOException);
+                return null;
+            }
+        }
+
+        private void method_30294(Path path) throws IOException {
+            path.register(this.field_25790, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+        }
+
+        public boolean method_30292() throws IOException {
+            WatchKey watchKey;
+            boolean bl = false;
+            while ((watchKey = this.field_25790.poll()) != null) {
+                List<WatchEvent<?>> list = watchKey.pollEvents();
+                for (WatchEvent<?> watchEvent : list) {
+                    Path path;
+                    bl = true;
+                    if (watchKey.watchable() != this.field_25791 || watchEvent.kind() != StandardWatchEventKinds.ENTRY_CREATE || !Files.isDirectory(path = this.field_25791.resolve((Path)watchEvent.context()), LinkOption.NOFOLLOW_LINKS)) continue;
+                    this.method_30294(path);
+                }
+                watchKey.reset();
+            }
+            return bl;
+        }
+
+        @Override
+        public void close() throws IOException {
+            this.field_25790.close();
+        }
     }
 }
 

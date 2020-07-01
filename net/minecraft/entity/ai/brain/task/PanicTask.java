@@ -41,7 +41,7 @@ extends Task<VillagerEntity> {
     @Override
     protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         if (l % 100L == 0L) {
-            villagerEntity.summonGolem(l, 3);
+            villagerEntity.summonGolem(serverWorld, l, 3);
         }
     }
 

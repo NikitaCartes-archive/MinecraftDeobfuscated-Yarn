@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -71,8 +72,8 @@ implements Angerable {
     }
 
     @Override
-    public PassiveEntity createChild(PassiveEntity mate) {
-        return EntityType.POLAR_BEAR.create(this.world);
+    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return EntityType.POLAR_BEAR.create(serverWorld);
     }
 
     @Override
@@ -238,12 +239,12 @@ implements Angerable {
     }
 
     @Override
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData();
             ((PassiveEntity.PassiveData)entityData).setBabyChance(1.0f);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     class PolarBearEscapeDangerGoal

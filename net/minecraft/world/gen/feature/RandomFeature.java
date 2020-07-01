@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
@@ -20,12 +19,12 @@ extends Feature<RandomFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig) {
         for (RandomFeatureEntry<?> randomFeatureEntry : randomFeatureConfig.features) {
             if (!(random.nextFloat() < randomFeatureEntry.chance)) continue;
-            return randomFeatureEntry.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
+            return randomFeatureEntry.generate(serverWorldAccess, chunkGenerator, random, blockPos);
         }
-        return randomFeatureConfig.defaultFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
+        return randomFeatureConfig.defaultFeature.generate(serverWorldAccess, chunkGenerator, random, blockPos);
     }
 }
 

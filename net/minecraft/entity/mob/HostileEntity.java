@@ -5,6 +5,7 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import java.util.function.Predicate;
+import net.minecraft.class_5425;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -100,16 +101,16 @@ implements Monster {
         return 0.5f - world.getBrightness(pos);
     }
 
-    public static boolean isSpawnDark(WorldAccess world, BlockPos pos, Random random) {
-        if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+    public static boolean isSpawnDark(class_5425 arg, BlockPos pos, Random random) {
+        if (arg.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
             return false;
         }
-        int i = world.getWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
+        int i = arg.getWorld().isThundering() ? arg.getLightLevel(pos, 10) : arg.getLightLevel(pos);
         return i <= random.nextInt(8);
     }
 
-    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(world, pos, random) && HostileEntity.canMobSpawn(type, world, spawnReason, pos, random);
+    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, class_5425 arg, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return arg.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(arg, pos, random) && HostileEntity.canMobSpawn(type, arg, spawnReason, pos, random);
     }
 
     public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

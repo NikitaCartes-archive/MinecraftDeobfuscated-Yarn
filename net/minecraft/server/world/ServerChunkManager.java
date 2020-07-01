@@ -363,7 +363,7 @@ extends ChunkManager {
             });
             this.world.getProfiler().push("customSpawners");
             if (bl2) {
-                this.world.method_29202(this.spawnMonsters, this.spawnAnimals);
+                this.world.tickSpawners(this.spawnMonsters, this.spawnAnimals);
             }
             this.world.getProfiler().pop();
             this.world.getProfiler().pop();

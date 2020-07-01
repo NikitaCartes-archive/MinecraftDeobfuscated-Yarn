@@ -168,7 +168,7 @@ implements Waterloggable {
         BlockEntity blockEntity;
         if (world.isClient()) {
             for (int i = 0; i < 20; ++i) {
-                CampfireBlock.spawnSmokeParticle(world.getWorld(), pos, state.get(SIGNAL_FIRE), true);
+                CampfireBlock.spawnSmokeParticle((World)world, pos, state.get(SIGNAL_FIRE), true);
             }
         }
         if ((blockEntity = world.getBlockEntity(pos)) instanceof CampfireBlockEntity) {

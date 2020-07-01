@@ -60,7 +60,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.tag.TagManager;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -520,8 +520,7 @@ public final class ItemStack {
 
     @Environment(value=EnvType.CLIENT)
     public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
-        int k;
-        ListTag listTag2;
+        int i;
         ArrayList<Text> list = Lists.newArrayList();
         MutableText mutableText = new LiteralText("").append(this.getName()).formatted(this.getRarity().formatting);
         if (this.hasCustomName()) {
@@ -531,20 +530,16 @@ public final class ItemStack {
         if (!context.isAdvanced() && !this.hasCustomName() && this.getItem() == Items.FILLED_MAP) {
             list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.GRAY));
         }
-        int i = 0;
-        if (this.hasTag() && this.tag.contains("HideFlags", 99)) {
-            i = this.tag.getInt("HideFlags");
-        }
-        if ((i & 0x20) == 0) {
+        if (ItemStack.method_30267(i = this.method_30266(), class_5422.field_25773)) {
             this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);
         }
         if (this.hasTag()) {
-            if ((i & 1) == 0) {
+            if (ItemStack.method_30267(i, class_5422.field_25768)) {
                 ItemStack.appendEnchantments(list, this.getEnchantments());
             }
             if (this.tag.contains("display", 10)) {
                 CompoundTag compoundTag = this.tag.getCompound("display");
-                if (compoundTag.contains("color", 3)) {
+                if (ItemStack.method_30267(i, class_5422.field_25774) && compoundTag.contains("color", 99)) {
                     if (context.isAdvanced()) {
                         list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.GRAY));
                     } else {
@@ -567,53 +562,58 @@ public final class ItemStack {
                 }
             }
         }
-        for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-            Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
-            if (multimap.isEmpty() || (i & 2) != 0) continue;
-            list.add(LiteralText.EMPTY);
-            list.add(new TranslatableText("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
-            for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : multimap.entries()) {
-                EntityAttributeModifier entityAttributeModifier = entry.getValue();
-                double d = entityAttributeModifier.getValue();
-                boolean bl = false;
-                if (player != null) {
-                    if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
-                        d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                        d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
-                        bl = true;
-                    } else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_ID) {
-                        d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
-                        bl = true;
+        if (ItemStack.method_30267(i, class_5422.field_25769)) {
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+                Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
+                if (multimap.isEmpty()) continue;
+                list.add(LiteralText.EMPTY);
+                list.add(new TranslatableText("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
+                for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : multimap.entries()) {
+                    EntityAttributeModifier entityAttributeModifier = entry.getValue();
+                    double d = entityAttributeModifier.getValue();
+                    boolean bl = false;
+                    if (player != null) {
+                        if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_ID) {
+                            d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                            d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
+                            bl = true;
+                        } else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_ID) {
+                            d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
+                            bl = true;
+                        }
                     }
+                    double e = entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? d * 100.0 : (entry.getKey().equals(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE) ? d * 10.0 : d);
+                    if (bl) {
+                        list.add(new LiteralText(" ").append(new TranslatableText("attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(), MODIFIER_FORMAT.format(e), new TranslatableText(entry.getKey().getTranslationKey()))).formatted(Formatting.DARK_GREEN));
+                        continue;
+                    }
+                    if (d > 0.0) {
+                        list.add(new TranslatableText("attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(), MODIFIER_FORMAT.format(e), new TranslatableText(entry.getKey().getTranslationKey())).formatted(Formatting.BLUE));
+                        continue;
+                    }
+                    if (!(d < 0.0)) continue;
+                    list.add(new TranslatableText("attribute.modifier.take." + entityAttributeModifier.getOperation().getId(), MODIFIER_FORMAT.format(e *= -1.0), new TranslatableText(entry.getKey().getTranslationKey())).formatted(Formatting.RED));
                 }
-                double e = entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? d * 100.0 : (entry.getKey().equals(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE) ? d * 10.0 : d);
-                if (bl) {
-                    list.add(new LiteralText(" ").append(new TranslatableText("attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(), MODIFIER_FORMAT.format(e), new TranslatableText(entry.getKey().getTranslationKey()))).formatted(Formatting.DARK_GREEN));
-                    continue;
-                }
-                if (d > 0.0) {
-                    list.add(new TranslatableText("attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(), MODIFIER_FORMAT.format(e), new TranslatableText(entry.getKey().getTranslationKey())).formatted(Formatting.BLUE));
-                    continue;
-                }
-                if (!(d < 0.0)) continue;
-                list.add(new TranslatableText("attribute.modifier.take." + entityAttributeModifier.getOperation().getId(), MODIFIER_FORMAT.format(e *= -1.0), new TranslatableText(entry.getKey().getTranslationKey())).formatted(Formatting.RED));
             }
         }
-        if (this.hasTag() && this.getTag().getBoolean("Unbreakable") && (i & 4) == 0) {
-            list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
-        }
-        if (this.hasTag() && this.tag.contains("CanDestroy", 9) && (i & 8) == 0 && !(listTag2 = this.tag.getList("CanDestroy", 8)).isEmpty()) {
-            list.add(LiteralText.EMPTY);
-            list.add(new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
-            for (k = 0; k < listTag2.size(); ++k) {
-                list.addAll(ItemStack.parseBlockTag(listTag2.getString(k)));
+        if (this.hasTag()) {
+            ListTag listTag2;
+            if (ItemStack.method_30267(i, class_5422.field_25770) && this.tag.getBoolean("Unbreakable")) {
+                list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
             }
-        }
-        if (this.hasTag() && this.tag.contains("CanPlaceOn", 9) && (i & 0x10) == 0 && !(listTag2 = this.tag.getList("CanPlaceOn", 8)).isEmpty()) {
-            list.add(LiteralText.EMPTY);
-            list.add(new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
-            for (k = 0; k < listTag2.size(); ++k) {
-                list.addAll(ItemStack.parseBlockTag(listTag2.getString(k)));
+            if (ItemStack.method_30267(i, class_5422.field_25771) && this.tag.contains("CanDestroy", 9) && !(listTag2 = this.tag.getList("CanDestroy", 8)).isEmpty()) {
+                list.add(LiteralText.EMPTY);
+                list.add(new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
+                for (int k = 0; k < listTag2.size(); ++k) {
+                    list.addAll(ItemStack.parseBlockTag(listTag2.getString(k)));
+                }
+            }
+            if (ItemStack.method_30267(i, class_5422.field_25772) && this.tag.contains("CanPlaceOn", 9) && !(listTag2 = this.tag.getList("CanPlaceOn", 8)).isEmpty()) {
+                list.add(LiteralText.EMPTY);
+                list.add(new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
+                for (int k = 0; k < listTag2.size(); ++k) {
+                    list.addAll(ItemStack.parseBlockTag(listTag2.getString(k)));
+                }
             }
         }
         if (context.isAdvanced()) {
@@ -622,10 +622,28 @@ public final class ItemStack {
             }
             list.add(new LiteralText(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
             if (this.hasTag()) {
-                list.add(new TranslatableText("item.nbt_tags", this.getTag().getKeys().size()).formatted(Formatting.DARK_GRAY));
+                list.add(new TranslatableText("item.nbt_tags", this.tag.getKeys().size()).formatted(Formatting.DARK_GRAY));
             }
         }
         return list;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    private static boolean method_30267(int i, class_5422 arg) {
+        return (i & arg.method_30269()) == 0;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    private int method_30266() {
+        if (this.hasTag() && this.tag.contains("HideFlags", 99)) {
+            return this.tag.getInt("HideFlags");
+        }
+        return 0;
+    }
+
+    public void method_30268(class_5422 arg) {
+        CompoundTag compoundTag = this.getOrCreateTag();
+        compoundTag.putInt("HideFlags", compoundTag.getInt("HideFlags") | arg.method_30269());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -650,7 +668,7 @@ public final class ItemStack {
                 if (bl) {
                     return Lists.newArrayList(blockState.getBlock().getName().formatted(Formatting.DARK_GRAY));
                 }
-                net.minecraft.tag.Tag<Block> tag2 = BlockTags.getContainer().get(identifier);
+                net.minecraft.tag.Tag<Block> tag2 = BlockTags.getTagGroup().getTag(identifier);
                 if (tag2 != null && !(collection = tag2.values()).isEmpty()) {
                     return collection.stream().map(Block::getName).map(text -> text.formatted(Formatting.DARK_GRAY)).collect(Collectors.toList());
                 }
@@ -785,7 +803,7 @@ public final class ItemStack {
         return Objects.equals(first.getBlockEntity().toTag(new CompoundTag()), second.getBlockEntity().toTag(new CompoundTag()));
     }
 
-    public boolean canDestroy(RegistryTagManager manager, CachedBlockPosition pos) {
+    public boolean canDestroy(TagManager tagManager, CachedBlockPosition pos) {
         if (ItemStack.areBlocksEqual(pos, this.lastDestroyPos)) {
             return this.lastDestroyResult;
         }
@@ -795,7 +813,7 @@ public final class ItemStack {
             for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
                 try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(manager);
+                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(tagManager);
                     if (predicate.test(pos)) {
                         this.lastDestroyResult = true;
                         return true;
@@ -810,7 +828,7 @@ public final class ItemStack {
         return false;
     }
 
-    public boolean canPlaceOn(RegistryTagManager manager, CachedBlockPosition pos) {
+    public boolean canPlaceOn(TagManager tagManager, CachedBlockPosition pos) {
         if (ItemStack.areBlocksEqual(pos, this.lastPlaceOnPos)) {
             return this.lastPlaceOnResult;
         }
@@ -820,7 +838,7 @@ public final class ItemStack {
             for (int i = 0; i < listTag.size(); ++i) {
                 String string = listTag.getString(i);
                 try {
-                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(manager);
+                    Predicate<CachedBlockPosition> predicate = BlockPredicateArgumentType.blockPredicate().parse(new StringReader(string)).create(tagManager);
                     if (predicate.test(pos)) {
                         this.lastPlaceOnResult = true;
                         return true;
@@ -874,6 +892,22 @@ public final class ItemStack {
 
     public SoundEvent getEatSound() {
         return this.getItem().getEatSound();
+    }
+
+    public static enum class_5422 {
+        field_25768,
+        field_25769,
+        field_25770,
+        field_25771,
+        field_25772,
+        field_25773,
+        field_25774;
+
+        private int field_25775 = 1 << this.ordinal();
+
+        public int method_30269() {
+            return this.field_25775;
+        }
     }
 }
 

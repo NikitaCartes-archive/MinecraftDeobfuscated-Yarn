@@ -17,9 +17,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlBlendState;
 import net.minecraft.client.gl.GlProgram;
 import net.minecraft.client.gl.GlProgramManager;
@@ -27,7 +27,6 @@ import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderParseException;
 import net.minecraft.client.gl.Uniform;
-import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -45,7 +44,7 @@ AutoCloseable {
     private static final Uniform dummyUniform = new Uniform();
     private static JsonGlProgram activeProgram;
     private static int activeProgramRef;
-    private final Map<String, Object> samplerBinds = Maps.newHashMap();
+    private final Map<String, IntSupplier> samplerBinds = Maps.newHashMap();
     private final List<String> samplerNames = Lists.newArrayList();
     private final List<Integer> samplerShaderLocs = Lists.newArrayList();
     private final List<GlUniform> uniformData = Lists.newArrayList();
@@ -229,18 +228,12 @@ AutoCloseable {
             activeProgramRef = this.programRef;
         }
         for (int i = 0; i < this.samplerShaderLocs.size(); ++i) {
-            if (this.samplerBinds.get(this.samplerNames.get(i)) == null) continue;
+            String string = this.samplerNames.get(i);
+            IntSupplier intSupplier = this.samplerBinds.get(string);
+            if (intSupplier == null) continue;
             RenderSystem.activeTexture(33984 + i);
             RenderSystem.enableTexture();
-            Object object = this.samplerBinds.get(this.samplerNames.get(i));
-            int j = -1;
-            if (object instanceof Framebuffer) {
-                j = ((Framebuffer)object).colorAttachment;
-            } else if (object instanceof AbstractTexture) {
-                j = ((AbstractTexture)object).getGlId();
-            } else if (object instanceof Integer) {
-                j = (Integer)object;
-            }
+            int j = intSupplier.getAsInt();
             if (j == -1) continue;
             RenderSystem.bindTexture(j);
             GlUniform.uniform1(this.samplerShaderLocs.get(i), i);
@@ -309,11 +302,11 @@ AutoCloseable {
         this.samplerNames.add(string);
     }
 
-    public void bindSampler(String samplerName, Object object) {
+    public void bindSampler(String samplerName, IntSupplier intSupplier) {
         if (this.samplerBinds.containsKey(samplerName)) {
             this.samplerBinds.remove(samplerName);
         }
-        this.samplerBinds.put(samplerName, object);
+        this.samplerBinds.put(samplerName, intSupplier);
         this.markUniformsDirty();
     }
 

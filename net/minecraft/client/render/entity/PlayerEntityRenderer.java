@@ -92,7 +92,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             playerEntityModel.rightPantLeg.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_PANTS_LEG);
             playerEntityModel.leftSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.LEFT_SLEEVE);
             playerEntityModel.rightSleeve.visible = abstractClientPlayerEntity.isPartVisible(PlayerModelPart.RIGHT_SLEEVE);
-            playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
+            playerEntityModel.sneaking = abstractClientPlayerEntity.isInSneakingPose();
             BipedEntityModel.ArmPose armPose = PlayerEntityRenderer.getArmPose(abstractClientPlayerEntity, Hand.MAIN_HAND);
             BipedEntityModel.ArmPose armPose2 = PlayerEntityRenderer.getArmPose(abstractClientPlayerEntity, Hand.OFF_HAND);
             if (armPose.method_30156()) {
@@ -172,7 +172,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         PlayerEntityModel playerEntityModel = (PlayerEntityModel)this.getModel();
         this.setModelPose(player);
         playerEntityModel.handSwingProgress = 0.0f;
-        playerEntityModel.isSneaking = false;
+        playerEntityModel.sneaking = false;
         playerEntityModel.leaningPitch = 0.0f;
         playerEntityModel.setAngles(player, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         arm.pitch = 0.0f;

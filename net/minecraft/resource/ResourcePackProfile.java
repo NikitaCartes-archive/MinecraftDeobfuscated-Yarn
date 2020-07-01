@@ -45,7 +45,7 @@ implements AutoCloseable {
      * Enabled aggressive exception aggregation
      */
     @Nullable
-    public static <T extends ResourcePackProfile> T of(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Factory<T> containerFactory, InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) {
+    public static ResourcePackProfile of(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Factory containerFactory, InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) {
         try (ResourcePack resourcePack = packFactory.get();){
             PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
             if (alwaysEnabled && packResourceMetadata == null) {
@@ -53,8 +53,8 @@ implements AutoCloseable {
                 packResourceMetadata = BROKEN_PACK_META;
             }
             if (packResourceMetadata != null) {
-                T t = containerFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
-                return t;
+                ResourcePackProfile resourcePackProfile = containerFactory.create(name, alwaysEnabled, packFactory, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
+                return resourcePackProfile;
             }
             LOGGER.warn("Couldn't find pack meta for pack {}", (Object)name);
             return null;
@@ -147,7 +147,7 @@ implements AutoCloseable {
         BOTTOM;
 
 
-        public <T, P extends ResourcePackProfile> int insert(List<T> items, T item, Function<T, P> profileGetter, boolean listInverted) {
+        public <T> int insert(List<T> items, T item, Function<T, ResourcePackProfile> profileGetter, boolean listInverted) {
             ResourcePackProfile resourcePackProfile;
             int i;
             InsertionPosition insertionPosition;
@@ -155,12 +155,12 @@ implements AutoCloseable {
             if (insertionPosition == BOTTOM) {
                 ResourcePackProfile resourcePackProfile2;
                 int i2;
-                for (i2 = 0; i2 < items.size() && (resourcePackProfile2 = (ResourcePackProfile)profileGetter.apply(items.get(i2))).isPinned() && resourcePackProfile2.getInitialPosition() == this; ++i2) {
+                for (i2 = 0; i2 < items.size() && (resourcePackProfile2 = profileGetter.apply(items.get(i2))).isPinned() && resourcePackProfile2.getInitialPosition() == this; ++i2) {
                 }
                 items.add(i2, item);
                 return i2;
             }
-            for (i = items.size() - 1; i >= 0 && (resourcePackProfile = (ResourcePackProfile)profileGetter.apply(items.get(i))).isPinned() && resourcePackProfile.getInitialPosition() == this; --i) {
+            for (i = items.size() - 1; i >= 0 && (resourcePackProfile = profileGetter.apply(items.get(i))).isPinned() && resourcePackProfile.getInitialPosition() == this; --i) {
             }
             items.add(i + 1, item);
             return i + 1;
@@ -172,9 +172,9 @@ implements AutoCloseable {
     }
 
     @FunctionalInterface
-    public static interface Factory<T extends ResourcePackProfile> {
+    public static interface Factory {
         @Nullable
-        public T create(String var1, boolean var2, Supplier<ResourcePack> var3, ResourcePack var4, PackResourceMetadata var5, InsertionPosition var6, ResourcePackSource var7);
+        public ResourcePackProfile create(String var1, boolean var2, Supplier<ResourcePack> var3, ResourcePack var4, PackResourceMetadata var5, InsertionPosition var6, ResourcePackSource var7);
     }
 }
 

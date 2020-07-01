@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -46,6 +47,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -301,9 +303,9 @@ extends AnimalEntity {
     }
 
     @Override
-    public RabbitEntity createChild(PassiveEntity passiveEntity) {
-        RabbitEntity rabbitEntity = EntityType.RABBIT.create(this.world);
-        int i = this.chooseType(this.world);
+    public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld);
+        int i = this.chooseType(serverWorld);
         if (this.random.nextInt(20) != 0) {
             i = passiveEntity instanceof RabbitEntity && this.random.nextBoolean() ? ((RabbitEntity)passiveEntity).getRabbitType() : this.getRabbitType();
         }
@@ -336,15 +338,15 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        int i = this.chooseType(world);
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        int i = this.chooseType(arg);
         if (entityData instanceof RabbitData) {
             i = ((RabbitData)entityData).type;
         } else {
             entityData = new RabbitData(i);
         }
         this.setRabbitType(i);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     private int chooseType(WorldAccess world) {
@@ -387,8 +389,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 
     static class RabbitAttackGoal

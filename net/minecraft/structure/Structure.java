@@ -22,6 +22,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -171,16 +172,16 @@ public class Structure {
         return Structure.transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
     }
 
-    public void place(WorldAccess world, BlockPos pos, StructurePlacementData placementData, Random random) {
+    public void place(class_5425 arg, BlockPos pos, StructurePlacementData placementData, Random random) {
         placementData.calculateBoundingBox();
-        this.placeAndNotifyListeners(world, pos, placementData, random);
+        this.placeAndNotifyListeners(arg, pos, placementData, random);
     }
 
-    public void placeAndNotifyListeners(WorldAccess world, BlockPos pos, StructurePlacementData data, Random random) {
-        this.place(world, pos, pos, data, random, 2);
+    public void placeAndNotifyListeners(class_5425 arg, BlockPos pos, StructurePlacementData data, Random random) {
+        this.place(arg, pos, pos, data, random, 2);
     }
 
-    public boolean place(WorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, Random random, int i) {
+    public boolean place(class_5425 arg, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, Random random, int i) {
         if (this.blockInfoLists.isEmpty()) {
             return false;
         }
@@ -197,19 +198,19 @@ public class Structure {
         int m = Integer.MIN_VALUE;
         int n = Integer.MIN_VALUE;
         int o = Integer.MIN_VALUE;
-        List<StructureBlockInfo> list4 = Structure.process(world, pos, blockPos, placementData, list);
+        List<StructureBlockInfo> list4 = Structure.process(arg, pos, blockPos, placementData, list);
         for (StructureBlockInfo structureBlockInfo : list4) {
             BlockEntity blockEntity;
             BlockPos blockPos2 = structureBlockInfo.pos;
             if (blockBox != null && !blockBox.contains(blockPos2)) continue;
-            FluidState fluidState = placementData.shouldPlaceFluids() ? world.getFluidState(blockPos2) : null;
+            FluidState fluidState = placementData.shouldPlaceFluids() ? arg.getFluidState(blockPos2) : null;
             BlockState blockState = structureBlockInfo.state.mirror(placementData.getMirror()).rotate(placementData.getRotation());
             if (structureBlockInfo.tag != null) {
-                blockEntity = world.getBlockEntity(blockPos2);
+                blockEntity = arg.getBlockEntity(blockPos2);
                 Clearable.clear(blockEntity);
-                world.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), 20);
+                arg.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), 20);
             }
-            if (!world.setBlockState(blockPos2, blockState, i)) continue;
+            if (!arg.setBlockState(blockPos2, blockState, i)) continue;
             j = Math.min(j, blockPos2.getX());
             k = Math.min(k, blockPos2.getY());
             l = Math.min(l, blockPos2.getZ());
@@ -217,7 +218,7 @@ public class Structure {
             n = Math.max(n, blockPos2.getY());
             o = Math.max(o, blockPos2.getZ());
             list3.add(Pair.of(blockPos2, structureBlockInfo.tag));
-            if (structureBlockInfo.tag != null && (blockEntity = world.getBlockEntity(blockPos2)) != null) {
+            if (structureBlockInfo.tag != null && (blockEntity = arg.getBlockEntity(blockPos2)) != null) {
                 structureBlockInfo.tag.putInt("x", blockPos2.getX());
                 structureBlockInfo.tag.putInt("y", blockPos2.getY());
                 structureBlockInfo.tag.putInt("z", blockPos2.getZ());
@@ -229,7 +230,7 @@ public class Structure {
                 blockEntity.applyRotation(placementData.getRotation());
             }
             if (fluidState == null || !(blockState.getBlock() instanceof FluidFillable)) continue;
-            ((FluidFillable)((Object)blockState.getBlock())).tryFillWithFluid(world, blockPos2, blockState, fluidState);
+            ((FluidFillable)((Object)blockState.getBlock())).tryFillWithFluid(arg, blockPos2, blockState, fluidState);
             if (fluidState.isStill()) continue;
             list2.add(blockPos2);
         }
@@ -243,16 +244,16 @@ public class Structure {
                 Block block;
                 BlockPos blockPos2;
                 BlockPos blockPos4 = blockPos2 = (BlockPos)iterator.next();
-                FluidState fluidState2 = world.getFluidState(blockPos4);
+                FluidState fluidState2 = arg.getFluidState(blockPos4);
                 for (int p = 0; p < directions.length && !fluidState2.isStill(); ++p) {
                     BlockPos blockPos3 = blockPos4.offset(directions[p]);
-                    FluidState fluidState3 = world.getFluidState(blockPos3);
-                    if (!(fluidState3.getHeight(world, blockPos3) > fluidState2.getHeight(world, blockPos4)) && (!fluidState3.isStill() || fluidState2.isStill())) continue;
+                    FluidState fluidState3 = arg.getFluidState(blockPos3);
+                    if (!(fluidState3.getHeight(arg, blockPos3) > fluidState2.getHeight(arg, blockPos4)) && (!fluidState3.isStill() || fluidState2.isStill())) continue;
                     fluidState2 = fluidState3;
                     blockPos4 = blockPos3;
                 }
-                if (!fluidState2.isStill() || !((block = (blockState2 = world.getBlockState(blockPos2)).getBlock()) instanceof FluidFillable)) continue;
-                ((FluidFillable)((Object)block)).tryFillWithFluid(world, blockPos2, blockState2, fluidState2);
+                if (!fluidState2.isStill() || !((block = (blockState2 = arg.getBlockState(blockPos2)).getBlock()) instanceof FluidFillable)) continue;
+                ((FluidFillable)((Object)block)).tryFillWithFluid(arg, blockPos2, blockState2, fluidState2);
                 bl = true;
                 iterator.remove();
             }
@@ -267,25 +268,25 @@ public class Structure {
                     BlockPos blockPos6 = (BlockPos)pair.getFirst();
                     ((VoxelSet)voxelSet).set(blockPos6.getX() - n2, blockPos6.getY() - r, blockPos6.getZ() - s, true, true);
                 }
-                Structure.updateCorner(world, i, voxelSet, n2, r, s);
+                Structure.updateCorner(arg, i, voxelSet, n2, r, s);
             }
             for (Pair pair : list3) {
                 BlockEntity blockEntity;
                 BlockPos blockPos4 = (BlockPos)pair.getFirst();
                 if (!placementData.shouldUpdateNeighbors()) {
                     BlockState blockState2;
-                    BlockState blockState3 = world.getBlockState(blockPos4);
-                    if (blockState3 != (blockState2 = Block.postProcessState(blockState3, world, blockPos4))) {
-                        world.setBlockState(blockPos4, blockState2, i & 0xFFFFFFFE | 0x10);
+                    BlockState blockState3 = arg.getBlockState(blockPos4);
+                    if (blockState3 != (blockState2 = Block.postProcessState(blockState3, arg, blockPos4))) {
+                        arg.setBlockState(blockPos4, blockState2, i & 0xFFFFFFFE | 0x10);
                     }
-                    world.updateNeighbors(blockPos4, blockState2.getBlock());
+                    arg.updateNeighbors(blockPos4, blockState2.getBlock());
                 }
-                if (pair.getSecond() == null || (blockEntity = world.getBlockEntity(blockPos4)) == null) continue;
+                if (pair.getSecond() == null || (blockEntity = arg.getBlockEntity(blockPos4)) == null) continue;
                 blockEntity.markDirty();
             }
         }
         if (!placementData.shouldIgnoreEntities()) {
-            this.spawnEntities(world, pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition(), blockBox, placementData.method_27265());
+            this.spawnEntities(arg, pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition(), blockBox, placementData.method_27265());
         }
         return true;
     }
@@ -322,7 +323,7 @@ public class Structure {
         return list2;
     }
 
-    private void spawnEntities(WorldAccess world, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean bl) {
+    private void spawnEntities(class_5425 arg, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean bl) {
         for (StructureEntityInfo structureEntityInfo : this.entities) {
             BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
             if (area != null && !area.contains(blockPos)) continue;
@@ -335,20 +336,20 @@ public class Structure {
             listTag.add(DoubleTag.of(vec3d2.z));
             compoundTag.put("Pos", listTag);
             compoundTag.remove("UUID");
-            Structure.getEntity(world, compoundTag).ifPresent(entity -> {
+            Structure.getEntity(arg, compoundTag).ifPresent(entity -> {
                 float f = entity.applyMirror(blockMirror);
                 entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.yaw - entity.applyRotation(blockRotation), entity.pitch);
                 if (bl && entity instanceof MobEntity) {
-                    ((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, compoundTag);
+                    ((MobEntity)entity).initialize(arg, arg.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, compoundTag);
                 }
-                world.spawnEntity((Entity)entity);
+                arg.spawnEntity((Entity)entity);
             });
         }
     }
 
-    private static Optional<Entity> getEntity(WorldAccess worldAccess, CompoundTag compoundTag) {
+    private static Optional<Entity> getEntity(class_5425 arg, CompoundTag compoundTag) {
         try {
-            return EntityType.getEntityFromTag(compoundTag, worldAccess.getWorld());
+            return EntityType.getEntityFromTag(compoundTag, arg.getWorld());
         } catch (Exception exception) {
             return Optional.empty();
         }

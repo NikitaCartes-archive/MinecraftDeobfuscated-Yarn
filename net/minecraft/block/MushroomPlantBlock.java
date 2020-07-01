@@ -12,6 +12,7 @@ import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -67,7 +68,7 @@ implements Fertilizable {
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.isOf(Blocks.MYCELIUM) || blockState.isOf(Blocks.PODZOL)) {
+        if (blockState.isIn(BlockTags.MUSHROOM_GROW_BLOCK)) {
             return true;
         }
         return world.getBaseLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);
@@ -84,7 +85,7 @@ implements Fertilizable {
             serverWorld.setBlockState(pos, state, 3);
             return false;
         }
-        if (configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
+        if (configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
             return true;
         }
         serverWorld.setBlockState(pos, state, 3);

@@ -148,11 +148,40 @@ implements ItemConvertible {
         return blockState;
     }
 
-    public static void replaced(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags) {
-        Block.replaceBlock(state, newState, world, pos, flags, 512);
+    /**
+     * Replaces the {@code state} with the {@code newState} at the {@code pos}.
+     * 
+     * <p>If the two state objects are identical, this method does nothing.
+     * 
+     * <p>If the new state {@linkplain BlockState#isAir() is air},
+     * breaks the block at the position instead.
+     * 
+     * @param state the existing block state
+     * @param newState the new block state
+     * @param world the world
+     * @param pos the position of the replaced block state
+     * @param flags the bitwise flags for {@link net.minecraft.world.ModifiableWorld#setBlockState(BlockPos, BlockState, int, int)}
+     */
+    public static void replace(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags) {
+        Block.replace(state, newState, world, pos, flags, 512);
     }
 
-    public static void replaceBlock(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
+    /**
+     * Replaces the {@code state} with the {@code newState} at the {@code pos}.
+     * 
+     * <p>If the two state objects are identical, this method does nothing.
+     * 
+     * <p>If the new state {@linkplain BlockState#isAir() is air},
+     * breaks the block at the position instead.
+     * 
+     * @param state the existing block state
+     * @param newState the new block state
+     * @param world the world
+     * @param pos the position of the replaced block state
+     * @param flags the bitwise flags for {@link net.minecraft.world.ModifiableWorld#setBlockState(BlockPos, BlockState, int, int)}
+     * @param maxUpdateDepth the limit for the cascading block updates
+     */
+    public static void replace(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
         if (newState != state) {
             if (newState.isAir()) {
                 if (!world.isClient()) {
@@ -256,22 +285,22 @@ implements ItemConvertible {
     public static void dropStacks(BlockState state, World world, BlockPos pos) {
         if (world instanceof ServerWorld) {
             Block.getDroppedStacks(state, (ServerWorld)world, pos, null).forEach(stack -> Block.dropStack(world, pos, stack));
+            state.onStacksDropped((ServerWorld)world, pos, ItemStack.EMPTY);
         }
-        state.onStacksDropped(world, pos, ItemStack.EMPTY);
     }
 
-    public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity) {
-        if (world instanceof ServerWorld) {
-            Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity).forEach(stack -> Block.dropStack(world, pos, stack));
+    public static void dropStacks(BlockState state, WorldAccess worldAccess, BlockPos pos, @Nullable BlockEntity blockEntity) {
+        if (worldAccess instanceof ServerWorld) {
+            Block.getDroppedStacks(state, (ServerWorld)worldAccess, pos, blockEntity).forEach(stack -> Block.dropStack((ServerWorld)worldAccess, pos, stack));
+            state.onStacksDropped((ServerWorld)worldAccess, pos, ItemStack.EMPTY);
         }
-        state.onStacksDropped(world, pos, ItemStack.EMPTY);
     }
 
     public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack stack) {
         if (world instanceof ServerWorld) {
             Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, stack).forEach(itemStack -> Block.dropStack(world, pos, itemStack));
+            state.onStacksDropped((ServerWorld)world, pos, stack);
         }
-        state.onStacksDropped(world, pos, stack);
     }
 
     public static void dropStack(World world, BlockPos pos, ItemStack stack) {
@@ -287,12 +316,12 @@ implements ItemConvertible {
         world.spawnEntity(itemEntity);
     }
 
-    protected void dropExperience(World world, BlockPos pos, int size) {
-        if (!world.isClient && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+    protected void dropExperience(ServerWorld serverWorld, BlockPos pos, int size) {
+        if (serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             while (size > 0) {
                 int i = ExperienceOrbEntity.roundToOrbSize(size);
                 size -= i;
-                world.spawnEntity(new ExperienceOrbEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
+                serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
             }
         }
     }
@@ -416,7 +445,7 @@ implements ItemConvertible {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void buildTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+    public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
     }
 
     @Override

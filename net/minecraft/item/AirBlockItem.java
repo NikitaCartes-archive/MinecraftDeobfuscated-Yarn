@@ -32,7 +32,7 @@ extends Item {
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
-        this.block.buildTooltip(stack, world, tooltip, context);
+        this.block.appendTooltip(stack, world, tooltip, context);
     }
 }
 

@@ -18,6 +18,7 @@ import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
@@ -162,6 +163,12 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     @Environment(value=EnvType.CLIENT)
     public int getCraftingSlotCount() {
         return 10;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public RecipeBookCategory getCategory() {
+        return RecipeBookCategory.CRAFTING;
     }
 }
 

@@ -60,20 +60,19 @@ implements Packet<ClientPlayPacketListener> {
     @Override
     public void read(PacketByteBuf buf) throws IOException {
         this.playerEntityId = buf.readInt();
-        int i = buf.readUnsignedByte();
-        this.hardcore = (i & 8) == 8;
-        this.gameMode = GameMode.byId(i &= 0xFFFFFFF7);
-        this.field_25713 = GameMode.byId(buf.readUnsignedByte());
-        int j = buf.readVarInt();
+        this.hardcore = buf.readBoolean();
+        this.gameMode = GameMode.byId(buf.readByte());
+        this.field_25713 = GameMode.byId(buf.readByte());
+        int i = buf.readVarInt();
         this.field_25320 = Sets.newHashSet();
-        for (int k = 0; k < j; ++k) {
+        for (int j = 0; j < i; ++j) {
             this.field_25320.add(RegistryKey.of(Registry.DIMENSION, buf.readIdentifier()));
         }
         this.dimensionTracker = buf.decode(RegistryTracker.Modifiable.CODEC);
         this.field_25321 = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, buf.readIdentifier());
         this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
         this.sha256Seed = buf.readLong();
-        this.maxPlayers = buf.readUnsignedByte();
+        this.maxPlayers = buf.readVarInt();
         this.chunkLoadDistance = buf.readVarInt();
         this.reducedDebugInfo = buf.readBoolean();
         this.showDeathScreen = buf.readBoolean();
@@ -84,11 +83,8 @@ implements Packet<ClientPlayPacketListener> {
     @Override
     public void write(PacketByteBuf buf) throws IOException {
         buf.writeInt(this.playerEntityId);
-        int i = this.gameMode.getId();
-        if (this.hardcore) {
-            i |= 8;
-        }
-        buf.writeByte(i);
+        buf.writeBoolean(this.hardcore);
+        buf.writeByte(this.gameMode.getId());
         buf.writeByte(this.field_25713.getId());
         buf.writeVarInt(this.field_25320.size());
         for (RegistryKey<World> registryKey : this.field_25320) {
@@ -98,7 +94,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeIdentifier(this.field_25321.getValue());
         buf.writeIdentifier(this.dimensionId.getValue());
         buf.writeLong(this.sha256Seed);
-        buf.writeByte(this.maxPlayers);
+        buf.writeVarInt(this.maxPlayers);
         buf.writeVarInt(this.chunkLoadDistance);
         buf.writeBoolean(this.reducedDebugInfo);
         buf.writeBoolean(this.showDeathScreen);

@@ -308,7 +308,7 @@ public abstract class AbstractBlock {
     }
 
     @Deprecated
-    public void onStacksDropped(BlockState state, World world, BlockPos pos, ItemStack stack) {
+    public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
     }
 
     @Deprecated
@@ -605,7 +605,7 @@ public abstract class AbstractBlock {
                 mutable.set(pos, direction);
                 BlockState blockState = world.getBlockState(mutable);
                 BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), world, mutable, pos);
-                Block.replaceBlock(blockState, blockState2, world, mutable, flags, i);
+                Block.replace(blockState, blockState2, world, mutable, flags, i);
             }
         }
 
@@ -637,8 +637,8 @@ public abstract class AbstractBlock {
             this.getBlock().onEntityCollision(this.asBlockState(), world, pos, entity);
         }
 
-        public void onStacksDropped(World world, BlockPos pos, ItemStack stack) {
-            this.getBlock().onStacksDropped(this.asBlockState(), world, pos, stack);
+        public void onStacksDropped(ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
+            this.getBlock().onStacksDropped(this.asBlockState(), serverWorld, pos, stack);
         }
 
         public List<ItemStack> getDroppedStacks(LootContext.Builder builder) {

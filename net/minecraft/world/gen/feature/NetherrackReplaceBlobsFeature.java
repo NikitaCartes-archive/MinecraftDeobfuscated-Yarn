@@ -12,7 +12,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
@@ -25,7 +24,7 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig) {
         Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
         BlockPos blockPos2 = NetherrackReplaceBlobsFeature.method_27107(serverWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, serverWorldAccess.getHeight() - 1), block);
         if (blockPos2 == null) {

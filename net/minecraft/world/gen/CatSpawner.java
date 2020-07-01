@@ -15,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
-import net.minecraft.world.World;
 import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -26,8 +25,8 @@ implements Spawner {
     private int ticksUntilNextSpawn;
 
     @Override
-    public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-        if (!bl2 || !serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+    public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
+        if (!spawnAnimals || !world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
             return 0;
         }
         --this.ticksUntilNextSpawn;
@@ -35,23 +34,23 @@ implements Spawner {
             return 0;
         }
         this.ticksUntilNextSpawn = 1200;
-        ServerPlayerEntity playerEntity = serverWorld.getRandomAlivePlayer();
+        ServerPlayerEntity playerEntity = world.getRandomAlivePlayer();
         if (playerEntity == null) {
             return 0;
         }
-        Random random = serverWorld.random;
+        Random random = world.random;
         int i = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
         int j = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
         BlockPos blockPos = playerEntity.getBlockPos().add(i, 0, j);
-        if (!serverWorld.isRegionLoaded(blockPos.getX() - 10, blockPos.getY() - 10, blockPos.getZ() - 10, blockPos.getX() + 10, blockPos.getY() + 10, blockPos.getZ() + 10)) {
+        if (!world.isRegionLoaded(blockPos.getX() - 10, blockPos.getY() - 10, blockPos.getZ() - 10, blockPos.getX() + 10, blockPos.getY() + 10, blockPos.getZ() + 10)) {
             return 0;
         }
-        if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, serverWorld, blockPos, EntityType.CAT)) {
-            if (serverWorld.isNearOccupiedPointOfInterest(blockPos, 2)) {
-                return this.spawnInHouse(serverWorld, blockPos);
+        if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, world, blockPos, EntityType.CAT)) {
+            if (world.isNearOccupiedPointOfInterest(blockPos, 2)) {
+                return this.spawnInHouse(world, blockPos);
             }
-            if (serverWorld.getStructureAccessor().method_28388(blockPos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
-                return this.spawnInSwampHut(serverWorld, blockPos);
+            if (world.getStructureAccessor().method_28388(blockPos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
+                return this.spawnInSwampHut(world, blockPos);
             }
         }
         return 0;
@@ -66,23 +65,23 @@ implements Spawner {
         return 0;
     }
 
-    private int spawnInSwampHut(World world, BlockPos pos) {
+    private int spawnInSwampHut(ServerWorld serverWorld, BlockPos pos) {
         int i = 16;
-        List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
+        List<CatEntity> list = serverWorld.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
         if (list.size() < 1) {
-            return this.spawn(pos, world);
+            return this.spawn(pos, serverWorld);
         }
         return 0;
     }
 
-    private int spawn(BlockPos pos, World world) {
-        CatEntity catEntity = EntityType.CAT.create(world);
+    private int spawn(BlockPos pos, ServerWorld serverWorld) {
+        CatEntity catEntity = EntityType.CAT.create(serverWorld);
         if (catEntity == null) {
             return 0;
         }
-        catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
+        catEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
         catEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-        world.spawnEntity(catEntity);
+        serverWorld.spawnEntity(catEntity);
         return 1;
     }
 }

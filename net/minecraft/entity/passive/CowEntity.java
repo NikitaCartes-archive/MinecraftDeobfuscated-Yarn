@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -94,8 +95,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public CowEntity createChild(PassiveEntity passiveEntity) {
-        return EntityType.COW.create(this.world);
+    public CowEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return EntityType.COW.create(serverWorld);
     }
 
     @Override
@@ -107,8 +108,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 }
 

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -30,7 +29,7 @@ public class ReloadCommand {
         });
     }
 
-    private static Collection<String> method_29478(ResourcePackManager<?> resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
+    private static Collection<String> method_29478(ResourcePackManager resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
         resourcePackManager.scanPacks();
         ArrayList<String> collection2 = Lists.newArrayList(collection);
         List<String> collection3 = saveProperties.method_29589().getDisabled();
@@ -45,7 +44,7 @@ public class ReloadCommand {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("reload").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> {
             ServerCommandSource serverCommandSource = (ServerCommandSource)commandContext.getSource();
             MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-            ResourcePackManager<ResourcePackProfile> resourcePackManager = minecraftServer.getDataPackManager();
+            ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
             SaveProperties saveProperties = minecraftServer.getSaveProperties();
             Collection<String> collection = resourcePackManager.getEnabledNames();
             Collection<String> collection2 = ReloadCommand.method_29478(resourcePackManager, saveProperties, collection);

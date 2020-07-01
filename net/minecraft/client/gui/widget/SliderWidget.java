@@ -26,7 +26,7 @@ extends AbstractButtonWidget {
     }
 
     @Override
-    protected int getYImage(boolean isHovered) {
+    protected int getYImage(boolean hovered) {
         return 0;
     }
 

@@ -39,7 +39,7 @@ implements Fertilizable {
 
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-        return floor.isIn(BlockTags.NYLIUM) || floor.isOf(Blocks.SOUL_SOIL) || super.canPlantOnTop(floor, world, pos);
+        return floor.isIn(BlockTags.NYLIUM) || floor.isOf(Blocks.MYCELIUM) || floor.isOf(Blocks.SOUL_SOIL) || super.canPlantOnTop(floor, world, pos);
     }
 
     @Override
@@ -56,7 +56,7 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        this.field_22135.get().generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), random, pos);
+        this.field_22135.get().generate(world, world.getChunkManager().getChunkGenerator(), random, pos);
     }
 }
 

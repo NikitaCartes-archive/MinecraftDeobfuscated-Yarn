@@ -96,9 +96,10 @@ extends Entity {
         this.prevY = this.getY();
         this.prevZ = this.getZ();
         Vec3d vec3d = this.getVelocity();
-        if (this.isSubmergedIn(FluidTags.WATER)) {
+        float f = this.getStandingEyeHeight() - 0.11111111f;
+        if (this.isTouchingWater() && this.getFluidHeight(FluidTags.WATER) > (double)f) {
             this.applyBuoyancy();
-        } else if (this.isSubmergedIn(FluidTags.LAVA)) {
+        } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > (double)f) {
             this.method_24348();
         } else if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
@@ -113,13 +114,16 @@ extends Entity {
         }
         if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getEntityId()) % 4 == 0) {
             this.move(MovementType.SELF, this.getVelocity());
-            float f = 0.98f;
+            float g = 0.98f;
             if (this.onGround) {
-                f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98f;
+                g = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98f;
             }
-            this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
+            this.setVelocity(this.getVelocity().multiply(g, 0.98, g));
             if (this.onGround) {
-                this.setVelocity(this.getVelocity().multiply(1.0, -0.5, 1.0));
+                Vec3d vec3d2 = this.getVelocity();
+                if (vec3d2.y < 0.0) {
+                    this.setVelocity(vec3d2.multiply(1.0, -0.5, 1.0));
+                }
             }
         }
         boolean bl = MathHelper.floor(this.prevX) != MathHelper.floor(this.getX()) || MathHelper.floor(this.prevY) != MathHelper.floor(this.getY()) || MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());

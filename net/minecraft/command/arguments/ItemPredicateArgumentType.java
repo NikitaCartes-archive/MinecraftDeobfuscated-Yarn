@@ -44,7 +44,7 @@ implements ArgumentType<ItemPredicateArgument> {
         }
         Identifier identifier = itemStringReader.getId();
         return commandContext -> {
-            Tag<Item> tag = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getTagManager().items().get(identifier);
+            Tag<Item> tag = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getTagManager().getItems().getTag(identifier);
             if (tag == null) {
                 throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
             }
@@ -66,7 +66,7 @@ implements ArgumentType<ItemPredicateArgument> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return itemStringReader.getSuggestions(builder, ItemTags.getContainer());
+        return itemStringReader.getSuggestions(builder, ItemTags.getTagGroup());
     }
 
     @Override

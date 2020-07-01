@@ -11,7 +11,7 @@ import java.util.Set;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 import net.minecraft.world.gen.feature.Feature;
@@ -19,7 +19,7 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AlterGroundTreeDecorator
 extends TreeDecorator {
-    public static final Codec<AlterGroundTreeDecorator> field_24957 = ((MapCodec)BlockStateProvider.CODEC.fieldOf("provider")).xmap(AlterGroundTreeDecorator::new, alterGroundTreeDecorator -> alterGroundTreeDecorator.field_21316).codec();
+    public static final Codec<AlterGroundTreeDecorator> CODEC = ((MapCodec)BlockStateProvider.CODEC.fieldOf("provider")).xmap(AlterGroundTreeDecorator::new, alterGroundTreeDecorator -> alterGroundTreeDecorator.field_21316).codec();
     private final BlockStateProvider field_21316;
 
     public AlterGroundTreeDecorator(BlockStateProvider blockStateProvider) {
@@ -32,19 +32,19 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+    public void generate(ServerWorldAccess serverWorldAccess, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
         int i = logPositions.get(0).getY();
         logPositions.stream().filter(blockPos -> blockPos.getY() == i).forEach(blockPos -> {
-            this.method_23462(world, random, blockPos.west().north());
-            this.method_23462(world, random, blockPos.east(2).north());
-            this.method_23462(world, random, blockPos.west().south(2));
-            this.method_23462(world, random, blockPos.east(2).south(2));
+            this.method_23462(serverWorldAccess, random, blockPos.west().north());
+            this.method_23462(serverWorldAccess, random, blockPos.east(2).north());
+            this.method_23462(serverWorldAccess, random, blockPos.west().south(2));
+            this.method_23462(serverWorldAccess, random, blockPos.east(2).south(2));
             for (int i = 0; i < 5; ++i) {
                 int j = random.nextInt(64);
                 int k = j % 8;
                 int l = j / 8;
                 if (k != 0 && k != 7 && l != 0 && l != 7) continue;
-                this.method_23462(world, random, blockPos.add(-3 + k, 0, -3 + l));
+                this.method_23462(serverWorldAccess, random, blockPos.add(-3 + k, 0, -3 + l));
             }
         });
     }

@@ -18,9 +18,11 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.mob.AbstractPiglinEntity;
 import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinBrain;
+import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,7 +35,7 @@ public class PiglinSpecificSensor
 extends Sensor<LivingEntity> {
     @Override
     public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-        return ImmutableSet.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.MOBS, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, new MemoryModuleType[]{MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEAREST_ADULT_PIGLINS, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_REPELLENT});
+        return ImmutableSet.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.MOBS, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, new MemoryModuleType[]{MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEARBY_ADULT_PIGLINS, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_REPELLENT});
     }
 
     @Override
@@ -48,8 +50,8 @@ extends Sensor<LivingEntity> {
         Optional<Object> optional6 = Optional.empty();
         Optional<Object> optional7 = Optional.empty();
         int i = 0;
-        ArrayList<PiglinEntity> list = Lists.newArrayList();
-        ArrayList<PiglinEntity> list2 = Lists.newArrayList();
+        ArrayList<AbstractPiglinEntity> list = Lists.newArrayList();
+        ArrayList<AbstractPiglinEntity> list2 = Lists.newArrayList();
         List list3 = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of());
         for (LivingEntity livingEntity : list3) {
             if (livingEntity instanceof HoglinEntity) {
@@ -62,6 +64,10 @@ extends Sensor<LivingEntity> {
                 ++i;
                 if (optional2.isPresent() || !hoglinEntity.canBeHunted()) continue;
                 optional2 = Optional.of(hoglinEntity);
+                continue;
+            }
+            if (livingEntity instanceof PiglinBruteEntity) {
+                list.add((PiglinBruteEntity)livingEntity);
                 continue;
             }
             if (livingEntity instanceof PiglinEntity) {
@@ -92,17 +98,16 @@ extends Sensor<LivingEntity> {
         }
         List list4 = brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of());
         for (LivingEntity livingEntity2 : list4) {
-            if (!(livingEntity2 instanceof PiglinEntity) || !((PiglinEntity)livingEntity2).isAdult()) continue;
-            list2.add((PiglinEntity)livingEntity2);
+            if (!(livingEntity2 instanceof AbstractPiglinEntity) || !((AbstractPiglinEntity)livingEntity2).isAdult()) continue;
+            list2.add((AbstractPiglinEntity)livingEntity2);
         }
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_NEMESIS, optional);
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, optional2);
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, optional3);
-        brain.remember(MemoryModuleType.NEAREST_VISIBLE_BABY_PIGLIN, optional4);
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, optional5);
         brain.remember(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, optional6);
         brain.remember(MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, optional7);
-        brain.remember(MemoryModuleType.NEAREST_ADULT_PIGLINS, list2);
+        brain.remember(MemoryModuleType.NEARBY_ADULT_PIGLINS, list2);
         brain.remember(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, list);
         brain.remember(MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, list.size());
         brain.remember(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, i);

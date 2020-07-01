@@ -10,6 +10,7 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
+import net.minecraft.class_5425;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.Structure;
@@ -22,7 +23,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
@@ -93,7 +93,7 @@ extends StructurePiece {
         return true;
     }
 
-    protected abstract void handleMetadata(String var1, BlockPos var2, WorldAccess var3, Random var4, BlockBox var5);
+    protected abstract void handleMetadata(String var1, BlockPos var2, class_5425 var3, Random var4, BlockBox var5);
 
     @Override
     public void translate(int x, int y, int z) {

@@ -4,6 +4,7 @@
 package net.minecraft.entity.passive;
 
 import java.util.UUID;
+import net.minecraft.class_5425;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -26,6 +27,7 @@ import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -34,7 +36,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class HorseEntity
@@ -227,20 +228,20 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public PassiveEntity createChild(PassiveEntity mate) {
+    public PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         HorseBaseEntity horseBaseEntity;
-        if (mate instanceof DonkeyEntity) {
-            horseBaseEntity = EntityType.MULE.create(this.world);
+        if (passiveEntity instanceof DonkeyEntity) {
+            horseBaseEntity = EntityType.MULE.create(serverWorld);
         } else {
-            HorseEntity horseEntity = (HorseEntity)mate;
-            horseBaseEntity = EntityType.HORSE.create(this.world);
+            HorseEntity horseEntity = (HorseEntity)passiveEntity;
+            horseBaseEntity = EntityType.HORSE.create(serverWorld);
             int i = this.random.nextInt(9);
             HorseColor horseColor = i < 4 ? this.getColor() : (i < 8 ? horseEntity.getColor() : Util.getRandom(HorseColor.values(), this.random));
             int j = this.random.nextInt(5);
             HorseMarking horseMarking = j < 2 ? this.getMarking() : (j < 4 ? horseEntity.getMarking() : Util.getRandom(HorseMarking.values(), this.random));
             ((HorseEntity)horseBaseEntity).setVariant(horseColor, horseMarking);
         }
-        this.setChildAttributes(mate, horseBaseEntity);
+        this.setChildAttributes(passiveEntity, horseBaseEntity);
         return horseBaseEntity;
     }
 
@@ -256,7 +257,7 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         HorseColor horseColor;
         if (entityData instanceof HorseData) {
             horseColor = ((HorseData)entityData).color;
@@ -265,7 +266,7 @@ extends HorseBaseEntity {
             entityData = new HorseData(horseColor);
         }
         this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), this.random));
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }
 
     public static class HorseData

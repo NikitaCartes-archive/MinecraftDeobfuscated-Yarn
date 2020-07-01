@@ -53,7 +53,7 @@ extends Task<VillagerEntity> {
             return;
         }
         LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5f);
-        villagerEntity.talkWithVillager(villagerEntity2, l);
+        villagerEntity.talkWithVillager(serverWorld, villagerEntity2, l);
         if (villagerEntity.wantsToStartBreeding() && (villagerEntity.getVillagerData().getProfession() == VillagerProfession.FARMER || villagerEntity2.canBreed())) {
             GatherItemsVillagerTask.giveHalfOfStack(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet(), villagerEntity2);
         }

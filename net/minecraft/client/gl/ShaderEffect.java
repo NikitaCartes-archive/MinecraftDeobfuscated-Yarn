@@ -193,13 +193,13 @@ implements AutoCloseable {
                                 RenderSystem.texParameter(3553, 10241, 9728);
                                 RenderSystem.texParameter(3553, 10240, 9728);
                             }
-                            postProcessShader.addAuxTarget(string4, abstractTexture.getGlId(), j, k);
+                            postProcessShader.addAuxTarget(string4, abstractTexture::getGlId, j, k);
                             break block20;
                         }
                         if (bl) {
-                            postProcessShader.addAuxTarget(string4, framebuffer3.depthAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                            postProcessShader.addAuxTarget(string4, framebuffer3::method_30278, framebuffer3.textureWidth, framebuffer3.textureHeight);
                         } else {
-                            postProcessShader.addAuxTarget(string4, framebuffer3, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                            postProcessShader.addAuxTarget(string4, framebuffer3::method_30277, framebuffer3.textureWidth, framebuffer3.textureHeight);
                         }
                     } catch (Exception exception) {
                         ShaderParseException shaderParseException = ShaderParseException.wrap(exception);

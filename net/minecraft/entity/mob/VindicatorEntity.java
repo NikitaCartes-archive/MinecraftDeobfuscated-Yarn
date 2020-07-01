@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5425;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -50,7 +51,6 @@ import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class VindicatorEntity
@@ -67,8 +67,8 @@ extends IllagerEntity {
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new BreakDoorGoal(this));
-        this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this, this));
-        this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, 10.0f));
+        this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this));
+        this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, this, 10.0f));
         this.goalSelector.add(4, new AttackGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
         this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
@@ -129,8 +129,8 @@ extends IllagerEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        EntityData entityData2 = super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
         ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);

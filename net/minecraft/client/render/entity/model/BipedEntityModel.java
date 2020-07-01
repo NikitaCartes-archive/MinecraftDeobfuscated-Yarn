@@ -35,7 +35,7 @@ ModelWithHead {
     public ModelPart leftLeg;
     public ArmPose leftArmPose = ArmPose.EMPTY;
     public ArmPose rightArmPose = ArmPose.EMPTY;
-    public boolean isSneaking;
+    public boolean sneaking;
     public float leaningPitch;
 
     public BipedEntityModel(float scale) {
@@ -144,7 +144,7 @@ ModelWithHead {
             this.method_30155(livingEntity);
         }
         this.method_29353(livingEntity, h);
-        if (this.isSneaking) {
+        if (this.sneaking) {
             this.torso.pitch = 0.5f;
             this.rightArm.pitch += 0.4f;
             this.leftArm.pitch += 0.4f;
@@ -331,7 +331,7 @@ ModelWithHead {
         super.copyStateTo(bipedEntityModel);
         bipedEntityModel.leftArmPose = this.leftArmPose;
         bipedEntityModel.rightArmPose = this.rightArmPose;
-        bipedEntityModel.isSneaking = this.isSneaking;
+        bipedEntityModel.sneaking = this.sneaking;
         bipedEntityModel.head.copyPositionAndRotation(this.head);
         bipedEntityModel.helmet.copyPositionAndRotation(this.helmet);
         bipedEntityModel.torso.copyPositionAndRotation(this.torso);

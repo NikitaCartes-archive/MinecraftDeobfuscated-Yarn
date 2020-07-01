@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.IntSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -25,7 +26,7 @@ implements AutoCloseable {
     private final JsonGlProgram program;
     public final Framebuffer input;
     public final Framebuffer output;
-    private final List<Object> samplerValues = Lists.newArrayList();
+    private final List<IntSupplier> samplerValues = Lists.newArrayList();
     private final List<String> samplerNames = Lists.newArrayList();
     private final List<Integer> samplerWidths = Lists.newArrayList();
     private final List<Integer> samplerHeights = Lists.newArrayList();
@@ -42,9 +43,9 @@ implements AutoCloseable {
         this.program.close();
     }
 
-    public void addAuxTarget(String name, Object target, int width, int height) {
+    public void addAuxTarget(String name, IntSupplier intSupplier, int width, int height) {
         this.samplerNames.add(this.samplerNames.size(), name);
-        this.samplerValues.add(this.samplerValues.size(), target);
+        this.samplerValues.add(this.samplerValues.size(), intSupplier);
         this.samplerWidths.add(this.samplerWidths.size(), width);
         this.samplerHeights.add(this.samplerHeights.size(), height);
     }
@@ -58,7 +59,7 @@ implements AutoCloseable {
         float f = this.output.textureWidth;
         float g = this.output.textureHeight;
         RenderSystem.viewport(0, 0, (int)f, (int)g);
-        this.program.bindSampler("DiffuseSampler", this.input);
+        this.program.bindSampler("DiffuseSampler", this.input::method_30277);
         for (int i = 0; i < this.samplerValues.size(); ++i) {
             this.program.bindSampler(this.samplerNames.get(i), this.samplerValues.get(i));
             this.program.getUniformByNameOrDummy("AuxSize" + i).set(this.samplerWidths.get(i).intValue(), this.samplerHeights.get(i).intValue());
@@ -85,9 +86,9 @@ implements AutoCloseable {
         this.program.disable();
         this.output.endWrite();
         this.input.endRead();
-        for (Object object : this.samplerValues) {
+        for (IntSupplier object : this.samplerValues) {
             if (!(object instanceof Framebuffer)) continue;
-            ((Framebuffer)object).endRead();
+            ((Framebuffer)((Object)object)).endRead();
         }
     }
 

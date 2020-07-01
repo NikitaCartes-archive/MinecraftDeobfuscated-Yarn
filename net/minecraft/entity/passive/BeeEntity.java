@@ -528,8 +528,8 @@ Flutterer {
     }
 
     @Override
-    public BeeEntity createChild(PassiveEntity passiveEntity) {
-        return EntityType.BEE.create(this.world);
+    public BeeEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return EntityType.BEE.create(serverWorld);
     }
 
     @Override
@@ -592,8 +592,8 @@ Flutterer {
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 
     class EnterHiveGoal

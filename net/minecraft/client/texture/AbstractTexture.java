@@ -15,7 +15,8 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class AbstractTexture {
+public abstract class AbstractTexture
+implements AutoCloseable {
     protected int glId = -1;
     protected boolean bilinear;
     protected boolean mipmap;
@@ -71,6 +72,10 @@ public abstract class AbstractTexture {
 
     public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
         textureManager.registerTexture(identifier, this);
+    }
+
+    @Override
+    public void close() {
     }
 }
 

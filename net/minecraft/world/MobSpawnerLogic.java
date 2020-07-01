@@ -17,6 +17,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -74,7 +75,7 @@ public abstract class MobSpawnerLogic {
         }
         World world = this.getWorld();
         BlockPos blockPos = this.getPos();
-        if (world.isClient) {
+        if (!(world instanceof ServerWorld)) {
             double d = (double)blockPos.getX() + world.random.nextDouble();
             double e = (double)blockPos.getY() + world.random.nextDouble();
             double f = (double)blockPos.getZ() + world.random.nextDouble();
@@ -107,7 +108,9 @@ public abstract class MobSpawnerLogic {
                 double g = j >= 1 ? listTag.getDouble(0) : (double)blockPos.getX() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
                 double h = j >= 2 ? listTag.getDouble(1) : (double)(blockPos.getY() + world.random.nextInt(3) - 1);
                 double d = k = j >= 3 ? listTag.getDouble(2) : (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-                if (!world.doesNotCollide(optional.get().createSimpleBoundingBox(g, h, k)) || !SpawnRestriction.canSpawn(optional.get(), world.getWorld(), SpawnReason.SPAWNER, new BlockPos(g, h, k), world.getRandom())) continue;
+                if (!world.doesNotCollide(optional.get().createSimpleBoundingBox(g, h, k))) continue;
+                ServerWorld serverWorld = (ServerWorld)world;
+                if (!SpawnRestriction.canSpawn(optional.get(), serverWorld, SpawnReason.SPAWNER, new BlockPos(g, h, k), world.getRandom())) continue;
                 Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, world, entity -> {
                     entity.refreshPositionAndAngles(g, h, k, entity.yaw, entity.pitch);
                     return entity;
@@ -126,7 +129,7 @@ public abstract class MobSpawnerLogic {
                     MobEntity mobEntity = (MobEntity)entity2;
                     if (!mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) continue;
                     if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().contains("id", 8)) {
-                        ((MobEntity)entity2).initialize(world, world.getLocalDifficulty(entity2.getBlockPos()), SpawnReason.SPAWNER, null, null);
+                        ((MobEntity)entity2).initialize(serverWorld, world.getLocalDifficulty(entity2.getBlockPos()), SpawnReason.SPAWNER, null, null);
                     }
                 }
                 this.spawnEntity(entity2);
@@ -220,8 +223,8 @@ public abstract class MobSpawnerLogic {
     public Entity getRenderedEntity() {
         if (this.renderedEntity == null) {
             this.renderedEntity = EntityType.loadEntityWithPassengers(this.spawnEntry.getEntityTag(), this.getWorld(), Function.identity());
-            if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().contains("id", 8) && this.renderedEntity instanceof MobEntity) {
-                ((MobEntity)this.renderedEntity).initialize(this.getWorld(), this.getWorld().getLocalDifficulty(this.renderedEntity.getBlockPos()), SpawnReason.SPAWNER, null, null);
+            if (this.spawnEntry.getEntityTag().getSize() != 1 || !this.spawnEntry.getEntityTag().contains("id", 8) || this.renderedEntity instanceof MobEntity) {
+                // empty if block
             }
         }
         return this.renderedEntity;

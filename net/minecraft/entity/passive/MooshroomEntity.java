@@ -70,8 +70,8 @@ implements Shearable {
     }
 
     @Override
-    public void onStruckByLightning(LightningEntity lightning) {
-        UUID uUID = lightning.getUuid();
+    public void onStruckByLightning(ServerWorld serverWorld, LightningEntity lightningEntity) {
+        UUID uUID = lightningEntity.getUuid();
         if (!uUID.equals(this.lightningId)) {
             this.setType(this.getMooshroomType() == Type.RED ? Type.BROWN : Type.RED);
             this.lightningId = uUID;
@@ -100,7 +100,7 @@ implements Shearable {
             } else {
                 itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
             }
-            ItemStack itemStack3 = ItemUsage.method_30012(itemStack, player, itemStack2);
+            ItemStack itemStack3 = ItemUsage.method_30270(itemStack, player, itemStack2, false);
             player.setStackInHand(hand, itemStack3);
             SoundEvent soundEvent = bl ? SoundEvents.ENTITY_MOOSHROOM_SUSPICIOUS_MILK : SoundEvents.ENTITY_MOOSHROOM_MILK;
             this.playSound(soundEvent, 1.0f, 1.0f);
@@ -210,8 +210,8 @@ implements Shearable {
     }
 
     @Override
-    public MooshroomEntity createChild(PassiveEntity passiveEntity) {
-        MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(this.world);
+    public MooshroomEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(serverWorld);
         mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
         return mooshroomEntity;
     }
@@ -224,13 +224,13 @@ implements Shearable {
     }
 
     @Override
-    public /* synthetic */ CowEntity createChild(PassiveEntity passiveEntity) {
-        return this.createChild(passiveEntity);
+    public /* synthetic */ CowEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 
     @Override
-    public /* synthetic */ PassiveEntity createChild(PassiveEntity mate) {
-        return this.createChild(mate);
+    public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return this.createChild(serverWorld, passiveEntity);
     }
 
     public static enum Type {

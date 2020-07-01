@@ -123,7 +123,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         }
 
         static {
-            field_24840 = StringIdentifiable.method_28140(Type::values, Type::byName);
+            field_24840 = StringIdentifiable.createCodec(Type::values, Type::byName);
             BY_NAME = Arrays.stream(Type.values()).collect(Collectors.toMap(Type::getName, type -> type));
         }
     }

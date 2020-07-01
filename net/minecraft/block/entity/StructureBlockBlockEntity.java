@@ -386,8 +386,8 @@ extends BlockEntity {
         return true;
     }
 
-    public boolean loadStructure() {
-        return this.loadStructure(true);
+    public boolean loadStructure(ServerWorld serverWorld) {
+        return this.loadStructure(serverWorld, true);
     }
 
     private static Random createRandom(long seed) {
@@ -397,12 +397,11 @@ extends BlockEntity {
         return new Random(seed);
     }
 
-    public boolean loadStructure(boolean resizeDisabled) {
+    public boolean loadStructure(ServerWorld serverWorld, boolean bl) {
         Structure structure;
-        if (this.mode != StructureBlockMode.LOAD || this.world.isClient || this.structureName == null) {
+        if (this.mode != StructureBlockMode.LOAD || this.structureName == null) {
             return false;
         }
-        ServerWorld serverWorld = (ServerWorld)this.world;
         StructureManager structureManager = serverWorld.getStructureManager();
         try {
             structure = structureManager.getStructure(this.structureName);
@@ -412,29 +411,29 @@ extends BlockEntity {
         if (structure == null) {
             return false;
         }
-        return this.place(resizeDisabled, structure);
+        return this.place(serverWorld, bl, structure);
     }
 
-    public boolean place(boolean resizeDisabled, Structure structure) {
+    public boolean place(ServerWorld serverWorld, boolean bl, Structure structure) {
         BlockPos blockPos2;
-        boolean bl;
+        boolean bl2;
         BlockPos blockPos = this.getPos();
         if (!ChatUtil.isEmpty(structure.getAuthor())) {
             this.author = structure.getAuthor();
         }
-        if (!(bl = this.size.equals(blockPos2 = structure.getSize()))) {
+        if (!(bl2 = this.size.equals(blockPos2 = structure.getSize()))) {
             this.size = blockPos2;
             this.markDirty();
-            BlockState blockState = this.world.getBlockState(blockPos);
-            this.world.updateListeners(blockPos, blockState, blockState, 3);
+            BlockState blockState = serverWorld.getBlockState(blockPos);
+            serverWorld.updateListeners(blockPos, blockState, blockState, 3);
         }
-        if (!resizeDisabled || bl) {
+        if (!bl || bl2) {
             StructurePlacementData structurePlacementData = new StructurePlacementData().setMirror(this.mirror).setRotation(this.rotation).setIgnoreEntities(this.ignoreEntities).setChunkPosition(null);
             if (this.integrity < 1.0f) {
                 structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0f, 1.0f))).setRandom(StructureBlockBlockEntity.createRandom(this.seed));
             }
             BlockPos blockPos3 = blockPos.add(this.offset);
-            structure.place(this.world, blockPos3, structurePlacementData, StructureBlockBlockEntity.createRandom(this.seed));
+            structure.place(serverWorld, blockPos3, structurePlacementData, StructureBlockBlockEntity.createRandom(this.seed));
             return true;
         }
         return false;

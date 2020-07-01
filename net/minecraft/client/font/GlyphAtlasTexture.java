@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.font;
 
-import java.io.Closeable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.GlyphRenderer;
@@ -18,8 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class GlyphAtlasTexture
-extends AbstractTexture
-implements Closeable {
+extends AbstractTexture {
     private final Identifier id;
     private final RenderLayer field_21690;
     private final RenderLayer field_21691;

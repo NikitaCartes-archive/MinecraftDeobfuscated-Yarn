@@ -121,7 +121,6 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
-import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
@@ -292,7 +291,7 @@ WindowEventHandler {
     private final boolean onlineChatEnabled;
     private final ReloadableResourceManager resourceManager;
     private final ClientBuiltinResourcePackProvider builtinPackProvider;
-    private final ResourcePackManager<ClientResourcePackProfile> resourcePackManager;
+    private final ResourcePackManager resourcePackManager;
     private final LanguageManager languageManager;
     private final BlockColors blockColors;
     private final ItemColors itemColors;
@@ -376,7 +375,7 @@ WindowEventHandler {
         this.versionType = args.game.versionType;
         this.sessionPropertyMap = args.network.profileProperties;
         this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
-        this.resourcePackManager = new ResourcePackManager<ClientResourcePackProfile>(MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.field_25347));
+        this.resourcePackManager = new ResourcePackManager(MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.field_25347));
         this.netProxy = args.network.netProxy;
         this.sessionService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString()).createMinecraftSessionService();
         this.session = args.network.session;
@@ -595,7 +594,7 @@ WindowEventHandler {
 
     private void initializeSearchableContainers() {
         TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<ItemStack>(itemStack -> itemStack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(text -> Formatting.strip(text.getString()).trim()).filter(string -> !string.isEmpty()), itemStack -> Stream.of(Registry.ITEM.getId(itemStack.getItem())));
-        IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<ItemStack>(itemStack -> ItemTags.getContainer().getTagsFor(itemStack.getItem()).stream());
+        IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<ItemStack>(itemStack -> ItemTags.getTagGroup().getTagsFor(itemStack.getItem()).stream());
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         for (Item item : Registry.ITEM) {
             item.appendStacks(ItemGroup.SEARCH, defaultedList);
@@ -1575,7 +1574,7 @@ WindowEventHandler {
 
     public IntegratedResourceManager method_29604(RegistryTracker.Modifiable modifiable, Function<LevelStorage.Session, DataPackSettings> function, Function4<LevelStorage.Session, RegistryTracker.Modifiable, ResourceManager, DataPackSettings, SaveProperties> function4, boolean bl, LevelStorage.Session session) throws InterruptedException, ExecutionException {
         DataPackSettings dataPackSettings = function.apply(session);
-        ResourcePackManager<ResourcePackProfile> resourcePackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
+        ResourcePackManager resourcePackManager = new ResourcePackManager(new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
         try {
             DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(resourcePackManager, dataPackSettings, bl);
             CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this);
@@ -1899,9 +1898,9 @@ WindowEventHandler {
         snooper.addInfo("subtitles", this.options.showSubtitles);
         snooper.addInfo("touch", this.options.touchscreen ? "touch" : "mouse");
         int i = 0;
-        for (ClientResourcePackProfile clientResourcePackProfile : this.resourcePackManager.getEnabledProfiles()) {
-            if (clientResourcePackProfile.isAlwaysEnabled() || clientResourcePackProfile.isPinned()) continue;
-            snooper.addInfo("resource_pack[" + i++ + "]", clientResourcePackProfile.getName());
+        for (ResourcePackProfile resourcePackProfile : this.resourcePackManager.getEnabledProfiles()) {
+            if (resourcePackProfile.isAlwaysEnabled() || resourcePackProfile.isPinned()) continue;
+            snooper.addInfo("resource_pack[" + i++ + "]", resourcePackProfile.getName());
         }
         snooper.addInfo("resource_packs", i);
         if (this.server != null) {
@@ -1980,7 +1979,7 @@ WindowEventHandler {
         return this.resourceManager;
     }
 
-    public ResourcePackManager<ClientResourcePackProfile> getResourcePackManager() {
+    public ResourcePackManager getResourcePackManager() {
         return this.resourcePackManager;
     }
 
@@ -2190,7 +2189,7 @@ WindowEventHandler {
         return this.bufferBuilders;
     }
 
-    private static ClientResourcePackProfile createResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) {
+    private static ResourcePackProfile createResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) {
         int i = packResourceMetadata.getPackFormat();
         Supplier<ResourcePack> supplier2 = supplier;
         if (i <= 3) {
@@ -2199,7 +2198,7 @@ WindowEventHandler {
         if (i <= 4) {
             supplier2 = MinecraftClient.createV4ResourcePackFactory(supplier2);
         }
-        return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
+        return new ResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
     }
 
     private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> supplier) {
@@ -2227,17 +2226,17 @@ WindowEventHandler {
     @Environment(value=EnvType.CLIENT)
     public static final class IntegratedResourceManager
     implements AutoCloseable {
-        private final ResourcePackManager<ResourcePackProfile> resourcePackManager;
+        private final ResourcePackManager resourcePackManager;
         private final ServerResourceManager serverResourceManager;
         private final SaveProperties saveProperties;
 
-        private IntegratedResourceManager(ResourcePackManager<ResourcePackProfile> resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties) {
+        private IntegratedResourceManager(ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties) {
             this.resourcePackManager = resourcePackManager;
             this.serverResourceManager = serverResourceManager;
             this.saveProperties = saveProperties;
         }
 
-        public ResourcePackManager<ResourcePackProfile> getResourcePackManager() {
+        public ResourcePackManager getResourcePackManager() {
             return this.resourcePackManager;
         }
 

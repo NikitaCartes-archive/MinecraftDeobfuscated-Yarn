@@ -22,14 +22,14 @@ implements AutoCloseable {
     private final NativeImageBackedTexture texture;
     private final NativeImage image;
     private final Identifier textureIdentifier;
-    private boolean isDirty;
+    private boolean dirty;
     private float field_21528;
-    private final GameRenderer worldRenderer;
+    private final GameRenderer renderer;
     private final MinecraftClient client;
 
-    public LightmapTextureManager(GameRenderer gameRenderer, MinecraftClient minecraftClient) {
-        this.worldRenderer = gameRenderer;
-        this.client = minecraftClient;
+    public LightmapTextureManager(GameRenderer renderer, MinecraftClient client) {
+        this.renderer = renderer;
+        this.client = client;
         this.texture = new NativeImageBackedTexture(16, 16, false);
         this.textureIdentifier = this.client.getTextureManager().registerDynamicTexture("light_map", this.texture);
         this.image = this.texture.getImage();
@@ -49,7 +49,7 @@ implements AutoCloseable {
     public void tick() {
         this.field_21528 = (float)((double)this.field_21528 + (Math.random() - Math.random()) * Math.random() * Math.random() * 0.1);
         this.field_21528 = (float)((double)this.field_21528 * 0.9);
-        this.isDirty = true;
+        this.dirty = true;
     }
 
     public void disable() {
@@ -77,10 +77,10 @@ implements AutoCloseable {
     }
 
     public void update(float delta) {
-        if (!this.isDirty) {
+        if (!this.dirty) {
             return;
         }
-        this.isDirty = false;
+        this.dirty = false;
         this.client.getProfiler().push("lightTex");
         ClientWorld clientWorld = this.client.world;
         if (clientWorld == null) {
@@ -112,8 +112,8 @@ implements AutoCloseable {
                     vector3f3.scale(m);
                     vector3f2.add(vector3f3);
                     vector3f2.lerp(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
-                    if (this.worldRenderer.getSkyDarkness(delta) > 0.0f) {
-                        r = this.worldRenderer.getSkyDarkness(delta);
+                    if (this.renderer.getSkyDarkness(delta) > 0.0f) {
+                        r = this.renderer.getSkyDarkness(delta);
                         vector3f4 = vector3f2.copy();
                         vector3f4.multiplyComponentwise(0.7f, 0.6f, 0.6f);
                         vector3f2.lerp(vector3f4, r);

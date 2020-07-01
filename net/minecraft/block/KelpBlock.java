@@ -66,7 +66,7 @@ implements FluidFillable {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
         if (fluidState.isIn(FluidTags.WATER) && fluidState.getLevel() == 8) {
-            return this.getRandomGrowthState(ctx.getWorld());
+            return super.getPlacementState(ctx);
         }
         return null;
     }

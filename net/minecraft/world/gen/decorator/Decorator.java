@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.CarvingMaskDecorator;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
@@ -127,10 +126,10 @@ public abstract class Decorator<DC extends DecoratorConfig> {
         return this.codec;
     }
 
-    protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
+    protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
         MutableBoolean mutableBoolean = new MutableBoolean();
         this.getPositions(serverWorldAccess, chunkGenerator, random, decoratorConfig, blockPos2).forEach(blockPos -> {
-            if (configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, (BlockPos)blockPos)) {
+            if (configuredFeature.generate(serverWorldAccess, chunkGenerator, random, (BlockPos)blockPos)) {
                 mutableBoolean.setTrue();
             }
         });

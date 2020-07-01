@@ -7,11 +7,11 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
 public class BoatDispenserBehavior
 extends ItemDispenserBehavior {
@@ -26,7 +26,7 @@ extends ItemDispenserBehavior {
     public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
         double g;
         Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-        World world = pointer.getWorld();
+        ServerWorld world = pointer.getWorld();
         double d = pointer.getX() + (double)((float)direction.getOffsetX() * 1.125f);
         double e = pointer.getY() + (double)((float)direction.getOffsetY() * 1.125f);
         double f = pointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125f);

@@ -186,16 +186,16 @@ Element {
     extends AbstractButtonWidget
     implements RecipeGridAligner<Ingredient> {
         private final Recipe<?> recipe;
-        private final boolean isCraftable;
+        private final boolean craftable;
         protected final List<InputSlot> slots;
 
-        public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean isCraftable) {
+        public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean craftable) {
             super(x, y, 200, 20, LiteralText.EMPTY);
             this.slots = Lists.newArrayList();
             this.width = 24;
             this.height = 24;
             this.recipe = recipe;
-            this.isCraftable = isCraftable;
+            this.craftable = craftable;
             this.alignRecipe(recipe);
         }
 
@@ -217,7 +217,7 @@ Element {
             RenderSystem.enableAlphaTest();
             RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(BG_TEX);
             int i = 152;
-            if (!this.isCraftable) {
+            if (!this.craftable) {
                 i += 26;
             }
             int n = j = RecipeAlternativesWidget.this.furnace ? 130 : 78;

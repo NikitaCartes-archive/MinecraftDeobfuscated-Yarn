@@ -3,6 +3,8 @@
  */
 package net.minecraft.client.render.entity;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -10,16 +12,16 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PiglinEntityModel;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.AbstractPiglinEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class PiglinEntityRenderer
 extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
-    private static final Identifier PIGLIN_TEXTURE = new Identifier("textures/entity/piglin/piglin.png");
-    private static final Identifier ZOMBIFIED_PIGLIN_TEXTURE = new Identifier("textures/entity/piglin/zombified_piglin.png");
+    private static final Map<EntityType<?>, Identifier> field_25793 = ImmutableMap.of(EntityType.PIGLIN, new Identifier("textures/entity/piglin/piglin.png"), EntityType.ZOMBIFIED_PIGLIN, new Identifier("textures/entity/piglin/zombified_piglin.png"), EntityType.PIGLIN_BRUTE, new Identifier("textures/entity/piglin/piglin_brute.png"));
 
     public PiglinEntityRenderer(EntityRenderDispatcher dispatcher, boolean zombified) {
         super(dispatcher, PiglinEntityRenderer.getPiglinModel(zombified), 0.5f, 1.0019531f, 1.0f, 1.0019531f);
@@ -36,12 +38,16 @@ extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
 
     @Override
     public Identifier getTexture(MobEntity mobEntity) {
-        return mobEntity instanceof PiglinEntity ? PIGLIN_TEXTURE : ZOMBIFIED_PIGLIN_TEXTURE;
+        Identifier identifier = field_25793.get(mobEntity.getType());
+        if (identifier == null) {
+            throw new IllegalArgumentException("I don't know what texture to use for " + mobEntity.getType());
+        }
+        return identifier;
     }
 
     @Override
     protected boolean isShaking(MobEntity mobEntity) {
-        return mobEntity instanceof PiglinEntity && ((PiglinEntity)mobEntity).canConvert();
+        return mobEntity instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)mobEntity).shouldZombify();
     }
 
     @Override

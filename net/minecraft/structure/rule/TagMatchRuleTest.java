@@ -10,12 +10,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.structure.rule.RuleTestType;
+import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainers;
 
 public class TagMatchRuleTest
 extends RuleTest {
-    public static final Codec<TagMatchRuleTest> field_25014 = ((MapCodec)Tag.method_28134(TagContainers.instance()::blocks).fieldOf("tag")).xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag).codec();
+    public static final Codec<TagMatchRuleTest> field_25014 = ((MapCodec)Tag.codec(ServerTagManagerHolder.getTagManager()::getBlocks).fieldOf("tag")).xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag).codec();
     private final Tag<Block> tag;
 
     public TagMatchRuleTest(Tag<Block> tag) {

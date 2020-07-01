@@ -43,7 +43,7 @@ extends SaplingGenerator {
         serverWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
         serverWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);
         serverWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState2, 4);
-        if (configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), chunkGenerator, random, blockPos.add(i, 0, j))) {
+        if (configuredFeature.generate(serverWorld, chunkGenerator, random, blockPos.add(i, 0, j))) {
             return true;
         }
         serverWorld.setBlockState(blockPos.add(i, 0, j), blockState, 4);

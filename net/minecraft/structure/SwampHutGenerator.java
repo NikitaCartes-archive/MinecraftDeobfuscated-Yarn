@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.StairShape;
+import net.minecraft.class_5425;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WitchEntity;
@@ -21,7 +22,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -55,17 +55,17 @@ extends StructurePieceWithDimensions {
         if (!this.method_14839(serverWorldAccess, boundingBox, 0)) {
             return false;
         }
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 1, 1, 5, 1, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 4, 2, 5, 4, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 2, 1, 0, 4, 1, 0, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 2, 2, 2, 3, 3, 2, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 2, 3, 1, 3, 6, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 5, 2, 3, 5, 3, 6, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 2, 2, 7, 4, 3, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 0, 2, 1, 3, 2, Blocks.OAK_LOG.getDefaultState(), Blocks.OAK_LOG.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 5, 0, 2, 5, 3, 2, Blocks.OAK_LOG.getDefaultState(), Blocks.OAK_LOG.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 1, 0, 7, 1, 3, 7, Blocks.OAK_LOG.getDefaultState(), Blocks.OAK_LOG.getDefaultState(), false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 5, 0, 7, 5, 3, 7, Blocks.OAK_LOG.getDefaultState(), Blocks.OAK_LOG.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 1, 1, 1, 5, 1, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 1, 4, 2, 5, 4, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 2, 1, 0, 4, 1, 0, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 2, 2, 2, 3, 3, 2, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 1, 2, 3, 1, 3, 6, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 5, 2, 3, 5, 3, 6, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 2, 2, 7, 4, 3, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 1, 0, 2, 1, 3, 2, Blocks.OAK_LOG.getDefaultState(), Blocks.OAK_LOG.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 5, 0, 2, 5, 3, 2, Blocks.OAK_LOG.getDefaultState(), Blocks.OAK_LOG.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 1, 0, 7, 1, 3, 7, Blocks.OAK_LOG.getDefaultState(), Blocks.OAK_LOG.getDefaultState(), false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 5, 0, 7, 5, 3, 7, Blocks.OAK_LOG.getDefaultState(), Blocks.OAK_LOG.getDefaultState(), false);
         this.addBlock(serverWorldAccess, Blocks.OAK_FENCE.getDefaultState(), 2, 3, 2, boundingBox);
         this.addBlock(serverWorldAccess, Blocks.OAK_FENCE.getDefaultState(), 3, 3, 7, boundingBox);
         this.addBlock(serverWorldAccess, Blocks.AIR.getDefaultState(), 1, 3, 4, boundingBox);
@@ -80,10 +80,10 @@ extends StructurePieceWithDimensions {
         BlockState blockState2 = (BlockState)Blocks.SPRUCE_STAIRS.getDefaultState().with(StairsBlock.FACING, Direction.EAST);
         BlockState blockState3 = (BlockState)Blocks.SPRUCE_STAIRS.getDefaultState().with(StairsBlock.FACING, Direction.WEST);
         BlockState blockState4 = (BlockState)Blocks.SPRUCE_STAIRS.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 4, 1, 6, 4, 1, blockState, blockState, false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 4, 2, 0, 4, 7, blockState2, blockState2, false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 6, 4, 2, 6, 4, 7, blockState3, blockState3, false);
-        this.fillWithOutline((WorldAccess)serverWorldAccess, boundingBox, 0, 4, 8, 6, 4, 8, blockState4, blockState4, false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 0, 4, 1, 6, 4, 1, blockState, blockState, false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 0, 4, 2, 0, 4, 7, blockState2, blockState2, false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 6, 4, 2, 6, 4, 7, blockState3, blockState3, false);
+        this.fillWithOutline(serverWorldAccess, boundingBox, 0, 4, 8, 6, 4, 8, blockState4, blockState4, false);
         this.addBlock(serverWorldAccess, (BlockState)blockState.with(StairsBlock.SHAPE, StairShape.OUTER_RIGHT), 0, 4, 1, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)blockState.with(StairsBlock.SHAPE, StairShape.OUTER_LEFT), 6, 4, 1, boundingBox);
         this.addBlock(serverWorldAccess, (BlockState)blockState4.with(StairsBlock.SHAPE, StairShape.OUTER_LEFT), 0, 4, 8, boundingBox);
@@ -105,17 +105,17 @@ extends StructurePieceWithDimensions {
         return true;
     }
 
-    private void method_16181(WorldAccess worldAccess, BlockBox blockBox) {
+    private void method_16181(class_5425 arg, BlockBox blockBox) {
         int k;
         int j;
         int i;
         if (!this.hasCat && blockBox.contains(new BlockPos(i = this.applyXTransform(2, 5), j = this.applyYTransform(2), k = this.applyZTransform(2, 5)))) {
             this.hasCat = true;
-            CatEntity catEntity = EntityType.CAT.create(worldAccess.getWorld());
+            CatEntity catEntity = EntityType.CAT.create(arg.getWorld());
             catEntity.setPersistent();
             catEntity.refreshPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
-            catEntity.initialize(worldAccess, worldAccess.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
-            worldAccess.spawnEntity(catEntity);
+            catEntity.initialize(arg, arg.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
+            arg.spawnEntity(catEntity);
         }
     }
 }

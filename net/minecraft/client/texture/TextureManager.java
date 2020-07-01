@@ -6,7 +6,6 @@ package net.minecraft.client.texture;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.realmsclient.RealmsMainScreen;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,6 +17,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.realms.RealmsMainScreen;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.AsyncTexture;
 import net.minecraft.client.texture.MissingSprite;
@@ -73,13 +73,24 @@ AutoCloseable {
         AbstractTexture abstractTexture2 = this.textures.put(identifier, abstractTexture = this.method_24303(identifier, abstractTexture));
         if (abstractTexture2 != abstractTexture) {
             if (abstractTexture2 != null && abstractTexture2 != MissingSprite.getMissingSpriteTexture()) {
-                abstractTexture2.clearGlId();
                 this.tickListeners.remove(abstractTexture2);
+                this.method_30299(identifier, abstractTexture2);
             }
             if (abstractTexture instanceof TextureTickListener) {
                 this.tickListeners.add((TextureTickListener)((Object)abstractTexture));
             }
         }
+    }
+
+    private void method_30299(Identifier identifier, AbstractTexture abstractTexture) {
+        if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
+            try {
+                abstractTexture.close();
+            } catch (Exception exception) {
+                LOGGER.warn("Failed to close texture {}", (Object)identifier, (Object)exception);
+            }
+        }
+        abstractTexture.clearGlId();
     }
 
     private AbstractTexture method_24303(Identifier identifier, AbstractTexture abstractTexture) {
@@ -94,9 +105,8 @@ AutoCloseable {
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Registering texture");
             CrashReportSection crashReportSection = crashReport.addElement("Resource location being registered");
-            AbstractTexture abstractTexture2 = abstractTexture;
             crashReportSection.add("Resource location", identifier);
-            crashReportSection.add("Texture object class", () -> abstractTexture2.getClass().getName());
+            crashReportSection.add("Texture object class", () -> abstractTexture.getClass().getName());
             throw new CrashException(crashReport);
         }
     }
@@ -149,7 +159,7 @@ AutoCloseable {
 
     @Override
     public void close() {
-        this.textures.values().forEach(AbstractTexture::clearGlId);
+        this.textures.forEach(this::method_30299);
         this.textures.clear();
         this.tickListeners.clear();
         this.dynamicIdCounters.clear();

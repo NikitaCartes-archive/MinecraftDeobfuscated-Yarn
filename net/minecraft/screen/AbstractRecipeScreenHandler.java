@@ -9,6 +9,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.recipe.InputSlotFiller;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -37,5 +38,8 @@ extends ScreenHandler {
 
     @Environment(value=EnvType.CLIENT)
     public abstract int getCraftingSlotCount();
+
+    @Environment(value=EnvType.CLIENT)
+    public abstract RecipeBookCategory getCategory();
 }
 

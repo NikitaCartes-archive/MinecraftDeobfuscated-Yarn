@@ -20,7 +20,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.tag.SetTag;
-import net.minecraft.tag.TagContainer;
+import net.minecraft.tag.TagGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -37,8 +37,8 @@ import net.minecraft.util.JsonHelper;
  * or unordered, depending on the configuration from the tag builder.
  */
 public interface Tag<T> {
-    public static <T> Codec<Tag<T>> method_28134(Supplier<TagContainer<T>> supplier) {
-        return Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(((TagContainer)supplier.get()).get((Identifier)identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown tag: " + identifier)), tag -> Optional.ofNullable(((TagContainer)supplier.get()).getId(tag)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown tag: " + tag)));
+    public static <T> Codec<Tag<T>> codec(Supplier<TagGroup<T>> groupGetter) {
+        return Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(((TagGroup)groupGetter.get()).getTag((Identifier)identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown tag: " + identifier)), tag -> Optional.ofNullable(((TagGroup)groupGetter.get()).getUncheckedTagId(tag)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown tag: " + tag)));
     }
 
     public boolean contains(T var1);
@@ -50,8 +50,8 @@ public interface Tag<T> {
         return list.get(random.nextInt(list.size()));
     }
 
-    public static <T> Tag<T> of(Set<T> set) {
-        return SetTag.method_29900(set);
+    public static <T> Tag<T> of(Set<T> values) {
+        return SetTag.of(values);
     }
 
     public static interface Identified<T>

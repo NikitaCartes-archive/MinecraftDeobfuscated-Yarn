@@ -3,6 +3,8 @@
  */
 package net.minecraft.entity;
 
+import net.minecraft.util.math.Box;
+
 public class EntityDimensions {
     public final float width;
     public final float height;
@@ -12,6 +14,12 @@ public class EntityDimensions {
         this.width = width;
         this.height = height;
         this.fixed = fixed;
+    }
+
+    public Box method_30231(double d, double e, double f) {
+        float g = this.width / 2.0f;
+        float h = this.height;
+        return new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g);
     }
 
     public EntityDimensions scaled(float ratio) {

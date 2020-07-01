@@ -5,11 +5,12 @@ package net.minecraft.util.math;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.WorldPositionPointer;
+import net.minecraft.util.math.Position;
 
 public interface BlockPointer
-extends WorldPositionPointer {
+extends Position {
     @Override
     public double getX();
 
@@ -24,5 +25,7 @@ extends WorldPositionPointer {
     public BlockState getBlockState();
 
     public <T extends BlockEntity> T getBlockEntity();
+
+    public ServerWorld getWorld();
 }
 

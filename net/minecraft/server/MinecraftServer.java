@@ -97,7 +97,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.tag.TagManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -223,7 +223,7 @@ AutoCloseable {
     private boolean waitingForNextTick;
     @Environment(value=EnvType.CLIENT)
     private boolean iconFilePresent;
-    private final ResourcePackManager<ResourcePackProfile> dataPackManager;
+    private final ResourcePackManager dataPackManager;
     private final ServerScoreboard scoreboard = new ServerScoreboard(this);
     @Nullable
     private DataCommandStorage dataCommandStorage;
@@ -249,7 +249,7 @@ AutoCloseable {
         return (S)minecraftServer;
     }
 
-    public MinecraftServer(Thread thread, RegistryTracker.Modifiable modifiable, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager<ResourcePackProfile> resourcePackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+    public MinecraftServer(Thread thread, RegistryTracker.Modifiable modifiable, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager resourcePackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super("Server");
         this.dimensionTracker = modifiable;
         this.saveProperties = saveProperties;
@@ -434,7 +434,7 @@ AutoCloseable {
         }
         if (bl) {
             ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
-            configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), chunkGenerator, serverWorld.random, new BlockPos(serverWorldProperties.getSpawnX(), serverWorldProperties.getSpawnY(), serverWorldProperties.getSpawnZ()));
+            configuredFeature.generate(serverWorld, chunkGenerator, serverWorld.random, new BlockPos(serverWorldProperties.getSpawnX(), serverWorldProperties.getSpawnY(), serverWorldProperties.getSpawnZ()));
         }
     }
 
@@ -445,7 +445,7 @@ AutoCloseable {
         serverWorldProperties.setRaining(false);
         serverWorldProperties.setThundering(false);
         serverWorldProperties.setClearWeatherTime(1000000000);
-        serverWorldProperties.setTimeOfDay(6000L);
+        serverWorldProperties.method_29035(6000L);
         serverWorldProperties.setGameMode(GameMode.SPECTATOR);
     }
 
@@ -1221,7 +1221,7 @@ AutoCloseable {
         return completableFuture;
     }
 
-    public static DataPackSettings loadDataPacks(ResourcePackManager<ResourcePackProfile> resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
+    public static DataPackSettings loadDataPacks(ResourcePackManager resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
         resourcePackManager.scanPacks();
         if (safeMode) {
             resourcePackManager.setEnabledProfiles(Collections.singleton("vanilla"));
@@ -1249,7 +1249,7 @@ AutoCloseable {
         return MinecraftServer.method_29735(resourcePackManager);
     }
 
-    private static DataPackSettings method_29735(ResourcePackManager<?> resourcePackManager) {
+    private static DataPackSettings method_29735(ResourcePackManager resourcePackManager) {
         Collection<String> collection = resourcePackManager.getEnabledNames();
         ImmutableList<String> list = ImmutableList.copyOf(collection);
         List list2 = resourcePackManager.getNames().stream().filter(string -> !collection.contains(string)).collect(ImmutableList.toImmutableList());
@@ -1269,7 +1269,7 @@ AutoCloseable {
         }
     }
 
-    public ResourcePackManager<ResourcePackProfile> getDataPackManager() {
+    public ResourcePackManager getDataPackManager() {
         return this.dataPackManager;
     }
 
@@ -1296,7 +1296,7 @@ AutoCloseable {
         return this.serverResourceManager.getRecipeManager();
     }
 
-    public RegistryTagManager getTagManager() {
+    public TagManager getTagManager() {
         return this.serverResourceManager.getRegistryTagManager();
     }
 

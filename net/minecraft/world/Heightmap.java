@@ -167,7 +167,7 @@ public class Heightmap {
         }
 
         static {
-            field_24772 = StringIdentifiable.method_28140(Type::values, Type::byName);
+            field_24772 = StringIdentifiable.createCodec(Type::values, Type::byName);
             BY_NAME = Util.make(Maps.newHashMap(), hashMap -> {
                 for (Type type : Type.values()) {
                     hashMap.put(type.name, type);

@@ -507,7 +507,7 @@ public class Raid {
         CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
         ListTag listTag = new BannerPattern.Patterns().add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN).add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY).add(BannerPattern.STRIPE_CENTER, DyeColor.GRAY).add(BannerPattern.BORDER, DyeColor.LIGHT_GRAY).add(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK).add(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY).add(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY).add(BannerPattern.BORDER, DyeColor.BLACK).toTag();
         compoundTag.put("Patterns", listTag);
-        itemStack.getOrCreateTag().putInt("HideFlags", 32);
+        itemStack.method_30268(ItemStack.class_5422.field_25773);
         itemStack.setCustomName(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
         return itemStack;
     }

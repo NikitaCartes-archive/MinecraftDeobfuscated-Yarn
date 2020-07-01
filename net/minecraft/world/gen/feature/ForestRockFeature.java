@@ -8,7 +8,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.ForestRockFeatureConfig;
@@ -20,7 +19,7 @@ extends Feature<ForestRockFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ForestRockFeatureConfig forestRockFeatureConfig) {
+    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ForestRockFeatureConfig forestRockFeatureConfig) {
         Block block;
         while (blockPos.getY() > 3 && (serverWorldAccess.isAir(blockPos.down()) || !ForestRockFeature.isSoil(block = serverWorldAccess.getBlockState(blockPos.down()).getBlock()) && !ForestRockFeature.isStone(block))) {
             blockPos = blockPos.down();

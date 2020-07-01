@@ -242,7 +242,7 @@ extends DrawableHelper {
                         long l = 0L;
                         float h = 0.0f;
                         if (worldChunk2 != null) {
-                            h = world.getMoonSize();
+                            h = world.method_30272();
                             l = worldChunk2.getInhabitedTime();
                         }
                         LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);
@@ -336,7 +336,7 @@ extends DrawableHelper {
             for (Map.Entry entry : blockState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
             }
-            for (Identifier identifier : this.client.getNetworkHandler().getTagManager().blocks().getTagsFor(blockState.getBlock())) {
+            for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getBlocks().getTagsFor(blockState.getBlock())) {
                 list.add("#" + identifier);
             }
         }
@@ -349,7 +349,7 @@ extends DrawableHelper {
             for (Map.Entry entry : fluidState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
             }
-            for (Identifier identifier : this.client.getNetworkHandler().getTagManager().fluids().getTagsFor(fluidState.getFluid())) {
+            for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getFluids().getTagsFor(fluidState.getFluid())) {
                 list.add("#" + identifier);
             }
         }

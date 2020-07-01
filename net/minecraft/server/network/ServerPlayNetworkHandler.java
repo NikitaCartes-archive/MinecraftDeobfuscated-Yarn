@@ -80,6 +80,7 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
+import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
@@ -385,18 +386,13 @@ implements ServerPlayPacketListener {
     @Override
     public void onRecipeBookData(RecipeBookDataC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-        if (packet.getMode() == RecipeBookDataC2SPacket.Mode.SHOWN) {
-            this.server.getRecipeManager().get(packet.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
-        } else if (packet.getMode() == RecipeBookDataC2SPacket.Mode.SETTINGS) {
-            this.player.getRecipeBook().setGuiOpen(packet.isGuiOpen());
-            this.player.getRecipeBook().setFilteringCraftable(packet.isFilteringCraftable());
-            this.player.getRecipeBook().setFurnaceGuiOpen(packet.isFurnaceGuiOpen());
-            this.player.getRecipeBook().setFurnaceFilteringCraftable(packet.isFurnaceFilteringCraftable());
-            this.player.getRecipeBook().setBlastFurnaceGuiOpen(packet.isBlastFurnaceGuiOpen());
-            this.player.getRecipeBook().setBlastFurnaceFilteringCraftable(packet.isBlastFurnaceFilteringCraftable());
-            this.player.getRecipeBook().setSmokerGuiOpen(packet.isSmokerGuiOpen());
-            this.player.getRecipeBook().setSmokerFilteringCraftable(packet.isSmokerGuiFilteringCraftable());
-        }
+        this.server.getRecipeManager().get(packet.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
+    }
+
+    @Override
+    public void onRecipeCategoryOptions(RecipeCategoryOptionsC2SPacket packet) {
+        NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+        this.player.getRecipeBook().setCategoryOptions(packet.getCategory(), packet.isGuiOpen(), packet.isFilteringCraftable());
     }
 
     @Override
@@ -566,7 +562,7 @@ implements ServerPlayPacketListener {
                 } else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
                     if (!structureBlockBlockEntity.isStructureAvailable()) {
                         this.player.sendMessage(new TranslatableText("structure_block.load_not_found", string), false);
-                    } else if (structureBlockBlockEntity.loadStructure()) {
+                    } else if (structureBlockBlockEntity.loadStructure(this.player.getServerWorld())) {
                         this.player.sendMessage(new TranslatableText("structure_block.load_success", string), false);
                     } else {
                         this.player.sendMessage(new TranslatableText("structure_block.load_prepare", string), false);
@@ -1102,6 +1098,7 @@ implements ServerPlayPacketListener {
             double d = 36.0;
             if (this.player.squaredDistanceTo(entity) < 36.0) {
                 Hand hand = packet.getHand();
+                ItemStack itemStack = hand != null ? this.player.getStackInHand(hand).copy() : ItemStack.EMPTY;
                 Optional<Object> optional = Optional.empty();
                 if (packet.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT) {
                     optional = Optional.of(this.player.interact(entity, hand));
@@ -1116,7 +1113,7 @@ implements ServerPlayPacketListener {
                     this.player.attack(entity);
                 }
                 if (optional.isPresent() && ((ActionResult)((Object)optional.get())).isAccepted()) {
-                    Criteria.PLAYER_INTERACTED_WITH_ENTITY.test(this.player, this.player.getStackInHand(hand), entity);
+                    Criteria.PLAYER_INTERACTED_WITH_ENTITY.test(this.player, itemStack, entity);
                     if (((ActionResult)((Object)optional.get())).shouldSwingHand()) {
                         this.player.swingHand(hand, true);
                     }
