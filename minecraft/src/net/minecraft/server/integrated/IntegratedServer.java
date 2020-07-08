@@ -25,7 +25,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.SaveProperties;
@@ -45,7 +45,7 @@ public class IntegratedServer extends MinecraftServer {
 	public IntegratedServer(
 		Thread thread,
 		MinecraftClient minecraftClient,
-		RegistryTracker.Modifiable modifiable,
+		DynamicRegistryManager.Impl impl,
 		LevelStorage.Session session,
 		ResourcePackManager resourcePackManager,
 		ServerResourceManager serverResourceManager,
@@ -57,7 +57,7 @@ public class IntegratedServer extends MinecraftServer {
 	) {
 		super(
 			thread,
-			modifiable,
+			impl,
 			session,
 			saveProperties,
 			resourcePackManager,
@@ -72,7 +72,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setServerName(minecraftClient.getSession().getUsername());
 		this.setDemo(minecraftClient.isDemo());
 		this.setWorldHeight(256);
-		this.setPlayerManager(new IntegratedPlayerManager(this, this.dimensionTracker, this.field_24371));
+		this.setPlayerManager(new IntegratedPlayerManager(this, this.registryManager, this.field_24371));
 		this.client = minecraftClient;
 	}
 
@@ -130,6 +130,11 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public boolean isDedicated() {
 		return false;
+	}
+
+	@Override
+	public int getRateLimit() {
+		return 0;
 	}
 
 	@Override

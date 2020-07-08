@@ -39,8 +39,9 @@ public class IdList<T> implements IndexedIterable<T> {
 		this.set(value, this.nextId);
 	}
 
-	public int getId(T value) {
-		Integer integer = (Integer)this.idMap.get(value);
+	@Override
+	public int getRawId(T object) {
+		Integer integer = (Integer)this.idMap.get(object);
 		return integer == null ? -1 : integer;
 	}
 

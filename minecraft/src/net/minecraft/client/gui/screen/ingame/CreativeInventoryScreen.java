@@ -45,6 +45,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -347,6 +348,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				searchable = this.client.getSearchableContainer(SearchManager.ITEM_TAG);
 				this.searchForTags(string);
 			} else {
+				string = Language.getInstance().reorder(string, false);
 				searchable = this.client.getSearchableContainer(SearchManager.ITEM_TOOLTIP);
 			}
 

@@ -161,7 +161,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.WARPED_SIGN
 			);
 		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
-		this.getOrCreateTagBuilder(ItemTags.FURNACE_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
+		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
 	}
 
 	protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {

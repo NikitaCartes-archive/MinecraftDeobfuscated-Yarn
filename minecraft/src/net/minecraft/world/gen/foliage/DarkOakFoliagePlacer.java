@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -12,11 +13,11 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class DarkOakFoliagePlacer extends FoliagePlacer {
 	public static final Codec<DarkOakFoliagePlacer> CODEC = RecordCodecBuilder.create(
-		instance -> method_28846(instance).apply(instance, DarkOakFoliagePlacer::new)
+		instance -> method_30411(instance).apply(instance, DarkOakFoliagePlacer::new)
 	);
 
-	public DarkOakFoliagePlacer(int i, int j, int k, int l) {
-		super(i, j, k, l);
+	public DarkOakFoliagePlacer(class_5428 arg, class_5428 arg2) {
+		super(arg, arg2);
 	}
 
 	@Override

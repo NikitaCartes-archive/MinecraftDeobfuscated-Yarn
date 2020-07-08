@@ -44,6 +44,7 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class Explosion {
+	private static final ExplosionBehavior field_25818 = new ExplosionBehavior();
 	private final boolean createFire;
 	private final Explosion.DestructionType destructionType;
 	private final Random random = new Random();
@@ -110,7 +111,7 @@ public class Explosion {
 	}
 
 	private ExplosionBehavior chooseBehavior(@Nullable Entity entity) {
-		return (ExplosionBehavior)(entity == null ? DefaultExplosionBehavior.INSTANCE : new EntityExplosionBehavior(entity));
+		return (ExplosionBehavior)(entity == null ? field_25818 : new EntityExplosionBehavior(entity));
 	}
 
 	public static float getExposure(Vec3d source, Entity entity) {

@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -13,8 +14,8 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 public class BushFoliagePlacer extends BlobFoliagePlacer {
 	public static final Codec<BushFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> method_28838(instance).apply(instance, BushFoliagePlacer::new));
 
-	public BushFoliagePlacer(int i, int j, int k, int l, int m) {
-		super(i, j, k, l, m, FoliagePlacerType.BUSH_FOLIAGE_PLACER);
+	public BushFoliagePlacer(class_5428 arg, class_5428 arg2, int i) {
+		super(arg, arg2, i);
 	}
 
 	@Override

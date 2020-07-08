@@ -30,7 +30,7 @@ public abstract class PassiveEntity extends PathAwareEntity {
 		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.PassiveData();
+			entityData = new PassiveEntity.PassiveData(true);
 		}
 
 		PassiveEntity.PassiveData passiveData = (PassiveEntity.PassiveData)entityData;
@@ -156,8 +156,21 @@ public abstract class PassiveEntity extends PathAwareEntity {
 
 	public static class PassiveData implements EntityData {
 		private int spawnCount;
-		private boolean babyAllowed = true;
-		private float babyChance = 0.05F;
+		private final boolean babyAllowed;
+		private final float babyChance;
+
+		private PassiveData(boolean bl, float f) {
+			this.babyAllowed = bl;
+			this.babyChance = f;
+		}
+
+		public PassiveData(boolean bl) {
+			this(bl, 0.05F);
+		}
+
+		public PassiveData(float f) {
+			this(true, f);
+		}
 
 		public int getSpawnedCount() {
 			return this.spawnCount;
@@ -171,16 +184,8 @@ public abstract class PassiveEntity extends PathAwareEntity {
 			return this.babyAllowed;
 		}
 
-		public void setBabyAllowed(boolean babyAllowed) {
-			this.babyAllowed = babyAllowed;
-		}
-
 		public float getBabyChance() {
 			return this.babyChance;
-		}
-
-		public void setBabyChance(float babyChance) {
-			this.babyChance = babyChance;
 		}
 	}
 }

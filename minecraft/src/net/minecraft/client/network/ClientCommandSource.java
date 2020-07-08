@@ -22,6 +22,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
@@ -121,6 +122,11 @@ public class ClientCommandSource implements CommandSource {
 	@Override
 	public Set<RegistryKey<World>> getWorldKeys() {
 		return this.networkHandler.getWorldKeys();
+	}
+
+	@Override
+	public DynamicRegistryManager getRegistryManager() {
+		return this.networkHandler.getRegistryManager();
 	}
 
 	public void onCommandSuggestions(int completionId, Suggestions suggestions) {

@@ -377,10 +377,7 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		if (this.isBaby()) {
-			tag.putBoolean("IsBaby", true);
-		}
-
+		tag.putBoolean("IsBaby", this.isBaby());
 		tag.putBoolean("CanBreakDoors", this.canBreakDoors());
 		tag.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
 		tag.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
@@ -389,10 +386,7 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		if (tag.getBoolean("IsBaby")) {
-			this.setBaby(true);
-		}
-
+		this.setBaby(tag.getBoolean("IsBaby"));
 		this.setCanBreakDoors(tag.getBoolean("CanBreakDoors"));
 		this.inWaterTime = tag.getInt("InWaterTime");
 		if (tag.contains("DrownedConversionTime", 99) && tag.getInt("DrownedConversionTime") > -1) {

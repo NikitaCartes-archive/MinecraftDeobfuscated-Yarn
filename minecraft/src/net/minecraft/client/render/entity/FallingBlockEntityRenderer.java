@@ -40,7 +40,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 						blockState,
 						blockPos,
 						matrixStack,
-						vertexConsumerProvider.getBuffer(RenderLayers.method_29359(blockState)),
+						vertexConsumerProvider.getBuffer(RenderLayers.getMovingBlockLayer(blockState)),
 						false,
 						new Random(),
 						blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()),

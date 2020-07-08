@@ -113,7 +113,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			matrices.translate(-0.5, -0.5, -0.5);
 			if (!model.isBuiltin() && (stack.getItem() != Items.TRIDENT || bl)) {
 				boolean bl2;
-				if (renderMode != ModelTransformation.Mode.GUI && !renderMode.method_29998() && stack.getItem() instanceof BlockItem) {
+				if (renderMode != ModelTransformation.Mode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
 					Block block = ((BlockItem)stack.getItem()).getBlock();
 					bl2 = !(block instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock);
 				} else {
@@ -127,21 +127,21 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 					MatrixStack.Entry entry = matrices.peek();
 					if (renderMode == ModelTransformation.Mode.GUI) {
 						entry.getModel().multiply(0.5F);
-					} else if (renderMode.method_29998()) {
+					} else if (renderMode.isFirstPerson()) {
 						entry.getModel().multiply(0.75F);
 					}
 
 					if (bl2) {
-						vertexConsumer = method_30115(vertexConsumers, renderLayer, entry);
+						vertexConsumer = getTransformingDirectGlintVertexConsumer(vertexConsumers, renderLayer, entry);
 					} else {
-						vertexConsumer = method_30114(vertexConsumers, renderLayer, entry);
+						vertexConsumer = getTransformingGlintVertexConsumer(vertexConsumers, renderLayer, entry);
 					}
 
 					matrices.pop();
 				} else if (bl2) {
-					vertexConsumer = method_29711(vertexConsumers, renderLayer, true, stack.hasGlint());
+					vertexConsumer = getDirectGlintVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
 				} else {
-					vertexConsumer = getArmorVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
+					vertexConsumer = getGlintVertexConsumer(vertexConsumers, renderLayer, true, stack.hasGlint());
 				}
 
 				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
@@ -153,40 +153,44 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public static VertexConsumer method_27952(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
-		return bl2
+	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean glint) {
+		return glint
 			? VertexConsumers.dual(
 				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer)
 			)
 			: vertexConsumerProvider.getBuffer(renderLayer);
 	}
 
-	public static VertexConsumer method_30114(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
+	public static VertexConsumer getTransformingGlintVertexConsumer(
+		VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry
+	) {
 		return VertexConsumers.dual(
 			new TransformingVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()),
 			vertexConsumerProvider.getBuffer(renderLayer)
 		);
 	}
 
-	public static VertexConsumer method_30115(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
+	public static VertexConsumer getTransformingDirectGlintVertexConsumer(
+		VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry
+	) {
 		return VertexConsumers.dual(
 			new TransformingVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlintDirect()), entry.getModel(), entry.getNormal()),
 			vertexConsumerProvider.getBuffer(renderLayer)
 		);
 	}
 
-	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
+	public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
 		return glint
 			? VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
 			: vertexConsumers.getBuffer(layer);
 	}
 
-	public static VertexConsumer method_29711(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
-		return bl2
+	public static VertexConsumer getDirectGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer layer, boolean bl, boolean glint) {
+		return glint
 			? VertexConsumers.dual(
-				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getGlintDirect() : RenderLayer.getEntityGlintDirect()), vertexConsumerProvider.getBuffer(renderLayer)
+				vertexConsumerProvider.getBuffer(bl ? RenderLayer.getGlintDirect() : RenderLayer.getEntityGlintDirect()), vertexConsumerProvider.getBuffer(layer)
 			)
-			: vertexConsumerProvider.getBuffer(renderLayer);
+			: vertexConsumerProvider.getBuffer(layer);
 	}
 
 	private void renderBakedItemQuads(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {

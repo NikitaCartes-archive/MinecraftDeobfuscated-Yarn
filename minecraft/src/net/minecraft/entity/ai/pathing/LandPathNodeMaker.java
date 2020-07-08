@@ -279,23 +279,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				}
 
 				if (pathNodeType2 == PathNodeType.OPEN) {
-					Box box2 = new Box(
-						(double)x - e + 0.5, (double)y + 0.001, (double)z - e + 0.5, (double)x + e + 0.5, (double)((float)y + this.entity.getHeight()), (double)z + e + 0.5
-					);
-					if (this.method_29304(box2)) {
-						return null;
-					}
-
-					if (this.entity.getWidth() >= 1.0F) {
-						PathNodeType pathNodeType3 = this.method_29303(this.entity, x, y - 1, z);
-						if (pathNodeType3 == PathNodeType.BLOCKED) {
-							pathNode = this.getNode(x, y, z);
-							pathNode.type = PathNodeType.WALKABLE;
-							pathNode.penalty = Math.max(pathNode.penalty, f);
-							return pathNode;
-						}
-					}
-
 					int i = 0;
 					int j = y;
 
@@ -307,8 +290,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							return pathNode2;
 						}
 
-						PathNode pathNode2 = this.getNode(x, y, z);
 						if (i++ >= this.entity.getSafeFallDistance()) {
+							PathNode pathNode2 = this.getNode(x, y, z);
 							pathNode2.type = PathNodeType.BLOCKED;
 							pathNode2.penalty = -1.0F;
 							return pathNode2;
@@ -317,13 +300,14 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						pathNodeType2 = this.method_29303(this.entity, x, y, z);
 						f = this.entity.getPathfindingPenalty(pathNodeType2);
 						if (pathNodeType2 != PathNodeType.OPEN && f >= 0.0F) {
-							pathNode = pathNode2;
-							pathNode2.type = pathNodeType2;
-							pathNode2.penalty = Math.max(pathNode2.penalty, f);
+							pathNode = this.getNode(x, y, z);
+							pathNode.type = pathNodeType2;
+							pathNode.penalty = Math.max(pathNode.penalty, f);
 							break;
 						}
 
 						if (f < 0.0F) {
+							PathNode pathNode2 = this.getNode(x, y, z);
 							pathNode2.type = PathNodeType.BLOCKED;
 							pathNode2.penalty = -1.0F;
 							return pathNode2;
@@ -372,7 +356,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				}
 			}
 
-			return pathNodeType == PathNodeType.OPEN && mob.getPathfindingPenalty(pathNodeType2) == 0.0F ? PathNodeType.OPEN : pathNodeType2;
+			return pathNodeType == PathNodeType.OPEN && mob.getPathfindingPenalty(pathNodeType2) == 0.0F && sizeX <= 1 ? PathNodeType.OPEN : pathNodeType2;
 		}
 	}
 

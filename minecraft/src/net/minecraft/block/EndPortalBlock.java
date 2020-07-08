@@ -52,7 +52,7 @@ public class EndPortalBlock extends BlockWithEntity {
 				return;
 			}
 
-			entity.changeDimension(serverWorld);
+			entity.moveToWorld(serverWorld);
 		}
 	}
 

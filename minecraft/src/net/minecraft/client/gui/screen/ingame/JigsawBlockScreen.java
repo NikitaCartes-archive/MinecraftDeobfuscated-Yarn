@@ -134,10 +134,13 @@ public class JigsawBlockScreen extends Screen {
 		}) {
 			@Override
 			public Text getMessage() {
-				return super.getMessage().shallowCopy().append(" ").append(ScreenTexts.getToggleText(JigsawBlockScreen.this.keepJigsaws));
+				return ScreenTexts.method_30619(super.getMessage(), JigsawBlockScreen.this.keepJigsaws);
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), buttonWidget -> this.generate()));
+		this.addButton(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), buttonWidget -> {
+			this.onDone();
+			this.generate();
+		}));
 		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, buttonWidget -> this.onDone()));
 		this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCancel()));
 		this.setInitialFocus(this.poolField);

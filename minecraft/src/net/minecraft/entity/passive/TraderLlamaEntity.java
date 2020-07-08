@@ -106,8 +106,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		}
 
 		if (entityData == null) {
-			entityData = new PassiveEntity.PassiveData();
-			((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
+			entityData = new PassiveEntity.PassiveData(false);
 		}
 
 		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);

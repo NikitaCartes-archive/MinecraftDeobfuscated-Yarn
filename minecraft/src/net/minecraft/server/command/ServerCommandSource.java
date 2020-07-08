@@ -27,6 +27,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
@@ -400,5 +401,10 @@ public class ServerCommandSource implements CommandSource {
 	@Override
 	public Set<RegistryKey<World>> getWorldKeys() {
 		return this.server.getWorldRegistryKeys();
+	}
+
+	@Override
+	public DynamicRegistryManager getRegistryManager() {
+		return this.server.getRegistryManager();
 	}
 }

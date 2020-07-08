@@ -119,7 +119,7 @@ public class BuiltinModelItemRenderer {
 				SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
 				VertexConsumer vertexConsumer = spriteIdentifier.getSprite()
 					.getTextureSpecificVertexConsumer(
-						ItemRenderer.method_29711(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
+						ItemRenderer.getDirectGlintVertexConsumer(vertexConsumerProvider, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint())
 					);
 				this.modelShield.method_23775().render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
@@ -135,7 +135,7 @@ public class BuiltinModelItemRenderer {
 			} else if (item == Items.TRIDENT) {
 				matrixStack.push();
 				matrixStack.scale(1.0F, -1.0F, -1.0F);
-				VertexConsumer vertexConsumer2 = ItemRenderer.method_29711(
+				VertexConsumer vertexConsumer2 = ItemRenderer.getDirectGlintVertexConsumer(
 					vertexConsumerProvider, this.modelTrident.getLayer(TridentEntityModel.TEXTURE), false, stack.hasGlint()
 				);
 				this.modelTrident.render(matrixStack, vertexConsumer2, i, j, 1.0F, 1.0F, 1.0F, 1.0F);

@@ -196,16 +196,16 @@ public class AbstractPackScreen extends Screen {
 			}
 		});
 		if (mutableBoolean.isTrue()) {
-			SystemToast.method_29627(minecraftClient, path.toString());
+			SystemToast.addPackCopyFailure(minecraftClient, path.toString());
 		}
 	}
 
 	@Override
-	public void method_29638(List<Path> list) {
-		String string = (String)list.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
+	public void filesDragged(List<Path> paths) {
+		String string = (String)paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
 		this.client.openScreen(new ConfirmScreen(bl -> {
 			if (bl) {
-				method_29669(this.client, list, this.field_25474.toPath());
+				method_29669(this.client, paths, this.field_25474.toPath());
 				this.method_29680();
 			}
 
@@ -221,7 +221,9 @@ public class AbstractPackScreen extends Screen {
 			Identifier var10;
 			try {
 				String string = resourcePackProfile.getName();
-				Identifier identifier = new Identifier("pack/" + Util.method_30309(string) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon");
+				Identifier identifier = new Identifier(
+					"minecraft", "pack/" + Util.method_30309(string, Identifier::method_29184) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
+				);
 				NativeImage nativeImage = NativeImage.read(inputStream);
 				textureManager.registerTexture(identifier, new NativeImageBackedTexture(nativeImage));
 				var10 = identifier;

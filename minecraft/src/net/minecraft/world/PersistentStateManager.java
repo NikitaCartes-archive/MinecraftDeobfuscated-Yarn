@@ -78,58 +78,82 @@ public class PersistentStateManager {
 
 	public CompoundTag readTag(String id, int dataVersion) throws IOException {
 		File file = this.getFile(id);
-		PushbackInputStream pushbackInputStream = new PushbackInputStream(new FileInputStream(file), 2);
+		FileInputStream fileInputStream = new FileInputStream(file);
 		Throwable var5 = null;
 
-		CompoundTag var36;
+		Object var10;
 		try {
-			CompoundTag compoundTag;
-			if (this.isCompressed(pushbackInputStream)) {
-				compoundTag = NbtIo.readCompressed(pushbackInputStream);
-			} else {
-				DataInputStream dataInputStream = new DataInputStream(pushbackInputStream);
-				Throwable var8 = null;
+			PushbackInputStream pushbackInputStream;
+			try {
+				pushbackInputStream = new PushbackInputStream(fileInputStream, 2);
+				Throwable var7 = null;
 
 				try {
-					compoundTag = NbtIo.read(dataInputStream);
-				} catch (Throwable var31) {
-					var8 = var31;
-					throw var31;
+					CompoundTag compoundTag;
+					if (this.isCompressed(pushbackInputStream)) {
+						compoundTag = NbtIo.readCompressed(pushbackInputStream);
+					} else {
+						DataInputStream dataInputStream = new DataInputStream(pushbackInputStream);
+						var10 = null;
+
+						try {
+							compoundTag = NbtIo.read(dataInputStream);
+						} catch (Throwable var54) {
+							var10 = var54;
+							throw var54;
+						} finally {
+							if (dataInputStream != null) {
+								if (var10 != null) {
+									try {
+										dataInputStream.close();
+									} catch (Throwable var53) {
+										var10.addSuppressed(var53);
+									}
+								} else {
+									dataInputStream.close();
+								}
+							}
+						}
+					}
+
+					int i = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
+					var10 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, i, dataVersion);
+				} catch (Throwable var56) {
+					var7 = var56;
+					throw var56;
 				} finally {
-					if (dataInputStream != null) {
-						if (var8 != null) {
+					if (pushbackInputStream != null) {
+						if (var7 != null) {
 							try {
-								dataInputStream.close();
-							} catch (Throwable var30) {
-								var8.addSuppressed(var30);
+								pushbackInputStream.close();
+							} catch (Throwable var52) {
+								var7.addSuppressed(var52);
 							}
 						} else {
-							dataInputStream.close();
+							pushbackInputStream.close();
 						}
 					}
 				}
+			} catch (Throwable var58) {
+				pushbackInputStream = var58;
+				var5 = var58;
+				throw var58;
 			}
-
-			int i = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-			var36 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, i, dataVersion);
-		} catch (Throwable var33) {
-			var5 = var33;
-			throw var33;
 		} finally {
-			if (pushbackInputStream != null) {
+			if (fileInputStream != null) {
 				if (var5 != null) {
 					try {
-						pushbackInputStream.close();
-					} catch (Throwable var29) {
-						var5.addSuppressed(var29);
+						fileInputStream.close();
+					} catch (Throwable var51) {
+						var5.addSuppressed(var51);
 					}
 				} else {
-					pushbackInputStream.close();
+					fileInputStream.close();
 				}
 			}
 		}
 
-		return var36;
+		return (CompoundTag)var10;
 	}
 
 	private boolean isCompressed(PushbackInputStream pushbackInputStream) throws IOException {

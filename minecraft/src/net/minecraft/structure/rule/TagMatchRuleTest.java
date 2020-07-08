@@ -8,7 +8,7 @@ import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 
 public class TagMatchRuleTest extends RuleTest {
-	public static final Codec<TagMatchRuleTest> field_25014 = Tag.codec(ServerTagManagerHolder.getTagManager()::getBlocks)
+	public static final Codec<TagMatchRuleTest> field_25014 = Tag.codec(() -> ServerTagManagerHolder.getTagManager().getBlocks())
 		.fieldOf("tag")
 		.<TagMatchRuleTest>xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag)
 		.codec();

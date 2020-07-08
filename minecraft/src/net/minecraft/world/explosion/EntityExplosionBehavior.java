@@ -7,17 +7,16 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
-class EntityExplosionBehavior implements ExplosionBehavior {
+public class EntityExplosionBehavior extends ExplosionBehavior {
 	private final Entity entity;
 
-	EntityExplosionBehavior(Entity entity) {
+	public EntityExplosionBehavior(Entity entity) {
 		this.entity = entity;
 	}
 
 	@Override
 	public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
-		return DefaultExplosionBehavior.INSTANCE
-			.getBlastResistance(explosion, world, pos, blockState, fluidState)
+		return super.getBlastResistance(explosion, world, pos, blockState, fluidState)
 			.map(float_ -> this.entity.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, float_));
 	}
 

@@ -2,7 +2,7 @@ package net.minecraft.world.biome.source;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.util.CachingLayerSampler;
@@ -19,7 +19,7 @@ public class BiomeLayerSampler {
 	}
 
 	private Biome getBiome(int id) {
-		Biome biome = Registry.BIOME.get(id);
+		Biome biome = BuiltinRegistries.BIOME.get(id);
 		if (biome == null) {
 			if (SharedConstants.isDevelopment) {
 				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Unknown biome id: " + id));

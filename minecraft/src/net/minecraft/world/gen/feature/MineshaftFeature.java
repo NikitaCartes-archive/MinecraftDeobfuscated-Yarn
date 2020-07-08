@@ -11,6 +11,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -33,7 +34,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		MineshaftFeatureConfig mineshaftFeatureConfig
 	) {
 		chunkRandom.setCarverSeed(l, i, j);
-		double d = mineshaftFeatureConfig.probability;
+		double d = (double)mineshaftFeatureConfig.probability;
 		return chunkRandom.nextDouble() < d;
 	}
 
@@ -47,7 +48,15 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig) {
+		public void init(
+			DynamicRegistryManager dynamicRegistryManager,
+			ChunkGenerator chunkGenerator,
+			StructureManager structureManager,
+			int i,
+			int j,
+			Biome biome,
+			MineshaftFeatureConfig mineshaftFeatureConfig
+		) {
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
 				0, this.random, (i << 4) + 2, (j << 4) + 2, mineshaftFeatureConfig.type
 			);

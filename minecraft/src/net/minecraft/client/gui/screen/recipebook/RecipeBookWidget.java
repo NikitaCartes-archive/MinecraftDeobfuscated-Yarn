@@ -36,6 +36,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookWidget extends DrawableHelper implements Drawable, Element, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
@@ -179,7 +180,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		String string = this.searchField.getText();
 		if (!string.isEmpty()) {
 			ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
-				this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT))
+				this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(Language.getInstance().reorder(string.toLowerCase(Locale.ROOT), false))
 			);
 			list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
 		}

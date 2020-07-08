@@ -555,16 +555,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	@Override
-	public boolean shouldCloseOnEsc() {
-		return false;
-	}
-
-	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == 256 || this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
-			this.client.player.closeHandledScreen();
+		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (super.keyPressed(keyCode, scanCode, modifiers)) {
+		} else if (this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
+			this.onClose();
 			return true;
 		} else {
 			this.handleHotbarKeyPressed(keyCode, scanCode);
@@ -621,5 +616,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	public T getScreenHandler() {
 		return this.handler;
+	}
+
+	@Override
+	public void onClose() {
+		this.client.player.closeHandledScreen();
+		super.onClose();
 	}
 }

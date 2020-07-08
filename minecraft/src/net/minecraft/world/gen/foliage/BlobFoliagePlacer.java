@@ -1,12 +1,13 @@
 package net.minecraft.world.gen.foliage;
 
-import com.mojang.datafixers.Products.P5;
+import com.mojang.datafixers.Products.P3;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -16,17 +17,13 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	public static final Codec<BlobFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> method_28838(instance).apply(instance, BlobFoliagePlacer::new));
 	protected final int height;
 
-	protected static <P extends BlobFoliagePlacer> P5<Mu<P>, Integer, Integer, Integer, Integer, Integer> method_28838(Instance<P> instance) {
-		return method_28846(instance).and(Codec.INT.fieldOf("height").forGetter(blobFoliagePlacer -> blobFoliagePlacer.height));
+	protected static <P extends BlobFoliagePlacer> P3<Mu<P>, class_5428, class_5428, Integer> method_28838(Instance<P> instance) {
+		return method_30411(instance).and(Codec.intRange(0, 16).fieldOf("height").forGetter(blobFoliagePlacer -> blobFoliagePlacer.height));
 	}
 
-	protected BlobFoliagePlacer(int i, int j, int k, int l, int m, FoliagePlacerType<?> foliagePlacerType) {
-		super(i, j, k, l);
-		this.height = m;
-	}
-
-	public BlobFoliagePlacer(int i, int j, int k, int l, int m) {
-		this(i, j, k, l, m, FoliagePlacerType.BLOB_FOLIAGE_PLACER);
+	public BlobFoliagePlacer(class_5428 arg, class_5428 arg2, int i) {
+		super(arg, arg2);
+		this.height = i;
 	}
 
 	@Override

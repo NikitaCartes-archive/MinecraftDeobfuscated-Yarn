@@ -101,9 +101,7 @@ public class ToastManager extends DrawableHelper {
 			}
 
 			RenderSystem.pushMatrix();
-			RenderSystem.translatef(
-				(float)x - (float)this.instance.method_29049() * this.getDisappearProgress(l), (float)(y * this.instance.method_29050()), (float)(800 + y)
-			);
+			RenderSystem.translatef((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), (float)(y * this.instance.getHeight()), (float)(800 + y));
 			Toast.Visibility visibility = this.instance.draw(matrices, ToastManager.this, l - this.field_2242);
 			RenderSystem.popMatrix();
 			if (visibility != this.visibility) {

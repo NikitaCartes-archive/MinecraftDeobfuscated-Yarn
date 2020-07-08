@@ -1,16 +1,15 @@
 package net.minecraft.world.biome;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
-import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilders;
 
 public final class DesertHillsBiome extends Biome {
 	public DesertHillsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG)
+				.configureSurfaceBuilder(ConfiguredSurfaceBuilders.DESERT)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.DESERT)
 				.depth(0.45F)
@@ -20,9 +19,9 @@ public final class DesertHillsBiome extends Biome {
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.DESERT_PYRAMID);
+		this.addStructureFeature(ConfiguredStructureFeatures.DESERT_PYRAMID);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
-		this.addStructureFeature(DefaultBiomeFeatures.DESERT_RUINED_PORTAL);
+		this.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_DESERT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDesertLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
@@ -37,16 +36,6 @@ public final class DesertHillsBiome extends Biome {
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addDesertFeatures(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
-		this.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
-		this.addSpawn(SpawnGroup.AMBIENT, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 100, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.CREEPER, 100, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SLIME, 100, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 1, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.WITCH, 5, 1, 1));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE, 19, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_VILLAGER, 1, 1, 1));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.HUSK, 80, 4, 4));
+		DefaultBiomeFeatures.addDesertMobs(this);
 	}
 }

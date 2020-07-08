@@ -137,7 +137,7 @@ public class ModelTransformation {
 		GROUND,
 		FIXED;
 
-		public boolean method_29998() {
+		public boolean isFirstPerson() {
 			return this == FIRST_PERSON_LEFT_HAND || this == FIRST_PERSON_RIGHT_HAND;
 		}
 	}

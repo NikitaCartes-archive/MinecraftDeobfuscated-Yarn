@@ -98,7 +98,6 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	}
 
 	private Text method_27459() {
-		String string = this.generateStructures ? "mco.configure.world.on" : "mco.configure.world.off";
-		return new TranslatableText("selectWorld.mapFeatures").append(" ").append(new TranslatableText(string));
+		return ScreenTexts.method_30619(new TranslatableText("selectWorld.mapFeatures"), this.generateStructures);
 	}
 }

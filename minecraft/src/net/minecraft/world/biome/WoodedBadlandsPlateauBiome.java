@@ -2,17 +2,16 @@ package net.minecraft.world.biome;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
-import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilders;
 
 public final class WoodedBadlandsPlateauBiome extends Biome {
 	public WoodedBadlandsPlateauBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.WOODED_BADLANDS, SurfaceBuilder.BADLANDS_CONFIG)
+				.configureSurfaceBuilder(ConfiguredSurfaceBuilders.WOODED_BADLANDS)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.MESA)
 				.depth(1.5F)
@@ -23,7 +22,7 @@ public final class WoodedBadlandsPlateauBiome extends Biome {
 				.parent(null)
 		);
 		DefaultBiomeFeatures.addBadlandsUndergroundStructures(this);
-		this.addStructureFeature(DefaultBiomeFeatures.MOUNTAIN_RUINED_PORTAL);
+		this.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
@@ -37,15 +36,7 @@ public final class WoodedBadlandsPlateauBiome extends Biome {
 		DefaultBiomeFeatures.addBadlandsVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
-		this.addSpawn(SpawnGroup.AMBIENT, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE, 95, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_VILLAGER, 5, 1, 1));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 100, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.CREEPER, 100, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SLIME, 100, 4, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 1, 4));
-		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.WITCH, 5, 1, 1));
+		DefaultBiomeFeatures.addBatsAndMonsters(this);
 	}
 
 	@Environment(EnvType.CLIENT)

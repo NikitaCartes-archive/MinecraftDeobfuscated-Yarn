@@ -503,6 +503,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		public final int variant;
 
 		private LlamaData(int variant) {
+			super(true);
 			this.variant = variant;
 		}
 	}

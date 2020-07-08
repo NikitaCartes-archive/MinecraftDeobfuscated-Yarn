@@ -19,6 +19,8 @@ public class AdmireItemTask<E extends PiglinEntity> extends Task<E> {
 				MemoryModuleType.ADMIRING_ITEM,
 				MemoryModuleState.VALUE_ABSENT,
 				MemoryModuleType.ADMIRING_DISABLED,
+				MemoryModuleState.VALUE_ABSENT,
+				MemoryModuleType.DISABLE_WALK_TO_ADMIRE_ITEM,
 				MemoryModuleState.VALUE_ABSENT
 			)
 		);

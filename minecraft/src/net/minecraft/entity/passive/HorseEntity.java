@@ -294,6 +294,7 @@ public class HorseEntity extends HorseBaseEntity {
 		public final HorseColor color;
 
 		public HorseData(HorseColor color) {
+			super(true);
 			this.color = color;
 		}
 	}

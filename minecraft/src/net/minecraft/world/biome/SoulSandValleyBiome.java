@@ -1,7 +1,5 @@
 package net.minecraft.world.biome;
 
-import com.google.common.collect.ImmutableList;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.sound.MusicType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -10,23 +8,17 @@ import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.ProbabilityConfig;
-import net.minecraft.world.gen.carver.Carver;
-import net.minecraft.world.gen.decorator.ChanceRangeDecoratorConfig;
-import net.minecraft.world.gen.decorator.CountDecoratorConfig;
-import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.carver.ConfiguredCarvers;
+import net.minecraft.world.gen.feature.ConfiguredFeatures;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilders;
 
 public class SoulSandValleyBiome extends Biome {
-	protected SoulSandValleyBiome() {
+	public SoulSandValleyBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.SOUL_SAND_VALLEY, SurfaceBuilder.SOUL_SAND_CONFIG)
+				.configureSurfaceBuilder(ConfiguredSurfaceBuilders.SOUL_SAND_VALLEY)
 				.precipitation(Biome.Precipitation.NONE)
 				.category(Biome.Category.NETHER)
 				.depth(0.1F)
@@ -46,69 +38,23 @@ public class SoulSandValleyBiome extends Biome {
 						.build()
 				)
 				.parent(null)
-				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 0.0F)))
 		);
-		this.addStructureFeature(DefaultBiomeFeatures.FORTRESS);
-		this.addStructureFeature(DefaultBiomeFeatures.NETHER_FOSSIL);
-		this.addStructureFeature(DefaultBiomeFeatures.NETHER_RUINED_PORTAL);
-		this.addStructureFeature(DefaultBiomeFeatures.BASTION_REMNANT);
-		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
-		this.addFeature(
-			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.SPRING_FEATURE
-				.configure(DefaultBiomeFeatures.LAVA_SPRING_CONFIG)
-				.createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(20, 8, 16, 256)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Feature.BASALT_PILLAR.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(10, 0, 0, 128)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.SPRING_FEATURE
-				.configure(DefaultBiomeFeatures.NETHER_SPRING_CONFIG)
-				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(8, 4, 8, 128)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.GLOWSTONE_BLOB.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.LIGHT_GEM_CHANCE.configure(new CountDecoratorConfig(10)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.GLOWSTONE_BLOB.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(10, 0, 0, 128)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.RANDOM_PATCH
-				.configure(DefaultBiomeFeatures.SOUL_SAND_CRIMSON_ROOTS_CONFIG)
-				.createDecoratedFeature(Decorator.CHANCE_RANGE.configure(new ChanceRangeDecoratorConfig(1.0F, 0, 0, 128)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.NETHER_FIRE_CONFIG).createDecoratedFeature(Decorator.FIRE.configure(new CountDecoratorConfig(10)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.SOUL_FIRE_CONFIG).createDecoratedFeature(Decorator.FIRE.configure(new CountDecoratorConfig(10)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.ORE
-				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.MAGMA_BLOCK.getDefaultState(), 33))
-				.createDecoratedFeature(Decorator.MAGMA.configure(new CountDecoratorConfig(4)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.SPRING_FEATURE
-				.configure(DefaultBiomeFeatures.ENCLOSED_NETHER_SPRING_CONFIG)
-				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(16, 10, 20, 128)))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.ORE
-				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.SOUL_SAND.getDefaultState(), 12))
-				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(12, 0, 0, 32)))
-		);
+		this.addStructureFeature(ConfiguredStructureFeatures.FORTRESS);
+		this.addStructureFeature(ConfiguredStructureFeatures.NETHER_FOSSIL);
+		this.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER);
+		this.addStructureFeature(ConfiguredStructureFeatures.BASTION_REMNANT);
+		this.addCarver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE);
+		this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
+		this.addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, ConfiguredFeatures.BASALT_PILLAR);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_CRIMSON_ROOTS);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_SOUL_SAND);
 		DefaultBiomeFeatures.addNetherMineables(this);
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 20, 5, 5));
 		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 50, 4, 4));

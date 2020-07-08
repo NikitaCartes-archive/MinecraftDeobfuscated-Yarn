@@ -8,7 +8,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
-import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
+import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.NetherForestVegetationFeature;
 import net.minecraft.world.gen.feature.TwistingVinesFeature;
 
@@ -46,10 +46,10 @@ public class NyliumBlock extends Block implements Fertilizable {
 		BlockState blockState = world.getBlockState(pos);
 		BlockPos blockPos = pos.up();
 		if (blockState.isOf(Blocks.CRIMSON_NYLIUM)) {
-			NetherForestVegetationFeature.method_26264(world, random, blockPos, DefaultBiomeFeatures.CRIMSON_ROOTS_CONFIG, 3, 1);
+			NetherForestVegetationFeature.method_26264(world, random, blockPos, ConfiguredFeatures.class_5465.field_26151, 3, 1);
 		} else if (blockState.isOf(Blocks.WARPED_NYLIUM)) {
-			NetherForestVegetationFeature.method_26264(world, random, blockPos, DefaultBiomeFeatures.WARPED_ROOTS_CONFIG, 3, 1);
-			NetherForestVegetationFeature.method_26264(world, random, blockPos, DefaultBiomeFeatures.NETHER_SPROUTS_CONFIG, 3, 1);
+			NetherForestVegetationFeature.method_26264(world, random, blockPos, ConfiguredFeatures.class_5465.field_26152, 3, 1);
+			NetherForestVegetationFeature.method_26264(world, random, blockPos, ConfiguredFeatures.class_5465.field_26153, 3, 1);
 			if (random.nextInt(8) == 0) {
 				TwistingVinesFeature.method_26265(world, random, blockPos, 3, 1, 2);
 			}

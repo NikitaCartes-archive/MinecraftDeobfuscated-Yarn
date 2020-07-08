@@ -6,6 +6,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.decorator.DecoratorContext;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 	public DecoratedFeature(Codec<DecoratedFeatureConfig> codec) {
@@ -15,7 +17,13 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 	public boolean generate(
 		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig
 	) {
-		return decoratedFeatureConfig.decorator.generate(serverWorldAccess, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
+		MutableBoolean mutableBoolean = new MutableBoolean();
+		decoratedFeatureConfig.decorator.method_30444(new DecoratorContext(serverWorldAccess, chunkGenerator), random, blockPos).forEach(blockPosx -> {
+			if (((ConfiguredFeature)decoratedFeatureConfig.feature.get()).generate(serverWorldAccess, chunkGenerator, random, blockPosx)) {
+				mutableBoolean.setTrue();
+			}
+		});
+		return mutableBoolean.isTrue();
 	}
 
 	public String toString() {

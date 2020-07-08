@@ -1014,7 +1014,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			double g = this.getBoundingBox().maxY + 0.75;
 
 			do {
-				double h = this.world.getCollisionHeightAt(mutable);
+				double h = this.world.getDismountHeight(mutable);
 				if ((double)mutable.getY() + h > g) {
 					break;
 				}
@@ -1061,8 +1061,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.PassiveData();
-			((PassiveEntity.PassiveData)entityData).setBabyChance(0.2F);
+			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
 		this.initAttributes();

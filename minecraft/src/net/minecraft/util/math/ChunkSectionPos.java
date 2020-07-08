@@ -54,11 +54,39 @@ public class ChunkSectionPos extends Vec3i {
 		int i = getLocalCoord(pos.getX());
 		int j = getLocalCoord(pos.getY());
 		int k = getLocalCoord(pos.getZ());
-		return (short)(i << 8 | k << 4 | j);
+		return (short)(i << 8 | k << 4 | j << 0);
 	}
 
-	public static int getWorldCoord(int chunkCoord) {
-		return chunkCoord << 4;
+	public static int method_30551(short s) {
+		return s >>> 8 & 15;
+	}
+
+	public static int method_30552(short s) {
+		return s >>> 0 & 15;
+	}
+
+	public static int method_30553(short s) {
+		return s >>> 4 & 15;
+	}
+
+	public int method_30554(short s) {
+		return this.getMinX() + method_30551(s);
+	}
+
+	public int method_30555(short s) {
+		return this.getMinY() + method_30552(s);
+	}
+
+	public int method_30556(short s) {
+		return this.getMinZ() + method_30553(s);
+	}
+
+	public BlockPos method_30557(short s) {
+		return new BlockPos(this.method_30554(s), this.method_30555(s), this.method_30556(s));
+	}
+
+	public static int getBlockCoord(int sectionCoord) {
+		return sectionCoord << 4;
 	}
 
 	public static int getX(long packed) {
@@ -109,9 +137,9 @@ public class ChunkSectionPos extends Vec3i {
 		return (this.getSectionZ() << 4) + 15;
 	}
 
-	public static long fromGlobalPos(long globalLong) {
+	public static long fromBlockPos(long blockPos) {
 		return asLong(
-			getSectionCoord(BlockPos.unpackLongX(globalLong)), getSectionCoord(BlockPos.unpackLongY(globalLong)), getSectionCoord(BlockPos.unpackLongZ(globalLong))
+			getSectionCoord(BlockPos.unpackLongX(blockPos)), getSectionCoord(BlockPos.unpackLongY(blockPos)), getSectionCoord(BlockPos.unpackLongZ(blockPos))
 		);
 	}
 
@@ -120,7 +148,7 @@ public class ChunkSectionPos extends Vec3i {
 	}
 
 	public BlockPos getMinPos() {
-		return new BlockPos(getWorldCoord(this.getSectionX()), getWorldCoord(this.getSectionY()), getWorldCoord(this.getSectionZ()));
+		return new BlockPos(getBlockCoord(this.getSectionX()), getBlockCoord(this.getSectionY()), getBlockCoord(this.getSectionZ()));
 	}
 
 	public BlockPos getCenterPos() {

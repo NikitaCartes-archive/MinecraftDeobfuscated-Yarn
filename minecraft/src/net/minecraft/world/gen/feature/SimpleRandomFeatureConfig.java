@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class SimpleRandomFeatureConfig implements FeatureConfig {
 	public static final Codec<SimpleRandomFeatureConfig> CODEC = ConfiguredFeature.CODEC
@@ -9,9 +10,9 @@ public class SimpleRandomFeatureConfig implements FeatureConfig {
 		.fieldOf("features")
 		.<SimpleRandomFeatureConfig>xmap(SimpleRandomFeatureConfig::new, simpleRandomFeatureConfig -> simpleRandomFeatureConfig.features)
 		.codec();
-	public final List<ConfiguredFeature<?, ?>> features;
+	public final List<Supplier<ConfiguredFeature<?, ?>>> features;
 
-	public SimpleRandomFeatureConfig(List<ConfiguredFeature<?, ?>> features) {
+	public SimpleRandomFeatureConfig(List<Supplier<ConfiguredFeature<?, ?>>> features) {
 		this.features = features;
 	}
 }

@@ -338,6 +338,9 @@ public class FilledMapItem extends NetworkSyncedItem {
 		if (compoundTag != null && compoundTag.contains("map_scale_direction", 99)) {
 			scale(stack, world, compoundTag.getInt("map_scale_direction"));
 			compoundTag.remove("map_scale_direction");
+		} else if (compoundTag != null && compoundTag.contains("map_to_lock", 1) && compoundTag.getBoolean("map_to_lock")) {
+			copyMap(world, stack);
+			compoundTag.remove("map_to_lock");
 		}
 	}
 
@@ -357,16 +360,11 @@ public class FilledMapItem extends NetworkSyncedItem {
 		}
 	}
 
-	@Nullable
-	public static ItemStack copyMap(World world, ItemStack stack) {
+	public static void copyMap(World world, ItemStack stack) {
 		MapState mapState = getOrCreateMapState(stack, world);
 		if (mapState != null) {
-			ItemStack itemStack = stack.copy();
-			MapState mapState2 = createMapState(itemStack, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
+			MapState mapState2 = createMapState(stack, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
 			mapState2.copyFrom(mapState);
-			return itemStack;
-		} else {
-			return null;
 		}
 	}
 
@@ -404,12 +402,12 @@ public class FilledMapItem extends NetworkSyncedItem {
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
 		if (blockState.isIn(BlockTags.BANNERS)) {
-			if (!context.world.isClient) {
+			if (!context.getWorld().isClient) {
 				MapState mapState = getOrCreateMapState(context.getStack(), context.getWorld());
 				mapState.addBanner(context.getWorld(), context.getBlockPos());
 			}
 
-			return ActionResult.success(context.world.isClient);
+			return ActionResult.success(context.getWorld().isClient);
 		} else {
 			return super.useOnBlock(context);
 		}

@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -43,10 +42,7 @@ public class PointOfInterestSet {
 						)
 						.apply(instance, PointOfInterestSet::new)
 			)
-			.withDefault(
-				Util.method_29188("Failed to read POI section: ", LOGGER::error),
-				(Supplier<? extends PointOfInterestSet>)(() -> new PointOfInterestSet(runnable, false, ImmutableList.of()))
-			);
+			.orElseGet(Util.method_29188("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(runnable, false, ImmutableList.of()));
 	}
 
 	public PointOfInterestSet(Runnable updateListener) {
