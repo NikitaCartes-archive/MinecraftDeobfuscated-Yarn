@@ -6,6 +6,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -27,18 +28,20 @@ extends Task<PathAwareEntity> {
     private final PointOfInterestType poiType;
     private final MemoryModuleType<GlobalPos> targetMemoryModuleType;
     private final boolean onlyRunIfChild;
+    private final Optional<Byte> field_25812;
     private long positionExpireTimeLimit;
     private final Long2ObjectMap<RetryMarker> foundPositionsToExpiry = new Long2ObjectOpenHashMap<RetryMarker>();
 
-    public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl) {
+    public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl, Optional<Byte> optional) {
         super(FindPointOfInterestTask.method_29245(memoryModuleType, memoryModuleType2));
         this.poiType = poiType;
         this.targetMemoryModuleType = memoryModuleType2;
         this.onlyRunIfChild = bl;
+        this.field_25812 = optional;
     }
 
-    public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
-        this(pointOfInterestType, memoryModuleType, memoryModuleType, bl);
+    public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl, Optional<Byte> optional) {
+        this(pointOfInterestType, memoryModuleType, memoryModuleType, bl, optional);
     }
 
     private static ImmutableMap<MemoryModuleType<?>, MemoryModuleState> method_29245(MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2) {
@@ -85,6 +88,7 @@ extends Task<PathAwareEntity> {
             pointOfInterestStorage.getType(blockPos2).ifPresent(pointOfInterestType -> {
                 pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos2), blockPos2, 1);
                 pathAwareEntity.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getRegistryKey(), blockPos2));
+                this.field_25812.ifPresent(byte_ -> serverWorld.sendEntityStatus(pathAwareEntity, (byte)byte_));
                 this.foundPositionsToExpiry.clear();
                 DebugInfoSender.sendPointOfInterest(serverWorld, blockPos2);
             });

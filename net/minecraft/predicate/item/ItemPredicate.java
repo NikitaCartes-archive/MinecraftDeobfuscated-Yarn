@@ -122,7 +122,7 @@ public class ItemPredicate {
         Item item = null;
         if (jsonObject.has("item")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
-            item = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item id '" + identifier + "'"));
+            item = Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item id '" + identifier + "'"));
         }
         Tag<Item> tag = null;
         if (jsonObject.has("tag")) {
@@ -135,7 +135,7 @@ public class ItemPredicate {
         Potion potion = null;
         if (jsonObject.has("potion")) {
             Identifier identifier3 = new Identifier(JsonHelper.getString(jsonObject, "potion"));
-            potion = (Potion)Registry.POTION.getOrEmpty(identifier3).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier3 + "'"));
+            potion = Registry.POTION.getOrEmpty(identifier3).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier3 + "'"));
         }
         EnchantmentPredicate[] enchantmentPredicates = EnchantmentPredicate.deserializeAll(jsonObject.get("enchantments"));
         EnchantmentPredicate[] enchantmentPredicates2 = EnchantmentPredicate.deserializeAll(jsonObject.get("stored_enchantments"));

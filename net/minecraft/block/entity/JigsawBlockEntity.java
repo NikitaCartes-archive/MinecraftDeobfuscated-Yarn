@@ -3,7 +3,6 @@
  */
 package net.minecraft.block.entity;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,11 +20,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.SinglePoolElement;
-import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
-import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -137,22 +133,11 @@ extends BlockEntity {
         ArrayList<PoolStructurePiece> list = Lists.newArrayList();
         Structure structure = new Structure();
         structure.saveFromWorld(world, blockPos, new BlockPos(1, 1, 1), false, null);
-        SinglePoolElement structurePoolElement = new SinglePoolElement(structure, ImmutableList.of(), StructurePool.Projection.RIGID);
-        RuntimeStructurePiece runtimeStructurePiece = new RuntimeStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos));
-        StructurePoolBasedGenerator.method_27230(runtimeStructurePiece, maxDepth, RuntimeStructurePiece::new, chunkGenerator, structureManager, list, random);
-        for (PoolStructurePiece poolStructurePiece : list) {
-            poolStructurePiece.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
-        }
-    }
-
-    public static final class RuntimeStructurePiece
-    extends PoolStructurePiece {
-        public RuntimeStructurePiece(StructureManager manager, StructurePoolElement poolElement, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox box) {
-            super(StructurePieceType.RUNTIME, manager, poolElement, pos, groundLevelDelta, rotation, box);
-        }
-
-        public RuntimeStructurePiece(StructureManager manager, CompoundTag tag) {
-            super(manager, tag, StructurePieceType.RUNTIME);
+        SinglePoolElement structurePoolElement = new SinglePoolElement(structure);
+        PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos));
+        StructurePoolBasedGenerator.method_27230(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random);
+        for (PoolStructurePiece poolStructurePiece2 : list) {
+            poolStructurePiece2.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
         }
     }
 

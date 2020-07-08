@@ -26,7 +26,7 @@ extends Feature<DefaultFeatureConfig> {
     @Override
     public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockPos.Mutable mutable = blockPos.mutableCopy();
-        block0: for (int i = blockPos.getY(); i < 256; ++i) {
+        block0: for (int i = 64; i < 256; ++i) {
             mutable.set(blockPos);
             mutable.move(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
             mutable.setY(i);

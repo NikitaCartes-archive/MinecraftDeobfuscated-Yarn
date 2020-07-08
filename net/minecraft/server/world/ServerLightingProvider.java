@@ -70,30 +70,30 @@ implements AutoCloseable {
         this.enqueue(pos.x, pos.z, () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> {
             int i;
             super.setRetainData(pos, false);
-            super.setLightEnabled(pos, false);
+            super.setColumnEnabled(pos, false);
             for (i = -1; i < 17; ++i) {
-                super.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
-                super.queueData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
+                super.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
+                super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
             }
             for (i = 0; i < 16; ++i) {
-                super.updateSectionStatus(ChunkSectionPos.from(pos, i), true);
+                super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
             }
         }, () -> "updateChunkStatus " + pos + " " + true));
     }
 
     @Override
-    public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
-        this.enqueue(pos.getSectionX(), pos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.updateSectionStatus(pos, status), () -> "updateSectionStatus " + pos + " " + status));
+    public void setSectionStatus(ChunkSectionPos pos, boolean notReady) {
+        this.enqueue(pos.getSectionX(), pos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setSectionStatus(pos, notReady), () -> "updateSectionStatus " + pos + " " + notReady));
     }
 
     @Override
-    public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
-        this.enqueue(pos.x, pos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setLightEnabled(pos, lightEnabled), () -> "enableLight " + pos + " " + lightEnabled));
+    public void setColumnEnabled(ChunkPos pos, boolean lightEnabled) {
+        this.enqueue(pos.x, pos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setColumnEnabled(pos, lightEnabled), () -> "enableLight " + pos + " " + lightEnabled));
     }
 
     @Override
-    public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
-        this.enqueue(pos.getSectionX(), pos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.queueData(lightType, pos, nibbles, bl), () -> "queueData " + pos));
+    public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
+        this.enqueue(pos.getSectionX(), pos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.enqueueSectionData(lightType, pos, nibbles, bl), () -> "queueData " + pos));
     }
 
     private void enqueue(int x, int z, Stage stage, Runnable task) {
@@ -122,9 +122,9 @@ implements AutoCloseable {
             for (int i = 0; i < 16; ++i) {
                 ChunkSection chunkSection = chunkSections[i];
                 if (ChunkSection.isEmpty(chunkSection)) continue;
-                super.updateSectionStatus(ChunkSectionPos.from(chunkPos, i), false);
+                super.setSectionStatus(ChunkSectionPos.from(chunkPos, i), false);
             }
-            super.setLightEnabled(chunkPos, true);
+            super.setColumnEnabled(chunkPos, true);
             if (!excludeBlocks) {
                 chunk.getLightSourcesStream().forEach(blockPos -> super.addLightSource((BlockPos)blockPos, chunk.getLuminance((BlockPos)blockPos)));
             }

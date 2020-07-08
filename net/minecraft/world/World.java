@@ -50,10 +50,9 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
@@ -165,40 +164,6 @@ AutoCloseable {
 
     public static boolean isHeightInvalid(int y) {
         return y < 0 || y >= 256;
-    }
-
-    public double getCollisionHeightAt(BlockPos pos) {
-        return this.getCollisionHeightAt(pos, blockState -> false);
-    }
-
-    public double getCollisionHeightAt(BlockPos pos, Predicate<BlockState> predicate) {
-        VoxelShape voxelShape;
-        BlockState blockState = this.getBlockState(pos);
-        VoxelShape voxelShape2 = voxelShape = predicate.test(blockState) ? VoxelShapes.empty() : blockState.getCollisionShape(this, pos);
-        if (voxelShape.isEmpty()) {
-            BlockPos blockPos = pos.down();
-            BlockState blockState2 = this.getBlockState(blockPos);
-            VoxelShape voxelShape22 = predicate.test(blockState2) ? VoxelShapes.empty() : blockState2.getCollisionShape(this, blockPos);
-            double d = voxelShape22.getMax(Direction.Axis.Y);
-            if (d >= 1.0) {
-                return d - 1.0;
-            }
-            return Double.NEGATIVE_INFINITY;
-        }
-        return voxelShape.getMax(Direction.Axis.Y);
-    }
-
-    public double method_26096(BlockPos blockPos, double d) {
-        BlockPos.Mutable mutable = blockPos.mutableCopy();
-        int i = MathHelper.ceil(d);
-        for (int j = 0; j < i; ++j) {
-            VoxelShape voxelShape = this.getBlockState(mutable).getCollisionShape(this, mutable);
-            if (!voxelShape.isEmpty()) {
-                return (double)j + voxelShape.getMin(Direction.Axis.Y);
-            }
-            mutable.move(Direction.UP);
-        }
-        return Double.POSITIVE_INFINITY;
     }
 
     public WorldChunk getWorldChunk(BlockPos pos) {
@@ -1026,6 +991,8 @@ AutoCloseable {
     public final boolean isDebugWorld() {
         return this.debugWorld;
     }
+
+    public abstract DynamicRegistryManager getRegistryManager();
 
     @Override
     public /* synthetic */ Chunk getChunk(int chunkX, int chunkZ) {

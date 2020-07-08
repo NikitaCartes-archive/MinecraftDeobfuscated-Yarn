@@ -16,7 +16,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.FixedBiomeSource;
@@ -70,7 +70,7 @@ public abstract class GeneratorType {
     private static final GeneratorType SINGLE_BIOME_CAVES = new GeneratorType("single_biome_caves"){
 
         @Override
-        public GeneratorOptions method_29077(RegistryTracker.Modifiable modifiable, long l, boolean bl, boolean bl2) {
+        public GeneratorOptions method_29077(DynamicRegistryManager.Impl impl, long l, boolean bl, boolean bl2) {
             return new GeneratorOptions(l, bl, bl2, GeneratorOptions.method_29962(DimensionType.method_28517(l), DimensionType::getOverworldCavesDimensionType, this.getChunkGenerator(l)));
         }
 
@@ -97,7 +97,7 @@ public abstract class GeneratorType {
     protected static final Map<Optional<GeneratorType>, ScreenProvider> field_25053 = ImmutableMap.of(Optional.of(FLAT), (createWorldScreen, generatorOptions) -> {
         ChunkGenerator chunkGenerator = generatorOptions.getChunkGenerator();
         return new CustomizeFlatLevelScreen(createWorldScreen, flatChunkGeneratorConfig -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new FlatChunkGenerator((FlatChunkGeneratorConfig)flatChunkGeneratorConfig)))), chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).method_28545() : FlatChunkGeneratorConfig.getDefaultConfig());
-    }, Optional.of(SINGLE_BIOME_SURFACE), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_SURFACE, biome)), GeneratorType.getFirstBiome(generatorOptions)), Optional.of(SINGLE_BIOME_CAVES), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_CAVES, biome)), GeneratorType.getFirstBiome(generatorOptions)), Optional.of(SINGLE_BIOME_FLOATING_ISLANDS), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)), GeneratorType.getFirstBiome(generatorOptions)));
+    }, Optional.of(SINGLE_BIOME_SURFACE), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_SURFACE, biome)), GeneratorType.getFirstBiome(generatorOptions)), Optional.of(SINGLE_BIOME_CAVES), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_CAVES, biome)), GeneratorType.getFirstBiome(generatorOptions)), Optional.of(SINGLE_BIOME_FLOATING_ISLANDS), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)), GeneratorType.getFirstBiome(generatorOptions)));
     private final Text translationKey;
 
     private GeneratorType(String translationKey) {
@@ -129,7 +129,7 @@ public abstract class GeneratorType {
         return this.translationKey;
     }
 
-    public GeneratorOptions method_29077(RegistryTracker.Modifiable modifiable, long l, boolean bl, boolean bl2) {
+    public GeneratorOptions method_29077(DynamicRegistryManager.Impl impl, long l, boolean bl, boolean bl2) {
         return new GeneratorOptions(l, bl, bl2, GeneratorOptions.method_28608(DimensionType.method_28517(l), this.getChunkGenerator(l)));
     }
 

@@ -29,7 +29,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -125,17 +125,17 @@ SaveProperties {
     }
 
     @Override
-    public CompoundTag cloneWorldTag(RegistryTracker registryTracker, @Nullable CompoundTag compoundTag) {
+    public CompoundTag cloneWorldTag(DynamicRegistryManager dynamicRegistryManager, @Nullable CompoundTag compoundTag) {
         this.loadPlayerData();
         if (compoundTag == null) {
             compoundTag = this.playerData;
         }
         CompoundTag compoundTag2 = new CompoundTag();
-        this.updateProperties(registryTracker, compoundTag2, compoundTag);
+        this.updateProperties(dynamicRegistryManager, compoundTag2, compoundTag);
         return compoundTag2;
     }
 
-    private void updateProperties(RegistryTracker registryTracker, CompoundTag compoundTag, @Nullable CompoundTag compoundTag2) {
+    private void updateProperties(DynamicRegistryManager dynamicRegistryManager, CompoundTag compoundTag, @Nullable CompoundTag compoundTag2) {
         ListTag listTag = new ListTag();
         this.serverBrands.stream().map(StringTag::of).forEach(listTag::add);
         compoundTag.put("ServerBrands", listTag);
@@ -146,7 +146,7 @@ SaveProperties {
         compoundTag3.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
         compoundTag.put("Version", compoundTag3);
         compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-        RegistryReadingOps<Tag> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, registryTracker);
+        RegistryReadingOps<Tag> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, dynamicRegistryManager);
         GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.field_25425).resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error)).ifPresent(tag -> compoundTag.put("WorldGenSettings", (Tag)tag));
         compoundTag.putInt("GameType", this.field_25030.getGameMode().getId());
         compoundTag.putInt("SpawnX", this.spawnX);
@@ -245,13 +245,13 @@ SaveProperties {
     }
 
     @Override
-    public void method_29034(long l) {
-        this.time = l;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     @Override
-    public void method_29035(long l) {
-        this.timeOfDay = l;
+    public void setTimeOfDay(long time) {
+        this.timeOfDay = time;
     }
 
     @Override

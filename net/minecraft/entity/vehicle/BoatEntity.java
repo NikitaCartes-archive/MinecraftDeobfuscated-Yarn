@@ -609,17 +609,16 @@ extends Entity {
         BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e = this.getZ() + vec3d.z);
         BlockPos blockPos2 = blockPos.down();
         if (!this.world.isWater(blockPos2)) {
+            double f = (double)blockPos.getY() + this.world.getDismountHeight(blockPos);
+            double g = (double)blockPos.getY() + this.world.getDismountHeight(blockPos2);
             for (EntityPose entityPose : passenger.getPoses()) {
-                Vec3d vec3d3;
-                Vec3d vec3d2;
-                Box box = passenger.getBoundingBox(entityPose);
-                double f = this.world.getCollisionHeightAt(blockPos);
-                if (Dismounting.canDismountInBlock(f) && Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d2 = new Vec3d(d, (double)blockPos.getY() + f, e)))) {
+                Vec3d vec3d2 = Dismounting.findDismountPos(this.world, d, f, e, passenger, entityPose);
+                if (vec3d2 != null) {
                     passenger.setPose(entityPose);
                     return vec3d2;
                 }
-                double g = this.world.getCollisionHeightAt(blockPos2);
-                if (!Dismounting.canDismountInBlock(g) || !Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d3 = new Vec3d(d, (double)blockPos2.getY() + g, e)))) continue;
+                Vec3d vec3d3 = Dismounting.findDismountPos(this.world, d, g, e, passenger, entityPose);
+                if (vec3d3 == null) continue;
                 passenger.setPose(entityPose);
                 return vec3d3;
             }

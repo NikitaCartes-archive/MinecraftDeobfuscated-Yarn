@@ -9,6 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -18,14 +19,12 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class SpruceFoliagePlacer
 extends FoliagePlacer {
-    public static final Codec<SpruceFoliagePlacer> field_24936 = RecordCodecBuilder.create(instance -> SpruceFoliagePlacer.method_28846(instance).and(instance.group(((MapCodec)Codec.INT.fieldOf("trunk_height")).forGetter(spruceFoliagePlacer -> spruceFoliagePlacer.trunkHeight), ((MapCodec)Codec.INT.fieldOf("trunk_height_random")).forGetter(spruceFoliagePlacer -> spruceFoliagePlacer.randomTrunkHeight))).apply((Applicative<SpruceFoliagePlacer, ?>)instance, SpruceFoliagePlacer::new));
-    private final int trunkHeight;
-    private final int randomTrunkHeight;
+    public static final Codec<SpruceFoliagePlacer> field_24936 = RecordCodecBuilder.create(instance -> SpruceFoliagePlacer.method_30411(instance).and(((MapCodec)class_5428.method_30316(0, 16, 8).fieldOf("trunk_height")).forGetter(spruceFoliagePlacer -> spruceFoliagePlacer.trunkHeight)).apply((Applicative<SpruceFoliagePlacer, ?>)instance, SpruceFoliagePlacer::new));
+    private final class_5428 trunkHeight;
 
-    public SpruceFoliagePlacer(int i, int j, int k, int l, int m, int n) {
-        super(i, j, k, l);
-        this.trunkHeight = m;
-        this.randomTrunkHeight = n;
+    public SpruceFoliagePlacer(class_5428 arg, class_5428 arg2, class_5428 arg3) {
+        super(arg, arg2);
+        this.trunkHeight = arg3;
     }
 
     @Override
@@ -53,7 +52,7 @@ extends FoliagePlacer {
 
     @Override
     public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
-        return Math.max(4, trunkHeight - this.trunkHeight - random.nextInt(this.randomTrunkHeight + 1));
+        return Math.max(4, trunkHeight - this.trunkHeight.method_30321(random));
     }
 
     @Override

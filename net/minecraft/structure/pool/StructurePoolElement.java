@@ -3,16 +3,27 @@
  */
 package net.minecraft.structure.pool;
 
+import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.pool.EmptyPoolElement;
+import net.minecraft.structure.pool.FeaturePoolElement;
+import net.minecraft.structure.pool.LegacySinglePoolElement;
+import net.minecraft.structure.pool.ListPoolElement;
+import net.minecraft.structure.pool.SinglePoolElement;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
+import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -20,6 +31,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class StructurePoolElement {
@@ -61,6 +73,34 @@ public abstract class StructurePoolElement {
 
     public int getGroundLevelDelta() {
         return 1;
+    }
+
+    public static Function<StructurePool.Projection, EmptyPoolElement> method_30438() {
+        return projection -> EmptyPoolElement.INSTANCE;
+    }
+
+    public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30425(String string) {
+        return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), ImmutableList::of, (StructurePool.Projection)projection);
+    }
+
+    public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30426(String string, ImmutableList<StructureProcessor> immutableList) {
+        return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> immutableList, (StructurePool.Projection)projection);
+    }
+
+    public static Function<StructurePool.Projection, SinglePoolElement> method_30434(String string) {
+        return projection -> new SinglePoolElement(Either.left(new Identifier(string)), ImmutableList::of, (StructurePool.Projection)projection);
+    }
+
+    public static Function<StructurePool.Projection, SinglePoolElement> method_30435(String string, ImmutableList<StructureProcessor> immutableList) {
+        return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> immutableList, (StructurePool.Projection)projection);
+    }
+
+    public static Function<StructurePool.Projection, FeaturePoolElement> method_30421(ConfiguredFeature<?, ?> configuredFeature) {
+        return projection -> new FeaturePoolElement(() -> configuredFeature, (StructurePool.Projection)projection);
+    }
+
+    public static Function<StructurePool.Projection, ListPoolElement> method_30429(List<Function<StructurePool.Projection, ? extends StructurePoolElement>> list) {
+        return projection -> new ListPoolElement(list.stream().map(function -> (StructurePoolElement)function.apply(projection)).collect(Collectors.toList()), (StructurePool.Projection)projection);
     }
 }
 

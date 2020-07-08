@@ -25,7 +25,6 @@ import net.minecraft.util.math.BlockPos;
 public class CartographyTableScreenHandler
 extends ScreenHandler {
     private final ScreenHandlerContext context;
-    private boolean currentlyTakingItem;
     private long lastTakeResultTime;
     public final Inventory inventory = new SimpleInventory(2){
 
@@ -75,29 +74,9 @@ extends ScreenHandler {
             }
 
             @Override
-            public ItemStack takeStack(int amount) {
-                ItemStack itemStack = super.takeStack(amount);
-                ItemStack itemStack2 = context.run((world, blockPos) -> {
-                    ItemStack itemStack2;
-                    if (!CartographyTableScreenHandler.this.currentlyTakingItem && CartographyTableScreenHandler.this.inventory.getStack(1).getItem() == Items.GLASS_PANE && (itemStack2 = FilledMapItem.copyMap(world, CartographyTableScreenHandler.this.inventory.getStack(0))) != null) {
-                        itemStack2.setCount(1);
-                        return itemStack2;
-                    }
-                    return itemStack;
-                }).orElse(itemStack);
-                CartographyTableScreenHandler.this.inventory.removeStack(0, 1);
-                CartographyTableScreenHandler.this.inventory.removeStack(1, 1);
-                return itemStack2;
-            }
-
-            @Override
-            protected void onCrafted(ItemStack stack, int amount) {
-                this.takeStack(amount);
-                super.onCrafted(stack, amount);
-            }
-
-            @Override
             public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+                ((Slot)CartographyTableScreenHandler.this.slots.get(0)).takeStack(1);
+                ((Slot)CartographyTableScreenHandler.this.slots.get(1)).takeStack(1);
                 stack.getItem().onCraft(stack, player.world, player);
                 context.run((world, blockPos) -> {
                     long l = world.getTime();
@@ -152,6 +131,7 @@ extends ScreenHandler {
             } else if (item == Items.GLASS_PANE && !mapState.locked) {
                 itemStack4 = map.copy();
                 itemStack4.setCount(1);
+                itemStack4.getOrCreateTag().putBoolean("map_to_lock", true);
                 this.sendContentUpdates();
             } else if (item == Items.MAP) {
                 itemStack4 = map.copy();
@@ -184,16 +164,6 @@ extends ScreenHandler {
             Item item = itemStack3.getItem();
             itemStack = itemStack3.copy();
             if (index == 2) {
-                if (this.inventory.getStack(1).getItem() == Items.GLASS_PANE) {
-                    itemStack3 = this.context.run((world, blockPos) -> {
-                        ItemStack itemStack2 = FilledMapItem.copyMap(world, this.inventory.getStack(0));
-                        if (itemStack2 != null) {
-                            itemStack2.setCount(1);
-                            return itemStack2;
-                        }
-                        return itemStack2;
-                    }).orElse(itemStack3);
-                }
                 item.onCraft(itemStack3, player.world, player);
                 if (!this.insertItem(itemStack3, 3, 39, true)) {
                     return ItemStack.EMPTY;
@@ -209,9 +179,7 @@ extends ScreenHandler {
             if (itemStack3.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            this.currentlyTakingItem = true;
             slot.onTakeItem(player, itemStack3);
-            this.currentlyTakingItem = false;
             this.sendContentUpdates();
         }
         return itemStack;

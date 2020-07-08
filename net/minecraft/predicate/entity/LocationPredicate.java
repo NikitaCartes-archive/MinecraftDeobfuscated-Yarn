@@ -17,6 +17,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -125,7 +126,7 @@ public class LocationPredicate {
             jsonObject.addProperty("feature", this.feature.getName());
         }
         if (this.biome != null) {
-            jsonObject.addProperty("biome", Registry.BIOME.getId(this.biome).toString());
+            jsonObject.addProperty("biome", BuiltinRegistries.BIOME.getId(this.biome).toString());
         }
         if (this.smokey != null) {
             jsonObject.addProperty("smokey", this.smokey);
@@ -150,7 +151,7 @@ public class LocationPredicate {
         Biome biome = null;
         if (jsonObject.has("biome")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-            biome = Registry.BIOME.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier2 + "'"));
+            biome = BuiltinRegistries.BIOME.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier2 + "'"));
         }
         Boolean boolean_ = jsonObject.has("smokey") ? Boolean.valueOf(jsonObject.get("smokey").getAsBoolean()) : null;
         LightPredicate lightPredicate = LightPredicate.fromJson(jsonObject.get("light"));

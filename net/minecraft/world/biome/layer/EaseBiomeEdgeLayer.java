@@ -3,7 +3,7 @@
  */
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayers;
@@ -71,8 +71,8 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
         if (BiomeLayers.areSimilar(i, j)) {
             return true;
         }
-        Biome biome = (Biome)Registry.BIOME.get(i);
-        Biome biome2 = (Biome)Registry.BIOME.get(j);
+        Biome biome = (Biome)BuiltinRegistries.BIOME.get(i);
+        Biome biome2 = (Biome)BuiltinRegistries.BIOME.get(j);
         if (biome != null && biome2 != null) {
             Biome.TemperatureGroup temperatureGroup2;
             Biome.TemperatureGroup temperatureGroup = biome.getTemperatureGroup();
@@ -82,22 +82,22 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
     }
 
     static {
-        DESERT_ID = Registry.BIOME.getRawId(Biomes.DESERT);
-        MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.MOUNTAINS);
-        WOODED_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.WOODED_MOUNTAINS);
-        SNOWY_TUNDRA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TUNDRA);
-        JUNGLE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE);
-        BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
-        JUNGLE_EDGE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE_EDGE);
-        BADLANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
-        BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.BADLANDS_PLATEAU);
-        WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
-        PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);
-        GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA);
-        MOUNTAIN_EDGE_ID = Registry.BIOME.getRawId(Biomes.MOUNTAIN_EDGE);
-        SWAMP_ID = Registry.BIOME.getRawId(Biomes.SWAMP);
-        TAIGA_ID = Registry.BIOME.getRawId(Biomes.TAIGA);
-        SNOWY_TAIGA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TAIGA);
+        DESERT_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DESERT);
+        MOUNTAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.MOUNTAINS);
+        WOODED_MOUNTAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.WOODED_MOUNTAINS);
+        SNOWY_TUNDRA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SNOWY_TUNDRA);
+        JUNGLE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.JUNGLE);
+        BAMBOO_JUNGLE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
+        JUNGLE_EDGE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.JUNGLE_EDGE);
+        BADLANDS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BADLANDS);
+        BADLANDS_PLATEAU_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BADLANDS_PLATEAU);
+        WOODED_BADLANDS_PLATEAU_ID = BuiltinRegistries.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
+        PLAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.PLAINS);
+        GIANT_TREE_TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA);
+        MOUNTAIN_EDGE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.MOUNTAIN_EDGE);
+        SWAMP_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SWAMP);
+        TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.TAIGA);
+        SNOWY_TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SNOWY_TAIGA);
     }
 }
 

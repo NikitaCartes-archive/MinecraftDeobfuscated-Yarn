@@ -33,7 +33,7 @@ extends PathAwareEntity {
     public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         PassiveData passiveData;
         if (entityData == null) {
-            entityData = new PassiveData();
+            entityData = new PassiveData(true);
         }
         if ((passiveData = (PassiveData)entityData).canSpawnBaby() && passiveData.getSpawnedCount() > 0 && this.random.nextFloat() <= passiveData.getBabyChance()) {
             this.setBreedingAge(-24000);
@@ -152,8 +152,21 @@ extends PathAwareEntity {
     public static class PassiveData
     implements EntityData {
         private int spawnCount;
-        private boolean babyAllowed = true;
-        private float babyChance = 0.05f;
+        private final boolean babyAllowed;
+        private final float babyChance;
+
+        private PassiveData(boolean bl, float f) {
+            this.babyAllowed = bl;
+            this.babyChance = f;
+        }
+
+        public PassiveData(boolean bl) {
+            this(bl, 0.05f);
+        }
+
+        public PassiveData(float f) {
+            this(true, f);
+        }
 
         public int getSpawnedCount() {
             return this.spawnCount;
@@ -167,16 +180,8 @@ extends PathAwareEntity {
             return this.babyAllowed;
         }
 
-        public void setBabyAllowed(boolean babyAllowed) {
-            this.babyAllowed = babyAllowed;
-        }
-
         public float getBabyChance() {
             return this.babyChance;
-        }
-
-        public void setBabyChance(float babyChance) {
-            this.babyChance = babyChance;
         }
     }
 }

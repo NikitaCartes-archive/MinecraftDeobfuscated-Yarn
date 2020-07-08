@@ -107,15 +107,15 @@ extends Screen {
         public RuleListWidget(final GameRules gameRules) {
             super(EditGameRulesScreen.this.client, EditGameRulesScreen.this.width, EditGameRulesScreen.this.height, 43, EditGameRulesScreen.this.height - 32, 24);
             final HashMap map = Maps.newHashMap();
-            GameRules.forEachType(new GameRules.TypeConsumer(){
+            GameRules.accept(new GameRules.Visitor(){
 
                 @Override
-                public void acceptBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
+                public void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
                     this.createRuleWidget(key, (text, list, string, booleanRule) -> new BooleanRuleWidget(text, list, string, (GameRules.BooleanRule)booleanRule));
                 }
 
                 @Override
-                public void acceptInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
+                public void visitInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
                     this.createRuleWidget(key, (text, list, string, intRule) -> new IntRuleWidget(text, list, string, (GameRules.IntRule)intRule));
                 }
 
@@ -202,14 +202,10 @@ extends Screen {
 
                 @Override
                 protected MutableText getNarrationMessage() {
-                    return BooleanRuleWidget.this.createBooleanRuleText(name, booleanRule.get()).shallowCopy().append("\n").append(ruleName);
+                    return ScreenTexts.method_30619(name, booleanRule.get()).append("\n").append(ruleName);
                 }
             };
             this.children.add(this.toggleButton);
-        }
-
-        private MutableText createBooleanRuleText(Text text, boolean value) {
-            return new LiteralText("").append(text).append(": ").append(ScreenTexts.getToggleText(value));
         }
 
         @Override

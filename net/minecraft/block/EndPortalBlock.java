@@ -52,7 +52,7 @@ extends BlockWithEntity {
             if (serverWorld == null) {
                 return;
             }
-            entity.changeDimension(serverWorld);
+            entity.moveToWorld(serverWorld);
         }
     }
 

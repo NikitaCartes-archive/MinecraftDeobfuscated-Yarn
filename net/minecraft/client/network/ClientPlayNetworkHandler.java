@@ -295,14 +295,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -334,7 +335,7 @@ implements ClientPlayPacketListener {
     private final RecipeManager recipeManager = new RecipeManager();
     private final UUID sessionId = UUID.randomUUID();
     private Set<RegistryKey<World>> worldKeys;
-    private RegistryTracker registryTracker = RegistryTracker.create();
+    private DynamicRegistryManager registryManager = DynamicRegistryManager.create();
 
     public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile) {
         this.client = client;
@@ -368,10 +369,10 @@ implements ClientPlayPacketListener {
         ArrayList<RegistryKey<World>> arrayList = Lists.newArrayList(packet.method_29443());
         Collections.shuffle(arrayList);
         this.worldKeys = Sets.newLinkedHashSet(arrayList);
-        this.registryTracker = packet.getDimension();
+        this.registryManager = packet.getRegistryManager();
         RegistryKey<DimensionType> registryKey = packet.method_29444();
         RegistryKey<World> registryKey2 = packet.getDimensionId();
-        DimensionType dimensionType = this.registryTracker.getDimensionTypeRegistry().get(registryKey);
+        DimensionType dimensionType = this.registryManager.getDimensionTypes().get(registryKey);
         this.chunkLoadDistance = packet.getChunkLoadDistance();
         boolean bl = packet.isDebugWorld();
         boolean bl2 = packet.isFlatWorld();
@@ -660,9 +661,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        for (ChunkDeltaUpdateS2CPacket.ChunkDeltaRecord chunkDeltaRecord : packet.getRecords()) {
-            this.world.setBlockStateWithoutNeighborUpdates(chunkDeltaRecord.getBlockPos(), chunkDeltaRecord.getState());
-        }
+        packet.method_30621(this.world::setBlockStateWithoutNeighborUpdates);
     }
 
     @Override
@@ -670,7 +669,8 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         int i = packet.getX();
         int j = packet.getZ();
-        WorldChunk worldChunk = this.world.getChunkManager().loadChunkFromPacket(i, j, packet.getBiomeArray(), packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask(), packet.isFullChunk());
+        BiomeArray biomeArray = packet.getBiomeArray() == null ? null : new BiomeArray(this.registryManager.get(Registry.BIOME_KEY), packet.getBiomeArray());
+        WorldChunk worldChunk = this.world.getChunkManager().loadChunkFromPacket(i, j, biomeArray, packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask(), packet.isFullChunk());
         if (worldChunk != null && packet.isFullChunk()) {
             this.world.addEntitiesToChunk(worldChunk);
         }
@@ -684,15 +684,15 @@ implements ClientPlayPacketListener {
             blockEntity.fromTag(this.world.getBlockState(blockPos2), compoundTag);
         }
         if (!packet.method_30144()) {
-            this.world.getLightingProvider().setLightEnabled(worldChunk.getPos(), false);
+            this.world.getLightingProvider().setColumnEnabled(worldChunk.getPos(), false);
             int k = packet.getVerticalStripBitmask();
             for (int l = 0; l < 16; ++l) {
                 if ((k & 1 << l) == 0) continue;
-                this.world.getLightingProvider().queueData(LightType.BLOCK, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
-                this.world.getLightingProvider().queueData(LightType.SKY, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
+                this.world.getLightingProvider().enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
+                this.world.getLightingProvider().enqueueSectionData(LightType.SKY, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
             }
             this.world.getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
-            this.world.getLightingProvider().setLightEnabled(worldChunk.getPos(), true);
+            this.world.getLightingProvider().setColumnEnabled(worldChunk.getPos(), true);
             worldChunk.getLightSourcesStream().forEach(blockPos -> this.world.getLightingProvider().addLightSource((BlockPos)blockPos, worldChunk.getLuminance((BlockPos)blockPos)));
         }
     }
@@ -707,9 +707,9 @@ implements ClientPlayPacketListener {
         LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
         for (int k = 0; k < 16; ++k) {
             this.world.scheduleBlockRenders(i, k, j);
-            lightingProvider.updateSectionStatus(ChunkSectionPos.from(i, k, j), true);
+            lightingProvider.setSectionStatus(ChunkSectionPos.from(i, k, j), true);
         }
-        lightingProvider.setLightEnabled(new ChunkPos(i, j), false);
+        lightingProvider.setColumnEnabled(new ChunkPos(i, j), false);
     }
 
     @Override
@@ -928,7 +928,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         RegistryKey<DimensionType> registryKey = packet.method_29445();
         RegistryKey<World> registryKey2 = packet.getDimension();
-        DimensionType dimensionType = this.registryTracker.getDimensionTypeRegistry().get(registryKey);
+        DimensionType dimensionType = this.registryManager.getDimensionTypes().get(registryKey);
         ClientPlayerEntity clientPlayerEntity = this.client.player;
         int i = clientPlayerEntity.getEntityId();
         this.positionLookSetup = false;
@@ -1655,7 +1655,7 @@ implements ClientPlayPacketListener {
                 }
                 this.client.debugRenderer.caveDebugRenderer.method_3704(blockPos2, list, list2);
             } else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
-                DimensionType dimensionType = this.registryTracker.getDimensionTypeRegistry().get(packetByteBuf.readIdentifier());
+                DimensionType dimensionType = this.registryManager.getDimensionTypes().get(packetByteBuf.readIdentifier());
                 BlockBox blockBox = new BlockBox(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
                 int m = packetByteBuf.readInt();
                 ArrayList<BlockBox> list2 = Lists.newArrayList();
@@ -2030,7 +2030,7 @@ implements ClientPlayPacketListener {
             boolean bl2 = (mask & 1 << i) != 0;
             boolean bl4 = bl3 = (filledMask & 1 << i) != 0;
             if (!bl2 && !bl3) continue;
-            provider.queueData(type, ChunkSectionPos.from(chunkX, j, chunkZ), bl2 ? new ChunkNibbleArray((byte[])updates.next().clone()) : new ChunkNibbleArray(), bl);
+            provider.enqueueSectionData(type, ChunkSectionPos.from(chunkX, j, chunkZ), bl2 ? new ChunkNibbleArray((byte[])updates.next().clone()) : new ChunkNibbleArray(), bl);
             this.world.scheduleBlockRenders(chunkX, j, chunkZ);
         }
     }
@@ -2090,8 +2090,8 @@ implements ClientPlayPacketListener {
         return this.worldKeys;
     }
 
-    public RegistryTracker getRegistryTracker() {
-        return this.registryTracker;
+    public DynamicRegistryManager getRegistryManager() {
+        return this.registryManager;
     }
 }
 

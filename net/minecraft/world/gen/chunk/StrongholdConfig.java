@@ -7,10 +7,9 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.dynamic.NumberCodecs;
 
 public class StrongholdConfig {
-    public static final Codec<StrongholdConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)NumberCodecs.rangedInt(0, 1023).fieldOf("distance")).forGetter(StrongholdConfig::getDistance), ((MapCodec)NumberCodecs.rangedInt(0, 1023).fieldOf("spread")).forGetter(StrongholdConfig::getSpread), ((MapCodec)NumberCodecs.rangedInt(1, 4095).fieldOf("count")).forGetter(StrongholdConfig::getCount)).apply((Applicative<StrongholdConfig, ?>)instance, StrongholdConfig::new));
+    public static final Codec<StrongholdConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, 1023).fieldOf("distance")).forGetter(StrongholdConfig::getDistance), ((MapCodec)Codec.intRange(0, 1023).fieldOf("spread")).forGetter(StrongholdConfig::getSpread), ((MapCodec)Codec.intRange(1, 4095).fieldOf("count")).forGetter(StrongholdConfig::getCount)).apply((Applicative<StrongholdConfig, ?>)instance, StrongholdConfig::new));
     private final int distance;
     private final int spread;
     private final int count;

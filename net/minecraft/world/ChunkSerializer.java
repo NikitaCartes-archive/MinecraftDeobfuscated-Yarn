@@ -76,7 +76,7 @@ public class ChunkSerializer {
         if (!Objects.equals(pos, chunkPos)) {
             LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", (Object)pos, (Object)pos, (Object)chunkPos);
         }
-        BiomeArray biomeArray = new BiomeArray(pos, biomeSource, compoundTag.contains("Biomes", 11) ? compoundTag.getIntArray("Biomes") : null);
+        BiomeArray biomeArray = new BiomeArray(world.getRegistryManager().get(Registry.BIOME_KEY), pos, biomeSource, compoundTag.contains("Biomes", 11) ? compoundTag.getIntArray("Biomes") : null);
         UpgradeData upgradeData = compoundTag.contains("UpgradeData", 10) ? new UpgradeData(compoundTag.getCompound("UpgradeData")) : UpgradeData.NO_UPGRADE_DATA;
         ChunkTickScheduler<Block> chunkTickScheduler = new ChunkTickScheduler<Block>(block -> block == null || block.getDefaultState().isAir(), pos, compoundTag.getList("ToBeTicked", 9));
         ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, compoundTag.getList("LiquidsToBeTicked", 9));
@@ -104,10 +104,10 @@ public class ChunkSerializer {
             }
             if (!bl) continue;
             if (compoundTag2.contains("BlockLight", 7)) {
-                lightingProvider.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("BlockLight")), true);
+                lightingProvider.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("BlockLight")), true);
             }
             if (!bl2 || !compoundTag2.contains("SkyLight", 7)) continue;
-            lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("SkyLight")), true);
+            lightingProvider.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("SkyLight")), true);
         }
         long l = compoundTag.getLong("InhabitedTime");
         ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(tag);
@@ -209,8 +209,8 @@ public class ChunkSerializer {
         for (int i = -1; i < 17; ++i) {
             int j = i;
             ChunkSection chunkSection2 = Arrays.stream(chunkSections).filter(chunkSection -> chunkSection != null && chunkSection.getYOffset() >> 4 == j).findFirst().orElse(WorldChunk.EMPTY_SECTION);
-            ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightArray(ChunkSectionPos.from(chunkPos, j));
-            ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getLightArray(ChunkSectionPos.from(chunkPos, j));
+            ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(chunkPos, j));
+            ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(chunkPos, j));
             if (chunkSection2 == WorldChunk.EMPTY_SECTION && chunkNibbleArray == null && chunkNibbleArray2 == null) continue;
             compoundTag3 = new CompoundTag();
             ((CompoundTag)compoundTag3).putByte("Y", (byte)(j & 0xFF));
@@ -340,17 +340,17 @@ public class ChunkSerializer {
         return compoundTag;
     }
 
-    private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureManager structureManager, CompoundTag compoundTag, long l) {
+    private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureManager structureManager, CompoundTag tag, long worldSeed) {
         HashMap<StructureFeature<?>, StructureStart<?>> map = Maps.newHashMap();
-        CompoundTag compoundTag2 = compoundTag.getCompound("Starts");
-        for (String string : compoundTag2.getKeys()) {
+        CompoundTag compoundTag = tag.getCompound("Starts");
+        for (String string : compoundTag.getKeys()) {
             String string2 = string.toLowerCase(Locale.ROOT);
             StructureFeature structureFeature = (StructureFeature)StructureFeature.STRUCTURES.get(string2);
             if (structureFeature == null) {
                 LOGGER.error("Unknown structure start: {}", (Object)string2);
                 continue;
             }
-            StructureStart<?> structureStart = StructureFeature.method_28660(structureManager, compoundTag2.getCompound(string), l);
+            StructureStart<?> structureStart = StructureFeature.readStructureStart(structureManager, compoundTag.getCompound(string), worldSeed);
             if (structureStart == null) continue;
             map.put(structureFeature, structureStart);
         }

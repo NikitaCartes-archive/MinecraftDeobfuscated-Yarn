@@ -45,7 +45,7 @@ public class ChunkStatus {
     public static final ChunkStatus STRUCTURE_STARTS = ChunkStatus.register("structure_starts", EMPTY, 0, PRE_CARVER_HEIGHTMAPS, ChunkType.field_12808, (ChunkStatus targetStatus, ServerWorld world, ChunkGenerator generator, StructureManager structureManager, ServerLightingProvider lightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> surroundingChunks, Chunk chunk) -> {
         if (!chunk.getStatus().isAtLeast(targetStatus)) {
             if (world.getServer().getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
-                generator.setStructureStarts(world.getStructureAccessor(), chunk, structureManager, world.getSeed());
+                generator.setStructureStarts(world.getRegistryManager(), world.getStructureAccessor(), chunk, structureManager, world.getSeed());
             }
             if (chunk instanceof ProtoChunk) {
                 ((ProtoChunk)chunk).setStatus(targetStatus);
@@ -57,7 +57,7 @@ public class ChunkStatus {
         ChunkRegion chunkRegion = new ChunkRegion(world, surroundingChunks);
         generator.addStructureReferences(chunkRegion, world.getStructureAccessor().method_29951(chunkRegion), chunk);
     });
-    public static final ChunkStatus BIOMES = ChunkStatus.register("biomes", STRUCTURE_REFERENCES, 0, PRE_CARVER_HEIGHTMAPS, ChunkType.field_12808, (ServerWorld world, ChunkGenerator generator, List<Chunk> surroundingChunks, Chunk chunk) -> generator.populateBiomes(chunk));
+    public static final ChunkStatus BIOMES = ChunkStatus.register("biomes", STRUCTURE_REFERENCES, 0, PRE_CARVER_HEIGHTMAPS, ChunkType.field_12808, (ServerWorld world, ChunkGenerator generator, List<Chunk> surroundingChunks, Chunk chunk) -> generator.populateBiomes(world.getRegistryManager().get(Registry.BIOME_KEY), chunk));
     public static final ChunkStatus NOISE = ChunkStatus.register("noise", BIOMES, 8, PRE_CARVER_HEIGHTMAPS, ChunkType.field_12808, (ServerWorld world, ChunkGenerator generator, List<Chunk> surroundingChunks, Chunk chunk) -> {
         ChunkRegion chunkRegion = new ChunkRegion(world, surroundingChunks);
         generator.populateNoise(chunkRegion, world.getStructureAccessor().method_29951(chunkRegion), chunk);

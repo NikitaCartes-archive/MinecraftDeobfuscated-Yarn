@@ -7,10 +7,9 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.dynamic.NumberCodecs;
 
 public class NoiseSamplingConfig {
-    private static final Codec<Double> field_25188 = NumberCodecs.rangedDouble(0.001, 1000.0);
+    private static final Codec<Double> field_25188 = Codec.doubleRange(0.001, 1000.0);
     public static final Codec<NoiseSamplingConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)field_25188.fieldOf("xz_scale")).forGetter(NoiseSamplingConfig::getXZScale), ((MapCodec)field_25188.fieldOf("y_scale")).forGetter(NoiseSamplingConfig::getYScale), ((MapCodec)field_25188.fieldOf("xz_factor")).forGetter(NoiseSamplingConfig::getXZFactor), ((MapCodec)field_25188.fieldOf("y_factor")).forGetter(NoiseSamplingConfig::getYFactor)).apply((Applicative<NoiseSamplingConfig, ?>)instance, NoiseSamplingConfig::new));
     private final double xzScale;
     private final double yScale;

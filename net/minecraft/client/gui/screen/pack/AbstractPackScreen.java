@@ -165,16 +165,16 @@ extends Screen {
             }
         });
         if (mutableBoolean.isTrue()) {
-            SystemToast.method_29627(minecraftClient, path.toString());
+            SystemToast.addPackCopyFailure(minecraftClient, path.toString());
         }
     }
 
     @Override
-    public void method_29638(List<Path> list) {
-        String string = list.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
+    public void filesDragged(List<Path> paths) {
+        String string = paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
         this.client.openScreen(new ConfirmScreen(bl -> {
             if (bl) {
-                AbstractPackScreen.method_29669(this.client, list, this.field_25474.toPath());
+                AbstractPackScreen.method_29669(this.client, paths, this.field_25474.toPath());
                 this.method_29680();
             }
             this.client.openScreen(this);

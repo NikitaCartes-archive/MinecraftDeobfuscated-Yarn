@@ -121,9 +121,9 @@ import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.TickTimeTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
@@ -153,9 +153,7 @@ import net.minecraft.world.gen.PillagerSpawner;
 import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
@@ -177,7 +175,7 @@ AutoCloseable {
     protected final WorldSaveHandler field_24371;
     private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
     private final List<Runnable> serverGuiTickables = Lists.newArrayList();
-    private TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, this::getTicks);
+    private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, this::getTicks);
     private Profiler profiler = DummyProfiler.INSTANCE;
     private final ServerNetworkIo networkIo;
     private final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
@@ -186,7 +184,7 @@ AutoCloseable {
     private final DataFixer dataFixer;
     private String serverIp;
     private int serverPort = -1;
-    protected final RegistryTracker.Modifiable dimensionTracker;
+    protected final DynamicRegistryManager.Impl registryManager;
     private final Map<RegistryKey<World>, ServerWorld> worlds = Maps.newLinkedHashMap();
     private PlayerManager playerManager;
     private volatile boolean running = true;
@@ -249,9 +247,9 @@ AutoCloseable {
         return (S)minecraftServer;
     }
 
-    public MinecraftServer(Thread thread, RegistryTracker.Modifiable modifiable, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager resourcePackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+    public MinecraftServer(Thread thread, DynamicRegistryManager.Impl impl, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager resourcePackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super("Server");
-        this.dimensionTracker = modifiable;
+        this.registryManager = impl;
         this.saveProperties = saveProperties;
         this.proxy = proxy;
         this.dataPackManager = resourcePackManager;
@@ -343,7 +341,7 @@ AutoCloseable {
             dimensionType = dimensionOptions.getDimensionType();
             chunkGenerator = dimensionOptions.getChunkGenerator();
         }
-        RegistryKey<DimensionType> registryKey = this.dimensionTracker.getDimensionTypeRegistry().getKey(dimensionType).orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType));
+        RegistryKey<DimensionType> registryKey = this.registryManager.getDimensionTypes().getKey(dimensionType).orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType));
         ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, this.session, serverWorldProperties, World.OVERWORLD, registryKey, dimensionType, worldGenerationProgressListener, chunkGenerator, bl, m, list, true);
         this.worlds.put(World.OVERWORLD, serverWorld);
         PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
@@ -378,7 +376,7 @@ AutoCloseable {
             if (registryKey2 == DimensionOptions.OVERWORLD) continue;
             RegistryKey<World> registryKey3 = RegistryKey.of(Registry.DIMENSION, registryKey2.getValue());
             DimensionType dimensionType2 = entry.getValue().getDimensionType();
-            RegistryKey<DimensionType> registryKey4 = this.dimensionTracker.getDimensionTypeRegistry().getKey(dimensionType2).orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType2));
+            RegistryKey<DimensionType> registryKey4 = this.registryManager.getDimensionTypes().getKey(dimensionType2).orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType2));
             ChunkGenerator chunkGenerator2 = entry.getValue().getChunkGenerator();
             UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
             ServerWorld serverWorld2 = new ServerWorld(this, this.workerExecutor, this.session, unmodifiableLevelProperties, registryKey3, registryKey4, dimensionType2, worldGenerationProgressListener, chunkGenerator2, bl, m, ImmutableList.of(), false);
@@ -433,7 +431,7 @@ AutoCloseable {
             j += l;
         }
         if (bl) {
-            ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
+            ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeatures.BONUS_CHEST;
             configuredFeature.generate(serverWorld, chunkGenerator, serverWorld.random, new BlockPos(serverWorldProperties.getSpawnX(), serverWorldProperties.getSpawnY(), serverWorldProperties.getSpawnZ()));
         }
     }
@@ -445,7 +443,7 @@ AutoCloseable {
         serverWorldProperties.setRaining(false);
         serverWorldProperties.setThundering(false);
         serverWorldProperties.setClearWeatherTime(1000000000);
-        serverWorldProperties.method_29035(6000L);
+        serverWorldProperties.setTimeOfDay(6000L);
         serverWorldProperties.setGameMode(GameMode.SPECTATOR);
     }
 
@@ -520,7 +518,7 @@ AutoCloseable {
         ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
         serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
         this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
-        this.session.method_27426(this.dimensionTracker, this.saveProperties, this.getPlayerManager().getUserData());
+        this.session.method_27426(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
         return bl4;
     }
 
@@ -1011,6 +1009,8 @@ AutoCloseable {
 
     public abstract boolean isDedicated();
 
+    public abstract int getRateLimit();
+
     public boolean isOnlineMode() {
         return this.onlineMode;
     }
@@ -1403,10 +1403,10 @@ AutoCloseable {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
             final ArrayList<String> list = Lists.newArrayList();
             final GameRules gameRules = this.getGameRules();
-            GameRules.forEachType(new GameRules.TypeConsumer(){
+            GameRules.accept(new GameRules.Visitor(){
 
                 @Override
-                public <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
+                public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
                     list.add(String.format("%s=%s\n", key.getName(), ((GameRules.Rule)gameRules.get(key)).toString()));
                 }
             });
@@ -1482,6 +1482,10 @@ AutoCloseable {
 
     public SaveProperties getSaveProperties() {
         return this.saveProperties;
+    }
+
+    public DynamicRegistryManager getRegistryManager() {
+        return this.registryManager;
     }
 
     @Override

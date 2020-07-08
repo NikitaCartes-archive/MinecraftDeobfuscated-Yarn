@@ -29,27 +29,27 @@ extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         BlockPos blockPos;
         PlayerEntity playerEntity = context.getPlayer();
-        World worldAccess = context.getWorld();
-        BlockState blockState = worldAccess.getBlockState(blockPos = context.getBlockPos());
+        World world = context.getWorld();
+        BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
         if (CampfireBlock.method_30035(blockState)) {
-            worldAccess.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
-            worldAccess.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
+            world.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
+            world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
             if (playerEntity != null) {
                 context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
             }
-            return ActionResult.success(worldAccess.isClient());
+            return ActionResult.success(world.isClient());
         }
         BlockPos blockPos2 = blockPos.offset(context.getSide());
-        if (AbstractFireBlock.method_30032(worldAccess, blockPos2)) {
-            worldAccess.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
-            BlockState blockState2 = AbstractFireBlock.getState(worldAccess, blockPos2);
-            worldAccess.setBlockState(blockPos2, blockState2, 11);
+        if (AbstractFireBlock.method_30032(world, blockPos2, context.getPlayerFacing())) {
+            world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, RANDOM.nextFloat() * 0.4f + 0.8f);
+            BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);
+            world.setBlockState(blockPos2, blockState2, 11);
             ItemStack itemStack = context.getStack();
             if (playerEntity instanceof ServerPlayerEntity) {
                 Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
                 itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
             }
-            return ActionResult.success(worldAccess.isClient());
+            return ActionResult.success(world.isClient());
         }
         return ActionResult.FAIL;
     }

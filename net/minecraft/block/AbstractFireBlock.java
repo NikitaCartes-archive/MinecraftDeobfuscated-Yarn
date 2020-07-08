@@ -3,15 +3,16 @@
  */
 package net.minecraft.block;
 
+import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.AreaHelper;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
-import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SoulFireBlock;
 import net.minecraft.entity.Entity;
@@ -26,7 +27,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 public abstract class AbstractFireBlock
 extends Block {
@@ -143,15 +143,21 @@ extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        Optional<AreaHelper> optional;
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        if ((world.getRegistryKey() == World.OVERWORLD || world.getRegistryKey() == World.NETHER) && NetherPortalBlock.createPortalAt(world, pos)) {
+        if (AbstractFireBlock.method_30366(world) && (optional = AreaHelper.method_30485(world, pos, Direction.Axis.X)).isPresent()) {
+            optional.get().createPortal();
             return;
         }
         if (!state.canPlaceAt(world, pos)) {
             world.removeBlock(pos, false);
         }
+    }
+
+    private static boolean method_30366(World world) {
+        return world.getRegistryKey() == World.OVERWORLD || world.getRegistryKey() == World.NETHER;
     }
 
     @Override
@@ -161,18 +167,26 @@ extends Block {
         }
     }
 
-    public static boolean method_30032(WorldAccess worldAccess, BlockPos blockPos) {
-        BlockState blockState = worldAccess.getBlockState(blockPos);
-        BlockState blockState2 = AbstractFireBlock.getState(worldAccess, blockPos);
-        return blockState.isAir() && (blockState2.canPlaceAt(worldAccess, blockPos) || AbstractFireBlock.method_30033(worldAccess, blockPos));
+    public static boolean method_30032(World world, BlockPos blockPos, Direction direction) {
+        BlockState blockState = world.getBlockState(blockPos);
+        if (!blockState.isAir()) {
+            return false;
+        }
+        return AbstractFireBlock.getState(world, blockPos).canPlaceAt(world, blockPos) || AbstractFireBlock.method_30033(world, blockPos, direction);
     }
 
-    private static boolean method_30033(WorldAccess worldAccess, BlockPos blockPos) {
-        for (Direction direction : Direction.Type.HORIZONTAL) {
-            if (!worldAccess.getBlockState(blockPos.offset(direction)).isOf(Blocks.OBSIDIAN) || NetherPortalBlock.createAreaHelper(worldAccess, blockPos) == null) continue;
-            return true;
+    private static boolean method_30033(World world, BlockPos blockPos, Direction direction) {
+        if (!AbstractFireBlock.method_30366(world)) {
+            return false;
         }
-        return false;
+        BlockPos.Mutable mutable = blockPos.mutableCopy();
+        boolean bl = false;
+        for (Direction direction2 : Direction.values()) {
+            if (!world.getBlockState(mutable.set(blockPos).move(direction2)).isOf(Blocks.OBSIDIAN)) continue;
+            bl = true;
+            break;
+        }
+        return bl && AreaHelper.method_30485(world, blockPos, direction.rotateYCounterclockwise().getAxis()).isPresent();
     }
 }
 

@@ -33,6 +33,7 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
@@ -76,7 +77,7 @@ implements Consumer<Consumer<Advancement>> {
 
     protected static Advancement.Task requireListedBiomesVisited(Advancement.Task task, Biome[] biomes) {
         for (Biome biome : biomes) {
-            task.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(biome)));
+            task.criterion(BuiltinRegistries.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(biome)));
         }
         return task;
     }

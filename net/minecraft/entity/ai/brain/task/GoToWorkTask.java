@@ -33,6 +33,7 @@ extends Task<VillagerEntity> {
         GlobalPos globalPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
         villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
         villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
+        serverWorld2.sendEntityStatus(villagerEntity, (byte)14);
         if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.NONE) {
             return;
         }

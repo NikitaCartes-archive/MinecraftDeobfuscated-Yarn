@@ -17,11 +17,10 @@ import java.util.Optional;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.ForwardingDynamicOps;
-import net.minecraft.util.dynamic.NumberCodecs;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.registry.SimpleRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,17 +29,17 @@ public class RegistryOps<T>
 extends ForwardingDynamicOps<T> {
     private static final Logger LOGGER = LogManager.getLogger();
     private final ResourceManager resourceManager;
-    private final RegistryTracker registryTracker;
+    private final DynamicRegistryManager registryManager;
     private final Map<RegistryKey<? extends Registry<?>>, ValueHolder<?>> valueHolders = Maps.newIdentityHashMap();
 
-    public static <T> RegistryOps<T> of(DynamicOps<T> delegate, ResourceManager resourceManager, RegistryTracker registryTracker) {
+    public static <T> RegistryOps<T> of(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager registryTracker) {
         return new RegistryOps<T>(delegate, resourceManager, registryTracker);
     }
 
-    private RegistryOps(DynamicOps<T> delegate, ResourceManager resourceManager, RegistryTracker registryTracker) {
+    private RegistryOps(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager registryTracker) {
         super(delegate);
         this.resourceManager = resourceManager;
-        this.registryTracker = registryTracker;
+        this.registryManager = registryTracker;
     }
 
     /**
@@ -51,15 +50,15 @@ extends ForwardingDynamicOps<T> {
      * 
      * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, Codec)
      */
-    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<Registry<E>> registryKey, MapCodec<E> mapCodec) {
-        Optional<MutableRegistry<E>> optional = this.registryTracker.get(registryKey);
+    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, MapCodec<E> mapCodec) {
+        Optional optional = this.registryManager.getOptional(registryKey);
         if (!optional.isPresent()) {
             return DataResult.error("Unknown registry: " + registryKey);
         }
         MutableRegistry mutableRegistry = optional.get();
         DataResult dataResult = Identifier.CODEC.decode(this.delegate, object);
         if (!dataResult.result().isPresent()) {
-            return NumberCodecs.method_29906(registryKey, mapCodec).codec().decode(this.delegate, object).map(pair2 -> pair2.mapFirst(pair -> {
+            return SimpleRegistry.method_30516(registryKey, mapCodec).codec().decode(this.delegate, object).map(pair2 -> pair2.mapFirst(pair -> {
                 mutableRegistry.add((RegistryKey)pair.getFirst(), pair.getSecond());
                 mutableRegistry.markLoaded((RegistryKey)pair.getFirst());
                 return pair::getSecond;
@@ -73,7 +72,7 @@ extends ForwardingDynamicOps<T> {
     /**
      * Loads elements into a registry just loaded from a decoder.
      */
-    public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<Registry<E>> registryRef, MapCodec<E> mapCodec) {
+    public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<? extends Registry<E>> registryRef, MapCodec<E> mapCodec) {
         Identifier identifier = registryRef.getValue();
         Collection<Identifier> collection = this.resourceManager.findResources(identifier, string -> string.endsWith(".json"));
         DataResult<SimpleRegistry<Object>> dataResult = DataResult.success(registry, Lifecycle.stable());
@@ -106,7 +105,7 @@ extends ForwardingDynamicOps<T> {
      * 
      * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.</p>
      */
-    private <E> DataResult<java.util.function.Supplier<E>> readSupplier(RegistryKey<Registry<E>> registryRef, MutableRegistry<E> registry, MapCodec<E> mapCodec, Identifier elementId) {
+    private <E> DataResult<java.util.function.Supplier<E>> readSupplier(RegistryKey<? extends Registry<E>> registryRef, MutableRegistry<E> registry, MapCodec<E> mapCodec, Identifier elementId) {
         RegistryKey registryKey = RegistryKey.of(registryRef, elementId);
         Object object2 = registry.get(registryKey);
         if (object2 != null) {
@@ -125,7 +124,7 @@ extends ForwardingDynamicOps<T> {
             return object;
         });
         ((ValueHolder)valueHolder).values.put(registryKey, DataResult.success(supplier));
-        DataResult<E> dataResult2 = this.readElement(registryRef, registryKey, mapCodec);
+        DataResult<java.util.function.Supplier> dataResult2 = this.readElement(registryRef, registryKey, mapCodec);
         dataResult2.result().ifPresent(object -> registry.add(registryKey, object));
         DataResult<java.util.function.Supplier<E>> dataResult3 = dataResult2.map(object -> () -> object);
         ((ValueHolder)valueHolder).values.put(registryKey, dataResult3);
@@ -138,7 +137,7 @@ extends ForwardingDynamicOps<T> {
     /**
      * Reads the actual element.
      */
-    private <E> DataResult<E> readElement(RegistryKey<Registry<E>> registryRef, RegistryKey<E> elementRef, MapCodec<E> mapCodec) {
+    private <E> DataResult<E> readElement(RegistryKey<? extends Registry<E>> registryRef, RegistryKey<E> elementRef, MapCodec<E> mapCodec) {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
          * 
@@ -188,7 +187,7 @@ extends ForwardingDynamicOps<T> {
         throw new IllegalStateException("Decompilation failed");
     }
 
-    private <E> ValueHolder<E> getValueHolder(RegistryKey<Registry<E>> registryRef) {
+    private <E> ValueHolder<E> getValueHolder(RegistryKey<? extends Registry<E>> registryRef) {
         return this.valueHolders.computeIfAbsent(registryRef, registryKey -> new ValueHolder());
     }
 

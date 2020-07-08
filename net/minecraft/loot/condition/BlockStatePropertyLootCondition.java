@@ -69,7 +69,7 @@ implements LootCondition {
         @Override
         public BlockStatePropertyLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-            Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
+            Block block = Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
             StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("properties"));
             statePredicate.check(block.getStateManager(), string -> {
                 throw new JsonSyntaxException("Block " + block + " has no property " + string);

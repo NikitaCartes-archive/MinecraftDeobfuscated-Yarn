@@ -157,7 +157,7 @@ implements Predicate<ItemStack> {
         }
         if (json.has("item")) {
             Identifier identifier = new Identifier(JsonHelper.getString(json, "item"));
-            Item item = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
+            Item item = Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
             return new StackEntry(new ItemStack(item));
         }
         if (json.has("tag")) {

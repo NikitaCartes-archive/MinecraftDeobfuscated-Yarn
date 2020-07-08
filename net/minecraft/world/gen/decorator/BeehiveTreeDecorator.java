@@ -26,7 +26,7 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class BeehiveTreeDecorator
 extends TreeDecorator {
-    public static final Codec<BeehiveTreeDecorator> CODEC = ((MapCodec)Codec.FLOAT.fieldOf("probability")).xmap(BeehiveTreeDecorator::new, beehiveTreeDecorator -> Float.valueOf(beehiveTreeDecorator.chance)).codec();
+    public static final Codec<BeehiveTreeDecorator> CODEC = ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("probability")).xmap(BeehiveTreeDecorator::new, beehiveTreeDecorator -> Float.valueOf(beehiveTreeDecorator.chance)).codec();
     private final float chance;
 
     public BeehiveTreeDecorator(float f) {

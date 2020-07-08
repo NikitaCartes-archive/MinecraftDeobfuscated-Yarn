@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -61,7 +61,7 @@ public interface SaveProperties {
     @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo();
 
-    public CompoundTag cloneWorldTag(RegistryTracker var1, @Nullable CompoundTag var2);
+    public CompoundTag cloneWorldTag(DynamicRegistryManager var1, @Nullable CompoundTag var2);
 
     public boolean isHardcore();
 

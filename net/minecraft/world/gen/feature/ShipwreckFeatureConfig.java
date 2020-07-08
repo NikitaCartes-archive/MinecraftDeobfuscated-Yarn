@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class ShipwreckFeatureConfig
 implements FeatureConfig {
-    public static final Codec<ShipwreckFeatureConfig> CODEC = ((MapCodec)Codec.BOOL.fieldOf("is_beached")).withDefault(false).xmap(ShipwreckFeatureConfig::new, shipwreckFeatureConfig -> shipwreckFeatureConfig.isBeached).codec();
+    public static final Codec<ShipwreckFeatureConfig> CODEC = ((MapCodec)Codec.BOOL.fieldOf("is_beached")).orElse(false).xmap(ShipwreckFeatureConfig::new, shipwreckFeatureConfig -> shipwreckFeatureConfig.isBeached).codec();
     public final boolean isBeached;
 
     public ShipwreckFeatureConfig(boolean isBeached) {

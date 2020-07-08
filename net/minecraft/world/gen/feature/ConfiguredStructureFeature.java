@@ -4,9 +4,13 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import java.util.function.Supplier;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -17,7 +21,8 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
-    public static final Codec<ConfiguredStructureFeature<?, ?>> TYPE_CODEC = Registry.STRUCTURE_FEATURE.dispatch("name", configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
+    public static final MapCodec<ConfiguredStructureFeature<?, ?>> field_25834 = Registry.STRUCTURE_FEATURE.dispatchMap("name", configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
+    public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> TYPE_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, field_25834);
     public final F feature;
     public final FC config;
 
@@ -26,8 +31,11 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
         this.config = featureConfig;
     }
 
-    public StructureStart<?> method_28622(ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long l, ChunkPos chunkPos, Biome biome, int i, StructureConfig structureConfig) {
-        return ((StructureFeature)this.feature).method_28657(chunkGenerator, biomeSource, structureManager, l, chunkPos, biome, i, new ChunkRandom(), structureConfig, this.config);
+    /**
+     * @see StructureFeature#tryPlaceStart
+     */
+    public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, Biome biome, int referenceCount, StructureConfig structureConfig) {
+        return ((StructureFeature)this.feature).tryPlaceStart(dynamicRegistryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, biome, referenceCount, new ChunkRandom(), structureConfig, this.config);
     }
 }
 

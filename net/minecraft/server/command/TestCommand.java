@@ -103,7 +103,7 @@ public class TestCommand {
         BlockPos blockPos2 = blockPos.subtract(optional.get());
         String string = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
         String string2 = structureBlockBlockEntity.getStructurePath();
-        MutableText text = new LiteralText(string).setStyle(Style.EMPTY.withBold(true).withColor(Formatting.GREEN).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard"))).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");")));
+        MutableText text = new LiteralText(string).setStyle(Style.EMPTY.withBold(true).withColor(Formatting.GREEN).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard"))).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");")));
         source.sendFeedback(new LiteralText("Position relative to " + string2 + ": ").append(text), false);
         DebugInfoSender.addGameTestMarker(serverWorld, new BlockPos(blockPos), string, -2147418368, 10000);
         return 1;
@@ -272,17 +272,18 @@ public class TestCommand {
         return 0;
     }
 
-    private static int executeImport(ServerCommandSource source, String structure) {
+    private static int executeImport(ServerCommandSource serverCommandSource, String structure) {
         Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, structure + ".snbt");
         Identifier identifier = new Identifier("minecraft", structure);
-        Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
+        Path path2 = serverCommandSource.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
         try {
             BufferedReader bufferedReader = Files.newBufferedReader(path);
             String string = IOUtils.toString(bufferedReader);
             Files.createDirectories(path2.getParent(), new FileAttribute[0]);
-            OutputStream outputStream = Files.newOutputStream(path2, new OpenOption[0]);
-            NbtIo.writeCompressed(StringNbtReader.parse(string), outputStream);
-            TestCommand.sendMessage(source, "Imported to " + path2.toAbsolutePath());
+            try (OutputStream outputStream = Files.newOutputStream(path2, new OpenOption[0]);){
+                NbtIo.writeCompressed(StringNbtReader.parse(string), outputStream);
+            }
+            TestCommand.sendMessage(serverCommandSource, "Imported to " + path2.toAbsolutePath());
             return 0;
         } catch (CommandSyntaxException | IOException exception) {
             System.err.println("Failed to load structure " + structure);

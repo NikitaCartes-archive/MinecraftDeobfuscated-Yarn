@@ -31,7 +31,7 @@ extends AbstractCriterion<Conditions> {
         Potion potion = null;
         if (jsonObject.has("potion")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "potion"));
-            potion = (Potion)Registry.POTION.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
+            potion = Registry.POTION.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
         }
         return new Conditions(extended, potion);
     }

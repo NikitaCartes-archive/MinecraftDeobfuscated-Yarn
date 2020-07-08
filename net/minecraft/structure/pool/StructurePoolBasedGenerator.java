@@ -9,19 +9,17 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.JigsawBlock;
-import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.JigsawJunction;
-import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.VillageGenerator;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.structure.pool.StructurePoolRegistry;
+import net.minecraft.structure.pool.TemplatePools;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -29,29 +27,27 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.MutableRegistry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class StructurePoolBasedGenerator {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final StructurePoolRegistry REGISTRY = new StructurePoolRegistry();
 
-    public static void init() {
-        BastionRemnantGenerator.init();
-        VillageGenerator.init();
-        PillagerOutpostGenerator.init();
-    }
-
-    public static void addPieces(Identifier startPoolId, int size, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<? super PoolStructurePiece> list, Random random, boolean bl, boolean bl2) {
+    public static void method_30419(DynamicRegistryManager dynamicRegistryManager, StructurePoolFeatureConfig structurePoolFeatureConfig, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<? super PoolStructurePiece> list, Random random, boolean bl, boolean bl2) {
         StructureFeature.method_28664();
+        MutableRegistry<StructurePool> mutableRegistry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
         BlockRotation blockRotation = BlockRotation.random(random);
-        StructurePool structurePool = REGISTRY.get(startPoolId);
+        StructurePool structurePool = structurePoolFeatureConfig.getStartPool().get();
         StructurePoolElement structurePoolElement = structurePool.getRandomElement(random);
         PoolStructurePiece poolStructurePiece = pieceFactory.create(structureManager, structurePoolElement, blockPos, structurePoolElement.getGroundLevelDelta(), blockRotation, structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation));
         BlockBox blockBox = poolStructurePiece.getBoundingBox();
@@ -61,12 +57,12 @@ public class StructurePoolBasedGenerator {
         int l = blockBox.minY + poolStructurePiece.getGroundLevelDelta();
         poolStructurePiece.translate(0, k - l, 0);
         list.add(poolStructurePiece);
-        if (size <= 0) {
+        if (structurePoolFeatureConfig.getSize() <= 0) {
             return;
         }
         int m = 80;
         Box box = new Box(i - 80, k - 80, j - 80, i + 80 + 1, k + 80 + 1, j + 80 + 1);
-        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(size, pieceFactory, chunkGenerator, structureManager, list, random);
+        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(mutableRegistry, structurePoolFeatureConfig.getSize(), pieceFactory, chunkGenerator, structureManager, list, random);
         structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(poolStructurePiece, new MutableObject<VoxelShape>(VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST)), k + 80, 0));
         while (!structurePoolGenerator.structurePieces.isEmpty()) {
             ShapedPoolStructurePiece shapedPoolStructurePiece = (ShapedPoolStructurePiece)structurePoolGenerator.structurePieces.removeFirst();
@@ -74,9 +70,9 @@ public class StructurePoolBasedGenerator {
         }
     }
 
-    public static void method_27230(PoolStructurePiece poolStructurePiece, int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
-        StructurePoolBasedGenerator.init();
-        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(i, pieceFactory, chunkGenerator, structureManager, list, random);
+    public static void method_27230(DynamicRegistryManager dynamicRegistryManager, PoolStructurePiece poolStructurePiece, int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
+        MutableRegistry<StructurePool> mutableRegistry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
+        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(mutableRegistry, i, pieceFactory, chunkGenerator, structureManager, list, random);
         structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(poolStructurePiece, new MutableObject<VoxelShape>(VoxelShapes.UNBOUNDED), 0, 0));
         while (!structurePoolGenerator.structurePieces.isEmpty()) {
             ShapedPoolStructurePiece shapedPoolStructurePiece = (ShapedPoolStructurePiece)structurePoolGenerator.structurePieces.removeFirst();
@@ -84,15 +80,12 @@ public class StructurePoolBasedGenerator {
         }
     }
 
-    static {
-        REGISTRY.add(StructurePool.EMPTY);
-    }
-
     public static interface PieceFactory {
         public PoolStructurePiece create(StructureManager var1, StructurePoolElement var2, BlockPos var3, int var4, BlockRotation var5, BlockBox var6);
     }
 
     static final class StructurePoolGenerator {
+        private final Registry<StructurePool> field_25852;
         private final int maxSize;
         private final PieceFactory pieceFactory;
         private final ChunkGenerator chunkGenerator;
@@ -101,7 +94,8 @@ public class StructurePoolBasedGenerator {
         private final Random random;
         private final Deque<ShapedPoolStructurePiece> structurePieces = Queues.newArrayDeque();
 
-        private StructurePoolGenerator(int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
+        private StructurePoolGenerator(Registry<StructurePool> registry, int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
+            this.field_25852 = registry;
             this.maxSize = i;
             this.pieceFactory = pieceFactory;
             this.chunkGenerator = chunkGenerator;
@@ -128,9 +122,9 @@ public class StructurePoolBasedGenerator {
                 BlockPos blockPos3 = blockPos2.offset(direction);
                 int j = blockPos2.getY() - i;
                 int k = -1;
-                StructurePool structurePool = REGISTRY.get(new Identifier(structureBlockInfo2.tag.getString("pool")));
-                StructurePool structurePool2 = REGISTRY.get(structurePool.getTerminatorsId());
-                if (structurePool == StructurePool.INVALID || structurePool.getElementCount() == 0 && structurePool != StructurePool.EMPTY) {
+                StructurePool structurePool = StructurePoolGenerator.method_30420(this.field_25852, new Identifier(structureBlockInfo2.tag.getString("pool")));
+                StructurePool structurePool2 = StructurePoolGenerator.method_30420(this.field_25852, structurePool.getTerminatorsId());
+                if (structurePool == TemplatePools.INVALID || structurePool.getElementCount() == 0 && structurePool != TemplatePools.EMPTY) {
                     LOGGER.warn("Empty or none existent pool: {}", (Object)structureBlockInfo2.tag.getString("pool"));
                     continue;
                 }
@@ -160,8 +154,8 @@ public class StructurePoolBasedGenerator {
                                 return 0;
                             }
                             Identifier identifier = new Identifier(structureBlockInfo.tag.getString("pool"));
-                            StructurePool structurePool = REGISTRY.get(identifier);
-                            StructurePool structurePool2 = REGISTRY.get(structurePool.getTerminatorsId());
+                            StructurePool structurePool = StructurePoolGenerator.method_30420(this.field_25852, identifier);
+                            StructurePool structurePool2 = StructurePoolGenerator.method_30420(this.field_25852, structurePool.getTerminatorsId());
                             return Math.max(structurePool.getHighestY(this.structureManager), structurePool2.getHighestY(this.structureManager));
                         }).max().orElse(0);
                         for (Structure.StructureBlockInfo structureBlockInfo22 : list2) {
@@ -217,6 +211,10 @@ public class StructurePoolBasedGenerator {
                     }
                 }
             }
+        }
+
+        private static StructurePool method_30420(Registry<StructurePool> registry, Identifier identifier) {
+            return Optional.ofNullable(registry.get(identifier)).orElse(TemplatePools.INVALID);
         }
     }
 

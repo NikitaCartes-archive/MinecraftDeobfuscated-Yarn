@@ -71,11 +71,11 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
 
     @Override
     protected void propagateLevel(long id, int level, boolean decrease) {
-        long l = ChunkSectionPos.fromGlobalPos(id);
+        long l = ChunkSectionPos.fromBlockPos(id);
         for (Direction direction : DIRECTIONS) {
             long m = BlockPos.offset(id, direction);
-            long n = ChunkSectionPos.fromGlobalPos(m);
-            if (l != n && !((BlockLightStorage)this.lightStorage).hasLight(n)) continue;
+            long n = ChunkSectionPos.fromBlockPos(m);
+            if (l != n && !((BlockLightStorage)this.lightStorage).hasSection(n)) continue;
             this.propagateLevel(id, m, level, decrease);
         }
     }
@@ -92,14 +92,14 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
                 return i;
             }
         }
-        long l = ChunkSectionPos.fromGlobalPos(id);
-        ChunkNibbleArray chunkNibbleArray = ((BlockLightStorage)this.lightStorage).getLightArray(l, true);
+        long l = ChunkSectionPos.fromBlockPos(id);
+        ChunkNibbleArray chunkNibbleArray = ((BlockLightStorage)this.lightStorage).getLightSection(l, true);
         for (Direction direction : DIRECTIONS) {
             long n;
             ChunkNibbleArray chunkNibbleArray2;
             long m = BlockPos.offset(id, direction);
-            if (m == excludedId || (chunkNibbleArray2 = l == (n = ChunkSectionPos.fromGlobalPos(m)) ? chunkNibbleArray : ((BlockLightStorage)this.lightStorage).getLightArray(n, true)) == null) continue;
-            int k = this.getPropagatedLevel(m, id, this.getCurrentLevelFromArray(chunkNibbleArray2, m));
+            if (m == excludedId || (chunkNibbleArray2 = l == (n = ChunkSectionPos.fromBlockPos(m)) ? chunkNibbleArray : ((BlockLightStorage)this.lightStorage).getLightSection(n, true)) == null) continue;
+            int k = this.getPropagatedLevel(m, id, this.getCurrentLevelFromSection(chunkNibbleArray2, m));
             if (i > k) {
                 i = k;
             }

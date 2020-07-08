@@ -570,8 +570,8 @@ extends AnimalEntity {
         public final int type;
 
         public RabbitData(int type) {
+            super(1.0f);
             this.type = type;
-            this.setBabyChance(1.0f);
         }
     }
 }

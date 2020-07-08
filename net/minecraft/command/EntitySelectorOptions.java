@@ -263,7 +263,7 @@ public class EntitySelectorOptions {
                 entitySelectorReader.setPredicate(entity -> entity.getServer().getTagManager().getEntityTypes().getTagOrEmpty(identifier).contains(entity.getType()) != bl);
             } else {
                 Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
-                EntityType entityType = (EntityType)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
+                EntityType<?> entityType = Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
                     entitySelectorReader.getReader().setCursor(i);
                     return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
                 });

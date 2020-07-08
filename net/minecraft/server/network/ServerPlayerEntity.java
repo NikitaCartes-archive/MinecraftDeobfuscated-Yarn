@@ -10,16 +10,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.UUID;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_5459;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.datafixer.NbtOps;
@@ -127,10 +131,10 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -455,7 +459,7 @@ implements ScreenHandlerListener {
                     int i = 256;
                     String string = text.asTruncatedString(256);
                     TranslatableText text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
-                    MutableText text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
+                    MutableText text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
                     this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text3));
                 }
             });
@@ -565,9 +569,18 @@ implements ScreenHandlerListener {
 
     @Override
     @Nullable
-    public Entity changeDimension(ServerWorld destination) {
-        double j;
-        float h;
+    protected TeleportTarget getTeleportTarget(ServerWorld destination) {
+        TeleportTarget teleportTarget = super.getTeleportTarget(destination);
+        if (teleportTarget != null && this.world.getRegistryKey() == World.OVERWORLD && destination.getRegistryKey() == World.END) {
+            Vec3d vec3d = teleportTarget.position.add(0.0, -1.0, 0.0);
+            return new TeleportTarget(vec3d, Vec3d.ZERO, 90.0f, 0.0f);
+        }
+        return teleportTarget;
+    }
+
+    @Override
+    @Nullable
+    public Entity moveToWorld(ServerWorld destination) {
         this.inTeleportationState = true;
         ServerWorld serverWorld = this.getServerWorld();
         RegistryKey<World> registryKey = serverWorld.getRegistryKey();
@@ -588,75 +601,64 @@ implements ScreenHandlerListener {
         playerManager.sendCommandTree(this);
         serverWorld.removePlayer(this);
         this.removed = false;
-        double d = this.getX();
-        double e = this.getY();
-        double f = this.getZ();
-        float g = this.pitch;
-        float i = h = this.yaw;
-        serverWorld.getProfiler().push("moving");
-        if (destination.getRegistryKey() == World.END) {
-            BlockPos blockPos = ServerWorld.END_SPAWN_POS;
-            d = blockPos.getX();
-            e = blockPos.getY();
-            f = blockPos.getZ();
-            h = 90.0f;
-            g = 0.0f;
-        } else {
+        TeleportTarget teleportTarget = this.getTeleportTarget(destination);
+        if (teleportTarget != null) {
+            serverWorld.getProfiler().push("moving");
             if (registryKey == World.OVERWORLD && destination.getRegistryKey() == World.NETHER) {
                 this.enteredNetherPos = this.getPos();
+            } else if (destination.getRegistryKey() == World.END) {
+                this.createEndSpawnPlatform(destination, new BlockPos(teleportTarget.position));
             }
-            DimensionType dimensionType = serverWorld.getDimension();
-            DimensionType dimensionType2 = destination.getDimension();
-            j = 8.0;
-            if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
-                d /= 8.0;
-                f /= 8.0;
-            } else if (dimensionType.isShrunk() && !dimensionType2.isShrunk()) {
-                d *= 8.0;
-                f *= 8.0;
+            serverWorld.getProfiler().pop();
+            serverWorld.getProfiler().push("placing");
+            this.setWorld(destination);
+            destination.onPlayerChangeDimension(this);
+            this.worldChanged(serverWorld);
+            this.setRotation(teleportTarget.yaw, teleportTarget.pitch);
+            this.refreshPositionAfterTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z);
+            serverWorld.getProfiler().pop();
+            this.interactionManager.setWorld(destination);
+            this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
+            playerManager.sendWorldInfo(this, destination);
+            playerManager.sendPlayerStatus(this);
+            for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
+                this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), statusEffectInstance));
             }
+            this.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
+            this.syncedExperience = -1;
+            this.syncedHealth = -1.0f;
+            this.syncedFoodLevel = -1;
         }
-        this.refreshPositionAndAngles(d, e, f, h, g);
-        serverWorld.getProfiler().pop();
-        serverWorld.getProfiler().push("placing");
-        double k = Math.min(-2.9999872E7, destination.getWorldBorder().getBoundWest() + 16.0);
-        j = Math.min(-2.9999872E7, destination.getWorldBorder().getBoundNorth() + 16.0);
-        double l = Math.min(2.9999872E7, destination.getWorldBorder().getBoundEast() - 16.0);
-        double m = Math.min(2.9999872E7, destination.getWorldBorder().getBoundSouth() - 16.0);
-        d = MathHelper.clamp(d, k, l);
-        f = MathHelper.clamp(f, j, m);
-        this.refreshPositionAndAngles(d, e, f, h, g);
-        if (destination.getRegistryKey() == World.END) {
-            int n = MathHelper.floor(this.getX());
-            int o = MathHelper.floor(this.getY()) - 1;
-            int p = MathHelper.floor(this.getZ());
-            ServerWorld.createEndSpawnPlatform(destination);
-            this.refreshPositionAndAngles(n, o, p, h, 0.0f);
-            this.setVelocity(Vec3d.ZERO);
-        } else if (!destination.getPortalForcer().usePortal(this, i)) {
-            destination.getPortalForcer().createPortal(this);
-            destination.getPortalForcer().usePortal(this, i);
-        }
-        serverWorld.getProfiler().pop();
-        this.setWorld(destination);
-        destination.onPlayerChangeDimension(this);
-        this.dimensionChanged(serverWorld);
-        this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), h, g);
-        this.interactionManager.setWorld(destination);
-        this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
-        playerManager.sendWorldInfo(this, destination);
-        playerManager.sendPlayerStatus(this);
-        for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-            this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), statusEffectInstance));
-        }
-        this.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
-        this.syncedExperience = -1;
-        this.syncedHealth = -1.0f;
-        this.syncedFoodLevel = -1;
         return this;
     }
 
-    private void dimensionChanged(ServerWorld targetWorld) {
+    private void createEndSpawnPlatform(ServerWorld world, BlockPos centerPos) {
+        BlockPos.Mutable mutable = centerPos.mutableCopy();
+        for (int i = -2; i <= 2; ++i) {
+            for (int j = -2; j <= 2; ++j) {
+                for (int k = -1; k < 3; ++k) {
+                    BlockState blockState = k == -1 ? Blocks.OBSIDIAN.getDefaultState() : Blocks.AIR.getDefaultState();
+                    world.setBlockState(mutable.set(centerPos).move(j, k, i), blockState);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
+        Optional<class_5459.class_5460> optional = super.method_30330(serverWorld, blockPos, bl);
+        if (optional.isPresent()) {
+            return optional;
+        }
+        Direction.Axis axis = this.world.getBlockState(this.lastNetherPortalPosition).method_28500(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
+        Optional<class_5459.class_5460> optional2 = serverWorld.getPortalForcer().method_30482(blockPos, axis);
+        if (!optional2.isPresent()) {
+            LOGGER.error("Unable to create a portal, likely target out of worldborder");
+        }
+        return optional2;
+    }
+
+    private void worldChanged(ServerWorld targetWorld) {
         RegistryKey<World> registryKey = targetWorld.getRegistryKey();
         RegistryKey<World> registryKey2 = this.world.getRegistryKey();
         Criteria.CHANGED_DIMENSION.trigger(this, registryKey, registryKey2);
@@ -1019,8 +1021,6 @@ implements ScreenHandlerListener {
             this.experienceProgress = oldPlayer.experienceProgress;
             this.setScore(oldPlayer.getScore());
             this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
-            this.lastNetherPortalDirectionVector = oldPlayer.lastNetherPortalDirectionVector;
-            this.lastNetherPortalDirection = oldPlayer.lastNetherPortalDirection;
         } else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
             this.inventory.clone(oldPlayer.inventory);
             this.experienceLevel = oldPlayer.experienceLevel;
@@ -1077,7 +1077,7 @@ implements ScreenHandlerListener {
 
     @Override
     public void refreshPositionAfterTeleport(double x, double y, double z) {
-        this.networkHandler.requestTeleport(x, y, z, this.yaw, this.pitch);
+        this.requestTeleport(x, y, z);
         this.networkHandler.syncWithPlayerPosition();
     }
 
@@ -1277,7 +1277,7 @@ implements ScreenHandlerListener {
             this.refreshPositionAndAngles(x, y, z, yaw, pitch);
             this.setWorld(targetWorld);
             targetWorld.onPlayerTeleport(this);
-            this.dimensionChanged(serverWorld);
+            this.worldChanged(serverWorld);
             this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
             this.interactionManager.setWorld(targetWorld);
             this.server.getPlayerManager().sendWorldInfo(this, targetWorld);

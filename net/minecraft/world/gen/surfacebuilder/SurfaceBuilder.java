@@ -31,32 +31,29 @@ import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 import net.minecraft.world.gen.surfacebuilder.WoodedBadlandsSurfaceBuilder;
 
 public abstract class SurfaceBuilder<C extends SurfaceConfig> {
-    public static final BlockState AIR = Blocks.AIR.getDefaultState();
-    public static final BlockState DIRT = Blocks.DIRT.getDefaultState();
-    public static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
-    public static final BlockState PODZOL = Blocks.PODZOL.getDefaultState();
-    public static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
-    public static final BlockState STONE = Blocks.STONE.getDefaultState();
-    public static final BlockState COARSE_DIRT = Blocks.COARSE_DIRT.getDefaultState();
-    public static final BlockState SAND = Blocks.SAND.getDefaultState();
-    public static final BlockState RED_SAND = Blocks.RED_SAND.getDefaultState();
-    public static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
-    public static final BlockState MYCELIUM = Blocks.MYCELIUM.getDefaultState();
-    public static final BlockState SOUL_SAND = Blocks.SOUL_SAND.getDefaultState();
-    public static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
-    public static final BlockState END_STONE = Blocks.END_STONE.getDefaultState();
-    public static final BlockState CRIMSON_NYLIUM = Blocks.CRIMSON_NYLIUM.getDefaultState();
-    public static final BlockState WARPED_NYLIUM = Blocks.WARPED_NYLIUM.getDefaultState();
-    public static final BlockState NETHER_WART_BLOCK = Blocks.NETHER_WART_BLOCK.getDefaultState();
-    public static final BlockState WARPED_WART_BLOCK = Blocks.WARPED_WART_BLOCK.getDefaultState();
-    public static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
-    public static final BlockState BASALT = Blocks.BASALT.getDefaultState();
-    public static final BlockState MAGMA_BLOCK = Blocks.MAGMA_BLOCK.getDefaultState();
-    public static final TernarySurfaceConfig AIR_CONFIG = new TernarySurfaceConfig(AIR, AIR, AIR);
+    private static final BlockState DIRT = Blocks.DIRT.getDefaultState();
+    private static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
+    private static final BlockState PODZOL = Blocks.PODZOL.getDefaultState();
+    private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
+    private static final BlockState STONE = Blocks.STONE.getDefaultState();
+    private static final BlockState COARSE_DIRT = Blocks.COARSE_DIRT.getDefaultState();
+    private static final BlockState SAND = Blocks.SAND.getDefaultState();
+    private static final BlockState RED_SAND = Blocks.RED_SAND.getDefaultState();
+    private static final BlockState WHITE_TERRACOTTA = Blocks.WHITE_TERRACOTTA.getDefaultState();
+    private static final BlockState MYCELIUM = Blocks.MYCELIUM.getDefaultState();
+    private static final BlockState SOUL_SAND = Blocks.SOUL_SAND.getDefaultState();
+    private static final BlockState NETHERRACK = Blocks.NETHERRACK.getDefaultState();
+    private static final BlockState END_STONE = Blocks.END_STONE.getDefaultState();
+    private static final BlockState CRIMSON_NYLIUM = Blocks.CRIMSON_NYLIUM.getDefaultState();
+    private static final BlockState WARPED_NYLIUM = Blocks.WARPED_NYLIUM.getDefaultState();
+    private static final BlockState NETHER_WART_BLOCK = Blocks.NETHER_WART_BLOCK.getDefaultState();
+    private static final BlockState WARPED_WART_BLOCK = Blocks.WARPED_WART_BLOCK.getDefaultState();
+    private static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
+    private static final BlockState BASALT = Blocks.BASALT.getDefaultState();
+    private static final BlockState MAGMA_BLOCK = Blocks.MAGMA_BLOCK.getDefaultState();
     public static final TernarySurfaceConfig PODZOL_CONFIG = new TernarySurfaceConfig(PODZOL, DIRT, GRAVEL);
     public static final TernarySurfaceConfig GRAVEL_CONFIG = new TernarySurfaceConfig(GRAVEL, GRAVEL, GRAVEL);
     public static final TernarySurfaceConfig GRASS_CONFIG = new TernarySurfaceConfig(GRASS_BLOCK, DIRT, GRAVEL);
-    public static final TernarySurfaceConfig DIRT_CONFIG = new TernarySurfaceConfig(DIRT, DIRT, GRAVEL);
     public static final TernarySurfaceConfig STONE_CONFIG = new TernarySurfaceConfig(STONE, STONE, GRAVEL);
     public static final TernarySurfaceConfig COARSE_DIRT_CONFIG = new TernarySurfaceConfig(COARSE_DIRT, DIRT, GRAVEL);
     public static final TernarySurfaceConfig SAND_CONFIG = new TernarySurfaceConfig(SAND, SAND, GRAVEL);
@@ -92,11 +89,15 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     }
 
     public SurfaceBuilder(Codec<C> codec) {
-        this.field_25016 = ((MapCodec)codec.fieldOf("config")).xmap(surfaceConfig -> new ConfiguredSurfaceBuilder<SurfaceConfig>(this, (SurfaceConfig)surfaceConfig), configuredSurfaceBuilder -> configuredSurfaceBuilder.config).codec();
+        this.field_25016 = ((MapCodec)codec.fieldOf("config")).xmap(this::method_30478, ConfiguredSurfaceBuilder::getConfig).codec();
     }
 
     public Codec<ConfiguredSurfaceBuilder<C>> method_29003() {
         return this.field_25016;
+    }
+
+    public ConfiguredSurfaceBuilder<C> method_30478(C surfaceConfig) {
+        return new ConfiguredSurfaceBuilder<C>(this, surfaceConfig);
     }
 
     public abstract void generate(Random var1, Chunk var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, long var12, C var14);

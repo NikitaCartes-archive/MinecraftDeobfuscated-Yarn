@@ -160,14 +160,19 @@ public class GameRules {
         return new GameRules((Map)this.rules.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ((Rule)entry.getValue()).copy())));
     }
 
-    public static void forEachType(TypeConsumer action) {
-        RULE_TYPES.forEach((key, type) -> GameRules.accept(action, key, type));
+    /**
+     * Make the visitor visit all registered game rules.
+     * 
+     * <p>The visitation involves calling both {@link #accept(GameRules.Key, GameRules.Type)} and {@code acceptX} for every game rule, where X is the current rule's concrete type such as a boolean.
+     */
+    public static void accept(Visitor visitor) {
+        RULE_TYPES.forEach((key, type) -> GameRules.accept(visitor, key, type));
     }
 
-    private static <T extends Rule<T>> void accept(TypeConsumer consumer, Key<?> key, Type<?> type) {
+    private static <T extends Rule<T>> void accept(Visitor consumer, Key<?> key, Type<?> type) {
         Key<?> key2 = key;
         Type<?> type2 = type;
-        consumer.accept(key2, type2);
+        consumer.visit(key2, type2);
         type2.accept(consumer, key2);
     }
 
@@ -195,7 +200,7 @@ public class GameRules {
         private boolean value;
 
         private static Type<BooleanRule> create(boolean initialValue, BiConsumer<MinecraftServer, BooleanRule> changeCallback) {
-            return new Type<BooleanRule>(BoolArgumentType::bool, type -> new BooleanRule((Type<BooleanRule>)type, initialValue), changeCallback, TypeConsumer::acceptBoolean);
+            return new Type<BooleanRule>(BoolArgumentType::bool, type -> new BooleanRule((Type<BooleanRule>)type, initialValue), changeCallback, Visitor::visitBoolean);
         }
 
         private static Type<BooleanRule> create(boolean initialValue) {
@@ -277,7 +282,7 @@ public class GameRules {
         private int value;
 
         private static Type<IntRule> create(int initialValue, BiConsumer<MinecraftServer, IntRule> changeCallback) {
-            return new Type<IntRule>(IntegerArgumentType::integer, type -> new IntRule((Type<IntRule>)type, initialValue), changeCallback, TypeConsumer::acceptInt);
+            return new Type<IntRule>(IntegerArgumentType::integer, type -> new IntRule((Type<IntRule>)type, initialValue), changeCallback, Visitor::visitInt);
         }
 
         private static Type<IntRule> create(int initialValue) {
@@ -425,7 +430,7 @@ public class GameRules {
             return (T)((Rule)this.ruleFactory.apply(this));
         }
 
-        public void accept(TypeConsumer consumer, Key<T> key) {
+        public void accept(Visitor consumer, Key<T> key) {
             this.ruleAcceptor.call(consumer, key, this);
         }
     }
@@ -468,19 +473,19 @@ public class GameRules {
         }
     }
 
-    public static interface TypeConsumer {
-        default public <T extends Rule<T>> void accept(Key<T> key, Type<T> type) {
+    public static interface Visitor {
+        default public <T extends Rule<T>> void visit(Key<T> key, Type<T> type) {
         }
 
-        default public void acceptBoolean(Key<BooleanRule> key, Type<BooleanRule> type) {
+        default public void visitBoolean(Key<BooleanRule> key, Type<BooleanRule> type) {
         }
 
-        default public void acceptInt(Key<IntRule> key, Type<IntRule> type) {
+        default public void visitInt(Key<IntRule> key, Type<IntRule> type) {
         }
     }
 
     static interface Acceptor<T extends Rule<T>> {
-        public void call(TypeConsumer var1, Key<T> var2, Type<T> var3);
+        public void call(Visitor var1, Key<T> var2, Type<T> var3);
     }
 
     public static enum Category {

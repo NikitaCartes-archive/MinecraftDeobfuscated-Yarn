@@ -7,7 +7,8 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Identifier;
+import java.util.function.Supplier;
+import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 /**
@@ -16,12 +17,12 @@ import net.minecraft.world.gen.feature.FeatureConfig;
  */
 public class StructurePoolFeatureConfig
 implements FeatureConfig {
-    public static final Codec<StructurePoolFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Identifier.CODEC.fieldOf("start_pool")).forGetter(StructurePoolFeatureConfig::getStartPool), ((MapCodec)Codec.INT.fieldOf("size")).forGetter(StructurePoolFeatureConfig::getSize)).apply((Applicative<StructurePoolFeatureConfig, ?>)instance, StructurePoolFeatureConfig::new));
-    public final Identifier startPool;
-    public final int size;
+    public static final Codec<StructurePoolFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructurePool.CODEC.fieldOf("start_pool")).forGetter(StructurePoolFeatureConfig::getStartPool), ((MapCodec)Codec.intRange(0, 7).fieldOf("size")).forGetter(StructurePoolFeatureConfig::getSize)).apply((Applicative<StructurePoolFeatureConfig, ?>)instance, StructurePoolFeatureConfig::new));
+    private final Supplier<StructurePool> startPool;
+    private final int size;
 
-    public StructurePoolFeatureConfig(Identifier identifier, int size) {
-        this.startPool = identifier;
+    public StructurePoolFeatureConfig(Supplier<StructurePool> supplier, int size) {
+        this.startPool = supplier;
         this.size = size;
     }
 
@@ -29,7 +30,7 @@ implements FeatureConfig {
         return this.size;
     }
 
-    public Identifier getStartPool() {
+    public Supplier<StructurePool> getStartPool() {
         return this.startPool;
     }
 }

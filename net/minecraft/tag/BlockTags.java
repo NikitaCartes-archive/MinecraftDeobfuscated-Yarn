@@ -97,6 +97,8 @@ public final class BlockTags {
     public static final Tag.Identified<Block> INFINIBURN_OVERWORLD = BlockTags.register("infiniburn_overworld");
     public static final Tag.Identified<Block> INFINIBURN_NETHER = BlockTags.register("infiniburn_nether");
     public static final Tag.Identified<Block> INFINIBURN_END = BlockTags.register("infiniburn_end");
+    public static final Tag.Identified<Block> BASE_STONE_OVERWORLD = BlockTags.register("base_stone_overworld");
+    public static final Tag.Identified<Block> BASE_STONE_NETHER = BlockTags.register("base_stone_nether");
 
     private static Tag.Identified<Block> register(String id) {
         return REQUIRED_TAGS.add(id);

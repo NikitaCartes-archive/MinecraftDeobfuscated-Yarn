@@ -17,7 +17,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
-import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
@@ -66,9 +65,9 @@ extends Entity {
     private static final TrackedData<Integer> CUSTOM_BLOCK_ID = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final ImmutableMap<EntityPose, ImmutableList<Integer>> field_24464 = ImmutableMap.of(EntityPose.STANDING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.CROUCHING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.SWIMMING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1)));
-    private boolean field_7660;
-    private static final Map<RailShape, Pair<Vec3i, Vec3i>> field_7664 = Util.make(Maps.newEnumMap(RailShape.class), enumMap -> {
+    private static final ImmutableMap<EntityPose, ImmutableList<Integer>> DISMOUNT_FREE_Y_SPACES_NEEDED = ImmutableMap.of(EntityPose.STANDING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.CROUCHING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.SWIMMING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1)));
+    private boolean yawFlipped;
+    private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), enumMap -> {
         Vec3i vec3i = Direction.WEST.getVector();
         Vec3i vec3i2 = Direction.EAST.getVector();
         Vec3i vec3i3 = Direction.NORTH.getVector();
@@ -178,36 +177,32 @@ extends Entity {
             return super.updatePassengerForDismount(passenger);
         }
         int[][] is = Dismounting.getDismountOffsets(direction);
-        BlockPos blockPos = this.getBlockPos();
+        BlockPos blockPos2 = this.getBlockPos();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         ImmutableList<EntityPose> immutableList = passenger.getPoses();
         for (EntityPose entityPose : immutableList) {
             EntityDimensions entityDimensions = passenger.getDimensions(entityPose);
             float f = Math.min(entityDimensions.width, 1.0f) / 2.0f;
-            Iterator iterator = field_24464.get((Object)entityPose).iterator();
+            Iterator iterator = DISMOUNT_FREE_Y_SPACES_NEEDED.get((Object)entityPose).iterator();
             while (iterator.hasNext()) {
                 int i = (Integer)iterator.next();
                 for (int[] js : is) {
                     Vec3d vec3d;
                     Box box;
-                    mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
-                    double d = this.world.getCollisionHeightAt(mutable, blockState -> {
-                        if (blockState.isIn(BlockTags.CLIMBABLE)) {
-                            return true;
-                        }
-                        return blockState.getBlock() instanceof TrapdoorBlock && blockState.get(TrapdoorBlock.OPEN) != false;
-                    });
-                    if (!Dismounting.canDismountInBlock(d) || !Dismounting.canPlaceEntityAt(this.world, passenger, (box = new Box(-f, d, -f, f, d + (double)entityDimensions.height, f)).offset(vec3d = Vec3d.ofCenter(mutable, d)))) continue;
+                    mutable.set(blockPos2.getX() + js[0], blockPos2.getY() + i, blockPos2.getZ() + js[1]);
+                    double d = this.world.getDismountHeight(Dismounting.getCollisionShape(this.world, mutable), () -> Dismounting.getCollisionShape(this.world, (BlockPos)mutable.down()));
+                    if (!Dismounting.canDismountInBlock(d) || !Dismounting.canPlaceEntityAt(this.world, passenger, (box = new Box(-f, 0.0, -f, f, entityDimensions.height, f)).offset(vec3d = Vec3d.ofCenter(mutable, d)))) continue;
                     passenger.setPose(entityPose);
                     return vec3d;
                 }
             }
         }
         double e = this.getBoundingBox().maxY;
-        mutable.set((double)blockPos.getX(), e, (double)blockPos.getZ());
+        mutable.set((double)blockPos2.getX(), e, (double)blockPos2.getZ());
         for (EntityPose entityPose2 : immutableList) {
             double g = passenger.getDimensions((EntityPose)entityPose2).height;
-            double h = (double)mutable.getY() + this.world.method_26096(mutable, e - (double)mutable.getY() + g);
+            int j = MathHelper.ceil(e - (double)mutable.getY() + g);
+            double h = Dismounting.getCeilingHeight(mutable, j, blockPos -> this.world.getBlockState((BlockPos)blockPos).getCollisionShape(this.world, (BlockPos)blockPos));
             if (!(e + g <= h)) continue;
             passenger.setPose(entityPose2);
             break;
@@ -273,13 +268,13 @@ extends Entity {
         return !this.removed;
     }
 
-    private static Pair<Vec3i, Vec3i> method_22864(RailShape railShape) {
-        return field_7664.get(railShape);
+    private static Pair<Vec3i, Vec3i> getAdjacentRailPositionsByShape(RailShape shape) {
+        return ADJACENT_RAIL_POSITIONS_BY_SHAPE.get(shape);
     }
 
     @Override
     public Direction getMovementDirection() {
-        return this.field_7660 ? this.getHorizontalFacing().getOpposite().rotateYClockwise() : this.getHorizontalFacing().rotateYClockwise();
+        return this.yawFlipped ? this.getHorizontalFacing().getOpposite().rotateYClockwise() : this.getHorizontalFacing().rotateYClockwise();
     }
 
     @Override
@@ -337,13 +332,13 @@ extends Entity {
         double l = this.prevZ - this.getZ();
         if (h * h + l * l > 0.001) {
             this.yaw = (float)(MathHelper.atan2(l, h) * 180.0 / Math.PI);
-            if (this.field_7660) {
+            if (this.yawFlipped) {
                 this.yaw += 180.0f;
             }
         }
         if ((m = (double)MathHelper.wrapDegrees(this.yaw - this.prevYaw)) < -170.0 || m >= 170.0) {
             this.yaw += 180.0f;
-            this.field_7660 = !this.field_7660;
+            this.yawFlipped = !this.yawFlipped;
         }
         this.setRotation(this.yaw, this.pitch);
         if (this.getMinecartType() == Type.RIDEABLE && AbstractMinecartEntity.squaredHorizontalLength(this.getVelocity()) > 0.01) {
@@ -369,6 +364,7 @@ extends Entity {
             this.setOnFireFromLava();
             this.fallDistance *= 0.5f;
         }
+        this.firstUpdate = false;
     }
 
     protected double getMaxOffRailSpeed() {
@@ -402,7 +398,7 @@ extends Entity {
         double d = this.getX();
         double e = this.getY();
         double f = this.getZ();
-        Vec3d vec3d = this.method_7508(d, e, f);
+        Vec3d vec3d = this.snapPositionToRail(d, e, f);
         e = pos.getY();
         boolean bl = false;
         boolean bl2 = false;
@@ -436,7 +432,7 @@ extends Entity {
             }
         }
         vec3d2 = this.getVelocity();
-        Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.method_22864(railShape);
+        Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.getAdjacentRailPositionsByShape(railShape);
         Vec3i vec3i = pair.getFirst();
         Vec3i vec3i2 = pair.getSecond();
         double h = vec3i2.getX() - vec3i.getX();
@@ -496,7 +492,7 @@ extends Entity {
             this.updatePosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
         }
         this.applySlowdown();
-        Vec3d vec3d4 = this.method_7508(this.getX(), this.getY(), this.getZ());
+        Vec3d vec3d4 = this.snapPositionToRail(this.getX(), this.getY(), this.getZ());
         if (vec3d4 != null && vec3d != null) {
             double v = (vec3d.y - vec3d4.y) * 0.05;
             vec3d5 = this.getVelocity();
@@ -552,80 +548,83 @@ extends Entity {
         this.setVelocity(this.getVelocity().multiply(d, 0.0, d));
     }
 
+    /**
+     * This method is used to determine the minecart's render orientation, by computing a position along the rail slightly before and slightly after the minecart's actual position.
+     */
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public Vec3d method_7505(double d, double e, double f, double g) {
+    public Vec3d snapPositionToRailWithOffset(double x, double y, double z, double offset) {
         BlockState blockState;
         int k;
         int j;
-        int i = MathHelper.floor(d);
-        if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(e)) - 1, k = MathHelper.floor(f))).isIn(BlockTags.RAILS)) {
+        int i = MathHelper.floor(x);
+        if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(y)) - 1, k = MathHelper.floor(z))).isIn(BlockTags.RAILS)) {
             --j;
         }
         if (AbstractRailBlock.isRail(blockState = this.world.getBlockState(new BlockPos(i, j, k)))) {
             RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
-            e = j;
+            y = j;
             if (railShape.isAscending()) {
-                e = j + 1;
+                y = j + 1;
             }
-            Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.method_22864(railShape);
+            Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.getAdjacentRailPositionsByShape(railShape);
             Vec3i vec3i = pair.getFirst();
             Vec3i vec3i2 = pair.getSecond();
-            double h = vec3i2.getX() - vec3i.getX();
-            double l = vec3i2.getZ() - vec3i.getZ();
-            double m = Math.sqrt(h * h + l * l);
-            if (vec3i.getY() != 0 && MathHelper.floor(d += (h /= m) * g) - i == vec3i.getX() && MathHelper.floor(f += (l /= m) * g) - k == vec3i.getZ()) {
-                e += (double)vec3i.getY();
-            } else if (vec3i2.getY() != 0 && MathHelper.floor(d) - i == vec3i2.getX() && MathHelper.floor(f) - k == vec3i2.getZ()) {
-                e += (double)vec3i2.getY();
+            double d = vec3i2.getX() - vec3i.getX();
+            double e = vec3i2.getZ() - vec3i.getZ();
+            double f = Math.sqrt(d * d + e * e);
+            if (vec3i.getY() != 0 && MathHelper.floor(x += (d /= f) * offset) - i == vec3i.getX() && MathHelper.floor(z += (e /= f) * offset) - k == vec3i.getZ()) {
+                y += (double)vec3i.getY();
+            } else if (vec3i2.getY() != 0 && MathHelper.floor(x) - i == vec3i2.getX() && MathHelper.floor(z) - k == vec3i2.getZ()) {
+                y += (double)vec3i2.getY();
             }
-            return this.method_7508(d, e, f);
+            return this.snapPositionToRail(x, y, z);
         }
         return null;
     }
 
     @Nullable
-    public Vec3d method_7508(double d, double e, double f) {
+    public Vec3d snapPositionToRail(double x, double y, double z) {
         BlockState blockState;
         int k;
         int j;
-        int i = MathHelper.floor(d);
-        if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(e)) - 1, k = MathHelper.floor(f))).isIn(BlockTags.RAILS)) {
+        int i = MathHelper.floor(x);
+        if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(y)) - 1, k = MathHelper.floor(z))).isIn(BlockTags.RAILS)) {
             --j;
         }
         if (AbstractRailBlock.isRail(blockState = this.world.getBlockState(new BlockPos(i, j, k)))) {
-            double s;
+            double p;
             RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
-            Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.method_22864(railShape);
+            Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.getAdjacentRailPositionsByShape(railShape);
             Vec3i vec3i = pair.getFirst();
             Vec3i vec3i2 = pair.getSecond();
-            double g = (double)i + 0.5 + (double)vec3i.getX() * 0.5;
-            double h = (double)j + 0.0625 + (double)vec3i.getY() * 0.5;
-            double l = (double)k + 0.5 + (double)vec3i.getZ() * 0.5;
-            double m = (double)i + 0.5 + (double)vec3i2.getX() * 0.5;
-            double n = (double)j + 0.0625 + (double)vec3i2.getY() * 0.5;
-            double o = (double)k + 0.5 + (double)vec3i2.getZ() * 0.5;
-            double p = m - g;
-            double q = (n - h) * 2.0;
-            double r = o - l;
-            if (p == 0.0) {
-                s = f - (double)k;
-            } else if (r == 0.0) {
-                s = d - (double)i;
+            double d = (double)i + 0.5 + (double)vec3i.getX() * 0.5;
+            double e = (double)j + 0.0625 + (double)vec3i.getY() * 0.5;
+            double f = (double)k + 0.5 + (double)vec3i.getZ() * 0.5;
+            double g = (double)i + 0.5 + (double)vec3i2.getX() * 0.5;
+            double h = (double)j + 0.0625 + (double)vec3i2.getY() * 0.5;
+            double l = (double)k + 0.5 + (double)vec3i2.getZ() * 0.5;
+            double m = g - d;
+            double n = (h - e) * 2.0;
+            double o = l - f;
+            if (m == 0.0) {
+                p = z - (double)k;
+            } else if (o == 0.0) {
+                p = x - (double)i;
             } else {
-                double t = d - g;
-                double u = f - l;
-                s = (t * p + u * r) * 2.0;
+                double q = x - d;
+                double r = z - f;
+                p = (q * m + r * o) * 2.0;
             }
-            d = g + p * s;
-            e = h + q * s;
-            f = l + r * s;
-            if (q < 0.0) {
-                e += 1.0;
-            } else if (q > 0.0) {
-                e += 0.5;
+            x = d + m * p;
+            y = e + n * p;
+            z = f + o * p;
+            if (n < 0.0) {
+                y += 1.0;
+            } else if (n > 0.0) {
+                y += 0.5;
             }
-            return new Vec3d(d, e, f);
+            return new Vec3d(x, y, z);
         }
         return null;
     }
@@ -790,13 +789,13 @@ extends Entity {
         return 6;
     }
 
-    public void setCustomBlock(BlockState blockState) {
-        this.getDataTracker().set(CUSTOM_BLOCK_ID, Block.getRawIdFromState(blockState));
+    public void setCustomBlock(BlockState state) {
+        this.getDataTracker().set(CUSTOM_BLOCK_ID, Block.getRawIdFromState(state));
         this.setCustomBlockPresent(true);
     }
 
-    public void setCustomBlockOffset(int i) {
-        this.getDataTracker().set(CUSTOM_BLOCK_OFFSET, i);
+    public void setCustomBlockOffset(int offset) {
+        this.getDataTracker().set(CUSTOM_BLOCK_OFFSET, offset);
         this.setCustomBlockPresent(true);
     }
 
@@ -804,8 +803,8 @@ extends Entity {
         return this.getDataTracker().get(CUSTOM_BLOCK_PRESENT);
     }
 
-    public void setCustomBlockPresent(boolean bl) {
-        this.getDataTracker().set(CUSTOM_BLOCK_PRESENT, bl);
+    public void setCustomBlockPresent(boolean present) {
+        this.getDataTracker().set(CUSTOM_BLOCK_PRESENT, present);
     }
 
     @Override

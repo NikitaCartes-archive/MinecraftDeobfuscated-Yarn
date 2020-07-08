@@ -10,22 +10,26 @@ import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import org.jetbrains.annotations.Nullable;
 
 public class FixedBiomeSource
 extends BiomeSource {
-    public static final Codec<FixedBiomeSource> field_24717 = ((MapCodec)Registry.BIOME.fieldOf("biome")).xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome).stable().codec();
-    private final Biome biome;
+    public static final Codec<FixedBiomeSource> field_24717 = ((MapCodec)Biome.field_24677.fieldOf("biome")).xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome).stable().codec();
+    private final Supplier<Biome> biome;
 
     public FixedBiomeSource(Biome biome) {
-        super(ImmutableList.of(biome));
-        this.biome = biome;
+        this(() -> biome);
+    }
+
+    public FixedBiomeSource(Supplier<Biome> supplier) {
+        super(ImmutableList.of(supplier.get()));
+        this.biome = supplier;
     }
 
     @Override
@@ -41,13 +45,13 @@ extends BiomeSource {
 
     @Override
     public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-        return this.biome;
+        return this.biome.get();
     }
 
     @Override
     @Nullable
     public BlockPos locateBiome(int x, int y, int z, int radius, int i, List<Biome> biomes, Random random, boolean bl) {
-        if (biomes.contains(this.biome)) {
+        if (biomes.contains(this.biome.get())) {
             if (bl) {
                 return new BlockPos(x, y, z);
             }
@@ -58,7 +62,7 @@ extends BiomeSource {
 
     @Override
     public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
-        return Sets.newHashSet(this.biome);
+        return Sets.newHashSet(this.biome.get());
     }
 }
 

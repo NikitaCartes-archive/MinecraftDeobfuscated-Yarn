@@ -90,7 +90,7 @@ extends ConditionalLootFunction {
         @Override
         public CopyStateFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-            Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
+            Block block = Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
             StateManager<Block, BlockState> stateManager = block.getStateManager();
             HashSet set = Sets.newHashSet();
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "properties", null);

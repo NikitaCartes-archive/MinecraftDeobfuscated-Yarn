@@ -22,7 +22,7 @@ import net.minecraft.util.ProgressListener;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biomes;
@@ -56,16 +56,16 @@ public class AnvilLevelStorage {
         }
         int i = list.size() + list2.size() + list3.size();
         LOGGER.info("Total conversion count is {}", (Object)i);
-        RegistryTracker.Modifiable modifiable = RegistryTracker.create();
-        RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, modifiable);
+        DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+        RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, impl);
         SaveProperties saveProperties = session.readLevelProperties(registryOps, DataPackSettings.SAFE_MODE);
         long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
         BiomeSource biomeSource = saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld() ? new FixedBiomeSource(Biomes.PLAINS) : new VanillaLayeredBiomeSource(l, false, false);
-        AnvilLevelStorage.convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
-        AnvilLevelStorage.convertRegions(new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
-        AnvilLevelStorage.convertRegions(new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);
+        AnvilLevelStorage.convertRegions(impl, new File(file, "region"), list, biomeSource, 0, i, progressListener);
+        AnvilLevelStorage.convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
+        AnvilLevelStorage.convertRegions(impl, new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);
         AnvilLevelStorage.makeMcrLevelDatBackup(session);
-        session.method_27425(modifiable, saveProperties);
+        session.method_27425(impl, saveProperties);
         return true;
     }
 
@@ -81,23 +81,23 @@ public class AnvilLevelStorage {
         }
     }
 
-    private static void convertRegions(File file, Iterable<File> iterable, BiomeSource biomeSource, int i, int currentCount, ProgressListener progressListener) {
+    private static void convertRegions(DynamicRegistryManager.Impl impl, File file, Iterable<File> iterable, BiomeSource biomeSource, int i, int j, ProgressListener progressListener) {
         for (File file2 : iterable) {
-            AnvilLevelStorage.convertRegion(file, file2, biomeSource, i, currentCount, progressListener);
-            int j = (int)Math.round(100.0 * (double)(++i) / (double)currentCount);
-            progressListener.progressStagePercentage(j);
+            AnvilLevelStorage.convertRegion(impl, file, file2, biomeSource, i, j, progressListener);
+            int k = (int)Math.round(100.0 * (double)(++i) / (double)j);
+            progressListener.progressStagePercentage(k);
         }
     }
 
-    private static void convertRegion(File file, File baseFolder, BiomeSource biomeSource, int i, int progressStart, ProgressListener progressListener) {
-        String string = baseFolder.getName();
-        try (RegionFile regionFile = new RegionFile(baseFolder, file, true);
+    private static void convertRegion(DynamicRegistryManager.Impl impl, File file, File file2, BiomeSource biomeSource, int i, int j, ProgressListener progressListener) {
+        String string = file2.getName();
+        try (RegionFile regionFile = new RegionFile(file2, file, true);
              RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"), file, true);){
-            for (int j = 0; j < 32; ++j) {
-                int k;
-                for (k = 0; k < 32; ++k) {
+            for (int k = 0; k < 32; ++k) {
+                int l;
+                for (l = 0; l < 32; ++l) {
                     CompoundTag compoundTag;
-                    ChunkPos chunkPos = new ChunkPos(j, k);
+                    ChunkPos chunkPos = new ChunkPos(k, l);
                     if (!regionFile.hasChunk(chunkPos) || regionFile2.hasChunk(chunkPos)) continue;
                     try (DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);){
                         if (dataInputStream == null) {
@@ -114,19 +114,19 @@ public class AnvilLevelStorage {
                     CompoundTag compoundTag3 = new CompoundTag();
                     CompoundTag compoundTag4 = new CompoundTag();
                     compoundTag3.put("Level", compoundTag4);
-                    AlphaChunkIo.convertAlphaChunk(alphaChunk, compoundTag4, biomeSource);
+                    AlphaChunkIo.convertAlphaChunk(impl, alphaChunk, compoundTag4, biomeSource);
                     try (DataOutputStream dataOutputStream = regionFile2.getChunkOutputStream(chunkPos);){
                         NbtIo.write(compoundTag3, (DataOutput)dataOutputStream);
                         continue;
                     }
                 }
-                k = (int)Math.round(100.0 * (double)(i * 1024) / (double)(progressStart * 1024));
-                int l = (int)Math.round(100.0 * (double)((j + 1) * 32 + i * 1024) / (double)(progressStart * 1024));
-                if (l <= k) continue;
-                progressListener.progressStagePercentage(l);
+                l = (int)Math.round(100.0 * (double)(i * 1024) / (double)(j * 1024));
+                int m = (int)Math.round(100.0 * (double)((k + 1) * 32 + i * 1024) / (double)(j * 1024));
+                if (m <= l) continue;
+                progressListener.progressStagePercentage(m);
             }
         } catch (IOException iOException2) {
-            LOGGER.error("Failed to upgrade region file {}", (Object)baseFolder, (Object)iOException2);
+            LOGGER.error("Failed to upgrade region file {}", (Object)file2, (Object)iOException2);
         }
     }
 

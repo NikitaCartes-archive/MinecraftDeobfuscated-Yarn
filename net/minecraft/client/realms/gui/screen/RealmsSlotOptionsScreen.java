@@ -26,8 +26,9 @@ public class RealmsSlotOptionsScreen
 extends RealmsScreen {
     public static final Text[] DIFFICULTIES = new Text[]{new TranslatableText("options.difficulty.peaceful"), new TranslatableText("options.difficulty.easy"), new TranslatableText("options.difficulty.normal"), new TranslatableText("options.difficulty.hard")};
     public static final Text[] GAME_MODES = new Text[]{new TranslatableText("selectWorld.gameMode.survival"), new TranslatableText("selectWorld.gameMode.creative"), new TranslatableText("selectWorld.gameMode.adventure")};
-    private static final TranslatableText field_24207 = new TranslatableText("mco.configure.world.on");
-    private static final TranslatableText field_24208 = new TranslatableText("mco.configure.world.off");
+    private static final Text field_24207 = new TranslatableText("mco.configure.world.on");
+    private static final Text field_24208 = new TranslatableText("mco.configure.world.off");
+    private static final Text field_25884 = new TranslatableText("selectWorld.gameMode");
     private TextFieldWidget nameEdit;
     protected final RealmsConfigureWorldScreen parent;
     private int column1_x;
@@ -175,7 +176,7 @@ extends RealmsScreen {
     }
 
     private Text gameModeTitle() {
-        return new TranslatableText("selectWorld.gameMode").append(": ").append(GAME_MODES[this.gameModeIndex]);
+        return new TranslatableText("options.generic_value", field_25884, GAME_MODES[this.gameModeIndex]);
     }
 
     private Text pvpTitle() {

@@ -4,9 +4,12 @@
 package net.minecraft.world.gen.carver;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -15,13 +18,18 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverConfig;
 
 public class ConfiguredCarver<WC extends CarverConfig> {
-    public static final Codec<ConfiguredCarver<?>> field_24828 = Registry.CARVER.dispatch("name", configuredCarver -> configuredCarver.carver, Carver::getCodec);
-    public final Carver<WC> carver;
-    public final WC config;
+    public static final MapCodec<ConfiguredCarver<?>> field_25832 = Registry.CARVER.dispatchMap("name", configuredCarver -> configuredCarver.carver, Carver::getCodec);
+    public static final Codec<Supplier<ConfiguredCarver<?>>> field_24828 = RegistryElementCodec.of(Registry.CONFIGURED_CARVER_WORLDGEN, field_25832);
+    private final Carver<WC> carver;
+    private final WC config;
 
     public ConfiguredCarver(Carver<WC> carver, WC config) {
         this.carver = carver;
         this.config = config;
+    }
+
+    public WC method_30378() {
+        return this.config;
     }
 
     public boolean shouldCarve(Random random, int chunkX, int chunkZ) {

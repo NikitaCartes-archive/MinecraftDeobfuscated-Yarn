@@ -73,7 +73,7 @@ implements AutoCloseable {
         this.program.enable();
         this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
         this.output.beginWrite(false);
-        RenderSystem.depthMask(false);
+        RenderSystem.depthFunc(519);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
@@ -82,7 +82,7 @@ implements AutoCloseable {
         bufferBuilder.vertex(0.0, g, 500.0).color(255, 255, 255, 255).next();
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
-        RenderSystem.depthMask(true);
+        RenderSystem.depthFunc(515);
         this.program.disable();
         this.output.endWrite();
         this.input.endRead();

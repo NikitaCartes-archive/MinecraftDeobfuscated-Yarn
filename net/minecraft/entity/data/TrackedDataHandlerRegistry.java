@@ -490,7 +490,7 @@ public class TrackedDataHandlerRegistry {
     }
 
     public static int getId(TrackedDataHandler<?> handler) {
-        return field_13328.getId(handler);
+        return field_13328.getRawId(handler);
     }
 
     static {

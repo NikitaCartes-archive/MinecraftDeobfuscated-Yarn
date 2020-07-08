@@ -52,6 +52,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -340,6 +341,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                 searchable = this.client.getSearchableContainer(SearchManager.ITEM_TAG);
                 this.searchForTags(string);
             } else {
+                string = Language.getInstance().reorder(string, false);
                 searchable = this.client.getSearchableContainer(SearchManager.ITEM_TOOLTIP);
             }
             ((CreativeScreenHandler)this.handler).itemList.addAll(searchable.findAll(string.toLowerCase(Locale.ROOT)));

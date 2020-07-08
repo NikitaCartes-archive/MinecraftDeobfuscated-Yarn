@@ -17,7 +17,7 @@ extends Task<E> {
     private final int duration;
 
     public AdmireItemTask(int duration) {
-        super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ADMIRING_ITEM, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleState.VALUE_ABSENT));
+        super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ADMIRING_ITEM, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.DISABLE_WALK_TO_ADMIRE_ITEM, MemoryModuleState.VALUE_ABSENT));
         this.duration = duration;
     }
 

@@ -9,6 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -18,12 +19,12 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class JungleFoliagePlacer
 extends FoliagePlacer {
-    public static final Codec<JungleFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> JungleFoliagePlacer.method_28846(instance).and(((MapCodec)Codec.INT.fieldOf("height")).forGetter(jungleFoliagePlacer -> jungleFoliagePlacer.height)).apply((Applicative<JungleFoliagePlacer, ?>)instance, JungleFoliagePlacer::new));
+    public static final Codec<JungleFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> JungleFoliagePlacer.method_30411(instance).and(((MapCodec)Codec.intRange(0, 16).fieldOf("height")).forGetter(jungleFoliagePlacer -> jungleFoliagePlacer.height)).apply((Applicative<JungleFoliagePlacer, ?>)instance, JungleFoliagePlacer::new));
     protected final int height;
 
-    public JungleFoliagePlacer(int i, int j, int k, int l, int m) {
-        super(i, j, k, l);
-        this.height = m;
+    public JungleFoliagePlacer(class_5428 arg, class_5428 arg2, int i) {
+        super(arg, arg2);
+        this.height = i;
     }
 
     @Override

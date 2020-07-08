@@ -98,7 +98,7 @@ Drawable {
             if (!this.changeFocus(bl)) {
                 this.changeFocus(bl);
             }
-            return true;
+            return false;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
@@ -129,8 +129,8 @@ Drawable {
         return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
     }
 
-    public void renderTooltip(MatrixStack matrices, StringRenderable stringRenderable, int x, int y) {
-        this.renderTooltip(matrices, Arrays.asList(stringRenderable), x, y);
+    public void renderTooltip(MatrixStack matrices, StringRenderable text, int x, int y) {
+        this.renderTooltip(matrices, Arrays.asList(text), x, y);
     }
 
     /*
@@ -445,7 +445,7 @@ Drawable {
         return true;
     }
 
-    public void method_29638(List<Path> list) {
+    public void filesDragged(List<Path> paths) {
     }
 }
 

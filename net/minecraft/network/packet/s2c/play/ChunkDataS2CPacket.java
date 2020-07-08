@@ -32,7 +32,7 @@ implements Packet<ClientPlayPacketListener> {
     private int verticalStripBitmask;
     private CompoundTag heightmaps;
     @Nullable
-    private BiomeArray biomeArray;
+    private int[] biomeArray;
     private byte[] data;
     private List<CompoundTag> blockEntities;
     private boolean isFullChunk;
@@ -53,7 +53,7 @@ implements Packet<ClientPlayPacketListener> {
             this.heightmaps.put(entry.getKey().getName(), new LongArrayTag(entry.getValue().asLongArray()));
         }
         if (this.isFullChunk) {
-            this.biomeArray = chunk.getBiomeArray().copy();
+            this.biomeArray = chunk.getBiomeArray().toIntArray();
         }
         this.data = new byte[this.getDataSize(chunk, includedSectionsMask)];
         this.verticalStripBitmask = this.writeData(new PacketByteBuf(this.getWriteBuffer()), chunk, includedSectionsMask);
@@ -78,7 +78,7 @@ implements Packet<ClientPlayPacketListener> {
         this.verticalStripBitmask = buf.readVarInt();
         this.heightmaps = buf.readCompoundTag();
         if (this.isFullChunk) {
-            this.biomeArray = new BiomeArray(buf);
+            this.biomeArray = buf.readIntArray(BiomeArray.DEFAULT_LENGTH);
         }
         if ((i = buf.readVarInt()) > 0x200000) {
             throw new RuntimeException("Chunk Packet trying to allocate too much memory on read.");
@@ -101,7 +101,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.verticalStripBitmask);
         buf.writeCompoundTag(this.heightmaps);
         if (this.biomeArray != null) {
-            this.biomeArray.toPacket(buf);
+            buf.writeIntArray(this.biomeArray);
         }
         buf.writeVarInt(this.data.length);
         buf.writeBytes(this.data);
@@ -188,8 +188,8 @@ implements Packet<ClientPlayPacketListener> {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public BiomeArray getBiomeArray() {
-        return this.biomeArray == null ? null : this.biomeArray.copy();
+    public int[] getBiomeArray() {
+        return this.biomeArray;
     }
 }
 

@@ -25,7 +25,7 @@ extends Feature<OreFeatureConfig> {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int j = 0; j < i; ++j) {
             this.getStartPos(mutable, random, blockPos, Math.min(j, 7));
-            if (!oreFeatureConfig.target.getCondition().test(serverWorldAccess.getBlockState(mutable)) || this.checkAir(serverWorldAccess, mutable)) continue;
+            if (!oreFeatureConfig.target.test(serverWorldAccess.getBlockState(mutable), random) || this.checkAir(serverWorldAccess, mutable)) continue;
             serverWorldAccess.setBlockState(mutable, oreFeatureConfig.state, 2);
         }
         return true;

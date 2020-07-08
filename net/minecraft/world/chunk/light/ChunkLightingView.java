@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public interface ChunkLightingView
 extends LightingView {
     @Nullable
-    public ChunkNibbleArray getLightArray(ChunkSectionPos var1);
+    public ChunkNibbleArray getLightSection(ChunkSectionPos var1);
 
     public int getLightLevel(BlockPos var1);
 
@@ -23,7 +23,7 @@ extends LightingView {
 
         @Override
         @Nullable
-        public ChunkNibbleArray getLightArray(ChunkSectionPos pos) {
+        public ChunkNibbleArray getLightSection(ChunkSectionPos pos) {
             return null;
         }
 
@@ -33,7 +33,7 @@ extends LightingView {
         }
 
         @Override
-        public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
+        public void setSectionStatus(ChunkSectionPos pos, boolean notReady) {
         }
     }
 }

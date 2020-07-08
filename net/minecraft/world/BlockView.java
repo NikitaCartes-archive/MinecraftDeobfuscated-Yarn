@@ -5,6 +5,7 @@ package net.minecraft.world;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -73,6 +74,24 @@ public interface BlockView {
             return blockHitResult.withSide(blockHitResult2.getSide());
         }
         return blockHitResult;
+    }
+
+    default public double getDismountHeight(VoxelShape blockCollisionShape, Supplier<VoxelShape> belowBlockCollisionShapeGetter) {
+        if (!blockCollisionShape.isEmpty()) {
+            return blockCollisionShape.getMax(Direction.Axis.Y);
+        }
+        double d = belowBlockCollisionShapeGetter.get().getMax(Direction.Axis.Y);
+        if (d >= 1.0) {
+            return d - 1.0;
+        }
+        return Double.NEGATIVE_INFINITY;
+    }
+
+    default public double getDismountHeight(BlockPos pos) {
+        return this.getDismountHeight(this.getBlockState(pos).getCollisionShape(this, pos), () -> {
+            BlockPos blockPos2 = pos.down();
+            return this.getBlockState(blockPos2).getCollisionShape(this, blockPos2);
+        });
     }
 
     public static <T> T rayTrace(RayTraceContext rayTraceContext, BiFunction<RayTraceContext, BlockPos, T> context, Function<RayTraceContext, T> blockRayTracer) {

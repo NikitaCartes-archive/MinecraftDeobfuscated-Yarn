@@ -14,10 +14,10 @@ import net.minecraft.world.GameRules;
 public class GameRuleCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         final LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("gamerule").requires(source -> source.hasPermissionLevel(2));
-        GameRules.forEachType(new GameRules.TypeConsumer(){
+        GameRules.accept(new GameRules.Visitor(){
 
             @Override
-            public <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
+            public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
                 literalArgumentBuilder.then(((LiteralArgumentBuilder)CommandManager.literal(key.getName()).executes(context -> GameRuleCommand.executeQuery((ServerCommandSource)context.getSource(), key))).then(type.argument("value").executes(context -> GameRuleCommand.executeSet(context, key))));
             }
         });

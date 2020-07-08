@@ -27,7 +27,6 @@ import net.minecraft.util.logging.DebugLoggerPrintStream;
 import net.minecraft.util.logging.LoggerPrintStream;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,14 +66,14 @@ public class Bootstrap {
         });
     }
 
-    private static void method_27732(final Set<String> set) {
+    private static void collectMissingGameRuleTranslations(final Set<String> translations) {
         final Language language = Language.getInstance();
-        GameRules.forEachType(new GameRules.TypeConsumer(){
+        GameRules.accept(new GameRules.Visitor(){
 
             @Override
-            public <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
+            public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
                 if (!language.hasTranslation(key.getTranslationKey())) {
-                    set.add(key.getName());
+                    translations.add(key.getName());
                 }
             }
         });
@@ -87,10 +86,9 @@ public class Bootstrap {
         Bootstrap.collectMissingTranslations(Registry.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.ITEM, Item::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.ENCHANTMENT, Enchantment::getTranslationKey, set);
-        Bootstrap.collectMissingTranslations(Registry.BIOME, Biome::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.BLOCK, Block::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.CUSTOM_STAT, identifier -> "stat." + identifier.toString().replace(':', '.'), set);
-        Bootstrap.method_27732(set);
+        Bootstrap.collectMissingGameRuleTranslations(set);
         return set;
     }
 

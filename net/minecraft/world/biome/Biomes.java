@@ -5,7 +5,8 @@ package net.minecraft.world.biome;
 
 import java.util.Collections;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.collection.IdList;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.BadlandsBiome;
 import net.minecraft.world.biome.BadlandsPlateauBiome;
 import net.minecraft.world.biome.BambooJungleBiome;
@@ -86,8 +87,10 @@ import net.minecraft.world.biome.WarpedForestBiome;
 import net.minecraft.world.biome.WoodedBadlandsPlateauBiome;
 import net.minecraft.world.biome.WoodedHillsBiome;
 import net.minecraft.world.biome.WoodedMountainsBiome;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class Biomes {
+    public static final IdList<Biome> field_25821 = new IdList();
     public static final Biome OCEAN;
     public static final Biome DEFAULT;
     public static final Biome PLAINS;
@@ -170,11 +173,16 @@ public abstract class Biomes {
     public static final Biome BASALT_DELTAS;
 
     private static Biome register(int rawId, String id, Biome biome) {
-        Registry.register(Registry.BIOME, rawId, id, biome);
+        BuiltinRegistries.set(BuiltinRegistries.BIOME, rawId, id, biome);
         if (biome.hasParent()) {
-            Biome.PARENT_BIOME_ID_MAP.set(biome, Registry.BIOME.getRawId(Registry.BIOME.get(new Identifier(biome.parent))));
+            field_25821.set(biome, BuiltinRegistries.BIOME.getRawId(BuiltinRegistries.BIOME.get(new Identifier(biome.parent))));
         }
         return biome;
+    }
+
+    @Nullable
+    public static Biome method_30360(Biome biome) {
+        return field_25821.get(BuiltinRegistries.BIOME.getRawId(biome));
     }
 
     static {

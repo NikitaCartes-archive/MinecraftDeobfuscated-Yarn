@@ -1637,13 +1637,9 @@ extends LivingEntity {
         return this.addTellClickEvent(mutableText);
     }
 
-    public Text getNameAndUuid() {
-        return new LiteralText("").append(this.getName()).append(" (").append(this.gameProfile.getId().toString()).append(")");
-    }
-
     private MutableText addTellClickEvent(MutableText component) {
         String string = this.getGameProfile().getName();
-        return component.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + string + " ")).setHoverEvent(this.getHoverEvent()).withInsertion(string));
+        return component.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + string + " ")).withHoverEvent(this.getHoverEvent()).withInsertion(string));
     }
 
     @Override

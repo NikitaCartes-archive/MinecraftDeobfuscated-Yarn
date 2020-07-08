@@ -65,7 +65,7 @@ Waterloggable {
 
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-        return !floor.getCollisionShape(world, pos).getFace(Direction.UP).isEmpty();
+        return !floor.getCollisionShape(world, pos).getFace(Direction.UP).isEmpty() || floor.isSideSolidFullSquare(world, pos, Direction.UP);
     }
 
     @Override

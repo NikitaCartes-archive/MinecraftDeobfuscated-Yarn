@@ -11,6 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
@@ -36,17 +37,12 @@ import net.minecraft.world.gen.feature.Feature;
 public class FeaturePoolElement
 extends StructurePoolElement {
     public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.CODEC.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.method_28883()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
-    private final ConfiguredFeature<?, ?> feature;
+    private final Supplier<ConfiguredFeature<?, ?>> feature;
     private final CompoundTag tag;
 
-    @Deprecated
-    public FeaturePoolElement(ConfiguredFeature<?, ?> feature) {
-        this(feature, StructurePool.Projection.RIGID);
-    }
-
-    private FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
+    protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> supplier, StructurePool.Projection projection) {
         super(projection);
-        this.feature = configuredFeature;
+        this.feature = supplier;
         this.tag = this.createDefaultJigsawTag();
     }
 
@@ -79,7 +75,7 @@ extends StructurePoolElement {
 
     @Override
     public boolean generate(StructureManager structureManager, ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
-        return this.feature.generate(serverWorldAccess, chunkGenerator, random, blockPos);
+        return this.feature.get().generate(serverWorldAccess, chunkGenerator, random, blockPos);
     }
 
     @Override
@@ -88,7 +84,7 @@ extends StructurePoolElement {
     }
 
     public String toString() {
-        return "Feature[" + Registry.FEATURE.getId((Feature<?>)this.feature.feature) + "]";
+        return "Feature[" + Registry.FEATURE.getId((Feature<?>)this.feature.get().method_30380()) + "]";
     }
 }
 

@@ -34,6 +34,7 @@ import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.LegacyQueryHandler;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketEncoder;
+import net.minecraft.network.RateLimitedConnection;
 import net.minecraft.network.SizePrepender;
 import net.minecraft.network.SplitterHandler;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
@@ -89,7 +90,8 @@ public class ServerNetworkIo {
                         // empty catch block
                     }
                     channel.pipeline().addLast("timeout", (ChannelHandler)new ReadTimeoutHandler(30)).addLast("legacy_query", (ChannelHandler)new LegacyQueryHandler(ServerNetworkIo.this)).addLast("splitter", (ChannelHandler)new SplitterHandler()).addLast("decoder", (ChannelHandler)new DecoderHandler(NetworkSide.SERVERBOUND)).addLast("prepender", (ChannelHandler)new SizePrepender()).addLast("encoder", (ChannelHandler)new PacketEncoder(NetworkSide.CLIENTBOUND));
-                    ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
+                    int i = ServerNetworkIo.this.server.getRateLimit();
+                    ClientConnection clientConnection = i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.SERVERBOUND);
                     ServerNetworkIo.this.connections.add(clientConnection);
                     channel.pipeline().addLast("packet_handler", (ChannelHandler)clientConnection);
                     clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));

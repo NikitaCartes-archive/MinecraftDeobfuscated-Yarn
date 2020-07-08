@@ -11,7 +11,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.util.Monitor;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.client.util.Window;
-import net.minecraft.text.MutableText;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,11 +43,10 @@ extends DoubleOption {
                 return new TranslatableText("options.fullscreen.unavailable");
             }
             double d = doubleOption.get((GameOptions)gameOptions);
-            MutableText mutableText = doubleOption.getDisplayPrefix();
             if (d == -1.0) {
-                return mutableText.append(new TranslatableText("options.fullscreen.current"));
+                return doubleOption.method_30501(new TranslatableText("options.fullscreen.current"));
             }
-            return mutableText.append(monitor.getVideoMode((int)d).toString());
+            return doubleOption.method_30501(new LiteralText(monitor.getVideoMode((int)d).toString()));
         });
     }
 }

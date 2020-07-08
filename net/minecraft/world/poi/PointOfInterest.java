@@ -19,7 +19,7 @@ public class PointOfInterest {
     private final Runnable updateListener;
 
     public static Codec<PointOfInterest> method_28359(Runnable runnable) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.field_25064.fieldOf("pos")).forGetter(pointOfInterest -> pointOfInterest.pos), ((MapCodec)Registry.POINT_OF_INTEREST_TYPE.fieldOf("type")).forGetter(pointOfInterest -> pointOfInterest.type), ((MapCodec)Codec.INT.fieldOf("free_tickets")).withDefault(0).forGetter(pointOfInterest -> pointOfInterest.freeTickets), RecordCodecBuilder.point(runnable)).apply((Applicative<PointOfInterest, ?>)instance, PointOfInterest::new));
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.field_25064.fieldOf("pos")).forGetter(pointOfInterest -> pointOfInterest.pos), ((MapCodec)Registry.POINT_OF_INTEREST_TYPE.fieldOf("type")).forGetter(pointOfInterest -> pointOfInterest.type), ((MapCodec)Codec.INT.fieldOf("free_tickets")).orElse(0).forGetter(pointOfInterest -> pointOfInterest.freeTickets), RecordCodecBuilder.point(runnable)).apply((Applicative<PointOfInterest, ?>)instance, PointOfInterest::new));
     }
 
     private PointOfInterest(BlockPos pos, PointOfInterestType type, int freeTickets, Runnable updateListener) {

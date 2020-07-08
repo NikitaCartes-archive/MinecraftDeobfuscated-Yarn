@@ -16,6 +16,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.SideShapeType;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
@@ -77,8 +78,6 @@ implements ItemConvertible {
             return this.load((VoxelShape)shape);
         }
     });
-    private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
-    private static final VoxelShape SOLID_SMALL_SQUARE_SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 10.0, 9.0);
     protected final StateManager<Block, BlockState> stateManager;
     private BlockState defaultState;
     @Nullable
@@ -100,7 +99,7 @@ implements ItemConvertible {
         if (state == null) {
             return 0;
         }
-        int i = STATE_IDS.getId(state);
+        int i = STATE_IDS.getRawId(state);
         return i == -1 ? 0 : i;
     }
 
@@ -236,8 +235,7 @@ implements ItemConvertible {
     }
 
     public static boolean hasTopRim(BlockView world, BlockPos pos) {
-        BlockState blockState = world.getBlockState(pos);
-        return blockState.isFullCube(world, pos) && blockState.isSideSolidFullSquare(world, pos, Direction.UP) || !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+        return world.getBlockState(pos).isSideSolid(world, pos, Direction.UP, SideShapeType.RIGID);
     }
 
     public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
@@ -245,11 +243,7 @@ implements ItemConvertible {
         if (side == Direction.DOWN && blockState.isIn(BlockTags.UNSTABLE_BOTTOM_CENTER)) {
             return false;
         }
-        return !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(side), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
-    }
-
-    public static boolean isSideSolidFullSquare(BlockState state, BlockView world, BlockPos pos, Direction side) {
-        return Block.isFaceFullSquare(state.getSidesShape(world, pos), side);
+        return blockState.isSideSolid(world, pos, side, SideShapeType.CENTER);
     }
 
     public static boolean isFaceFullSquare(VoxelShape shape, Direction side) {

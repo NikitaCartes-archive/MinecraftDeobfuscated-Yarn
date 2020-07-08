@@ -61,11 +61,39 @@ extends Vec3i {
         int i = ChunkSectionPos.getLocalCoord(pos.getX());
         int j = ChunkSectionPos.getLocalCoord(pos.getY());
         int k = ChunkSectionPos.getLocalCoord(pos.getZ());
-        return (short)(i << 8 | k << 4 | j);
+        return (short)(i << 8 | k << 4 | j << 0);
     }
 
-    public static int getWorldCoord(int chunkCoord) {
-        return chunkCoord << 4;
+    public static int method_30551(short s) {
+        return s >>> 8 & 0xF;
+    }
+
+    public static int method_30552(short s) {
+        return s >>> 0 & 0xF;
+    }
+
+    public static int method_30553(short s) {
+        return s >>> 4 & 0xF;
+    }
+
+    public int method_30554(short s) {
+        return this.getMinX() + ChunkSectionPos.method_30551(s);
+    }
+
+    public int method_30555(short s) {
+        return this.getMinY() + ChunkSectionPos.method_30552(s);
+    }
+
+    public int method_30556(short s) {
+        return this.getMinZ() + ChunkSectionPos.method_30553(s);
+    }
+
+    public BlockPos method_30557(short s) {
+        return new BlockPos(this.method_30554(s), this.method_30555(s), this.method_30556(s));
+    }
+
+    public static int getBlockCoord(int sectionCoord) {
+        return sectionCoord << 4;
     }
 
     public static int getX(long packed) {
@@ -116,8 +144,8 @@ extends Vec3i {
         return (this.getSectionZ() << 4) + 15;
     }
 
-    public static long fromGlobalPos(long globalLong) {
-        return ChunkSectionPos.asLong(ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(globalLong)), ChunkSectionPos.getSectionCoord(BlockPos.unpackLongY(globalLong)), ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(globalLong)));
+    public static long fromBlockPos(long blockPos) {
+        return ChunkSectionPos.asLong(ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getSectionCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(blockPos)));
     }
 
     public static long withZeroZ(long pos) {
@@ -125,7 +153,7 @@ extends Vec3i {
     }
 
     public BlockPos getMinPos() {
-        return new BlockPos(ChunkSectionPos.getWorldCoord(this.getSectionX()), ChunkSectionPos.getWorldCoord(this.getSectionY()), ChunkSectionPos.getWorldCoord(this.getSectionZ()));
+        return new BlockPos(ChunkSectionPos.getBlockCoord(this.getSectionX()), ChunkSectionPos.getBlockCoord(this.getSectionY()), ChunkSectionPos.getBlockCoord(this.getSectionZ()));
     }
 
     public BlockPos getCenterPos() {

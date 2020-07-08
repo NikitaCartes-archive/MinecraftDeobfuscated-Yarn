@@ -233,29 +233,17 @@ extends PathNodeMaker {
             }
         }
         if (pathNodeType2 == PathNodeType.OPEN) {
-            PathNodeType pathNodeType3;
-            Box box2 = new Box((double)x - e + 0.5, (double)y + 0.001, (double)z - e + 0.5, (double)x + e + 0.5, (float)y + this.entity.getHeight(), (double)z + e + 0.5);
-            if (this.method_29304(box2)) {
-                return null;
-            }
-            if (this.entity.getWidth() >= 1.0f && (pathNodeType3 = this.method_29303(this.entity, x, y - 1, z)) == PathNodeType.BLOCKED) {
-                pathNode = this.getNode(x, y, z);
-                pathNode.type = PathNodeType.WALKABLE;
-                pathNode.penalty = Math.max(pathNode.penalty, f);
-                return pathNode;
-            }
             int i = 0;
             int j = y;
             while (pathNodeType2 == PathNodeType.OPEN) {
-                PathNode pathNode2;
                 if (--y < 0) {
-                    pathNode2 = this.getNode(x, j, z);
+                    PathNode pathNode2 = this.getNode(x, j, z);
                     pathNode2.type = PathNodeType.BLOCKED;
                     pathNode2.penalty = -1.0f;
                     return pathNode2;
                 }
-                pathNode2 = this.getNode(x, y, z);
                 if (i++ >= this.entity.getSafeFallDistance()) {
+                    PathNode pathNode2 = this.getNode(x, y, z);
                     pathNode2.type = PathNodeType.BLOCKED;
                     pathNode2.penalty = -1.0f;
                     return pathNode2;
@@ -263,12 +251,13 @@ extends PathNodeMaker {
                 pathNodeType2 = this.method_29303(this.entity, x, y, z);
                 f = this.entity.getPathfindingPenalty(pathNodeType2);
                 if (pathNodeType2 != PathNodeType.OPEN && f >= 0.0f) {
-                    pathNode = pathNode2;
+                    pathNode = this.getNode(x, y, z);
                     pathNode.type = pathNodeType2;
                     pathNode.penalty = Math.max(pathNode.penalty, f);
                     break;
                 }
                 if (!(f < 0.0f)) continue;
+                PathNode pathNode2 = this.getNode(x, y, z);
                 pathNode2.type = PathNodeType.BLOCKED;
                 pathNode2.penalty = -1.0f;
                 return pathNode2;
@@ -307,7 +296,7 @@ extends PathNodeMaker {
             if (!(mob.getPathfindingPenalty(pathNodeType3) >= mob.getPathfindingPenalty(pathNodeType2))) continue;
             pathNodeType2 = pathNodeType3;
         }
-        if (pathNodeType == PathNodeType.OPEN && mob.getPathfindingPenalty(pathNodeType2) == 0.0f) {
+        if (pathNodeType == PathNodeType.OPEN && mob.getPathfindingPenalty(pathNodeType2) == 0.0f && sizeX <= 1) {
             return PathNodeType.OPEN;
         }
         return pathNodeType2;

@@ -3,7 +3,7 @@
  */
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayers;
@@ -56,9 +56,9 @@ NorthWestCoordinateTransformer
             LOGGER.debug("old! {}", (Object)i);
         }
         int k = (j - 2) % 29;
-        if (!(BiomeLayers.isShallowOcean(i) || j < 2 || k != 1 || (biome = (Biome)Registry.BIOME.get(i)) != null && biome.hasParent())) {
-            Biome biome2 = Biome.getModifiedBiome(biome);
-            return biome2 == null ? i : Registry.BIOME.getRawId(biome2);
+        if (!(BiomeLayers.isShallowOcean(i) || j < 2 || k != 1 || (biome = (Biome)BuiltinRegistries.BIOME.get(i)) != null && biome.hasParent())) {
+            Biome biome2 = Biomes.method_30360(biome);
+            return biome2 == null ? i : BuiltinRegistries.BIOME.getRawId(biome2);
         }
         if (context.nextInt(3) == 0 || k == 0) {
             int l = i;
@@ -102,8 +102,8 @@ NorthWestCoordinateTransformer
                 int n = l = context.nextInt(2) == 0 ? PLAINS_ID : FOREST_ID;
             }
             if (k == 0 && l != i) {
-                Biome biome2 = Biome.getModifiedBiome((Biome)Registry.BIOME.get(l));
-                int n = l = biome2 == null ? i : Registry.BIOME.getRawId(biome2);
+                Biome biome2 = Biomes.method_30360((Biome)BuiltinRegistries.BIOME.get(l));
+                int n = l = biome2 == null ? i : BuiltinRegistries.BIOME.getRawId(biome2);
             }
             if (l != i) {
                 int m = 0;
@@ -129,32 +129,32 @@ NorthWestCoordinateTransformer
 
     static {
         LOGGER = LogManager.getLogger();
-        BIRCH_FOREST_ID = Registry.BIOME.getRawId(Biomes.BIRCH_FOREST);
-        BIRCH_FOREST_HILLS_ID = Registry.BIOME.getRawId(Biomes.BIRCH_FOREST_HILLS);
-        DESERT_ID = Registry.BIOME.getRawId(Biomes.DESERT);
-        DESERT_HILLS_ID = Registry.BIOME.getRawId(Biomes.DESERT_HILLS);
-        MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.MOUNTAINS);
-        WOODED_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.WOODED_MOUNTAINS);
-        FOREST_ID = Registry.BIOME.getRawId(Biomes.FOREST);
-        WOODED_HILLS_ID = Registry.BIOME.getRawId(Biomes.WOODED_HILLS);
-        SNOWY_TUNDRA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TUNDRA);
-        SNOWY_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.SNOWY_MOUNTAINS);
-        JUNGLE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE);
-        JUNGLE_HILLS_ID = Registry.BIOME.getRawId(Biomes.JUNGLE_HILLS);
-        BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
-        BAMBOO_JUNGLE_HILLS_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE_HILLS);
-        BADLANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
-        WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
-        PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);
-        GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA);
-        GIANT_TREE_TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA_HILLS);
-        DARK_FOREST_ID = Registry.BIOME.getRawId(Biomes.DARK_FOREST);
-        SAVANNA_ID = Registry.BIOME.getRawId(Biomes.SAVANNA);
-        SAVANNA_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.SAVANNA_PLATEAU);
-        TAIGA_ID = Registry.BIOME.getRawId(Biomes.TAIGA);
-        SNOWY_TAIGA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TAIGA);
-        SNOWY_TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TAIGA_HILLS);
-        TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.TAIGA_HILLS);
+        BIRCH_FOREST_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BIRCH_FOREST);
+        BIRCH_FOREST_HILLS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BIRCH_FOREST_HILLS);
+        DESERT_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DESERT);
+        DESERT_HILLS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DESERT_HILLS);
+        MOUNTAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.MOUNTAINS);
+        WOODED_MOUNTAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.WOODED_MOUNTAINS);
+        FOREST_ID = BuiltinRegistries.BIOME.getRawId(Biomes.FOREST);
+        WOODED_HILLS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.WOODED_HILLS);
+        SNOWY_TUNDRA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SNOWY_TUNDRA);
+        SNOWY_MOUNTAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SNOWY_MOUNTAINS);
+        JUNGLE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.JUNGLE);
+        JUNGLE_HILLS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.JUNGLE_HILLS);
+        BAMBOO_JUNGLE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
+        BAMBOO_JUNGLE_HILLS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BAMBOO_JUNGLE_HILLS);
+        BADLANDS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BADLANDS);
+        WOODED_BADLANDS_PLATEAU_ID = BuiltinRegistries.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
+        PLAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.PLAINS);
+        GIANT_TREE_TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA);
+        GIANT_TREE_TAIGA_HILLS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA_HILLS);
+        DARK_FOREST_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DARK_FOREST);
+        SAVANNA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SAVANNA);
+        SAVANNA_PLATEAU_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SAVANNA_PLATEAU);
+        TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.TAIGA);
+        SNOWY_TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SNOWY_TAIGA);
+        SNOWY_TAIGA_HILLS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SNOWY_TAIGA_HILLS);
+        TAIGA_HILLS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.TAIGA_HILLS);
     }
 }
 

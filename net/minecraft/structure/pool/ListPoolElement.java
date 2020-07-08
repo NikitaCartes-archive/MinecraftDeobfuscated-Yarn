@@ -27,11 +27,6 @@ extends StructurePoolElement {
     public static final Codec<ListPoolElement> field_24950 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructurePoolElement.field_24953.listOf().fieldOf("elements")).forGetter(listPoolElement -> listPoolElement.elements), ListPoolElement.method_28883()).apply((Applicative<ListPoolElement, ?>)instance, ListPoolElement::new));
     private final List<StructurePoolElement> elements;
 
-    @Deprecated
-    public ListPoolElement(List<StructurePoolElement> list) {
-        this(list, StructurePool.Projection.RIGID);
-    }
-
     public ListPoolElement(List<StructurePoolElement> list, StructurePool.Projection projection) {
         super(projection);
         if (list.isEmpty()) {

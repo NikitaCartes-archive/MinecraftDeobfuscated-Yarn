@@ -6,6 +6,6 @@ package net.minecraft.world.gen.decorator;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
 
 public interface DecoratorConfig {
-    public static final NopeDecoratorConfig DEFAULT = NopeDecoratorConfig.field_24892;
+    public static final NopeDecoratorConfig DEFAULT = NopeDecoratorConfig.INSTANCE;
 }
 

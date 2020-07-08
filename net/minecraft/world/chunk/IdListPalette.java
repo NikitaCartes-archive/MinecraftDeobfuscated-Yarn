@@ -23,7 +23,7 @@ implements Palette<T> {
 
     @Override
     public int getIndex(T object) {
-        int i = this.idList.getId(object);
+        int i = this.idList.getRawId(object);
         return i == -1 ? 0 : i;
     }
 

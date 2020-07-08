@@ -55,7 +55,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class SurfaceChunkGenerator
 extends ChunkGenerator {
-    public static final Codec<SurfaceChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BiomeSource.field_24713.fieldOf("biome_source")).forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.biomeSource), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.field_24778), ((MapCodec)ChunkGeneratorType.field_24781.fieldOf("settings")).forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.field_24774)).apply((Applicative<SurfaceChunkGenerator, ?>)instance, instance.stable(SurfaceChunkGenerator::new)));
+    public static final Codec<SurfaceChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BiomeSource.field_24713.fieldOf("biome_source")).forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.biomeSource), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.worldSeed), ((MapCodec)ChunkGeneratorType.field_24781.fieldOf("settings")).forGetter(surfaceChunkGenerator -> surfaceChunkGenerator.field_24774)).apply((Applicative<SurfaceChunkGenerator, ?>)instance, instance.stable(SurfaceChunkGenerator::new)));
     private static final float[] field_16649 = Util.make(new float[13824], array -> {
         for (int i = 0; i < 24; ++i) {
             for (int j = 0; j < 24; ++j) {
@@ -89,7 +89,7 @@ extends ChunkGenerator {
     private final SimplexNoiseSampler field_24777;
     protected final BlockState defaultBlock;
     protected final BlockState defaultFluid;
-    private final long field_24778;
+    private final long worldSeed;
     protected final ChunkGeneratorType field_24774;
     private final int field_24779;
 
@@ -97,9 +97,9 @@ extends ChunkGenerator {
         this(biomeSource, biomeSource, l, chunkGeneratorType);
     }
 
-    private SurfaceChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long l, ChunkGeneratorType chunkGeneratorType) {
-        super(biomeSource, biomeSource2, chunkGeneratorType.getConfig(), l);
-        this.field_24778 = l;
+    private SurfaceChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long worldSeed, ChunkGeneratorType chunkGeneratorType) {
+        super(biomeSource, biomeSource2, chunkGeneratorType.getConfig(), worldSeed);
+        this.worldSeed = worldSeed;
         this.field_24774 = chunkGeneratorType;
         NoiseConfig noiseConfig = chunkGeneratorType.method_28559();
         this.field_24779 = noiseConfig.getHeight();
@@ -110,7 +110,7 @@ extends ChunkGenerator {
         this.noiseSizeX = 16 / this.horizontalNoiseResolution;
         this.noiseSizeY = noiseConfig.getHeight() / this.verticalNoiseResolution;
         this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
-        this.random = new ChunkRandom(l);
+        this.random = new ChunkRandom(worldSeed);
         this.lowerInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
         this.upperInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
         this.interpolationNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-7, 0));
@@ -118,7 +118,7 @@ extends ChunkGenerator {
         this.random.consume(2620);
         this.field_24776 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
         if (noiseConfig.hasIslandNoiseOverride()) {
-            ChunkRandom chunkRandom = new ChunkRandom(l);
+            ChunkRandom chunkRandom = new ChunkRandom(worldSeed);
             chunkRandom.consume(17292);
             this.field_24777 = new SimplexNoiseSampler(chunkRandom);
         } else {
@@ -138,7 +138,7 @@ extends ChunkGenerator {
     }
 
     public boolean method_28548(long l, ChunkGeneratorType.Preset preset) {
-        return this.field_24778 == l && this.field_24774.method_28555(preset);
+        return this.worldSeed == l && this.field_24774.method_28555(preset);
     }
 
     private double sampleNoise(int x, int y, int z, double horizontalScale, double verticalScale, double horizontalStretch, double verticalStretch) {

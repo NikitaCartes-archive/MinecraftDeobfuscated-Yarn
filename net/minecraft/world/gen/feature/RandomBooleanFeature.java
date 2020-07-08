@@ -21,9 +21,9 @@ extends Feature<RandomBooleanFeatureConfig> {
     public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomBooleanFeatureConfig randomBooleanFeatureConfig) {
         boolean bl = random.nextBoolean();
         if (bl) {
-            return randomBooleanFeatureConfig.featureTrue.generate(serverWorldAccess, chunkGenerator, random, blockPos);
+            return randomBooleanFeatureConfig.featureTrue.get().generate(serverWorldAccess, chunkGenerator, random, blockPos);
         }
-        return randomBooleanFeatureConfig.featureFalse.generate(serverWorldAccess, chunkGenerator, random, blockPos);
+        return randomBooleanFeatureConfig.featureFalse.get().generate(serverWorldAccess, chunkGenerator, random, blockPos);
     }
 }
 

@@ -14,6 +14,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
@@ -71,7 +72,7 @@ extends StructureFeature<OceanRuinFeatureConfig> {
         }
 
         @Override
-        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, OceanRuinFeatureConfig oceanRuinFeatureConfig) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, OceanRuinFeatureConfig oceanRuinFeatureConfig) {
             int k = i * 16;
             int l = j * 16;
             BlockPos blockPos = new BlockPos(k, 90, l);

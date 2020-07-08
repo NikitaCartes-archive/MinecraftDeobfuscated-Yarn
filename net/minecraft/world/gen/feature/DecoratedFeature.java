@@ -9,8 +9,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.decorator.DecoratorContext;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class DecoratedFeature
 extends Feature<DecoratedFeatureConfig> {
@@ -19,8 +21,14 @@ extends Feature<DecoratedFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig) {
-        return decoratedFeatureConfig.decorator.generate(serverWorldAccess, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
+    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos2, DecoratedFeatureConfig decoratedFeatureConfig) {
+        MutableBoolean mutableBoolean = new MutableBoolean();
+        decoratedFeatureConfig.decorator.method_30444(new DecoratorContext(serverWorldAccess, chunkGenerator), random, blockPos2).forEach(blockPos -> {
+            if (decoratedFeatureConfig.feature.get().generate(serverWorldAccess, chunkGenerator, random, (BlockPos)blockPos)) {
+                mutableBoolean.setTrue();
+            }
+        });
+        return mutableBoolean.isTrue();
     }
 
     public String toString() {

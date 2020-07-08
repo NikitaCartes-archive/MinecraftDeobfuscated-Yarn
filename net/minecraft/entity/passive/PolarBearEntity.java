@@ -241,8 +241,7 @@ implements Angerable {
     @Override
     public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
-            entityData = new PassiveEntity.PassiveData();
-            ((PassiveEntity.PassiveData)entityData).setBabyChance(1.0f);
+            entityData = new PassiveEntity.PassiveData(1.0f);
         }
         return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }

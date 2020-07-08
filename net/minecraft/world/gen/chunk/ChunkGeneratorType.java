@@ -20,7 +20,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.world.gen.chunk.NoiseConfig;
 import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.chunk.SlideConfig;
@@ -29,7 +28,7 @@ import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorType {
-    public static final Codec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorType::getConfig), ((MapCodec)NoiseConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorType::method_28559), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorType::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorType::getDefaultFluid), ((MapCodec)NumberCodecs.rangedInt(-20, 276).fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorType::getBedrockCeilingY), ((MapCodec)NumberCodecs.rangedInt(-20, 276).fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorType::getBedrockFloorY), ((MapCodec)NumberCodecs.rangedInt(0, 255).fieldOf("sea_level")).forGetter(ChunkGeneratorType::method_28561), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorType::method_28562)).apply((Applicative<ChunkGeneratorType, ?>)instance, ChunkGeneratorType::new));
+    public static final Codec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorType::getConfig), ((MapCodec)NoiseConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorType::method_28559), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorType::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorType::getDefaultFluid), ((MapCodec)Codec.intRange(-20, 276).fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorType::getBedrockCeilingY), ((MapCodec)Codec.intRange(-20, 276).fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorType::getBedrockFloorY), ((MapCodec)Codec.intRange(0, 255).fieldOf("sea_level")).forGetter(ChunkGeneratorType::method_28561), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorType::method_28562)).apply((Applicative<ChunkGeneratorType, ?>)instance, ChunkGeneratorType::new));
     public static final Codec<ChunkGeneratorType> field_24781 = Codec.either(Preset.field_24788, field_24780).xmap(either -> either.map(Preset::getChunkGeneratorType, Function.identity()), chunkGeneratorType -> chunkGeneratorType.field_24787.map(Either::left).orElseGet(() -> Either.right(chunkGeneratorType)));
     private final StructuresConfig config;
     private final NoiseConfig field_24782;

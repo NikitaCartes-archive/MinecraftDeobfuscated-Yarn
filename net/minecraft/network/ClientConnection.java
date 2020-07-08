@@ -56,6 +56,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Lazy;
+import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -234,11 +235,15 @@ extends SimpleChannelInboundHandler<Packet<?>> {
             this.channel.flush();
         }
         if (this.ticks++ % 20 == 0) {
-            this.avgPacketsSent = this.avgPacketsSent * 0.75f + (float)this.packetsSentCounter * 0.25f;
-            this.avgPacketsReceived = this.avgPacketsReceived * 0.75f + (float)this.packetsReceivedCounter * 0.25f;
-            this.packetsSentCounter = 0;
-            this.packetsReceivedCounter = 0;
+            this.updateStats();
         }
+    }
+
+    protected void updateStats() {
+        this.avgPacketsSent = MathHelper.lerp(0.75f, this.packetsSentCounter, this.avgPacketsSent);
+        this.avgPacketsReceived = MathHelper.lerp(0.75f, this.packetsReceivedCounter, this.avgPacketsReceived);
+        this.packetsSentCounter = 0;
+        this.packetsReceivedCounter = 0;
     }
 
     public SocketAddress getAddress() {
@@ -366,7 +371,6 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public float getAveragePacketsReceived() {
         return this.avgPacketsReceived;
     }

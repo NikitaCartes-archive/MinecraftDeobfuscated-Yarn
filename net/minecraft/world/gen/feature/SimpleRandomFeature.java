@@ -21,7 +21,7 @@ extends Feature<SimpleRandomFeatureConfig> {
     @Override
     public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SimpleRandomFeatureConfig simpleRandomFeatureConfig) {
         int i = random.nextInt(simpleRandomFeatureConfig.features.size());
-        ConfiguredFeature<?, ?> configuredFeature = simpleRandomFeatureConfig.features.get(i);
+        ConfiguredFeature<?, ?> configuredFeature = simpleRandomFeatureConfig.features.get(i).get();
         return configuredFeature.generate(serverWorldAccess, chunkGenerator, random, blockPos);
     }
 }

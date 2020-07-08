@@ -22,7 +22,6 @@ import java.util.Set;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Int2ObjectBiMap;
-import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.util.dynamic.RegistryCodec;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -42,8 +41,12 @@ extends MutableRegistry<T> {
     protected Object[] randomEntries;
     private int nextId;
 
-    public SimpleRegistry(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle) {
+    public SimpleRegistry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
         super(registryKey, lifecycle);
+    }
+
+    public static <T> MapCodec<Pair<RegistryKey<T>, T>> method_30516(RegistryKey<? extends Registry<T>> registryKey, MapCodec<T> mapCodec) {
+        return Codec.mapPair(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("name"), mapCodec);
     }
 
     @Override
@@ -80,8 +83,8 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public int getRawId(@Nullable T entry) {
-        return this.indexedEntries.getId(entry);
+    public int getRawId(@Nullable T object) {
+        return this.indexedEntries.getRawId(object);
     }
 
     @Override
@@ -108,15 +111,11 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public Optional<T> getOrEmpty(@Nullable Identifier id) {
-        return Optional.ofNullable(this.entriesById.get(id));
-    }
-
-    @Override
     public Set<Identifier> getIds() {
         return Collections.unmodifiableSet(this.entriesById.keySet());
     }
 
+    @Override
     public Set<Map.Entry<RegistryKey<T>, T>> getEntries() {
         return Collections.unmodifiableMap(this.entriesByKey).entrySet();
     }
@@ -153,8 +152,8 @@ extends MutableRegistry<T> {
         this.loadedKeys.add(registryKey);
     }
 
-    public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<Registry<T>> registryKey, Lifecycle lifecycle, MapCodec<T> mapCodec) {
-        return NumberCodecs.method_29906(registryKey, mapCodec).codec().listOf().xmap(list -> {
+    public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+        return SimpleRegistry.method_30516(registryKey, mapCodec).codec().listOf().xmap(list -> {
             SimpleRegistry simpleRegistry = new SimpleRegistry(registryKey, lifecycle);
             for (Pair pair : list) {
                 simpleRegistry.add((RegistryKey)pair.getFirst(), pair.getSecond());
@@ -169,11 +168,11 @@ extends MutableRegistry<T> {
         });
     }
 
-    public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+    public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
         return RegistryCodec.of(registryRef, lifecycle, mapCodec);
     }
 
-    public static <T> Codec<SimpleRegistry<T>> createEmptyCodec(RegistryKey<Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
+    public static <T> Codec<SimpleRegistry<T>> createEmptyCodec(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
         return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue), mapCodec.codec()).xmap(map -> {
             SimpleRegistry simpleRegistry = new SimpleRegistry(registryRef, lifecycle);
             map.forEach((? super K registryKey, ? super V object) -> {

@@ -10,9 +10,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.explosion.Explosion;
 
-public interface ExplosionBehavior {
-    public Optional<Float> getBlastResistance(Explosion var1, BlockView var2, BlockPos var3, BlockState var4, FluidState var5);
+public class ExplosionBehavior {
+    public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
+        if (blockState.isAir() && fluidState.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(Float.valueOf(Math.max(blockState.getBlock().getBlastResistance(), fluidState.getBlastResistance())));
+    }
 
-    public boolean canDestroyBlock(Explosion var1, BlockView var2, BlockPos var3, BlockState var4, float var5);
+    public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
+        return true;
+    }
 }
 

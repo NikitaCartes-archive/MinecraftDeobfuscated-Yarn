@@ -10,12 +10,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ProtoChunk;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorContext;
 
 public class CarvingMaskDecorator
 extends Decorator<CarvingMaskDecoratorConfig> {
@@ -24,13 +21,9 @@ extends Decorator<CarvingMaskDecoratorConfig> {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(WorldAccess worldAccess, ChunkGenerator chunkGenerator, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos) {
-        Chunk chunk = worldAccess.getChunk(blockPos);
-        ChunkPos chunkPos = chunk.getPos();
-        BitSet bitSet = ((ProtoChunk)chunk).getCarvingMask(carvingMaskDecoratorConfig.step);
-        if (bitSet == null) {
-            return Stream.empty();
-        }
+    public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos) {
+        ChunkPos chunkPos = new ChunkPos(blockPos);
+        BitSet bitSet = decoratorContext.getOrCreateCarvingMask(chunkPos, carvingMaskDecoratorConfig.step);
         return IntStream.range(0, bitSet.length()).filter(i -> bitSet.get(i) && random.nextFloat() < carvingMaskDecoratorConfig.probability).mapToObj(i -> {
             int j = i & 0xF;
             int k = i >> 4 & 0xF;

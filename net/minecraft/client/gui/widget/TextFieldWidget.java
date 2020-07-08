@@ -24,6 +24,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -51,7 +52,7 @@ Element {
     private String suggestion;
     private Consumer<String> changedListener;
     private Predicate<String> textPredicate = Objects::nonNull;
-    private BiFunction<String, Integer, String> renderTextProvider = (string, integer) -> string;
+    private BiFunction<String, Integer, StringRenderable> renderTextProvider = (string, integer) -> StringRenderable.plain(string);
 
     public TextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
         this(textRenderer, x, y, width, height, null, text);
@@ -69,7 +70,7 @@ Element {
         this.changedListener = changedListener;
     }
 
-    public void setRenderTextProvider(BiFunction<String, Integer, String> renderTextProvider) {
+    public void setRenderTextProvider(BiFunction<String, Integer, StringRenderable> renderTextProvider) {
         this.renderTextProvider = renderTextProvider;
     }
 

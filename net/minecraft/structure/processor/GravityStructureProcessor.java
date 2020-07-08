@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GravityStructureProcessor
 extends StructureProcessor {
-    public static final Codec<GravityStructureProcessor> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Heightmap.Type.field_24772.fieldOf("heightmap")).withDefault(Heightmap.Type.WORLD_SURFACE_WG).forGetter(gravityStructureProcessor -> gravityStructureProcessor.heightmap), ((MapCodec)Codec.INT.fieldOf("offset")).withDefault(0).forGetter(gravityStructureProcessor -> gravityStructureProcessor.offset)).apply((Applicative<GravityStructureProcessor, ?>)instance, GravityStructureProcessor::new));
+    public static final Codec<GravityStructureProcessor> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Heightmap.Type.field_24772.fieldOf("heightmap")).orElse(Heightmap.Type.WORLD_SURFACE_WG).forGetter(gravityStructureProcessor -> gravityStructureProcessor.heightmap), ((MapCodec)Codec.INT.fieldOf("offset")).orElse(0).forGetter(gravityStructureProcessor -> gravityStructureProcessor.offset)).apply((Applicative<GravityStructureProcessor, ?>)instance, GravityStructureProcessor::new));
     private final Heightmap.Type heightmap;
     private final int offset;
 

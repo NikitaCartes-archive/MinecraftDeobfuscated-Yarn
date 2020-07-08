@@ -29,8 +29,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ChunkTaskPrioritySystem
-implements AutoCloseable,
-ChunkHolder.LevelUpdateListener {
+implements ChunkHolder.LevelUpdateListener,
+AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<MessageListener<?>, LevelPrioritizedQueue<? extends Function<MessageListener<Unit>, ?>>> queues;
     private final Set<MessageListener<?>> actors;

@@ -287,7 +287,7 @@ public class RenderLayers {
         return RenderLayer.getSolid();
     }
 
-    public static RenderLayer method_29359(BlockState blockState) {
+    public static RenderLayer getMovingBlockLayer(BlockState blockState) {
         Block block = blockState.getBlock();
         if (block instanceof LeavesBlock) {
             return fancyGraphicsOrBetter ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
@@ -302,24 +302,24 @@ public class RenderLayers {
         return RenderLayer.getSolid();
     }
 
-    public static RenderLayer getEntityBlockLayer(BlockState state, boolean bl) {
+    public static RenderLayer getEntityBlockLayer(BlockState state, boolean direct) {
         RenderLayer renderLayer = RenderLayers.getBlockLayer(state);
         if (renderLayer == RenderLayer.getTranslucent()) {
             if (!MinecraftClient.isFabulousGraphicsOrBetter()) {
                 return TexturedRenderLayers.getEntityTranslucentCull();
             }
-            return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
+            return direct ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.getItemEntityTranslucentCull();
         }
         return TexturedRenderLayers.getEntityCutout();
     }
 
-    public static RenderLayer getItemLayer(ItemStack stack, boolean bl) {
+    public static RenderLayer getItemLayer(ItemStack stack, boolean direct) {
         Item item = stack.getItem();
         if (item instanceof BlockItem) {
             Block block = ((BlockItem)item).getBlock();
-            return RenderLayers.getEntityBlockLayer(block.getDefaultState(), bl);
+            return RenderLayers.getEntityBlockLayer(block.getDefaultState(), direct);
         }
-        return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
+        return direct ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.getItemEntityTranslucentCull();
     }
 
     public static RenderLayer getFluidLayer(FluidState state) {

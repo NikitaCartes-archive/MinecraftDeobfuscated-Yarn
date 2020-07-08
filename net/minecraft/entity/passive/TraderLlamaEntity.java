@@ -112,8 +112,7 @@ extends LlamaEntity {
             this.setBreedingAge(0);
         }
         if (entityData == null) {
-            entityData = new PassiveEntity.PassiveData();
-            ((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
+            entityData = new PassiveEntity.PassiveData(false);
         }
         return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
     }

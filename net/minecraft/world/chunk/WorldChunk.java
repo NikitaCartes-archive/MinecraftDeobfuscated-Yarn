@@ -245,7 +245,7 @@ implements Chunk {
         this.heightmaps.get(Heightmap.Type.WORLD_SURFACE).trackUpdate(i, j, k, state);
         boolean bl2 = chunkSection.isEmpty();
         if (bl != bl2) {
-            this.world.getChunkManager().getLightingProvider().updateSectionStatus(pos, bl2);
+            this.world.getChunkManager().getLightingProvider().setSectionStatus(pos, bl2);
         }
         if (!this.world.isClient) {
             blockState.onStateReplaced(this.world, pos, state, moved);

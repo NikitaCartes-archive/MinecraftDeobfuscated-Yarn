@@ -258,7 +258,7 @@ public class BlockArgumentParser {
     public void parseBlockId() throws CommandSyntaxException {
         int i = this.reader.getCursor();
         this.blockId = Identifier.fromCommandInput(this.reader);
-        Block block = (Block)Registry.BLOCK.getOrEmpty(this.blockId).orElseThrow(() -> {
+        Block block = Registry.BLOCK.getOrEmpty(this.blockId).orElseThrow(() -> {
             this.reader.setCursor(i);
             return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
         });

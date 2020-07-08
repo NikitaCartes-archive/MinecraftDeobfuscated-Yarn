@@ -22,6 +22,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -30,6 +31,8 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class PotionUtil {
+    private static final MutableText field_25817 = new TranslatableText("effect.none").formatted(Formatting.GRAY);
+
     public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
         return PotionUtil.getPotionEffects(stack.getTag());
     }
@@ -148,7 +151,7 @@ public class PotionUtil {
         List<StatusEffectInstance> list2 = PotionUtil.getPotionEffects(stack);
         ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.newArrayList();
         if (list2.isEmpty()) {
-            list.add(new TranslatableText("effect.none").formatted(Formatting.GRAY));
+            list.add(field_25817);
         } else {
             for (StatusEffectInstance statusEffectInstance : list2) {
                 TranslatableText mutableText = new TranslatableText(statusEffectInstance.getTranslationKey());
@@ -162,10 +165,10 @@ public class PotionUtil {
                     }
                 }
                 if (statusEffectInstance.getAmplifier() > 0) {
-                    mutableText.append(" ").append(new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
+                    mutableText = new TranslatableText("potion.withAmplifier", mutableText, new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
                 }
                 if (statusEffectInstance.getDuration() > 20) {
-                    mutableText.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
+                    mutableText = new TranslatableText("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, f));
                 }
                 list.add(mutableText.formatted(statusEffect.getType().getFormatting()));
             }

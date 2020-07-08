@@ -48,7 +48,7 @@ implements ChunkLightingView {
     @Override
     protected void resetLevel(long id) {
         ((LightStorage)this.lightStorage).updateAll();
-        if (((LightStorage)this.lightStorage).hasLight(ChunkSectionPos.fromGlobalPos(id))) {
+        if (((LightStorage)this.lightStorage).hasSection(ChunkSectionPos.fromBlockPos(id))) {
             super.resetLevel(id);
         }
     }
@@ -139,8 +139,8 @@ implements ChunkLightingView {
         return 15 - ((LightStorage)this.lightStorage).get(id);
     }
 
-    protected int getCurrentLevelFromArray(ChunkNibbleArray array, long blockPos) {
-        return 15 - array.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)));
+    protected int getCurrentLevelFromSection(ChunkNibbleArray section, long blockPos) {
+        return 15 - section.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(blockPos)));
     }
 
     @Override
@@ -162,7 +162,7 @@ implements ChunkLightingView {
             if (((LevelPropagator)this.lightStorage).hasPendingUpdates() && (maxSteps = ((LevelPropagator)this.lightStorage).applyPendingUpdates(maxSteps)) == 0) {
                 return maxSteps;
             }
-            ((LightStorage)this.lightStorage).updateLightArrays(this, doSkylight, skipEdgeLightPropagation);
+            ((LightStorage)this.lightStorage).updateLight(this, doSkylight, skipEdgeLightPropagation);
         }
         this.field_15794 = true;
         if (this.hasPendingUpdates()) {
@@ -173,18 +173,18 @@ implements ChunkLightingView {
             }
         }
         this.field_15794 = false;
-        ((LightStorage)this.lightStorage).notifyChunkProvider();
+        ((LightStorage)this.lightStorage).notifyChanges();
         return maxSteps;
     }
 
-    protected void setLightArray(long pos, @Nullable ChunkNibbleArray lightArray, boolean bl) {
-        ((LightStorage)this.lightStorage).setLightArray(pos, lightArray, bl);
+    protected void enqueueSectionData(long sectionPos, @Nullable ChunkNibbleArray lightArray, boolean bl) {
+        ((LightStorage)this.lightStorage).enqueueSectionData(sectionPos, lightArray, bl);
     }
 
     @Override
     @Nullable
-    public ChunkNibbleArray getLightArray(ChunkSectionPos pos) {
-        return ((LightStorage)this.lightStorage).getLightArray(pos.asLong());
+    public ChunkNibbleArray getLightSection(ChunkSectionPos pos) {
+        return ((LightStorage)this.lightStorage).getLightSection(pos.asLong());
     }
 
     @Override
@@ -193,8 +193,8 @@ implements ChunkLightingView {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public String method_22875(long l) {
-        return "" + ((LightStorage)this.lightStorage).getLevel(l);
+    public String displaySectionLevel(long sectionPos) {
+        return "" + ((LightStorage)this.lightStorage).getLevel(sectionPos);
     }
 
     public void checkBlock(BlockPos pos) {
@@ -209,18 +209,18 @@ implements ChunkLightingView {
     }
 
     @Override
-    public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
-        ((LightStorage)this.lightStorage).updateSectionStatus(pos.asLong(), status);
+    public void setSectionStatus(ChunkSectionPos pos, boolean notReady) {
+        ((LightStorage)this.lightStorage).setSectionStatus(pos.asLong(), notReady);
     }
 
-    public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
+    public void setColumnEnabled(ChunkPos pos, boolean enabled) {
         long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
-        ((LightStorage)this.lightStorage).setLightEnabled(l, lightEnabled);
+        ((LightStorage)this.lightStorage).setColumnEnabled(l, enabled);
     }
 
-    public void setRetainData(ChunkPos pos, boolean retainData) {
+    public void setRetainColumn(ChunkPos pos, boolean retainData) {
         long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
-        ((LightStorage)this.lightStorage).setRetainData(l, retainData);
+        ((LightStorage)this.lightStorage).setRetainColumn(l, retainData);
     }
 }
 

@@ -104,7 +104,7 @@ extends DrawableHelper {
                 this.field_2242 = l;
             }
             RenderSystem.pushMatrix();
-            RenderSystem.translatef((float)x - (float)this.instance.method_29049() * this.getDisappearProgress(l), y * this.instance.method_29050(), 800 + y);
+            RenderSystem.translatef((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), y * this.instance.getHeight(), 800 + y);
             Toast.Visibility visibility = this.instance.draw(matrices, this.field_2245, l - this.field_2242);
             RenderSystem.popMatrix();
             if (visibility != this.visibility) {

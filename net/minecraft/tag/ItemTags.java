@@ -66,7 +66,7 @@ public final class ItemTags {
     public static final Tag.Identified<Item> LECTERN_BOOKS = ItemTags.register("lectern_books");
     public static final Tag.Identified<Item> BEACON_PAYMENT_ITEMS = ItemTags.register("beacon_payment_items");
     public static final Tag.Identified<Item> STONE_TOOL_MATERIALS = ItemTags.register("stone_tool_materials");
-    public static final Tag.Identified<Item> FURNACE_MATERIALS = ItemTags.register("furnace_materials");
+    public static final Tag.Identified<Item> STONE_CRAFTING_MATERIALS = ItemTags.register("stone_crafting_materials");
 
     private static Tag.Identified<Item> register(String id) {
         return REQUIRED_TAGS.add(id);

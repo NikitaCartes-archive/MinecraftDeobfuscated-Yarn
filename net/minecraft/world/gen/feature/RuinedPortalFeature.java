@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -135,7 +136,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         }
 
         @Override
-        public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, RuinedPortalFeatureConfig ruinedPortalFeatureConfig) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, RuinedPortalFeatureConfig ruinedPortalFeatureConfig) {
             boolean bl;
             RuinedPortalStructurePiece.VerticalPlacement verticalPlacement;
             RuinedPortalStructurePiece.Properties properties = new RuinedPortalStructurePiece.Properties();

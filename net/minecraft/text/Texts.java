@@ -18,6 +18,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.ParsableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,7 @@ public class Texts {
         HoverEvent hoverEvent = style.getHoverEvent();
         if (hoverEvent != null && (text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT)) != null) {
             HoverEvent hoverEvent2 = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.parse(serverCommandSource, text, entity, i + 1));
-            return style.setHoverEvent(hoverEvent2);
+            return style.withHoverEvent(hoverEvent2);
         }
         return style;
     }
@@ -103,7 +104,7 @@ public class Texts {
     }
 
     public static MutableText bracketed(Text text) {
-        return new LiteralText("[").append(text).append("]");
+        return new TranslatableText("chat.square_brackets", text);
     }
 
     public static Text toText(Message message) {

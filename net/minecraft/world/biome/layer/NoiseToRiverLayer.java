@@ -3,7 +3,7 @@
  */
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
@@ -31,7 +31,7 @@ public enum NoiseToRiverLayer implements CrossSamplingLayer
     }
 
     static {
-        RIVER_ID = Registry.BIOME.getRawId(Biomes.RIVER);
+        RIVER_ID = BuiltinRegistries.BIOME.getRawId(Biomes.RIVER);
     }
 }
 

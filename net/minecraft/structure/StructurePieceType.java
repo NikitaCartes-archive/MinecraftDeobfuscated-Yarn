@@ -4,9 +4,7 @@
 package net.minecraft.structure;
 
 import java.util.Locale;
-import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.DesertTempleGenerator;
 import net.minecraft.structure.EndCityGenerator;
@@ -17,14 +15,13 @@ import net.minecraft.structure.NetherFortressGenerator;
 import net.minecraft.structure.NetherFossilGenerator;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.OceanRuinGenerator;
-import net.minecraft.structure.PillagerOutpostGenerator;
+import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.SwampHutGenerator;
-import net.minecraft.structure.VillageGenerator;
 import net.minecraft.structure.WoodlandMansionGenerator;
 import net.minecraft.util.registry.Registry;
 
@@ -33,8 +30,6 @@ public interface StructurePieceType {
     public static final StructurePieceType MINESHAFT_CROSSING = StructurePieceType.register(MineshaftGenerator.MineshaftCrossing::new, "MSCrossing");
     public static final StructurePieceType MINESHAFT_ROOM = StructurePieceType.register(MineshaftGenerator.MineshaftRoom::new, "MSRoom");
     public static final StructurePieceType MINESHAFT_STAIRS = StructurePieceType.register(MineshaftGenerator.MineshaftStairs::new, "MSStairs");
-    public static final StructurePieceType PILLAGER_OUTPOST = StructurePieceType.register(PillagerOutpostGenerator.Piece::new, "PCP");
-    public static final StructurePieceType VILLAGE = StructurePieceType.register(VillageGenerator.Piece::new, "NVi");
     public static final StructurePieceType NETHER_FORTRESS_BRIDGE_CROSSING = StructurePieceType.register(NetherFortressGenerator.BridgeCrossing::new, "NeBCr");
     public static final StructurePieceType NETHER_FORTRESS_BRIDGE_END = StructurePieceType.register(NetherFortressGenerator.BridgeEnd::new, "NeBEF");
     public static final StructurePieceType NETHER_FORTRESS_BRIDGE = StructurePieceType.register(NetherFortressGenerator.Bridge::new, "NeBS");
@@ -86,8 +81,7 @@ public interface StructurePieceType {
     public static final StructurePieceType BURIED_TREASURE = StructurePieceType.register(BuriedTreasureGenerator.Piece::new, "BTP");
     public static final StructurePieceType SHIPWRECK = StructurePieceType.register(ShipwreckGenerator.Piece::new, "Shipwreck");
     public static final StructurePieceType NETHER_FOSSIL = StructurePieceType.register(NetherFossilGenerator.Piece::new, "NeFos");
-    public static final StructurePieceType BASTION_REMNANT = StructurePieceType.register(BastionRemnantGenerator.Piece::new, "BastionRemnant");
-    public static final StructurePieceType RUNTIME = StructurePieceType.register(JigsawBlockEntity.RuntimeStructurePiece::new, "Runtime");
+    public static final StructurePieceType JIGSAW = StructurePieceType.register(PoolStructurePiece::new, "jigsaw");
 
     public StructurePiece load(StructureManager var1, CompoundTag var2);
 

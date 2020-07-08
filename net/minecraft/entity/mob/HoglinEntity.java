@@ -230,7 +230,9 @@ Hoglin {
 
     private void zombify(ServerWorld word) {
         ZoglinEntity zoglinEntity = this.method_29243(EntityType.ZOGLIN);
-        zoglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+        if (zoglinEntity != null) {
+            zoglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+        }
     }
 
     @Override

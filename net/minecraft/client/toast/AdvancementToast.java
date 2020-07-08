@@ -34,7 +34,7 @@ implements Toast {
         manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
-        manager.drawTexture(matrices, 0, 0, 0, 0, this.method_29049(), this.method_29050());
+        manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
         if (advancementDisplay != null) {
             int i;
             List<StringRenderable> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
@@ -50,7 +50,7 @@ implements Toast {
                     manager.getGame().textRenderer.draw(matrices, I18n.translate("advancements.toast." + advancementDisplay.getFrame().getId(), new Object[0]), 30.0f, 11.0f, i | k);
                 } else {
                     int k = MathHelper.floor(MathHelper.clamp((float)(startTime - 1500L) / 300.0f, 0.0f, 1.0f) * 252.0f) << 24 | 0x4000000;
-                    int l = this.method_29050() / 2 - list.size() * manager.getGame().textRenderer.fontHeight / 2;
+                    int l = this.getHeight() / 2 - list.size() * manager.getGame().textRenderer.fontHeight / 2;
                     for (StringRenderable stringRenderable : list) {
                         manager.getGame().textRenderer.draw(matrices, stringRenderable, 30.0f, (float)l, 0xFFFFFF | k);
                         l += manager.getGame().textRenderer.fontHeight;

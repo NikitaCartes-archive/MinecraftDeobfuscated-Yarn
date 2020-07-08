@@ -30,7 +30,7 @@ extends Item {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, (BlockState)blockState.with(CampfireBlock.LIT, true));
             bl = true;
-        } else if (AbstractFireBlock.method_30032(world, blockPos = blockPos.offset(context.getSide()))) {
+        } else if (AbstractFireBlock.method_30032(world, blockPos = blockPos.offset(context.getSide()), context.getPlayerFacing())) {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
             bl = true;

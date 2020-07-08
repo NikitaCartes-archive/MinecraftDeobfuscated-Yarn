@@ -48,7 +48,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_5407;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -126,6 +125,7 @@ import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
+import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.IdentifierSearchableContainer;
@@ -224,8 +224,8 @@ import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.TickTimeTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
@@ -300,7 +300,7 @@ WindowEventHandler {
     private final MusicTracker musicTracker;
     private final FontManager fontManager;
     private final SplashTextResourceSupplier splashTextLoader;
-    private final class_5407 field_25671;
+    private final VideoWarningManager videoWarningManager;
     private final MinecraftSessionService sessionService;
     private final PlayerSkinProvider skinProvider;
     private final BakedModelManager bakedModelManager;
@@ -467,8 +467,8 @@ WindowEventHandler {
         this.resourceManager.registerListener(this.paintingManager);
         this.statusEffectSpriteManager = new StatusEffectSpriteManager(this.textureManager);
         this.resourceManager.registerListener(this.statusEffectSpriteManager);
-        this.field_25671 = new class_5407();
-        this.resourceManager.registerListener(this.field_25671);
+        this.videoWarningManager = new VideoWarningManager();
+        this.resourceManager.registerListener(this.videoWarningManager);
         this.inGameHud = new InGameHud(this);
         this.debugRenderer = new DebugRenderer(this);
         RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
@@ -1426,7 +1426,7 @@ WindowEventHandler {
         return dataPackSettings;
     }
 
-    public static SaveProperties createSaveProperties(LevelStorage.Session session, RegistryTracker.Modifiable registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings) {
+    public static SaveProperties createSaveProperties(LevelStorage.Session session, DynamicRegistryManager.Impl registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings) {
         RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, resourceManager, registryTracker);
         SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings);
         if (saveProperties == null) {
@@ -1436,11 +1436,11 @@ WindowEventHandler {
     }
 
     public void startIntegratedServer(String worldName) {
-        this.startIntegratedServer(worldName, RegistryTracker.create(), MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, WorldLoadAction.BACKUP);
+        this.startIntegratedServer(worldName, DynamicRegistryManager.create(), MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, WorldLoadAction.BACKUP);
     }
 
-    public void method_29607(String worldName, LevelInfo levelInfo, RegistryTracker.Modifiable registryTracker, GeneratorOptions generatorOptions) {
-        this.startIntegratedServer(worldName, registryTracker, session -> levelInfo.method_29558(), (session, modifiable2, resourceManager, dataPackSettings) -> {
+    public void method_29607(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
+        this.startIntegratedServer(worldName, registryTracker, session -> levelInfo.method_29558(), (session, impl2, resourceManager, dataPackSettings) -> {
             RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, resourceManager, registryTracker);
             DataResult<SimpleRegistry<DimensionOptions>> dataResult = registryOps.loadToRegistry(generatorOptions.getDimensionMap(), Registry.DIMENSION_OPTIONS, DimensionOptions.CODEC);
             SimpleRegistry<DimensionOptions> simpleRegistry = dataResult.resultOrPartial(LOGGER::error).orElse(generatorOptions.getDimensionMap());
@@ -1448,7 +1448,7 @@ WindowEventHandler {
         }, false, WorldLoadAction.CREATE);
     }
 
-    private void startIntegratedServer(String worldName, RegistryTracker.Modifiable registryTracker, Function<LevelStorage.Session, DataPackSettings> function, Function4<LevelStorage.Session, RegistryTracker.Modifiable, ResourceManager, DataPackSettings, SaveProperties> function4, boolean safeMode, WorldLoadAction worldLoadAction) {
+    private void startIntegratedServer(String worldName, DynamicRegistryManager.Impl registryTracker, Function<LevelStorage.Session, DataPackSettings> function, Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> function4, boolean safeMode, WorldLoadAction worldLoadAction) {
         boolean bl2;
         IntegratedResourceManager integratedResourceManager;
         LevelStorage.Session session;
@@ -1572,7 +1572,7 @@ WindowEventHandler {
         }
     }
 
-    public IntegratedResourceManager method_29604(RegistryTracker.Modifiable modifiable, Function<LevelStorage.Session, DataPackSettings> function, Function4<LevelStorage.Session, RegistryTracker.Modifiable, ResourceManager, DataPackSettings, SaveProperties> function4, boolean bl, LevelStorage.Session session) throws InterruptedException, ExecutionException {
+    public IntegratedResourceManager method_29604(DynamicRegistryManager.Impl impl, Function<LevelStorage.Session, DataPackSettings> function, Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> function4, boolean bl, LevelStorage.Session session) throws InterruptedException, ExecutionException {
         DataPackSettings dataPackSettings = function.apply(session);
         ResourcePackManager resourcePackManager = new ResourcePackManager(new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
         try {
@@ -1580,7 +1580,7 @@ WindowEventHandler {
             CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this);
             this.runTasks(completableFuture::isDone);
             ServerResourceManager serverResourceManager = completableFuture.get();
-            SaveProperties saveProperties = function4.apply(session, modifiable, serverResourceManager.getResourceManager(), dataPackSettings2);
+            SaveProperties saveProperties = function4.apply(session, impl, serverResourceManager.getResourceManager(), dataPackSettings2);
             return new IntegratedResourceManager(resourcePackManager, serverResourceManager, saveProperties);
         } catch (InterruptedException | ExecutionException exception) {
             resourcePackManager.close();
@@ -2007,8 +2007,8 @@ WindowEventHandler {
         return this.paused;
     }
 
-    public class_5407 method_30049() {
-        return this.field_25671;
+    public VideoWarningManager getVideoWarningManager() {
+        return this.videoWarningManager;
     }
 
     public SoundManager getSoundManager() {

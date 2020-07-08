@@ -69,7 +69,7 @@ extends BlockEntityRenderer<PistonBlockEntity> {
     }
 
     private void method_3575(BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i) {
-        RenderLayer renderLayer = RenderLayers.method_29359(blockState);
+        RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(blockState);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
         this.manager.getModelRenderer().render(world, this.manager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, new Random(), blockState.getRenderingSeed(blockPos), i);
     }

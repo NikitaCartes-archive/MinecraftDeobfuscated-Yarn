@@ -8,7 +8,7 @@ import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public class NopeDecoratorConfig
 implements DecoratorConfig {
-    public static final Codec<NopeDecoratorConfig> field_24891 = Codec.unit(() -> field_24892);
-    public static final NopeDecoratorConfig field_24892 = new NopeDecoratorConfig();
+    public static final Codec<NopeDecoratorConfig> CODEC = Codec.unit(() -> INSTANCE);
+    public static final NopeDecoratorConfig INSTANCE = new NopeDecoratorConfig();
 }
 

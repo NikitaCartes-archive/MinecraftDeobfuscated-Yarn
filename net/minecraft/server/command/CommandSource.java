@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
@@ -47,6 +48,8 @@ public interface CommandSource {
     }
 
     public Set<RegistryKey<World>> getWorldKeys();
+
+    public DynamicRegistryManager getRegistryManager();
 
     public boolean hasPermissionLevel(int var1);
 

@@ -43,6 +43,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -171,7 +172,7 @@ RecipeGridAligner<Ingredient> {
         list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittingRecipes());
         String string = this.searchField.getText();
         if (!string.isEmpty()) {
-            ObjectLinkedOpenHashSet objectSet = new ObjectLinkedOpenHashSet(this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT)));
+            ObjectLinkedOpenHashSet objectSet = new ObjectLinkedOpenHashSet(this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(Language.getInstance().reorder(string.toLowerCase(Locale.ROOT), false)));
             list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
         }
         if (this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {

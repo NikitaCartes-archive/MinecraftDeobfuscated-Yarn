@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5407;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -26,10 +25,10 @@ import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.LogarithmicOption;
 import net.minecraft.client.options.NarratorOption;
 import net.minecraft.client.options.ParticlesOption;
+import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -43,52 +42,50 @@ public abstract class Option {
         MinecraftClient.getInstance().worldRenderer.reload();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
-        MutableText mutableText = doubleOption.getDisplayPrefix();
         int i = (int)d * 2 + 1;
-        return mutableText.append(new TranslatableText("options.biomeBlendRadius." + i));
+        return doubleOption.method_30501(new TranslatableText("options.biomeBlendRadius." + i));
     });
     public static final DoubleOption CHAT_HEIGHT_FOCUSED = new DoubleOption("options.chat.height.focused", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.chatHeightFocused, (gameOptions, double_) -> {
         gameOptions.chatHeightFocused = double_;
         MinecraftClient.getInstance().inGameHud.getChatHud().reset();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
-        return doubleOption.getDisplayPrefix().append(ChatHud.getHeight(d) + "px");
+        return doubleOption.method_30500(ChatHud.getHeight(d));
     });
     public static final DoubleOption SATURATION = new DoubleOption("options.chat.height.unfocused", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.chatHeightUnfocused, (gameOptions, double_) -> {
         gameOptions.chatHeightUnfocused = double_;
         MinecraftClient.getInstance().inGameHud.getChatHud().reset();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
-        return doubleOption.getDisplayPrefix().append(ChatHud.getHeight(d) + "px");
+        return doubleOption.method_30500(ChatHud.getHeight(d));
     });
     public static final DoubleOption CHAT_OPACITY = new DoubleOption("options.chat.opacity", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.chatOpacity, (gameOptions, double_) -> {
         gameOptions.chatOpacity = double_;
         MinecraftClient.getInstance().inGameHud.getChatHud().reset();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
-        return doubleOption.getDisplayPrefix().append((int)(d * 90.0 + 10.0) + "%");
+        return doubleOption.method_30503(d * 0.9 + 0.1);
     });
     public static final DoubleOption CHAT_SCALE = new DoubleOption("options.chat.scale", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.chatScale, (gameOptions, double_) -> {
         gameOptions.chatScale = double_;
         MinecraftClient.getInstance().inGameHud.getChatHud().reset();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
-        MutableText mutableText = doubleOption.getDisplayPrefix();
         if (d == 0.0) {
-            return mutableText.append(ScreenTexts.OFF);
+            return ScreenTexts.method_30619(doubleOption.getDisplayPrefix(), false);
         }
-        return mutableText.append((int)(d * 100.0) + "%");
+        return doubleOption.method_30503(d);
     });
     public static final DoubleOption CHAT_WIDTH = new DoubleOption("options.chat.width", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.chatWidth, (gameOptions, double_) -> {
         gameOptions.chatWidth = double_;
         MinecraftClient.getInstance().inGameHud.getChatHud().reset();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
-        return doubleOption.getDisplayPrefix().append(ChatHud.getWidth(d) + "px");
+        return doubleOption.method_30500(ChatHud.getWidth(d));
     });
     public static final DoubleOption CHAT_LINE_SPACING = new DoubleOption("options.chat.line_spacing", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.chatLineSpacing, (gameOptions, double_) -> {
         gameOptions.chatLineSpacing = double_;
-    }, (gameOptions, doubleOption) -> doubleOption.getDisplayPrefix().append((int)(doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions)) * 100.0) + "%"));
+    }, (gameOptions, doubleOption) -> doubleOption.method_30503(doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions))));
     public static final DoubleOption CHAT_DELAY_INSTANT = new DoubleOption("options.chat.delay_instant", 0.0, 6.0, 0.1f, gameOptions -> gameOptions.chatDelay, (gameOptions, double_) -> {
         gameOptions.chatDelay = double_;
     }, (gameOptions, doubleOption) -> {
@@ -102,54 +99,50 @@ public abstract class Option {
         gameOptions.fov = double_;
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
-        MutableText mutableText = doubleOption.getDisplayPrefix();
         if (d == 70.0) {
-            return mutableText.append(new TranslatableText("options.fov.min"));
+            return doubleOption.method_30501(new TranslatableText("options.fov.min"));
         }
         if (d == doubleOption.getMax()) {
-            return mutableText.append(new TranslatableText("options.fov.max"));
+            return doubleOption.method_30501(new TranslatableText("options.fov.max"));
         }
-        return mutableText.append(Integer.toString((int)d));
+        return doubleOption.method_30504((int)d);
     });
     public static final DoubleOption FRAMERATE_LIMIT = new DoubleOption("options.framerateLimit", 10.0, 260.0, 10.0f, gameOptions -> gameOptions.maxFps, (gameOptions, double_) -> {
         gameOptions.maxFps = (int)double_.doubleValue();
         MinecraftClient.getInstance().getWindow().setFramerateLimit(gameOptions.maxFps);
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
-        MutableText mutableText = doubleOption.getDisplayPrefix();
         if (d == doubleOption.getMax()) {
-            return mutableText.append(new TranslatableText("options.framerateLimit.max"));
+            return doubleOption.method_30501(new TranslatableText("options.framerateLimit.max"));
         }
-        return mutableText.append(new TranslatableText("options.framerate", (int)d));
+        return doubleOption.method_30501(new TranslatableText("options.framerate", (int)d));
     });
     public static final DoubleOption GAMMA = new DoubleOption("options.gamma", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.gamma, (gameOptions, double_) -> {
         gameOptions.gamma = double_;
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
-        MutableText mutableText = doubleOption.getDisplayPrefix();
         if (d == 0.0) {
-            return mutableText.append(new TranslatableText("options.gamma.min"));
+            return doubleOption.method_30501(new TranslatableText("options.gamma.min"));
         }
         if (d == 1.0) {
-            return mutableText.append(new TranslatableText("options.gamma.max"));
+            return doubleOption.method_30501(new TranslatableText("options.gamma.max"));
         }
-        return mutableText.append("+" + (int)(d * 100.0) + "%");
+        return doubleOption.method_30502((int)(d * 100.0));
     });
     public static final DoubleOption MIPMAP_LEVELS = new DoubleOption("options.mipmapLevels", 0.0, 4.0, 1.0f, gameOptions -> gameOptions.mipmapLevels, (gameOptions, double_) -> {
         gameOptions.mipmapLevels = (int)double_.doubleValue();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
-        MutableText mutableText = doubleOption.getDisplayPrefix();
         if (d == 0.0) {
-            return mutableText.append(ScreenTexts.OFF);
+            return ScreenTexts.method_30619(doubleOption.getDisplayPrefix(), false);
         }
-        return mutableText.append(Integer.toString((int)d));
+        return doubleOption.method_30504((int)d);
     });
     public static final DoubleOption MOUSE_WHEEL_SENSITIVITY = new LogarithmicOption("options.mouseWheelSensitivity", 0.01, 10.0, 0.01f, gameOptions -> gameOptions.mouseWheelSensitivity, (gameOptions, double_) -> {
         gameOptions.mouseWheelSensitivity = double_;
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
-        return doubleOption.getDisplayPrefix().append(String.format("%.2f", doubleOption.getValue(d)));
+        return doubleOption.method_30501(new LiteralText(String.format("%.2f", doubleOption.getValue(d))));
     });
     public static final BooleanOption RAW_MOUSE_INPUT = new BooleanOption("options.rawMouseInput", gameOptions -> gameOptions.rawMouseInput, (gameOptions, boolean_) -> {
         gameOptions.rawMouseInput = boolean_;
@@ -163,53 +156,52 @@ public abstract class Option {
         MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
-        return doubleOption.getDisplayPrefix().append(new TranslatableText("options.chunks", (int)d));
+        return doubleOption.method_30501(new TranslatableText("options.chunks", (int)d));
     });
     public static final DoubleOption ENTITY_DISTANCE_SCALING = new DoubleOption("options.entityDistanceScaling", 0.5, 5.0, 0.25f, gameOptions -> gameOptions.entityDistanceScaling, (gameOptions, double_) -> {
         gameOptions.entityDistanceScaling = (float)double_.doubleValue();
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
-        return doubleOption.getDisplayPrefix().append(new TranslatableText("options.entityDistancePercent", (int)(d * 100.0)));
+        return doubleOption.method_30503(d);
     });
     public static final DoubleOption SENSITIVITY = new DoubleOption("options.sensitivity", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.mouseSensitivity, (gameOptions, double_) -> {
         gameOptions.mouseSensitivity = double_;
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
-        MutableText mutableText = doubleOption.getDisplayPrefix();
         if (d == 0.0) {
-            return mutableText.append(new TranslatableText("options.sensitivity.min"));
+            return doubleOption.method_30501(new TranslatableText("options.sensitivity.min"));
         }
         if (d == 1.0) {
-            return mutableText.append(new TranslatableText("options.sensitivity.max"));
+            return doubleOption.method_30501(new TranslatableText("options.sensitivity.max"));
         }
-        return mutableText.append((int)(d * 200.0) + "%");
+        return doubleOption.method_30503(2.0 * d);
     });
     public static final DoubleOption TEXT_BACKGROUND_OPACITY = new DoubleOption("options.accessibility.text_background_opacity", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.textBackgroundOpacity, (gameOptions, double_) -> {
         gameOptions.textBackgroundOpacity = double_;
         MinecraftClient.getInstance().inGameHud.getChatHud().reset();
-    }, (gameOptions, doubleOption) -> doubleOption.getDisplayPrefix().append((int)(doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions)) * 100.0) + "%"));
+    }, (gameOptions, doubleOption) -> doubleOption.method_30503(doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions))));
     public static final CyclingOption AO = new CyclingOption("options.ao", (gameOptions, integer) -> {
         gameOptions.ao = AoOption.getOption(gameOptions.ao.getValue() + integer);
         MinecraftClient.getInstance().worldRenderer.reload();
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.ao.getTranslationKey())));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.ao.getTranslationKey())));
     public static final CyclingOption ATTACK_INDICATOR = new CyclingOption("options.attackIndicator", (gameOptions, integer) -> {
         gameOptions.attackIndicator = AttackIndicator.byId(gameOptions.attackIndicator.getId() + integer);
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.attackIndicator.getTranslationKey())));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.attackIndicator.getTranslationKey())));
     public static final CyclingOption VISIBILITY = new CyclingOption("options.chat.visibility", (gameOptions, integer) -> {
         gameOptions.chatVisibility = ChatVisibility.byId((gameOptions.chatVisibility.getId() + integer) % 3);
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.chatVisibility.getTranslationKey())));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.chatVisibility.getTranslationKey())));
     private static final Text FAST_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fast.tooltip");
     private static final Text FABULOUS_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fabulous.tooltip", new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC));
     private static final Text FANCY_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fancy.tooltip");
     public static final CyclingOption GRAPHICS = new CyclingOption("options.graphics", (options, count) -> {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        class_5407 lv = minecraftClient.method_30049();
-        if (options.graphicsMode == GraphicsMode.FANCY && lv.method_30137()) {
-            lv.method_30138();
+        VideoWarningManager videoWarningManager = minecraftClient.getVideoWarningManager();
+        if (options.graphicsMode == GraphicsMode.FANCY && videoWarningManager.canWarn()) {
+            videoWarningManager.scheduleWarning();
             return;
         }
         options.graphicsMode = options.graphicsMode.next();
-        if (options.graphicsMode == GraphicsMode.FABULOUS && (!GlStateManager.supportsGl30() || lv.method_30142())) {
+        if (options.graphicsMode == GraphicsMode.FABULOUS && (!GlStateManager.supportsGl30() || videoWarningManager.hasCancelledAfterWarning())) {
             options.graphicsMode = GraphicsMode.FAST;
         }
         minecraftClient.worldRenderer.reload();
@@ -227,46 +219,45 @@ public abstract class Option {
                 cyclingOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FABULOUS_GRAPHICS_TOOLTIP, 200));
             }
         }
-        TranslatableText translatableText = new TranslatableText(options.graphicsMode.getTranslationKey());
+        TranslatableText mutableText = new TranslatableText(options.graphicsMode.getTranslationKey());
         if (options.graphicsMode == GraphicsMode.FABULOUS) {
-            return cyclingOption.getDisplayPrefix().append(new LiteralText("").append(translatableText).formatted(Formatting.ITALIC));
+            return cyclingOption.method_30501(mutableText.formatted(Formatting.ITALIC));
         }
-        return cyclingOption.getDisplayPrefix().append(translatableText);
+        return cyclingOption.method_30501(mutableText);
     });
     public static final CyclingOption GUI_SCALE = new CyclingOption("options.guiScale", (gameOptions, integer) -> {
         gameOptions.guiScale = Integer.remainderUnsigned(gameOptions.guiScale + integer, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()) + 1);
     }, (gameOptions, cyclingOption) -> {
-        MutableText mutableText = cyclingOption.getDisplayPrefix();
         if (gameOptions.guiScale == 0) {
-            return mutableText.append(new TranslatableText("options.guiScale.auto"));
+            return cyclingOption.method_30501(new TranslatableText("options.guiScale.auto"));
         }
-        return mutableText.append(Integer.toString(gameOptions.guiScale));
+        return cyclingOption.method_30504(gameOptions.guiScale);
     });
     public static final CyclingOption MAIN_HAND = new CyclingOption("options.mainHand", (gameOptions, integer) -> {
         gameOptions.mainArm = gameOptions.mainArm.getOpposite();
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(gameOptions.mainArm.method_27301()));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(gameOptions.mainArm.method_27301()));
     public static final CyclingOption NARRATOR = new CyclingOption("options.narrator", (gameOptions, integer) -> {
         gameOptions.narrator = NarratorManager.INSTANCE.isActive() ? NarratorOption.byId(gameOptions.narrator.getId() + integer) : NarratorOption.OFF;
         NarratorManager.INSTANCE.addToast(gameOptions.narrator);
     }, (gameOptions, cyclingOption) -> {
         if (NarratorManager.INSTANCE.isActive()) {
-            return cyclingOption.getDisplayPrefix().append(gameOptions.narrator.getTranslationKey());
+            return cyclingOption.method_30501(gameOptions.narrator.getTranslationKey());
         }
-        return cyclingOption.getDisplayPrefix().append(new TranslatableText("options.narrator.notavailable"));
+        return cyclingOption.method_30501(new TranslatableText("options.narrator.notavailable"));
     });
     public static final CyclingOption PARTICLES = new CyclingOption("options.particles", (gameOptions, integer) -> {
         gameOptions.particles = ParticlesOption.byId(gameOptions.particles.getId() + integer);
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.particles.getTranslationKey())));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.particles.getTranslationKey())));
     public static final CyclingOption CLOUDS = new CyclingOption("options.renderClouds", (gameOptions, integer) -> {
         Framebuffer framebuffer;
         gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer);
         if (MinecraftClient.isFabulousGraphicsOrBetter() && (framebuffer = MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer()) != null) {
             framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
         }
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
     public static final CyclingOption TEXT_BACKGROUND = new CyclingOption("options.accessibility.text_background", (gameOptions, integer) -> {
         gameOptions.backgroundForChatOnly = !gameOptions.backgroundForChatOnly;
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.backgroundForChatOnly ? "options.accessibility.text_background.chat" : "options.accessibility.text_background.everywhere")));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.backgroundForChatOnly ? "options.accessibility.text_background.chat" : "options.accessibility.text_background.everywhere")));
     public static final BooleanOption AUTO_JUMP = new BooleanOption("options.autoJump", gameOptions -> gameOptions.autoJump, (gameOptions, boolean_) -> {
         gameOptions.autoJump = boolean_;
     });
@@ -323,10 +314,10 @@ public abstract class Option {
     });
     public static final CyclingOption SNEAK_TOGGLED = new CyclingOption("key.sneak", (gameOptions, integer) -> {
         gameOptions.sneakToggled = !gameOptions.sneakToggled;
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.sneakToggled ? "options.key.toggle" : "options.key.hold")));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.sneakToggled ? "options.key.toggle" : "options.key.hold")));
     public static final CyclingOption SPRINT_TOGGLED = new CyclingOption("key.sprint", (gameOptions, integer) -> {
         gameOptions.sprintToggled = !gameOptions.sprintToggled;
-    }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.sprintToggled ? "options.key.toggle" : "options.key.hold")));
+    }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.sprintToggled ? "options.key.toggle" : "options.key.hold")));
     public static final BooleanOption TOUCHSCREEN = new BooleanOption("options.touchscreen", gameOptions -> gameOptions.touchscreen, (gameOptions, boolean_) -> {
         gameOptions.touchscreen = boolean_;
     });
@@ -341,18 +332,18 @@ public abstract class Option {
     public static final BooleanOption VIEW_BOBBING = new BooleanOption("options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, boolean_) -> {
         gameOptions.bobView = boolean_;
     });
-    private final String key;
+    private final Text key;
     private Optional<List<StringRenderable>> tooltip;
 
     public Option(String key) {
-        this.key = key;
+        this.key = new TranslatableText(key);
         this.tooltip = Optional.empty();
     }
 
     public abstract AbstractButtonWidget createButton(GameOptions var1, int var2, int var3, int var4);
 
-    public MutableText getDisplayPrefix() {
-        return new TranslatableText(this.key).append(": ");
+    protected Text getDisplayPrefix() {
+        return this.key;
     }
 
     public void setTooltip(List<StringRenderable> tooltip) {
@@ -361,6 +352,26 @@ public abstract class Option {
 
     public Optional<List<StringRenderable>> getTooltip() {
         return this.tooltip;
+    }
+
+    protected Text method_30500(int i) {
+        return new TranslatableText("options.pixel_value", this.getDisplayPrefix(), i);
+    }
+
+    protected Text method_30503(double d) {
+        return new TranslatableText("options.percent_value", this.getDisplayPrefix(), (int)(d * 100.0));
+    }
+
+    protected Text method_30502(int i) {
+        return new TranslatableText("options.percent_add_value", this.getDisplayPrefix(), i);
+    }
+
+    protected Text method_30501(Text text) {
+        return new TranslatableText("options.generic_value", this.getDisplayPrefix(), text);
+    }
+
+    protected Text method_30504(int i) {
+        return this.method_30501(new LiteralText(Integer.toString(i)));
     }
 }
 

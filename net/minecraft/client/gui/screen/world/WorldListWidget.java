@@ -42,6 +42,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.DataPackSettings;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -51,7 +52,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -163,7 +164,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.level = level;
             this.client = MinecraftClient.getInstance();
             String string = level.getName();
-            this.iconLocation = new Identifier("worlds/" + Util.method_30309(string) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon");
+            this.iconLocation = new Identifier("minecraft", "worlds/" + Util.method_30309(string, Identifier::method_29184) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon");
             this.iconFile = level.getFile();
             if (!this.iconFile.isFile()) {
                 this.iconFile = null;
@@ -318,16 +319,17 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         public void recreate() {
             this.method_29990();
-            RegistryTracker.Modifiable modifiable = RegistryTracker.create();
+            DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-                 MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);){
+                 MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);){
                 LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
+                DataPackSettings dataPackSettings = levelInfo.method_29558();
                 GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
                 Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
                 if (generatorOptions.isLegacyCustomizedType()) {
-                    this.client.openScreen(new ConfirmScreen(bl -> this.client.openScreen(bl ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, modifiable) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
+                    this.client.openScreen(new ConfirmScreen(bl -> this.client.openScreen(bl ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
                 } else {
-                    this.client.openScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, modifiable));
+                    this.client.openScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl));
                 }
             } catch (Exception exception) {
                 LOGGER.error("Unable to recreate world", (Throwable)exception);

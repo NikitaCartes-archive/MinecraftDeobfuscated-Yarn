@@ -1029,9 +1029,9 @@ AutoCloseable {
         immediate.draw(RenderLayer.getEntityGlintDirect());
         immediate.draw(RenderLayer.getWaterMask());
         this.bufferBuilders.getEffectVertexConsumers().draw();
-        immediate.draw(RenderLayer.getLines());
-        immediate.draw();
         if (this.transparencyShader != null) {
+            immediate.draw(RenderLayer.getLines());
+            immediate.draw();
             this.translucentFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             this.translucentFramebuffer.copyDepthFrom(this.client.getFramebuffer());
             profiler.swap("translucent");
@@ -1051,6 +1051,8 @@ AutoCloseable {
             this.renderLayer(RenderLayer.getTripwire(), matrices, d, e, f);
             profiler.swap("particles");
             this.client.particleManager.renderParticles(matrices, immediate, lightmapTextureManager, camera, tickDelta);
+            immediate.draw(RenderLayer.getLines());
+            immediate.draw();
         }
         RenderSystem.pushMatrix();
         RenderSystem.multMatrix(matrices.peek().getModel());

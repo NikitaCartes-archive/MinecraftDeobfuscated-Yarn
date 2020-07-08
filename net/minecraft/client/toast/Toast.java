@@ -24,11 +24,11 @@ public interface Toast {
         return TYPE;
     }
 
-    default public int method_29049() {
+    default public int getWidth() {
         return 160;
     }
 
-    default public int method_29050() {
+    default public int getHeight() {
         return 32;
     }
 

@@ -52,7 +52,7 @@ extends Option {
     }
 
     public Text getDisplayString(GameOptions options) {
-        return this.getDisplayPrefix().append(ScreenTexts.getToggleText(this.get(options)));
+        return ScreenTexts.method_30619(this.getDisplayPrefix(), this.get(options));
     }
 }
 

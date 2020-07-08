@@ -59,6 +59,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
@@ -101,11 +102,11 @@ extends World {
 
     public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, Properties properties, RegistryKey<World> registryKey, RegistryKey<DimensionType> registryKey2, DimensionType dimensionType, int i, Supplier<Profiler> supplier, WorldRenderer worldRenderer, boolean bl, long l) {
         super(properties, registryKey, registryKey2, dimensionType, supplier, true, bl, l);
+        this.netHandler = clientPlayNetworkHandler;
         this.chunkManager = new ClientChunkManager(this, i);
         this.clientWorldProperties = properties;
-        this.netHandler = clientPlayNetworkHandler;
         this.worldRenderer = worldRenderer;
-        this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.getRegistryTracker().getDimensionTypeRegistry().getKey(dimensionType));
+        this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.getRegistryManager().getDimensionTypes().getKey(dimensionType));
         this.setSpawnPos(new BlockPos(8, 64, 8));
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
@@ -174,7 +175,7 @@ extends World {
 
     public void tickEntity(Entity entity) {
         if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
-            this.checkChunk(entity);
+            this.checkEntityChunkPos(entity);
             return;
         }
         entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
@@ -186,7 +187,7 @@ extends World {
             entity.tick();
             this.getProfiler().pop();
         }
-        this.checkChunk(entity);
+        this.checkEntityChunkPos(entity);
         if (entity.updateNeeded) {
             for (Entity entity2 : entity.getPassengerList()) {
                 this.tickPassenger(entity, entity2);
@@ -209,7 +210,7 @@ extends World {
             ++passenger.age;
             passenger.tickRiding();
         }
-        this.checkChunk(passenger);
+        this.checkEntityChunkPos(passenger);
         if (passenger.updateNeeded) {
             for (Entity entity2 : passenger.getPassengerList()) {
                 this.tickPassenger(passenger, entity2);
@@ -217,8 +218,11 @@ extends World {
         }
     }
 
-    private void checkChunk(Entity entity) {
-        if (!entity.method_29240()) {
+    /**
+     * Validates if an entity's current position matches its chunk position. If the entity's chunk position and actual position don't match, then the entity will be moved to its new chunk.
+     */
+    private void checkEntityChunkPos(Entity entity) {
+        if (!entity.isChunkPosUpdateRequested()) {
             return;
         }
         this.getProfiler().push("chunkCheck");
@@ -243,7 +247,7 @@ extends World {
 
     public void unloadBlockEntities(WorldChunk chunk) {
         this.unloadedBlockEntities.addAll(chunk.getBlockEntities().values());
-        this.chunkManager.getLightingProvider().setLightEnabled(chunk.getPos(), false);
+        this.chunkManager.getLightingProvider().setColumnEnabled(chunk.getPos(), false);
     }
 
     public void resetChunkColor(int i, int j) {
@@ -507,6 +511,11 @@ extends World {
     @Override
     public TagManager getTagManager() {
         return this.netHandler.getTagManager();
+    }
+
+    @Override
+    public DynamicRegistryManager getRegistryManager() {
+        return this.netHandler.getRegistryManager();
     }
 
     @Override

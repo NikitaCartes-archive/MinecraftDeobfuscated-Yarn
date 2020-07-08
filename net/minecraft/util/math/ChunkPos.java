@@ -95,10 +95,6 @@ public class ChunkPos {
         return this.z & 0x1F;
     }
 
-    public BlockPos toBlockPos(int chunkRelativeX, int chunkRelativeY, int chunkRelativeZ) {
-        return new BlockPos((this.x << 4) + chunkRelativeX, chunkRelativeY, (this.z << 4) + chunkRelativeZ);
-    }
-
     public String toString() {
         return "[" + this.x + ", " + this.z + "]";
     }

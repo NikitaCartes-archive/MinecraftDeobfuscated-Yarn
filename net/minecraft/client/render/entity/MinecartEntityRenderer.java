@@ -48,11 +48,11 @@ extends EntityRenderer<T> {
         double e = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderY, ((Entity)abstractMinecartEntity).getY());
         double m = MathHelper.lerp((double)g, ((AbstractMinecartEntity)abstractMinecartEntity).lastRenderZ, ((Entity)abstractMinecartEntity).getZ());
         double n = 0.3f;
-        Vec3d vec3d = ((AbstractMinecartEntity)abstractMinecartEntity).method_7508(d, e, m);
+        Vec3d vec3d = ((AbstractMinecartEntity)abstractMinecartEntity).snapPositionToRail(d, e, m);
         float o = MathHelper.lerp(g, ((AbstractMinecartEntity)abstractMinecartEntity).prevPitch, ((AbstractMinecartEntity)abstractMinecartEntity).pitch);
         if (vec3d != null) {
-            Vec3d vec3d2 = ((AbstractMinecartEntity)abstractMinecartEntity).method_7505(d, e, m, 0.3f);
-            Vec3d vec3d3 = ((AbstractMinecartEntity)abstractMinecartEntity).method_7505(d, e, m, -0.3f);
+            Vec3d vec3d2 = ((AbstractMinecartEntity)abstractMinecartEntity).snapPositionToRailWithOffset(d, e, m, 0.3f);
+            Vec3d vec3d3 = ((AbstractMinecartEntity)abstractMinecartEntity).snapPositionToRailWithOffset(d, e, m, -0.3f);
             if (vec3d2 == null) {
                 vec3d2 = vec3d;
             }

@@ -39,9 +39,9 @@ implements DebugRenderer.Renderer {
             int i = world.getLightLevel(LightType.SKY, blockPos2);
             float f = (float)(15 - i) / 15.0f * 0.5f + 0.16f;
             int j = MathHelper.hsvToRgb(f, 0.9f, 0.9f);
-            long l = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
+            long l = ChunkSectionPos.fromBlockPos(blockPos2.asLong());
             if (longSet.add(l)) {
-                DebugRenderer.drawString(world.getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(l)), ChunkSectionPos.getX(l) * 16 + 8, ChunkSectionPos.getY(l) * 16 + 8, ChunkSectionPos.getZ(l) * 16 + 8, 0xFF0000, 0.3f);
+                DebugRenderer.drawString(world.getChunkManager().getLightingProvider().displaySectionLevel(LightType.SKY, ChunkSectionPos.from(l)), ChunkSectionPos.getX(l) * 16 + 8, ChunkSectionPos.getY(l) * 16 + 8, ChunkSectionPos.getZ(l) * 16 + 8, 0xFF0000, 0.3f);
             }
             if (i == 15) continue;
             DebugRenderer.drawString(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);

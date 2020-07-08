@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.minecraft.block.Blocks;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -68,26 +69,29 @@ implements Vanishable {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        BlockPos blockPos = context.hit.getBlockPos();
-        if (context.world.getBlockState(blockPos).isOf(Blocks.LODESTONE)) {
+        BlockPos blockPos = context.getBlockPos();
+        World world = context.getWorld();
+        if (world.getBlockState(blockPos).isOf(Blocks.LODESTONE)) {
             boolean bl;
-            context.world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
-            boolean bl2 = bl = !context.player.abilities.creativeMode && context.stack.getCount() == 1;
+            world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
+            PlayerEntity playerEntity = context.getPlayer();
+            ItemStack itemStack = context.getStack();
+            boolean bl2 = bl = !playerEntity.abilities.creativeMode && itemStack.getCount() == 1;
             if (bl) {
-                this.method_27315(context.world.getRegistryKey(), blockPos, context.stack.getOrCreateTag());
+                this.method_27315(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
             } else {
-                ItemStack itemStack = new ItemStack(Items.COMPASS, 1);
-                CompoundTag compoundTag = context.stack.hasTag() ? context.stack.getTag().copy() : new CompoundTag();
-                itemStack.setTag(compoundTag);
-                if (!context.player.abilities.creativeMode) {
-                    context.stack.decrement(1);
+                ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
+                CompoundTag compoundTag = itemStack.hasTag() ? itemStack.getTag().copy() : new CompoundTag();
+                itemStack2.setTag(compoundTag);
+                if (!playerEntity.abilities.creativeMode) {
+                    itemStack.decrement(1);
                 }
-                this.method_27315(context.world.getRegistryKey(), blockPos, compoundTag);
-                if (!context.player.inventory.insertStack(itemStack)) {
-                    context.player.dropItem(itemStack, false);
+                this.method_27315(world.getRegistryKey(), blockPos, compoundTag);
+                if (!playerEntity.inventory.insertStack(itemStack2)) {
+                    playerEntity.dropItem(itemStack2, false);
                 }
             }
-            return ActionResult.success(context.world.isClient);
+            return ActionResult.success(world.isClient);
         }
         return super.useOnBlock(context);
     }

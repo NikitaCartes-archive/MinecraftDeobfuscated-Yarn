@@ -3,22 +3,21 @@
  */
 package net.minecraft.world.biome;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
-import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilders;
 
 public final class SnowyBeachBiome
 extends Biome {
     public SnowyBeachBiome() {
-        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG).precipitation(Biome.Precipitation.SNOW).category(Biome.Category.BEACH).depth(0.0f).scale(0.025f).temperature(0.05f).downfall(0.3f).effects(new BiomeEffects.Builder().waterColor(4020182).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
-        this.addStructureFeature(DefaultBiomeFeatures.NORMAL_MINESHAFT);
-        this.addStructureFeature(DefaultBiomeFeatures.BURIED_TREASURE);
-        this.addStructureFeature(DefaultBiomeFeatures.BEACHED_SHIPWRECK);
-        this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
+        super(new Biome.Settings().configureSurfaceBuilder(ConfiguredSurfaceBuilders.DESERT).precipitation(Biome.Precipitation.SNOW).category(Biome.Category.BEACH).depth(0.0f).scale(0.025f).temperature(0.05f).downfall(0.3f).effects(new BiomeEffects.Builder().waterColor(4020182).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build()).parent(null));
+        this.addStructureFeature(ConfiguredStructureFeatures.MINESHAFT);
+        this.addStructureFeature(ConfiguredStructureFeatures.BURIED_TREASURE);
+        this.addStructureFeature(ConfiguredStructureFeatures.SHIPWRECK_BEACHED);
+        this.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);
@@ -31,15 +30,7 @@ extends Biome {
         DefaultBiomeFeatures.addDefaultVegetation(this);
         DefaultBiomeFeatures.addSprings(this);
         DefaultBiomeFeatures.addFrozenTopLayer(this);
-        this.addSpawn(SpawnGroup.AMBIENT, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
-        this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
-        this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE, 95, 4, 4));
-        this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_VILLAGER, 5, 1, 1));
-        this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 100, 4, 4));
-        this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.CREEPER, 100, 4, 4));
-        this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SLIME, 100, 4, 4));
-        this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 1, 4));
-        this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.WITCH, 5, 1, 1));
+        DefaultBiomeFeatures.addBatsAndMonsters(this);
     }
 }
 

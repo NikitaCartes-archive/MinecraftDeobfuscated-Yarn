@@ -6,6 +6,7 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -24,6 +25,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
@@ -32,13 +34,12 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.feature.BastionRemnantFeature;
-import net.minecraft.world.gen.feature.BastionRemnantFeatureConfig;
 import net.minecraft.world.gen.feature.BuriedTreasureFeature;
-import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.DesertPyramidFeature;
@@ -71,7 +72,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     public static final BiMap<String, StructureFeature<?>> STRUCTURES = HashBiMap.create();
     private static final Map<StructureFeature<?>, GenerationStep.Feature> STRUCTURE_TO_GENERATION_STEP = Maps.newHashMap();
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final StructureFeature<DefaultFeatureConfig> PILLAGER_OUTPOST = StructureFeature.register("Pillager_Outpost", new PillagerOutpostFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
+    public static final StructureFeature<StructurePoolFeatureConfig> PILLAGER_OUTPOST = StructureFeature.register("Pillager_Outpost", new PillagerOutpostFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<MineshaftFeatureConfig> MINESHAFT = StructureFeature.register("Mineshaft", new MineshaftFeature(MineshaftFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_STRUCTURES);
     public static final StructureFeature<DefaultFeatureConfig> MANSION = StructureFeature.register("Mansion", new WoodlandMansionFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<DefaultFeatureConfig> JUNGLE_PYRAMID = StructureFeature.register("Jungle_Pyramid", new JungleTempleFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
@@ -85,11 +86,12 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<OceanRuinFeatureConfig> OCEAN_RUIN = StructureFeature.register("Ocean_Ruin", new OceanRuinFeature(OceanRuinFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<DefaultFeatureConfig> FORTRESS = StructureFeature.register("Fortress", new NetherFortressFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION);
     public static final StructureFeature<DefaultFeatureConfig> END_CITY = StructureFeature.register("EndCity", new EndCityFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
-    public static final StructureFeature<BuriedTreasureFeatureConfig> BURIED_TREASURE = StructureFeature.register("Buried_Treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_STRUCTURES);
+    public static final StructureFeature<ProbabilityConfig> BURIED_TREASURE = StructureFeature.register("Buried_Treasure", new BuriedTreasureFeature(ProbabilityConfig.CODEC), GenerationStep.Feature.UNDERGROUND_STRUCTURES);
     public static final StructureFeature<StructurePoolFeatureConfig> VILLAGE = StructureFeature.register("Village", new VillageFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = StructureFeature.register("Nether_Fossil", new NetherFossilFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION);
-    public static final StructureFeature<BastionRemnantFeatureConfig> BASTION_REMNANT = StructureFeature.register("Bastion_Remnant", new BastionRemnantFeature(BastionRemnantFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
+    public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = StructureFeature.register("Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final List<StructureFeature<?>> field_24861 = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
+    private static final Map<String, String> field_25839 = ImmutableMap.builder().put("nvi", "jigsaw").put("pcp", "jigsaw").put("bastionremnant", "jigsaw").put("runtime", "jigsaw").build();
     private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
     private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
@@ -102,7 +104,11 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         this.codec = ((MapCodec)codec.fieldOf("config")).xmap(featureConfig -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)featureConfig), configuredStructureFeature -> configuredStructureFeature.config).codec();
     }
 
-    public GenerationStep.Feature method_28663() {
+    /**
+     * Gets the step during which this structure will participate in world generation.
+     * Structures will generate before other features in the same generation step.
+     */
+    public GenerationStep.Feature getGenerationStep() {
         return STRUCTURE_TO_GENERATION_STEP.get(this);
     }
 
@@ -110,8 +116,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     }
 
     @Nullable
-    public static StructureStart<?> method_28660(StructureManager structureManager, CompoundTag compoundTag, long l) {
-        String string = compoundTag.getString("id");
+    public static StructureStart<?> readStructureStart(StructureManager structureManager, CompoundTag tag, long worldSeed) {
+        String string = tag.getString("id");
         if ("INVALID".equals(string)) {
             return StructureStart.DEFAULT;
         }
@@ -120,27 +126,28 @@ public abstract class StructureFeature<C extends FeatureConfig> {
             LOGGER.error("Unknown feature id: {}", (Object)string);
             return null;
         }
-        int i = compoundTag.getInt("ChunkX");
-        int j = compoundTag.getInt("ChunkZ");
-        int k = compoundTag.getInt("references");
-        BlockBox blockBox = compoundTag.contains("BB") ? new BlockBox(compoundTag.getIntArray("BB")) : BlockBox.empty();
-        ListTag listTag = compoundTag.getList("Children", 10);
+        int i = tag.getInt("ChunkX");
+        int j = tag.getInt("ChunkZ");
+        int k = tag.getInt("references");
+        BlockBox blockBox = tag.contains("BB") ? new BlockBox(tag.getIntArray("BB")) : BlockBox.empty();
+        ListTag listTag = tag.getList("Children", 10);
         try {
-            StructureStart<?> structureStart = super.method_28656(i, j, blockBox, k, l);
-            for (int m = 0; m < listTag.size(); ++m) {
-                CompoundTag compoundTag2 = listTag.getCompound(m);
-                String string2 = compoundTag2.getString("id");
-                StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string2.toLowerCase(Locale.ROOT)));
+            StructureStart<?> structureStart = super.createStart(i, j, blockBox, k, worldSeed);
+            for (int l = 0; l < listTag.size(); ++l) {
+                CompoundTag compoundTag = listTag.getCompound(l);
+                String string2 = compoundTag.getString("id").toLowerCase(Locale.ROOT);
+                String string3 = field_25839.getOrDefault(string2, string2);
+                StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string3));
                 if (structurePieceType == null) {
-                    LOGGER.error("Unknown structure piece id: {}", (Object)string2);
+                    LOGGER.error("Unknown structure piece id: {}", (Object)string3);
                     continue;
                 }
                 try {
-                    StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag2);
+                    StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag);
                     structureStart.getChildren().add(structurePiece);
                     continue;
                 } catch (Exception exception) {
-                    LOGGER.error("Exception loading structure piece with id {}", (Object)string2, (Object)exception);
+                    LOGGER.error("Exception loading structure piece with id {}", (Object)string3, (Object)exception);
                 }
             }
             return structureStart;
@@ -158,22 +165,34 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         return new ConfiguredStructureFeature<C, StructureFeature>(this, config);
     }
 
+    /**
+     * Tries to find the closest structure of this type near a given block.
+     * <p>
+     * This method relies on the given world generation settings (seed and placement configuration)
+     * to match the time at which the structure was generated, otherwise it will not be found.
+     * <p>
+     * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
+     * 
+     * @return null if no structure could be found within the given search radius.
+     * 
+     * @param searchRadius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
+     */
     @Nullable
-    public BlockPos locateStructure(WorldView worldView, StructureAccessor structureAccessor, BlockPos blockPos, int i, boolean skipExistingChunks, long l, StructureConfig structureConfig) {
-        int j = structureConfig.getSpacing();
-        int k = blockPos.getX() >> 4;
-        int m = blockPos.getZ() >> 4;
+    public BlockPos locateStructure(WorldView worldView, StructureAccessor structureAccessor, BlockPos searchStartPos, int searchRadius, boolean skipExistingChunks, long worldSeed, StructureConfig config) {
+        int i = config.getSpacing();
+        int j = searchStartPos.getX() >> 4;
+        int k = searchStartPos.getZ() >> 4;
         ChunkRandom chunkRandom = new ChunkRandom();
-        block0: for (int n = 0; n <= i; ++n) {
-            for (int o = -n; o <= n; ++o) {
-                boolean bl = o == -n || o == n;
-                for (int p = -n; p <= n; ++p) {
+        block0: for (int l = 0; l <= searchRadius; ++l) {
+            for (int m = -l; m <= l; ++m) {
+                boolean bl = m == -l || m == l;
+                for (int n = -l; n <= l; ++n) {
                     boolean bl2;
-                    boolean bl3 = bl2 = p == -n || p == n;
+                    boolean bl3 = bl2 = n == -l || n == l;
                     if (!bl && !bl2) continue;
-                    int q = k + j * o;
-                    int r = m + j * p;
-                    ChunkPos chunkPos = this.method_27218(structureConfig, l, chunkRandom, q, r);
+                    int o = j + i * m;
+                    int p = k + i * n;
+                    ChunkPos chunkPos = this.getStartChunk(config, worldSeed, chunkRandom, o, p);
                     Chunk chunk = worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
                     StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), this, chunk);
                     if (structureStart != null && structureStart.hasChildren()) {
@@ -185,49 +204,74 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                             return structureStart.getPos();
                         }
                     }
-                    if (n == 0) break;
+                    if (l == 0) break;
                 }
-                if (n == 0) continue block0;
+                if (l == 0) continue block0;
             }
         }
         return null;
     }
 
-    protected boolean method_27219() {
+    /**
+     * If true, this structure's start position will be uniformy distributed within
+     * a placement grid cell. If false, the structure's starting point will be biased
+     * towards the center of the cell.
+     */
+    protected boolean isUniformDistribution() {
         return true;
     }
 
-    public final ChunkPos method_27218(StructureConfig structureConfig, long l, ChunkRandom chunkRandom, int i, int j) {
-        int q;
-        int p;
-        int k = structureConfig.getSpacing();
-        int m = structureConfig.getSeparation();
-        int n = Math.floorDiv(i, k);
-        int o = Math.floorDiv(j, k);
-        chunkRandom.setRegionSeed(l, n, o, structureConfig.getSalt());
-        if (this.method_27219()) {
-            p = chunkRandom.nextInt(k - m);
-            q = chunkRandom.nextInt(k - m);
+    /**
+     * Determines the cell of the structure placement grid a chunk belongs to, and
+     * returns the chunk within that cell, that this structure will actually be placed at.
+     * <p>
+     * If the {@link StructureConfig} uses a separation setting greater than 0, the
+     * placement will be constrained to [0, spacing - separation] within the grid cell.
+     * If a non-uniform distribution is used for placement {@see #isUniformDistribution()},
+     * then this also moves the center towards the origin.
+     */
+    public final ChunkPos getStartChunk(StructureConfig config, long worldSeed, ChunkRandom placementRandom, int chunkX, int chunkY) {
+        int n;
+        int m;
+        int i = config.getSpacing();
+        int j = config.getSeparation();
+        int k = Math.floorDiv(chunkX, i);
+        int l = Math.floorDiv(chunkY, i);
+        placementRandom.setRegionSeed(worldSeed, k, l, config.getSalt());
+        if (this.isUniformDistribution()) {
+            m = placementRandom.nextInt(i - j);
+            n = placementRandom.nextInt(i - j);
         } else {
-            p = (chunkRandom.nextInt(k - m) + chunkRandom.nextInt(k - m)) / 2;
-            q = (chunkRandom.nextInt(k - m) + chunkRandom.nextInt(k - m)) / 2;
+            m = (placementRandom.nextInt(i - j) + placementRandom.nextInt(i - j)) / 2;
+            n = (placementRandom.nextInt(i - j) + placementRandom.nextInt(i - j)) / 2;
         }
-        return new ChunkPos(n * k + p, o * k + q);
+        return new ChunkPos(k * i + m, l * i + n);
     }
 
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, C featureConfig) {
+    /**
+     * Checks if this structure can <em>actually</em> be placed at a potential structure position determined via
+     * {@link #getStartChunk}. Specific structures override this method to reduce the spawn propability or
+     * restrict the spawn in some other way.
+     */
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos, C featureConfig) {
         return true;
     }
 
-    private StructureStart<C> method_28656(int i, int j, BlockBox blockBox, int k, long l) {
-        return this.getStructureStartFactory().create(this, i, j, blockBox, k, l);
+    private StructureStart<C> createStart(int chunkX, int chunkZ, BlockBox boundingBox, int referenceCount, long worldSeed) {
+        return this.getStructureStartFactory().create(this, chunkX, chunkZ, boundingBox, referenceCount, worldSeed);
     }
 
-    public StructureStart<?> method_28657(ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long l, ChunkPos chunkPos, Biome biome, int i, ChunkRandom chunkRandom, StructureConfig structureConfig, C featureConfig) {
-        ChunkPos chunkPos2 = this.method_27218(structureConfig, l, chunkRandom, chunkPos.x, chunkPos.z);
-        if (chunkPos.x == chunkPos2.x && chunkPos.z == chunkPos2.z && this.shouldStartAt(chunkGenerator, biomeSource, l, chunkRandom, chunkPos.x, chunkPos.z, biome, chunkPos2, featureConfig)) {
-            StructureStart<C> structureStart = this.method_28656(chunkPos.x, chunkPos.z, BlockBox.empty(), i, l);
-            structureStart.init(chunkGenerator, structureManager, chunkPos.x, chunkPos.z, biome, featureConfig);
+    /**
+     * Tries to place a starting point for this type of structure in the given chunk.
+     * <p>
+     * If this structure doesn't have a starting point in the chunk, {@link StructureStart.DEFAULT}
+     * will be returned.
+     */
+    public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, Biome biome, int referenceCount, ChunkRandom chunkRandom, StructureConfig structureConfig, C featureConfig) {
+        ChunkPos chunkPos2 = this.getStartChunk(structureConfig, worldSeed, chunkRandom, chunkPos.x, chunkPos.z);
+        if (chunkPos.x == chunkPos2.x && chunkPos.z == chunkPos2.z && this.shouldStartAt(chunkGenerator, biomeSource, worldSeed, chunkRandom, chunkPos.x, chunkPos.z, biome, chunkPos2, featureConfig)) {
+            StructureStart<C> structureStart = this.createStart(chunkPos.x, chunkPos.z, BlockBox.empty(), referenceCount, worldSeed);
+            structureStart.init(dynamicRegistryManager, chunkGenerator, structureManager, chunkPos.x, chunkPos.z, biome, featureConfig);
             if (structureStart.hasChildren()) {
                 return structureStart;
             }

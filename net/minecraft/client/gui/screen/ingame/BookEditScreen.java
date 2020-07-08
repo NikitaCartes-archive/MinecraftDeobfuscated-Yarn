@@ -25,7 +25,6 @@ import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
 import net.minecraft.client.util.SelectionManager;
@@ -37,6 +36,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -51,6 +51,10 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class BookEditScreen
 extends Screen {
+    private static final StringRenderable field_25893 = new TranslatableText("book.editTitle");
+    private static final StringRenderable field_25894 = new TranslatableText("book.finalizeWarning");
+    private static final StringRenderable field_25895 = StringRenderable.styled("_", Style.EMPTY.withColor(Formatting.BLACK));
+    private static final StringRenderable field_25896 = StringRenderable.styled("_", Style.EMPTY.withColor(Formatting.GRAY));
     private final PlayerEntity player;
     private final ItemStack itemStack;
     private boolean dirty;
@@ -74,6 +78,8 @@ extends Screen {
     private final Hand hand;
     @Nullable
     private PageContent pageContent = PageContent.method_27599();
+    private StringRenderable field_25891 = StringRenderable.EMPTY;
+    private final StringRenderable field_25892;
 
     public BookEditScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
         super(NarratorManager.EMPTY);
@@ -90,6 +96,7 @@ extends Screen {
         if (this.pages.isEmpty()) {
             this.pages.add("");
         }
+        this.field_25892 = new TranslatableText("book.byAuthor", playerEntity.getName()).formatted(Formatting.DARK_GRAY);
     }
 
     private void method_27584(String string) {
@@ -388,21 +395,18 @@ extends Screen {
         int j = 2;
         this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
         if (this.signing) {
-            String string = this.title;
-            string = this.tickCounter / 6 % 2 == 0 ? string + "" + (Object)((Object)Formatting.BLACK) + "_" : string + "" + (Object)((Object)Formatting.GRAY) + "_";
-            String string2 = I18n.translate("book.editTitle", new Object[0]);
-            int k = this.getStringWidth(string2);
-            this.textRenderer.draw(matrices, string2, (float)(i + 36 + (114 - k) / 2), 34.0f, 0);
-            int l = this.getStringWidth(string);
-            this.textRenderer.draw(matrices, string, (float)(i + 36 + (114 - l) / 2), 50.0f, 0);
-            String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
-            int m = this.getStringWidth(string3);
-            this.textRenderer.draw(matrices, (Object)((Object)Formatting.DARK_GRAY) + string3, (float)(i + 36 + (114 - m) / 2), 60.0f, 0);
-            this.textRenderer.drawTrimmed(new TranslatableText("book.finalizeWarning"), i + 36, 82, 114, 0);
+            boolean bl = this.tickCounter / 6 % 2 == 0;
+            StringRenderable stringRenderable = StringRenderable.concat(StringRenderable.plain(this.title), bl ? field_25895 : field_25896);
+            int k = this.textRenderer.getWidth(field_25893);
+            this.textRenderer.draw(matrices, field_25893, (float)(i + 36 + (114 - k) / 2), 34.0f, 0);
+            int l = this.textRenderer.getWidth(stringRenderable);
+            this.textRenderer.draw(matrices, stringRenderable, (float)(i + 36 + (114 - l) / 2), 50.0f, 0);
+            int m = this.textRenderer.getWidth(this.field_25892);
+            this.textRenderer.draw(matrices, this.field_25892, (float)(i + 36 + (114 - m) / 2), 60.0f, 0);
+            this.textRenderer.drawTrimmed(field_25894, i + 36, 82, 114, 0);
         } else {
-            String string = I18n.translate("book.pageIndicator", this.currentPage + 1, this.countPages());
-            int n = this.getStringWidth(string);
-            this.textRenderer.draw(matrices, string, (float)(i - n + 192 - 44), 18.0f, 0);
+            int n = this.textRenderer.getWidth(this.field_25891);
+            this.textRenderer.draw(matrices, this.field_25891, (float)(i - n + 192 - 44), 18.0f, 0);
             PageContent pageContent = this.getPageContent();
             for (Line line : pageContent.lines) {
                 this.textRenderer.draw(matrices, line.text, (float)line.x, (float)line.y, -16777216);
@@ -422,10 +426,6 @@ extends Screen {
                 this.textRenderer.draw(matrixStack, "_", (float)position.x, (float)position.y, 0);
             }
         }
-    }
-
-    private int getStringWidth(String text) {
-        return this.textRenderer.getWidth(this.textRenderer.isRightToLeft() ? this.textRenderer.mirror(text) : text);
     }
 
     private void method_27588(Rect2i[] rect2is) {
@@ -508,6 +508,7 @@ extends Screen {
     private PageContent getPageContent() {
         if (this.pageContent == null) {
             this.pageContent = this.createPageContent();
+            this.field_25891 = new TranslatableText("book.pageIndicator", this.currentPage + 1, this.countPages());
         }
         return this.pageContent;
     }

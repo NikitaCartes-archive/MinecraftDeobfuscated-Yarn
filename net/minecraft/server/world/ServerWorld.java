@@ -111,6 +111,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.CsvWriter;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
@@ -163,7 +164,7 @@ implements ServerWorldAccess {
     private final ServerChunkManager serverChunkManager;
     boolean inEntityTick;
     private final MinecraftServer server;
-    private final ServerWorldProperties field_24456;
+    private final ServerWorldProperties worldProperties;
     public boolean savingDisabled;
     private boolean allPlayersSleeping;
     private int idleTimeout;
@@ -185,7 +186,7 @@ implements ServerWorldAccess {
         this.field_25143 = bl2;
         this.server = server;
         this.spawners = spawners;
-        this.field_24456 = properties;
+        this.worldProperties = properties;
         this.serverChunkManager = new ServerChunkManager(this, session, server.getDataFixer(), server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), generationProgressListener, () -> server.getOverworld().getPersistentStateManager());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
@@ -199,12 +200,12 @@ implements ServerWorldAccess {
         this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, server.getSaveProperties().getGeneratorOptions().getSeed(), server.getSaveProperties().method_29036()) : null;
     }
 
-    public void method_27910(int i, int j, boolean bl, boolean bl2) {
-        this.field_24456.setClearWeatherTime(i);
-        this.field_24456.setRainTime(j);
-        this.field_24456.setThunderTime(j);
-        this.field_24456.setRaining(bl);
-        this.field_24456.setThundering(bl2);
+    public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
+        this.worldProperties.setClearWeatherTime(clearDuration);
+        this.worldProperties.setRainTime(rainDuration);
+        this.worldProperties.setThunderTime(rainDuration);
+        this.worldProperties.setRaining(raining);
+        this.worldProperties.setThundering(thundering);
     }
 
     @Override
@@ -226,9 +227,9 @@ implements ServerWorldAccess {
         boolean bl = this.isRaining();
         if (this.getDimension().hasSkyLight()) {
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
-                int i = this.field_24456.getClearWeatherTime();
-                int j = this.field_24456.getThunderTime();
-                int k = this.field_24456.getRainTime();
+                int i = this.worldProperties.getClearWeatherTime();
+                int j = this.worldProperties.getThunderTime();
+                int k = this.worldProperties.getRainTime();
                 boolean bl2 = this.properties.isThundering();
                 boolean bl3 = this.properties.isRaining();
                 if (i > 0) {
@@ -253,11 +254,11 @@ implements ServerWorldAccess {
                         k = bl3 ? this.random.nextInt(12000) + 12000 : this.random.nextInt(168000) + 12000;
                     }
                 }
-                this.field_24456.setThunderTime(j);
-                this.field_24456.setRainTime(k);
-                this.field_24456.setClearWeatherTime(i);
-                this.field_24456.setThundering(bl2);
-                this.field_24456.setRaining(bl3);
+                this.worldProperties.setThunderTime(j);
+                this.worldProperties.setRainTime(k);
+                this.worldProperties.setClearWeatherTime(i);
+                this.worldProperties.setThundering(bl2);
+                this.worldProperties.setRaining(bl3);
             }
             this.thunderGradientPrev = this.thunderGradient;
             this.thunderGradient = this.properties.isThundering() ? (float)((double)this.thunderGradient + 0.01) : (float)((double)this.thunderGradient - 0.01);
@@ -281,11 +282,11 @@ implements ServerWorldAccess {
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient));
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient));
         }
-        if (this.allPlayersSleeping && this.players.stream().noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && !serverPlayerEntity.isSleepingLongEnough())) {
+        if (this.allPlayersSleeping && this.players.stream().noneMatch(player -> !player.isSpectator() && !player.isSleepingLongEnough())) {
             this.allPlayersSleeping = false;
             if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
                 long l = this.properties.getTimeOfDay() + 24000L;
-                this.method_29199(l - l % 24000L);
+                this.setTimeOfDay(l - l % 24000L);
             }
             this.wakeSleepingPlayers();
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
@@ -364,15 +365,15 @@ implements ServerWorldAccess {
             return;
         }
         long l = this.properties.getTime() + 1L;
-        this.field_24456.method_29034(l);
-        this.field_24456.getScheduledEvents().processEvents(this.server, l);
+        this.worldProperties.setTime(l);
+        this.worldProperties.getScheduledEvents().processEvents(this.server, l);
         if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-            this.method_29199(this.properties.getTimeOfDay() + 1L);
+            this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
         }
     }
 
-    public void method_29199(long l) {
-        this.field_24456.method_29035(l);
+    public void setTimeOfDay(long timeOfDay) {
+        this.worldProperties.setTimeOfDay(timeOfDay);
     }
 
     public void tickSpawners(boolean spawnMonsters, boolean spawnAnimals) {
@@ -382,7 +383,7 @@ implements ServerWorldAccess {
     }
 
     private void wakeSleepingPlayers() {
-        this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList()).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false));
+        this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList()).forEach(player -> player.wakeUp(false, false));
     }
 
     public void tickChunk(WorldChunk chunk, int randomTickSpeed) {
@@ -450,7 +451,7 @@ implements ServerWorldAccess {
     protected BlockPos getSurface(BlockPos pos) {
         BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
         Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getHeight(), blockPos.getZ())).expand(3.0);
-        List<LivingEntity> list = this.getEntities(LivingEntity.class, box, (? super T livingEntity) -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos()));
+        List<LivingEntity> list = this.getEntities(LivingEntity.class, box, (? super T entity) -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos()));
         if (!list.isEmpty()) {
             return list.get(this.random.nextInt(list.size())).getBlockPos();
         }
@@ -487,10 +488,10 @@ implements ServerWorldAccess {
     }
 
     private void resetWeather() {
-        this.field_24456.setRainTime(0);
-        this.field_24456.setRaining(false);
-        this.field_24456.setThunderTime(0);
-        this.field_24456.setThundering(false);
+        this.worldProperties.setRainTime(0);
+        this.worldProperties.setRaining(false);
+        this.worldProperties.setThunderTime(0);
+        this.worldProperties.setThundering(false);
     }
 
     public void resetIdleTimeout() {
@@ -513,7 +514,7 @@ implements ServerWorldAccess {
 
     public void tickEntity(Entity entity) {
         if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
-            this.checkChunk(entity);
+            this.checkEntityChunkPos(entity);
             return;
         }
         entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
@@ -527,7 +528,7 @@ implements ServerWorldAccess {
             entity.tick();
             profiler.pop();
         }
-        this.checkChunk(entity);
+        this.checkEntityChunkPos(entity);
         if (entity.updateNeeded) {
             for (Entity entity2 : entity.getPassengerList()) {
                 this.tickPassenger(entity, entity2);
@@ -554,7 +555,7 @@ implements ServerWorldAccess {
             passenger.tickRiding();
             profiler.pop();
         }
-        this.checkChunk(passenger);
+        this.checkEntityChunkPos(passenger);
         if (passenger.updateNeeded) {
             for (Entity entity : passenger.getPassengerList()) {
                 this.tickPassenger(passenger, entity);
@@ -562,8 +563,11 @@ implements ServerWorldAccess {
         }
     }
 
-    public void checkChunk(Entity entity) {
-        if (!entity.method_29240()) {
+    /**
+     * Validates if an entity's current position matches its chunk position. If the entity's chunk position and actual position don't match, then the entity will be moved to its new chunk.
+     */
+    public void checkEntityChunkPos(Entity entity) {
+        if (!entity.isChunkPosUpdateRequested()) {
             return;
         }
         this.getProfiler().push("chunkCheck");
@@ -664,17 +668,17 @@ implements ServerWorldAccess {
         entity.teleporting = true;
         this.tryLoadEntity(entity);
         entity.teleporting = bl;
-        this.checkChunk(entity);
+        this.checkEntityChunkPos(entity);
     }
 
     public void onPlayerTeleport(ServerPlayerEntity player) {
         this.addPlayer(player);
-        this.checkChunk(player);
+        this.checkEntityChunkPos(player);
     }
 
     public void onPlayerChangeDimension(ServerPlayerEntity player) {
         this.addPlayer(player);
-        this.checkChunk(player);
+        this.checkEntityChunkPos(player);
     }
 
     public void onPlayerConnected(ServerPlayerEntity player) {
@@ -987,6 +991,11 @@ implements ServerWorldAccess {
         return this.savingDisabled;
     }
 
+    @Override
+    public DynamicRegistryManager getRegistryManager() {
+        return this.server.getRegistryManager();
+    }
+
     public PersistentStateManager getPersistentStateManager() {
         return this.getChunkManager().getPersistentStateManager();
     }
@@ -1225,7 +1234,7 @@ implements ServerWorldAccess {
     }
 
     public String toString() {
-        return "ServerLevel[" + this.field_24456.getLevelName() + "]";
+        return "ServerLevel[" + this.worldProperties.getLevelName() + "]";
     }
 
     public boolean isFlat() {

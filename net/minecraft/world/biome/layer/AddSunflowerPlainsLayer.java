@@ -3,7 +3,7 @@
  */
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.type.SouthEastSamplingLayer;
 import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
@@ -24,8 +24,8 @@ public enum AddSunflowerPlainsLayer implements SouthEastSamplingLayer
     }
 
     static {
-        PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);
-        SUNFLOWER_PLAINS = Registry.BIOME.getRawId(Biomes.SUNFLOWER_PLAINS);
+        PLAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.PLAINS);
+        SUNFLOWER_PLAINS = BuiltinRegistries.BIOME.getRawId(Biomes.SUNFLOWER_PLAINS);
     }
 }
 

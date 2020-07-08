@@ -27,8 +27,9 @@ implements IndexedIterable<K> {
         this.idToValues = new Object[size];
     }
 
-    public int getId(@Nullable K value) {
-        return this.getIdFromIndex(this.findIndex(value, this.getIdealIndex(value)));
+    @Override
+    public int getRawId(@Nullable K object) {
+        return this.getIdFromIndex(this.findIndex(object, this.getIdealIndex(object)));
     }
 
     @Override
