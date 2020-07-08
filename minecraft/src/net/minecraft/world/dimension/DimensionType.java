@@ -16,12 +16,12 @@ import net.minecraft.block.Block;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeAccessType;
@@ -52,7 +52,7 @@ public class DimensionType {
 					Codec.BOOL.fieldOf("bed_works").forGetter(DimensionType::isBedWorking),
 					Codec.BOOL.fieldOf("respawn_anchor_works").forGetter(DimensionType::isRespawnAnchorWorking),
 					Codec.BOOL.fieldOf("has_raids").forGetter(DimensionType::hasRaids),
-					NumberCodecs.rangedInt(0, 256).fieldOf("logical_height").forGetter(DimensionType::getLogicalHeight),
+					Codec.intRange(0, 256).fieldOf("logical_height").forGetter(DimensionType::getLogicalHeight),
 					Identifier.CODEC.fieldOf("infiniburn").forGetter(dimensionType -> dimensionType.infiniburn),
 					Codec.FLOAT.fieldOf("ambient_light").forGetter(dimensionType -> dimensionType.ambientLight)
 				)
@@ -260,12 +260,13 @@ public class DimensionType {
 		return World.CODEC.parse(dynamic);
 	}
 
-	public static RegistryTracker.Modifiable addRegistryDefaults(RegistryTracker.Modifiable registryTracker) {
-		registryTracker.addDimensionType(OVERWORLD_REGISTRY_KEY, OVERWORLD);
-		registryTracker.addDimensionType(OVERWORLD_CAVES_REGISTRY_KEY, OVERWORLD_CAVES);
-		registryTracker.addDimensionType(THE_NETHER_REGISTRY_KEY, THE_NETHER);
-		registryTracker.addDimensionType(THE_END_REGISTRY_KEY, THE_END);
-		return registryTracker;
+	public static DynamicRegistryManager.Impl addRegistryDefaults(DynamicRegistryManager.Impl registryManager) {
+		MutableRegistry<DimensionType> mutableRegistry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
+		mutableRegistry.add(OVERWORLD_REGISTRY_KEY, OVERWORLD);
+		mutableRegistry.add(OVERWORLD_CAVES_REGISTRY_KEY, OVERWORLD_CAVES);
+		mutableRegistry.add(THE_NETHER_REGISTRY_KEY, THE_NETHER);
+		mutableRegistry.add(THE_END_REGISTRY_KEY, THE_END);
+		return registryManager;
 	}
 
 	private static ChunkGenerator createEndGenerator(long seed) {

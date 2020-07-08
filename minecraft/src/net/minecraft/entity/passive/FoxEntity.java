@@ -984,7 +984,7 @@ public class FoxEntity extends AnimalEntity {
 		public final FoxEntity.Type type;
 
 		public FoxData(FoxEntity.Type type) {
-			this.setBabyAllowed(false);
+			super(false);
 			this.type = type;
 		}
 	}

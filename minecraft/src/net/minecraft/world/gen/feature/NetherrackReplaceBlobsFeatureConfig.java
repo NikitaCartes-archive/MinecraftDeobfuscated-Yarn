@@ -2,70 +2,29 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.class_5428;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.Vec3i;
 
 public class NetherrackReplaceBlobsFeatureConfig implements FeatureConfig {
-	public static final Codec<NetherrackReplaceBlobsFeatureConfig> CODEC = RecordCodecBuilder.create(
+	public static final Codec<NetherrackReplaceBlobsFeatureConfig> field_25848 = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.CODEC.fieldOf("target").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.target),
-					BlockState.CODEC.fieldOf("state").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.state),
-					Vec3i.field_25123.fieldOf("minimum_reach").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.minReachPos),
-					Vec3i.field_25123.fieldOf("maximum_reach").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.maxReachPos)
+					BlockState.CODEC.fieldOf("target").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.field_25849),
+					BlockState.CODEC.fieldOf("state").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.field_25850),
+					class_5428.field_25809.fieldOf("radius").forGetter(netherrackReplaceBlobsFeatureConfig -> netherrackReplaceBlobsFeatureConfig.field_25851)
 				)
 				.apply(instance, NetherrackReplaceBlobsFeatureConfig::new)
 	);
-	public final BlockState target;
-	public final BlockState state;
-	public final Vec3i minReachPos;
-	public final Vec3i maxReachPos;
+	public final BlockState field_25849;
+	public final BlockState field_25850;
+	private final class_5428 field_25851;
 
-	public NetherrackReplaceBlobsFeatureConfig(BlockState target, BlockState state, Vec3i minReachPos, Vec3i maxReachPos) {
-		this.target = target;
-		this.state = state;
-		this.minReachPos = minReachPos;
-		this.maxReachPos = maxReachPos;
+	public NetherrackReplaceBlobsFeatureConfig(BlockState blockState, BlockState blockState2, class_5428 arg) {
+		this.field_25849 = blockState;
+		this.field_25850 = blockState2;
+		this.field_25851 = arg;
 	}
 
-	public static class Builder {
-		private BlockState target = Blocks.AIR.getDefaultState();
-		private BlockState state = Blocks.AIR.getDefaultState();
-		private Vec3i minReachPos = Vec3i.ZERO;
-		private Vec3i maxReachPos = Vec3i.ZERO;
-
-		public NetherrackReplaceBlobsFeatureConfig.Builder target(BlockState target) {
-			this.target = target;
-			return this;
-		}
-
-		public NetherrackReplaceBlobsFeatureConfig.Builder state(BlockState state) {
-			this.state = state;
-			return this;
-		}
-
-		public NetherrackReplaceBlobsFeatureConfig.Builder minReachPos(Vec3i minReachPos) {
-			this.minReachPos = minReachPos;
-			return this;
-		}
-
-		public NetherrackReplaceBlobsFeatureConfig.Builder maxReachPos(Vec3i maxReachPos) {
-			this.maxReachPos = maxReachPos;
-			return this;
-		}
-
-		public NetherrackReplaceBlobsFeatureConfig build() {
-			if (this.minReachPos.getX() >= 0 && this.minReachPos.getY() >= 0 && this.minReachPos.getZ() >= 0) {
-				if (this.minReachPos.getX() <= this.maxReachPos.getX()
-					&& this.minReachPos.getY() <= this.maxReachPos.getY()
-					&& this.minReachPos.getZ() <= this.maxReachPos.getZ()) {
-					return new NetherrackReplaceBlobsFeatureConfig(this.target, this.state, this.minReachPos, this.maxReachPos);
-				} else {
-					throw new IllegalArgumentException("Maximum reach must be greater than minimum reach for each axis");
-				}
-			} else {
-				throw new IllegalArgumentException("Minimum reach cannot be less than zero");
-			}
-		}
+	public class_5428 method_30405() {
+		return this.field_25851;
 	}
 }

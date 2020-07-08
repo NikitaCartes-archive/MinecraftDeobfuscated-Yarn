@@ -32,7 +32,11 @@ public class LocateBiomeCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Identifier identifier) throws CommandSyntaxException {
-		Biome biome = (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> INVALID_EXCEPTION.create(identifier));
+		Biome biome = (Biome)source.getMinecraftServer()
+			.getRegistryManager()
+			.get(Registry.BIOME_KEY)
+			.getOrEmpty(identifier)
+			.orElseThrow(() -> INVALID_EXCEPTION.create(identifier));
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		BlockPos blockPos2 = source.getWorld().locateBiome(biome, blockPos, 6400, 8);
 		String string = identifier.toString();

@@ -106,11 +106,11 @@ public class ClientChunkManager extends ChunkManager {
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();
-			lightingProvider.setLightEnabled(new ChunkPos(x, z), true);
+			lightingProvider.setColumnEnabled(new ChunkPos(x, z), true);
 
 			for (int j = 0; j < chunkSections.length; j++) {
 				ChunkSection chunkSection = chunkSections[j];
-				lightingProvider.updateSectionStatus(ChunkSectionPos.from(x, j, z), ChunkSection.isEmpty(chunkSection));
+				lightingProvider.setSectionStatus(ChunkSectionPos.from(x, j, z), ChunkSection.isEmpty(chunkSection));
 			}
 
 			this.world.resetChunkColor(x, z);

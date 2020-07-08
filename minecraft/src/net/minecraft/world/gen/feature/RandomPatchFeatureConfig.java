@@ -23,13 +23,13 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 						.fieldOf("whitelist")
 						.forGetter(randomPatchFeatureConfig -> (List)randomPatchFeatureConfig.whitelist.stream().map(Block::getDefaultState).collect(Collectors.toList())),
 					BlockState.CODEC.listOf().fieldOf("blacklist").forGetter(randomPatchFeatureConfig -> ImmutableList.copyOf(randomPatchFeatureConfig.blacklist)),
-					Codec.INT.fieldOf("tries").withDefault(128).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.tries),
-					Codec.INT.fieldOf("xspread").withDefault(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadX),
-					Codec.INT.fieldOf("yspread").withDefault(3).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadY),
-					Codec.INT.fieldOf("zspread").withDefault(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadZ),
-					Codec.BOOL.fieldOf("can_replace").withDefault(false).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.canReplace),
-					Codec.BOOL.fieldOf("project").withDefault(true).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.project),
-					Codec.BOOL.fieldOf("need_water").withDefault(false).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.needsWater)
+					Codec.INT.fieldOf("tries").orElse(128).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.tries),
+					Codec.INT.fieldOf("xspread").orElse(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadX),
+					Codec.INT.fieldOf("yspread").orElse(3).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadY),
+					Codec.INT.fieldOf("zspread").orElse(7).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.spreadZ),
+					Codec.BOOL.fieldOf("can_replace").orElse(false).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.canReplace),
+					Codec.BOOL.fieldOf("project").orElse(true).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.project),
+					Codec.BOOL.fieldOf("need_water").orElse(false).forGetter(randomPatchFeatureConfig -> randomPatchFeatureConfig.needsWater)
 				)
 				.apply(instance, RandomPatchFeatureConfig::new)
 	);

@@ -16,7 +16,7 @@ public class RandomBooleanFeature extends Feature<RandomBooleanFeatureConfig> {
 	) {
 		boolean bl = random.nextBoolean();
 		return bl
-			? randomBooleanFeatureConfig.featureTrue.generate(serverWorldAccess, chunkGenerator, random, blockPos)
-			: randomBooleanFeatureConfig.featureFalse.generate(serverWorldAccess, chunkGenerator, random, blockPos);
+			? ((ConfiguredFeature)randomBooleanFeatureConfig.featureTrue.get()).generate(serverWorldAccess, chunkGenerator, random, blockPos)
+			: ((ConfiguredFeature)randomBooleanFeatureConfig.featureFalse.get()).generate(serverWorldAccess, chunkGenerator, random, blockPos);
 	}
 }

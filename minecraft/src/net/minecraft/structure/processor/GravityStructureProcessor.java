@@ -15,9 +15,9 @@ public class GravityStructureProcessor extends StructureProcessor {
 		instance -> instance.group(
 					Heightmap.Type.field_24772
 						.fieldOf("heightmap")
-						.withDefault(Heightmap.Type.WORLD_SURFACE_WG)
+						.orElse(Heightmap.Type.WORLD_SURFACE_WG)
 						.forGetter(gravityStructureProcessor -> gravityStructureProcessor.heightmap),
-					Codec.INT.fieldOf("offset").withDefault(0).forGetter(gravityStructureProcessor -> gravityStructureProcessor.offset)
+					Codec.INT.fieldOf("offset").orElse(0).forGetter(gravityStructureProcessor -> gravityStructureProcessor.offset)
 				)
 				.apply(instance, GravityStructureProcessor::new)
 	);

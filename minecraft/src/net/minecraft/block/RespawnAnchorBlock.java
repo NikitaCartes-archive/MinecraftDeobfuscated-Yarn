@@ -29,7 +29,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.explosion.DefaultExplosionBehavior;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
@@ -118,12 +117,7 @@ public class RespawnAnchorBlock extends Block {
 			public Optional<Float> getBlastResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState) {
 				return pos.equals(explodedPos) && bl2
 					? Optional.of(Blocks.WATER.getBlastResistance())
-					: DefaultExplosionBehavior.INSTANCE.getBlastResistance(explosion, world, pos, blockState, fluidState);
-			}
-
-			@Override
-			public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
-				return DefaultExplosionBehavior.INSTANCE.canDestroyBlock(explosion, world, pos, state, power);
+					: super.getBlastResistance(explosion, world, pos, blockState, fluidState);
 			}
 		};
 		world.createExplosion(

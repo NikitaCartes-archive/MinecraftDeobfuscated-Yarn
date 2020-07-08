@@ -22,7 +22,7 @@ public class SeedCommand {
 								.styled(
 									style -> style.withColor(Formatting.GREEN)
 											.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(l)))
-											.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.copy.click")))
+											.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.copy.click")))
 											.withInsertion(String.valueOf(l))
 								)
 						);

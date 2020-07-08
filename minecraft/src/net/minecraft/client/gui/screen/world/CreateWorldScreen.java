@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -25,6 +27,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.GeneratorType;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
@@ -39,7 +42,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -53,6 +56,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class CreateWorldScreen extends Screen {
 	private static final Logger field_25480 = LogManager.getLogger();
+	private static final TranslatableText field_25898 = new TranslatableText("selectWorld.gameMode");
 	private final Screen parent;
 	private TextFieldWidget levelNameField;
 	private String saveDirectoryName;
@@ -64,7 +68,7 @@ public class CreateWorldScreen extends Screen {
 	private boolean cheatsEnabled;
 	private boolean tweakedCheats;
 	public boolean hardcore;
-	protected DataPackSettings field_25479 = DataPackSettings.SAFE_MODE;
+	protected DataPackSettings field_25479;
 	@Nullable
 	private Path field_25477;
 	@Nullable
@@ -84,16 +88,24 @@ public class CreateWorldScreen extends Screen {
 	public final MoreOptionsDialog moreOptionsDialog;
 
 	public CreateWorldScreen(
-		@Nullable Screen screen, LevelInfo levelInfo, GeneratorOptions generatorOptions, @Nullable Path path, RegistryTracker.Modifiable modifiable
+		@Nullable Screen screen,
+		LevelInfo levelInfo,
+		GeneratorOptions generatorOptions,
+		@Nullable Path path,
+		DataPackSettings dataPackSettings,
+		DynamicRegistryManager.Impl impl
 	) {
-		this(screen, new MoreOptionsDialog(modifiable, generatorOptions));
+		this(
+			screen,
+			dataPackSettings,
+			new MoreOptionsDialog(impl, generatorOptions, GeneratorType.method_29078(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
+		);
 		this.levelName = levelInfo.getLevelName();
 		this.cheatsEnabled = levelInfo.isHardcore();
 		this.tweakedCheats = true;
 		this.field_24289 = levelInfo.getDifficulty();
 		this.field_24290 = this.field_24289;
 		this.gameRules.setAllValues(levelInfo.getGameRules(), null);
-		this.field_25479 = levelInfo.method_29558();
 		if (levelInfo.hasStructures()) {
 			this.currentMode = CreateWorldScreen.Mode.HARDCORE;
 		} else if (levelInfo.getGameMode().isSurvivalLike()) {
@@ -106,13 +118,18 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	public CreateWorldScreen(@Nullable Screen parent) {
-		this(parent, new MoreOptionsDialog());
+		this(
+			parent,
+			DataPackSettings.SAFE_MODE,
+			new MoreOptionsDialog(DynamicRegistryManager.create(), GeneratorOptions.getDefaultOptions(), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty())
+		);
 	}
 
-	private CreateWorldScreen(@Nullable Screen screen, MoreOptionsDialog moreOptionsDialog) {
+	private CreateWorldScreen(@Nullable Screen screen, DataPackSettings dataPackSettings, MoreOptionsDialog moreOptionsDialog) {
 		super(new TranslatableText("selectWorld.create"));
 		this.parent = screen;
 		this.levelName = I18n.translate("selectWorld.newWorld");
+		this.field_25479 = dataPackSettings;
 		this.moreOptionsDialog = moreOptionsDialog;
 	}
 
@@ -145,7 +162,7 @@ public class CreateWorldScreen extends Screen {
 		int i = this.width / 2 - 155;
 		int j = this.width / 2 + 5;
 		this.gameModeSwitchButton = this.addButton(
-			new ButtonWidget(i, 100, 150, 20, new TranslatableText("selectWorld.gameMode"), buttonWidget -> {
+			new ButtonWidget(i, 100, 150, 20, LiteralText.EMPTY, buttonWidget -> {
 				switch (this.currentMode) {
 					case SURVIVAL:
 						this.tweakDefaultsTo(CreateWorldScreen.Mode.HARDCORE);
@@ -161,10 +178,11 @@ public class CreateWorldScreen extends Screen {
 			}) {
 				@Override
 				public Text getMessage() {
-					return super.getMessage()
-						.shallowCopy()
-						.append(": ")
-						.append(new TranslatableText("selectWorld.gameMode." + CreateWorldScreen.this.currentMode.translationSuffix));
+					return new TranslatableText(
+						"options.generic_value",
+						CreateWorldScreen.field_25898,
+						new TranslatableText("selectWorld.gameMode." + CreateWorldScreen.this.currentMode.translationSuffix)
+					);
 				}
 
 				@Override
@@ -187,26 +205,21 @@ public class CreateWorldScreen extends Screen {
 				return new TranslatableText("options.difficulty").append(": ").append(CreateWorldScreen.this.field_24290.getTranslatableName());
 			}
 		});
-		this.enableCheatsButton = this.addButton(
-			new ButtonWidget(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), buttonWidget -> {
-				this.tweakedCheats = true;
-				this.cheatsEnabled = !this.cheatsEnabled;
-				buttonWidget.queueNarration(250);
-			}) {
-				@Override
-				public Text getMessage() {
-					return super.getMessage()
-						.shallowCopy()
-						.append(" ")
-						.append(ScreenTexts.getToggleText(CreateWorldScreen.this.cheatsEnabled && !CreateWorldScreen.this.hardcore));
-				}
-
-				@Override
-				protected MutableText getNarrationMessage() {
-					return super.getNarrationMessage().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"));
-				}
+		this.enableCheatsButton = this.addButton(new ButtonWidget(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), buttonWidget -> {
+			this.tweakedCheats = true;
+			this.cheatsEnabled = !this.cheatsEnabled;
+			buttonWidget.queueNarration(250);
+		}) {
+			@Override
+			public Text getMessage() {
+				return ScreenTexts.method_30619(super.getMessage(), CreateWorldScreen.this.cheatsEnabled && !CreateWorldScreen.this.hardcore);
 			}
-		);
+
+			@Override
+			protected MutableText getNarrationMessage() {
+				return super.getNarrationMessage().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"));
+			}
+		});
 		this.field_25478 = this.addButton(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), buttonWidget -> this.method_29694()));
 		this.gameRulesButton = this.addButton(
 			new ButtonWidget(
@@ -431,7 +444,7 @@ public class CreateWorldScreen extends Screen {
 				this.field_25477 = Files.createTempDirectory("mcworld-");
 			} catch (IOException var2) {
 				field_25480.warn("Failed to create temporary dir", (Throwable)var2);
-				SystemToast.method_29627(this.client, this.saveDirectoryName);
+				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
 				this.method_30297();
 			}
 		}
@@ -484,6 +497,8 @@ public class CreateWorldScreen extends Screen {
 						} else {
 							this.client.send(() -> {
 								this.field_25479 = dataPackSettings;
+								this.moreOptionsDialog.method_30509(DynamicRegistryManager.load(serverResourceManager.getResourceManager()));
+								serverResourceManager.close();
 								this.client.openScreen(this);
 							});
 						}
@@ -569,7 +584,7 @@ public class CreateWorldScreen extends Screen {
 				}
 			} catch (CreateWorldScreen.WorldCreationException | IOException var33) {
 				field_25480.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
-				SystemToast.method_29627(this.client, this.saveDirectoryName);
+				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
 				this.method_30297();
 				return false;
 			}
@@ -620,7 +635,7 @@ public class CreateWorldScreen extends Screen {
 			}
 		} catch (CreateWorldScreen.WorldCreationException | IOException var16) {
 			field_25480.warn("Failed to copy datapacks from world {}", path, var16);
-			SystemToast.method_29627(minecraftClient, path.toString());
+			SystemToast.addPackCopyFailure(minecraftClient, path.toString());
 			return null;
 		}
 

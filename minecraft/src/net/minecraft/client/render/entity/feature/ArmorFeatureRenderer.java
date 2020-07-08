@@ -99,7 +99,7 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		float h,
 		@Nullable String string
 	) {
-		VertexConsumer vertexConsumer = ItemRenderer.method_27952(
+		VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
 			vertexConsumerProvider, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(armorItem, bl2, string)), false, bl
 		);
 		bipedEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, 1.0F);

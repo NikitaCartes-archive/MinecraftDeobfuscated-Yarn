@@ -11,8 +11,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -49,8 +47,8 @@ import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
@@ -176,7 +174,7 @@ public class LevelStorage {
 	@Nullable
 	private static DataPackSettings method_29583(File file, DataFixer dataFixer) {
 		try {
-			CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
+			CompoundTag compoundTag = NbtIo.method_30613(file);
 			CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 			compoundTag2.remove("Player");
 			int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
@@ -193,7 +191,7 @@ public class LevelStorage {
 	private static BiFunction<File, DataFixer, LevelProperties> readLevelProperties(DynamicOps<Tag> dynamicOps, DataPackSettings dataPackSettings) {
 		return (file, dataFixer) -> {
 			try {
-				CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
+				CompoundTag compoundTag = NbtIo.method_30613(file);
 				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 				CompoundTag compoundTag3 = compoundTag2.contains("Player", 10) ? compoundTag2.getCompound("Player") : null;
 				compoundTag2.remove("Player");
@@ -215,7 +213,7 @@ public class LevelStorage {
 	private BiFunction<File, DataFixer, LevelSummary> method_29014(File file, boolean bl) {
 		return (file2, dataFixer) -> {
 			try {
-				CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file2));
+				CompoundTag compoundTag = NbtIo.method_30613(file2);
 				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 				compoundTag2.remove("Player");
 				int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
@@ -334,19 +332,19 @@ public class LevelStorage {
 			return LevelStorage.this.readLevelProperties(this.directory.toFile(), (file, dataFixer) -> LevelStorage.method_29583(file, dataFixer));
 		}
 
-		public void method_27425(RegistryTracker registryTracker, SaveProperties saveProperties) {
-			this.method_27426(registryTracker, saveProperties, null);
+		public void method_27425(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties) {
+			this.method_27426(dynamicRegistryManager, saveProperties, null);
 		}
 
-		public void method_27426(RegistryTracker registryTracker, SaveProperties saveProperties, @Nullable CompoundTag compoundTag) {
+		public void method_27426(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties, @Nullable CompoundTag compoundTag) {
 			File file = this.directory.toFile();
-			CompoundTag compoundTag2 = saveProperties.cloneWorldTag(registryTracker, compoundTag);
+			CompoundTag compoundTag2 = saveProperties.cloneWorldTag(dynamicRegistryManager, compoundTag);
 			CompoundTag compoundTag3 = new CompoundTag();
 			compoundTag3.put("Data", compoundTag2);
 
 			try {
 				File file2 = File.createTempFile("level", ".dat", file);
-				NbtIo.writeCompressed(compoundTag3, new FileOutputStream(file2));
+				NbtIo.method_30614(compoundTag3, file2);
 				File file3 = new File(file, "level.dat_old");
 				File file4 = new File(file, "level.dat");
 				Util.method_27760(file4, file2, file3);
@@ -416,10 +414,10 @@ public class LevelStorage {
 			if (file.exists()) {
 				File file2 = new File(file, "level.dat");
 				if (file2.exists()) {
-					CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file2));
+					CompoundTag compoundTag = NbtIo.method_30613(file2);
 					CompoundTag compoundTag2 = compoundTag.getCompound("Data");
 					compoundTag2.putString("LevelName", name);
-					NbtIo.writeCompressed(compoundTag, new FileOutputStream(file2));
+					NbtIo.method_30614(compoundTag, file2);
 				}
 			}
 		}

@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -62,7 +62,7 @@ public abstract class GeneratorType {
 	};
 	private static final GeneratorType SINGLE_BIOME_CAVES = new GeneratorType("single_biome_caves") {
 		@Override
-		public GeneratorOptions method_29077(RegistryTracker.Modifiable modifiable, long l, boolean bl, boolean bl2) {
+		public GeneratorOptions method_29077(DynamicRegistryManager.Impl impl, long l, boolean bl, boolean bl2) {
 			return new GeneratorOptions(
 				l, bl, bl2, GeneratorOptions.method_29962(DimensionType.method_28517(l), DimensionType::getOverworldCavesDimensionType, this.getChunkGenerator(l))
 			);
@@ -109,18 +109,21 @@ public abstract class GeneratorType {
 		Optional.of(SINGLE_BIOME_SURFACE),
 		(createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(
 				createWorldScreen,
+				createWorldScreen.moreOptionsDialog.method_29700(),
 				biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(method_29079(generatorOptions, SINGLE_BIOME_SURFACE, biome)),
 				getFirstBiome(generatorOptions)
 			),
 		Optional.of(SINGLE_BIOME_CAVES),
 		(createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(
 				createWorldScreen,
+				createWorldScreen.moreOptionsDialog.method_29700(),
 				biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(method_29079(generatorOptions, SINGLE_BIOME_CAVES, biome)),
 				getFirstBiome(generatorOptions)
 			),
 		Optional.of(SINGLE_BIOME_FLOATING_ISLANDS),
 		(createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(
 				createWorldScreen,
+				createWorldScreen.moreOptionsDialog.method_29700(),
 				biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(method_29079(generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)),
 				getFirstBiome(generatorOptions)
 			)
@@ -167,7 +170,7 @@ public abstract class GeneratorType {
 		return this.translationKey;
 	}
 
-	public GeneratorOptions method_29077(RegistryTracker.Modifiable modifiable, long l, boolean bl, boolean bl2) {
+	public GeneratorOptions method_29077(DynamicRegistryManager.Impl impl, long l, boolean bl, boolean bl2) {
 		return new GeneratorOptions(l, bl, bl2, GeneratorOptions.method_28608(DimensionType.method_28517(l), this.getChunkGenerator(l)));
 	}
 

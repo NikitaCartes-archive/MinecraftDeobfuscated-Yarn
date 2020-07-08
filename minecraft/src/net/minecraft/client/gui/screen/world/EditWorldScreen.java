@@ -35,7 +35,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -124,12 +124,12 @@ public class EditWorldScreen extends Screen {
 				20,
 				new TranslatableText("selectWorld.edit.export_worldgen_settings"),
 				buttonWidgetx -> {
-					RegistryTracker.Modifiable modifiable = RegistryTracker.create();
+					DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 
 					DataResult<String> dataResult2;
 					try (MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client
-							.method_29604(modifiable, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, this.field_23777)) {
-						DynamicOps<JsonElement> dynamicOps = RegistryReadingOps.of(JsonOps.INSTANCE, modifiable);
+							.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, this.field_23777)) {
+						DynamicOps<JsonElement> dynamicOps = RegistryReadingOps.of(JsonOps.INSTANCE, impl);
 						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, integratedResourceManager.getSaveProperties().getGeneratorOptions());
 						dataResult2 = dataResult.flatMap(jsonElement -> {
 							Path path = this.field_23777.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
@@ -171,7 +171,7 @@ public class EditWorldScreen extends Screen {
 						dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure"
 					);
 					dataResult2.error().ifPresent(partialResult -> field_23776.error("Error exporting world settings: {}", partialResult));
-					this.client.getToastManager().add(SystemToast.method_29047(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
+					this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
 				}
 			)
 		);

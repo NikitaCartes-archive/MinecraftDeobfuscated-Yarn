@@ -41,8 +41,8 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
@@ -141,8 +141,8 @@ public class Main {
 			}
 
 			serverResourceManager.loadRegistryTags();
-			RegistryTracker.Modifiable modifiable = RegistryTracker.create();
-			RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), modifiable);
+			DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+			RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 			SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
 			if (saveProperties == null) {
 				LevelInfo levelInfo;
@@ -161,7 +161,7 @@ public class Main {
 						new GameRules(),
 						dataPackSettings2
 					);
-					generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.field_24623.withBonusChest() : serverPropertiesHandler.field_24623;
+					generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.generatorOptions.withBonusChest() : serverPropertiesHandler.generatorOptions;
 				}
 
 				saveProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
@@ -171,13 +171,13 @@ public class Main {
 				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions().getWorlds());
 			}
 
-			session.method_27425(modifiable, saveProperties);
+			session.method_27425(impl, saveProperties);
 			SaveProperties saveProperties2 = saveProperties;
 			final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(
 				serverThread -> {
 					MinecraftDedicatedServer minecraftDedicatedServerx = new MinecraftDedicatedServer(
 						serverThread,
-						modifiable,
+						impl,
 						session,
 						resourcePackManager,
 						serverResourceManager,

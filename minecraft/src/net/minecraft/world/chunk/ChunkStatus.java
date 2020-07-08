@@ -51,7 +51,7 @@ public class ChunkStatus {
 		(targetStatus, world, generator, structureManager, lightingProvider, function, surroundingChunks, chunk) -> {
 			if (!chunk.getStatus().isAtLeast(targetStatus)) {
 				if (world.getServer().getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
-					generator.setStructureStarts(world.getStructureAccessor(), chunk, structureManager, world.getSeed());
+					generator.setStructureStarts(world.getRegistryManager(), world.getStructureAccessor(), chunk, structureManager, world.getSeed());
 				}
 
 				if (chunk instanceof ProtoChunk) {
@@ -74,7 +74,7 @@ public class ChunkStatus {
 		0,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.field_12808,
-		(world, generator, surroundingChunks, chunk) -> generator.populateBiomes(chunk)
+		(world, generator, surroundingChunks, chunk) -> generator.populateBiomes(world.getRegistryManager().get(Registry.BIOME_KEY), chunk)
 	);
 	public static final ChunkStatus NOISE = register(
 		"noise", BIOMES, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {

@@ -111,11 +111,11 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	public static class Spike {
 		public static final Codec<EndSpikeFeature.Spike> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.INT.fieldOf("centerX").withDefault(0).forGetter(spike -> spike.centerX),
-						Codec.INT.fieldOf("centerZ").withDefault(0).forGetter(spike -> spike.centerZ),
-						Codec.INT.fieldOf("radius").withDefault(0).forGetter(spike -> spike.radius),
-						Codec.INT.fieldOf("height").withDefault(0).forGetter(spike -> spike.height),
-						Codec.BOOL.fieldOf("guarded").withDefault(false).forGetter(spike -> spike.guarded)
+						Codec.INT.fieldOf("centerX").orElse(0).forGetter(spike -> spike.centerX),
+						Codec.INT.fieldOf("centerZ").orElse(0).forGetter(spike -> spike.centerZ),
+						Codec.INT.fieldOf("radius").orElse(0).forGetter(spike -> spike.radius),
+						Codec.INT.fieldOf("height").orElse(0).forGetter(spike -> spike.height),
+						Codec.BOOL.fieldOf("guarded").orElse(false).forGetter(spike -> spike.guarded)
 					)
 					.apply(instance, EndSpikeFeature.Spike::new)
 		);

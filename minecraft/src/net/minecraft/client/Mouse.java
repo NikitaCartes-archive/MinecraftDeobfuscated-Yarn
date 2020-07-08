@@ -157,7 +157,7 @@ public class Mouse {
 
 	private void method_29616(long l, List<Path> list) {
 		if (this.client.currentScreen != null) {
-			this.client.currentScreen.method_29638(list);
+			this.client.currentScreen.filesDragged(list);
 		}
 	}
 

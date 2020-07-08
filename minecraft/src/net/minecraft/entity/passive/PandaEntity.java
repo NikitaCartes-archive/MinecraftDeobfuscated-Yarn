@@ -535,8 +535,7 @@ public class PandaEntity extends AnimalEntity {
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
 		this.resetAttributes();
 		if (entityData == null) {
-			entityData = new PassiveEntity.PassiveData();
-			((PassiveEntity.PassiveData)entityData).setBabyChance(0.2F);
+			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
 		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);

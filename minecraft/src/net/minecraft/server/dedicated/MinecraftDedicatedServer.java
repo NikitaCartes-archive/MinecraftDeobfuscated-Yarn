@@ -45,7 +45,7 @@ import net.minecraft.util.logging.UncaughtExceptionHandler;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -68,7 +68,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	public MinecraftDedicatedServer(
 		Thread thread,
-		RegistryTracker.Modifiable modifiable,
+		DynamicRegistryManager.Impl impl,
 		LevelStorage.Session session,
 		ResourcePackManager resourcePackManager,
 		ServerResourceManager serverResourceManager,
@@ -82,7 +82,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	) {
 		super(
 			thread,
-			modifiable,
+			impl,
 			session,
 			saveProperties,
 			resourcePackManager,
@@ -179,7 +179,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (!ServerConfigHandler.checkSuccess(this)) {
 			return false;
 		} else {
-			this.setPlayerManager(new DedicatedPlayerManager(this, this.dimensionTracker, this.field_24371));
+			this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.field_24371));
 			long l = Util.getMeasuringTimeNano();
 			this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
 			SkullBlockEntity.setUserCache(this.getUserCache());
@@ -340,6 +340,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public boolean isDedicated() {
 		return true;
+	}
+
+	@Override
+	public int getRateLimit() {
+		return this.getProperties().rateLimit;
 	}
 
 	@Override

@@ -2,13 +2,12 @@ package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.dynamic.NumberCodecs;
 
 public class SlideConfig {
 	public static final Codec<SlideConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.INT.fieldOf("target").forGetter(SlideConfig::getTarget),
-					NumberCodecs.rangedInt(0, 256).fieldOf("size").forGetter(SlideConfig::getSize),
+					Codec.intRange(0, 256).fieldOf("size").forGetter(SlideConfig::getSize),
 					Codec.INT.fieldOf("offset").forGetter(SlideConfig::getOffset)
 				)
 				.apply(instance, SlideConfig::new)

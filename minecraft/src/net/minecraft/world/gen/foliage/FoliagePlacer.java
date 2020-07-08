@@ -1,11 +1,12 @@
 package net.minecraft.world.gen.foliage;
 
-import com.mojang.datafixers.Products.P4;
+import com.mojang.datafixers.Products.P2;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -15,25 +16,19 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class FoliagePlacer {
 	public static final Codec<FoliagePlacer> CODEC = Registry.FOLIAGE_PLACER_TYPE.dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
-	protected final int radius;
-	protected final int randomRadius;
-	protected final int offset;
-	protected final int randomOffset;
+	protected final class_5428 radius;
+	protected final class_5428 offset;
 
-	protected static <P extends FoliagePlacer> P4<Mu<P>, Integer, Integer, Integer, Integer> method_28846(Instance<P> instance) {
+	protected static <P extends FoliagePlacer> P2<Mu<P>, class_5428, class_5428> method_30411(Instance<P> instance) {
 		return instance.group(
-			Codec.INT.fieldOf("radius").forGetter(foliagePlacer -> foliagePlacer.radius),
-			Codec.INT.fieldOf("radius_random").forGetter(foliagePlacer -> foliagePlacer.randomRadius),
-			Codec.INT.fieldOf("offset").forGetter(foliagePlacer -> foliagePlacer.offset),
-			Codec.INT.fieldOf("offset_random").forGetter(foliagePlacer -> foliagePlacer.randomOffset)
+			class_5428.method_30316(0, 8, 8).fieldOf("radius").forGetter(foliagePlacer -> foliagePlacer.radius),
+			class_5428.method_30316(0, 8, 8).fieldOf("offset").forGetter(foliagePlacer -> foliagePlacer.offset)
 		);
 	}
 
-	public FoliagePlacer(int radius, int randomRadius, int offset, int randomOffset) {
-		this.radius = radius;
-		this.randomRadius = randomRadius;
-		this.offset = offset;
-		this.randomOffset = randomOffset;
+	public FoliagePlacer(class_5428 arg, class_5428 arg2) {
+		this.radius = arg;
+		this.offset = arg2;
 	}
 
 	protected abstract FoliagePlacerType<?> getType();
@@ -71,11 +66,11 @@ public abstract class FoliagePlacer {
 	public abstract int getHeight(Random random, int trunkHeight, TreeFeatureConfig config);
 
 	public int getRadius(Random random, int baseHeight) {
-		return this.radius + random.nextInt(this.randomRadius + 1);
+		return this.radius.method_30321(random);
 	}
 
 	private int method_27386(Random random) {
-		return this.offset + random.nextInt(this.randomOffset + 1);
+		return this.offset.method_30321(random);
 	}
 
 	protected abstract boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl);

@@ -29,6 +29,7 @@ import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -112,7 +113,7 @@ public class PresetsScreen extends Screen {
 		return list;
 	}
 
-	public static FlatChunkGeneratorConfig method_29060(String string, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+	public static FlatChunkGeneratorConfig method_29060(Registry<Biome> registry, String string, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		Iterator<String> iterator = Splitter.on(';').split(string).iterator();
 		if (!iterator.hasNext()) {
 			return FlatChunkGeneratorConfig.getDefaultConfig();
@@ -126,9 +127,9 @@ public class PresetsScreen extends Screen {
 				if (iterator.hasNext()) {
 					try {
 						Identifier identifier = new Identifier((String)iterator.next());
-						biome = (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
-					} catch (Exception var7) {
-						field_25043.error("Error while parsing flat world string => {}", var7.getMessage());
+						biome = (Biome)registry.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
+					} catch (Exception var8) {
+						field_25043.error("Error while parsing flat world string => {}", var8.getMessage());
 					}
 				}
 
@@ -138,7 +139,7 @@ public class PresetsScreen extends Screen {
 		}
 	}
 
-	private static String method_29062(FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+	private static String method_29062(DynamicRegistryManager dynamicRegistryManager, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (int i = 0; i < flatChunkGeneratorConfig.getLayers().size(); i++) {
@@ -150,7 +151,7 @@ public class PresetsScreen extends Screen {
 		}
 
 		stringBuilder.append(";");
-		stringBuilder.append(Registry.BIOME.getId(flatChunkGeneratorConfig.getBiome()));
+		stringBuilder.append(dynamicRegistryManager.get(Registry.BIOME_KEY).getId(flatChunkGeneratorConfig.getBiome()));
 		return stringBuilder.toString();
 	}
 
@@ -161,17 +162,26 @@ public class PresetsScreen extends Screen {
 		this.listText = new TranslatableText("createWorld.customize.presets.list");
 		this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
 		this.customPresetField.setMaxLength(1230);
-		this.customPresetField.setText(method_29062(this.parent.method_29055()));
+		this.customPresetField.setText(method_29062(this.parent.parent.moreOptionsDialog.method_29700(), this.parent.method_29055()));
 		this.field_25044 = this.parent.method_29055();
 		this.children.add(this.customPresetField);
 		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget();
 		this.children.add(this.listWidget);
 		this.selectPresetButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
-				FlatChunkGeneratorConfig flatChunkGeneratorConfig = method_29060(this.customPresetField.getText(), this.field_25044);
-				this.parent.method_29054(flatChunkGeneratorConfig);
-				this.client.openScreen(this.parent);
-			})
+			new ButtonWidget(
+				this.width / 2 - 155,
+				this.height - 28,
+				150,
+				20,
+				new TranslatableText("createWorld.customize.presets.select"),
+				buttonWidget -> {
+					FlatChunkGeneratorConfig flatChunkGeneratorConfig = method_29060(
+						this.parent.parent.moreOptionsDialog.method_29700().get(Registry.BIOME_KEY), this.customPresetField.getText(), this.field_25044
+					);
+					this.parent.method_29054(flatChunkGeneratorConfig);
+					this.client.openScreen(this.parent);
+				}
+			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
 		this.updateSelectButton(this.listWidget.getSelected() != null);
@@ -456,7 +466,8 @@ public class PresetsScreen extends Screen {
 				SuperflatPresetsListWidget.this.setSelected(this);
 				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.presets
 					.get(SuperflatPresetsListWidget.this.children().indexOf(this));
-				PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(superflatPreset.field_25045));
+				PresetsScreen.this.customPresetField
+					.setText(PresetsScreen.method_29062(PresetsScreen.this.parent.parent.moreOptionsDialog.method_29700(), superflatPreset.field_25045));
 				PresetsScreen.this.customPresetField.setCursorToStart();
 				PresetsScreen.this.field_25044 = superflatPreset.field_25045;
 			}

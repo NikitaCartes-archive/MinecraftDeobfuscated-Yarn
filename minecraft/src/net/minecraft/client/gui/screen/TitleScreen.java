@@ -32,7 +32,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -206,7 +206,7 @@ public class TitleScreen extends Screen {
 				200,
 				20,
 				new TranslatableText("menu.playdemo"),
-				buttonWidget -> this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, RegistryTracker.create(), GeneratorOptions.DEMO_CONFIG)
+				buttonWidget -> this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, DynamicRegistryManager.create(), GeneratorOptions.DEMO_CONFIG)
 			)
 		);
 		this.buttonResetDemo = this.addButton(

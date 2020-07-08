@@ -89,6 +89,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		hashMap.put(EntityType.MAGMA_CUBE, SoundEvents.ENTITY_PARROT_IMITATE_MAGMA_CUBE);
 		hashMap.put(EntityType.PHANTOM, SoundEvents.ENTITY_PARROT_IMITATE_PHANTOM);
 		hashMap.put(EntityType.PIGLIN, SoundEvents.ENTITY_PARROT_IMITATE_PIGLIN);
+		hashMap.put(EntityType.PIGLIN_BRUTE, SoundEvents.ENTITY_PARROT_IMITATE_PIGLIN_BRUTE);
 		hashMap.put(EntityType.PILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_PILLAGER);
 		hashMap.put(EntityType.RAVAGER, SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER);
 		hashMap.put(EntityType.SHULKER, SoundEvents.ENTITY_PARROT_IMITATE_SHULKER);
@@ -129,8 +130,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	) {
 		this.setVariant(this.random.nextInt(5));
 		if (entityData == null) {
-			entityData = new PassiveEntity.PassiveData();
-			((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
+			entityData = new PassiveEntity.PassiveData(false);
 		}
 
 		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);

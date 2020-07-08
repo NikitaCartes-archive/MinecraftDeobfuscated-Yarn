@@ -47,10 +47,9 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -373,9 +372,7 @@ public class EnderDragonFight {
 
 	private void generateEndGateway(BlockPos blockPos) {
 		this.world.syncWorldEvent(3000, blockPos, 0);
-		Feature.END_GATEWAY
-			.configure(EndGatewayFeatureConfig.createConfig())
-			.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos);
+		ConfiguredFeatures.END_GATEWAY_DELAYED.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos);
 	}
 
 	private void generateEndPortal(boolean previouslyKilled) {

@@ -1,6 +1,5 @@
 package net.minecraft.block.entity;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
@@ -17,9 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.SinglePoolElement;
-import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
@@ -132,16 +129,16 @@ public class JigsawBlockEntity extends BlockEntity {
 		List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
 		Structure structure = new Structure();
 		structure.saveFromWorld(world, blockPos, new BlockPos(1, 1, 1), false, null);
-		StructurePoolElement structurePoolElement = new SinglePoolElement(structure, ImmutableList.of(), StructurePool.Projection.RIGID);
-		JigsawBlockEntity.RuntimeStructurePiece runtimeStructurePiece = new JigsawBlockEntity.RuntimeStructurePiece(
+		StructurePoolElement structurePoolElement = new SinglePoolElement(structure);
+		PoolStructurePiece poolStructurePiece = new PoolStructurePiece(
 			structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos)
 		);
 		StructurePoolBasedGenerator.method_27230(
-			runtimeStructurePiece, maxDepth, JigsawBlockEntity.RuntimeStructurePiece::new, chunkGenerator, structureManager, list, random
+			world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random
 		);
 
-		for (PoolStructurePiece poolStructurePiece : list) {
-			poolStructurePiece.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
+		for (PoolStructurePiece poolStructurePiece2 : list) {
+			poolStructurePiece2.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
 		}
 	}
 
@@ -162,18 +159,6 @@ public class JigsawBlockEntity extends BlockEntity {
 
 		public static Optional<JigsawBlockEntity.Joint> byName(String name) {
 			return Arrays.stream(values()).filter(joint -> joint.asString().equals(name)).findFirst();
-		}
-	}
-
-	public static final class RuntimeStructurePiece extends PoolStructurePiece {
-		public RuntimeStructurePiece(
-			StructureManager manager, StructurePoolElement poolElement, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox box
-		) {
-			super(StructurePieceType.RUNTIME, manager, poolElement, pos, groundLevelDelta, rotation, box);
-		}
-
-		public RuntimeStructurePiece(StructureManager manager, CompoundTag tag) {
-			super(manager, tag, StructurePieceType.RUNTIME);
 		}
 	}
 }

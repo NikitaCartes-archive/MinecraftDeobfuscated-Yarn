@@ -8,6 +8,7 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -34,7 +35,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		ChunkPos chunkPos,
 		DefaultFeatureConfig defaultFeatureConfig
 	) {
-		return chunkGenerator.method_28507(new ChunkPos(i, j));
+		return chunkGenerator.isStrongholdStartingChunk(new ChunkPos(i, j));
 	}
 
 	public static class Start extends StructureStart<DefaultFeatureConfig> {
@@ -45,7 +46,15 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 			this.field_24559 = l;
 		}
 
-		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
+		public void init(
+			DynamicRegistryManager dynamicRegistryManager,
+			ChunkGenerator chunkGenerator,
+			StructureManager structureManager,
+			int i,
+			int j,
+			Biome biome,
+			DefaultFeatureConfig defaultFeatureConfig
+		) {
 			int k = 0;
 
 			StrongholdGenerator.Start start;

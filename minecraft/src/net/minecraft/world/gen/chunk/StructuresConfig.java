@@ -10,16 +10,26 @@ import javax.annotation.Nullable;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.StructureFeature;
 
+/**
+ * Contains the configuration for placement of each structure type during chunk generation.
+ */
 public class StructuresConfig {
 	public static final Codec<StructuresConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					StrongholdConfig.CODEC.optionalFieldOf("stronghold").forGetter(structuresConfig -> Optional.ofNullable(structuresConfig.stronghold)),
+					StrongholdConfig.CODEC.optionalFieldOf("stronghold").forGetter(config -> Optional.ofNullable(config.stronghold)),
 					Codec.simpleMap(Registry.STRUCTURE_FEATURE, StructureConfig.CODEC, Registry.STRUCTURE_FEATURE)
 						.fieldOf("structures")
-						.forGetter(structuresConfig -> structuresConfig.structures)
+						.forGetter(config -> config.structures)
 				)
 				.apply(instance, StructuresConfig::new)
 	);
+	/**
+	 * Default placement settings for each known structure type.
+	 * At startup, Minecraft validates that each registered structure has a default
+	 * configuration in this map. If mods register structures after this class
+	 * has been initialized, the check will already have been made and a
+	 * bad default configuration will be used instead (see below).
+	 */
 	public static final ImmutableMap<StructureFeature<?>, StructureConfig> DEFAULT_STRUCTURES = ImmutableMap.<StructureFeature<?>, StructureConfig>builder()
 		.put(StructureFeature.VILLAGE, new StructureConfig(32, 8, 10387312))
 		.put(StructureFeature.DESERT_PYRAMID, new StructureConfig(32, 8, 14357617))
@@ -40,8 +50,15 @@ public class StructuresConfig {
 		.put(StructureFeature.FORTRESS, new StructureConfig(27, 4, 30084232))
 		.put(StructureFeature.NETHER_FOSSIL, new StructureConfig(2, 1, 14357921))
 		.build();
+	/**
+	 * Default placement settings for the Stronghold.
+	 */
 	public static final StrongholdConfig DEFAULT_STRONGHOLD;
 	private final Map<StructureFeature<?>, StructureConfig> structures;
+	/**
+	 * Placement settings for the stronghold for this particular combination of settings,
+	 * may be null to disable placement of strongholds.
+	 */
 	@Nullable
 	private final StrongholdConfig stronghold;
 
@@ -50,17 +67,26 @@ public class StructuresConfig {
 		this.structures = structures;
 	}
 
-	public StructuresConfig(boolean bl) {
+	/**
+	 * Creates a new structure placement configuration with default values.
+	 * 
+	 * @param withStronghold Determines if the default stronghold configuration should be included.
+	 */
+	public StructuresConfig(boolean withStronghold) {
 		this.structures = Maps.<StructureFeature<?>, StructureConfig>newHashMap(DEFAULT_STRUCTURES);
-		this.stronghold = bl ? DEFAULT_STRONGHOLD : null;
+		this.stronghold = withStronghold ? DEFAULT_STRONGHOLD : null;
 	}
 
 	public Map<StructureFeature<?>, StructureConfig> getStructures() {
 		return this.structures;
 	}
 
-	public StructureConfig method_28600(StructureFeature<?> structureFeature) {
-		return (StructureConfig)this.structures.getOrDefault(structureFeature, new StructureConfig(1, 0, 0));
+	/**
+	 * Gets the placement configuration for a specific structure type, or
+	 * a default placement if placement for the structure was not explicitly configured.
+	 */
+	public StructureConfig getForType(StructureFeature<?> structureType) {
+		return (StructureConfig)this.structures.getOrDefault(structureType, new StructureConfig(1, 0, 0));
 	}
 
 	@Nullable

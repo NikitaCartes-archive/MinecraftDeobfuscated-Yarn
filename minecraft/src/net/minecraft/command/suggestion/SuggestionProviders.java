@@ -31,7 +31,10 @@ public class SuggestionProviders {
 		(commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(commandContext.getSource().getSoundIds(), suggestionsBuilder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> ALL_BIOMES = register(
-		new Identifier("available_biomes"), (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(Registry.BIOME.getIds(), suggestionsBuilder)
+		new Identifier("available_biomes"),
+		(commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
+				commandContext.getSource().getRegistryManager().get(Registry.BIOME_KEY).getIds(), suggestionsBuilder
+			)
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
 		new Identifier("summonable_entities"),

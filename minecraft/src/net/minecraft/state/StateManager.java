@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.dynamic.NumberCodecs;
 
 public class StateManager<O, S extends State<O, S>> {
 	private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-z0-9_]+$");
@@ -74,7 +73,7 @@ public class StateManager<O, S extends State<O, S>> {
 	private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> method_30040(
 		MapCodec<S> mapCodec, Supplier<S> supplier, String string, Property<T> property
 	) {
-		return Codec.mapPair(mapCodec, NumberCodecs.method_30018(property.method_30044().fieldOf(string), () -> property.method_30041((State<?, ?>)supplier.get())))
+		return Codec.mapPair(mapCodec, property.method_30044().fieldOf(string).setPartial(() -> property.method_30041((State<?, ?>)supplier.get())))
 			.xmap(
 				pair -> (State)((State)pair.getFirst()).with(property, ((Property.class_4933)pair.getSecond()).method_30045()),
 				state -> Pair.of(state, property.method_30041(state))

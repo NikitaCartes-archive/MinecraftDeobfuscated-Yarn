@@ -322,8 +322,8 @@ public class ItemEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(ServerWorld destination) {
-		Entity entity = super.changeDimension(destination);
+	public Entity moveToWorld(ServerWorld destination) {
+		Entity entity = super.moveToWorld(destination);
 		if (!this.world.isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}

@@ -42,8 +42,8 @@ public class GeneratorOptions {
 	public static final Codec<GeneratorOptions> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.LONG.fieldOf("seed").stable().forGetter(GeneratorOptions::getSeed),
-						Codec.BOOL.fieldOf("generate_features").withDefault(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures),
-						Codec.BOOL.fieldOf("bonus_chest").withDefault(false).stable().forGetter(GeneratorOptions::hasBonusChest),
+						Codec.BOOL.fieldOf("generate_features").orElse(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures),
+						Codec.BOOL.fieldOf("bonus_chest").orElse(false).stable().forGetter(GeneratorOptions::hasBonusChest),
 						SimpleRegistry.createCodec(Registry.DIMENSION_OPTIONS, Lifecycle.stable(), DimensionOptions.CODEC)
 							.xmap(DimensionOptions::method_29569, Function.identity())
 							.fieldOf("dimensions")

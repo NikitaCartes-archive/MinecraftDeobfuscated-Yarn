@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
@@ -27,17 +28,12 @@ public class FeaturePoolElement extends StructurePoolElement {
 		instance -> instance.group(ConfiguredFeature.CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), method_28883())
 				.apply(instance, FeaturePoolElement::new)
 	);
-	private final ConfiguredFeature<?, ?> feature;
+	private final Supplier<ConfiguredFeature<?, ?>> feature;
 	private final CompoundTag tag;
 
-	@Deprecated
-	public FeaturePoolElement(ConfiguredFeature<?, ?> feature) {
-		this(feature, StructurePool.Projection.RIGID);
-	}
-
-	private FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
+	protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> supplier, StructurePool.Projection projection) {
 		super(projection);
-		this.feature = configuredFeature;
+		this.feature = supplier;
 		this.tag = this.createDefaultJigsawTag();
 	}
 
@@ -85,7 +81,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		Random random,
 		boolean keepJigsaws
 	) {
-		return this.feature.generate(serverWorldAccess, chunkGenerator, random, blockPos);
+		return ((ConfiguredFeature)this.feature.get()).generate(serverWorldAccess, chunkGenerator, random, blockPos);
 	}
 
 	@Override
@@ -94,6 +90,6 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	public String toString() {
-		return "Feature[" + Registry.FEATURE.getId(this.feature.feature) + "]";
+		return "Feature[" + Registry.FEATURE.getId(((ConfiguredFeature)this.feature.get()).method_30380()) + "]";
 	}
 }

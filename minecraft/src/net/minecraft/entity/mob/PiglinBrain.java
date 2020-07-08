@@ -18,6 +18,7 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.AdmireItemTask;
+import net.minecraft.entity.ai.brain.task.AdmireItemTimeLimitTask;
 import net.minecraft.entity.ai.brain.task.AttackTask;
 import net.minecraft.entity.ai.brain.task.ConditionalTask;
 import net.minecraft.entity.ai.brain.task.CrossbowAttackTask;
@@ -176,7 +177,11 @@ public class PiglinBrain {
 		brain.setTaskList(
 			Activity.ADMIRE_ITEM,
 			10,
-			ImmutableList.of(new WalkToNearestVisibleWantedItemTask<>(PiglinBrain::doesNotHaveGoldInOffHand, 1.0F, true, 9), new WantNewItemTask(9)),
+			ImmutableList.of(
+				new WalkToNearestVisibleWantedItemTask<>(PiglinBrain::doesNotHaveGoldInOffHand, 1.0F, true, 9),
+				new WantNewItemTask(9),
+				new AdmireItemTimeLimitTask(200, 200)
+			),
 			MemoryModuleType.ADMIRING_ITEM
 		);
 	}
@@ -289,6 +294,7 @@ public class PiglinBrain {
 
 		Item item = itemStack.getItem();
 		if (isGoldenItem(item)) {
+			piglin.getBrain().forget(MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM);
 			swapItemWithOffHand(piglin, itemStack);
 			setAdmiringItem(piglin);
 		} else if (isFood(item) && !hasAteRecently(piglin)) {

@@ -190,7 +190,7 @@ public class CommandManager {
 			}
 
 			commandSource.sendError(
-				new TranslatableText("command.failed").styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2)))
+				new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2)))
 			);
 			if (SharedConstants.isDevelopment) {
 				commandSource.sendError(new LiteralText(Util.getInnermostMessage(var15)));

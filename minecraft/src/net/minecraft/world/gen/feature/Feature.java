@@ -11,6 +11,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.TestableWorld;
+import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -41,20 +42,20 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = register("monster_room", new DungeonFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> BLUE_ICE = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> ICEBERG = register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));
-	public static final Feature<ForestRockFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(ForestRockFeatureConfig.CODEC));
-	public static final Feature<DiskFeatureConfig> DISK = register("disk", new DiskFeature(DiskFeatureConfig.CODEC));
-	public static final Feature<IcePatchFeatureConfig> ICE_PATCH = register("ice_patch", new IcePatchFeature(IcePatchFeatureConfig.CODEC));
+	public static final Feature<SingleStateFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(SingleStateFeatureConfig.CODEC));
+	public static final Feature<DiskFeatureConfig> DISK = register("disk", new UnderwaterDiskFeature(DiskFeatureConfig.CODEC));
+	public static final Feature<DiskFeatureConfig> ICE_PATCH = register("ice_patch", new IcePatchFeature(DiskFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> LAKE = register("lake", new LakeFeature(SingleStateFeatureConfig.CODEC));
 	public static final Feature<OreFeatureConfig> ORE = register("ore", new OreFeature(OreFeatureConfig.CODEC));
 	public static final Feature<EndSpikeFeatureConfig> END_SPIKE = register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> END_ISLAND = register("end_island", new EndIslandFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<EndGatewayFeatureConfig> END_GATEWAY = register("end_gateway", new EndGatewayFeature(EndGatewayFeatureConfig.CODEC));
-	public static final Feature<SeagrassFeatureConfig> SEAGRASS = register("seagrass", new SeagrassFeature(SeagrassFeatureConfig.CODEC));
+	public static final SeagrassFeature SEAGRASS = register("seagrass", new SeagrassFeature(ProbabilityConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> KELP = register("kelp", new KelpFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> CORAL_TREE = register("coral_tree", new CoralTreeFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> CORAL_MUSHROOM = register("coral_mushroom", new CoralMushroomFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> CORAL_CLAW = register("coral_claw", new CoralClawFeature(DefaultFeatureConfig.CODEC));
-	public static final Feature<SeaPickleFeatureConfig> SEA_PICKLE = register("sea_pickle", new SeaPickleFeature(SeaPickleFeatureConfig.CODEC));
+	public static final Feature<CountConfig> SEA_PICKLE = register("sea_pickle", new SeaPickleFeature(CountConfig.CODEC));
 	public static final Feature<SimpleBlockFeatureConfig> SIMPLE_BLOCK = register("simple_block", new SimpleBlockFeature(SimpleBlockFeatureConfig.CODEC));
 	public static final Feature<ProbabilityConfig> BAMBOO = register("bamboo", new BambooFeature(ProbabilityConfig.CODEC));
 	public static final Feature<HugeFungusFeatureConfig> HUGE_FUNGUS = register("huge_fungus", new HugeFungusFeature(HugeFungusFeatureConfig.CODEC));
@@ -66,15 +67,12 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<BasaltColumnsFeatureConfig> BASALT_COLUMNS = register("basalt_columns", new BasaltColumnsFeature(BasaltColumnsFeatureConfig.CODEC));
 	public static final Feature<DeltaFeatureConfig> DELTA_FEATURE = register("delta_feature", new DeltaFeature(DeltaFeatureConfig.CODEC));
 	public static final Feature<NetherrackReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = register(
-		"netherrack_replace_blobs", new NetherrackReplaceBlobsFeature(NetherrackReplaceBlobsFeatureConfig.CODEC)
+		"netherrack_replace_blobs", new NetherrackReplaceBlobsFeature(NetherrackReplaceBlobsFeatureConfig.field_25848)
 	);
 	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> BASALT_PILLAR = register("basalt_pillar", new BasaltPillarFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<OreFeatureConfig> NO_SURFACE_ORE = register("no_surface_ore", new NoSurfaceOreFeature(OreFeatureConfig.CODEC));
-	public static final Feature<RandomRandomFeatureConfig> RANDOM_RANDOM_SELECTOR = register(
-		"random_random_selector", new RandomRandomFeature(RandomRandomFeatureConfig.CODEC)
-	);
 	public static final Feature<RandomFeatureConfig> RANDOM_SELECTOR = register("random_selector", new RandomFeature(RandomFeatureConfig.CODEC));
 	public static final Feature<SimpleRandomFeatureConfig> SIMPLE_RANDOM_SELECTOR = register(
 		"simple_random_selector", new SimpleRandomFeature(SimpleRandomFeatureConfig.CODEC)

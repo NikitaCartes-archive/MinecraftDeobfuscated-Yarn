@@ -106,9 +106,9 @@ import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.TickTimeTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
@@ -138,8 +138,7 @@ import net.minecraft.world.gen.PillagerSpawner;
 import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
@@ -158,7 +157,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected final WorldSaveHandler field_24371;
 	private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
 	private final List<Runnable> serverGuiTickables = Lists.<Runnable>newArrayList();
-	private TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, this::getTicks);
+	private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, this::getTicks);
 	private Profiler profiler = DummyProfiler.INSTANCE;
 	private final ServerNetworkIo networkIo;
 	private final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
@@ -167,7 +166,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final DataFixer dataFixer;
 	private String serverIp;
 	private int serverPort = -1;
-	protected final RegistryTracker.Modifiable dimensionTracker;
+	protected final DynamicRegistryManager.Impl registryManager;
 	private final Map<RegistryKey<World>, ServerWorld> worlds = Maps.<RegistryKey<World>, ServerWorld>newLinkedHashMap();
 	private PlayerManager playerManager;
 	private volatile boolean running = true;
@@ -232,7 +231,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public MinecraftServer(
 		Thread thread,
-		RegistryTracker.Modifiable modifiable,
+		DynamicRegistryManager.Impl impl,
 		LevelStorage.Session session,
 		SaveProperties saveProperties,
 		ResourcePackManager resourcePackManager,
@@ -245,7 +244,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super("Server");
-		this.dimensionTracker = modifiable;
+		this.registryManager = impl;
 		this.saveProperties = saveProperties;
 		this.proxy = proxy;
 		this.dataPackManager = resourcePackManager;
@@ -340,8 +339,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			chunkGenerator = dimensionOptions.getChunkGenerator();
 		}
 
-		RegistryKey<DimensionType> registryKey = (RegistryKey<DimensionType>)this.dimensionTracker
-			.getDimensionTypeRegistry()
+		RegistryKey<DimensionType> registryKey = (RegistryKey<DimensionType>)this.registryManager
+			.getDimensionTypes()
 			.getKey(dimensionType)
 			.orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType));
 		ServerWorld serverWorld = new ServerWorld(
@@ -396,8 +395,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			if (registryKey2 != DimensionOptions.OVERWORLD) {
 				RegistryKey<World> registryKey3 = RegistryKey.of(Registry.DIMENSION, registryKey2.getValue());
 				DimensionType dimensionType2 = ((DimensionOptions)entry.getValue()).getDimensionType();
-				RegistryKey<DimensionType> registryKey4 = (RegistryKey<DimensionType>)this.dimensionTracker
-					.getDimensionTypeRegistry()
+				RegistryKey<DimensionType> registryKey4 = (RegistryKey<DimensionType>)this.registryManager
+					.getDimensionTypes()
 					.getKey(dimensionType2)
 					.orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType2));
 				ChunkGenerator chunkGenerator2 = ((DimensionOptions)entry.getValue()).getChunkGenerator();
@@ -475,7 +474,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			if (bl) {
-				ConfiguredFeature<?, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
+				ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeatures.BONUS_CHEST;
 				configuredFeature.generate(
 					serverWorld,
 					chunkGenerator,
@@ -493,7 +492,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		serverWorldProperties.setRaining(false);
 		serverWorldProperties.setThundering(false);
 		serverWorldProperties.setClearWeatherTime(1000000000);
-		serverWorldProperties.method_29035(6000L);
+		serverWorldProperties.setTimeOfDay(6000L);
 		serverWorldProperties.setGameMode(GameMode.SPECTATOR);
 	}
 
@@ -578,7 +577,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
 		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
-		this.session.method_27426(this.dimensionTracker, this.saveProperties, this.getPlayerManager().getUserData());
+		this.session.method_27426(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
 		return bl4;
 	}
 
@@ -1119,6 +1118,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public abstract boolean isDedicated();
 
+	public abstract int getRateLimit();
+
 	public boolean isOnlineMode() {
 		return this.onlineMode;
 	}
@@ -1579,9 +1580,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		try {
 			final List<String> list = Lists.<String>newArrayList();
 			final GameRules gameRules = this.getGameRules();
-			GameRules.forEachType(new GameRules.TypeConsumer() {
+			GameRules.accept(new GameRules.Visitor() {
 				@Override
-				public <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
+				public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
 					list.add(String.format("%s=%s\n", key.getName(), gameRules.<T>get(key).toString()));
 				}
 			});
@@ -1712,5 +1713,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public SaveProperties getSaveProperties() {
 		return this.saveProperties;
+	}
+
+	public DynamicRegistryManager getRegistryManager() {
+		return this.registryManager;
 	}
 }

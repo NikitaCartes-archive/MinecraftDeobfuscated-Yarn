@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import java.util.Locale;
-import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.registry.Registry;
 
@@ -10,8 +9,6 @@ public interface StructurePieceType {
 	StructurePieceType MINESHAFT_CROSSING = register(MineshaftGenerator.MineshaftCrossing::new, "MSCrossing");
 	StructurePieceType MINESHAFT_ROOM = register(MineshaftGenerator.MineshaftRoom::new, "MSRoom");
 	StructurePieceType MINESHAFT_STAIRS = register(MineshaftGenerator.MineshaftStairs::new, "MSStairs");
-	StructurePieceType PILLAGER_OUTPOST = register(PillagerOutpostGenerator.Piece::new, "PCP");
-	StructurePieceType VILLAGE = register(VillageGenerator.Piece::new, "NVi");
 	StructurePieceType NETHER_FORTRESS_BRIDGE_CROSSING = register(NetherFortressGenerator.BridgeCrossing::new, "NeBCr");
 	StructurePieceType NETHER_FORTRESS_BRIDGE_END = register(NetherFortressGenerator.BridgeEnd::new, "NeBEF");
 	StructurePieceType NETHER_FORTRESS_BRIDGE = register(NetherFortressGenerator.Bridge::new, "NeBS");
@@ -63,8 +60,7 @@ public interface StructurePieceType {
 	StructurePieceType BURIED_TREASURE = register(BuriedTreasureGenerator.Piece::new, "BTP");
 	StructurePieceType SHIPWRECK = register(ShipwreckGenerator.Piece::new, "Shipwreck");
 	StructurePieceType NETHER_FOSSIL = register(NetherFossilGenerator.Piece::new, "NeFos");
-	StructurePieceType BASTION_REMNANT = register(BastionRemnantGenerator.Piece::new, "BastionRemnant");
-	StructurePieceType RUNTIME = register(JigsawBlockEntity.RuntimeStructurePiece::new, "Runtime");
+	StructurePieceType JIGSAW = register(PoolStructurePiece::new, "jigsaw");
 
 	StructurePiece load(StructureManager structureManager, CompoundTag tag);
 

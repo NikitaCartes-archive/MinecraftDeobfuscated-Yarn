@@ -36,7 +36,7 @@ public class BiMapPalette<T> implements Palette<T> {
 
 	@Override
 	public int getIndex(T object) {
-		int i = this.map.getId(object);
+		int i = this.map.getRawId(object);
 		if (i == -1) {
 			i = this.map.add(object);
 			if (i >= 1 << this.indexBits) {
@@ -81,7 +81,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		buf.writeVarInt(i);
 
 		for (int j = 0; j < i; j++) {
-			buf.writeVarInt(this.idList.getId(this.map.get(j)));
+			buf.writeVarInt(this.idList.getRawId(this.map.get(j)));
 		}
 	}
 
@@ -90,7 +90,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		int i = PacketByteBuf.getVarIntSizeBytes(this.getIndexBits());
 
 		for (int j = 0; j < this.getIndexBits(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getId(this.map.get(j)));
+			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getRawId(this.map.get(j)));
 		}
 
 		return i;

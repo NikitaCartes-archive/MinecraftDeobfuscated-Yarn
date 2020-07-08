@@ -32,6 +32,7 @@ import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.LegacyQueryHandler;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketEncoder;
+import net.minecraft.network.RateLimitedConnection;
 import net.minecraft.network.SizePrepender;
 import net.minecraft.network.SplitterHandler;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
@@ -87,7 +88,7 @@ public class ServerNetworkIo {
 								protected void initChannel(Channel channel) throws Exception {
 									try {
 										channel.config().setOption(ChannelOption.TCP_NODELAY, true);
-									} catch (ChannelException var3) {
+									} catch (ChannelException var4) {
 									}
 
 									channel.pipeline()
@@ -97,7 +98,8 @@ public class ServerNetworkIo {
 										.addLast("decoder", new DecoderHandler(NetworkSide.SERVERBOUND))
 										.addLast("prepender", new SizePrepender())
 										.addLast("encoder", new PacketEncoder(NetworkSide.CLIENTBOUND));
-									ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
+									int i = ServerNetworkIo.this.server.getRateLimit();
+									ClientConnection clientConnection = (ClientConnection)(i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.SERVERBOUND));
 									ServerNetworkIo.this.connections.add(clientConnection);
 									channel.pipeline().addLast("packet_handler", clientConnection);
 									clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));

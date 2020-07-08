@@ -11,6 +11,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -26,7 +27,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	protected boolean method_27219() {
+	protected boolean isUniformDistribution() {
 		return false;
 	}
 
@@ -73,7 +74,15 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 			super(structureFeature, i, j, blockBox, k, l);
 		}
 
-		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
+		public void init(
+			DynamicRegistryManager dynamicRegistryManager,
+			ChunkGenerator chunkGenerator,
+			StructureManager structureManager,
+			int i,
+			int j,
+			Biome biome,
+			DefaultFeatureConfig defaultFeatureConfig
+		) {
 			this.method_16588(i, j);
 		}
 

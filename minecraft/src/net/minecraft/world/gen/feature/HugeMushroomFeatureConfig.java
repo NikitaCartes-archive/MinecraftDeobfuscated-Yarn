@@ -9,7 +9,7 @@ public class HugeMushroomFeatureConfig implements FeatureConfig {
 		instance -> instance.group(
 					BlockStateProvider.CODEC.fieldOf("cap_provider").forGetter(hugeMushroomFeatureConfig -> hugeMushroomFeatureConfig.capProvider),
 					BlockStateProvider.CODEC.fieldOf("stem_provider").forGetter(hugeMushroomFeatureConfig -> hugeMushroomFeatureConfig.stemProvider),
-					Codec.INT.fieldOf("foliage_radius").withDefault(2).forGetter(hugeMushroomFeatureConfig -> hugeMushroomFeatureConfig.capSize)
+					Codec.INT.fieldOf("foliage_radius").orElse(2).forGetter(hugeMushroomFeatureConfig -> hugeMushroomFeatureConfig.capSize)
 				)
 				.apply(instance, HugeMushroomFeatureConfig::new)
 	);

@@ -56,23 +56,23 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
+	public void setSectionStatus(ChunkSectionPos pos, boolean notReady) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.updateSectionStatus(pos, status);
+			this.blockLightProvider.setSectionStatus(pos, notReady);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.updateSectionStatus(pos, status);
+			this.skyLightProvider.setSectionStatus(pos, notReady);
 		}
 	}
 
-	public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
+	public void setColumnEnabled(ChunkPos pos, boolean lightEnabled) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.setLightEnabled(pos, lightEnabled);
+			this.blockLightProvider.setColumnEnabled(pos, lightEnabled);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.setLightEnabled(pos, lightEnabled);
+			this.skyLightProvider.setColumnEnabled(pos, lightEnabled);
 		}
 	}
 
@@ -85,35 +85,35 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_22876(LightType lightType, ChunkSectionPos chunkSectionPos) {
+	public String displaySectionLevel(LightType lightType, ChunkSectionPos chunkSectionPos) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				return this.blockLightProvider.method_22875(chunkSectionPos.asLong());
+				return this.blockLightProvider.displaySectionLevel(chunkSectionPos.asLong());
 			}
 		} else if (this.skyLightProvider != null) {
-			return this.skyLightProvider.method_22875(chunkSectionPos.asLong());
+			return this.skyLightProvider.displaySectionLevel(chunkSectionPos.asLong());
 		}
 
 		return "n/a";
 	}
 
-	public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
+	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				this.blockLightProvider.setLightArray(pos.asLong(), nibbles, bl);
+				this.blockLightProvider.enqueueSectionData(pos.asLong(), nibbles, bl);
 			}
 		} else if (this.skyLightProvider != null) {
-			this.skyLightProvider.setLightArray(pos.asLong(), nibbles, bl);
+			this.skyLightProvider.enqueueSectionData(pos.asLong(), nibbles, bl);
 		}
 	}
 
 	public void setRetainData(ChunkPos pos, boolean retainData) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.setRetainData(pos, retainData);
+			this.blockLightProvider.setRetainColumn(pos, retainData);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.setRetainData(pos, retainData);
+			this.skyLightProvider.setRetainColumn(pos, retainData);
 		}
 	}
 

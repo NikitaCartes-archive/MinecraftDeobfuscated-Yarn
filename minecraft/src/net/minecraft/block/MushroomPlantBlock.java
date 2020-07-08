@@ -9,9 +9,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
@@ -69,16 +67,16 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos pos, BlockState state, Random random) {
 		serverWorld.removeBlock(pos, false);
-		ConfiguredFeature<HugeMushroomFeatureConfig, ?> configuredFeature;
+		ConfiguredFeature<?, ?> configuredFeature;
 		if (this == Blocks.BROWN_MUSHROOM) {
-			configuredFeature = Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_BROWN_MUSHROOM_CONFIG);
+			configuredFeature = ConfiguredFeatures.HUGE_BROWN_MUSHROOM;
 		} else {
 			if (this != Blocks.RED_MUSHROOM) {
 				serverWorld.setBlockState(pos, state, 3);
 				return false;
 			}
 
-			configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_RED_MUSHROOM_CONFIG);
+			configuredFeature = ConfiguredFeatures.HUGE_RED_MUSHROOM;
 		}
 
 		if (configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {

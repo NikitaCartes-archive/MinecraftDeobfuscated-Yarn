@@ -17,7 +17,7 @@ public class PointOfInterest {
 			instance -> instance.group(
 						BlockPos.field_25064.fieldOf("pos").forGetter(pointOfInterest -> pointOfInterest.pos),
 						Registry.POINT_OF_INTEREST_TYPE.fieldOf("type").forGetter(pointOfInterest -> pointOfInterest.type),
-						Codec.INT.fieldOf("free_tickets").withDefault(0).forGetter(pointOfInterest -> pointOfInterest.freeTickets),
+						Codec.INT.fieldOf("free_tickets").orElse(0).forGetter(pointOfInterest -> pointOfInterest.freeTickets),
 						RecordCodecBuilder.point(runnable)
 					)
 					.apply(instance, PointOfInterest::new)

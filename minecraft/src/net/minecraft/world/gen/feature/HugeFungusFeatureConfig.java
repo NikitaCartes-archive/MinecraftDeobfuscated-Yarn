@@ -12,7 +12,7 @@ public class HugeFungusFeatureConfig implements FeatureConfig {
 					BlockState.CODEC.fieldOf("stem_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.stemState),
 					BlockState.CODEC.fieldOf("hat_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.hatState),
 					BlockState.CODEC.fieldOf("decor_state").forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.decorationState),
-					Codec.BOOL.fieldOf("planted").withDefault(false).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.planted)
+					Codec.BOOL.fieldOf("planted").orElse(false).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.planted)
 				)
 				.apply(instance, HugeFungusFeatureConfig::new)
 	);

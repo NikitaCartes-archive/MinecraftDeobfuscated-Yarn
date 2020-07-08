@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -23,20 +24,22 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 	private final PointOfInterestType poiType;
 	private final MemoryModuleType<GlobalPos> targetMemoryModuleType;
 	private final boolean onlyRunIfChild;
+	private final Optional<Byte> field_25812;
 	private long positionExpireTimeLimit;
 	private final Long2ObjectMap<FindPointOfInterestTask.RetryMarker> foundPositionsToExpiry = new Long2ObjectOpenHashMap<>();
 
 	public FindPointOfInterestTask(
-		PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl
+		PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl, Optional<Byte> optional
 	) {
 		super(method_29245(memoryModuleType, memoryModuleType2));
 		this.poiType = poiType;
 		this.targetMemoryModuleType = memoryModuleType2;
 		this.onlyRunIfChild = bl;
+		this.field_25812 = optional;
 	}
 
-	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
-		this(pointOfInterestType, memoryModuleType, memoryModuleType, bl);
+	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl, Optional<Byte> optional) {
+		this(pointOfInterestType, memoryModuleType, memoryModuleType, bl, optional);
 	}
 
 	private static ImmutableMap<MemoryModuleType<?>, MemoryModuleState> method_29245(
@@ -88,6 +91,7 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 			pointOfInterestStorage.getType(blockPos).ifPresent(pointOfInterestType -> {
 				pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2x -> blockPos2x.equals(blockPos), blockPos, 1);
 				pathAwareEntity.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getRegistryKey(), blockPos));
+				this.field_25812.ifPresent(byte_ -> serverWorld.sendEntityStatus(pathAwareEntity, byte_));
 				this.foundPositionsToExpiry.clear();
 				DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
 			});

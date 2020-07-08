@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5407;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.LiteralText;
@@ -29,9 +29,8 @@ public abstract class Option {
 			MinecraftClient.getInstance().worldRenderer.reload();
 		}, (gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);
-			MutableText mutableText = doubleOption.getDisplayPrefix();
 			int i = (int)d * 2 + 1;
-			return mutableText.append(new TranslatableText("options.biomeBlendRadius." + i));
+			return doubleOption.method_30501(new TranslatableText("options.biomeBlendRadius." + i));
 		}
 	);
 	public static final DoubleOption CHAT_HEIGHT_FOCUSED = new DoubleOption(
@@ -40,7 +39,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			return doubleOption.getDisplayPrefix().append(ChatHud.getHeight(d) + "px");
+			return doubleOption.method_30500(ChatHud.getHeight(d));
 		}
 	);
 	public static final DoubleOption SATURATION = new DoubleOption(
@@ -49,7 +48,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			return doubleOption.getDisplayPrefix().append(ChatHud.getHeight(d) + "px");
+			return doubleOption.method_30500(ChatHud.getHeight(d));
 		}
 	);
 	public static final DoubleOption CHAT_OPACITY = new DoubleOption(
@@ -58,7 +57,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			return doubleOption.getDisplayPrefix().append((int)(d * 90.0 + 10.0) + "%");
+			return doubleOption.method_30503(d * 0.9 + 0.1);
 		}
 	);
 	public static final DoubleOption CHAT_SCALE = new DoubleOption(
@@ -67,8 +66,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			MutableText mutableText = doubleOption.getDisplayPrefix();
-			return d == 0.0 ? mutableText.append(ScreenTexts.OFF) : mutableText.append((int)(d * 100.0) + "%");
+			return (Text)(d == 0.0 ? ScreenTexts.method_30619(doubleOption.getDisplayPrefix(), false) : doubleOption.method_30503(d));
 		}
 	);
 	public static final DoubleOption CHAT_WIDTH = new DoubleOption(
@@ -77,7 +75,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			return doubleOption.getDisplayPrefix().append(ChatHud.getWidth(d) + "px");
+			return doubleOption.method_30500(ChatHud.getWidth(d));
 		}
 	);
 	public static final DoubleOption CHAT_LINE_SPACING = new DoubleOption(
@@ -87,7 +85,7 @@ public abstract class Option {
 		0.0F,
 		gameOptions -> gameOptions.chatLineSpacing,
 		(gameOptions, double_) -> gameOptions.chatLineSpacing = double_,
-		(gameOptions, doubleOption) -> doubleOption.getDisplayPrefix().append((int)(doubleOption.getRatio(doubleOption.get(gameOptions)) * 100.0) + "%")
+		(gameOptions, doubleOption) -> doubleOption.method_30503(doubleOption.getRatio(doubleOption.get(gameOptions)))
 	);
 	public static final DoubleOption CHAT_DELAY_INSTANT = new DoubleOption(
 		"options.chat.delay_instant",
@@ -104,11 +102,10 @@ public abstract class Option {
 	public static final DoubleOption FOV = new DoubleOption(
 		"options.fov", 30.0, 110.0, 1.0F, gameOptions -> gameOptions.fov, (gameOptions, double_) -> gameOptions.fov = double_, (gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);
-			MutableText mutableText = doubleOption.getDisplayPrefix();
 			if (d == 70.0) {
-				return mutableText.append(new TranslatableText("options.fov.min"));
+				return doubleOption.method_30501(new TranslatableText("options.fov.min"));
 			} else {
-				return d == doubleOption.getMax() ? mutableText.append(new TranslatableText("options.fov.max")) : mutableText.append(Integer.toString((int)d));
+				return d == doubleOption.getMax() ? doubleOption.method_30501(new TranslatableText("options.fov.max")) : doubleOption.method_30504((int)d);
 			}
 		}
 	);
@@ -124,20 +121,18 @@ public abstract class Option {
 		},
 		(gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);
-			MutableText mutableText = doubleOption.getDisplayPrefix();
 			return d == doubleOption.getMax()
-				? mutableText.append(new TranslatableText("options.framerateLimit.max"))
-				: mutableText.append(new TranslatableText("options.framerate", (int)d));
+				? doubleOption.method_30501(new TranslatableText("options.framerateLimit.max"))
+				: doubleOption.method_30501(new TranslatableText("options.framerate", (int)d));
 		}
 	);
 	public static final DoubleOption GAMMA = new DoubleOption(
 		"options.gamma", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.gamma, (gameOptions, double_) -> gameOptions.gamma = double_, (gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			MutableText mutableText = doubleOption.getDisplayPrefix();
 			if (d == 0.0) {
-				return mutableText.append(new TranslatableText("options.gamma.min"));
+				return doubleOption.method_30501(new TranslatableText("options.gamma.min"));
 			} else {
-				return d == 1.0 ? mutableText.append(new TranslatableText("options.gamma.max")) : mutableText.append("+" + (int)(d * 100.0) + "%");
+				return d == 1.0 ? doubleOption.method_30501(new TranslatableText("options.gamma.max")) : doubleOption.method_30502((int)(d * 100.0));
 			}
 		}
 	);
@@ -150,8 +145,7 @@ public abstract class Option {
 		(gameOptions, double_) -> gameOptions.mipmapLevels = (int)double_.doubleValue(),
 		(gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);
-			MutableText mutableText = doubleOption.getDisplayPrefix();
-			return d == 0.0 ? mutableText.append(ScreenTexts.OFF) : mutableText.append(Integer.toString((int)d));
+			return (Text)(d == 0.0 ? ScreenTexts.method_30619(doubleOption.getDisplayPrefix(), false) : doubleOption.method_30504((int)d));
 		}
 	);
 	public static final DoubleOption MOUSE_WHEEL_SENSITIVITY = new LogarithmicOption(
@@ -163,7 +157,7 @@ public abstract class Option {
 		(gameOptions, double_) -> gameOptions.mouseWheelSensitivity = double_,
 		(gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			return doubleOption.getDisplayPrefix().append(String.format("%.2f", doubleOption.getValue(d)));
+			return doubleOption.method_30501(new LiteralText(String.format("%.2f", doubleOption.getValue(d))));
 		}
 	);
 	public static final BooleanOption RAW_MOUSE_INPUT = new BooleanOption(
@@ -181,7 +175,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate();
 		}, (gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);
-			return doubleOption.getDisplayPrefix().append(new TranslatableText("options.chunks", (int)d));
+			return doubleOption.method_30501(new TranslatableText("options.chunks", (int)d));
 		}
 	);
 	public static final DoubleOption ENTITY_DISTANCE_SCALING = new DoubleOption(
@@ -193,7 +187,7 @@ public abstract class Option {
 		(gameOptions, double_) -> gameOptions.entityDistanceScaling = (float)double_.doubleValue(),
 		(gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);
-			return doubleOption.getDisplayPrefix().append(new TranslatableText("options.entityDistancePercent", (int)(d * 100.0)));
+			return doubleOption.method_30503(d);
 		}
 	);
 	public static final DoubleOption SENSITIVITY = new DoubleOption(
@@ -205,11 +199,10 @@ public abstract class Option {
 		(gameOptions, double_) -> gameOptions.mouseSensitivity = double_,
 		(gameOptions, doubleOption) -> {
 			double d = doubleOption.getRatio(doubleOption.get(gameOptions));
-			MutableText mutableText = doubleOption.getDisplayPrefix();
 			if (d == 0.0) {
-				return mutableText.append(new TranslatableText("options.sensitivity.min"));
+				return doubleOption.method_30501(new TranslatableText("options.sensitivity.min"));
 			} else {
-				return d == 1.0 ? mutableText.append(new TranslatableText("options.sensitivity.max")) : mutableText.append((int)(d * 200.0) + "%");
+				return d == 1.0 ? doubleOption.method_30501(new TranslatableText("options.sensitivity.max")) : doubleOption.method_30503(2.0 * d);
 			}
 		}
 	);
@@ -217,21 +210,21 @@ public abstract class Option {
 		"options.accessibility.text_background_opacity", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.textBackgroundOpacity, (gameOptions, double_) -> {
 			gameOptions.textBackgroundOpacity = double_;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
-		}, (gameOptions, doubleOption) -> doubleOption.getDisplayPrefix().append((int)(doubleOption.getRatio(doubleOption.get(gameOptions)) * 100.0) + "%")
+		}, (gameOptions, doubleOption) -> doubleOption.method_30503(doubleOption.getRatio(doubleOption.get(gameOptions)))
 	);
 	public static final CyclingOption AO = new CyclingOption("options.ao", (gameOptions, integer) -> {
 		gameOptions.ao = AoOption.getOption(gameOptions.ao.getValue() + integer);
 		MinecraftClient.getInstance().worldRenderer.reload();
-	}, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.ao.getTranslationKey())));
+	}, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.ao.getTranslationKey())));
 	public static final CyclingOption ATTACK_INDICATOR = new CyclingOption(
 		"options.attackIndicator",
 		(gameOptions, integer) -> gameOptions.attackIndicator = AttackIndicator.byId(gameOptions.attackIndicator.getId() + integer),
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.attackIndicator.getTranslationKey()))
+		(gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.attackIndicator.getTranslationKey()))
 	);
 	public static final CyclingOption VISIBILITY = new CyclingOption(
 		"options.chat.visibility",
 		(gameOptions, integer) -> gameOptions.chatVisibility = ChatVisibility.byId((gameOptions.chatVisibility.getId() + integer) % 3),
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.chatVisibility.getTranslationKey()))
+		(gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.chatVisibility.getTranslationKey()))
 	);
 	private static final Text FAST_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fast.tooltip");
 	private static final Text FABULOUS_GRAPHICS_TOOLTIP = new TranslatableText(
@@ -242,12 +235,12 @@ public abstract class Option {
 		"options.graphics",
 		(options, count) -> {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			class_5407 lv = minecraftClient.method_30049();
-			if (options.graphicsMode == GraphicsMode.FANCY && lv.method_30137()) {
-				lv.method_30138();
+			VideoWarningManager videoWarningManager = minecraftClient.getVideoWarningManager();
+			if (options.graphicsMode == GraphicsMode.FANCY && videoWarningManager.canWarn()) {
+				videoWarningManager.scheduleWarning();
 			} else {
 				options.graphicsMode = options.graphicsMode.next();
-				if (options.graphicsMode == GraphicsMode.FABULOUS && (!GlStateManager.supportsGl30() || lv.method_30142())) {
+				if (options.graphicsMode == GraphicsMode.FABULOUS && (!GlStateManager.supportsGl30() || videoWarningManager.hasCancelledAfterWarning())) {
 					options.graphicsMode = GraphicsMode.FAST;
 				}
 
@@ -266,10 +259,10 @@ public abstract class Option {
 					cyclingOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FABULOUS_GRAPHICS_TOOLTIP, 200));
 			}
 
-			TranslatableText translatableText = new TranslatableText(options.graphicsMode.getTranslationKey());
+			MutableText mutableText = new TranslatableText(options.graphicsMode.getTranslationKey());
 			return options.graphicsMode == GraphicsMode.FABULOUS
-				? cyclingOption.getDisplayPrefix().append(new LiteralText("").append(translatableText).formatted(Formatting.ITALIC))
-				: cyclingOption.getDisplayPrefix().append(translatableText);
+				? cyclingOption.method_30501(mutableText.formatted(Formatting.ITALIC))
+				: cyclingOption.method_30501(mutableText);
 		}
 	);
 	public static final CyclingOption GUI_SCALE = new CyclingOption(
@@ -277,17 +270,14 @@ public abstract class Option {
 		(gameOptions, integer) -> gameOptions.guiScale = Integer.remainderUnsigned(
 				gameOptions.guiScale + integer, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()) + 1
 			),
-		(gameOptions, cyclingOption) -> {
-			MutableText mutableText = cyclingOption.getDisplayPrefix();
-			return gameOptions.guiScale == 0
-				? mutableText.append(new TranslatableText("options.guiScale.auto"))
-				: mutableText.append(Integer.toString(gameOptions.guiScale));
-		}
+		(gameOptions, cyclingOption) -> gameOptions.guiScale == 0
+				? cyclingOption.method_30501(new TranslatableText("options.guiScale.auto"))
+				: cyclingOption.method_30504(gameOptions.guiScale)
 	);
 	public static final CyclingOption MAIN_HAND = new CyclingOption(
 		"options.mainHand",
 		(gameOptions, integer) -> gameOptions.mainArm = gameOptions.mainArm.getOpposite(),
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(gameOptions.mainArm.method_27301())
+		(gameOptions, cyclingOption) -> cyclingOption.method_30501(gameOptions.mainArm.method_27301())
 	);
 	public static final CyclingOption NARRATOR = new CyclingOption(
 		"options.narrator",
@@ -301,13 +291,13 @@ public abstract class Option {
 			NarratorManager.INSTANCE.addToast(gameOptions.narrator);
 		},
 		(gameOptions, cyclingOption) -> NarratorManager.INSTANCE.isActive()
-				? cyclingOption.getDisplayPrefix().append(gameOptions.narrator.getTranslationKey())
-				: cyclingOption.getDisplayPrefix().append(new TranslatableText("options.narrator.notavailable"))
+				? cyclingOption.method_30501(gameOptions.narrator.getTranslationKey())
+				: cyclingOption.method_30501(new TranslatableText("options.narrator.notavailable"))
 	);
 	public static final CyclingOption PARTICLES = new CyclingOption(
 		"options.particles",
 		(gameOptions, integer) -> gameOptions.particles = ParticlesOption.byId(gameOptions.particles.getId() + integer),
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.particles.getTranslationKey()))
+		(gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.particles.getTranslationKey()))
 	);
 	public static final CyclingOption CLOUDS = new CyclingOption("options.renderClouds", (gameOptions, integer) -> {
 		gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer);
@@ -317,14 +307,13 @@ public abstract class Option {
 				framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
 			}
 		}
-	}, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix().append(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
+	}, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.cloudRenderMode.getTranslationKey())));
 	public static final CyclingOption TEXT_BACKGROUND = new CyclingOption(
 		"options.accessibility.text_background",
 		(gameOptions, integer) -> gameOptions.backgroundForChatOnly = !gameOptions.backgroundForChatOnly,
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix()
-				.append(
-					new TranslatableText(gameOptions.backgroundForChatOnly ? "options.accessibility.text_background.chat" : "options.accessibility.text_background.everywhere")
-				)
+		(gameOptions, cyclingOption) -> cyclingOption.method_30501(
+				new TranslatableText(gameOptions.backgroundForChatOnly ? "options.accessibility.text_background.chat" : "options.accessibility.text_background.everywhere")
+			)
 	);
 	public static final BooleanOption AUTO_JUMP = new BooleanOption(
 		"options.autoJump", gameOptions -> gameOptions.autoJump, (gameOptions, boolean_) -> gameOptions.autoJump = boolean_
@@ -383,14 +372,12 @@ public abstract class Option {
 	public static final CyclingOption SNEAK_TOGGLED = new CyclingOption(
 		"key.sneak",
 		(gameOptions, integer) -> gameOptions.sneakToggled = !gameOptions.sneakToggled,
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix()
-				.append(new TranslatableText(gameOptions.sneakToggled ? "options.key.toggle" : "options.key.hold"))
+		(gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.sneakToggled ? "options.key.toggle" : "options.key.hold"))
 	);
 	public static final CyclingOption SPRINT_TOGGLED = new CyclingOption(
 		"key.sprint",
 		(gameOptions, integer) -> gameOptions.sprintToggled = !gameOptions.sprintToggled,
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix()
-				.append(new TranslatableText(gameOptions.sprintToggled ? "options.key.toggle" : "options.key.hold"))
+		(gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.sprintToggled ? "options.key.toggle" : "options.key.hold"))
 	);
 	public static final BooleanOption TOUCHSCREEN = new BooleanOption(
 		"options.touchscreen", gameOptions -> gameOptions.touchscreen, (gameOptions, boolean_) -> gameOptions.touchscreen = boolean_
@@ -406,18 +393,18 @@ public abstract class Option {
 	public static final BooleanOption VIEW_BOBBING = new BooleanOption(
 		"options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, boolean_) -> gameOptions.bobView = boolean_
 	);
-	private final String key;
+	private final Text key;
 	private Optional<List<StringRenderable>> tooltip;
 
 	public Option(String key) {
-		this.key = key;
+		this.key = new TranslatableText(key);
 		this.tooltip = Optional.empty();
 	}
 
 	public abstract AbstractButtonWidget createButton(GameOptions options, int x, int y, int width);
 
-	public MutableText getDisplayPrefix() {
-		return new TranslatableText(this.key).append(": ");
+	protected Text getDisplayPrefix() {
+		return this.key;
 	}
 
 	public void setTooltip(List<StringRenderable> tooltip) {
@@ -426,5 +413,25 @@ public abstract class Option {
 
 	public Optional<List<StringRenderable>> getTooltip() {
 		return this.tooltip;
+	}
+
+	protected Text method_30500(int i) {
+		return new TranslatableText("options.pixel_value", this.getDisplayPrefix(), i);
+	}
+
+	protected Text method_30503(double d) {
+		return new TranslatableText("options.percent_value", this.getDisplayPrefix(), (int)(d * 100.0));
+	}
+
+	protected Text method_30502(int i) {
+		return new TranslatableText("options.percent_add_value", this.getDisplayPrefix(), i);
+	}
+
+	protected Text method_30501(Text text) {
+		return new TranslatableText("options.generic_value", this.getDisplayPrefix(), text);
+	}
+
+	protected Text method_30504(int i) {
+		return this.method_30501(new LiteralText(Integer.toString(i)));
 	}
 }

@@ -3,17 +3,16 @@ package net.minecraft.world.gen.chunk;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.dynamic.NumberCodecs;
 
 public class NoiseConfig {
 	public static final Codec<NoiseConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					NumberCodecs.rangedInt(0, 256).fieldOf("height").forGetter(NoiseConfig::getHeight),
+					Codec.intRange(0, 256).fieldOf("height").forGetter(NoiseConfig::getHeight),
 					NoiseSamplingConfig.CODEC.fieldOf("sampling").forGetter(NoiseConfig::getSampling),
 					SlideConfig.CODEC.fieldOf("top_slide").forGetter(NoiseConfig::getTopSlide),
 					SlideConfig.CODEC.fieldOf("bottom_slide").forGetter(NoiseConfig::getBottomSlide),
-					NumberCodecs.rangedInt(1, 4).fieldOf("size_horizontal").forGetter(NoiseConfig::getSizeHorizontal),
-					NumberCodecs.rangedInt(1, 4).fieldOf("size_vertical").forGetter(NoiseConfig::getSizeVertical),
+					Codec.intRange(1, 4).fieldOf("size_horizontal").forGetter(NoiseConfig::getSizeHorizontal),
+					Codec.intRange(1, 4).fieldOf("size_vertical").forGetter(NoiseConfig::getSizeVertical),
 					Codec.DOUBLE.fieldOf("density_factor").forGetter(NoiseConfig::getDensityFactor),
 					Codec.DOUBLE.fieldOf("density_offset").forGetter(NoiseConfig::getDensityOffset),
 					Codec.BOOL.fieldOf("simplex_surface_noise").forGetter(NoiseConfig::hasSimplexSurfaceNoise),

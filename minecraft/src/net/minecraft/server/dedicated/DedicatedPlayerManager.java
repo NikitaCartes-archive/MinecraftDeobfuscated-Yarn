@@ -3,7 +3,7 @@ package net.minecraft.server.dedicated;
 import com.mojang.authlib.GameProfile;
 import java.io.IOException;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.WorldSaveHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 public class DedicatedPlayerManager extends PlayerManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public DedicatedPlayerManager(MinecraftDedicatedServer server, RegistryTracker.Modifiable tracker, WorldSaveHandler saveHandler) {
+	public DedicatedPlayerManager(MinecraftDedicatedServer server, DynamicRegistryManager.Impl tracker, WorldSaveHandler saveHandler) {
 		super(server, tracker, saveHandler, server.getProperties().maxPlayers);
 		ServerPropertiesHandler serverPropertiesHandler = server.getProperties();
 		this.setViewDistance(serverPropertiesHandler.viewDistance);

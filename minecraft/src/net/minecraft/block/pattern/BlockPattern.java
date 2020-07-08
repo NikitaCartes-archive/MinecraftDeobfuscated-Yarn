@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.WorldView;
 
@@ -146,72 +145,12 @@ public class BlockPattern {
 			return this.up;
 		}
 
-		public int getWidth() {
-			return this.width;
-		}
-
-		public int getHeight() {
-			return this.height;
-		}
-
 		public CachedBlockPosition translate(int i, int j, int k) {
 			return this.cache.getUnchecked(BlockPattern.translate(this.frontTopLeft, this.getForwards(), this.getUp(), i, j, k));
 		}
 
 		public String toString() {
 			return MoreObjects.toStringHelper(this).add("up", this.up).add("forwards", this.forwards).add("frontTopLeft", this.frontTopLeft).toString();
-		}
-
-		public BlockPattern.TeleportTarget getTeleportTarget(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
-			Direction direction2 = this.getForwards();
-			Direction direction3 = direction2.rotateYClockwise();
-			double f = (double)(this.getFrontTopLeft().getY() + 1) - d * (double)this.getHeight();
-			double g;
-			double h;
-			if (direction3 == Direction.NORTH) {
-				g = (double)blockPos.getX() + 0.5;
-				h = (double)(this.getFrontTopLeft().getZ() + 1) - (1.0 - e) * (double)this.getWidth();
-			} else if (direction3 == Direction.SOUTH) {
-				g = (double)blockPos.getX() + 0.5;
-				h = (double)this.getFrontTopLeft().getZ() + (1.0 - e) * (double)this.getWidth();
-			} else if (direction3 == Direction.WEST) {
-				g = (double)(this.getFrontTopLeft().getX() + 1) - (1.0 - e) * (double)this.getWidth();
-				h = (double)blockPos.getZ() + 0.5;
-			} else {
-				g = (double)this.getFrontTopLeft().getX() + (1.0 - e) * (double)this.getWidth();
-				h = (double)blockPos.getZ() + 0.5;
-			}
-
-			double i;
-			double j;
-			if (direction2.getOpposite() == direction) {
-				i = vec3d.x;
-				j = vec3d.z;
-			} else if (direction2.getOpposite() == direction.getOpposite()) {
-				i = -vec3d.x;
-				j = -vec3d.z;
-			} else if (direction2.getOpposite() == direction.rotateYClockwise()) {
-				i = -vec3d.z;
-				j = vec3d.x;
-			} else {
-				i = vec3d.z;
-				j = -vec3d.x;
-			}
-
-			int k = (direction2.getHorizontal() - direction.getOpposite().getHorizontal()) * 90;
-			return new BlockPattern.TeleportTarget(new Vec3d(g, f, h), new Vec3d(i, vec3d.y, j), k);
-		}
-	}
-
-	public static class TeleportTarget {
-		public final Vec3d pos;
-		public final Vec3d velocity;
-		public final int yaw;
-
-		public TeleportTarget(Vec3d pos, Vec3d velocity, int yaw) {
-			this.pos = pos;
-			this.velocity = velocity;
-			this.yaw = yaw;
 		}
 	}
 }

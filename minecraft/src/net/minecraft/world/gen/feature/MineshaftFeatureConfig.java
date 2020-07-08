@@ -6,16 +6,16 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public class MineshaftFeatureConfig implements FeatureConfig {
 	public static final Codec<MineshaftFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.DOUBLE.fieldOf("probability").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.probability),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.probability),
 					MineshaftFeature.Type.field_24839.fieldOf("type").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.type)
 				)
 				.apply(instance, MineshaftFeatureConfig::new)
 	);
-	public final double probability;
+	public final float probability;
 	public final MineshaftFeature.Type type;
 
-	public MineshaftFeatureConfig(double probability, MineshaftFeature.Type type) {
-		this.probability = probability;
+	public MineshaftFeatureConfig(float f, MineshaftFeature.Type type) {
+		this.probability = f;
 		this.type = type;
 	}
 }

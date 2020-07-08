@@ -211,12 +211,17 @@ public class GameRules {
 		);
 	}
 
-	public static void forEachType(GameRules.TypeConsumer action) {
-		RULE_TYPES.forEach((key, type) -> accept(action, key, type));
+	/**
+	 * Make the visitor visit all registered game rules.
+	 * 
+	 * <p>The visitation involves calling both {@link #accept(GameRules.Key, GameRules.Type)} and {@code acceptX} for every game rule, where X is the current rule's concrete type such as a boolean.
+	 */
+	public static void accept(GameRules.Visitor visitor) {
+		RULE_TYPES.forEach((key, type) -> accept(visitor, key, type));
 	}
 
-	private static <T extends GameRules.Rule<T>> void accept(GameRules.TypeConsumer consumer, GameRules.Key<?> key, GameRules.Type<?> type) {
-		consumer.accept(key, type);
+	private static <T extends GameRules.Rule<T>> void accept(GameRules.Visitor consumer, GameRules.Key<?> key, GameRules.Type<?> type) {
+		consumer.visit(key, type);
 		type.accept(consumer, key);
 	}
 
@@ -240,16 +245,14 @@ public class GameRules {
 	}
 
 	interface Acceptor<T extends GameRules.Rule<T>> {
-		void call(GameRules.TypeConsumer consumer, GameRules.Key<T> key, GameRules.Type<T> type);
+		void call(GameRules.Visitor consumer, GameRules.Key<T> key, GameRules.Type<T> type);
 	}
 
 	public static class BooleanRule extends GameRules.Rule<GameRules.BooleanRule> {
 		private boolean value;
 
 		private static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue, BiConsumer<MinecraftServer, GameRules.BooleanRule> changeCallback) {
-			return new GameRules.Type<>(
-				BoolArgumentType::bool, type -> new GameRules.BooleanRule(type, initialValue), changeCallback, GameRules.TypeConsumer::acceptBoolean
-			);
+			return new GameRules.Type<>(BoolArgumentType::bool, type -> new GameRules.BooleanRule(type, initialValue), changeCallback, GameRules.Visitor::visitBoolean);
 		}
 
 		private static GameRules.Type<GameRules.BooleanRule> create(boolean initialValue) {
@@ -331,9 +334,7 @@ public class GameRules {
 		private int value;
 
 		private static GameRules.Type<GameRules.IntRule> create(int initialValue, BiConsumer<MinecraftServer, GameRules.IntRule> changeCallback) {
-			return new GameRules.Type<>(
-				IntegerArgumentType::integer, type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.TypeConsumer::acceptInt
-			);
+			return new GameRules.Type<>(IntegerArgumentType::integer, type -> new GameRules.IntRule(type, initialValue), changeCallback, GameRules.Visitor::visitInt);
 		}
 
 		private static GameRules.Type<GameRules.IntRule> create(int initialValue) {
@@ -509,19 +510,37 @@ public class GameRules {
 			return (T)this.ruleFactory.apply(this);
 		}
 
-		public void accept(GameRules.TypeConsumer consumer, GameRules.Key<T> key) {
+		public void accept(GameRules.Visitor consumer, GameRules.Key<T> key) {
 			this.ruleAcceptor.call(consumer, key, this);
 		}
 	}
 
-	public interface TypeConsumer {
-		default <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
+	/**
+	 * A visitor used to visit all game rules.
+	 */
+	public interface Visitor {
+		/**
+		 * Visit a game rule.
+		 * 
+		 * <p>It is expected all game rules regardless of type will be visited using this method.
+		 */
+		default <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
 		}
 
-		default void acceptBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
+		/**
+		 * Visit a boolean rule.
+		 * 
+		 * <p>Note {@link #accept(GameRules.Key, GameRules.Type)} will be called before this method.
+		 */
+		default void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
 		}
 
-		default void acceptInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
+		/**
+		 * Visit an integer rule.
+		 * 
+		 * <p>Note {@link #accept(GameRules.Key, GameRules.Type)} will be called before this method.
+		 */
+		default void visitInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
 		}
 	}
 }

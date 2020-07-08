@@ -243,8 +243,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.PassiveData();
-			((PassiveEntity.PassiveData)entityData).setBabyChance(1.0F);
+			entityData = new PassiveEntity.PassiveData(1.0F);
 		}
 
 		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);

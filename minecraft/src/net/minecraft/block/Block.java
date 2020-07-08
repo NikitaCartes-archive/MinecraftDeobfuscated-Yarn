@@ -64,10 +64,6 @@ public class Block extends AbstractBlock implements ItemConvertible {
 				return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
 			}
 		});
-	private static final VoxelShape SOLID_MEDIUM_SQUARE_SHAPE = VoxelShapes.combineAndSimplify(
-		VoxelShapes.fullCube(), createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
-	);
-	private static final VoxelShape SOLID_SMALL_SQUARE_SHAPE = createCuboidShape(7.0, 0.0, 7.0, 9.0, 10.0, 9.0);
 	protected final StateManager<Block, BlockState> stateManager;
 	private BlockState defaultState;
 	@Nullable
@@ -88,7 +84,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		if (state == null) {
 			return 0;
 		} else {
-			int i = STATE_IDS.getId(state);
+			int i = STATE_IDS.getRawId(state);
 			return i == -1 ? 0 : i;
 		}
 	}
@@ -234,20 +230,12 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public static boolean hasTopRim(BlockView world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos);
-		return blockState.isFullCube(world, pos) && blockState.isSideSolidFullSquare(world, pos, Direction.UP)
-			|| !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+		return world.getBlockState(pos).isSideSolid(world, pos, Direction.UP, SideShapeType.RIGID);
 	}
 
 	public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
 		BlockState blockState = world.getBlockState(pos);
-		return side == Direction.DOWN && blockState.isIn(BlockTags.UNSTABLE_BOTTOM_CENTER)
-			? false
-			: !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(side), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
-	}
-
-	public static boolean isSideSolidFullSquare(BlockState state, BlockView world, BlockPos pos, Direction side) {
-		return isFaceFullSquare(state.getSidesShape(world, pos), side);
+		return side == Direction.DOWN && blockState.isIn(BlockTags.UNSTABLE_BOTTOM_CENTER) ? false : blockState.isSideSolid(world, pos, side, SideShapeType.CENTER);
 	}
 
 	public static boolean isFaceFullSquare(VoxelShape shape, Direction side) {

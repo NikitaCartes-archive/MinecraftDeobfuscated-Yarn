@@ -3,6 +3,8 @@ package net.minecraft.world.level.storage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -31,18 +33,18 @@ public class AlphaChunkIo {
 		return alphaChunk;
 	}
 
-	public static void convertAlphaChunk(AlphaChunkIo.AlphaChunk alphaChunk, CompoundTag tag, BiomeSource biomeSource) {
-		tag.putInt("xPos", alphaChunk.x);
-		tag.putInt("zPos", alphaChunk.z);
-		tag.putLong("LastUpdate", alphaChunk.lastUpdate);
+	public static void convertAlphaChunk(DynamicRegistryManager.Impl impl, AlphaChunkIo.AlphaChunk alphaChunk, CompoundTag compoundTag, BiomeSource biomeSource) {
+		compoundTag.putInt("xPos", alphaChunk.x);
+		compoundTag.putInt("zPos", alphaChunk.z);
+		compoundTag.putLong("LastUpdate", alphaChunk.lastUpdate);
 		int[] is = new int[alphaChunk.heightMap.length];
 
 		for (int i = 0; i < alphaChunk.heightMap.length; i++) {
 			is[i] = alphaChunk.heightMap[i];
 		}
 
-		tag.putIntArray("HeightMap", is);
-		tag.putBoolean("TerrainPopulated", alphaChunk.terrainPopulated);
+		compoundTag.putIntArray("HeightMap", is);
+		compoundTag.putBoolean("TerrainPopulated", alphaChunk.terrainPopulated);
 		ListTag listTag = new ListTag();
 
 		for (int j = 0; j < 8; j++) {
@@ -80,25 +82,25 @@ public class AlphaChunkIo {
 					}
 				}
 
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putByte("Y", (byte)(j & 0xFF));
-				compoundTag.putByteArray("Blocks", bs);
-				compoundTag.putByteArray("Data", chunkNibbleArray.asByteArray());
-				compoundTag.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
-				compoundTag.putByteArray("BlockLight", chunkNibbleArray3.asByteArray());
-				listTag.add(compoundTag);
+				CompoundTag compoundTag2 = new CompoundTag();
+				compoundTag2.putByte("Y", (byte)(j & 0xFF));
+				compoundTag2.putByteArray("Blocks", bs);
+				compoundTag2.putByteArray("Data", chunkNibbleArray.asByteArray());
+				compoundTag2.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
+				compoundTag2.putByteArray("BlockLight", chunkNibbleArray3.asByteArray());
+				listTag.add(compoundTag2);
 			}
 		}
 
-		tag.put("Sections", listTag);
-		tag.putIntArray("Biomes", new BiomeArray(new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray());
-		tag.put("Entities", alphaChunk.entities);
-		tag.put("TileEntities", alphaChunk.blockEntities);
+		compoundTag.put("Sections", listTag);
+		compoundTag.putIntArray("Biomes", new BiomeArray(impl.get(Registry.BIOME_KEY), new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray());
+		compoundTag.put("Entities", alphaChunk.entities);
+		compoundTag.put("TileEntities", alphaChunk.blockEntities);
 		if (alphaChunk.blockTicks != null) {
-			tag.put("TileTicks", alphaChunk.blockTicks);
+			compoundTag.put("TileTicks", alphaChunk.blockTicks);
 		}
 
-		tag.putBoolean("convertedFromAlphaFormat", true);
+		compoundTag.putBoolean("convertedFromAlphaFormat", true);
 	}
 
 	public static class AlphaChunk {

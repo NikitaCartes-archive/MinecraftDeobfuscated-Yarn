@@ -62,7 +62,9 @@ public class ChunkSerializer {
 			LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", pos, pos, chunkPos);
 		}
 
-		BiomeArray biomeArray = new BiomeArray(pos, biomeSource, compoundTag.contains("Biomes", 11) ? compoundTag.getIntArray("Biomes") : null);
+		BiomeArray biomeArray = new BiomeArray(
+			world.getRegistryManager().get(Registry.BIOME_KEY), pos, biomeSource, compoundTag.contains("Biomes", 11) ? compoundTag.getIntArray("Biomes") : null
+		);
 		UpgradeData upgradeData = compoundTag.contains("UpgradeData", 10) ? new UpgradeData(compoundTag.getCompound("UpgradeData")) : UpgradeData.NO_UPGRADE_DATA;
 		ChunkTickScheduler<Block> chunkTickScheduler = new ChunkTickScheduler<>(
 			block -> block == null || block.getDefaultState().isAir(), pos, compoundTag.getList("ToBeTicked", 9)
@@ -97,11 +99,11 @@ public class ChunkSerializer {
 
 			if (bl) {
 				if (compoundTag2.contains("BlockLight", 7)) {
-					lightingProvider.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("BlockLight")), true);
+					lightingProvider.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("BlockLight")), true);
 				}
 
 				if (bl2 && compoundTag2.contains("SkyLight", 7)) {
-					lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("SkyLight")), true);
+					lightingProvider.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, k), new ChunkNibbleArray(compoundTag2.getByteArray("SkyLight")), true);
 				}
 			}
 		}
@@ -242,8 +244,8 @@ public class ChunkSerializer {
 				.filter(chunkSectionx -> chunkSectionx != null && chunkSectionx.getYOffset() >> 4 == j)
 				.findFirst()
 				.orElse(WorldChunk.EMPTY_SECTION);
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightArray(ChunkSectionPos.from(chunkPos, j));
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getLightArray(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightSection(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getLightSection(ChunkSectionPos.from(chunkPos, j));
 			if (chunkSection != WorldChunk.EMPTY_SECTION || chunkNibbleArray != null || chunkNibbleArray2 != null) {
 				CompoundTag compoundTag3 = new CompoundTag();
 				compoundTag3.putByte("Y", (byte)(j & 0xFF));
@@ -408,17 +410,17 @@ public class ChunkSerializer {
 		return compoundTag;
 	}
 
-	private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureManager structureManager, CompoundTag compoundTag, long l) {
+	private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureManager structureManager, CompoundTag tag, long worldSeed) {
 		Map<StructureFeature<?>, StructureStart<?>> map = Maps.<StructureFeature<?>, StructureStart<?>>newHashMap();
-		CompoundTag compoundTag2 = compoundTag.getCompound("Starts");
+		CompoundTag compoundTag = tag.getCompound("Starts");
 
-		for (String string : compoundTag2.getKeys()) {
+		for (String string : compoundTag.getKeys()) {
 			String string2 = string.toLowerCase(Locale.ROOT);
 			StructureFeature<?> structureFeature = (StructureFeature<?>)StructureFeature.STRUCTURES.get(string2);
 			if (structureFeature == null) {
 				LOGGER.error("Unknown structure start: {}", string2);
 			} else {
-				StructureStart<?> structureStart = StructureFeature.method_28660(structureManager, compoundTag2.getCompound(string), l);
+				StructureStart<?> structureStart = StructureFeature.readStructureStart(structureManager, compoundTag.getCompound(string), worldSeed);
 				if (structureStart != null) {
 					map.put(structureFeature, structureStart);
 				}

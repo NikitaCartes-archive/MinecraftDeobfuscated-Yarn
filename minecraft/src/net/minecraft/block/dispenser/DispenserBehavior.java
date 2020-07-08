@@ -387,9 +387,10 @@ public interface DispenserBehavior {
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				World world = pointer.getWorld();
 				this.setSuccess(true);
-				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+				BlockPos blockPos = pointer.getBlockPos().offset(direction);
 				BlockState blockState = world.getBlockState(blockPos);
-				if (AbstractFireBlock.method_30032(world, blockPos)) {
+				if (AbstractFireBlock.method_30032(world, blockPos, direction)) {
 					world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
 				} else if (CampfireBlock.method_30035(blockState)) {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));

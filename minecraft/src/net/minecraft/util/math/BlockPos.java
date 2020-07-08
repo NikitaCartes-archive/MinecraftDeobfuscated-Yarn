@@ -11,6 +11,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
+import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -176,6 +177,17 @@ public class BlockPos extends Vec3i {
 		return i == 0
 			? this
 			: new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
+	}
+
+	public BlockPos method_30513(Direction.Axis axis, int i) {
+		if (i == 0) {
+			return this;
+		} else {
+			int j = axis == Direction.Axis.X ? i : 0;
+			int k = axis == Direction.Axis.Y ? i : 0;
+			int l = axis == Direction.Axis.Z ? i : 0;
+			return new BlockPos(this.getX() + j, this.getY() + k, this.getZ() + l);
+		}
 	}
 
 	public BlockPos rotate(BlockRotation rotation) {
@@ -384,6 +396,40 @@ public class BlockPos extends Vec3i {
 			};
 	}
 
+	public static Iterable<BlockPos.Mutable> method_30512(BlockPos blockPos, int i, Direction direction, Direction direction2) {
+		Validate.validState(direction.getAxis() != direction2.getAxis(), "The two directions cannot be on the same axis");
+		return () -> new AbstractIterator<BlockPos.Mutable>() {
+				private final Direction[] field_25903 = new Direction[]{direction, direction2, direction.getOpposite(), direction2.getOpposite()};
+				private final BlockPos.Mutable field_25904 = blockPos.mutableCopy().move(direction2);
+				private final int field_25905 = 4 * i;
+				private int field_25906 = -1;
+				private int field_25907;
+				private int field_25908;
+				private int field_25909 = this.field_25904.getX();
+				private int field_25910 = this.field_25904.getY();
+				private int field_25911 = this.field_25904.getZ();
+
+				protected BlockPos.Mutable computeNext() {
+					this.field_25904.set(this.field_25909, this.field_25910, this.field_25911).move(this.field_25903[(this.field_25906 + 4) % 4]);
+					this.field_25909 = this.field_25904.getX();
+					this.field_25910 = this.field_25904.getY();
+					this.field_25911 = this.field_25904.getZ();
+					if (this.field_25908 >= this.field_25907) {
+						if (this.field_25906 >= this.field_25905) {
+							return this.endOfData();
+						}
+
+						this.field_25906++;
+						this.field_25908 = 0;
+						this.field_25907 = this.field_25906 / 2 + 1;
+					}
+
+					this.field_25908++;
+					return this.field_25904;
+				}
+			};
+	}
+
 	public static class Mutable extends BlockPos {
 		public Mutable() {
 			this(0, 0, 0);
@@ -410,6 +456,11 @@ public class BlockPos extends Vec3i {
 		@Override
 		public BlockPos offset(Direction direction, int i) {
 			return super.offset(direction, i).toImmutable();
+		}
+
+		@Override
+		public BlockPos method_30513(Direction.Axis axis, int i) {
+			return super.method_30513(axis, i).toImmutable();
 		}
 
 		@Override

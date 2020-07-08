@@ -1,10 +1,13 @@
 package net.minecraft.world.biome;
 
 import java.util.Collections;
+import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.collection.IdList;
+import net.minecraft.util.registry.BuiltinRegistries;
 
 public abstract class Biomes {
+	public static final IdList<Biome> field_25821 = new IdList<>();
 	public static final Biome OCEAN = register(0, "ocean", new OceanBiome());
 	public static final Biome DEFAULT = OCEAN;
 	public static final Biome PLAINS = register(1, "plains", new PlainsBiome());
@@ -87,12 +90,17 @@ public abstract class Biomes {
 	public static final Biome BASALT_DELTAS = register(173, "basalt_deltas", new BasaltDeltasBiome());
 
 	private static Biome register(int rawId, String id, Biome biome) {
-		Registry.register(Registry.BIOME, rawId, id, biome);
+		BuiltinRegistries.set(BuiltinRegistries.BIOME, rawId, id, biome);
 		if (biome.hasParent()) {
-			Biome.PARENT_BIOME_ID_MAP.set(biome, Registry.BIOME.getRawId(Registry.BIOME.get(new Identifier(biome.parent))));
+			field_25821.set(biome, BuiltinRegistries.BIOME.getRawId(BuiltinRegistries.BIOME.get(new Identifier(biome.parent))));
 		}
 
 		return biome;
+	}
+
+	@Nullable
+	public static Biome method_30360(Biome biome) {
+		return field_25821.get(BuiltinRegistries.BIOME.getRawId(biome));
 	}
 
 	static {

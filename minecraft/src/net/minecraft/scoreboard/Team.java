@@ -33,7 +33,7 @@ public class Team extends AbstractTeam {
 		this.scoreboard = scoreboard;
 		this.name = name;
 		this.displayName = new LiteralText(name);
-		this.field_24195 = Style.EMPTY.withInsertion(name).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(name)));
+		this.field_24195 = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(name)));
 	}
 
 	@Override

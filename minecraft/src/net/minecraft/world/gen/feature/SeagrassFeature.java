@@ -9,43 +9,41 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class SeagrassFeature extends Feature<SeagrassFeatureConfig> {
-	public SeagrassFeature(Codec<SeagrassFeatureConfig> codec) {
+public class SeagrassFeature extends Feature<ProbabilityConfig> {
+	public SeagrassFeature(Codec<ProbabilityConfig> codec) {
 		super(codec);
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SeagrassFeatureConfig seagrassFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
 	) {
-		int i = 0;
-
-		for (int j = 0; j < seagrassFeatureConfig.count; j++) {
-			int k = random.nextInt(8) - random.nextInt(8);
-			int l = random.nextInt(8) - random.nextInt(8);
-			int m = serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
-			BlockPos blockPos2 = new BlockPos(blockPos.getX() + k, m, blockPos.getZ() + l);
-			if (serverWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
-				boolean bl = random.nextDouble() < seagrassFeatureConfig.tallSeagrassProbability;
-				BlockState blockState = bl ? Blocks.TALL_SEAGRASS.getDefaultState() : Blocks.SEAGRASS.getDefaultState();
-				if (blockState.canPlaceAt(serverWorldAccess, blockPos2)) {
-					if (bl) {
-						BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
-						BlockPos blockPos3 = blockPos2.up();
-						if (serverWorldAccess.getBlockState(blockPos3).isOf(Blocks.WATER)) {
-							serverWorldAccess.setBlockState(blockPos2, blockState, 2);
-							serverWorldAccess.setBlockState(blockPos3, blockState2, 2);
-						}
-					} else {
+		boolean bl = false;
+		int i = random.nextInt(8) - random.nextInt(8);
+		int j = random.nextInt(8) - random.nextInt(8);
+		int k = serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + i, blockPos.getZ() + j);
+		BlockPos blockPos2 = new BlockPos(blockPos.getX() + i, k, blockPos.getZ() + j);
+		if (serverWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
+			boolean bl2 = random.nextDouble() < (double)probabilityConfig.probability;
+			BlockState blockState = bl2 ? Blocks.TALL_SEAGRASS.getDefaultState() : Blocks.SEAGRASS.getDefaultState();
+			if (blockState.canPlaceAt(serverWorldAccess, blockPos2)) {
+				if (bl2) {
+					BlockState blockState2 = blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
+					BlockPos blockPos3 = blockPos2.up();
+					if (serverWorldAccess.getBlockState(blockPos3).isOf(Blocks.WATER)) {
 						serverWorldAccess.setBlockState(blockPos2, blockState, 2);
+						serverWorldAccess.setBlockState(blockPos3, blockState2, 2);
 					}
-
-					i++;
+				} else {
+					serverWorldAccess.setBlockState(blockPos2, blockState, 2);
 				}
+
+				bl = true;
 			}
 		}
 
-		return i > 0;
+		return bl;
 	}
 }

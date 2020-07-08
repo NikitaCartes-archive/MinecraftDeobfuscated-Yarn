@@ -55,6 +55,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
@@ -104,11 +105,11 @@ public class ClientWorld extends World {
 		long l
 	) {
 		super(properties, registryKey, registryKey2, dimensionType, supplier, true, bl, l);
+		this.netHandler = clientPlayNetworkHandler;
 		this.chunkManager = new ClientChunkManager(this, i);
 		this.clientWorldProperties = properties;
-		this.netHandler = clientPlayNetworkHandler;
 		this.worldRenderer = worldRenderer;
-		this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.getRegistryTracker().getDimensionTypeRegistry().getKey(dimensionType));
+		this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.getRegistryManager().getDimensionTypes().getKey(dimensionType));
 		this.setSpawnPos(new BlockPos(8, 64, 8));
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
@@ -183,7 +184,7 @@ public class ClientWorld extends World {
 
 	public void tickEntity(Entity entity) {
 		if (!(entity instanceof PlayerEntity) && !this.getChunkManager().shouldTickEntity(entity)) {
-			this.checkChunk(entity);
+			this.checkEntityChunkPos(entity);
 		} else {
 			entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
 			entity.prevYaw = entity.yaw;
@@ -195,7 +196,7 @@ public class ClientWorld extends World {
 				this.getProfiler().pop();
 			}
 
-			this.checkChunk(entity);
+			this.checkEntityChunkPos(entity);
 			if (entity.updateNeeded) {
 				for (Entity entity2 : entity.getPassengerList()) {
 					this.tickPassenger(entity, entity2);
@@ -216,7 +217,7 @@ public class ClientWorld extends World {
 				passenger.tickRiding();
 			}
 
-			this.checkChunk(passenger);
+			this.checkEntityChunkPos(passenger);
 			if (passenger.updateNeeded) {
 				for (Entity entity2 : passenger.getPassengerList()) {
 					this.tickPassenger(passenger, entity2);
@@ -225,8 +226,11 @@ public class ClientWorld extends World {
 		}
 	}
 
-	private void checkChunk(Entity entity) {
-		if (entity.method_29240()) {
+	/**
+	 * Validates if an entity's current position matches its chunk position. If the entity's chunk position and actual position don't match, then the entity will be moved to its new chunk.
+	 */
+	private void checkEntityChunkPos(Entity entity) {
+		if (entity.isChunkPosUpdateRequested()) {
 			this.getProfiler().push("chunkCheck");
 			int i = MathHelper.floor(entity.getX() / 16.0);
 			int j = MathHelper.floor(entity.getY() / 16.0);
@@ -253,7 +257,7 @@ public class ClientWorld extends World {
 
 	public void unloadBlockEntities(WorldChunk chunk) {
 		this.unloadedBlockEntities.addAll(chunk.getBlockEntities().values());
-		this.chunkManager.getLightingProvider().setLightEnabled(chunk.getPos(), false);
+		this.chunkManager.getLightingProvider().setColumnEnabled(chunk.getPos(), false);
 	}
 
 	public void resetChunkColor(int i, int j) {
@@ -547,6 +551,11 @@ public class ClientWorld extends World {
 	@Override
 	public TagManager getTagManager() {
 		return this.netHandler.getTagManager();
+	}
+
+	@Override
+	public DynamicRegistryManager getRegistryManager() {
+		return this.netHandler.getRegistryManager();
 	}
 
 	@Override
@@ -908,8 +917,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void populateCrashReport(CrashReportSection crashReportSection) {
-			MutableWorldProperties.super.populateCrashReport(crashReportSection);
+		public void populateCrashReport(CrashReportSection reportSection) {
+			MutableWorldProperties.super.populateCrashReport(reportSection);
 		}
 
 		public void setDifficulty(Difficulty difficulty) {

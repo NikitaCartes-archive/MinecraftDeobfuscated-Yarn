@@ -1,6 +1,6 @@
 package net.minecraft.world.biome.layer;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.type.CrossSamplingLayer;
@@ -9,22 +9,22 @@ import net.minecraft.world.biome.layer.util.LayerRandomnessSource;
 public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 	INSTANCE;
 
-	private static final int DESERT_ID = Registry.BIOME.getRawId(Biomes.DESERT);
-	private static final int MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.MOUNTAINS);
-	private static final int WOODED_MOUNTAINS_ID = Registry.BIOME.getRawId(Biomes.WOODED_MOUNTAINS);
-	private static final int SNOWY_TUNDRA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TUNDRA);
-	private static final int JUNGLE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE);
-	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
-	private static final int JUNGLE_EDGE_ID = Registry.BIOME.getRawId(Biomes.JUNGLE_EDGE);
-	private static final int BADLANDS_ID = Registry.BIOME.getRawId(Biomes.BADLANDS);
-	private static final int BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.BADLANDS_PLATEAU);
-	private static final int WOODED_BADLANDS_PLATEAU_ID = Registry.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
-	private static final int PLAINS_ID = Registry.BIOME.getRawId(Biomes.PLAINS);
-	private static final int GIANT_TREE_TAIGA_ID = Registry.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA);
-	private static final int MOUNTAIN_EDGE_ID = Registry.BIOME.getRawId(Biomes.MOUNTAIN_EDGE);
-	private static final int SWAMP_ID = Registry.BIOME.getRawId(Biomes.SWAMP);
-	private static final int TAIGA_ID = Registry.BIOME.getRawId(Biomes.TAIGA);
-	private static final int SNOWY_TAIGA_ID = Registry.BIOME.getRawId(Biomes.SNOWY_TAIGA);
+	private static final int DESERT_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DESERT);
+	private static final int MOUNTAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.MOUNTAINS);
+	private static final int WOODED_MOUNTAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.WOODED_MOUNTAINS);
+	private static final int SNOWY_TUNDRA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SNOWY_TUNDRA);
+	private static final int JUNGLE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.JUNGLE);
+	private static final int BAMBOO_JUNGLE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
+	private static final int JUNGLE_EDGE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.JUNGLE_EDGE);
+	private static final int BADLANDS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BADLANDS);
+	private static final int BADLANDS_PLATEAU_ID = BuiltinRegistries.BIOME.getRawId(Biomes.BADLANDS_PLATEAU);
+	private static final int WOODED_BADLANDS_PLATEAU_ID = BuiltinRegistries.BIOME.getRawId(Biomes.WOODED_BADLANDS_PLATEAU);
+	private static final int PLAINS_ID = BuiltinRegistries.BIOME.getRawId(Biomes.PLAINS);
+	private static final int GIANT_TREE_TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.GIANT_TREE_TAIGA);
+	private static final int MOUNTAIN_EDGE_ID = BuiltinRegistries.BIOME.getRawId(Biomes.MOUNTAIN_EDGE);
+	private static final int SWAMP_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SWAMP);
+	private static final int TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.TAIGA);
+	private static final int SNOWY_TAIGA_ID = BuiltinRegistries.BIOME.getRawId(Biomes.SNOWY_TAIGA);
 
 	@Override
 	public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
@@ -103,8 +103,8 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer {
 		if (BiomeLayers.areSimilar(i, j)) {
 			return true;
 		} else {
-			Biome biome = Registry.BIOME.get(i);
-			Biome biome2 = Registry.BIOME.get(j);
+			Biome biome = BuiltinRegistries.BIOME.get(i);
+			Biome biome2 = BuiltinRegistries.BIOME.get(j);
 			if (biome != null && biome2 != null) {
 				Biome.TemperatureGroup temperatureGroup = biome.getTemperatureGroup();
 				Biome.TemperatureGroup temperatureGroup2 = biome2.getTemperatureGroup();

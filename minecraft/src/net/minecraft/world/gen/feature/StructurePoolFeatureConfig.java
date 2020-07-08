@@ -2,7 +2,8 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Identifier;
+import java.util.function.Supplier;
+import net.minecraft.structure.pool.StructurePool;
 
 /**
  * A feature config that specifies a starting pool and a size for the first two parameters of
@@ -11,16 +12,16 @@ import net.minecraft.util.Identifier;
 public class StructurePoolFeatureConfig implements FeatureConfig {
 	public static final Codec<StructurePoolFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Identifier.CODEC.fieldOf("start_pool").forGetter(StructurePoolFeatureConfig::getStartPool),
-					Codec.INT.fieldOf("size").forGetter(StructurePoolFeatureConfig::getSize)
+					StructurePool.CODEC.fieldOf("start_pool").forGetter(StructurePoolFeatureConfig::getStartPool),
+					Codec.intRange(0, 7).fieldOf("size").forGetter(StructurePoolFeatureConfig::getSize)
 				)
 				.apply(instance, StructurePoolFeatureConfig::new)
 	);
-	public final Identifier startPool;
-	public final int size;
+	private final Supplier<StructurePool> startPool;
+	private final int size;
 
-	public StructurePoolFeatureConfig(Identifier identifier, int size) {
-		this.startPool = identifier;
+	public StructurePoolFeatureConfig(Supplier<StructurePool> supplier, int size) {
+		this.startPool = supplier;
 		this.size = size;
 	}
 
@@ -28,7 +29,7 @@ public class StructurePoolFeatureConfig implements FeatureConfig {
 		return this.size;
 	}
 
-	public Identifier getStartPool() {
+	public Supplier<StructurePool> getStartPool() {
 		return this.startPool;
 	}
 }

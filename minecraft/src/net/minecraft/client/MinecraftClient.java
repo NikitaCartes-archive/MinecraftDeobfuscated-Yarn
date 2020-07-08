@@ -42,7 +42,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5407;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -118,6 +117,7 @@ import net.minecraft.client.resource.Format3ResourcePack;
 import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
+import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.IdentifierSearchableContainer;
@@ -218,8 +218,8 @@ import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.TickTimeTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
@@ -290,7 +290,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final MusicTracker musicTracker;
 	private final FontManager fontManager;
 	private final SplashTextResourceSupplier splashTextLoader;
-	private final class_5407 field_25671;
+	private final VideoWarningManager videoWarningManager;
 	private final MinecraftSessionService sessionService;
 	private final PlayerSkinProvider skinProvider;
 	private final BakedModelManager bakedModelManager;
@@ -474,8 +474,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerListener(this.paintingManager);
 		this.statusEffectSpriteManager = new StatusEffectSpriteManager(this.textureManager);
 		this.resourceManager.registerListener(this.statusEffectSpriteManager);
-		this.field_25671 = new class_5407();
-		this.resourceManager.registerListener(this.field_25671);
+		this.videoWarningManager = new VideoWarningManager();
+		this.resourceManager.registerListener(this.videoWarningManager);
 		this.inGameHud = new InGameHud(this);
 		this.debugRenderer = new DebugRenderer(this);
 		RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
@@ -1589,7 +1589,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static SaveProperties createSaveProperties(
-		LevelStorage.Session session, RegistryTracker.Modifiable registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings
+		LevelStorage.Session session, DynamicRegistryManager.Impl registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings
 	) {
 		RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, resourceManager, registryTracker);
 		SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings);
@@ -1602,16 +1602,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void startIntegratedServer(String worldName) {
 		this.startIntegratedServer(
-			worldName, RegistryTracker.create(), MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, MinecraftClient.WorldLoadAction.BACKUP
+			worldName,
+			DynamicRegistryManager.create(),
+			MinecraftClient::method_29598,
+			MinecraftClient::createSaveProperties,
+			false,
+			MinecraftClient.WorldLoadAction.BACKUP
 		);
 	}
 
-	public void method_29607(String worldName, LevelInfo levelInfo, RegistryTracker.Modifiable registryTracker, GeneratorOptions generatorOptions) {
+	public void method_29607(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
 		this.startIntegratedServer(
 			worldName,
 			registryTracker,
 			session -> levelInfo.method_29558(),
-			(session, modifiable2, resourceManager, dataPackSettings) -> {
+			(session, impl2, resourceManager, dataPackSettings) -> {
 				RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, resourceManager, registryTracker);
 				DataResult<SimpleRegistry<DimensionOptions>> dataResult = registryOps.loadToRegistry(
 					generatorOptions.getDimensionMap(), Registry.DIMENSION_OPTIONS, DimensionOptions.CODEC
@@ -1627,9 +1632,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private void startIntegratedServer(
 		String worldName,
-		RegistryTracker.Modifiable registryTracker,
+		DynamicRegistryManager.Impl registryTracker,
 		Function<LevelStorage.Session, DataPackSettings> function,
-		Function4<LevelStorage.Session, RegistryTracker.Modifiable, ResourceManager, DataPackSettings, SaveProperties> function4,
+		Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> function4,
 		boolean safeMode,
 		MinecraftClient.WorldLoadAction worldLoadAction
 	) {
@@ -1799,9 +1804,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public MinecraftClient.IntegratedResourceManager method_29604(
-		RegistryTracker.Modifiable modifiable,
+		DynamicRegistryManager.Impl impl,
 		Function<LevelStorage.Session, DataPackSettings> function,
-		Function4<LevelStorage.Session, RegistryTracker.Modifiable, ResourceManager, DataPackSettings, SaveProperties> function4,
+		Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> function4,
 		boolean bl,
 		LevelStorage.Session session
 	) throws InterruptedException, ExecutionException {
@@ -1817,7 +1822,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			);
 			this.runTasks(completableFuture::isDone);
 			ServerResourceManager serverResourceManager = (ServerResourceManager)completableFuture.get();
-			SaveProperties saveProperties = function4.apply(session, modifiable, serverResourceManager.getResourceManager(), dataPackSettings2);
+			SaveProperties saveProperties = function4.apply(session, impl, serverResourceManager.getResourceManager(), dataPackSettings2);
 			return new MinecraftClient.IntegratedResourceManager(resourcePackManager, serverResourceManager, saveProperties);
 		} catch (ExecutionException | InterruptedException var12) {
 			resourcePackManager.close();
@@ -2261,8 +2266,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.paused;
 	}
 
-	public class_5407 method_30049() {
-		return this.field_25671;
+	public VideoWarningManager getVideoWarningManager() {
+		return this.videoWarningManager;
 	}
 
 	public SoundManager getSoundManager() {

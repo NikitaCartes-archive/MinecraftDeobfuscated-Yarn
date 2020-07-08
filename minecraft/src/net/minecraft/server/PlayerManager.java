@@ -71,8 +71,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -103,16 +103,16 @@ public abstract class PlayerManager {
 	private final Map<UUID, PlayerAdvancementTracker> advancementTrackers = Maps.<UUID, PlayerAdvancementTracker>newHashMap();
 	private final WorldSaveHandler saveHandler;
 	private boolean whitelistEnabled;
-	private final RegistryTracker.Modifiable registryTracker;
+	private final DynamicRegistryManager.Impl registryManager;
 	protected final int maxPlayers;
 	private int viewDistance;
 	private GameMode gameMode;
 	private boolean cheatsAllowed;
 	private int latencyUpdateTimer;
 
-	public PlayerManager(MinecraftServer server, RegistryTracker.Modifiable tracker, WorldSaveHandler saveHandler, int maxPlayers) {
+	public PlayerManager(MinecraftServer server, DynamicRegistryManager.Impl registryManager, WorldSaveHandler saveHandler, int maxPlayers) {
 		this.server = server;
-		this.registryTracker = tracker;
+		this.registryManager = registryManager;
 		this.maxPlayers = maxPlayers;
 		this.saveHandler = saveHandler;
 	}
@@ -168,7 +168,7 @@ public abstract class PlayerManager {
 				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				worldProperties.isHardcore(),
 				this.server.getWorldRegistryKeys(),
-				this.registryTracker,
+				this.registryManager,
 				serverWorld2.getDimensionRegistryKey(),
 				serverWorld2.getRegistryKey(),
 				this.getMaxPlayerCount(),

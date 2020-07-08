@@ -1138,6 +1138,7 @@ public abstract class LivingEntity extends Entity {
 				this.clearStatusEffects();
 				this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1));
 				this.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1));
+				this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 1));
 				this.world.sendEntityStatus(this, (byte)35);
 			}
 

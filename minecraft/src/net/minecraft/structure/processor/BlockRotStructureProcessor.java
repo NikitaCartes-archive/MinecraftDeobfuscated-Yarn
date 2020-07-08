@@ -11,7 +11,7 @@ import net.minecraft.world.WorldView;
 public class BlockRotStructureProcessor extends StructureProcessor {
 	public static final Codec<BlockRotStructureProcessor> CODEC = Codec.FLOAT
 		.fieldOf("integrity")
-		.withDefault(1.0F)
+		.orElse(1.0F)
 		.<BlockRotStructureProcessor>xmap(BlockRotStructureProcessor::new, blockRotStructureProcessor -> blockRotStructureProcessor.integrity)
 		.codec();
 	private final float integrity;

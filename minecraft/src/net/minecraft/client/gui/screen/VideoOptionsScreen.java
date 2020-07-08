@@ -7,7 +7,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5407;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -18,6 +17,7 @@ import net.minecraft.client.options.FullScreenOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.Option;
+import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.StringRenderable;
@@ -55,18 +55,18 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	@Nullable
 	private List<StringRenderable> tooltip;
 	private ButtonListWidget list;
-	private final class_5407 field_25688;
+	private final VideoWarningManager warningManager;
 	private final int mipmapLevels;
 
-	public VideoOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, new TranslatableText("options.videoTitle"));
-		this.field_25688 = parent.client.method_30049();
-		this.field_25688.method_30143();
-		if (gameOptions.graphicsMode == GraphicsMode.FABULOUS) {
-			this.field_25688.method_30139();
+	public VideoOptionsScreen(Screen parent, GameOptions options) {
+		super(parent, options, new TranslatableText("options.videoTitle"));
+		this.warningManager = parent.client.getVideoWarningManager();
+		this.warningManager.reset();
+		if (options.graphicsMode == GraphicsMode.FABULOUS) {
+			this.warningManager.acceptAfterWarnings();
 		}
 
-		this.mipmapLevels = gameOptions.mipmapLevels;
+		this.mipmapLevels = options.mipmapLevels;
 	}
 
 	@Override
@@ -102,40 +102,36 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 				this.client.onResolutionChanged();
 			}
 
-			if (this.field_25688.method_30141()) {
+			if (this.warningManager.shouldWarn()) {
 				List<StringRenderable> list = Lists.<StringRenderable>newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, NEWLINE_TEXT);
-				String string = this.field_25688.method_30060();
+				String string = this.warningManager.getRendererWarning();
 				if (string != null) {
 					list.add(NEWLINE_TEXT);
 					list.add(new TranslatableText("options.graphics.warning.renderer", string).formatted(Formatting.GRAY));
 				}
 
-				String string2 = this.field_25688.method_30063();
+				String string2 = this.warningManager.getVendorWarning();
 				if (string2 != null) {
 					list.add(NEWLINE_TEXT);
 					list.add(new TranslatableText("options.graphics.warning.vendor", string2).formatted(Formatting.GRAY));
 				}
 
-				String string3 = this.field_25688.method_30062();
+				String string3 = this.warningManager.getVersionWarning();
 				if (string3 != null) {
 					list.add(NEWLINE_TEXT);
 					list.add(new TranslatableText("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
 				}
 
 				this.client
-					.openScreen(
-						new GraphicsConfirmationScreen(
-							GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new GraphicsConfirmationScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, buttonx -> {
-								this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
-								MinecraftClient.getInstance().worldRenderer.reload();
-								this.field_25688.method_30139();
-								this.client.openScreen(this);
-							}), new GraphicsConfirmationScreen.ChoiceButton(GRAPHICS_WARNING_CANCEL_TEXT, buttonx -> {
-								this.field_25688.method_30140();
-								this.client.openScreen(this);
-							}))
-						)
-					);
+					.openScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, buttonx -> {
+						this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
+						MinecraftClient.getInstance().worldRenderer.reload();
+						this.warningManager.acceptAfterWarnings();
+						this.client.openScreen(this);
+					}), new DialogScreen.ChoiceButton(GRAPHICS_WARNING_CANCEL_TEXT, buttonx -> {
+						this.warningManager.cancelAfterWarnings();
+						this.client.openScreen(this);
+					}))));
 			}
 
 			return true;

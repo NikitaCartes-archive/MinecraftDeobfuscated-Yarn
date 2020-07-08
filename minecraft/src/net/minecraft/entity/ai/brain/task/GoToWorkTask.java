@@ -26,6 +26,7 @@ public class GoToWorkTask extends Task<VillagerEntity> {
 		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
 		villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
 		villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
+		serverWorld.sendEntityStatus(villagerEntity, (byte)14);
 		if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE) {
 			MinecraftServer minecraftServer = serverWorld.getServer();
 			Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))

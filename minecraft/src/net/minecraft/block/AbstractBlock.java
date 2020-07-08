@@ -702,9 +702,11 @@ public abstract class AbstractBlock {
 		}
 
 		public boolean isSideSolidFullSquare(BlockView world, BlockPos pos, Direction direction) {
-			return this.shapeCache != null
-				? this.shapeCache.solidFullSquare[direction.ordinal()]
-				: Block.isSideSolidFullSquare(this.asBlockState(), world, pos, direction);
+			return this.isSideSolid(world, pos, direction, SideShapeType.FULL);
+		}
+
+		public boolean isSideSolid(BlockView world, BlockPos pos, Direction direction, SideShapeType shapeType) {
+			return this.shapeCache != null ? this.shapeCache.isSideSolid(direction, shapeType) : shapeType.matches(this.asBlockState(), world, pos, direction);
 		}
 
 		public boolean isFullCube(BlockView world, BlockPos pos) {
@@ -719,6 +721,7 @@ public abstract class AbstractBlock {
 
 		static final class ShapeCache {
 			private static final Direction[] DIRECTIONS = Direction.values();
+			private static final int SHAPE_TYPE_LENGTH = SideShapeType.values().length;
 			protected final boolean fullOpaque;
 			private final boolean translucent;
 			private final int lightSubtracted;
@@ -726,7 +729,7 @@ public abstract class AbstractBlock {
 			private final VoxelShape[] extrudedFaces;
 			protected final VoxelShape collisionShape;
 			protected final boolean exceedsCube;
-			protected final boolean[] solidFullSquare;
+			private final boolean[] solidSides;
 			protected final boolean isFullCube;
 
 			private ShapeCache(BlockState state) {
@@ -748,13 +751,23 @@ public abstract class AbstractBlock {
 				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
 				this.exceedsCube = Arrays.stream(Direction.Axis.values())
 					.anyMatch(axis -> this.collisionShape.getMin(axis) < 0.0 || this.collisionShape.getMax(axis) > 1.0);
-				this.solidFullSquare = new boolean[6];
+				this.solidSides = new boolean[DIRECTIONS.length * SHAPE_TYPE_LENGTH];
 
 				for (Direction direction2 : DIRECTIONS) {
-					this.solidFullSquare[direction2.ordinal()] = Block.isSideSolidFullSquare(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+					for (SideShapeType sideShapeType : SideShapeType.values()) {
+						this.solidSides[indexSolidSide(direction2, sideShapeType)] = sideShapeType.matches(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, direction2);
+					}
 				}
 
 				this.isFullCube = Block.isShapeFullCube(state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN));
+			}
+
+			public boolean isSideSolid(Direction direction, SideShapeType shapeType) {
+				return this.solidSides[indexSolidSide(direction, shapeType)];
+			}
+
+			private static int indexSolidSide(Direction direction, SideShapeType shapeType) {
+				return direction.ordinal() * SHAPE_TYPE_LENGTH + shapeType.ordinal();
 			}
 		}
 	}

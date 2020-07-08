@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.Supplier;
 
 public class RandomBooleanFeatureConfig implements FeatureConfig {
 	public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(
@@ -11,11 +12,11 @@ public class RandomBooleanFeatureConfig implements FeatureConfig {
 				)
 				.apply(instance, RandomBooleanFeatureConfig::new)
 	);
-	public final ConfiguredFeature<?, ?> featureTrue;
-	public final ConfiguredFeature<?, ?> featureFalse;
+	public final Supplier<ConfiguredFeature<?, ?>> featureTrue;
+	public final Supplier<ConfiguredFeature<?, ?>> featureFalse;
 
-	public RandomBooleanFeatureConfig(ConfiguredFeature<?, ?> featureTrue, ConfiguredFeature<?, ?> featureFalse) {
-		this.featureTrue = featureTrue;
-		this.featureFalse = featureFalse;
+	public RandomBooleanFeatureConfig(Supplier<ConfiguredFeature<?, ?>> supplier, Supplier<ConfiguredFeature<?, ?>> supplier2) {
+		this.featureTrue = supplier;
+		this.featureFalse = supplier2;
 	}
 }

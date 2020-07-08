@@ -21,7 +21,7 @@ public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 
 		for (int j = 0; j < i; j++) {
 			this.getStartPos(mutable, random, blockPos, Math.min(j, 7));
-			if (oreFeatureConfig.target.getCondition().test(serverWorldAccess.getBlockState(mutable)) && !this.checkAir(serverWorldAccess, mutable)) {
+			if (oreFeatureConfig.target.test(serverWorldAccess.getBlockState(mutable), random) && !this.checkAir(serverWorldAccess, mutable)) {
 				serverWorldAccess.setBlockState(mutable, oreFeatureConfig.state, 2);
 			}
 		}

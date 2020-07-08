@@ -54,8 +54,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.PassiveData();
-			((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
+			entityData = new PassiveEntity.PassiveData(false);
 		}
 
 		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
@@ -180,9 +179,9 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 
 	@Nullable
 	@Override
-	public Entity changeDimension(ServerWorld destination) {
+	public Entity moveToWorld(ServerWorld destination) {
 		this.resetCustomer();
-		return super.changeDimension(destination);
+		return super.moveToWorld(destination);
 	}
 
 	protected void resetCustomer() {

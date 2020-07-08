@@ -240,7 +240,7 @@ public class Style {
 	 * 
 	 * @param hoverEvent the new hover event
 	 */
-	public Style setHoverEvent(@Nullable HoverEvent hoverEvent) {
+	public Style withHoverEvent(@Nullable HoverEvent hoverEvent) {
 		return new Style(
 			this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, hoverEvent, this.insertion, this.font
 		);

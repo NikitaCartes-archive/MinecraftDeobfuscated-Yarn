@@ -14,7 +14,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class CocoaBeansTreeDecorator extends TreeDecorator {
-	public static final Codec<CocoaBeansTreeDecorator> CODEC = Codec.FLOAT
+	public static final Codec<CocoaBeansTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
 		.fieldOf("probability")
 		.<CocoaBeansTreeDecorator>xmap(CocoaBeansTreeDecorator::new, cocoaBeansTreeDecorator -> cocoaBeansTreeDecorator.field_21318)
 		.codec();

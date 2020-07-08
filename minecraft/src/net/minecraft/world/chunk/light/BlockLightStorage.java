@@ -15,8 +15,8 @@ public class BlockLightStorage extends LightStorage<BlockLightStorage.Data> {
 
 	@Override
 	protected int getLight(long blockPos) {
-		long l = ChunkSectionPos.fromGlobalPos(blockPos);
-		ChunkNibbleArray chunkNibbleArray = this.getLightArray(l, false);
+		long l = ChunkSectionPos.fromBlockPos(blockPos);
+		ChunkNibbleArray chunkNibbleArray = this.getLightSection(l, false);
 		return chunkNibbleArray == null
 			? 0
 			: chunkNibbleArray.get(

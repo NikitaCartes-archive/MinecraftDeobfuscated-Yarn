@@ -4,26 +4,25 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.dynamic.NumberCodecs;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 public class CheckerboardBiomeSource extends BiomeSource {
 	public static final Codec<CheckerboardBiomeSource> field_24715 = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registry.BIOME.listOf().fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
-					NumberCodecs.rangedInt(0, 62).fieldOf("scale").withDefault(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)
+					Biome.field_24677.listOf().fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
+					Codec.intRange(0, 62).fieldOf("scale").orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)
 				)
 				.apply(instance, CheckerboardBiomeSource::new)
 	);
-	private final List<Biome> biomeArray;
+	private final List<Supplier<Biome>> biomeArray;
 	private final int gridSize;
 	private final int field_24716;
 
-	public CheckerboardBiomeSource(List<Biome> list, int size) {
-		super(ImmutableList.copyOf(list));
+	public CheckerboardBiomeSource(List<Supplier<Biome>> list, int size) {
+		super((List<Biome>)list.stream().map(Supplier::get).collect(ImmutableList.toImmutableList()));
 		this.biomeArray = list;
 		this.gridSize = size + 2;
 		this.field_24716 = size;
@@ -42,6 +41,6 @@ public class CheckerboardBiomeSource extends BiomeSource {
 
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		return (Biome)this.biomeArray.get(Math.floorMod((biomeX >> this.gridSize) + (biomeZ >> this.gridSize), this.biomeArray.size()));
+		return (Biome)((Supplier)this.biomeArray.get(Math.floorMod((biomeX >> this.gridSize) + (biomeZ >> this.gridSize), this.biomeArray.size()))).get();
 	}
 }

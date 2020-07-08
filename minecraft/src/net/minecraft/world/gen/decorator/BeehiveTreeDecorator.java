@@ -19,7 +19,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
-	public static final Codec<BeehiveTreeDecorator> CODEC = Codec.FLOAT
+	public static final Codec<BeehiveTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
 		.fieldOf("probability")
 		.<BeehiveTreeDecorator>xmap(BeehiveTreeDecorator::new, beehiveTreeDecorator -> beehiveTreeDecorator.chance)
 		.codec();

@@ -89,6 +89,8 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> INFINIBURN_OVERWORLD = register("infiniburn_overworld");
 	public static final Tag.Identified<Block> INFINIBURN_NETHER = register("infiniburn_nether");
 	public static final Tag.Identified<Block> INFINIBURN_END = register("infiniburn_end");
+	public static final Tag.Identified<Block> BASE_STONE_OVERWORLD = register("base_stone_overworld");
+	public static final Tag.Identified<Block> BASE_STONE_NETHER = register("base_stone_nether");
 
 	private static Tag.Identified<Block> register(String id) {
 		return REQUIRED_TAGS.add(id);

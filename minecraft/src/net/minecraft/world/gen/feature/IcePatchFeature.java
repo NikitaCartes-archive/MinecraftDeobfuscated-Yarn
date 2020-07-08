@@ -2,49 +2,26 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
-	private final Block ICE = Blocks.PACKED_ICE;
-
-	public IcePatchFeature(Codec<IcePatchFeatureConfig> codec) {
+public class IcePatchFeature extends DiskFeature {
+	public IcePatchFeature(Codec<DiskFeatureConfig> codec) {
 		super(codec);
 	}
 
+	@Override
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig
+		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
 	) {
 		while (serverWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
 			blockPos = blockPos.down();
 		}
 
-		if (!serverWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
-			return false;
-		} else {
-			int i = random.nextInt(icePatchFeatureConfig.radius) + 2;
-			int j = 1;
-
-			for (int k = blockPos.getX() - i; k <= blockPos.getX() + i; k++) {
-				for (int l = blockPos.getZ() - i; l <= blockPos.getZ() + i; l++) {
-					int m = k - blockPos.getX();
-					int n = l - blockPos.getZ();
-					if (m * m + n * n <= i * i) {
-						for (int o = blockPos.getY() - 1; o <= blockPos.getY() + 1; o++) {
-							BlockPos blockPos2 = new BlockPos(k, o, l);
-							Block block = serverWorldAccess.getBlockState(blockPos2).getBlock();
-							if (isSoil(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
-								serverWorldAccess.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
-							}
-						}
-					}
-				}
-			}
-
-			return true;
-		}
+		return !serverWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)
+			? false
+			: super.generate(serverWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig);
 	}
 }

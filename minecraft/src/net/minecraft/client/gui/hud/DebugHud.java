@@ -305,7 +305,7 @@ public class DebugHud extends DrawableHelper {
 
 						list.add(stringBuilder.toString());
 						if (blockPos.getY() >= 0 && blockPos.getY() < 256) {
-							list.add("Biome: " + Registry.BIOME.getId(this.client.world.getBiome(blockPos)));
+							list.add("Biome: " + this.client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(this.client.world.getBiome(blockPos)));
 							long l = 0L;
 							float h = 0.0F;
 							if (worldChunk2 != null) {

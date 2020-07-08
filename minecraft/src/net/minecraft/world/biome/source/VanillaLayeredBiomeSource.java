@@ -18,7 +18,7 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 					Codec.BOOL
 						.optionalFieldOf("legacy_biome_init_layer", Boolean.valueOf(false), Lifecycle.stable())
 						.forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24498),
-					Codec.BOOL.fieldOf("large_biomes").withDefault(false).stable().forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24729)
+					Codec.BOOL.fieldOf("large_biomes").orElse(false).stable().forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24729)
 				)
 				.apply(instance, instance.stable(VanillaLayeredBiomeSource::new))
 	);

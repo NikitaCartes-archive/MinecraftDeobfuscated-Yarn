@@ -19,36 +19,36 @@ import net.minecraft.text.TranslatableText;
 public class SystemToast implements Toast {
 	private final SystemToast.Type type;
 	private StringRenderable title;
-	private List<StringRenderable> field_25037;
+	private List<StringRenderable> lines;
 	private long startTime;
 	private boolean justUpdated;
-	private final int field_25038;
+	private final int width;
 
-	public SystemToast(SystemToast.Type type, Text text, @Nullable Text text2) {
-		this(type, text, method_29626(text2), 160);
+	public SystemToast(SystemToast.Type type, Text title, @Nullable Text description) {
+		this(type, title, getTextAsList(description), 160);
 	}
 
-	public static SystemToast method_29047(MinecraftClient minecraftClient, SystemToast.Type type, Text text, Text text2) {
-		TextRenderer textRenderer = minecraftClient.textRenderer;
-		List<StringRenderable> list = textRenderer.getTextHandler().wrapLines(text2, 200, Style.EMPTY);
+	public static SystemToast create(MinecraftClient client, SystemToast.Type type, Text title, Text description) {
+		TextRenderer textRenderer = client.textRenderer;
+		List<StringRenderable> list = textRenderer.getTextHandler().wrapLines(description, 200, Style.EMPTY);
 		int i = Math.max(200, list.stream().mapToInt(textRenderer::getWidth).max().orElse(200));
-		return new SystemToast(type, text, list, i + 30);
+		return new SystemToast(type, title, list, i + 30);
 	}
 
-	private SystemToast(SystemToast.Type type, Text text, List<StringRenderable> list, int i) {
+	private SystemToast(SystemToast.Type type, Text title, List<StringRenderable> lines, int width) {
 		this.type = type;
-		this.title = text;
-		this.field_25037 = list;
-		this.field_25038 = i;
+		this.title = title;
+		this.lines = lines;
+		this.width = width;
 	}
 
-	private static ImmutableList<StringRenderable> method_29626(@Nullable Text text) {
+	private static ImmutableList<StringRenderable> getTextAsList(@Nullable Text text) {
 		return text == null ? ImmutableList.of() : ImmutableList.of(text);
 	}
 
 	@Override
-	public int method_29049() {
-		return this.field_25038;
+	public int getWidth() {
+		return this.width;
 	}
 
 	@Override
@@ -60,51 +60,51 @@ public class SystemToast implements Toast {
 
 		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-		int i = this.method_29049();
+		int i = this.getWidth();
 		int j = 12;
-		if (i == 160 && this.field_25037.size() <= 1) {
-			manager.drawTexture(matrices, 0, 0, 0, 64, i, this.method_29050());
+		if (i == 160 && this.lines.size() <= 1) {
+			manager.drawTexture(matrices, 0, 0, 0, 64, i, this.getHeight());
 		} else {
-			int k = this.method_29050() + Math.max(0, this.field_25037.size() - 1) * 12;
+			int k = this.getHeight() + Math.max(0, this.lines.size() - 1) * 12;
 			int l = 28;
 			int m = Math.min(4, k - 28);
-			this.method_29046(matrices, manager, i, 0, 0, 28);
+			this.drawPart(matrices, manager, i, 0, 0, 28);
 
 			for (int n = 28; n < k - m; n += 10) {
-				this.method_29046(matrices, manager, i, 16, n, Math.min(16, k - n - m));
+				this.drawPart(matrices, manager, i, 16, n, Math.min(16, k - n - m));
 			}
 
-			this.method_29046(matrices, manager, i, 32 - m, k - m, m);
+			this.drawPart(matrices, manager, i, 32 - m, k - m, m);
 		}
 
-		if (this.field_25037 == null) {
+		if (this.lines == null) {
 			manager.getGame().textRenderer.draw(matrices, this.title, 18.0F, 12.0F, -256);
 		} else {
 			manager.getGame().textRenderer.draw(matrices, this.title, 18.0F, 7.0F, -256);
 
-			for (int k = 0; k < this.field_25037.size(); k++) {
-				manager.getGame().textRenderer.draw(matrices, (StringRenderable)this.field_25037.get(k), 18.0F, (float)(18 + k * 12), -1);
+			for (int k = 0; k < this.lines.size(); k++) {
+				manager.getGame().textRenderer.draw(matrices, (StringRenderable)this.lines.get(k), 18.0F, (float)(18 + k * 12), -1);
 			}
 		}
 
 		return startTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
-	private void method_29046(MatrixStack matrixStack, ToastManager toastManager, int i, int j, int k, int l) {
-		int m = j == 0 ? 20 : 5;
-		int n = Math.min(60, i - m);
-		toastManager.drawTexture(matrixStack, 0, k, 0, 64 + j, m, l);
+	private void drawPart(MatrixStack matrices, ToastManager manager, int width, int textureV, int y, int height) {
+		int i = textureV == 0 ? 20 : 5;
+		int j = Math.min(60, width - i);
+		manager.drawTexture(matrices, 0, y, 0, 64 + textureV, i, height);
 
-		for (int o = m; o < i - n; o += 64) {
-			toastManager.drawTexture(matrixStack, o, k, 32, 64 + j, Math.min(64, i - o - n), l);
+		for (int k = i; k < width - j; k += 64) {
+			manager.drawTexture(matrices, k, y, 32, 64 + textureV, Math.min(64, width - k - j), height);
 		}
 
-		toastManager.drawTexture(matrixStack, i - n, k, 160 - n, 64 + j, n, l);
+		manager.drawTexture(matrices, width - j, y, 160 - j, 64 + textureV, j, height);
 	}
 
 	public void setContent(Text title, @Nullable Text description) {
 		this.title = title;
-		this.field_25037 = method_29626(description);
+		this.lines = getTextAsList(description);
 		this.justUpdated = true;
 	}
 
@@ -133,8 +133,8 @@ public class SystemToast implements Toast {
 		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.delete_failure"), new LiteralText(worldName));
 	}
 
-	public static void method_29627(MinecraftClient minecraftClient, String string) {
-		add(minecraftClient.getToastManager(), SystemToast.Type.PACK_COPY_FAILURE, new TranslatableText("pack.copyFailure"), new LiteralText(string));
+	public static void addPackCopyFailure(MinecraftClient client, String directory) {
+		add(client.getToastManager(), SystemToast.Type.PACK_COPY_FAILURE, new TranslatableText("pack.copyFailure"), new LiteralText(directory));
 	}
 
 	@Environment(EnvType.CLIENT)

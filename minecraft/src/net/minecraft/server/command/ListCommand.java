@@ -24,7 +24,9 @@ public class ListCommand {
 	}
 
 	private static int executeUuids(ServerCommandSource source) {
-		return execute(source, PlayerEntity::getNameAndUuid);
+		return execute(
+			source, serverPlayerEntity -> new TranslatableText("commands.list.nameAndId", serverPlayerEntity.getName(), serverPlayerEntity.getGameProfile().getId())
+		);
 	}
 
 	private static int execute(ServerCommandSource source, Function<ServerPlayerEntity, Text> nameProvider) {

@@ -201,7 +201,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 				for (int[] js : is) {
 					mutable.set(blockPos.getX() + js[0], blockPos.getY(), blockPos.getZ() + js[1]);
-					double d = this.world.getCollisionHeightAt(mutable);
+					double d = this.world.getDismountHeight(mutable);
 					if (Dismounting.canDismountInBlock(d)) {
 						Vec3d vec3d = Vec3d.ofCenter(mutable, d);
 						if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d))) {

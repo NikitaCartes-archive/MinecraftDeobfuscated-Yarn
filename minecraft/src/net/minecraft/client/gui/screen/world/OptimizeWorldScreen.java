@@ -17,8 +17,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryTracker;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.level.LevelInfo;
@@ -45,13 +45,13 @@ public class OptimizeWorldScreen extends Screen {
 	public static OptimizeWorldScreen method_27031(
 		MinecraftClient minecraftClient, BooleanConsumer booleanConsumer, DataFixer dataFixer, LevelStorage.Session session, boolean bl
 	) {
-		RegistryTracker.Modifiable modifiable = RegistryTracker.create();
+		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 
 		try (MinecraftClient.IntegratedResourceManager integratedResourceManager = minecraftClient.method_29604(
-				modifiable, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session
+				impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session
 			)) {
 			SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
-			session.method_27425(modifiable, saveProperties);
+			session.method_27425(impl, saveProperties);
 			ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
 			return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
 		} catch (Exception var22) {

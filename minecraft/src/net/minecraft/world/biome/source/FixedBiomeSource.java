@@ -6,24 +6,28 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 public class FixedBiomeSource extends BiomeSource {
-	public static final Codec<FixedBiomeSource> field_24717 = Registry.BIOME
+	public static final Codec<FixedBiomeSource> field_24717 = Biome.field_24677
 		.fieldOf("biome")
 		.<FixedBiomeSource>xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome)
 		.stable()
 		.codec();
-	private final Biome biome;
+	private final Supplier<Biome> biome;
 
 	public FixedBiomeSource(Biome biome) {
-		super(ImmutableList.of(biome));
-		this.biome = biome;
+		this(() -> biome);
+	}
+
+	public FixedBiomeSource(Supplier<Biome> supplier) {
+		super(ImmutableList.of((Biome)supplier.get()));
+		this.biome = supplier;
 	}
 
 	@Override
@@ -39,13 +43,13 @@ public class FixedBiomeSource extends BiomeSource {
 
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		return this.biome;
+		return (Biome)this.biome.get();
 	}
 
 	@Nullable
 	@Override
 	public BlockPos locateBiome(int x, int y, int z, int radius, int i, List<Biome> biomes, Random random, boolean bl) {
-		if (biomes.contains(this.biome)) {
+		if (biomes.contains(this.biome.get())) {
 			return bl ? new BlockPos(x, y, z) : new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1));
 		} else {
 			return null;
@@ -54,6 +58,6 @@ public class FixedBiomeSource extends BiomeSource {
 
 	@Override
 	public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
-		return Sets.<Biome>newHashSet(this.biome);
+		return Sets.<Biome>newHashSet((Biome)this.biome.get());
 	}
 }

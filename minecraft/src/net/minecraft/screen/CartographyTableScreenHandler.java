@@ -1,7 +1,6 @@
 package net.minecraft.screen;
 
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,7 +20,6 @@ import net.minecraft.world.World;
 
 public class CartographyTableScreenHandler extends ScreenHandler {
 	private final ScreenHandlerContext context;
-	private boolean currentlyTakingItem;
 	private long lastTakeResultTime;
 	public final Inventory inventory = new SimpleInventory(2) {
 		@Override
@@ -65,32 +63,9 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 			}
 
 			@Override
-			public ItemStack takeStack(int amount) {
-				ItemStack itemStack = super.takeStack(amount);
-				ItemStack itemStack2 = (ItemStack)context.run((BiFunction)((world, blockPos) -> {
-					if (!CartographyTableScreenHandler.this.currentlyTakingItem && CartographyTableScreenHandler.this.inventory.getStack(1).getItem() == Items.GLASS_PANE) {
-						ItemStack itemStack2x = FilledMapItem.copyMap(world, CartographyTableScreenHandler.this.inventory.getStack(0));
-						if (itemStack2x != null) {
-							itemStack2x.setCount(1);
-							return itemStack2x;
-						}
-					}
-
-					return itemStack;
-				})).orElse(itemStack);
-				CartographyTableScreenHandler.this.inventory.removeStack(0, 1);
-				CartographyTableScreenHandler.this.inventory.removeStack(1, 1);
-				return itemStack2;
-			}
-
-			@Override
-			protected void onCrafted(ItemStack stack, int amount) {
-				this.takeStack(amount);
-				super.onCrafted(stack, amount);
-			}
-
-			@Override
 			public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+				((Slot)CartographyTableScreenHandler.this.slots.get(0)).takeStack(1);
+				((Slot)CartographyTableScreenHandler.this.slots.get(1)).takeStack(1);
 				stack.getItem().onCraft(stack, player.world, player);
 				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
@@ -147,6 +122,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				} else if (itemx == Items.GLASS_PANE && !mapState.locked) {
 					itemStack4 = map.copy();
 					itemStack4.setCount(1);
+					itemStack4.getOrCreateTag().putBoolean("map_to_lock", true);
 					this.sendContentUpdates();
 				} else {
 					if (itemx != Items.MAP) {
@@ -179,28 +155,15 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
-			ItemStack itemStack3 = itemStack2;
 			Item item = itemStack2.getItem();
 			itemStack = itemStack2.copy();
 			if (index == 2) {
-				if (this.inventory.getStack(1).getItem() == Items.GLASS_PANE) {
-					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
-						ItemStack itemStack2x = FilledMapItem.copyMap(world, this.inventory.getStack(0));
-						if (itemStack2x != null) {
-							itemStack2x.setCount(1);
-							return itemStack2x;
-						} else {
-							return itemStack2;
-						}
-					})).orElse(itemStack2);
-				}
-
-				item.onCraft(itemStack3, player.world, player);
-				if (!this.insertItem(itemStack3, 3, 39, true)) {
+				item.onCraft(itemStack2, player.world, player);
+				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack3, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			} else if (index != 1 && index != 0) {
 				if (item == Items.FILLED_MAP) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
@@ -221,18 +184,16 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				return ItemStack.EMPTY;
 			}
 
-			if (itemStack3.isEmpty()) {
+			if (itemStack2.isEmpty()) {
 				slot.setStack(ItemStack.EMPTY);
 			}
 
 			slot.markDirty();
-			if (itemStack3.getCount() == itemStack.getCount()) {
+			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
-			this.currentlyTakingItem = true;
-			slot.onTakeItem(player, itemStack3);
-			this.currentlyTakingItem = false;
+			slot.onTakeItem(player, itemStack2);
 			this.sendContentUpdates();
 		}
 

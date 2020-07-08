@@ -10,10 +10,10 @@ public class GameRuleCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		final LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("gamerule")
 			.requires(source -> source.hasPermissionLevel(2));
-		GameRules.forEachType(
-			new GameRules.TypeConsumer() {
+		GameRules.accept(
+			new GameRules.Visitor() {
 				@Override
-				public <T extends GameRules.Rule<T>> void accept(GameRules.Key<T> key, GameRules.Type<T> type) {
+				public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
 					literalArgumentBuilder.then(
 						CommandManager.literal(key.getName())
 							.executes(context -> GameRuleCommand.executeQuery(context.getSource(), key))

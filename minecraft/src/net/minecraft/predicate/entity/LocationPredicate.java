@@ -15,6 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -182,7 +183,7 @@ public class LocationPredicate {
 			}
 
 			if (this.biome != null) {
-				jsonObject.addProperty("biome", Registry.BIOME.getId(this.biome).toString());
+				jsonObject.addProperty("biome", BuiltinRegistries.BIOME.getId(this.biome).toString());
 			}
 
 			if (this.smokey != null) {
@@ -216,7 +217,7 @@ public class LocationPredicate {
 			Biome biome = null;
 			if (jsonObject.has("biome")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-				biome = (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier + "'"));
+				biome = (Biome)BuiltinRegistries.BIOME.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier + "'"));
 			}
 
 			Boolean boolean_ = jsonObject.has("smokey") ? jsonObject.get("smokey").getAsBoolean() : null;

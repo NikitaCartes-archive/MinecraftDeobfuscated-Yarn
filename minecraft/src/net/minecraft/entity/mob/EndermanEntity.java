@@ -91,11 +91,10 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.goalSelector.add(10, new EndermanEntity.PlaceBlockGoal(this));
 		this.goalSelector.add(11, new EndermanEntity.PickUpBlockGoal(this));
-		this.targetSelector.add(1, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
-		this.targetSelector.add(2, new EndermanEntity.TeleportTowardsPlayerGoal(this));
-		this.targetSelector.add(3, new RevengeGoal(this));
-		this.targetSelector.add(4, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
-		this.targetSelector.add(5, new UniversalAngerGoal<>(this, false));
+		this.targetSelector.add(1, new EndermanEntity.TeleportTowardsPlayerGoal(this, this::shouldAngerAt));
+		this.targetSelector.add(2, new RevengeGoal(this));
+		this.targetSelector.add(3, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
+		this.targetSelector.add(4, new UniversalAngerGoal<>(this, false));
 	}
 
 	public static DefaultAttributeContainer.Builder createEndermanAttributes() {
@@ -354,7 +353,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			return false;
 		} else {
 			boolean bl = super.damage(source, amount);
-			if (!this.world.isClient() && this.random.nextInt(10) != 0) {
+			if (!this.world.isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
 				this.teleportRandomly();
 			}
 
@@ -496,8 +495,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		private final TargetPredicate staringPlayerPredicate;
 		private final TargetPredicate validTargetPredicate = new TargetPredicate().includeHidden();
 
-		public TeleportTowardsPlayerGoal(EndermanEntity enderman) {
-			super(enderman, PlayerEntity.class, false);
+		public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable Predicate<LivingEntity> predicate) {
+			super(enderman, PlayerEntity.class, 10, false, false, predicate);
 			this.enderman = enderman;
 			this.staringPlayerPredicate = new TargetPredicate()
 				.setBaseMaxDistance(this.getFollowRange())

@@ -584,7 +584,7 @@ public class RecipesProvider implements DataProvider {
 		ShapedRecipeJsonFactory.create(Items.BREAD).input('#', Items.WHEAT).pattern("###").criterion("has_wheat", conditionsFromItem(Items.WHEAT)).offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.BREWING_STAND)
 			.input('B', Items.BLAZE_ROD)
-			.input('#', Blocks.COBBLESTONE)
+			.input('#', ItemTags.STONE_CRAFTING_MATERIALS)
 			.pattern(" B ")
 			.pattern("###")
 			.criterion("has_blaze_rod", conditionsFromItem(Items.BLAZE_ROD))
@@ -1053,11 +1053,11 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_brick", conditionsFromItem(Items.BRICK))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.FURNACE)
-			.input('#', ItemTags.FURNACE_MATERIALS)
+			.input('#', ItemTags.STONE_CRAFTING_MATERIALS)
 			.pattern("###")
 			.pattern("# #")
 			.pattern("###")
-			.criterion("has_cobblestone", conditionsFromTag(ItemTags.FURNACE_MATERIALS))
+			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_CRAFTING_MATERIALS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.FURNACE_MINECART)
 			.input('A', Blocks.FURNACE)

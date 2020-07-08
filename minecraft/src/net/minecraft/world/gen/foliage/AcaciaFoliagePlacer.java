@@ -4,16 +4,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class AcaciaFoliagePlacer extends FoliagePlacer {
-	public static final Codec<AcaciaFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> method_28846(instance).apply(instance, AcaciaFoliagePlacer::new));
+	public static final Codec<AcaciaFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> method_30411(instance).apply(instance, AcaciaFoliagePlacer::new));
 
-	public AcaciaFoliagePlacer(int i, int j, int k, int l) {
-		super(i, j, k, l);
+	public AcaciaFoliagePlacer(class_5428 arg, class_5428 arg2) {
+		super(arg, arg2);
 	}
 
 	@Override

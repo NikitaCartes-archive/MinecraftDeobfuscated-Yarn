@@ -523,8 +523,8 @@ public class RabbitEntity extends AnimalEntity {
 		public final int type;
 
 		public RabbitData(int type) {
+			super(1.0F);
 			this.type = type;
-			this.setBabyChance(1.0F);
 		}
 	}
 

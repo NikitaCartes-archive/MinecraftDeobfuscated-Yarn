@@ -72,48 +72,48 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	protected void updateChunkStatus(ChunkPos pos) {
 		this.enqueue(pos.x, pos.z, () -> 0, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable(() -> {
 			super.setRetainData(pos, false);
-			super.setLightEnabled(pos, false);
+			super.setColumnEnabled(pos, false);
 
 			for (int i = -1; i < 17; i++) {
-				super.queueData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
-				super.queueData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
+				super.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
+				super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
 			}
 
 			for (int i = 0; i < 16; i++) {
-				super.updateSectionStatus(ChunkSectionPos.from(pos, i), true);
+				super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
 			}
 		}, () -> "updateChunkStatus " + pos + " " + true));
 	}
 
 	@Override
-	public void updateSectionStatus(ChunkSectionPos pos, boolean status) {
+	public void setSectionStatus(ChunkSectionPos pos, boolean notReady) {
 		this.enqueue(
 			pos.getSectionX(),
 			pos.getSectionZ(),
 			() -> 0,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable(() -> super.updateSectionStatus(pos, status), () -> "updateSectionStatus " + pos + " " + status)
+			Util.debugRunnable(() -> super.setSectionStatus(pos, notReady), () -> "updateSectionStatus " + pos + " " + notReady)
 		);
 	}
 
 	@Override
-	public void setLightEnabled(ChunkPos pos, boolean lightEnabled) {
+	public void setColumnEnabled(ChunkPos pos, boolean lightEnabled) {
 		this.enqueue(
 			pos.x,
 			pos.z,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable(() -> super.setLightEnabled(pos, lightEnabled), () -> "enableLight " + pos + " " + lightEnabled)
+			Util.debugRunnable(() -> super.setColumnEnabled(pos, lightEnabled), () -> "enableLight " + pos + " " + lightEnabled)
 		);
 	}
 
 	@Override
-	public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
+	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean bl) {
 		this.enqueue(
 			pos.getSectionX(),
 			pos.getSectionZ(),
 			() -> 0,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable(() -> super.queueData(lightType, pos, nibbles, bl), () -> "queueData " + pos)
+			Util.debugRunnable(() -> super.enqueueSectionData(lightType, pos, nibbles, bl), () -> "queueData " + pos)
 		);
 	}
 
@@ -146,11 +146,11 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			for (int i = 0; i < 16; i++) {
 				ChunkSection chunkSection = chunkSections[i];
 				if (!ChunkSection.isEmpty(chunkSection)) {
-					super.updateSectionStatus(ChunkSectionPos.from(chunkPos, i), false);
+					super.setSectionStatus(ChunkSectionPos.from(chunkPos, i), false);
 				}
 			}
 
-			super.setLightEnabled(chunkPos, true);
+			super.setColumnEnabled(chunkPos, true);
 			if (!excludeBlocks) {
 				chunk.getLightSourcesStream().forEach(blockPos -> super.addLightSource(blockPos, chunk.getLuminance(blockPos)));
 			}

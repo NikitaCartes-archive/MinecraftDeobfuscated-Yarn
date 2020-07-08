@@ -1,16 +1,15 @@
 package net.minecraft.world.biome;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
-import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilders;
 
 public final class MushroomFieldShoreBiome extends Biome {
 	public MushroomFieldShoreBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.MYCELIUM_CONFIG)
+				.configureSurfaceBuilder(ConfiguredSurfaceBuilders.MYCELIUM)
 				.precipitation(Biome.Precipitation.RAIN)
 				.category(Biome.Category.MUSHROOM)
 				.depth(0.0F)
@@ -21,7 +20,7 @@ public final class MushroomFieldShoreBiome extends Biome {
 				.parent(null)
 		);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
-		this.addStructureFeature(DefaultBiomeFeatures.STANDARD_RUINED_PORTAL);
+		this.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
@@ -33,7 +32,6 @@ public final class MushroomFieldShoreBiome extends Biome {
 		DefaultBiomeFeatures.addDefaultVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
-		this.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.MOOSHROOM, 8, 4, 8));
-		this.addSpawn(SpawnGroup.AMBIENT, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
+		DefaultBiomeFeatures.addMushroomMobs(this);
 	}
 }

@@ -21,7 +21,7 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
-		for (int i = blockPos.getY(); i < 256; i++) {
+		for (int i = 64; i < 256; i++) {
 			mutable.set(blockPos);
 			mutable.move(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
 			mutable.setY(i);

@@ -23,8 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class Blocks {
 	public static final Block AIR = register("air", new AirBlock(AbstractBlock.Settings.of(Material.AIR).noCollision().dropsNothing().air()));
@@ -1296,7 +1295,10 @@ public class Blocks {
 		"barrier", new BarrierBlock(AbstractBlock.Settings.of(Material.BARRIER).strength(-1.0F, 3600000.8F).dropsNothing().nonOpaque().allowsSpawning(Blocks::never))
 	);
 	public static final Block IRON_TRAPDOOR = register(
-		"iron_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(5.0F).sounds(BlockSoundGroup.METAL).nonOpaque())
+		"iron_trapdoor",
+		new TrapdoorBlock(
+			AbstractBlock.Settings.of(Material.METAL).requiresTool().strength(5.0F).sounds(BlockSoundGroup.METAL).nonOpaque().allowsSpawning(Blocks::never)
+		)
 	);
 	public static final Block PRISMARINE = register(
 		"prismarine", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.CYAN).requiresTool().strength(1.5F, 6.0F))
@@ -2399,7 +2401,7 @@ public class Blocks {
 		"warped_fungus",
 		new FungusBlock(
 			AbstractBlock.Settings.of(Material.PLANT, MaterialColor.CYAN).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS),
-			() -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG)
+			() -> ConfiguredFeatures.WARPED_FUNGI_PLANTED
 		)
 	);
 	public static final Block WARPED_WART_BLOCK = register(
@@ -2436,7 +2438,7 @@ public class Blocks {
 		"crimson_fungus",
 		new FungusBlock(
 			AbstractBlock.Settings.of(Material.PLANT, MaterialColor.NETHER).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS),
-			() -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG)
+			() -> ConfiguredFeatures.CRIMSON_FUNGI_PLANTED
 		)
 	);
 	public static final Block SHROOMLIGHT = register(
@@ -2478,46 +2480,64 @@ public class Blocks {
 		"warped_planks", new Block(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.field_25706).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block CRIMSON_SLAB = register(
-		"crimson_slab", new SlabBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.NETHER).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+		"crimson_slab",
+		new SlabBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.getDefaultMaterialColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block WARPED_SLAB = register(
-		"warped_slab", new SlabBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+		"warped_slab",
+		new SlabBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.getDefaultMaterialColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block CRIMSON_PRESSURE_PLATE = register(
 		"crimson_pressure_plate",
 		new PressurePlateBlock(
 			PressurePlateBlock.ActivationRule.EVERYTHING,
-			AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.NETHER).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.getDefaultMaterialColor()).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block WARPED_PRESSURE_PLATE = register(
 		"warped_pressure_plate",
 		new PressurePlateBlock(
 			PressurePlateBlock.ActivationRule.EVERYTHING,
-			AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.getDefaultMaterialColor()).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block CRIMSON_FENCE = register(
-		"crimson_fence", new FenceBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.NETHER).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+		"crimson_fence",
+		new FenceBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.getDefaultMaterialColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block WARPED_FENCE = register(
-		"warped_fence", new FenceBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+		"warped_fence",
+		new FenceBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.getDefaultMaterialColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block CRIMSON_TRAPDOOR = register(
 		"crimson_trapdoor",
-		new TrapdoorBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.NETHER).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque())
+		new TrapdoorBlock(
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.getDefaultMaterialColor())
+				.strength(3.0F)
+				.sounds(BlockSoundGroup.WOOD)
+				.nonOpaque()
+				.allowsSpawning(Blocks::never)
+		)
 	);
 	public static final Block WARPED_TRAPDOOR = register(
 		"warped_trapdoor",
-		new TrapdoorBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque())
+		new TrapdoorBlock(
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.getDefaultMaterialColor())
+				.strength(3.0F)
+				.sounds(BlockSoundGroup.WOOD)
+				.nonOpaque()
+				.allowsSpawning(Blocks::never)
+		)
 	);
 	public static final Block CRIMSON_FENCE_GATE = register(
 		"crimson_fence_gate",
-		new FenceGateBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.NETHER).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+		new FenceGateBlock(
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.getDefaultMaterialColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD)
+		)
 	);
 	public static final Block WARPED_FENCE_GATE = register(
 		"warped_fence_gate",
-		new FenceGateBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+		new FenceGateBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.getDefaultMaterialColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block CRIMSON_STAIRS = register(
 		"crimson_stairs", new StairsBlock(CRIMSON_PLANKS.getDefaultState(), AbstractBlock.Settings.copy(CRIMSON_PLANKS))
@@ -2546,23 +2566,37 @@ public class Blocks {
 	public static final Block CRIMSON_SIGN = register(
 		"crimson_sign",
 		new SignBlock(
-			AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.NETHER).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD), SignType.CRIMSON
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.getDefaultMaterialColor()).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD),
+			SignType.CRIMSON
 		)
 	);
 	public static final Block WARPED_SIGN = register(
 		"warped_sign",
-		new SignBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD), SignType.WARPED)
+		new SignBlock(
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.getDefaultMaterialColor()).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD),
+			SignType.WARPED
+		)
 	);
 	public static final Block CRIMSON_WALL_SIGN = register(
 		"crimson_wall_sign",
 		new WallSignBlock(
-			AbstractBlock.Settings.of(Material.NETHER_WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(CRIMSON_SIGN), SignType.CRIMSON
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.getDefaultMaterialColor())
+				.noCollision()
+				.strength(1.0F)
+				.sounds(BlockSoundGroup.WOOD)
+				.dropsLike(CRIMSON_SIGN),
+			SignType.CRIMSON
 		)
 	);
 	public static final Block WARPED_WALL_SIGN = register(
 		"warped_wall_sign",
 		new WallSignBlock(
-			AbstractBlock.Settings.of(Material.NETHER_WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(WARPED_SIGN), SignType.WARPED
+			AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.getDefaultMaterialColor())
+				.noCollision()
+				.strength(1.0F)
+				.sounds(BlockSoundGroup.WOOD)
+				.dropsLike(WARPED_SIGN),
+			SignType.WARPED
 		)
 	);
 	public static final Block STRUCTURE_BLOCK = register(

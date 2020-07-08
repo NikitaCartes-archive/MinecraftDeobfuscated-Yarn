@@ -40,7 +40,7 @@ public class RegistryKey<T> {
 	 * @param registry the registry key of the registry in the root registry
 	 * @param value the identifier of the value
 	 */
-	public static <T> RegistryKey<T> of(RegistryKey<Registry<T>> registry, Identifier value) {
+	public static <T> RegistryKey<T> of(RegistryKey<? extends Registry<T>> registry, Identifier value) {
 		return of(registry.value, value);
 	}
 
@@ -83,7 +83,7 @@ public class RegistryKey<T> {
 	 * 
 	 * @param registry the reference to the value-holding registry in the root registry
 	 */
-	public static <T> Function<Identifier, RegistryKey<T>> createKeyFactory(RegistryKey<Registry<T>> registry) {
+	public static <T> Function<Identifier, RegistryKey<T>> createKeyFactory(RegistryKey<? extends Registry<T>> registry) {
 		return identifier -> of(registry, identifier);
 	}
 }

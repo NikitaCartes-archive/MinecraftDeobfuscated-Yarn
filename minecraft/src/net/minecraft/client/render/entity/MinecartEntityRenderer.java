@@ -40,11 +40,11 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		double e = MathHelper.lerp((double)g, abstractMinecartEntity.lastRenderY, abstractMinecartEntity.getY());
 		double m = MathHelper.lerp((double)g, abstractMinecartEntity.lastRenderZ, abstractMinecartEntity.getZ());
 		double n = 0.3F;
-		Vec3d vec3d = abstractMinecartEntity.method_7508(d, e, m);
+		Vec3d vec3d = abstractMinecartEntity.snapPositionToRail(d, e, m);
 		float o = MathHelper.lerp(g, abstractMinecartEntity.prevPitch, abstractMinecartEntity.pitch);
 		if (vec3d != null) {
-			Vec3d vec3d2 = abstractMinecartEntity.method_7505(d, e, m, 0.3F);
-			Vec3d vec3d3 = abstractMinecartEntity.method_7505(d, e, m, -0.3F);
+			Vec3d vec3d2 = abstractMinecartEntity.snapPositionToRailWithOffset(d, e, m, 0.3F);
+			Vec3d vec3d3 = abstractMinecartEntity.snapPositionToRailWithOffset(d, e, m, -0.3F);
 			if (vec3d2 == null) {
 				vec3d2 = vec3d;
 			}

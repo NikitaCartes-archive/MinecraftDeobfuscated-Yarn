@@ -97,11 +97,11 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	}
 
 	@Override
-	public void method_29034(long l) {
+	public void setTime(long time) {
 	}
 
 	@Override
-	public void method_29035(long l) {
+	public void setTimeOfDay(long time) {
 	}
 
 	@Override
@@ -199,8 +199,8 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Derived", true);
-		this.properties.populateCrashReport(crashReportSection);
+	public void populateCrashReport(CrashReportSection reportSection) {
+		reportSection.add("Derived", true);
+		this.properties.populateCrashReport(reportSection);
 	}
 }

@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,13 +23,9 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 	) {
 		Block block = hugeFungusFeatureConfig.validBaseBlock.getBlock();
 		BlockPos blockPos2 = null;
-		if (hugeFungusFeatureConfig.planted) {
-			Block block2 = serverWorldAccess.getBlockState(blockPos.down()).getBlock();
-			if (block2 == block) {
-				blockPos2 = blockPos;
-			}
-		} else {
-			blockPos2 = getStartPos(serverWorldAccess, blockPos, block);
+		Block block2 = serverWorldAccess.getBlockState(blockPos.down()).getBlock();
+		if (block2 == block) {
+			blockPos2 = blockPos;
 		}
 
 		if (blockPos2 == null) {
@@ -57,17 +52,10 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 	}
 
 	private static boolean method_24866(WorldAccess worldAccess, BlockPos blockPos, boolean bl) {
-		return worldAccess.testBlockState(
-			blockPos,
-			blockState -> {
-				Material material = blockState.getMaterial();
-				return blockState.isAir()
-					|| blockState.isOf(Blocks.WATER)
-					|| blockState.isOf(Blocks.LAVA)
-					|| material == Material.REPLACEABLE_PLANT
-					|| bl && material == Material.PLANT;
-			}
-		);
+		return worldAccess.testBlockState(blockPos, blockState -> {
+			Material material = blockState.getMaterial();
+			return blockState.getMaterial().isReplaceable() || bl && material == Material.PLANT;
+		});
 	}
 
 	private void generateStem(WorldAccess world, Random random, HugeFungusFeatureConfig config, BlockPos blockPos, int stemHeight, boolean thickStem) {
@@ -169,21 +157,6 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 				generateVines(pos, world, random);
 			}
 		}
-	}
-
-	@Nullable
-	private static BlockPos.Mutable getStartPos(WorldAccess world, BlockPos pos, Block block) {
-		BlockPos.Mutable mutable = pos.mutableCopy();
-
-		for (int i = pos.getY(); i >= 1; i--) {
-			mutable.setY(i);
-			Block block2 = world.getBlockState(mutable.down()).getBlock();
-			if (block2 == block) {
-				return mutable;
-			}
-		}
-
-		return null;
 	}
 
 	private static void generateVines(BlockPos blockPos, WorldAccess worldAccess, Random random) {

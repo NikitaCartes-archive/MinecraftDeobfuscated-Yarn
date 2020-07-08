@@ -39,7 +39,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -53,17 +52,12 @@ import net.minecraft.world.WorldAccess;
 
 public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	/**
-	 * Unused as of 1.16.2, superseded by {@link AbstractPiglinEntity#IMMUNE_TO_ZOMBIFICATION}.
-	 */
-	private static final TrackedData<Boolean> OLD_IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
 	private static final EntityAttributeModifier BABY_SPEED_BOOST = new EntityAttributeModifier(
 		BABY_SPEED_BOOST_ID, "Baby speed boost", 0.2F, EntityAttributeModifier.Operation.MULTIPLY_BASE
 	);
-	private int conversionTicks = 0;
 	private final SimpleInventory inventory = new SimpleInventory(8);
 	private boolean cannotHunt = false;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(
@@ -97,7 +91,9 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		MemoryModuleType.UNIVERSAL_ANGER,
 		MemoryModuleType.AVOID_TARGET,
 		MemoryModuleType.ADMIRING_ITEM,
+		MemoryModuleType.TIME_TRYING_TO_REACH_ADMIRE_ITEM,
 		MemoryModuleType.ADMIRING_DISABLED,
+		MemoryModuleType.DISABLE_WALK_TO_ADMIRE_ITEM,
 		MemoryModuleType.CELEBRATE_LOCATION,
 		MemoryModuleType.DANCING,
 		MemoryModuleType.HUNTED_RECENTLY,
@@ -160,7 +156,6 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		super.initDataTracker();
 		this.dataTracker.startTracking(BABY, false);
 		this.dataTracker.startTracking(CHARGING, false);
-		this.dataTracker.startTracking(OLD_IMMUNE_TO_ZOMBIFICATION, false);
 		this.dataTracker.startTracking(DANCING, false);
 	}
 
@@ -299,21 +294,11 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	@Override
 	protected void mobTick() {
-		super.mobTick();
 		this.world.getProfiler().push("piglinBrain");
 		this.getBrain().tick((ServerWorld)this.world, this);
 		this.world.getProfiler().pop();
 		PiglinBrain.tickActivities(this);
-		if (this.shouldZombify()) {
-			this.conversionTicks++;
-		} else {
-			this.conversionTicks = 0;
-		}
-
-		if (this.conversionTicks > 300) {
-			this.playZombificationSound();
-			this.zombify((ServerWorld)this.world);
-		}
+		super.mobTick();
 	}
 
 	@Override
@@ -413,7 +398,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	@Override
 	public boolean canGather(ItemStack stack) {
-		return this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && PiglinBrain.canGather(this, stack);
+		return this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && this.canPickUpLoot() && PiglinBrain.canGather(this, stack);
 	}
 
 	protected boolean method_24846(ItemStack stack) {
@@ -483,12 +468,6 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	protected void playSound(SoundEvent sound) {
 		this.playSound(sound, this.getSoundVolume(), this.getSoundPitch());
-	}
-
-	@Override
-	protected void sendAiDebugData() {
-		super.sendAiDebugData();
-		DebugInfoSender.sendBrainDebugData(this);
 	}
 
 	@Override

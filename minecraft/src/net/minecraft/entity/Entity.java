@@ -19,6 +19,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.AreaHelper;
+import net.minecraft.class_5459;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -26,9 +28,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
-import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -63,6 +63,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
@@ -96,8 +97,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.RayTraceContext;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
@@ -169,7 +172,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public int chunkX;
 	public int chunkY;
 	public int chunkZ;
-	private boolean field_25154;
+	private boolean chunkPosUpdateRequested;
 	private Vec3d field_25750;
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
@@ -177,8 +180,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected boolean inNetherPortal;
 	protected int netherPortalTime;
 	protected BlockPos lastNetherPortalPosition;
-	protected Vec3d lastNetherPortalDirectionVector;
-	protected Direction lastNetherPortalDirection;
 	private boolean invulnerable;
 	protected UUID uuid = MathHelper.randomUuid(this.random);
 	protected String uuidString = this.uuid.toString();
@@ -429,7 +430,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public int getMaxNetherPortalTime() {
-		return 1;
+		return 0;
 	}
 
 	protected void setOnFireFromLava() {
@@ -971,12 +972,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected boolean updateWaterState() {
 		this.fluidHeight.clear();
 		this.checkWaterState();
-		if (this.isTouchingWater()) {
-			return true;
-		} else {
-			double d = this.world.getDimension().isUltrawarm() ? 0.007 : 0.0023333333333333335;
-			return this.updateMovementInFluid(FluidTags.LAVA, d);
-		}
+		double d = this.world.getDimension().isUltrawarm() ? 0.007 : 0.0023333333333333335;
+		boolean bl = this.updateMovementInFluid(FluidTags.LAVA, d);
+		return this.isTouchingWater() || bl;
 	}
 
 	void checkWaterState() {
@@ -1729,28 +1727,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.method_30229();
 		} else {
 			if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
-				this.lastNetherPortalPosition = new BlockPos(pos);
-				BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, this.lastNetherPortalPosition);
-				double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
-				double e = MathHelper.clamp(
-					Math.abs(
-						MathHelper.getLerpProgress(
-							(result.getForwards().getAxis() == Direction.Axis.X ? this.getZ() : this.getX())
-								- (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0),
-							d,
-							d - (double)result.getWidth()
-						)
-					),
-					0.0,
-					1.0
-				);
-				double f = MathHelper.clamp(
-					MathHelper.getLerpProgress(this.getY() - 1.0, (double)result.getFrontTopLeft().getY(), (double)(result.getFrontTopLeft().getY() - result.getHeight())),
-					0.0,
-					1.0
-				);
-				this.lastNetherPortalDirectionVector = new Vec3d(e, f, 0.0);
-				this.lastNetherPortalDirection = result.getForwards();
+				this.lastNetherPortalPosition = pos.toImmutable();
 			}
 
 			this.inNetherPortal = true;
@@ -1769,7 +1746,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					this.world.getProfiler().push("portal");
 					this.netherPortalTime = i;
 					this.method_30229();
-					this.changeDimension(serverWorld2);
+					this.moveToWorld(serverWorld2);
 					this.world.getProfiler().pop();
 				}
 
@@ -2124,74 +2101,44 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.fromTag(compoundTag);
 		this.netherPortalCooldown = original.netherPortalCooldown;
 		this.lastNetherPortalPosition = original.lastNetherPortalPosition;
-		this.lastNetherPortalDirectionVector = original.lastNetherPortalDirectionVector;
-		this.lastNetherPortalDirection = original.lastNetherPortalDirection;
 	}
 
+	/**
+	 * Moves this entity to another world.
+	 * 
+	 * <p>Note all entities except server player entities are completely recreated at the destination.
+	 * 
+	 * @return the entity in the other world
+	 */
 	@Nullable
-	public Entity changeDimension(ServerWorld destination) {
+	public Entity moveToWorld(ServerWorld destination) {
 		if (this.world instanceof ServerWorld && !this.removed) {
 			this.world.getProfiler().push("changeDimension");
 			this.detach();
 			this.world.getProfiler().push("reposition");
-			Vec3d vec3d = this.getVelocity();
-			float f = 0.0F;
-			BlockPos blockPos;
-			if (this.world.getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD) {
-				blockPos = destination.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, destination.getSpawnPos());
-			} else if (destination.getRegistryKey() == World.END) {
-				blockPos = ServerWorld.END_SPAWN_POS;
+			TeleportTarget teleportTarget = this.getTeleportTarget(destination);
+			if (teleportTarget == null) {
+				return null;
 			} else {
-				double d = this.getX();
-				double e = this.getZ();
-				DimensionType dimensionType = this.world.getDimension();
-				DimensionType dimensionType2 = destination.getDimension();
-				double g = 8.0;
-				if (!dimensionType.isShrunk() && dimensionType2.isShrunk()) {
-					d /= 8.0;
-					e /= 8.0;
-				} else if (dimensionType.isShrunk() && !dimensionType2.isShrunk()) {
-					d *= 8.0;
-					e *= 8.0;
+				this.world.getProfiler().swap("reloading");
+				Entity entity = this.getType().create(destination);
+				if (entity != null) {
+					entity.copyFrom(this);
+					entity.refreshPositionAndAngles(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, entity.pitch);
+					entity.setVelocity(teleportTarget.velocity);
+					destination.onDimensionChanged(entity);
+					if (destination.getRegistryKey() == World.END) {
+						ServerWorld.createEndSpawnPlatform(destination);
+					}
 				}
 
-				double h = Math.min(-2.9999872E7, destination.getWorldBorder().getBoundWest() + 16.0);
-				double i = Math.min(-2.9999872E7, destination.getWorldBorder().getBoundNorth() + 16.0);
-				double j = Math.min(2.9999872E7, destination.getWorldBorder().getBoundEast() - 16.0);
-				double k = Math.min(2.9999872E7, destination.getWorldBorder().getBoundSouth() - 16.0);
-				d = MathHelper.clamp(d, h, j);
-				e = MathHelper.clamp(e, i, k);
-				Vec3d vec3d2 = this.getLastNetherPortalDirectionVector();
-				blockPos = new BlockPos(d, this.getY(), e);
-				BlockPattern.TeleportTarget teleportTarget = destination.getPortalForcer()
-					.getPortal(blockPos, vec3d, this.getLastNetherPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
-				if (teleportTarget == null) {
-					return null;
-				}
-
-				blockPos = new BlockPos(teleportTarget.pos);
-				vec3d = teleportTarget.velocity;
-				f = (float)teleportTarget.yaw;
+				this.method_30076();
+				this.world.getProfiler().pop();
+				((ServerWorld)this.world).resetIdleTimeout();
+				destination.resetIdleTimeout();
+				this.world.getProfiler().pop();
+				return entity;
 			}
-
-			this.world.getProfiler().swap("reloading");
-			Entity entity = this.getType().create(destination);
-			if (entity != null) {
-				entity.copyFrom(this);
-				entity.refreshPositionAndAngles(blockPos, entity.yaw + f, entity.pitch);
-				entity.setVelocity(vec3d);
-				destination.onDimensionChanged(entity);
-				if (destination.getRegistryKey() == World.END) {
-					ServerWorld.createEndSpawnPlatform(destination);
-				}
-			}
-
-			this.method_30076();
-			this.world.getProfiler().pop();
-			((ServerWorld)this.world).resetIdleTimeout();
-			destination.resetIdleTimeout();
-			this.world.getProfiler().pop();
-			return entity;
 		} else {
 			return null;
 		}
@@ -2199,6 +2146,75 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	protected void method_30076() {
 		this.removed = true;
+	}
+
+	@Nullable
+	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
+		boolean bl = this.world.getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD;
+		boolean bl2 = destination.getRegistryKey() == World.END;
+		if (!bl && !bl2) {
+			boolean bl3 = destination.getRegistryKey() == World.NETHER;
+			if (this.world.getRegistryKey() != World.NETHER && !bl3) {
+				return null;
+			} else {
+				WorldBorder worldBorder = destination.getWorldBorder();
+				double d = Math.max(-2.9999872E7, worldBorder.getBoundWest() + 16.0);
+				double e = Math.max(-2.9999872E7, worldBorder.getBoundNorth() + 16.0);
+				double f = Math.min(2.9999872E7, worldBorder.getBoundEast() - 16.0);
+				double g = Math.min(2.9999872E7, worldBorder.getBoundSouth() - 16.0);
+				double h = getTeleportationScale(this.world.getDimension(), destination.getDimension());
+				BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
+				return (TeleportTarget)this.method_30330(destination, blockPos2, bl3)
+					.map(
+						arg -> {
+							BlockState blockState = this.world.getBlockState(this.lastNetherPortalPosition);
+							Direction.Axis axis;
+							Vec3d vec3d;
+							if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
+								axis = blockState.get(Properties.HORIZONTAL_AXIS);
+								class_5459.class_5460 lv = class_5459.method_30574(
+									this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState(blockPos) == blockState
+								);
+								vec3d = AreaHelper.method_30494(lv, axis, this.getPos(), this.getDimensions(this.getPose()));
+							} else {
+								axis = Direction.Axis.X;
+								vec3d = new Vec3d(0.5, 0.0, 0.0);
+							}
+
+							return AreaHelper.method_30484(destination, arg, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
+						}
+					)
+					.orElse(null);
+			}
+		} else {
+			BlockPos blockPos;
+			if (bl2) {
+				blockPos = ServerWorld.END_SPAWN_POS;
+			} else {
+				blockPos = destination.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, destination.getSpawnPos());
+			}
+
+			return new TeleportTarget(
+				new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), this.getVelocity(), this.yaw, this.pitch
+			);
+		}
+	}
+
+	protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
+		return serverWorld.getPortalForcer().method_30483(blockPos, bl);
+	}
+
+	/**
+	 * Gets the teleportation scale between two dimensions.
+	 */
+	private static double getTeleportationScale(DimensionType origin, DimensionType destination) {
+		boolean bl = origin.isShrunk();
+		boolean bl2 = destination.isShrunk();
+		if (!bl && bl2) {
+			return 0.125;
+		} else {
+			return bl && !bl2 ? 8.0 : 1.0;
+		}
 	}
 
 	public boolean canUsePortals() {
@@ -2215,14 +2231,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public int getSafeFallDistance() {
 		return 3;
-	}
-
-	public Vec3d getLastNetherPortalDirectionVector() {
-		return this.lastNetherPortalDirectionVector;
-	}
-
-	public Direction getLastNetherPortalDirection() {
-		return this.lastNetherPortalDirection;
 	}
 
 	public boolean canAvoidTraps() {
@@ -2283,7 +2291,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	@Override
 	public Text getDisplayName() {
 		return Team.modifyText(this.getScoreboardTeam(), this.getName())
-			.styled(style -> style.setHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
+			.styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
 	}
 
 	public void setCustomName(@Nullable Text name) {
@@ -2323,7 +2331,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			ServerWorld serverWorld = (ServerWorld)this.world;
 			this.refreshPositionAndAngles(destX, destY, destZ, this.yaw, this.pitch);
 			this.streamPassengersRecursively().forEach(entity -> {
-				serverWorld.checkChunk(entity);
+				serverWorld.checkEntityChunkPos(entity);
 				entity.teleportRequested = true;
 
 				for (Entity entity2 : entity.passengerList) {
@@ -2502,9 +2510,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return bl;
 	}
 
-	public boolean method_29240() {
-		boolean bl = this.field_25154;
-		this.field_25154 = false;
+	public boolean isChunkPosUpdateRequested() {
+		boolean bl = this.chunkPosUpdateRequested;
+		this.chunkPosUpdateRequested = false;
 		return bl;
 	}
 
@@ -2848,7 +2856,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.blockPos = new BlockPos(i, j, k);
 			}
 
-			this.field_25154 = true;
+			this.chunkPosUpdateRequested = true;
 		}
 	}
 

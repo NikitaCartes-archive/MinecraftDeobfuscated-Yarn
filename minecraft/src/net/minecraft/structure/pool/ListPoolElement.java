@@ -23,11 +23,6 @@ public class ListPoolElement extends StructurePoolElement {
 	);
 	private final List<StructurePoolElement> elements;
 
-	@Deprecated
-	public ListPoolElement(List<StructurePoolElement> list) {
-		this(list, StructurePool.Projection.RIGID);
-	}
-
 	public ListPoolElement(List<StructurePoolElement> list, StructurePool.Projection projection) {
 		super(projection);
 		if (list.isEmpty()) {

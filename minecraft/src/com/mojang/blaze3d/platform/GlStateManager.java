@@ -920,6 +920,11 @@ public class GlStateManager {
 		return GL11.glGenTextures();
 	}
 
+	public static void method_30498(int[] is) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+		GL11.glGenTextures(is);
+	}
+
 	public static void deleteTexture(int texture) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		GL11.glDeleteTextures(texture);
@@ -929,6 +934,20 @@ public class GlStateManager {
 				texture2DState.boundTexture = -1;
 			}
 		}
+	}
+
+	public static void method_30499(int[] is) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+
+		for (GlStateManager.Texture2DState texture2DState : TEXTURES) {
+			for (int i : is) {
+				if (texture2DState.boundTexture == i) {
+					texture2DState.boundTexture = -1;
+				}
+			}
+		}
+
+		GL11.glDeleteTextures(is);
 	}
 
 	public static void bindTexture(int texture) {

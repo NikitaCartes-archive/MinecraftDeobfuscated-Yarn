@@ -26,6 +26,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class PotionUtil {
+	private static final MutableText field_25817 = new TranslatableText("effect.none").formatted(Formatting.GRAY);
+
 	public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
 		return getPotionEffects(stack.getTag());
 	}
@@ -153,7 +155,7 @@ public class PotionUtil {
 		List<StatusEffectInstance> list2 = getPotionEffects(stack);
 		List<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.<Pair<EntityAttribute, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {
-			list.add(new TranslatableText("effect.none").formatted(Formatting.GRAY));
+			list.add(field_25817);
 		} else {
 			for (StatusEffectInstance statusEffectInstance : list2) {
 				MutableText mutableText = new TranslatableText(statusEffectInstance.getTranslationKey());
@@ -172,11 +174,11 @@ public class PotionUtil {
 				}
 
 				if (statusEffectInstance.getAmplifier() > 0) {
-					mutableText.append(" ").append(new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
+					mutableText = new TranslatableText("potion.withAmplifier", mutableText, new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
 				}
 
 				if (statusEffectInstance.getDuration() > 20) {
-					mutableText.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
+					mutableText = new TranslatableText("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, f));
 				}
 
 				list.add(mutableText.formatted(statusEffect.getType().getFormatting()));

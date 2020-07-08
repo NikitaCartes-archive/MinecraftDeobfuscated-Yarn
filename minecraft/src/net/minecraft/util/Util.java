@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -39,6 +40,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
@@ -51,6 +53,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5462;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.crash.CrashException;
@@ -354,19 +357,104 @@ public class Util {
 		return array[random.nextInt(array.length)];
 	}
 
+	private static BooleanSupplier method_30625(Path path, Path path2) {
+		return new BooleanSupplier() {
+			public boolean getAsBoolean() {
+				try {
+					Files.move(path, path2);
+					return true;
+				} catch (IOException var2) {
+					Util.LOGGER.error("Failed to rename", (Throwable)var2);
+					return false;
+				}
+			}
+
+			public String toString() {
+				return "rename " + path + " to " + path2;
+			}
+		};
+	}
+
+	private static BooleanSupplier method_30624(Path path) {
+		return new BooleanSupplier() {
+			public boolean getAsBoolean() {
+				try {
+					Files.deleteIfExists(path);
+					return true;
+				} catch (IOException var2) {
+					Util.LOGGER.warn("Failed to delete", (Throwable)var2);
+					return false;
+				}
+			}
+
+			public String toString() {
+				return "delete old " + path;
+			}
+		};
+	}
+
+	private static BooleanSupplier method_30628(Path path) {
+		return new BooleanSupplier() {
+			public boolean getAsBoolean() {
+				return !Files.exists(path, new LinkOption[0]);
+			}
+
+			public String toString() {
+				return "verify that " + path + " is deleted";
+			}
+		};
+	}
+
+	private static BooleanSupplier method_30629(Path path) {
+		return new BooleanSupplier() {
+			public boolean getAsBoolean() {
+				return Files.isRegularFile(path, new LinkOption[0]);
+			}
+
+			public String toString() {
+				return "verify that " + path + " is present";
+			}
+		};
+	}
+
+	private static boolean method_30627(BooleanSupplier... booleanSuppliers) {
+		for (BooleanSupplier booleanSupplier : booleanSuppliers) {
+			if (!booleanSupplier.getAsBoolean()) {
+				LOGGER.warn("Failed to execute {}", booleanSupplier);
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private static boolean method_30622(int i, String string, BooleanSupplier... booleanSuppliers) {
+		for (int j = 0; j < i; j++) {
+			if (method_30627(booleanSuppliers)) {
+				return true;
+			}
+
+			LOGGER.error("Failed to {}, retrying {}/{}", string, j, i);
+		}
+
+		LOGGER.error("Failed to {}, aborting, progress might be lost", string);
+		return false;
+	}
+
 	public static void method_27760(File file, File file2, File file3) {
-		if (file3.exists()) {
-			file3.delete();
-		}
+		method_30626(file.toPath(), file2.toPath(), file3.toPath());
+	}
 
-		file.renameTo(file3);
-		if (file.exists()) {
-			file.delete();
-		}
-
-		file2.renameTo(file);
-		if (file2.exists()) {
-			file2.delete();
+	public static void method_30626(Path path, Path path2, Path path3) {
+		int i = 10;
+		if (!Files.exists(path, new LinkOption[0]) || method_30622(10, "create backup " + path3, method_30624(path3), method_30625(path, path3), method_30629(path3))
+			)
+		 {
+			if (method_30622(10, "remove old " + path, method_30624(path), method_30628(path))) {
+				if (!method_30622(10, "replace " + path + " with " + path2, method_30625(path2, path), method_30629(path))) {
+					method_30622(10, "restore " + path + " from " + path3, method_30625(path3, path), method_30629(path));
+				}
+			}
 		}
 	}
 
@@ -435,11 +523,8 @@ public class Util {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String method_30309(String string) {
-		return (String)string.toLowerCase(Locale.ROOT)
-			.chars()
-			.mapToObj(i -> Identifier.isCharValid((char)i) ? Character.toString((char)i) : "_")
-			.collect(Collectors.joining());
+	public static String method_30309(String string, class_5462 arg) {
+		return (String)string.toLowerCase(Locale.ROOT).chars().mapToObj(i -> arg.test((char)i) ? Character.toString((char)i) : "_").collect(Collectors.joining());
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

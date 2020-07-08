@@ -432,7 +432,7 @@ public class ServerChunkManager extends ChunkManager {
 		int j = pos.getZ() >> 4;
 		ChunkHolder chunkHolder = this.getChunkHolder(ChunkPos.toLong(i, j));
 		if (chunkHolder != null) {
-			chunkHolder.markForBlockUpdate(pos.getX() & 15, pos.getY(), pos.getZ() & 15);
+			chunkHolder.markForBlockUpdate(pos);
 		}
 	}
 

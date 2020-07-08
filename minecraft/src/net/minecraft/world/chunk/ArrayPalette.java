@@ -76,7 +76,7 @@ public class ArrayPalette<T> implements Palette<T> {
 		buf.writeVarInt(this.size);
 
 		for (int i = 0; i < this.size; i++) {
-			buf.writeVarInt(this.idList.getId(this.array[i]));
+			buf.writeVarInt(this.idList.getRawId(this.array[i]));
 		}
 	}
 
@@ -85,7 +85,7 @@ public class ArrayPalette<T> implements Palette<T> {
 		int i = PacketByteBuf.getVarIntSizeBytes(this.getSize());
 
 		for (int j = 0; j < this.getSize(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getId(this.array[j]));
+			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getRawId(this.array[j]));
 		}
 
 		return i;

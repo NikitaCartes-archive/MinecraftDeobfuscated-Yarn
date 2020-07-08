@@ -263,7 +263,7 @@ public class TestCommand {
 					Style.EMPTY
 						.withBold(true)
 						.withColor(Formatting.GREEN)
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard")))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard")))
 						.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");"))
 				);
 			source.sendFeedback(new LiteralText("Position relative to " + string2 + ": ").append(text), false);
@@ -453,22 +453,42 @@ public class TestCommand {
 		}
 	}
 
-	private static int executeImport(ServerCommandSource source, String structure) {
+	private static int executeImport(ServerCommandSource serverCommandSource, String structure) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, structure + ".snbt");
 		Identifier identifier = new Identifier("minecraft", structure);
-		Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
+		Path path2 = serverCommandSource.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
 
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
 			String string = IOUtils.toString(bufferedReader);
 			Files.createDirectories(path2.getParent());
 			OutputStream outputStream = Files.newOutputStream(path2);
-			NbtIo.writeCompressed(StringNbtReader.parse(string), outputStream);
-			sendMessage(source, "Imported to " + path2.toAbsolutePath());
+			Throwable var8 = null;
+
+			try {
+				NbtIo.writeCompressed(StringNbtReader.parse(string), outputStream);
+			} catch (Throwable var18) {
+				var8 = var18;
+				throw var18;
+			} finally {
+				if (outputStream != null) {
+					if (var8 != null) {
+						try {
+							outputStream.close();
+						} catch (Throwable var17) {
+							var8.addSuppressed(var17);
+						}
+					} else {
+						outputStream.close();
+					}
+				}
+			}
+
+			sendMessage(serverCommandSource, "Imported to " + path2.toAbsolutePath());
 			return 0;
-		} catch (CommandSyntaxException | IOException var8) {
+		} catch (CommandSyntaxException | IOException var20) {
 			System.err.println("Failed to load structure " + structure);
-			var8.printStackTrace();
+			var20.printStackTrace();
 			return 1;
 		}
 	}

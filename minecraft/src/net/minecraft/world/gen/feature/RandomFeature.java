@@ -14,12 +14,12 @@ public class RandomFeature extends Feature<RandomFeatureConfig> {
 	public boolean generate(
 		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig
 	) {
-		for (RandomFeatureEntry<?> randomFeatureEntry : randomFeatureConfig.features) {
+		for (RandomFeatureEntry randomFeatureEntry : randomFeatureConfig.features) {
 			if (random.nextFloat() < randomFeatureEntry.chance) {
 				return randomFeatureEntry.generate(serverWorldAccess, chunkGenerator, random, blockPos);
 			}
 		}
 
-		return randomFeatureConfig.defaultFeature.generate(serverWorldAccess, chunkGenerator, random, blockPos);
+		return ((ConfiguredFeature)randomFeatureConfig.defaultFeature.get()).generate(serverWorldAccess, chunkGenerator, random, blockPos);
 	}
 }

@@ -47,7 +47,7 @@ public class LocateCommand {
 			.styled(
 				style -> style.withColor(Formatting.GREEN)
 						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + structurePos.getX() + " ~ " + structurePos.getZ()))
-						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")))
 			);
 		source.sendFeedback(new TranslatableText(successMessage, structure, text, i), false);
 		return i;

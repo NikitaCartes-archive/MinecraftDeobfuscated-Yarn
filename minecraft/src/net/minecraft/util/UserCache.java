@@ -15,6 +15,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.ProfileLookupCallback;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -34,8 +35,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class UserCache {
+	private static final Logger field_25805 = LogManager.getLogger();
 	private static boolean useRemote;
 	private final Map<String, UserCache.Entry> byName = Maps.<String, UserCache.Entry>newConcurrentMap();
 	private final Map<UUID, UserCache.Entry> byUuid = Maps.<UUID, UserCache.Entry>newConcurrentMap();
@@ -163,32 +167,42 @@ public class UserCache {
 			Reader reader = Files.newReader(this.cacheFile, StandardCharsets.UTF_8);
 			Throwable var3 = null;
 
+			Object dateFormat;
 			try {
 				JsonArray jsonArray = this.gson.fromJson(reader, JsonArray.class);
-				DateFormat dateFormat = method_30170();
-				jsonArray.forEach(jsonElement -> {
-					UserCache.Entry entry = method_30167(jsonElement, dateFormat);
-					if (entry != null) {
-						list.add(entry);
-					}
-				});
-			} catch (Throwable var14) {
-				var3 = var14;
-				throw var14;
+				if (jsonArray != null) {
+					DateFormat dateFormatx = method_30170();
+					jsonArray.forEach(jsonElement -> {
+						UserCache.Entry entry = method_30167(jsonElement, dateFormat);
+						if (entry != null) {
+							list.add(entry);
+						}
+					});
+					return list;
+				}
+
+				dateFormat = list;
+			} catch (Throwable var17) {
+				var3 = var17;
+				throw var17;
 			} finally {
 				if (reader != null) {
 					if (var3 != null) {
 						try {
 							reader.close();
-						} catch (Throwable var13) {
-							var3.addSuppressed(var13);
+						} catch (Throwable var16) {
+							var3.addSuppressed(var16);
 						}
 					} else {
 						reader.close();
 					}
 				}
 			}
-		} catch (JsonParseException | IOException var16) {
+
+			return (List<UserCache.Entry>)dateFormat;
+		} catch (FileNotFoundException var19) {
+		} catch (JsonParseException | IOException var20) {
+			field_25805.warn("Failed to load profile cache {}", this.cacheFile, var20);
 		}
 
 		return list;

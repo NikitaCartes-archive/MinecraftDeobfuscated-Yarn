@@ -18,7 +18,7 @@ import net.minecraft.util.ProgressListener;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.RegistryTracker;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biomes;
@@ -52,8 +52,8 @@ public class AnvilLevelStorage {
 
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
-		RegistryTracker.Modifiable modifiable = RegistryTracker.create();
-		RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, modifiable);
+		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+		RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, impl);
 		SaveProperties saveProperties = session.readLevelProperties(registryOps, DataPackSettings.SAFE_MODE);
 		long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
 		BiomeSource biomeSource;
@@ -63,11 +63,11 @@ public class AnvilLevelStorage {
 			biomeSource = new VanillaLayeredBiomeSource(l, false, false);
 		}
 
-		convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
-		convertRegions(new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
-		convertRegions(new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);
+		convertRegions(impl, new File(file, "region"), list, biomeSource, 0, i, progressListener);
+		convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
+		convertRegions(impl, new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);
 		makeMcrLevelDatBackup(session);
-		session.method_27425(modifiable, saveProperties);
+		session.method_27425(impl, saveProperties);
 		return true;
 	}
 
@@ -83,25 +83,29 @@ public class AnvilLevelStorage {
 		}
 	}
 
-	private static void convertRegions(File file, Iterable<File> iterable, BiomeSource biomeSource, int i, int currentCount, ProgressListener progressListener) {
+	private static void convertRegions(
+		DynamicRegistryManager.Impl impl, File file, Iterable<File> iterable, BiomeSource biomeSource, int i, int j, ProgressListener progressListener
+	) {
 		for (File file2 : iterable) {
-			convertRegion(file, file2, biomeSource, i, currentCount, progressListener);
+			convertRegion(impl, file, file2, biomeSource, i, j, progressListener);
 			i++;
-			int j = (int)Math.round(100.0 * (double)i / (double)currentCount);
-			progressListener.progressStagePercentage(j);
+			int k = (int)Math.round(100.0 * (double)i / (double)j);
+			progressListener.progressStagePercentage(k);
 		}
 	}
 
-	private static void convertRegion(File file, File baseFolder, BiomeSource biomeSource, int i, int progressStart, ProgressListener progressListener) {
-		String string = baseFolder.getName();
+	private static void convertRegion(
+		DynamicRegistryManager.Impl impl, File file, File file2, BiomeSource biomeSource, int i, int j, ProgressListener progressListener
+	) {
+		String string = file2.getName();
 
 		try (
-			RegionFile regionFile = new RegionFile(baseFolder, file, true);
+			RegionFile regionFile = new RegionFile(file2, file, true);
 			RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"), file, true);
 		) {
-			for (int j = 0; j < 32; j++) {
-				for (int k = 0; k < 32; k++) {
-					ChunkPos chunkPos = new ChunkPos(j, k);
+			for (int k = 0; k < 32; k++) {
+				for (int l = 0; l < 32; l++) {
+					ChunkPos chunkPos = new ChunkPos(k, l);
 					if (regionFile.hasChunk(chunkPos) && !regionFile2.hasChunk(chunkPos)) {
 						CompoundTag compoundTag;
 						try {
@@ -115,24 +119,24 @@ public class AnvilLevelStorage {
 								}
 
 								compoundTag = NbtIo.read(dataInputStream);
-							} catch (Throwable var104) {
-								alphaChunk = var104;
-								throw var104;
+							} catch (Throwable var105) {
+								alphaChunk = var105;
+								throw var105;
 							} finally {
 								if (dataInputStream != null) {
 									if (alphaChunk != null) {
 										try {
 											dataInputStream.close();
-										} catch (Throwable var101) {
-											alphaChunk.addSuppressed(var101);
+										} catch (Throwable var102) {
+											alphaChunk.addSuppressed(var102);
 										}
 									} else {
 										dataInputStream.close();
 									}
 								}
 							}
-						} catch (IOException var106) {
-							LOGGER.warn("Failed to read data for chunk {}", chunkPos, var106);
+						} catch (IOException var107) {
+							LOGGER.warn("Failed to read data for chunk {}", chunkPos, var107);
 							continue;
 						}
 
@@ -141,22 +145,22 @@ public class AnvilLevelStorage {
 						CompoundTag compoundTag3 = new CompoundTag();
 						CompoundTag compoundTag4 = new CompoundTag();
 						compoundTag3.put("Level", compoundTag4);
-						AlphaChunkIo.convertAlphaChunk(alphaChunk, compoundTag4, biomeSource);
+						AlphaChunkIo.convertAlphaChunk(impl, alphaChunk, compoundTag4, biomeSource);
 						DataOutputStream dataOutputStream = regionFile2.getChunkOutputStream(chunkPos);
-						Throwable var20 = null;
+						Throwable var21 = null;
 
 						try {
 							NbtIo.write(compoundTag3, dataOutputStream);
-						} catch (Throwable var102) {
-							var20 = var102;
-							throw var102;
+						} catch (Throwable var103) {
+							var21 = var103;
+							throw var103;
 						} finally {
 							if (dataOutputStream != null) {
-								if (var20 != null) {
+								if (var21 != null) {
 									try {
 										dataOutputStream.close();
-									} catch (Throwable var100) {
-										var20.addSuppressed(var100);
+									} catch (Throwable var101) {
+										var21.addSuppressed(var101);
 									}
 								} else {
 									dataOutputStream.close();
@@ -166,14 +170,14 @@ public class AnvilLevelStorage {
 					}
 				}
 
-				int kx = (int)Math.round(100.0 * (double)(i * 1024) / (double)(progressStart * 1024));
-				int l = (int)Math.round(100.0 * (double)((j + 1) * 32 + i * 1024) / (double)(progressStart * 1024));
-				if (l > kx) {
-					progressListener.progressStagePercentage(l);
+				int lx = (int)Math.round(100.0 * (double)(i * 1024) / (double)(j * 1024));
+				int m = (int)Math.round(100.0 * (double)((k + 1) * 32 + i * 1024) / (double)(j * 1024));
+				if (m > lx) {
+					progressListener.progressStagePercentage(m);
 				}
 			}
-		} catch (IOException var111) {
-			LOGGER.error("Failed to upgrade region file {}", baseFolder, var111);
+		} catch (IOException var112) {
+			LOGGER.error("Failed to upgrade region file {}", file2, var112);
 		}
 	}
 

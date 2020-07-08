@@ -14,7 +14,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.NumberCodecs;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorType {
@@ -24,9 +23,9 @@ public final class ChunkGeneratorType {
 					NoiseConfig.CODEC.fieldOf("noise").forGetter(ChunkGeneratorType::method_28559),
 					BlockState.CODEC.fieldOf("default_block").forGetter(ChunkGeneratorType::getDefaultBlock),
 					BlockState.CODEC.fieldOf("default_fluid").forGetter(ChunkGeneratorType::getDefaultFluid),
-					NumberCodecs.rangedInt(-20, 276).fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorType::getBedrockCeilingY),
-					NumberCodecs.rangedInt(-20, 276).fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorType::getBedrockFloorY),
-					NumberCodecs.rangedInt(0, 255).fieldOf("sea_level").forGetter(ChunkGeneratorType::method_28561),
+					Codec.intRange(-20, 276).fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorType::getBedrockCeilingY),
+					Codec.intRange(-20, 276).fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorType::getBedrockFloorY),
+					Codec.intRange(0, 255).fieldOf("sea_level").forGetter(ChunkGeneratorType::method_28561),
 					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorType::method_28562)
 				)
 				.apply(instance, ChunkGeneratorType::new)

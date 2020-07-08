@@ -65,7 +65,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 					this,
 					PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY),
 					SoundEvents.ENTITY_WANDERING_TRADER_DISAPPEARED,
-					wanderingTraderEntity -> !this.world.isDay() && !wanderingTraderEntity.isInvisible()
+					wanderingTraderEntity -> this.world.isNight() && !wanderingTraderEntity.isInvisible()
 				)
 			);
 		this.goalSelector

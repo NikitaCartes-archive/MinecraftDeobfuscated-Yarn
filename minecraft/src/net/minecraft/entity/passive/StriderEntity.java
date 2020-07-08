@@ -41,7 +41,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
@@ -235,11 +234,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		for (BlockPos blockPos : set) {
 			if (!this.world.getFluidState(blockPos).isIn(FluidTags.LAVA)) {
-				for (EntityPose entityPose : passenger.getPoses()) {
-					double f = this.world.getCollisionHeightAt(blockPos);
-					if (Dismounting.canDismountInBlock(f)) {
+				double g = this.world.getDismountHeight(blockPos);
+				if (Dismounting.canDismountInBlock(g)) {
+					Vec3d vec3d2 = Vec3d.ofCenter(blockPos, g);
+
+					for (EntityPose entityPose : passenger.getPoses()) {
 						Box box = passenger.getBoundingBox(entityPose);
-						Vec3d vec3d2 = Vec3d.ofCenter(blockPos, f);
 						if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d2))) {
 							passenger.setPose(entityPose);
 							return vec3d2;
@@ -444,49 +444,32 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public EntityData initialize(
 		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		EntityData entityData2 = null;
-		StriderEntity.StriderData.RiderType riderType;
-		if (entityData instanceof StriderEntity.StriderData) {
-			riderType = ((StriderEntity.StriderData)entityData).type;
-		} else if (!this.isBaby()) {
-			if (this.random.nextInt(30) == 0) {
-				riderType = StriderEntity.StriderData.RiderType.PIGLIN_RIDER;
-				entityData2 = new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false);
-			} else if (this.random.nextInt(10) == 0) {
-				riderType = StriderEntity.StriderData.RiderType.BABY_RIDER;
-			} else {
-				riderType = StriderEntity.StriderData.RiderType.NO_RIDER;
-			}
-
-			entityData = new StriderEntity.StriderData(riderType);
-			((PassiveEntity.PassiveData)entityData).setBabyChance(riderType == StriderEntity.StriderData.RiderType.NO_RIDER ? 0.5F : 0.0F);
+		if (this.isBaby()) {
+			return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
 		} else {
-			riderType = StriderEntity.StriderData.RiderType.NO_RIDER;
-		}
-
-		MobEntity mobEntity = null;
-		if (riderType == StriderEntity.StriderData.RiderType.BABY_RIDER) {
-			StriderEntity striderEntity = EntityType.STRIDER.create(arg.getWorld());
-			if (striderEntity != null) {
-				mobEntity = striderEntity;
-				striderEntity.setBreedingAge(-24000);
-			}
-		} else if (riderType == StriderEntity.StriderData.RiderType.PIGLIN_RIDER) {
-			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(arg.getWorld());
-			if (zombifiedPiglinEntity != null) {
-				mobEntity = zombifiedPiglinEntity;
+			Object var7;
+			if (this.random.nextInt(30) == 0) {
+				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(arg.getWorld());
+				var7 = this.method_30336(arg, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false));
 				this.saddle(null);
+			} else if (this.random.nextInt(10) == 0) {
+				PassiveEntity passiveEntity = EntityType.STRIDER.create(arg.getWorld());
+				passiveEntity.setBreedingAge(-24000);
+				var7 = this.method_30336(arg, difficulty, passiveEntity, null);
+			} else {
+				var7 = new PassiveEntity.PassiveData(0.5F);
 			}
-		}
 
-		if (mobEntity != null) {
-			mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-			mobEntity.initialize(arg, difficulty, SpawnReason.JOCKEY, entityData2, null);
-			mobEntity.startRiding(this, true);
-			arg.spawnEntity(mobEntity);
+			return super.initialize(arg, difficulty, spawnReason, (EntityData)var7, entityTag);
 		}
+	}
 
-		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+	private EntityData method_30336(class_5425 arg, LocalDifficulty localDifficulty, MobEntity mobEntity, @Nullable EntityData entityData) {
+		mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
+		mobEntity.initialize(arg, localDifficulty, SpawnReason.JOCKEY, entityData, null);
+		mobEntity.startRiding(this, true);
+		arg.spawnEntity(mobEntity);
+		return new PassiveEntity.PassiveData(0.0F);
 	}
 
 	static class Navigation extends MobNavigation {
@@ -508,20 +491,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		@Override
 		public boolean isValidPosition(BlockPos pos) {
 			return this.world.getBlockState(pos).isOf(Blocks.LAVA) || super.isValidPosition(pos);
-		}
-	}
-
-	public static class StriderData extends PassiveEntity.PassiveData {
-		public final StriderEntity.StriderData.RiderType type;
-
-		public StriderData(StriderEntity.StriderData.RiderType type) {
-			this.type = type;
-		}
-
-		public static enum RiderType {
-			NO_RIDER,
-			BABY_RIDER,
-			PIGLIN_RIDER;
 		}
 	}
 }

@@ -280,7 +280,7 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer method_29359(BlockState blockState) {
+	public static RenderLayer getMovingBlockLayer(BlockState blockState) {
 		Block block = blockState.getBlock();
 		if (block instanceof LeavesBlock) {
 			return fancyGraphicsOrBetter ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
@@ -294,26 +294,26 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getEntityBlockLayer(BlockState state, boolean bl) {
+	public static RenderLayer getEntityBlockLayer(BlockState state, boolean direct) {
 		RenderLayer renderLayer = getBlockLayer(state);
 		if (renderLayer == RenderLayer.getTranslucent()) {
 			if (!MinecraftClient.isFabulousGraphicsOrBetter()) {
 				return TexturedRenderLayers.getEntityTranslucentCull();
 			} else {
-				return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
+				return direct ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.getItemEntityTranslucentCull();
 			}
 		} else {
 			return TexturedRenderLayers.getEntityCutout();
 		}
 	}
 
-	public static RenderLayer getItemLayer(ItemStack stack, boolean bl) {
+	public static RenderLayer getItemLayer(ItemStack stack, boolean direct) {
 		Item item = stack.getItem();
 		if (item instanceof BlockItem) {
 			Block block = ((BlockItem)item).getBlock();
-			return getEntityBlockLayer(block.getDefaultState(), bl);
+			return getEntityBlockLayer(block.getDefaultState(), direct);
 		} else {
-			return bl ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.method_29382();
+			return direct ? TexturedRenderLayers.getEntityTranslucentCull() : TexturedRenderLayers.getItemEntityTranslucentCull();
 		}
 	}
 

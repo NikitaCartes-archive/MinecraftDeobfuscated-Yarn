@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 public class FillLayerFeatureConfig implements FeatureConfig {
 	public static final Codec<FillLayerFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.INT.fieldOf("height").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.height),
+					Codec.intRange(0, 255).fieldOf("height").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.height),
 					BlockState.CODEC.fieldOf("state").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.state)
 				)
 				.apply(instance, FillLayerFeatureConfig::new)

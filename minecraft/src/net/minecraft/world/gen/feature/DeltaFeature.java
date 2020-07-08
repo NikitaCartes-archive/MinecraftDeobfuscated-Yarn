@@ -3,7 +3,6 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,14 +18,6 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	);
 	private static final Direction[] field_23883 = Direction.values();
 
-	private static int method_27104(Random random, DeltaFeatureConfig deltaFeatureConfig) {
-		return deltaFeatureConfig.minRadius + random.nextInt(deltaFeatureConfig.maxRadius - deltaFeatureConfig.minRadius + 1);
-	}
-
-	private static int method_27105(Random random, DeltaFeatureConfig deltaFeatureConfig) {
-		return random.nextInt(deltaFeatureConfig.maxRim + 1);
-	}
-
 	public DeltaFeature(Codec<DeltaFeatureConfig> codec) {
 		super(codec);
 	}
@@ -34,45 +25,40 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	public boolean generate(
 		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig
 	) {
-		BlockPos blockPos2 = method_27102(serverWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, serverWorldAccess.getHeight() - 1));
-		if (blockPos2 == null) {
-			return false;
-		} else {
-			boolean bl = false;
-			boolean bl2 = random.nextDouble() < 0.9;
-			int i = bl2 ? method_27105(random, deltaFeatureConfig) : 0;
-			int j = bl2 ? method_27105(random, deltaFeatureConfig) : 0;
-			boolean bl3 = bl2 && i != 0 && j != 0;
-			int k = method_27104(random, deltaFeatureConfig);
-			int l = method_27104(random, deltaFeatureConfig);
-			int m = Math.max(k, l);
+		boolean bl = false;
+		boolean bl2 = random.nextDouble() < 0.9;
+		int i = bl2 ? deltaFeatureConfig.method_30403().method_30321(random) : 0;
+		int j = bl2 ? deltaFeatureConfig.method_30403().method_30321(random) : 0;
+		boolean bl3 = bl2 && i != 0 && j != 0;
+		int k = deltaFeatureConfig.method_30402().method_30321(random);
+		int l = deltaFeatureConfig.method_30402().method_30321(random);
+		int m = Math.max(k, l);
 
-			for (BlockPos blockPos3 : BlockPos.iterateOutwards(blockPos2, k, 0, l)) {
-				if (blockPos3.getManhattanDistance(blockPos2) > m) {
-					break;
-				}
-
-				if (method_27103(serverWorldAccess, blockPos3, deltaFeatureConfig)) {
-					if (bl3) {
-						bl = true;
-						this.setBlockState(serverWorldAccess, blockPos3, deltaFeatureConfig.rim);
-					}
-
-					BlockPos blockPos4 = blockPos3.add(i, 0, j);
-					if (method_27103(serverWorldAccess, blockPos4, deltaFeatureConfig)) {
-						bl = true;
-						this.setBlockState(serverWorldAccess, blockPos4, deltaFeatureConfig.contents);
-					}
-				}
+		for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, k, 0, l)) {
+			if (blockPos2.getManhattanDistance(blockPos) > m) {
+				break;
 			}
 
-			return bl;
+			if (method_27103(serverWorldAccess, blockPos2, deltaFeatureConfig)) {
+				if (bl3) {
+					bl = true;
+					this.setBlockState(serverWorldAccess, blockPos2, deltaFeatureConfig.method_30400());
+				}
+
+				BlockPos blockPos3 = blockPos2.add(i, 0, j);
+				if (method_27103(serverWorldAccess, blockPos3, deltaFeatureConfig)) {
+					bl = true;
+					this.setBlockState(serverWorldAccess, blockPos3, deltaFeatureConfig.method_30397());
+				}
+			}
 		}
+
+		return bl;
 	}
 
 	private static boolean method_27103(WorldAccess worldAccess, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
 		BlockState blockState = worldAccess.getBlockState(blockPos);
-		if (blockState.isOf(deltaFeatureConfig.contents.getBlock())) {
+		if (blockState.isOf(deltaFeatureConfig.method_30397().getBlock())) {
 			return false;
 		} else if (field_24133.contains(blockState.getBlock())) {
 			return false;
@@ -86,22 +72,5 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 
 			return true;
 		}
-	}
-
-	@Nullable
-	private static BlockPos method_27102(WorldAccess worldAccess, BlockPos.Mutable mutable) {
-		while (mutable.getY() > 1) {
-			if (worldAccess.getBlockState(mutable).isAir()) {
-				BlockState blockState = worldAccess.getBlockState(mutable.move(Direction.DOWN));
-				mutable.move(Direction.UP);
-				if (!blockState.isOf(Blocks.LAVA) && !blockState.isOf(Blocks.BEDROCK) && !blockState.isAir()) {
-					return mutable;
-				}
-			}
-
-			mutable.move(Direction.DOWN);
-		}
-
-		return null;
 	}
 }

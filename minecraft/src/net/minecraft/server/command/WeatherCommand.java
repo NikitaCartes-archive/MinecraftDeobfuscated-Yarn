@@ -37,19 +37,19 @@ public class WeatherCommand {
 	}
 
 	private static int executeClear(ServerCommandSource source, int duration) {
-		source.getWorld().method_27910(duration, 0, false, false);
+		source.getWorld().setWeather(duration, 0, false, false);
 		source.sendFeedback(new TranslatableText("commands.weather.set.clear"), true);
 		return duration;
 	}
 
 	private static int executeRain(ServerCommandSource source, int duration) {
-		source.getWorld().method_27910(0, duration, true, false);
+		source.getWorld().setWeather(0, duration, true, false);
 		source.sendFeedback(new TranslatableText("commands.weather.set.rain"), true);
 		return duration;
 	}
 
 	private static int executeThunder(ServerCommandSource source, int duration) {
-		source.getWorld().method_27910(0, duration, true, true);
+		source.getWorld().setWeather(0, duration, true, true);
 		source.sendFeedback(new TranslatableText("commands.weather.set.thunder"), true);
 		return duration;
 	}
