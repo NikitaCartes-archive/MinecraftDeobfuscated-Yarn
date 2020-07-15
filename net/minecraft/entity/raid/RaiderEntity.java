@@ -495,7 +495,7 @@ extends PatrolEntity {
                 return false;
             }
             RaiderEntity raiderEntity = raid.getCaptain(((RaiderEntity)this.actor).getWave());
-            if (!(raiderEntity != null && raiderEntity.isAlive() || (list = ((RaiderEntity)this.actor).world.getEntities(ItemEntity.class, ((Entity)this.actor).getBoundingBox().expand(16.0, 8.0, 16.0), OBTAINABLE_OMINOUS_BANNER_PREDICATE)).isEmpty())) {
+            if (!(raiderEntity != null && raiderEntity.isAlive() || (list = ((RaiderEntity)this.actor).world.getEntitiesByClass(ItemEntity.class, ((Entity)this.actor).getBoundingBox().expand(16.0, 8.0, 16.0), OBTAINABLE_OMINOUS_BANNER_PREDICATE)).isEmpty())) {
                 return ((MobEntity)this.actor).getNavigation().startMovingTo(list.get(0), 1.15f);
             }
             return false;
@@ -504,7 +504,7 @@ extends PatrolEntity {
         @Override
         public void tick() {
             List<ItemEntity> list;
-            if (((MobEntity)this.actor).getNavigation().getTargetPos().isWithinDistance(((Entity)this.actor).getPos(), 1.414) && !(list = ((RaiderEntity)this.actor).world.getEntities(ItemEntity.class, ((Entity)this.actor).getBoundingBox().expand(4.0, 4.0, 4.0), OBTAINABLE_OMINOUS_BANNER_PREDICATE)).isEmpty()) {
+            if (((MobEntity)this.actor).getNavigation().getTargetPos().isWithinDistance(((Entity)this.actor).getPos(), 1.414) && !(list = ((RaiderEntity)this.actor).world.getEntitiesByClass(ItemEntity.class, ((Entity)this.actor).getBoundingBox().expand(4.0, 4.0, 4.0), OBTAINABLE_OMINOUS_BANNER_PREDICATE)).isEmpty()) {
                 ((RaiderEntity)this.actor).loot(list.get(0));
             }
         }

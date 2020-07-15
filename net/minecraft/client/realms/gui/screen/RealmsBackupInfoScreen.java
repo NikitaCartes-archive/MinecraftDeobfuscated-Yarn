@@ -95,32 +95,32 @@ extends RealmsScreen {
 
     @Environment(value=EnvType.CLIENT)
     class BackupInfoList
-    extends AlwaysSelectedEntryListWidget<class_5344> {
+    extends AlwaysSelectedEntryListWidget<BackupInfoListEntry> {
         public BackupInfoList(MinecraftClient minecraftClient) {
             super(minecraftClient, RealmsBackupInfoScreen.this.width, RealmsBackupInfoScreen.this.height, 32, RealmsBackupInfoScreen.this.height - 64, 36);
             this.setRenderSelection(false);
             if (((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).backup.changeList != null) {
-                ((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).backup.changeList.forEach((string, string2) -> this.addEntry(new class_5344((String)string, (String)string2)));
+                ((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).backup.changeList.forEach((key, value) -> this.addEntry(new BackupInfoListEntry((String)key, (String)value)));
             }
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    class class_5344
-    extends AlwaysSelectedEntryListWidget.Entry<class_5344> {
-        private final String field_25258;
-        private final String field_25259;
+    class BackupInfoListEntry
+    extends AlwaysSelectedEntryListWidget.Entry<BackupInfoListEntry> {
+        private final String key;
+        private final String value;
 
-        public class_5344(String string, String string2) {
-            this.field_25258 = string;
-            this.field_25259 = string2;
+        public BackupInfoListEntry(String key, String value) {
+            this.key = key;
+            this.value = value;
         }
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             TextRenderer textRenderer = ((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).client.textRenderer;
-            RealmsBackupInfoScreen.this.drawStringWithShadow(matrices, textRenderer, this.field_25258, x, y, 0xA0A0A0);
-            RealmsBackupInfoScreen.this.drawTextWithShadow(matrices, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.field_25258, this.field_25259), x, y + 12, 0xFFFFFF);
+            RealmsBackupInfoScreen.this.drawStringWithShadow(matrices, textRenderer, this.key, x, y, 0xA0A0A0);
+            RealmsBackupInfoScreen.this.drawTextWithShadow(matrices, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, 0xFFFFFF);
         }
     }
 }

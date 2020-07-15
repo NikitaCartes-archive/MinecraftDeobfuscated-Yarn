@@ -19,7 +19,7 @@ extends SimpleDecorator<CountConfig> {
 
     @Override
     public Stream<BlockPos> getPositions(Random random, CountConfig countConfig, BlockPos blockPos) {
-        return IntStream.range(0, countConfig.method_30396().method_30321(random)).mapToObj(i -> blockPos);
+        return IntStream.range(0, countConfig.method_30396().getValue(random)).mapToObj(i -> blockPos);
     }
 }
 

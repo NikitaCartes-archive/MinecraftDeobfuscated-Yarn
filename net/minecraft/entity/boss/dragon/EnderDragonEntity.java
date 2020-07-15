@@ -266,10 +266,10 @@ implements Monster {
         this.movePart(this.partWingRight, z * 4.5f, 2.0, y * 4.5f);
         this.movePart(this.partWingLeft, z * -4.5f, 2.0, y * -4.5f);
         if (!this.world.isClient && this.hurtTime == 0) {
-            this.launchLivingEntities(this.world.getEntities(this, this.partWingRight.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
-            this.launchLivingEntities(this.world.getEntities(this, this.partWingLeft.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
-            this.damageLivingEntities(this.world.getEntities(this, this.partHead.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
-            this.damageLivingEntities(this.world.getEntities(this, this.partNeck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            this.launchLivingEntities(this.world.getOtherEntities(this, this.partWingRight.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            this.launchLivingEntities(this.world.getOtherEntities(this, this.partWingLeft.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            this.damageLivingEntities(this.world.getOtherEntities(this, this.partHead.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            this.damageLivingEntities(this.world.getOtherEntities(this, this.partNeck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
         }
         float aa = MathHelper.sin(this.yaw * ((float)Math.PI / 180) - this.field_20865 * 0.01f);
         float ab = MathHelper.cos(this.yaw * ((float)Math.PI / 180) - this.field_20865 * 0.01f);

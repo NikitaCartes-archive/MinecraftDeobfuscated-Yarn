@@ -236,7 +236,7 @@ implements Monster {
             Direction direction3 = this.getAttachedFace().getOpposite();
             this.setBoundingBox(new Box(this.getX() - 0.5, this.getY(), this.getZ() - 0.5, this.getX() + 0.5, this.getY() + 1.0, this.getZ() + 0.5).stretch((double)direction3.getOffsetX() * d, (double)direction3.getOffsetY() * d, (double)direction3.getOffsetZ() * d));
             double g = d - e;
-            if (g > 0.0 && !(list = this.world.getEntities(this, this.getBoundingBox())).isEmpty()) {
+            if (g > 0.0 && !(list = this.world.getOtherEntities(this, this.getBoundingBox())).isEmpty()) {
                 for (Entity entity : list) {
                     if (entity instanceof ShulkerEntity || entity.noClip) continue;
                     entity.move(MovementType.SHULKER, new Vec3d(g * (double)direction3.getOffsetX(), g * (double)direction3.getOffsetY(), g * (double)direction3.getOffsetZ()));

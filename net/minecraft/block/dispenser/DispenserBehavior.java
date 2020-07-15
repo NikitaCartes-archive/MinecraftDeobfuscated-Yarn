@@ -220,7 +220,7 @@ public interface DispenserBehavior {
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                List<LivingEntity> list = pointer.getWorld().getEntities(LivingEntity.class, new Box(blockPos), livingEntity -> {
+                List<LivingEntity> list = pointer.getWorld().getEntitiesByClass(LivingEntity.class, new Box(blockPos), livingEntity -> {
                     if (livingEntity instanceof Saddleable) {
                         Saddleable saddleable = (Saddleable)((Object)livingEntity);
                         return !saddleable.isSaddled() && saddleable.canBeSaddled();
@@ -241,7 +241,7 @@ public interface DispenserBehavior {
             @Override
             protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                List<HorseBaseEntity> list = pointer.getWorld().getEntities(HorseBaseEntity.class, new Box(blockPos), horseBaseEntity -> horseBaseEntity.isAlive() && horseBaseEntity.canEquip());
+                List<HorseBaseEntity> list = pointer.getWorld().getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntity -> horseBaseEntity.isAlive() && horseBaseEntity.canEquip());
                 for (HorseBaseEntity horseBaseEntity2 : list) {
                     if (!horseBaseEntity2.canEquip(stack) || horseBaseEntity2.setSaddled() || !horseBaseEntity2.isTame()) continue;
                     horseBaseEntity2.equip(401, stack.split(1));
@@ -276,7 +276,7 @@ public interface DispenserBehavior {
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                List<AbstractDonkeyEntity> list = pointer.getWorld().getEntities(AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntity -> abstractDonkeyEntity.isAlive() && !abstractDonkeyEntity.hasChest());
+                List<AbstractDonkeyEntity> list = pointer.getWorld().getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntity -> abstractDonkeyEntity.isAlive() && !abstractDonkeyEntity.hasChest());
                 for (AbstractDonkeyEntity abstractDonkeyEntity2 : list) {
                     if (!abstractDonkeyEntity2.isTame() || !abstractDonkeyEntity2.equip(499, stack)) continue;
                     stack.decrement(1);

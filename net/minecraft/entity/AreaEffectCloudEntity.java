@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.command.arguments.ParticleArgumentType;
+import net.minecraft.command.argument.ParticleArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;

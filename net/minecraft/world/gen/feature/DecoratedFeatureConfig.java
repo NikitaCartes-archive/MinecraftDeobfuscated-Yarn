@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -26,7 +27,12 @@ implements FeatureConfig {
     }
 
     public String toString() {
-        return String.format("< %s [%s | %s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId((Feature<?>)this.feature.get().method_30380()), this.decorator);
+        return String.format("< %s [%s | %s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId((Feature<?>)this.feature.get().getFeature()), this.decorator);
+    }
+
+    @Override
+    public Stream<ConfiguredFeature<?, ?>> method_30649() {
+        return this.feature.get().method_30648();
     }
 }
 

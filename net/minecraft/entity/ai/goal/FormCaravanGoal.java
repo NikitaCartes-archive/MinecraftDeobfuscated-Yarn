@@ -31,7 +31,7 @@ extends Goal {
         if (this.llama.isLeashed() || this.llama.isFollowing()) {
             return false;
         }
-        List<Entity> list = this.llama.world.getEntities(this.llama, this.llama.getBoundingBox().expand(9.0, 4.0, 9.0), entity -> {
+        List<Entity> list = this.llama.world.getOtherEntities(this.llama, this.llama.getBoundingBox().expand(9.0, 4.0, 9.0), entity -> {
             EntityType<?> entityType = entity.getType();
             return entityType == EntityType.LLAMA || entityType == EntityType.TRADER_LLAMA;
         });

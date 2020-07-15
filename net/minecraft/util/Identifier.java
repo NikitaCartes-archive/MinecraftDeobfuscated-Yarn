@@ -147,7 +147,7 @@ implements Comparable<Identifier> {
 
     private static boolean isPathValid(String path) {
         for (int i = 0; i < path.length(); ++i) {
-            if (Identifier.method_29184(path.charAt(i))) continue;
+            if (Identifier.isPathCharacterValid(path.charAt(i))) continue;
             return false;
         }
         return true;
@@ -155,17 +155,17 @@ implements Comparable<Identifier> {
 
     private static boolean isNamespaceValid(String namespace) {
         for (int i = 0; i < namespace.length(); ++i) {
-            if (Identifier.method_29185(namespace.charAt(i))) continue;
+            if (Identifier.isNamespaceCharacterValid(namespace.charAt(i))) continue;
             return false;
         }
         return true;
     }
 
-    public static boolean method_29184(char c) {
+    public static boolean isPathCharacterValid(char c) {
         return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '.';
     }
 
-    private static boolean method_29185(char c) {
+    private static boolean isNamespaceCharacterValid(char c) {
         return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
     }
 

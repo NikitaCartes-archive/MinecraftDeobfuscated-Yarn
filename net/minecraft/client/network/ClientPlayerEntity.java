@@ -404,62 +404,38 @@ extends AbstractClientPlayerEntity {
         }
     }
 
-    @Override
-    protected void pushOutOfBlocks(double x, double y, double z) {
-        BlockPos blockPos = new BlockPos(x, y, z);
-        if (this.cannotFitAt(blockPos)) {
-            double d = x - (double)blockPos.getX();
-            double e = z - (double)blockPos.getZ();
-            Direction direction = null;
-            double f = 9999.0;
-            if (!this.cannotFitAt(blockPos.west()) && d < f) {
-                f = d;
-                direction = Direction.WEST;
-            }
-            if (!this.cannotFitAt(blockPos.east()) && 1.0 - d < f) {
-                f = 1.0 - d;
-                direction = Direction.EAST;
-            }
-            if (!this.cannotFitAt(blockPos.north()) && e < f) {
-                f = e;
-                direction = Direction.NORTH;
-            }
-            if (!this.cannotFitAt(blockPos.south()) && 1.0 - e < f) {
-                f = 1.0 - e;
-                direction = Direction.SOUTH;
-            }
-            if (direction != null) {
-                Vec3d vec3d = this.getVelocity();
-                switch (direction) {
-                    case WEST: {
-                        this.setVelocity(-0.1, vec3d.y, vec3d.z);
-                        break;
-                    }
-                    case EAST: {
-                        this.setVelocity(0.1, vec3d.y, vec3d.z);
-                        break;
-                    }
-                    case NORTH: {
-                        this.setVelocity(vec3d.x, vec3d.y, -0.1);
-                        break;
-                    }
-                    case SOUTH: {
-                        this.setVelocity(vec3d.x, vec3d.y, 0.1);
-                    }
-                }
+    private void method_30673(double d, double e) {
+        Direction[] directions;
+        BlockPos blockPos = new BlockPos(d, this.getY(), e);
+        if (!this.method_30674(blockPos)) {
+            return;
+        }
+        double f = d - (double)blockPos.getX();
+        double g = e - (double)blockPos.getZ();
+        Direction direction = null;
+        double h = Double.MAX_VALUE;
+        for (Direction direction2 : directions = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH}) {
+            double j;
+            double i = direction2.getAxis().choose(f, 0.0, g);
+            double d2 = j = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - i : i;
+            if (!(j < h) || this.method_30674(blockPos.offset(direction2))) continue;
+            h = j;
+            direction = direction2;
+        }
+        if (direction != null) {
+            Vec3d vec3d = this.getVelocity();
+            if (direction.getAxis() == Direction.Axis.X) {
+                this.setVelocity(0.1 * (double)direction.getOffsetX(), vec3d.y, vec3d.z);
+            } else {
+                this.setVelocity(vec3d.x, vec3d.y, 0.1 * (double)direction.getOffsetZ());
             }
         }
     }
 
-    private boolean cannotFitAt(BlockPos pos) {
+    private boolean method_30674(BlockPos blockPos2) {
         Box box = this.getBoundingBox();
-        BlockPos.Mutable mutable = pos.mutableCopy();
-        for (int i = MathHelper.floor(box.minY); i < MathHelper.ceil(box.maxY); ++i) {
-            mutable.setY(i);
-            if (this.doesNotSuffocate(mutable)) continue;
-            return true;
-        }
-        return false;
+        Box box2 = new Box(blockPos2.getX(), box.minY, blockPos2.getZ(), (double)blockPos2.getX() + 1.0, box.maxY, (double)blockPos2.getZ() + 1.0).contract(1.0E-7);
+        return !this.world.method_30635(this, box2, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos));
     }
 
     @Override
@@ -669,10 +645,10 @@ extends AbstractClientPlayerEntity {
             this.input.jumping = true;
         }
         if (!this.noClip) {
-            this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
+            this.method_30673(this.getX() - (double)this.getWidth() * 0.35, this.getZ() + (double)this.getWidth() * 0.35);
+            this.method_30673(this.getX() - (double)this.getWidth() * 0.35, this.getZ() - (double)this.getWidth() * 0.35);
+            this.method_30673(this.getX() + (double)this.getWidth() * 0.35, this.getZ() - (double)this.getWidth() * 0.35);
+            this.method_30673(this.getX() + (double)this.getWidth() * 0.35, this.getZ() + (double)this.getWidth() * 0.35);
         }
         if (bl2) {
             this.ticksLeftToDoubleTapSprint = 0;

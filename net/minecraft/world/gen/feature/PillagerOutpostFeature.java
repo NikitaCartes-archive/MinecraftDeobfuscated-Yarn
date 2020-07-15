@@ -13,6 +13,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.StructureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 
@@ -38,9 +39,13 @@ extends class_5434 {
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
+        StructureConfig structureConfig = chunkGenerator.getConfig().getForType(StructureFeature.VILLAGE);
+        if (structureConfig == null) {
+            return true;
+        }
         for (int n = i - 10; n <= i + 10; ++n) {
             for (int o = j - 10; o <= j + 10; ++o) {
-                ChunkPos chunkPos2 = StructureFeature.VILLAGE.getStartChunk(chunkGenerator.getConfig().getForType(StructureFeature.VILLAGE), l, chunkRandom, n, o);
+                ChunkPos chunkPos2 = StructureFeature.VILLAGE.getStartChunk(structureConfig, l, chunkRandom, n, o);
                 if (n != chunkPos2.x || o != chunkPos2.z) continue;
                 return false;
             }

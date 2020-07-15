@@ -110,7 +110,7 @@ public class Biome {
         return long2FloatLinkedOpenHashMap;
     }));
 
-    protected Biome(Settings settings) {
+    public Biome(Settings settings) {
         if (settings.surfaceBuilder == null || settings.precipitation == null || settings.category == null || settings.depth == null || settings.scale == null || settings.temperature == null || settings.downfall == null || settings.specialEffects == null) {
             throw new IllegalStateException("You are missing parameters to build a proper biome for " + this.getClass().getSimpleName() + "\n" + settings);
         }
@@ -121,17 +121,17 @@ public class Biome {
         this.scale = settings.scale.floatValue();
         this.temperature = settings.temperature.floatValue();
         this.downfall = settings.downfall.floatValue();
-        this.skyColor = this.calculateSkyColor();
+        this.skyColor = settings.field_26354 != null ? settings.field_26354.intValue() : this.calculateSkyColor();
         this.parent = settings.parent;
         this.effects = settings.specialEffects;
-        this.carvers = Maps.newHashMap();
+        this.carvers = Maps.newLinkedHashMap();
         this.structureFeatures = Lists.newArrayList();
         this.features = Lists.newArrayList();
-        this.spawns = Maps.newHashMap();
+        this.spawns = Maps.newLinkedHashMap();
         for (SpawnGroup spawnGroup : SpawnGroup.values()) {
             this.spawns.put(spawnGroup, Lists.newArrayList());
         }
-        this.spawnDensities = Maps.newHashMap();
+        this.spawnDensities = Maps.newLinkedHashMap();
         this.flowerFeatures = Lists.newArrayList();
     }
 
@@ -151,7 +151,7 @@ public class Biome {
         this.spawns = map2;
         this.parent = optional.orElse(null);
         this.spawnDensities = map3;
-        this.flowerFeatures = list.stream().flatMap(Collection::stream).map(Supplier::get).filter(configuredFeature -> configuredFeature.feature == Feature.DECORATED_FLOWER).collect(Collectors.toList());
+        this.flowerFeatures = list.stream().flatMap(Collection::stream).map(Supplier::get).flatMap(ConfiguredFeature::method_30648).filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER).collect(Collectors.toList());
     }
 
     public boolean hasParent() {
@@ -174,7 +174,7 @@ public class Biome {
         this.spawns.get(group).add(spawnEntry);
     }
 
-    protected void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
+    public void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
         this.spawnDensities.put(type, new SpawnDensity(mass, maxMass));
     }
 
@@ -260,9 +260,7 @@ public class Biome {
     }
 
     public void addFeature(int stepIndex, Supplier<ConfiguredFeature<?, ?>> supplier) {
-        if (supplier.get().feature == Feature.DECORATED_FLOWER) {
-            this.flowerFeatures.add(supplier.get());
-        }
+        supplier.get().method_30648().filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER).forEach(this.flowerFeatures::add);
         while (this.features.size() <= stepIndex) {
             this.features.add(Lists.newArrayList());
         }
@@ -298,7 +296,7 @@ public class Biome {
     }
 
     /**
-     * @return The lists of features configured for each {@link net.minecraft.world.gen.GenerationStep.Feature feature generation step}, up to the highest step that has a configured feature.
+     * Returns the lists of features configured for each {@link net.minecraft.world.gen.GenerationStep.Feature feature generation step}, up to the highest step that has a configured feature.
      * Entries are guaranteed to not be null, but may be empty lists if an earlier step has no features, but a later step does.
      */
     public List<List<Supplier<ConfiguredFeature<?, ?>>>> getFeatures() {
@@ -521,12 +519,14 @@ public class Biome {
         @Nullable
         private Float downfall;
         @Nullable
+        private Integer field_26354;
+        @Nullable
         private String parent;
         @Nullable
         private BiomeEffects specialEffects;
 
-        public Settings configureSurfaceBuilder(ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder) {
-            return this.surfaceBuilder(() -> configuredSurfaceBuilder);
+        public Settings surfaceBuilder(ConfiguredSurfaceBuilder<?> surfaceBuilder) {
+            return this.surfaceBuilder(() -> surfaceBuilder);
         }
 
         public Settings surfaceBuilder(Supplier<ConfiguredSurfaceBuilder<?>> supplier) {
@@ -564,6 +564,11 @@ public class Biome {
             return this;
         }
 
+        public Settings method_30637(int i) {
+            this.field_26354 = i;
+            return this;
+        }
+
         public Settings parent(@Nullable String parent) {
             this.parent = parent;
             return this;
@@ -575,7 +580,7 @@ public class Biome {
         }
 
         public String toString() {
-            return "BiomeBuilder{\nsurfaceBuilder=" + this.surfaceBuilder + ",\nprecipitation=" + this.precipitation + ",\nbiomeCategory=" + this.category + ",\ndepth=" + this.depth + ",\nscale=" + this.scale + ",\ntemperature=" + this.temperature + ",\ndownfall=" + this.downfall + ",\nspecialEffects=" + this.specialEffects + ",\nparent='" + this.parent + '\'' + "\n" + '}';
+            return "BiomeBuilder{\nsurfaceBuilder=" + this.surfaceBuilder + ",\nprecipitation=" + this.precipitation + ",\nbiomeCategory=" + this.category + ",\ndepth=" + this.depth + ",\nscale=" + this.scale + ",\ntemperature=" + this.temperature + ",\ndownfall=" + this.downfall + ",\nskyColor=" + this.field_26354 + ",\nspecialEffects=" + this.specialEffects + ",\nparent='" + this.parent + '\'' + "\n" + '}';
         }
     }
 

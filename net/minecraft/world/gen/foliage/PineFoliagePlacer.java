@@ -9,22 +9,22 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class PineFoliagePlacer
 extends FoliagePlacer {
-    public static final Codec<PineFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> PineFoliagePlacer.method_30411(instance).and(((MapCodec)class_5428.method_30316(0, 16, 8).fieldOf("height")).forGetter(pineFoliagePlacer -> pineFoliagePlacer.height)).apply((Applicative<PineFoliagePlacer, ?>)instance, PineFoliagePlacer::new));
-    private final class_5428 height;
+    public static final Codec<PineFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> PineFoliagePlacer.method_30411(instance).and(((MapCodec)UniformIntDistribution.createValidatedCodec(0, 16, 8).fieldOf("height")).forGetter(pineFoliagePlacer -> pineFoliagePlacer.height)).apply((Applicative<PineFoliagePlacer, ?>)instance, PineFoliagePlacer::new));
+    private final UniformIntDistribution height;
 
-    public PineFoliagePlacer(class_5428 arg, class_5428 arg2, class_5428 arg3) {
-        super(arg, arg2);
-        this.height = arg3;
+    public PineFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2, UniformIntDistribution uniformIntDistribution3) {
+        super(uniformIntDistribution, uniformIntDistribution2);
+        this.height = uniformIntDistribution3;
     }
 
     @Override
@@ -53,7 +53,7 @@ extends FoliagePlacer {
 
     @Override
     public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
-        return this.height.method_30321(random);
+        return this.height.getValue(random);
     }
 
     @Override

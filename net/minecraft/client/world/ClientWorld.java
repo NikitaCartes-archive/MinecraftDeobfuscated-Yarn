@@ -107,7 +107,7 @@ extends World {
         this.clientWorldProperties = properties;
         this.worldRenderer = worldRenderer;
         this.skyProperties = SkyProperties.byDimensionType(clientPlayNetworkHandler.getRegistryManager().getDimensionTypes().getKey(dimensionType));
-        this.setSpawnPos(new BlockPos(8, 64, 8));
+        this.setSpawnPos(new BlockPos(8, 64, 8), 0.0f);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
     }
@@ -744,8 +744,12 @@ extends World {
         return blockPos;
     }
 
-    public void setSpawnPos(BlockPos pos) {
-        this.properties.setSpawnPos(pos);
+    public float method_30671() {
+        return this.properties.getSpawnAngle();
+    }
+
+    public void setSpawnPos(BlockPos pos, float angle) {
+        this.properties.setSpawnPos(pos, angle);
     }
 
     public String toString() {
@@ -776,6 +780,7 @@ extends World {
         private int spawnX;
         private int spawnY;
         private int spawnZ;
+        private float field_26372;
         private long time;
         private long timeOfDay;
         private boolean raining;
@@ -805,6 +810,11 @@ extends World {
         }
 
         @Override
+        public float getSpawnAngle() {
+            return this.field_26372;
+        }
+
+        @Override
         public long getTime() {
             return this.time;
         }
@@ -829,6 +839,11 @@ extends World {
             this.spawnZ = spawnZ;
         }
 
+        @Override
+        public void setSpawnAngle(float angle) {
+            this.field_26372 = angle;
+        }
+
         public void setTime(long difficulty) {
             this.time = difficulty;
         }
@@ -838,10 +853,11 @@ extends World {
         }
 
         @Override
-        public void setSpawnPos(BlockPos pos) {
+        public void setSpawnPos(BlockPos pos, float angle) {
             this.spawnX = pos.getX();
             this.spawnY = pos.getY();
             this.spawnZ = pos.getZ();
+            this.field_26372 = angle;
         }
 
         @Override
@@ -880,8 +896,8 @@ extends World {
         }
 
         @Override
-        public void populateCrashReport(CrashReportSection reportSection) {
-            MutableWorldProperties.super.populateCrashReport(reportSection);
+        public void populateCrashReport(CrashReportSection crashReportSection) {
+            MutableWorldProperties.super.populateCrashReport(crashReportSection);
         }
 
         public void setDifficulty(Difficulty difficulty) {

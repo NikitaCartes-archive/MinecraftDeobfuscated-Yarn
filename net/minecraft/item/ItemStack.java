@@ -33,8 +33,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.command.arguments.BlockArgumentParser;
-import net.minecraft.command.arguments.BlockPredicateArgumentType;
+import net.minecraft.command.argument.BlockArgumentParser;
+import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -88,7 +88,7 @@ public final class ItemStack {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ItemStack EMPTY = new ItemStack((ItemConvertible)null);
     public static final DecimalFormat MODIFIER_FORMAT = Util.make(new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
-    private static final Style field_24092 = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
+    private static final Style LORE_STYLE = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
     private int count;
     private int cooldown;
     @Deprecated
@@ -105,8 +105,8 @@ public final class ItemStack {
         this(item, 1);
     }
 
-    private ItemStack(ItemConvertible itemConvertible, int i, Optional<CompoundTag> optional) {
-        this(itemConvertible, i);
+    private ItemStack(ItemConvertible itemConvertible, int count, Optional<CompoundTag> optional) {
+        this(itemConvertible, count);
         optional.ifPresent(this::setTag);
     }
 
@@ -530,16 +530,16 @@ public final class ItemStack {
         if (!context.isAdvanced() && !this.hasCustomName() && this.getItem() == Items.FILLED_MAP) {
             list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.GRAY));
         }
-        if (ItemStack.method_30267(i = this.method_30266(), class_5422.field_25773)) {
+        if (ItemStack.isSectionHidden(i = this.getHideFlags(), TooltipSection.ADDITIONAL)) {
             this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);
         }
         if (this.hasTag()) {
-            if (ItemStack.method_30267(i, class_5422.field_25768)) {
+            if (ItemStack.isSectionHidden(i, TooltipSection.ENCHANTMENTS)) {
                 ItemStack.appendEnchantments(list, this.getEnchantments());
             }
             if (this.tag.contains("display", 10)) {
                 CompoundTag compoundTag = this.tag.getCompound("display");
-                if (ItemStack.method_30267(i, class_5422.field_25774) && compoundTag.contains("color", 99)) {
+                if (ItemStack.isSectionHidden(i, TooltipSection.DYE) && compoundTag.contains("color", 99)) {
                     if (context.isAdvanced()) {
                         list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.GRAY));
                     } else {
@@ -553,7 +553,7 @@ public final class ItemStack {
                         try {
                             MutableText mutableText2 = Text.Serializer.fromJson(string);
                             if (mutableText2 == null) continue;
-                            list.add(Texts.setStyleIfAbsent(mutableText2, field_24092));
+                            list.add(Texts.setStyleIfAbsent(mutableText2, LORE_STYLE));
                             continue;
                         } catch (JsonParseException jsonParseException) {
                             compoundTag.remove("Lore");
@@ -562,7 +562,7 @@ public final class ItemStack {
                 }
             }
         }
-        if (ItemStack.method_30267(i, class_5422.field_25769)) {
+        if (ItemStack.isSectionHidden(i, TooltipSection.MODIFIERS)) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
                 if (multimap.isEmpty()) continue;
@@ -598,17 +598,17 @@ public final class ItemStack {
         }
         if (this.hasTag()) {
             ListTag listTag2;
-            if (ItemStack.method_30267(i, class_5422.field_25770) && this.tag.getBoolean("Unbreakable")) {
+            if (ItemStack.isSectionHidden(i, TooltipSection.UNBREAKABLE) && this.tag.getBoolean("Unbreakable")) {
                 list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
             }
-            if (ItemStack.method_30267(i, class_5422.field_25771) && this.tag.contains("CanDestroy", 9) && !(listTag2 = this.tag.getList("CanDestroy", 8)).isEmpty()) {
+            if (ItemStack.isSectionHidden(i, TooltipSection.CAN_DESTROY) && this.tag.contains("CanDestroy", 9) && !(listTag2 = this.tag.getList("CanDestroy", 8)).isEmpty()) {
                 list.add(LiteralText.EMPTY);
                 list.add(new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
                 for (int k = 0; k < listTag2.size(); ++k) {
                     list.addAll(ItemStack.parseBlockTag(listTag2.getString(k)));
                 }
             }
-            if (ItemStack.method_30267(i, class_5422.field_25772) && this.tag.contains("CanPlaceOn", 9) && !(listTag2 = this.tag.getList("CanPlaceOn", 8)).isEmpty()) {
+            if (ItemStack.isSectionHidden(i, TooltipSection.CAN_PLACE) && this.tag.contains("CanPlaceOn", 9) && !(listTag2 = this.tag.getList("CanPlaceOn", 8)).isEmpty()) {
                 list.add(LiteralText.EMPTY);
                 list.add(new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
                 for (int k = 0; k < listTag2.size(); ++k) {
@@ -629,21 +629,21 @@ public final class ItemStack {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static boolean method_30267(int i, class_5422 arg) {
-        return (i & arg.method_30269()) == 0;
+    private static boolean isSectionHidden(int flags, TooltipSection tooltipSection) {
+        return (flags & tooltipSection.getFlag()) == 0;
     }
 
     @Environment(value=EnvType.CLIENT)
-    private int method_30266() {
+    private int getHideFlags() {
         if (this.hasTag() && this.tag.contains("HideFlags", 99)) {
             return this.tag.getInt("HideFlags");
         }
         return 0;
     }
 
-    public void method_30268(class_5422 arg) {
+    public void addHideFlag(TooltipSection tooltipSection) {
         CompoundTag compoundTag = this.getOrCreateTag();
-        compoundTag.putInt("HideFlags", compoundTag.getInt("HideFlags") | arg.method_30269());
+        compoundTag.putInt("HideFlags", compoundTag.getInt("HideFlags") | tooltipSection.getFlag());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -894,19 +894,19 @@ public final class ItemStack {
         return this.getItem().getEatSound();
     }
 
-    public static enum class_5422 {
-        field_25768,
-        field_25769,
-        field_25770,
-        field_25771,
-        field_25772,
-        field_25773,
-        field_25774;
+    public static enum TooltipSection {
+        ENCHANTMENTS,
+        MODIFIERS,
+        UNBREAKABLE,
+        CAN_DESTROY,
+        CAN_PLACE,
+        ADDITIONAL,
+        DYE;
 
-        private int field_25775 = 1 << this.ordinal();
+        private int flag = 1 << this.ordinal();
 
-        public int method_30269() {
-            return this.field_25775;
+        public int getFlag() {
+            return this.flag;
         }
     }
 }

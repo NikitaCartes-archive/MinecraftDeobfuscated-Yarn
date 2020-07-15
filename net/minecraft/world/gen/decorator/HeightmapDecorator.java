@@ -18,10 +18,10 @@ extends AbstractHeightmapDecorator<DC> {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, DC decoratorConfig, BlockPos blockPos) {
-        int i = blockPos.getX();
-        int j = blockPos.getZ();
-        int k = decoratorContext.getTopY(this.getHeightmapType(decoratorConfig), i, j);
+    public Stream<BlockPos> getPositions(DecoratorContext context, Random random, DC config, BlockPos pos) {
+        int i = pos.getX();
+        int j = pos.getZ();
+        int k = context.getTopY(this.getHeightmapType(config), i, j);
         if (k > 0) {
             return Stream.of(new BlockPos(i, k, j));
         }

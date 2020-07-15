@@ -53,7 +53,7 @@ public class GlStateManager {
     private static final ColorMask COLOR_MASK;
     private static final Color4 COLOR;
     private static FBOMode fboMode;
-    private static class_5343 field_25251;
+    private static FBOBlitMode fboBlitMode;
 
     @Deprecated
     public static void pushLightingAttributes() {
@@ -227,7 +227,7 @@ public class GlStateManager {
      */
     public static String initFramebufferSupport(GLCapabilities capabilities) {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
-        field_25251 = capabilities.OpenGL30 ? class_5343.field_25253 : (capabilities.GL_EXT_framebuffer_blit ? class_5343.field_25254 : class_5343.field_25255);
+        fboBlitMode = capabilities.OpenGL30 ? FBOBlitMode.BASE : (capabilities.GL_EXT_framebuffer_blit ? FBOBlitMode.EXT : FBOBlitMode.NONE);
         if (capabilities.OpenGL30) {
             fboMode = FBOMode.BASE;
             FramebufferInfo.FRAME_BUFFER = 36160;
@@ -458,12 +458,12 @@ public class GlStateManager {
 
     public static void blitFramebuffer(int i, int j, int k, int l, int m, int n, int o, int p, int q, int r) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        switch (field_25251) {
-            case field_25253: {
+        switch (fboBlitMode) {
+            case BASE: {
                 GL30.glBlitFramebuffer(i, j, k, l, m, n, o, p, q, r);
                 break;
             }
-            case field_25254: {
+            case EXT: {
                 EXTFramebufferBlit.glBlitFramebufferEXT(i, j, k, l, m, n, o, p, q, r);
                 break;
             }
@@ -1260,7 +1260,7 @@ public class GlStateManager {
     }
 
     public static boolean supportsGl30() {
-        return field_25251 != class_5343.field_25255;
+        return fboBlitMode != FBOBlitMode.NONE;
     }
 
     static {
@@ -1534,10 +1534,10 @@ public class GlStateManager {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum class_5343 {
-        field_25253,
-        field_25254,
-        field_25255;
+    public static enum FBOBlitMode {
+        BASE,
+        EXT,
+        NONE;
 
     }
 

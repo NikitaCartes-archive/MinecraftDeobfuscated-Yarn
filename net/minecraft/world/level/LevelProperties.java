@@ -49,12 +49,13 @@ public class LevelProperties
 implements ServerWorldProperties,
 SaveProperties {
     private static final Logger LOGGER = LogManager.getLogger();
-    private LevelInfo field_25030;
-    private final GeneratorOptions field_25425;
+    private LevelInfo levelInfo;
+    private final GeneratorOptions generatorOptions;
     private final Lifecycle field_25426;
     private int spawnX;
     private int spawnY;
     private int spawnZ;
+    private float spawnAngle;
     private long time;
     private long timeOfDay;
     @Nullable
@@ -72,7 +73,7 @@ SaveProperties {
     private boolean initialized;
     private boolean difficultyLocked;
     private WorldBorder.Properties worldBorder;
-    private CompoundTag field_25031;
+    private CompoundTag dragonFight;
     @Nullable
     private CompoundTag customBossEvents;
     private int wanderingTraderSpawnDelay;
@@ -83,12 +84,13 @@ SaveProperties {
     private boolean modded;
     private final Timer<MinecraftServer> scheduledEvents;
 
-    private LevelProperties(@Nullable DataFixer dataFixer, int dataVersion, @Nullable CompoundTag playerData, boolean modded, int spawnX, int spawnY, int spawnZ, long time, long timeOfDay, int version, int clearWeatherTime, int rainTime, boolean raining, int thunderTime, boolean thundering, boolean initialized, boolean difficultyLocked, WorldBorder.Properties worldBorder, int wanderingTraderSpawnDelay, int wanderingTraderSpawnChance, @Nullable UUID wanderingTraderId, LinkedHashSet<String> serverBrands, Timer<MinecraftServer> timer, @Nullable CompoundTag compoundTag, CompoundTag compoundTag2, LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
+    private LevelProperties(@Nullable DataFixer dataFixer, int dataVersion, @Nullable CompoundTag playerData, boolean modded, int spawnX, int spawnY, int spawnZ, float spawnAngle, long time, long timeOfDay, int version, int clearWeatherTime, int rainTime, boolean raining, int thunderTime, boolean thundering, boolean initialized, boolean difficultyLocked, WorldBorder.Properties worldBorder, int wanderingTraderSpawnDelay, int wanderingTraderSpawnChance, @Nullable UUID wanderingTraderId, LinkedHashSet<String> serverBrands, Timer<MinecraftServer> scheduledEvents, @Nullable CompoundTag customBossEvents, CompoundTag dragonFight, LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
         this.dataFixer = dataFixer;
         this.modded = modded;
         this.spawnX = spawnX;
         this.spawnY = spawnY;
         this.spawnZ = spawnZ;
+        this.spawnAngle = spawnAngle;
         this.time = time;
         this.timeOfDay = timeOfDay;
         this.version = version;
@@ -106,22 +108,22 @@ SaveProperties {
         this.serverBrands = serverBrands;
         this.playerData = playerData;
         this.dataVersion = dataVersion;
-        this.scheduledEvents = timer;
-        this.customBossEvents = compoundTag;
-        this.field_25031 = compoundTag2;
-        this.field_25030 = levelInfo;
-        this.field_25425 = generatorOptions;
+        this.scheduledEvents = scheduledEvents;
+        this.customBossEvents = customBossEvents;
+        this.dragonFight = dragonFight;
+        this.levelInfo = levelInfo;
+        this.generatorOptions = generatorOptions;
         this.field_25426 = lifecycle;
     }
 
     public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
-        this(null, SharedConstants.getGameVersion().getWorldVersion(), null, false, 0, 0, 0, 0L, 0L, 19133, 0, 0, false, 0, false, false, false, WorldBorder.DEFAULT_BORDER, 0, 0, null, Sets.newLinkedHashSet(), new Timer<MinecraftServer>(TimerCallbackSerializer.INSTANCE), null, new CompoundTag(), levelInfo.method_28385(), generatorOptions, lifecycle);
+        this(null, SharedConstants.getGameVersion().getWorldVersion(), null, false, 0, 0, 0, 0.0f, 0L, 0L, 19133, 0, 0, false, 0, false, false, false, WorldBorder.DEFAULT_BORDER, 0, 0, null, Sets.newLinkedHashSet(), new Timer<MinecraftServer>(TimerCallbackSerializer.INSTANCE), null, new CompoundTag(), levelInfo.withCopiedGameRules(), generatorOptions, lifecycle);
     }
 
     public static LevelProperties method_29029(Dynamic<Tag> dynamic2, DataFixer dataFixer, int i, @Nullable CompoundTag compoundTag, LevelInfo levelInfo, SaveVersionInfo saveVersionInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
         long l = dynamic2.get("Time").asLong(0L);
         CompoundTag compoundTag2 = (CompoundTag)dynamic2.get("DragonFight").result().map(Dynamic::getValue).orElseGet(() -> (Tag)dynamic2.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap().getValue());
-        return new LevelProperties(dataFixer, i, compoundTag, dynamic2.get("WasModded").asBoolean(false), dynamic2.get("SpawnX").asInt(0), dynamic2.get("SpawnY").asInt(0), dynamic2.get("SpawnZ").asInt(0), l, dynamic2.get("DayTime").asLong(l), saveVersionInfo.getLevelFormatVersion(), dynamic2.get("clearWeatherTime").asInt(0), dynamic2.get("rainTime").asInt(0), dynamic2.get("raining").asBoolean(false), dynamic2.get("thunderTime").asInt(0), dynamic2.get("thundering").asBoolean(false), dynamic2.get("initialized").asBoolean(true), dynamic2.get("DifficultyLocked").asBoolean(false), WorldBorder.Properties.fromDynamic(dynamic2, WorldBorder.DEFAULT_BORDER), dynamic2.get("WanderingTraderSpawnDelay").asInt(0), dynamic2.get("WanderingTraderSpawnChance").asInt(0), dynamic2.get("WanderingTraderId").read(DynamicSerializableUuid.field_25122).result().orElse(null), dynamic2.get("ServerBrands").asStream().flatMap(dynamic -> Util.stream(dynamic.asString().result())).collect(Collectors.toCollection(Sets::newLinkedHashSet)), new Timer<MinecraftServer>(TimerCallbackSerializer.INSTANCE, dynamic2.get("ScheduledEvents").asStream()), (CompoundTag)dynamic2.get("CustomBossEvents").orElseEmptyMap().getValue(), compoundTag2, levelInfo, generatorOptions, lifecycle);
+        return new LevelProperties(dataFixer, i, compoundTag, dynamic2.get("WasModded").asBoolean(false), dynamic2.get("SpawnX").asInt(0), dynamic2.get("SpawnY").asInt(0), dynamic2.get("SpawnZ").asInt(0), dynamic2.get("SpawnAngle").asFloat(0.0f), l, dynamic2.get("DayTime").asLong(l), saveVersionInfo.getLevelFormatVersion(), dynamic2.get("clearWeatherTime").asInt(0), dynamic2.get("rainTime").asInt(0), dynamic2.get("raining").asBoolean(false), dynamic2.get("thunderTime").asInt(0), dynamic2.get("thundering").asBoolean(false), dynamic2.get("initialized").asBoolean(true), dynamic2.get("DifficultyLocked").asBoolean(false), WorldBorder.Properties.fromDynamic(dynamic2, WorldBorder.DEFAULT_BORDER), dynamic2.get("WanderingTraderSpawnDelay").asInt(0), dynamic2.get("WanderingTraderSpawnChance").asInt(0), dynamic2.get("WanderingTraderId").read(DynamicSerializableUuid.field_25122).result().orElse(null), dynamic2.get("ServerBrands").asStream().flatMap(dynamic -> Util.stream(dynamic.asString().result())).collect(Collectors.toCollection(Sets::newLinkedHashSet)), new Timer<MinecraftServer>(TimerCallbackSerializer.INSTANCE, dynamic2.get("ScheduledEvents").asStream()), (CompoundTag)dynamic2.get("CustomBossEvents").orElseEmptyMap().getValue(), compoundTag2, levelInfo, generatorOptions, lifecycle);
     }
 
     @Override
@@ -147,33 +149,34 @@ SaveProperties {
         compoundTag.put("Version", compoundTag3);
         compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         RegistryReadingOps<Tag> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, dynamicRegistryManager);
-        GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.field_25425).resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error)).ifPresent(tag -> compoundTag.put("WorldGenSettings", (Tag)tag));
-        compoundTag.putInt("GameType", this.field_25030.getGameMode().getId());
+        GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error)).ifPresent(tag -> compoundTag.put("WorldGenSettings", (Tag)tag));
+        compoundTag.putInt("GameType", this.levelInfo.getGameMode().getId());
         compoundTag.putInt("SpawnX", this.spawnX);
         compoundTag.putInt("SpawnY", this.spawnY);
         compoundTag.putInt("SpawnZ", this.spawnZ);
+        compoundTag.putFloat("SpawnAngle", this.spawnAngle);
         compoundTag.putLong("Time", this.time);
         compoundTag.putLong("DayTime", this.timeOfDay);
         compoundTag.putLong("LastPlayed", Util.getEpochTimeMs());
-        compoundTag.putString("LevelName", this.field_25030.getLevelName());
+        compoundTag.putString("LevelName", this.levelInfo.getLevelName());
         compoundTag.putInt("version", 19133);
         compoundTag.putInt("clearWeatherTime", this.clearWeatherTime);
         compoundTag.putInt("rainTime", this.rainTime);
         compoundTag.putBoolean("raining", this.raining);
         compoundTag.putInt("thunderTime", this.thunderTime);
         compoundTag.putBoolean("thundering", this.thundering);
-        compoundTag.putBoolean("hardcore", this.field_25030.hasStructures());
-        compoundTag.putBoolean("allowCommands", this.field_25030.isHardcore());
+        compoundTag.putBoolean("hardcore", this.levelInfo.isHardcore());
+        compoundTag.putBoolean("allowCommands", this.levelInfo.areCommandsAllowed());
         compoundTag.putBoolean("initialized", this.initialized);
         this.worldBorder.toTag(compoundTag);
-        compoundTag.putByte("Difficulty", (byte)this.field_25030.getDifficulty().getId());
+        compoundTag.putByte("Difficulty", (byte)this.levelInfo.getDifficulty().getId());
         compoundTag.putBoolean("DifficultyLocked", this.difficultyLocked);
-        compoundTag.put("GameRules", this.field_25030.getGameRules().toNbt());
-        compoundTag.put("DragonFight", this.field_25031);
+        compoundTag.put("GameRules", this.levelInfo.getGameRules().toNbt());
+        compoundTag.put("DragonFight", this.dragonFight);
         if (compoundTag2 != null) {
             compoundTag.put("Player", compoundTag2);
         }
-        DataPackSettings.CODEC.encodeStart(NbtOps.INSTANCE, this.field_25030.method_29558()).result().ifPresent(tag -> compoundTag.put("DataPacks", (Tag)tag));
+        DataPackSettings.CODEC.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataPackSettings()).result().ifPresent(tag -> compoundTag.put("DataPacks", (Tag)tag));
         if (this.customBossEvents != null) {
             compoundTag.put("CustomBossEvents", this.customBossEvents);
         }
@@ -198,6 +201,11 @@ SaveProperties {
     @Override
     public int getSpawnZ() {
         return this.spawnZ;
+    }
+
+    @Override
+    public float getSpawnAngle() {
+        return this.spawnAngle;
     }
 
     @Override
@@ -245,25 +253,31 @@ SaveProperties {
     }
 
     @Override
+    public void setSpawnAngle(float angle) {
+        this.spawnAngle = angle;
+    }
+
+    @Override
     public void setTime(long time) {
         this.time = time;
     }
 
     @Override
-    public void setTimeOfDay(long time) {
-        this.timeOfDay = time;
+    public void setTimeOfDay(long timeOfDay) {
+        this.timeOfDay = timeOfDay;
     }
 
     @Override
-    public void setSpawnPos(BlockPos pos) {
+    public void setSpawnPos(BlockPos pos, float angle) {
         this.spawnX = pos.getX();
         this.spawnY = pos.getY();
         this.spawnZ = pos.getZ();
+        this.spawnAngle = angle;
     }
 
     @Override
     public String getLevelName() {
-        return this.field_25030.getLevelName();
+        return this.levelInfo.getLevelName();
     }
 
     @Override
@@ -323,22 +337,22 @@ SaveProperties {
 
     @Override
     public GameMode getGameMode() {
-        return this.field_25030.getGameMode();
+        return this.levelInfo.getGameMode();
     }
 
     @Override
     public void setGameMode(GameMode gameMode) {
-        this.field_25030 = this.field_25030.method_28382(gameMode);
+        this.levelInfo = this.levelInfo.withGameMode(gameMode);
     }
 
     @Override
     public boolean isHardcore() {
-        return this.field_25030.hasStructures();
+        return this.levelInfo.isHardcore();
     }
 
     @Override
     public boolean areCommandsAllowed() {
-        return this.field_25030.isHardcore();
+        return this.levelInfo.areCommandsAllowed();
     }
 
     @Override
@@ -353,7 +367,7 @@ SaveProperties {
 
     @Override
     public GameRules getGameRules() {
-        return this.field_25030.getGameRules();
+        return this.levelInfo.getGameRules();
     }
 
     @Override
@@ -368,12 +382,12 @@ SaveProperties {
 
     @Override
     public Difficulty getDifficulty() {
-        return this.field_25030.getDifficulty();
+        return this.levelInfo.getDifficulty();
     }
 
     @Override
     public void setDifficulty(Difficulty difficulty) {
-        this.field_25030 = this.field_25030.method_28381(difficulty);
+        this.levelInfo = this.levelInfo.withDifficulty(difficulty);
     }
 
     @Override
@@ -392,14 +406,14 @@ SaveProperties {
     }
 
     @Override
-    public void populateCrashReport(CrashReportSection reportSection) {
-        ServerWorldProperties.super.populateCrashReport(reportSection);
-        SaveProperties.super.populateCrashReport(reportSection);
+    public void populateCrashReport(CrashReportSection crashReportSection) {
+        ServerWorldProperties.super.populateCrashReport(crashReportSection);
+        SaveProperties.super.populateCrashReport(crashReportSection);
     }
 
     @Override
     public GeneratorOptions getGeneratorOptions() {
-        return this.field_25425;
+        return this.generatorOptions;
     }
 
     @Override
@@ -409,23 +423,23 @@ SaveProperties {
     }
 
     @Override
-    public CompoundTag method_29036() {
-        return this.field_25031;
+    public CompoundTag getDragonFight() {
+        return this.dragonFight;
     }
 
     @Override
-    public void method_29037(CompoundTag compoundTag) {
-        this.field_25031 = compoundTag;
+    public void setDragonFight(CompoundTag tag) {
+        this.dragonFight = tag;
     }
 
     @Override
     public DataPackSettings method_29589() {
-        return this.field_25030.method_29558();
+        return this.levelInfo.getDataPackSettings();
     }
 
     @Override
     public void method_29590(DataPackSettings dataPackSettings) {
-        this.field_25030 = this.field_25030.method_29557(dataPackSettings);
+        this.levelInfo = this.levelInfo.withDataPackSettings(dataPackSettings);
     }
 
     @Override
@@ -488,7 +502,7 @@ SaveProperties {
     @Override
     @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo() {
-        return this.field_25030.method_28385();
+        return this.levelInfo.withCopiedGameRules();
     }
 }
 

@@ -521,13 +521,13 @@ extends WaterCreatureEntity {
             if (this.field_6758 > DolphinEntity.this.age) {
                 return false;
             }
-            List<ItemEntity> list = DolphinEntity.this.world.getEntities(ItemEntity.class, DolphinEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), CAN_TAKE);
+            List<ItemEntity> list = DolphinEntity.this.world.getEntitiesByClass(ItemEntity.class, DolphinEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), CAN_TAKE);
             return !list.isEmpty() || !DolphinEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty();
         }
 
         @Override
         public void start() {
-            List<ItemEntity> list = DolphinEntity.this.world.getEntities(ItemEntity.class, DolphinEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), CAN_TAKE);
+            List<ItemEntity> list = DolphinEntity.this.world.getEntitiesByClass(ItemEntity.class, DolphinEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), CAN_TAKE);
             if (!list.isEmpty()) {
                 DolphinEntity.this.getNavigation().startMovingTo(list.get(0), 1.2f);
                 DolphinEntity.this.playSound(SoundEvents.ENTITY_DOLPHIN_PLAY, 1.0f, 1.0f);
@@ -547,7 +547,7 @@ extends WaterCreatureEntity {
 
         @Override
         public void tick() {
-            List<ItemEntity> list = DolphinEntity.this.world.getEntities(ItemEntity.class, DolphinEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), CAN_TAKE);
+            List<ItemEntity> list = DolphinEntity.this.world.getEntitiesByClass(ItemEntity.class, DolphinEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), CAN_TAKE);
             ItemStack itemStack = DolphinEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
             if (!itemStack.isEmpty()) {
                 this.spitOutItem(itemStack);

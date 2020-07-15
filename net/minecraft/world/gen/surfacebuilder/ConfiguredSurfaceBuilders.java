@@ -35,8 +35,8 @@ public class ConfiguredSurfaceBuilders {
     public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> WARPED_FOREST = ConfiguredSurfaceBuilders.register("warped_forest", SurfaceBuilder.NETHER_FOREST.method_30478(SurfaceBuilder.WARPED_NYLIUM_CONFIG));
     public static final ConfiguredSurfaceBuilder<TernarySurfaceConfig> WOODED_BADLANDS = ConfiguredSurfaceBuilders.register("wooded_badlands", SurfaceBuilder.WOODED_BADLANDS.method_30478(SurfaceBuilder.BADLANDS_CONFIG));
 
-    private static <SC extends SurfaceConfig> ConfiguredSurfaceBuilder<SC> register(String name, ConfiguredSurfaceBuilder<SC> configuredSurfaceBuilder) {
-        return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_SURFACE_BUILDER, name, configuredSurfaceBuilder);
+    private static <SC extends SurfaceConfig> ConfiguredSurfaceBuilder<SC> register(String id, ConfiguredSurfaceBuilder<SC> configuredSurfaceBuilder) {
+        return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_SURFACE_BUILDER, id, configuredSurfaceBuilder);
     }
 }
 

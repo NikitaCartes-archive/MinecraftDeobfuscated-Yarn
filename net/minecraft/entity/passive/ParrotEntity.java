@@ -230,7 +230,7 @@ implements Flutterer {
         if (!parrot.isAlive() || parrot.isSilent() || world.random.nextInt(2) != 0) {
             return false;
         }
-        List<MobEntity> list = world.getEntities(MobEntity.class, parrot.getBoundingBox().expand(20.0), CAN_IMITATE);
+        List<MobEntity> list = world.getEntitiesByClass(MobEntity.class, parrot.getBoundingBox().expand(20.0), CAN_IMITATE);
         if (!list.isEmpty() && !(mobEntity = list.get(world.random.nextInt(list.size()))).isSilent()) {
             SoundEvent soundEvent = ParrotEntity.getSound(mobEntity.getType());
             world.playSound(null, parrot.getX(), parrot.getY(), parrot.getZ(), soundEvent, parrot.getSoundCategory(), 0.7f, ParrotEntity.getSoundPitch(world.random));

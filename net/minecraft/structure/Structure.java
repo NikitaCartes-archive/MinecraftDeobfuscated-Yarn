@@ -132,7 +132,7 @@ public class Structure {
     }
 
     private void addEntitiesFromWorld(World world, BlockPos firstCorner, BlockPos secondCorner) {
-        List<Entity> list = world.getEntities(Entity.class, new Box(firstCorner, secondCorner), entity -> !(entity instanceof PlayerEntity));
+        List<Entity> list = world.getEntitiesByClass(Entity.class, new Box(firstCorner, secondCorner), entity -> !(entity instanceof PlayerEntity));
         this.entities.clear();
         for (Entity entity2 : list) {
             Vec3d vec3d = new Vec3d(entity2.getX() - (double)firstCorner.getX(), entity2.getY() - (double)firstCorner.getY(), entity2.getZ() - (double)firstCorner.getZ());

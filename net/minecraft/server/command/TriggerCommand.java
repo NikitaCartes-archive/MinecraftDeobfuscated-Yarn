@@ -15,7 +15,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.command.arguments.ObjectiveArgumentType;
+import net.minecraft.command.argument.ObjectiveArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;

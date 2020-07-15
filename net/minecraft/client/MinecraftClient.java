@@ -1440,7 +1440,7 @@ WindowEventHandler {
     }
 
     public void method_29607(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
-        this.startIntegratedServer(worldName, registryTracker, session -> levelInfo.method_29558(), (session, impl2, resourceManager, dataPackSettings) -> {
+        this.startIntegratedServer(worldName, registryTracker, session -> levelInfo.getDataPackSettings(), (session, impl2, resourceManager, dataPackSettings) -> {
             RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, resourceManager, registryTracker);
             DataResult<SimpleRegistry<DimensionOptions>> dataResult = registryOps.loadToRegistry(generatorOptions.getDimensionMap(), Registry.DIMENSION_OPTIONS, DimensionOptions.CODEC);
             SimpleRegistry<DimensionOptions> simpleRegistry = dataResult.resultOrPartial(LOGGER::error).orElse(generatorOptions.getDimensionMap());

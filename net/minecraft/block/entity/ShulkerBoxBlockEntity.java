@@ -124,7 +124,7 @@ Tickable {
         }
         Direction direction = blockState.get(ShulkerBoxBlock.FACING);
         Box box = this.getCollisionBox(direction).offset(this.pos);
-        List<Entity> list = this.world.getEntities(null, box);
+        List<Entity> list = this.world.getOtherEntities(null, box);
         if (list.isEmpty()) {
             return;
         }

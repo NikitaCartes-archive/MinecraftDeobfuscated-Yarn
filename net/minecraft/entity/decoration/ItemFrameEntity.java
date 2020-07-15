@@ -126,7 +126,7 @@ extends AbstractDecorationEntity {
         if (!(blockState.getMaterial().isSolid() || this.facing.getAxis().isHorizontal() && AbstractRedstoneGateBlock.isRedstoneGate(blockState))) {
             return false;
         }
-        return this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty();
+        return this.world.getOtherEntities(this, this.getBoundingBox(), PREDICATE).isEmpty();
     }
 
     @Override

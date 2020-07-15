@@ -164,7 +164,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.level = level;
             this.client = MinecraftClient.getInstance();
             String string = level.getName();
-            this.iconLocation = new Identifier("minecraft", "worlds/" + Util.method_30309(string, Identifier::method_29184) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon");
+            this.iconLocation = new Identifier("minecraft", "worlds/" + Util.replaceInvalidChars(string, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon");
             this.iconFile = level.getFile();
             if (!this.iconFile.isFile()) {
                 this.iconFile = null;
@@ -323,7 +323,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
                  MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);){
                 LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
-                DataPackSettings dataPackSettings = levelInfo.method_29558();
+                DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
                 GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
                 Path path = CreateWorldScreen.method_29685(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
                 if (generatorOptions.isLegacyCustomizedType()) {

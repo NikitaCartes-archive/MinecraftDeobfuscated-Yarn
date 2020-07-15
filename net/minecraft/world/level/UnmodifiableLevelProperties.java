@@ -41,6 +41,11 @@ implements ServerWorldProperties {
     }
 
     @Override
+    public float getSpawnAngle() {
+        return this.properties.getSpawnAngle();
+    }
+
+    @Override
     public long getTime() {
         return this.properties.getTime();
     }
@@ -102,15 +107,19 @@ implements ServerWorldProperties {
     }
 
     @Override
+    public void setSpawnAngle(float angle) {
+    }
+
+    @Override
     public void setTime(long time) {
     }
 
     @Override
-    public void setTimeOfDay(long time) {
+    public void setTimeOfDay(long timeOfDay) {
     }
 
     @Override
-    public void setSpawnPos(BlockPos pos) {
+    public void setSpawnPos(BlockPos pos, float angle) {
     }
 
     @Override
@@ -204,9 +213,9 @@ implements ServerWorldProperties {
     }
 
     @Override
-    public void populateCrashReport(CrashReportSection reportSection) {
-        reportSection.add("Derived", true);
-        this.properties.populateCrashReport(reportSection);
+    public void populateCrashReport(CrashReportSection crashReportSection) {
+        crashReportSection.add("Derived", true);
+        this.properties.populateCrashReport(crashReportSection);
     }
 }
 

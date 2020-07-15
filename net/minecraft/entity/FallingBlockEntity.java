@@ -185,7 +185,7 @@ extends Entity {
     public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
         int i;
         if (this.hurtEntities && (i = MathHelper.ceil(fallDistance - 1.0f)) > 0) {
-            ArrayList<Entity> list = Lists.newArrayList(this.world.getEntities(this, this.getBoundingBox()));
+            ArrayList<Entity> list = Lists.newArrayList(this.world.getOtherEntities(this, this.getBoundingBox()));
             boolean bl = this.block.isIn(BlockTags.ANVIL);
             DamageSource damageSource = bl ? DamageSource.ANVIL : DamageSource.FALLING_BLOCK;
             for (Entity entity : list) {

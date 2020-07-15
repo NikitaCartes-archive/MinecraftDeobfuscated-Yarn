@@ -121,7 +121,7 @@ extends RealmsScreen {
     private List<KeyCombo> keyCombos;
     private int clicks;
     private ReentrantLock connectLock = new ReentrantLock();
-    private class_5220 field_24198;
+    private HoverState hoverState;
     private ButtonWidget showPopupButton;
     private ButtonWidget pendingInvitesButton;
     private ButtonWidget newsButton;
@@ -607,7 +607,7 @@ extends RealmsScreen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.field_24198 = class_5220.field_24199;
+        this.hoverState = HoverState.NONE;
         this.toolTip = null;
         this.renderBackground(matrices);
         this.realmSelectionList.render(matrices, mouseX, mouseY, delta);
@@ -871,7 +871,7 @@ extends RealmsScreen {
         DrawableHelper.drawTexture(matrixStack, i, j, f, 0.0f, 28, 28, 56, 28);
         if (bl) {
             this.method_27452(new TranslatableText("mco.selectServer.leave"));
-            this.field_24198 = class_5220.field_24201;
+            this.hoverState = HoverState.LEAVE;
         }
     }
 
@@ -886,7 +886,7 @@ extends RealmsScreen {
         DrawableHelper.drawTexture(matrixStack, i, j, f, 0.0f, 28, 28, 56, 28);
         if (bl) {
             this.method_27452(new TranslatableText("mco.selectServer.configure"));
-            this.field_24198 = class_5220.field_24202;
+            this.hoverState = HoverState.CONFIGURE;
         }
     }
 
@@ -1156,7 +1156,7 @@ extends RealmsScreen {
                 boolean bl = false;
                 if (k >= q && k < q + o && l > r && l <= r + 16 & l < RealmsMainScreen.this.height - 40 && l > 32 && !RealmsMainScreen.this.shouldShowPopup()) {
                     bl = true;
-                    RealmsMainScreen.this.field_24198 = class_5220.field_24200;
+                    RealmsMainScreen.this.hoverState = HoverState.EXPIRED;
                 }
                 int s = bl ? 2 : 1;
                 DrawableHelper.drawTexture(matrixStack, q, r, 0.0f, 46 + s * 20, o / 2, 8, 256, 256);
@@ -1363,13 +1363,13 @@ extends RealmsScreen {
             } else {
                 RealmsMainScreen.this.selectedServerId = realmsServer.id;
             }
-            if (RealmsMainScreen.this.field_24198 == class_5220.field_24202) {
+            if (RealmsMainScreen.this.hoverState == HoverState.CONFIGURE) {
                 RealmsMainScreen.this.selectedServerId = realmsServer.id;
                 RealmsMainScreen.this.configureClicked(realmsServer);
-            } else if (RealmsMainScreen.this.field_24198 == class_5220.field_24201) {
+            } else if (RealmsMainScreen.this.hoverState == HoverState.LEAVE) {
                 RealmsMainScreen.this.selectedServerId = realmsServer.id;
                 RealmsMainScreen.this.leaveClicked(realmsServer);
-            } else if (RealmsMainScreen.this.field_24198 == class_5220.field_24200) {
+            } else if (RealmsMainScreen.this.hoverState == HoverState.EXPIRED) {
                 RealmsMainScreen.this.onRenew();
             }
         }
@@ -1391,11 +1391,11 @@ extends RealmsScreen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static enum class_5220 {
-        field_24199,
-        field_24200,
-        field_24201,
-        field_24202;
+    static enum HoverState {
+        NONE,
+        EXPIRED,
+        LEAVE,
+        CONFIGURE;
 
     }
 }

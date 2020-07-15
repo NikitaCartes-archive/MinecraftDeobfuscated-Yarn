@@ -132,7 +132,7 @@ extends Block {
         BlockState blockState = world.getBlockState(pos);
         boolean bl = blockState.get(POWERED);
         boolean bl2 = false;
-        List<Entity> list = world.getEntities(null, blockState.getOutlineShape(world, pos).getBoundingBox().offset(pos));
+        List<Entity> list = world.getOtherEntities(null, blockState.getOutlineShape(world, pos).getBoundingBox().offset(pos));
         if (!list.isEmpty()) {
             for (Entity entity : list) {
                 if (entity.canAvoidTraps()) continue;

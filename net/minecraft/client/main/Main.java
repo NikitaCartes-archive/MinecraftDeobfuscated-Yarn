@@ -128,7 +128,7 @@ public class Main {
         CrashReport.initCrashReport();
         Bootstrap.initialize();
         Bootstrap.logMissing();
-        Util.method_29476();
+        Util.startTimerHack();
         Session session = new Session((String)optionSpec11.value(optionSet), string6, (String)optionSpec13.value(optionSet), (String)optionSpec22.value(optionSet));
         RunArgs runArgs = new RunArgs(new RunArgs.Network(session, propertyMap, propertyMap2, proxy), new WindowSettings(i, j, optionalInt, optionalInt2, bl), new RunArgs.Directories(file, file3, file2, string7), new RunArgs.Game(bl2, string4, string5, bl3, bl4), new RunArgs.AutoConnect(string8, integer));
         Thread thread = new Thread("Client Shutdown Thread"){

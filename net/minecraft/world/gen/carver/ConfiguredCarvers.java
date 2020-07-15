@@ -17,8 +17,8 @@ public class ConfiguredCarvers {
     public static final ConfiguredCarver<ProbabilityConfig> UNDERWATER_CAVE = ConfiguredCarvers.register("underwater_cave", Carver.UNDERWATER_CAVE.method_28614(new ProbabilityConfig(0.06666667f)));
     public static final ConfiguredCarver<ProbabilityConfig> NETHER_CAVE = ConfiguredCarvers.register("nether_cave", Carver.NETHER_CAVE.method_28614(new ProbabilityConfig(0.2f)));
 
-    private static <WC extends CarverConfig> ConfiguredCarver<WC> register(String name, ConfiguredCarver<WC> configuredCarver) {
-        return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_CARVER, name, configuredCarver);
+    private static <WC extends CarverConfig> ConfiguredCarver<WC> register(String id, ConfiguredCarver<WC> configuredCarver) {
+        return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_CARVER, id, configuredCarver);
     }
 }
 

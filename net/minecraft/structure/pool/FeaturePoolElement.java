@@ -84,7 +84,7 @@ extends StructurePoolElement {
     }
 
     public String toString() {
-        return "Feature[" + Registry.FEATURE.getId((Feature<?>)this.feature.get().method_30380()) + "]";
+        return "Feature[" + Registry.FEATURE.getId((Feature<?>)this.feature.get().getFeature()) + "]";
     }
 }
 

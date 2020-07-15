@@ -50,7 +50,7 @@ public abstract class ChunkTicketManager {
     private final Set<ChunkHolder> chunkHolders = Sets.newHashSet();
     private final ChunkTaskPrioritySystem levelUpdateListener;
     private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> playerTicketThrottler;
-    private final MessageListener<ChunkTaskPrioritySystem.SorterMessage> playerTicketThrottlerSorter;
+    private final MessageListener<ChunkTaskPrioritySystem.UnblockingMessage> playerTicketThrottlerUnblocker;
     private final LongSet chunkPositions = new LongOpenHashSet();
     private final Executor mainThreadExecutor;
     private long age;
@@ -60,7 +60,7 @@ public abstract class ChunkTicketManager {
         MessageListener<Runnable> messageListener = MessageListener.create("player ticket throttler", mainThreadExecutor::execute);
         this.levelUpdateListener = chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(messageListener), workerExecutor, 4);
         this.playerTicketThrottler = chunkTaskPrioritySystem.createExecutor(messageListener, true);
-        this.playerTicketThrottlerSorter = chunkTaskPrioritySystem.createSorterExecutor(messageListener);
+        this.playerTicketThrottlerUnblocker = chunkTaskPrioritySystem.createUnblockingExecutor(messageListener);
         this.mainThreadExecutor = mainThreadExecutor;
     }
 
@@ -113,7 +113,7 @@ public abstract class ChunkTicketManager {
                     throw new IllegalStateException();
                 }
                 CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder2.getEntityTickingFuture();
-                completableFuture.thenAccept(either -> this.mainThreadExecutor.execute(() -> this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> {}, l, false))));
+                completableFuture.thenAccept(either -> this.mainThreadExecutor.execute(() -> this.playerTicketThrottlerUnblocker.send(ChunkTaskPrioritySystem.createUnblockingMessage(() -> {}, l, false))));
             }
             this.chunkPositions.clear();
         }
@@ -296,11 +296,11 @@ public abstract class ChunkTicketManager {
                             ChunkTicketManager.this.addTicket(pos, chunkTicket);
                             ChunkTicketManager.this.chunkPositions.add(pos);
                         } else {
-                            ChunkTicketManager.this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> {}, pos, false));
+                            ChunkTicketManager.this.playerTicketThrottlerUnblocker.send(ChunkTaskPrioritySystem.createUnblockingMessage(() -> {}, pos, false));
                         }
                     }), pos, () -> distance));
                 } else {
-                    ChunkTicketManager.this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> ChunkTicketManager.this.removeTicket(pos, chunkTicket)), pos, true));
+                    ChunkTicketManager.this.playerTicketThrottlerUnblocker.send(ChunkTaskPrioritySystem.createUnblockingMessage(() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> ChunkTicketManager.this.removeTicket(pos, chunkTicket)), pos, true));
                 }
             }
         }

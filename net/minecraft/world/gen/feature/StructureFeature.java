@@ -91,7 +91,8 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = StructureFeature.register("Nether_Fossil", new NetherFossilFeature(DefaultFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION);
     public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = StructureFeature.register("Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final List<StructureFeature<?>> field_24861 = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
-    private static final Map<String, String> field_25839 = ImmutableMap.builder().put("nvi", "jigsaw").put("pcp", "jigsaw").put("bastionremnant", "jigsaw").put("runtime", "jigsaw").build();
+    private static final Identifier field_26362 = new Identifier("jigsaw");
+    private static final Map<Identifier, Identifier> field_25839 = ImmutableMap.builder().put(new Identifier("nvi"), field_26362).put(new Identifier("pcp"), field_26362).put(new Identifier("bastionremnant"), field_26362).put(new Identifier("runtime"), field_26362).build();
     private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
     private static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
@@ -136,10 +137,11 @@ public abstract class StructureFeature<C extends FeatureConfig> {
             for (int l = 0; l < listTag.size(); ++l) {
                 CompoundTag compoundTag = listTag.getCompound(l);
                 String string2 = compoundTag.getString("id").toLowerCase(Locale.ROOT);
-                String string3 = field_25839.getOrDefault(string2, string2);
-                StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string3));
+                Identifier identifier = new Identifier(string2);
+                Identifier identifier2 = field_25839.getOrDefault(identifier, identifier);
+                StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(identifier2);
                 if (structurePieceType == null) {
-                    LOGGER.error("Unknown structure piece id: {}", (Object)string3);
+                    LOGGER.error("Unknown structure piece id: {}", (Object)identifier2);
                     continue;
                 }
                 try {
@@ -147,7 +149,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     structureStart.getChildren().add(structurePiece);
                     continue;
                 } catch (Exception exception) {
-                    LOGGER.error("Exception loading structure piece with id {}", (Object)string3, (Object)exception);
+                    LOGGER.error("Exception loading structure piece with id {}", (Object)identifier2, (Object)exception);
                 }
             }
             return structureStart;
@@ -173,7 +175,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * <p>
      * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
      * 
-     * @return null if no structure could be found within the given search radius.
+     * @return {@code null} if no structure could be found within the given search radius
      * 
      * @param searchRadius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
      */
@@ -250,7 +252,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 
     /**
      * Checks if this structure can <em>actually</em> be placed at a potential structure position determined via
-     * {@link #getStartChunk}. Specific structures override this method to reduce the spawn propability or
+     * {@link #getStartChunk}. Specific structures override this method to reduce the spawn probability or
      * restrict the spawn in some other way.
      */
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos, C featureConfig) {

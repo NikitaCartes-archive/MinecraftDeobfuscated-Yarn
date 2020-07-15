@@ -21,6 +21,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
+import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
@@ -46,6 +47,7 @@ public class BuiltinRegistries {
     public static final Registry<ImmutableList<StructureProcessor>> PROCESSOR_LIST = BuiltinRegistries.addRegistry(Registry.PROCESSOR_LIST_WORLDGEN, () -> ProcessorLists.ZOMBIE_PLAINS);
     public static final Registry<StructurePool> TEMPLATE_POOL = BuiltinRegistries.addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, () -> TemplatePools.EMPTY);
     public static final Registry<Biome> BIOME = BuiltinRegistries.addRegistry(Registry.BIOME_KEY, () -> Biomes.DEFAULT);
+    public static final Registry<ChunkGeneratorType> field_26375 = BuiltinRegistries.addRegistry(Registry.NOISE_SETTINGS_WORLDGEN, () -> ChunkGeneratorType.field_26355);
 
     private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<T> defaultValueSupplier) {
         return BuiltinRegistries.addRegistry(registryRef, Lifecycle.experimental(), defaultValueSupplier);

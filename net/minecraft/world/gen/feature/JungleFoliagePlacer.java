@@ -9,10 +9,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
@@ -22,8 +22,8 @@ extends FoliagePlacer {
     public static final Codec<JungleFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> JungleFoliagePlacer.method_30411(instance).and(((MapCodec)Codec.intRange(0, 16).fieldOf("height")).forGetter(jungleFoliagePlacer -> jungleFoliagePlacer.height)).apply((Applicative<JungleFoliagePlacer, ?>)instance, JungleFoliagePlacer::new));
     protected final int height;
 
-    public JungleFoliagePlacer(class_5428 arg, class_5428 arg2, int i) {
-        super(arg, arg2);
+    public JungleFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2, int i) {
+        super(uniformIntDistribution, uniformIntDistribution2);
         this.height = i;
     }
 

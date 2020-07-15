@@ -30,10 +30,10 @@ public interface SaveProperties {
 
     public void addServerBrand(String var1, boolean var2);
 
-    default public void populateCrashReport(CrashReportSection reportSection) {
-        reportSection.add("Known server brands", () -> String.join((CharSequence)", ", this.getServerBrands()));
-        reportSection.add("Level was modded", () -> Boolean.toString(this.isModded()));
-        reportSection.add("Level storage version", () -> {
+    default public void populateCrashReport(CrashReportSection crashReportSection) {
+        crashReportSection.add("Known server brands", () -> String.join((CharSequence)", ", this.getServerBrands()));
+        crashReportSection.add("Level was modded", () -> Boolean.toString(this.isModded()));
+        crashReportSection.add("Level storage version", () -> {
             int i = this.getVersion();
             return String.format("0x%05X - %s", i, this.getFormatName(i));
         });
@@ -87,9 +87,9 @@ public interface SaveProperties {
 
     public CompoundTag getPlayerData();
 
-    public CompoundTag method_29036();
+    public CompoundTag getDragonFight();
 
-    public void method_29037(CompoundTag var1);
+    public void setDragonFight(CompoundTag var1);
 
     public GeneratorOptions getGeneratorOptions();
 

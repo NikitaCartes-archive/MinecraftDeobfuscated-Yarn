@@ -117,7 +117,7 @@ implements BlockEntityProvider {
     }
 
     private boolean isFree(World world, BlockPos pos) {
-        List<VillagerEntity> list = world.getEntities(VillagerEntity.class, new Box(pos), LivingEntity::isSleeping);
+        List<VillagerEntity> list = world.getEntitiesByClass(VillagerEntity.class, new Box(pos), LivingEntity::isSleeping);
         if (list.isEmpty()) {
             return false;
         }
@@ -263,7 +263,7 @@ implements BlockEntityProvider {
         Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
         Box box = type.createSimpleBoundingBox(vec3d.x, vec3d.y, vec3d.z);
         if (world.doesNotCollide(box)) {
-            if (world.method_29546(box.stretch(0.0, -0.2f, 0.0)).noneMatch(type::method_29496)) {
+            if (world.method_29546(box.stretch(0.0, -0.2f, 0.0)).noneMatch(type::isInvalidSpawn)) {
                 return Optional.of(vec3d);
             }
         }

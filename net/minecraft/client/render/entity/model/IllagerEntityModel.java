@@ -12,6 +12,7 @@ import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
@@ -112,7 +113,11 @@ ModelWithHead {
         }
         IllagerEntity.State state = ((IllagerEntity)illagerEntity).getState();
         if (state == IllagerEntity.State.ATTACKING) {
-            CrossbowPosing.method_29351(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, this.handSwingProgress, h);
+            if (((LivingEntity)illagerEntity).getMainHandStack().isEmpty()) {
+                CrossbowPosing.method_29352(this.leftAttackingArm, this.rightAttackingArm, true, this.handSwingProgress, h);
+            } else {
+                CrossbowPosing.method_29351(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, this.handSwingProgress, h);
+            }
         } else if (state == IllagerEntity.State.SPELLCASTING) {
             this.rightAttackingArm.pivotZ = 0.0f;
             this.rightAttackingArm.pivotX = -5.0f;

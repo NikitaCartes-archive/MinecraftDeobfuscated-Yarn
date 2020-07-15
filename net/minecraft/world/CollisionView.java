@@ -7,6 +7,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
@@ -63,6 +65,11 @@ extends BlockView {
 
     default public Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box) {
         return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box), false);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    default public boolean method_30635(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
+        return this.method_30030(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
     }
 
     default public Stream<VoxelShape> method_30030(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {

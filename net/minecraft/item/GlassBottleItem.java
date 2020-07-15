@@ -33,7 +33,7 @@ extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        List<AreaEffectCloudEntity> list = world.getEntities(AreaEffectCloudEntity.class, user.getBoundingBox().expand(2.0), entity -> entity != null && entity.isAlive() && entity.getOwner() instanceof EnderDragonEntity);
+        List<AreaEffectCloudEntity> list = world.getEntitiesByClass(AreaEffectCloudEntity.class, user.getBoundingBox().expand(2.0), entity -> entity != null && entity.isAlive() && entity.getOwner() instanceof EnderDragonEntity);
         ItemStack itemStack = user.getStackInHand(hand);
         if (!list.isEmpty()) {
             AreaEffectCloudEntity areaEffectCloudEntity = list.get(0);

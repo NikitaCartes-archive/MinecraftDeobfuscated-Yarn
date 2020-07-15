@@ -6,16 +6,16 @@ package net.minecraft.world.gen.decorator;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.stream.Stream;
-import net.minecraft.class_5432;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.decorator.Decoratable;
 import net.minecraft.world.gen.decorator.DecoratedDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.DecoratorContext;
 
 public class ConfiguredDecorator<DC extends DecoratorConfig>
-implements class_5432<ConfiguredDecorator<?>> {
+implements Decoratable<ConfiguredDecorator<?>> {
     public static final Codec<ConfiguredDecorator<?>> CODEC = Registry.DECORATOR.dispatch("name", configuredDecorator -> configuredDecorator.decorator, Decorator::getCodec);
     private final Decorator<DC> decorator;
     private final DC config;
@@ -34,7 +34,7 @@ implements class_5432<ConfiguredDecorator<?>> {
     }
 
     @Override
-    public ConfiguredDecorator<?> method_30374(ConfiguredDecorator<?> configuredDecorator) {
+    public ConfiguredDecorator<?> decorate(ConfiguredDecorator<?> configuredDecorator) {
         return new ConfiguredDecorator<DecoratedDecoratorConfig>(Decorator.DECORATED, new DecoratedDecoratorConfig(configuredDecorator, this));
     }
 
@@ -43,8 +43,8 @@ implements class_5432<ConfiguredDecorator<?>> {
     }
 
     @Override
-    public /* synthetic */ Object method_30374(ConfiguredDecorator configuredDecorator) {
-        return this.method_30374(configuredDecorator);
+    public /* synthetic */ Object decorate(ConfiguredDecorator decorator) {
+        return this.decorate(decorator);
     }
 }
 

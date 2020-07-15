@@ -90,7 +90,7 @@ implements Tickable {
         if (bl2) {
             --this.teleportCooldown;
         } else if (!this.world.isClient) {
-            List<Entity> list = this.world.getEntities(Entity.class, new Box(this.getPos()), EndGatewayBlockEntity::method_30276);
+            List<Entity> list = this.world.getEntitiesByClass(Entity.class, new Box(this.getPos()), EndGatewayBlockEntity::method_30276);
             if (!list.isEmpty()) {
                 this.tryTeleportingEntity(list.get(this.world.random.nextInt(list.size())));
             }

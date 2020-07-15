@@ -328,7 +328,7 @@ implements Monster {
             if (!this.canStart()) {
                 return false;
             }
-            if (PhantomEntity.this.age % 20 == 0 && !(list = PhantomEntity.this.world.getEntities(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY)).isEmpty()) {
+            if (PhantomEntity.this.age % 20 == 0 && !(list = PhantomEntity.this.world.getEntitiesByClass(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY)).isEmpty()) {
                 for (CatEntity catEntity : list) {
                     catEntity.hiss();
                 }

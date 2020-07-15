@@ -118,7 +118,7 @@ implements Tickable {
             return;
         }
         Box box = this.offsetHeadBox(voxelShape.getBoundingBox());
-        List<Entity> list = this.world.getEntities(null, Boxes.stretch(box, direction, d).union(box));
+        List<Entity> list = this.world.getOtherEntities(null, Boxes.stretch(box, direction, d).union(box));
         if (list.isEmpty()) {
             return;
         }
@@ -179,7 +179,7 @@ implements Tickable {
         double d = this.pushedBlock.getCollisionShape(this.world, this.pos).getMax(Direction.Axis.Y);
         Box box = this.offsetHeadBox(new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0));
         double e = f - this.progress;
-        List<Entity> list = this.world.getEntities((Entity)null, box, entity -> PistonBlockEntity.method_23671(box, entity));
+        List<Entity> list = this.world.getOtherEntities(null, box, entity -> PistonBlockEntity.method_23671(box, entity));
         for (Entity entity2 : list) {
             PistonBlockEntity.method_23672(direction, entity2, e, direction);
         }

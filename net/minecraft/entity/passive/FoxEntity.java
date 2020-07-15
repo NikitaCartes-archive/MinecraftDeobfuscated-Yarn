@@ -577,7 +577,7 @@ extends AnimalEntity {
         if (this.isSleeping()) {
             return SoundEvents.ENTITY_FOX_SLEEP;
         }
-        if (!this.world.isDay() && this.random.nextFloat() < 0.1f && (list = this.world.getEntities(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR)).isEmpty()) {
+        if (!this.world.isDay() && this.random.nextFloat() < 0.1f && (list = this.world.getEntitiesByClass(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR)).isEmpty()) {
             return SoundEvents.ENTITY_FOX_SCREECH;
         }
         return SoundEvents.ENTITY_FOX_AMBIENT;
@@ -1338,13 +1338,13 @@ extends AnimalEntity {
             if (FoxEntity.this.getRandom().nextInt(10) != 0) {
                 return false;
             }
-            List<ItemEntity> list = FoxEntity.this.world.getEntities(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PICKABLE_DROP_FILTER);
+            List<ItemEntity> list = FoxEntity.this.world.getEntitiesByClass(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PICKABLE_DROP_FILTER);
             return !list.isEmpty() && FoxEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty();
         }
 
         @Override
         public void tick() {
-            List<ItemEntity> list = FoxEntity.this.world.getEntities(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PICKABLE_DROP_FILTER);
+            List<ItemEntity> list = FoxEntity.this.world.getEntitiesByClass(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PICKABLE_DROP_FILTER);
             ItemStack itemStack = FoxEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
             if (itemStack.isEmpty() && !list.isEmpty()) {
                 FoxEntity.this.getNavigation().startMovingTo(list.get(0), 1.2f);
@@ -1353,7 +1353,7 @@ extends AnimalEntity {
 
         @Override
         public void start() {
-            List<ItemEntity> list = FoxEntity.this.world.getEntities(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PICKABLE_DROP_FILTER);
+            List<ItemEntity> list = FoxEntity.this.world.getEntitiesByClass(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PICKABLE_DROP_FILTER);
             if (!list.isEmpty()) {
                 FoxEntity.this.getNavigation().startMovingTo(list.get(0), 1.2f);
             }

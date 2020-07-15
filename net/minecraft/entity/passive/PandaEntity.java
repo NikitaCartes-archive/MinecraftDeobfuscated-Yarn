@@ -730,7 +730,7 @@ extends AnimalEntity {
             if (this.startAge > PandaEntity.this.age || PandaEntity.this.isBaby() || PandaEntity.this.isTouchingWater() || !PandaEntity.this.isIdle() || PandaEntity.this.getAskForBambooTicks() > 0) {
                 return false;
             }
-            List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), IS_FOOD);
+            List<ItemEntity> list = PandaEntity.this.world.getEntitiesByClass(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), IS_FOOD);
             return !list.isEmpty() || !PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty();
         }
 
@@ -751,7 +751,7 @@ extends AnimalEntity {
 
         @Override
         public void start() {
-            List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), IS_FOOD);
+            List<ItemEntity> list = PandaEntity.this.world.getEntitiesByClass(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), IS_FOOD);
             if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
                 PandaEntity.this.getNavigation().startMovingTo(list.get(0), 1.2f);
             } else if (!PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {

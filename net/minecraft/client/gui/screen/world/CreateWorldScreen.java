@@ -98,11 +98,11 @@ extends Screen {
     public CreateWorldScreen(@Nullable Screen screen, LevelInfo levelInfo, GeneratorOptions generatorOptions, @Nullable Path path, DataPackSettings dataPackSettings, DynamicRegistryManager.Impl impl) {
         this(screen, dataPackSettings, new MoreOptionsDialog(impl, generatorOptions, GeneratorType.method_29078(generatorOptions), OptionalLong.of(generatorOptions.getSeed())));
         this.levelName = levelInfo.getLevelName();
-        this.cheatsEnabled = levelInfo.isHardcore();
+        this.cheatsEnabled = levelInfo.areCommandsAllowed();
         this.tweakedCheats = true;
         this.field_24290 = this.field_24289 = levelInfo.getDifficulty();
         this.gameRules.setAllValues(levelInfo.getGameRules(), null);
-        if (levelInfo.hasStructures()) {
+        if (levelInfo.isHardcore()) {
             this.currentMode = Mode.HARDCORE;
         } else if (levelInfo.getGameMode().isSurvivalLike()) {
             this.currentMode = Mode.SURVIVAL;
@@ -460,7 +460,7 @@ extends Screen {
 
     private static void method_29687(Path path, Path path2, Path path3) {
         try {
-            Util.method_29775(path, path2, path3);
+            Util.relativeCopy(path, path2, path3);
         } catch (IOException iOException) {
             field_25480.warn("Failed to copy datapack file from {} to {}", (Object)path3, (Object)path2);
             throw new WorldCreationException(iOException);

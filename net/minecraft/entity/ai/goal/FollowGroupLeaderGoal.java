@@ -37,7 +37,7 @@ extends Goal {
         }
         this.checkSurroundingDelay = this.getSurroundingSearchDelay(this.fish);
         Predicate<SchoolingFishEntity> predicate = schoolingFishEntity -> schoolingFishEntity.canHaveMoreFishInGroup() || !schoolingFishEntity.hasLeader();
-        List<SchoolingFishEntity> list = this.fish.world.getEntities(this.fish.getClass(), this.fish.getBoundingBox().expand(8.0, 8.0, 8.0), predicate);
+        List<SchoolingFishEntity> list = this.fish.world.getEntitiesByClass(this.fish.getClass(), this.fish.getBoundingBox().expand(8.0, 8.0, 8.0), predicate);
         SchoolingFishEntity schoolingFishEntity2 = list.stream().filter(SchoolingFishEntity::canHaveMoreFishInGroup).findAny().orElse(this.fish);
         schoolingFishEntity2.pullInOtherFish(list.stream().filter(schoolingFishEntity -> !schoolingFishEntity.hasLeader()));
         return this.fish.hasLeader();

@@ -180,7 +180,7 @@ public class LevelStorage {
                 Dynamic<Tag> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<CompoundTag>(dynamicOps, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion());
                 Pair<GeneratorOptions, Lifecycle> pair = LevelStorage.method_29010(dynamic, dataFixer, i);
                 SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
-                LevelInfo levelInfo = LevelInfo.method_28383(dynamic, dataPackSettings);
+                LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
                 return LevelProperties.method_29029(dynamic, dataFixer, i, compoundTag3, levelInfo, saveVersionInfo, pair.getFirst(), pair.getSecond());
             } catch (Exception exception) {
                 LOGGER.error("Exception reading {}", file, (Object)exception);
@@ -203,7 +203,7 @@ public class LevelStorage {
                     boolean bl2 = j != this.getCurrentVersion();
                     File file3 = new File(file, "icon.png");
                     DataPackSettings dataPackSettings = dynamic.get("DataPacks").result().map(LevelStorage::method_29580).orElse(DataPackSettings.SAFE_MODE);
-                    LevelInfo levelInfo = LevelInfo.method_28383(dynamic, dataPackSettings);
+                    LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
                     return new LevelSummary(levelInfo, saveVersionInfo, file.getName(), bl2, bl, file3);
                 }
                 return null;
@@ -323,7 +323,7 @@ public class LevelStorage {
                 NbtIo.method_30614(compoundTag3, file2);
                 File file3 = new File(file, "level.dat_old");
                 File file4 = new File(file, "level.dat");
-                Util.method_27760(file4, file2, file3);
+                Util.backupAndReplace(file4, file2, file3);
             } catch (Exception exception) {
                 LOGGER.error("Failed to save level {}", (Object)file, (Object)exception);
             }

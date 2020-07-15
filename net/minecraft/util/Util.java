@@ -57,7 +57,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5462;
+import net.minecraft.client.util.CharPredicate;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -71,9 +71,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class Util {
     private static final AtomicInteger NEXT_SERVER_WORKER_ID = new AtomicInteger(1);
-    private static final ExecutorService BOOTSTRAP = Util.method_28122("Bootstrap");
-    private static final ExecutorService SERVER_WORKER_EXECUTOR = Util.method_28122("Main");
-    private static final ExecutorService field_24477 = Util.method_27959();
+    private static final ExecutorService BOOTSTRAP_EXECUTOR = Util.createWorker("Bootstrap");
+    private static final ExecutorService SERVER_WORKER_EXECUTOR = Util.createWorker("Main");
+    private static final ExecutorService IO_WORKER_EXECUTOR = Util.createIoWorker();
     public static LongSupplier nanoTimeSupplier = System::nanoTime;
     public static final UUID NIL_UUID = new UUID(0L, 0L);
     private static final Logger LOGGER = LogManager.getLogger();
@@ -105,7 +105,7 @@ public class Util {
         return Instant.now().toEpochMilli();
     }
 
-    private static ExecutorService method_28122(String string) {
+    private static ExecutorService createWorker(String string) {
         int i = MathHelper.clamp(Runtime.getRuntime().availableProcessors() - 1, 1, 7);
         ExecutorService executorService = i <= 0 ? MoreExecutors.newDirectExecutorService() : new ForkJoinPool(i, forkJoinPool -> {
             ForkJoinWorkerThread forkJoinWorkerThread = new ForkJoinWorkerThread(forkJoinPool){
@@ -126,37 +126,37 @@ public class Util {
         return executorService;
     }
 
-    public static Executor method_28124() {
-        return BOOTSTRAP;
+    public static Executor getBootstrapExecutor() {
+        return BOOTSTRAP_EXECUTOR;
     }
 
     public static Executor getServerWorkerExecutor() {
         return SERVER_WORKER_EXECUTOR;
     }
 
-    public static Executor method_27958() {
-        return field_24477;
+    public static Executor getIoWorkerExecutor() {
+        return IO_WORKER_EXECUTOR;
     }
 
     public static void shutdownServerWorkerExecutor() {
-        Util.method_27957(SERVER_WORKER_EXECUTOR);
-        Util.method_27957(field_24477);
+        Util.attemptShutdown(SERVER_WORKER_EXECUTOR);
+        Util.attemptShutdown(IO_WORKER_EXECUTOR);
     }
 
-    private static void method_27957(ExecutorService executorService) {
+    private static void attemptShutdown(ExecutorService service) {
         boolean bl;
-        executorService.shutdown();
+        service.shutdown();
         try {
-            bl = executorService.awaitTermination(3L, TimeUnit.SECONDS);
+            bl = service.awaitTermination(3L, TimeUnit.SECONDS);
         } catch (InterruptedException interruptedException) {
             bl = false;
         }
         if (!bl) {
-            executorService.shutdownNow();
+            service.shutdownNow();
         }
     }
 
-    private static ExecutorService method_27959() {
+    private static ExecutorService createIoWorker() {
         return Executors.newCachedThreadPool(runnable -> {
             Thread thread = new Thread(runnable);
             thread.setName("IO-Worker-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
@@ -358,13 +358,13 @@ public class Util {
         return array[random.nextInt(array.length)];
     }
 
-    private static BooleanSupplier method_30625(final Path path, final Path path2) {
+    private static BooleanSupplier renameTask(final Path src, final Path dest) {
         return new BooleanSupplier(){
 
             @Override
             public boolean getAsBoolean() {
                 try {
-                    Files.move(path, path2, new CopyOption[0]);
+                    Files.move(src, dest, new CopyOption[0]);
                     return true;
                 } catch (IOException iOException) {
                     LOGGER.error("Failed to rename", (Throwable)iOException);
@@ -373,12 +373,12 @@ public class Util {
             }
 
             public String toString() {
-                return "rename " + path + " to " + path2;
+                return "rename " + src + " to " + dest;
             }
         };
     }
 
-    private static BooleanSupplier method_30624(final Path path) {
+    private static BooleanSupplier deleteTask(final Path path) {
         return new BooleanSupplier(){
 
             @Override
@@ -398,7 +398,7 @@ public class Util {
         };
     }
 
-    private static BooleanSupplier method_30628(final Path path) {
+    private static BooleanSupplier deletionVerifyTask(final Path path) {
         return new BooleanSupplier(){
 
             @Override
@@ -412,7 +412,7 @@ public class Util {
         };
     }
 
-    private static BooleanSupplier method_30629(final Path path) {
+    private static BooleanSupplier existenceCheckTask(final Path path) {
         return new BooleanSupplier(){
 
             @Override
@@ -426,7 +426,7 @@ public class Util {
         };
     }
 
-    private static boolean method_30627(BooleanSupplier ... booleanSuppliers) {
+    private static boolean attemptTasks(BooleanSupplier ... booleanSuppliers) {
         for (BooleanSupplier booleanSupplier : booleanSuppliers) {
             if (booleanSupplier.getAsBoolean()) continue;
             LOGGER.warn("Failed to execute {}", (Object)booleanSupplier);
@@ -435,31 +435,34 @@ public class Util {
         return true;
     }
 
-    private static boolean method_30622(int i, String string, BooleanSupplier ... booleanSuppliers) {
-        for (int j = 0; j < i; ++j) {
-            if (Util.method_30627(booleanSuppliers)) {
+    private static boolean attemptTasks(int retries, String taskName, BooleanSupplier ... tasks) {
+        for (int i = 0; i < retries; ++i) {
+            if (Util.attemptTasks(tasks)) {
                 return true;
             }
-            LOGGER.error("Failed to {}, retrying {}/{}", (Object)string, (Object)j, (Object)i);
+            LOGGER.error("Failed to {}, retrying {}/{}", (Object)taskName, (Object)i, (Object)retries);
         }
-        LOGGER.error("Failed to {}, aborting, progress might be lost", (Object)string);
+        LOGGER.error("Failed to {}, aborting, progress might be lost", (Object)taskName);
         return false;
     }
 
-    public static void method_27760(File file, File file2, File file3) {
-        Util.method_30626(file.toPath(), file2.toPath(), file3.toPath());
+    public static void backupAndReplace(File current, File newFile, File backup) {
+        Util.backupAndReplace(current.toPath(), newFile.toPath(), backup.toPath());
     }
 
-    public static void method_30626(Path path, Path path2, Path path3) {
+    /**
+     * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}
+     */
+    public static void backupAndReplace(Path current, Path newPath, Path backup) {
         int i = 10;
-        if (Files.exists(path, new LinkOption[0]) && !Util.method_30622(10, "create backup " + path3, Util.method_30624(path3), Util.method_30625(path, path3), Util.method_30629(path3))) {
+        if (Files.exists(current, new LinkOption[0]) && !Util.attemptTasks(10, "create backup " + backup, Util.deleteTask(backup), Util.renameTask(current, backup), Util.existenceCheckTask(backup))) {
             return;
         }
-        if (!Util.method_30622(10, "remove old " + path, Util.method_30624(path), Util.method_30628(path))) {
+        if (!Util.attemptTasks(10, "remove old " + current, Util.deleteTask(current), Util.deletionVerifyTask(current))) {
             return;
         }
-        if (!Util.method_30622(10, "replace " + path + " with " + path2, Util.method_30625(path2, path), Util.method_30629(path))) {
-            Util.method_30622(10, "restore " + path + " from " + path3, Util.method_30625(path3, path), Util.method_30629(path));
+        if (!Util.attemptTasks(10, "replace " + current + " with " + newPath, Util.renameTask(newPath, current), Util.existenceCheckTask(current))) {
+            Util.attemptTasks(10, "restore " + current + " from " + backup, Util.renameTask(backup, current), Util.existenceCheckTask(current));
         }
     }
 
@@ -500,7 +503,7 @@ public class Util {
         return DataResult.success(is);
     }
 
-    public static void method_29476() {
+    public static void startTimerHack() {
         Thread thread = new Thread("Timer hack thread"){
 
             @Override
@@ -520,16 +523,20 @@ public class Util {
         thread.start();
     }
 
+    /**
+     * Copies a file contained in the folder {@code src} to the folder {@code dest}.
+     * This will replicate any path structure that may exist between {@code src} and {@code toCopy}.
+     */
     @Environment(value=EnvType.CLIENT)
-    public static void method_29775(Path path, Path path2, Path path3) throws IOException {
-        Path path4 = path.relativize(path3);
-        Path path5 = path2.resolve(path4);
-        Files.copy(path3, path5, new CopyOption[0]);
+    public static void relativeCopy(Path src, Path dest, Path toCopy) throws IOException {
+        Path path = src.relativize(toCopy);
+        Path path2 = dest.resolve(path);
+        Files.copy(toCopy, path2, new CopyOption[0]);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static String method_30309(String string, class_5462 arg) {
-        return string.toLowerCase(Locale.ROOT).chars().mapToObj(i -> arg.test((char)i) ? Character.toString((char)i) : "_").collect(Collectors.joining());
+    public static String replaceInvalidChars(String string, CharPredicate predicate) {
+        return string.toLowerCase(Locale.ROOT).chars().mapToObj(i -> predicate.test((char)i) ? Character.toString((char)i) : "_").collect(Collectors.joining());
     }
 
     static enum IdentityHashStrategy implements Hash.Strategy<Object>

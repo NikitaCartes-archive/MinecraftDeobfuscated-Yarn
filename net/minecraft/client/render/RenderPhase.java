@@ -40,14 +40,7 @@ public abstract class RenderPhase {
     });
     protected static final Transparency GLINT_TRANSPARENCY = new Transparency("glint_transparency", () -> {
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE);
-    }, () -> {
-        RenderSystem.disableBlend();
-        RenderSystem.defaultBlendFunc();
-    });
-    protected static final Transparency GLINT_GUI_TRANSPARENCY = new Transparency("glint_gui_transparency", () -> {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE);
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
     }, () -> {
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();

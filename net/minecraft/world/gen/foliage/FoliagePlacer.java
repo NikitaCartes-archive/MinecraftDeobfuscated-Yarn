@@ -9,27 +9,27 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public abstract class FoliagePlacer {
     public static final Codec<FoliagePlacer> CODEC = Registry.FOLIAGE_PLACER_TYPE.dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
-    protected final class_5428 radius;
-    protected final class_5428 offset;
+    protected final UniformIntDistribution radius;
+    protected final UniformIntDistribution offset;
 
-    protected static <P extends FoliagePlacer> Products.P2<RecordCodecBuilder.Mu<P>, class_5428, class_5428> method_30411(RecordCodecBuilder.Instance<P> instance) {
-        return instance.group(((MapCodec)class_5428.method_30316(0, 8, 8).fieldOf("radius")).forGetter(foliagePlacer -> foliagePlacer.radius), ((MapCodec)class_5428.method_30316(0, 8, 8).fieldOf("offset")).forGetter(foliagePlacer -> foliagePlacer.offset));
+    protected static <P extends FoliagePlacer> Products.P2<RecordCodecBuilder.Mu<P>, UniformIntDistribution, UniformIntDistribution> method_30411(RecordCodecBuilder.Instance<P> instance) {
+        return instance.group(((MapCodec)UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("radius")).forGetter(foliagePlacer -> foliagePlacer.radius), ((MapCodec)UniformIntDistribution.createValidatedCodec(0, 8, 8).fieldOf("offset")).forGetter(foliagePlacer -> foliagePlacer.offset));
     }
 
-    public FoliagePlacer(class_5428 arg, class_5428 arg2) {
-        this.radius = arg;
-        this.offset = arg2;
+    public FoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2) {
+        this.radius = uniformIntDistribution;
+        this.offset = uniformIntDistribution2;
     }
 
     protected abstract FoliagePlacerType<?> getType();
@@ -46,11 +46,11 @@ public abstract class FoliagePlacer {
     public abstract int getHeight(Random var1, int var2, TreeFeatureConfig var3);
 
     public int getRadius(Random random, int baseHeight) {
-        return this.radius.method_30321(random);
+        return this.radius.getValue(random);
     }
 
     private int method_27386(Random random) {
-        return this.offset.method_30321(random);
+        return this.offset.getValue(random);
     }
 
     protected abstract boolean isInvalidForLeaves(Random var1, int var2, int var3, int var4, int var5, boolean var6);

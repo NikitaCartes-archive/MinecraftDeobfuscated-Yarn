@@ -22,7 +22,7 @@ extends Feature<DiskFeatureConfig> {
     @Override
     public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
         boolean bl = false;
-        int i = diskFeatureConfig.radius.method_30321(random);
+        int i = diskFeatureConfig.radius.getValue(random);
         for (int j = blockPos.getX() - i; j <= blockPos.getX() + i; ++j) {
             for (int k = blockPos.getZ() - i; k <= blockPos.getZ() + i; ++k) {
                 int m;

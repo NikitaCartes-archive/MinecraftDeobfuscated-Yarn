@@ -849,7 +849,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.world.setSpawnPos(packet.getPos());
+        this.client.world.setSpawnPos(packet.getPos(), packet.getAngle());
     }
 
     @Override

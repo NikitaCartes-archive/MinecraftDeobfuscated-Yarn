@@ -21,7 +21,7 @@ extends SimpleDecorator<CountConfig> {
     @Override
     public Stream<BlockPos> getPositions(Random random, CountConfig countConfig, BlockPos blockPos) {
         ArrayList<BlockPos> list = Lists.newArrayList();
-        for (int i = 0; i < random.nextInt(random.nextInt(countConfig.method_30396().method_30321(random)) + 1) + 1; ++i) {
+        for (int i = 0; i < random.nextInt(random.nextInt(countConfig.method_30396().getValue(random)) + 1) + 1; ++i) {
             int j = random.nextInt(16) + blockPos.getX();
             int k = random.nextInt(16) + blockPos.getZ();
             int l = random.nextInt(120) + 4;

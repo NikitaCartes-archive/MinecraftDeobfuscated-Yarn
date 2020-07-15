@@ -197,7 +197,7 @@ implements ServerWorldAccess {
             properties.setGameMode(server.getDefaultGameMode());
         }
         this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions());
-        this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, server.getSaveProperties().getGeneratorOptions().getSeed(), server.getSaveProperties().method_29036()) : null;
+        this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, server.getSaveProperties().getGeneratorOptions().getSeed(), server.getSaveProperties().getDragonFight()) : null;
     }
 
     public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
@@ -451,7 +451,7 @@ implements ServerWorldAccess {
     protected BlockPos getSurface(BlockPos pos) {
         BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
         Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getHeight(), blockPos.getZ())).expand(3.0);
-        List<LivingEntity> list = this.getEntities(LivingEntity.class, box, (? super T entity) -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos()));
+        List<LivingEntity> list = this.getEntitiesByClass(LivingEntity.class, box, entity -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos()));
         if (!list.isEmpty()) {
             return list.get(this.random.nextInt(list.size())).getBlockPos();
         }
@@ -612,16 +612,28 @@ implements ServerWorldAccess {
 
     private void saveLevel() {
         if (this.enderDragonFight != null) {
-            this.server.getSaveProperties().method_29037(this.enderDragonFight.toTag());
+            this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toTag());
         }
         this.getChunkManager().getPersistentStateManager().save();
     }
 
-    public List<Entity> getEntities(@Nullable EntityType<?> entityType, Predicate<? super Entity> predicate) {
+    /**
+     * Computes a list of entities of the given type.
+     * 
+     * <strong>Warning:<strong> If {@code null} is passed as the entity type filter, care should be
+     * taken that the type argument {@code T} is set to {@link Entity}, otherwise heap pollution
+     * in the returned list or {@link ClassCastException} can occur.
+     * 
+     * @return a list of entities of the given type
+     * 
+     * @param type the entity type of the returned entities, or {@code null} for any type of entity
+     * @param predicate a predicate which returned entities must satisfy
+     */
+    public List<Entity> getEntitiesByType(@Nullable EntityType<?> type, Predicate<? super Entity> predicate) {
         ArrayList<Entity> list = Lists.newArrayList();
         ServerChunkManager serverChunkManager = this.getChunkManager();
         for (Entity entity : this.entitiesById.values()) {
-            if (entityType != null && entity.getType() != entityType || !serverChunkManager.isChunkLoaded(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4) || !predicate.test(entity)) continue;
+            if (type != null && entity.getType() != type || !serverChunkManager.isChunkLoaded(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4) || !predicate.test(entity)) continue;
             list.add(entity);
         }
         return list;
@@ -1016,12 +1028,12 @@ implements ServerWorldAccess {
         return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState::new, "idcounts").getNextMapId();
     }
 
-    public void setSpawnPos(BlockPos pos) {
+    public void setSpawnPos(BlockPos pos, float angle) {
         ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
-        this.properties.setSpawnPos(pos);
+        this.properties.setSpawnPos(pos, angle);
         this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
         this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
-        this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos));
+        this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos, angle));
     }
 
     public BlockPos getSpawnPos() {
@@ -1030,6 +1042,10 @@ implements ServerWorldAccess {
             blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
         }
         return blockPos;
+    }
+
+    public float method_30630() {
+        return this.properties.getSpawnAngle();
     }
 
     public LongSet getForcedChunks() {

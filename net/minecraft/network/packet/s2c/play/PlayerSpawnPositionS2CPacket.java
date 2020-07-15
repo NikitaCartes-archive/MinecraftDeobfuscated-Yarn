@@ -14,12 +14,14 @@ import net.minecraft.util.math.BlockPos;
 public class PlayerSpawnPositionS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private BlockPos pos;
+    private float angle;
 
     public PlayerSpawnPositionS2CPacket() {
     }
 
-    public PlayerSpawnPositionS2CPacket(BlockPos pos) {
+    public PlayerSpawnPositionS2CPacket(BlockPos pos, float angle) {
         this.pos = pos;
+        this.angle = angle;
     }
 
     @Override
@@ -40,6 +42,11 @@ implements Packet<ClientPlayPacketListener> {
     @Environment(value=EnvType.CLIENT)
     public BlockPos getPos() {
         return this.pos;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public float getAngle() {
+        return this.angle;
     }
 }
 

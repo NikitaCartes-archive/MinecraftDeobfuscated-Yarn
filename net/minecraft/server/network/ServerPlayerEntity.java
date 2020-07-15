@@ -25,7 +25,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.class_5459;
 import net.minecraft.client.options.ChatVisibility;
-import net.minecraft.command.arguments.EntityAnchorArgumentType;
+import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -177,13 +177,14 @@ implements ScreenHandlerListener {
     @Nullable
     private BlockPos spawnPointPosition;
     private boolean spawnPointSet;
+    private float spawnAngle;
     private int screenHandlerSyncId;
     public boolean skipPacketSlotUpdates;
     public int pingMilliseconds;
     public boolean notInAnyWorld;
 
     public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, ServerPlayerInteractionManager interactionManager) {
-        super(world, world.getSpawnPos(), profile);
+        super(world, world.getSpawnPos(), world.method_30630(), profile);
         interactionManager.player = this;
         this.interactionManager = interactionManager;
         this.server = server;
@@ -257,6 +258,7 @@ implements ScreenHandlerListener {
         if (tag.contains("SpawnX", 99) && tag.contains("SpawnY", 99) && tag.contains("SpawnZ", 99)) {
             this.spawnPointPosition = new BlockPos(tag.getInt("SpawnX"), tag.getInt("SpawnY"), tag.getInt("SpawnZ"));
             this.spawnPointSet = tag.getBoolean("SpawnForced");
+            this.spawnAngle = tag.getFloat("SpawnAngle");
             if (tag.contains("SpawnDimension")) {
                 this.spawnPointDimension = World.CODEC.parse(NbtOps.INSTANCE, tag.get("SpawnDimension")).resultOrPartial(LOGGER::error).orElse(World.OVERWORLD);
             }
@@ -293,6 +295,7 @@ implements ScreenHandlerListener {
             tag2.putInt("SpawnY", this.spawnPointPosition.getY());
             tag2.putInt("SpawnZ", this.spawnPointPosition.getZ());
             tag2.putBoolean("SpawnForced", this.spawnPointSet);
+            tag2.putFloat("SpawnAngle", this.spawnAngle);
             Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("SpawnDimension", (Tag)tag));
         }
     }
@@ -709,7 +712,7 @@ implements ScreenHandlerListener {
         if (this.isBedObstructed(pos, direction)) {
             return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
         }
-        this.setSpawnPoint(this.world.getRegistryKey(), pos, false, true);
+        this.setSpawnPoint(this.world.getRegistryKey(), pos, 0.0f, false, true);
         if (this.world.isDay()) {
             return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
         }
@@ -717,7 +720,7 @@ implements ScreenHandlerListener {
             double d = 8.0;
             double e = 5.0;
             Vec3d vec3d = Vec3d.ofBottomCenter(pos);
-            List<HostileEntity> list = this.world.getEntities(HostileEntity.class, new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0), hostileEntity -> hostileEntity.isAngryAt(this));
+            List<HostileEntity> list = this.world.getEntitiesByClass(HostileEntity.class, new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0), hostileEntity -> hostileEntity.isAngryAt(this));
             if (!list.isEmpty()) {
                 return Either.left(PlayerEntity.SleepFailureReason.NOT_SAFE);
             }
@@ -1290,6 +1293,10 @@ implements ScreenHandlerListener {
         return this.spawnPointPosition;
     }
 
+    public float getSpawnAngle() {
+        return this.spawnAngle;
+    }
+
     public RegistryKey<World> getSpawnPointDimension() {
         return this.spawnPointDimension;
     }
@@ -1298,7 +1305,7 @@ implements ScreenHandlerListener {
         return this.spawnPointSet;
     }
 
-    public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, boolean spawnPointSet, boolean bl) {
+    public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean spawnPointSet, boolean bl) {
         if (pos != null) {
             boolean bl2;
             boolean bl3 = bl2 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
@@ -1307,10 +1314,12 @@ implements ScreenHandlerListener {
             }
             this.spawnPointPosition = pos;
             this.spawnPointDimension = dimension;
+            this.spawnAngle = angle;
             this.spawnPointSet = spawnPointSet;
         } else {
             this.spawnPointPosition = null;
             this.spawnPointDimension = World.OVERWORLD;
+            this.spawnAngle = 0.0f;
             this.spawnPointSet = false;
         }
     }

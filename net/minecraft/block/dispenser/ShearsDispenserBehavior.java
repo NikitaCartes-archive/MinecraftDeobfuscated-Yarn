@@ -50,7 +50,7 @@ extends FallibleItemDispenserBehavior {
     }
 
     private static boolean tryShearEntity(ServerWorld world, BlockPos pos) {
-        List<Entity> list = world.getEntities(LivingEntity.class, new Box(pos), EntityPredicates.EXCEPT_SPECTATOR);
+        List<Entity> list = world.getEntitiesByClass(LivingEntity.class, new Box(pos), EntityPredicates.EXCEPT_SPECTATOR);
         for (LivingEntity livingEntity : list) {
             Shearable shearable;
             if (!(livingEntity instanceof Shearable) || !(shearable = (Shearable)((Object)livingEntity)).isShearable()) continue;

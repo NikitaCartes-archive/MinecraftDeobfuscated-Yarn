@@ -119,7 +119,7 @@ implements Hopper {
         if (HopperBlockEntity.extract(this)) {
             return true;
         }
-        List<Entity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
+        List<Entity> list = this.world.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
         if (!list.isEmpty()) {
             HopperBlockEntity.extract(this, (ItemEntity)list.get(0));
         }

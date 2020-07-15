@@ -289,7 +289,7 @@ extends LivingEntity {
 
     @Override
     protected void tickCramming() {
-        List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
+        List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
         for (int i = 0; i < list.size(); ++i) {
             Entity entity = list.get(i);
             if (!(this.squaredDistanceTo(entity) <= 0.2)) continue;

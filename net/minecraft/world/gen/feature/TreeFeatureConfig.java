@@ -10,11 +10,11 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.size.FeatureSize;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.world.gen.tree.TreeDecorator;
 import net.minecraft.world.gen.trunk.TrunkPlacer;
 
 public class TreeFeatureConfig

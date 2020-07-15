@@ -82,7 +82,7 @@ extends Entity {
                 this.world.setLightningTicksLeft(2);
             } else if (!this.cosmetic) {
                 double d = 3.0;
-                List<Entity> list = this.world.getEntities(this, new Box(this.getX() - 3.0, this.getY() - 3.0, this.getZ() - 3.0, this.getX() + 3.0, this.getY() + 6.0 + 3.0, this.getZ() + 3.0), Entity::isAlive);
+                List<Entity> list = this.world.getOtherEntities(this, new Box(this.getX() - 3.0, this.getY() - 3.0, this.getZ() - 3.0, this.getX() + 3.0, this.getY() + 6.0 + 3.0, this.getZ() + 3.0), Entity::isAlive);
                 for (Entity entity : list) {
                     entity.onStruckByLightning((ServerWorld)this.world, this);
                 }

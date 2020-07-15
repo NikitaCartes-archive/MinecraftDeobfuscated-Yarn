@@ -49,7 +49,7 @@ public final class ProjectileUtil {
         double e = d;
         Entity entity2 = null;
         Vec3d vec3d3 = null;
-        for (Entity entity3 : world.getEntities(entity, box, predicate)) {
+        for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
             Vec3d vec3d4;
             double f;
             Box box2 = entity3.getBoundingBox().expand(entity3.getTargetingMargin());
@@ -82,7 +82,7 @@ public final class ProjectileUtil {
     public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate) {
         double d = Double.MAX_VALUE;
         Entity entity2 = null;
-        for (Entity entity3 : world.getEntities(entity, box, predicate)) {
+        for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
             double e;
             Box box2 = entity3.getBoundingBox().expand(0.3f);
             Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);

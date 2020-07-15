@@ -57,7 +57,7 @@ NorthWestCoordinateTransformer
         }
         int k = (j - 2) % 29;
         if (!(BiomeLayers.isShallowOcean(i) || j < 2 || k != 1 || (biome = (Biome)BuiltinRegistries.BIOME.get(i)) != null && biome.hasParent())) {
-            Biome biome2 = Biomes.method_30360(biome);
+            Biome biome2 = Biomes.getMutated(biome);
             return biome2 == null ? i : BuiltinRegistries.BIOME.getRawId(biome2);
         }
         if (context.nextInt(3) == 0 || k == 0) {
@@ -102,7 +102,7 @@ NorthWestCoordinateTransformer
                 int n = l = context.nextInt(2) == 0 ? PLAINS_ID : FOREST_ID;
             }
             if (k == 0 && l != i) {
-                Biome biome2 = Biomes.method_30360((Biome)BuiltinRegistries.BIOME.get(l));
+                Biome biome2 = Biomes.getMutated((Biome)BuiltinRegistries.BIOME.get(l));
                 int n = l = biome2 == null ? i : BuiltinRegistries.BIOME.getRawId(biome2);
             }
             if (l != i) {

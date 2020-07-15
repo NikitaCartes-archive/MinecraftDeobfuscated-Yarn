@@ -14,10 +14,13 @@ extends WorldProperties {
 
     public void setSpawnZ(int var1);
 
-    default public void setSpawnPos(BlockPos pos) {
+    public void setSpawnAngle(float var1);
+
+    default public void setSpawnPos(BlockPos pos, float angle) {
         this.setSpawnX(pos.getX());
         this.setSpawnY(pos.getY());
         this.setSpawnZ(pos.getZ());
+        this.setSpawnAngle(angle);
     }
 }
 

@@ -183,7 +183,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<EyeOfEnderEntity> EYE_OF_ENDER = EntityType.register("eye_of_ender", Builder.create(EyeOfEnderEntity::new, SpawnGroup.MISC).setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(4));
     public static final EntityType<FallingBlockEntity> FALLING_BLOCK = EntityType.register("falling_block", Builder.create(FallingBlockEntity::new, SpawnGroup.MISC).setDimensions(0.98f, 0.98f).maxTrackingRange(10).trackingTickInterval(20));
     public static final EntityType<FireworkRocketEntity> FIREWORK_ROCKET = EntityType.register("firework_rocket", Builder.create(FireworkRocketEntity::new, SpawnGroup.MISC).setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(10));
-    public static final EntityType<FoxEntity> FOX = EntityType.register("fox", Builder.create(FoxEntity::new, SpawnGroup.CREATURE).setDimensions(0.6f, 0.7f).maxTrackingRange(8).method_29497(Blocks.SWEET_BERRY_BUSH));
+    public static final EntityType<FoxEntity> FOX = EntityType.register("fox", Builder.create(FoxEntity::new, SpawnGroup.CREATURE).setDimensions(0.6f, 0.7f).maxTrackingRange(8).allowSpawningInside(Blocks.SWEET_BERRY_BUSH));
     public static final EntityType<GhastEntity> GHAST = EntityType.register("ghast", Builder.create(GhastEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(4.0f, 4.0f).maxTrackingRange(10));
     public static final EntityType<GiantEntity> GIANT = EntityType.register("giant", Builder.create(GiantEntity::new, SpawnGroup.MONSTER).setDimensions(3.6f, 12.0f).maxTrackingRange(10));
     public static final EntityType<GuardianEntity> GUARDIAN = EntityType.register("guardian", Builder.create(GuardianEntity::new, SpawnGroup.MONSTER).setDimensions(0.85f, 0.85f).maxTrackingRange(8));
@@ -252,8 +252,8 @@ public class EntityType<T extends Entity> {
     public static final EntityType<VindicatorEntity> VINDICATOR = EntityType.register("vindicator", Builder.create(VindicatorEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.95f).maxTrackingRange(8));
     public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = EntityType.register("wandering_trader", Builder.create(WanderingTraderEntity::new, SpawnGroup.CREATURE).setDimensions(0.6f, 1.95f).maxTrackingRange(10));
     public static final EntityType<WitchEntity> WITCH = EntityType.register("witch", Builder.create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.95f).maxTrackingRange(8));
-    public static final EntityType<WitherEntity> WITHER = EntityType.register("wither", Builder.create(WitherEntity::new, SpawnGroup.MONSTER).makeFireImmune().method_29497(Blocks.WITHER_ROSE).setDimensions(0.9f, 3.5f).maxTrackingRange(10));
-    public static final EntityType<WitherSkeletonEntity> WITHER_SKELETON = EntityType.register("wither_skeleton", Builder.create(WitherSkeletonEntity::new, SpawnGroup.MONSTER).makeFireImmune().method_29497(Blocks.WITHER_ROSE).setDimensions(0.7f, 2.4f).maxTrackingRange(8));
+    public static final EntityType<WitherEntity> WITHER = EntityType.register("wither", Builder.create(WitherEntity::new, SpawnGroup.MONSTER).makeFireImmune().allowSpawningInside(Blocks.WITHER_ROSE).setDimensions(0.9f, 3.5f).maxTrackingRange(10));
+    public static final EntityType<WitherSkeletonEntity> WITHER_SKELETON = EntityType.register("wither_skeleton", Builder.create(WitherSkeletonEntity::new, SpawnGroup.MONSTER).makeFireImmune().allowSpawningInside(Blocks.WITHER_ROSE).setDimensions(0.7f, 2.4f).maxTrackingRange(8));
     public static final EntityType<WitherSkullEntity> WITHER_SKULL = EntityType.register("wither_skull", Builder.create(WitherSkullEntity::new, SpawnGroup.MISC).setDimensions(0.3125f, 0.3125f).maxTrackingRange(4).trackingTickInterval(10));
     public static final EntityType<WolfEntity> WOLF = EntityType.register("wolf", Builder.create(WolfEntity::new, SpawnGroup.CREATURE).setDimensions(0.6f, 0.85f).maxTrackingRange(10));
     public static final EntityType<ZoglinEntity> ZOGLIN = EntityType.register("zoglin", Builder.create(ZoglinEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(1.3964844f, 1.4f).maxTrackingRange(8));
@@ -265,7 +265,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<FishingBobberEntity> FISHING_BOBBER = EntityType.register("fishing_bobber", Builder.create(SpawnGroup.MISC).disableSaving().disableSummon().setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(5));
     private final EntityFactory<T> factory;
     private final SpawnGroup spawnGroup;
-    private final ImmutableSet<Block> field_25355;
+    private final ImmutableSet<Block> canSpawnInside;
     private final boolean saveable;
     private final boolean summonable;
     private final boolean fireImmune;
@@ -299,7 +299,7 @@ public class EntityType<T extends Entity> {
         this.saveable = saveable;
         this.summonable = summonable;
         this.fireImmune = fireImmune;
-        this.field_25355 = immutableSet;
+        this.canSpawnInside = immutableSet;
         this.dimensions = entityDimensions;
         this.maxTrackDistance = i;
         this.trackTickInterval = j;
@@ -452,8 +452,16 @@ public class EntityType<T extends Entity> {
         return new Box(feetX - (double)f, feetY, feetZ - (double)f, feetX + (double)f, feetY + (double)this.getHeight(), feetZ + (double)f);
     }
 
-    public boolean method_29496(BlockState blockState) {
-        if (this.field_25355.contains(blockState.getBlock())) {
+    /**
+     * Returns whether the EntityType can spawn inside the given block.
+     * 
+     * <p>By default, non-fire-immune mobs can't spawn in/on blocks dealing fire damage.
+     * Any mob can't spawn in wither roses, sweet berry bush, or cacti.
+     * 
+     * <p>This can be overwritten via {@link EntityType.Builder#allowSpawningInside(Block[])}
+     */
+    public boolean isInvalidSpawn(BlockState blockState) {
+        if (this.canSpawnInside.contains(blockState.getBlock())) {
             return false;
         }
         if (!this.fireImmune && (blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState) || blockState.isOf(Blocks.LAVA))) {
@@ -522,7 +530,7 @@ public class EntityType<T extends Entity> {
     public static class Builder<T extends Entity> {
         private final EntityFactory<T> factory;
         private final SpawnGroup spawnGroup;
-        private ImmutableSet<Block> field_25356 = ImmutableSet.of();
+        private ImmutableSet<Block> canSpawnInside = ImmutableSet.of();
         private boolean saveable = true;
         private boolean summonable = true;
         private boolean fireImmune;
@@ -565,8 +573,8 @@ public class EntityType<T extends Entity> {
             return this;
         }
 
-        public Builder<T> method_29497(Block ... blocks) {
-            this.field_25356 = ImmutableSet.copyOf(blocks);
+        public Builder<T> allowSpawningInside(Block ... blocks) {
+            this.canSpawnInside = ImmutableSet.copyOf(blocks);
             return this;
         }
 
@@ -589,7 +597,7 @@ public class EntityType<T extends Entity> {
             if (this.saveable) {
                 Util.method_29187(TypeReferences.ENTITY_TREE, id);
             }
-            return new EntityType<T>(this.factory, this.spawnGroup, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.field_25356, this.dimensions, this.maxTrackingRange, this.trackingTickInterval);
+            return new EntityType<T>(this.factory, this.spawnGroup, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.canSpawnInside, this.dimensions, this.maxTrackingRange, this.trackingTickInterval);
         }
     }
 }

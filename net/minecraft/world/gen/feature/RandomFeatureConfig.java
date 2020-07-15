@@ -8,6 +8,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
@@ -25,6 +26,11 @@ implements FeatureConfig {
     private RandomFeatureConfig(List<RandomFeatureEntry> list, Supplier<ConfiguredFeature<?, ?>> supplier) {
         this.features = list;
         this.defaultFeature = supplier;
+    }
+
+    @Override
+    public Stream<ConfiguredFeature<?, ?>> method_30649() {
+        return Stream.concat(this.features.stream().flatMap(randomFeatureEntry -> randomFeatureEntry.feature.get().method_30648()), this.defaultFeature.get().method_30648());
     }
 }
 

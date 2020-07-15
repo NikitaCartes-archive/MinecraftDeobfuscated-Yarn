@@ -7,51 +7,50 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import java.util.function.Supplier;
-import net.minecraft.class_5432;
+import java.util.stream.Stream;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
+import net.minecraft.world.gen.decorator.Decoratable;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.FlowerFeature;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>>
-implements class_5432<ConfiguredFeature<?, ?>> {
+implements Decoratable<ConfiguredFeature<?, ?>> {
     public static final MapCodec<ConfiguredFeature<?, ?>> field_25833 = Registry.FEATURE.dispatchMap("name", configuredFeature -> configuredFeature.feature, Feature::getCodec).orElseGet(ConfiguredFeature::method_30382);
     public static final Codec<Supplier<ConfiguredFeature<?, ?>>> CODEC = RegistryElementCodec.of(Registry.CONFIGURED_FEATURE_WORLDGEN, field_25833);
     public static final Logger LOGGER = LogManager.getLogger();
     public final F feature;
     public final FC config;
 
-    public ConfiguredFeature(F feature, FC featureConfig) {
+    public ConfiguredFeature(F feature, FC config) {
         this.feature = feature;
-        this.config = featureConfig;
+        this.config = config;
     }
 
     private static ConfiguredFeature<?, ?> method_30382() {
         return ConfiguredFeatures.NOPE;
     }
 
-    public F method_30380() {
+    public F getFeature() {
         return this.feature;
     }
 
-    public FC method_30381() {
+    public FC getConfig() {
         return this.config;
     }
 
     @Override
-    public ConfiguredFeature<?, ?> method_30374(ConfiguredDecorator<?> configuredDecorator) {
-        Feature<DecoratedFeatureConfig> feature = this.feature instanceof FlowerFeature ? Feature.DECORATED_FLOWER : Feature.DECORATED;
-        return feature.configure(new DecoratedFeatureConfig(() -> this, configuredDecorator));
+    public ConfiguredFeature<?, ?> decorate(ConfiguredDecorator<?> configuredDecorator) {
+        return Feature.DECORATED.configure(new DecoratedFeatureConfig(() -> this, configuredDecorator));
     }
 
     public RandomFeatureEntry withChance(float chance) {
@@ -62,9 +61,13 @@ implements class_5432<ConfiguredFeature<?, ?>> {
         return ((Feature)this.feature).generate(serverWorldAccess, chunkGenerator, random, blockPos, this.config);
     }
 
+    public Stream<ConfiguredFeature<?, ?>> method_30648() {
+        return Stream.concat(Stream.of(this), this.config.method_30649());
+    }
+
     @Override
-    public /* synthetic */ Object method_30374(ConfiguredDecorator configuredDecorator) {
-        return this.method_30374(configuredDecorator);
+    public /* synthetic */ Object decorate(ConfiguredDecorator decorator) {
+        return this.decorate(decorator);
     }
 }
 

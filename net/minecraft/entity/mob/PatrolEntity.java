@@ -200,7 +200,7 @@ extends HostileEntity {
         }
 
         private List<PatrolEntity> findPatrolTargets() {
-            return ((PatrolEntity)this.entity).world.getEntities(PatrolEntity.class, ((Entity)this.entity).getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf((Entity)this.entity));
+            return ((PatrolEntity)this.entity).world.getEntitiesByClass(PatrolEntity.class, ((Entity)this.entity).getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf((Entity)this.entity));
         }
 
         private boolean wander() {

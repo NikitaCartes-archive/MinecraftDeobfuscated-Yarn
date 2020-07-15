@@ -226,7 +226,7 @@ extends RaiderEntity {
 
     private void roar() {
         if (this.isAlive()) {
-            List<Entity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER);
+            List<Entity> list = this.world.getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER);
             for (Entity entity : list) {
                 if (!(entity instanceof IllagerEntity)) {
                     entity.damage(DamageSource.mob(this), 6.0f);

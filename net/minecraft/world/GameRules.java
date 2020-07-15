@@ -34,7 +34,7 @@ public class GameRules {
     private static final Map<Key<?>, Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> Key.method_20772(key)));
     public static final Key<BooleanRule> DO_FIRE_TICK = GameRules.register("doFireTick", Category.UPDATES, BooleanRule.method_20755(true));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether mobs can modify the world.
+     * A {@linkplain Rule game rule} which regulates whether mobs can modify the world.
      * 
      * <p>Generally one is expected to test this rule before an entity modifies the world.
      * 
@@ -47,19 +47,19 @@ public class GameRules {
      */
     public static final Key<BooleanRule> DO_MOB_GRIEFING = GameRules.register("mobGriefing", Category.MOBS, BooleanRule.method_20755(true));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether player inventories should be persist through respawning.
+     * A {@linkplain Rule game rule} which regulates whether player inventories should be persist through respawning.
      */
     public static final Key<BooleanRule> KEEP_INVENTORY = GameRules.register("keepInventory", Category.PLAYER, BooleanRule.method_20755(false));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether mobs can spawn naturally.
+     * A {@linkplain Rule game rule} which regulates whether mobs can spawn naturally.
      */
     public static final Key<BooleanRule> DO_MOB_SPAWNING = GameRules.register("doMobSpawning", Category.SPAWNING, BooleanRule.method_20755(true));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether mobs should drop loot on death.
+     * A {@linkplain Rule game rule} which regulates whether mobs should drop loot on death.
      */
     public static final Key<BooleanRule> DO_MOB_LOOT = GameRules.register("doMobLoot", Category.DROPS, BooleanRule.method_20755(true));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether blocks should drop their items when broken.
+     * A {@linkplain Rule game rule} which regulates whether blocks should drop their items when broken.
      */
     public static final Key<BooleanRule> DO_TILE_DROPS = GameRules.register("doTileDrops", Category.DROPS, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> DO_ENTITY_DROPS = GameRules.register("doEntityDrops", Category.DROPS, BooleanRule.method_20755(true));
@@ -71,7 +71,7 @@ public class GameRules {
     public static final Key<IntRule> RANDOM_TICK_SPEED = GameRules.register("randomTickSpeed", Category.UPDATES, IntRule.method_20764(3));
     public static final Key<BooleanRule> SEND_COMMAND_FEEDBACK = GameRules.register("sendCommandFeedback", Category.CHAT, BooleanRule.method_20755(true));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether clients' {@linkplain net.minecraft.client.gui.hud.DebugHud debug HUD}s show reduced information.
+     * A {@linkplain Rule game rule} which regulates whether clients' {@linkplain net.minecraft.client.gui.hud.DebugHud debug HUD}s show reduced information.
      * 
      * <p>When the value of this rule is changed, all connected clients will be notified to update their display.
      * In vanilla, this includes the visibility of coordinates on the clients' debug HUDs.
@@ -86,25 +86,25 @@ public class GameRules {
     public static final Key<IntRule> SPAWN_RADIUS = GameRules.register("spawnRadius", Category.PLAYER, IntRule.method_20764(10));
     public static final Key<BooleanRule> DISABLE_ELYTRA_MOVEMENT_CHECK = GameRules.register("disableElytraMovementCheck", Category.PLAYER, BooleanRule.method_20755(false));
     /**
-     * A {@linkplain GameRule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
+     * A {@linkplain Rule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
      */
     public static final Key<IntRule> MAX_ENTITY_CRAMMING = GameRules.register("maxEntityCramming", Category.MOBS, IntRule.method_20764(24));
     public static final Key<BooleanRule> DO_WEATHER_CYCLE = GameRules.register("doWeatherCycle", Category.UPDATES, BooleanRule.method_20755(true));
     public static final Key<BooleanRule> DO_LIMITED_CRAFTING = GameRules.register("doLimitedCrafting", Category.PLAYER, BooleanRule.method_20755(false));
     public static final Key<IntRule> MAX_COMMAND_CHAIN_LENGTH = GameRules.register("maxCommandChainLength", Category.MISC, IntRule.method_20764(65536));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether a player's advancements should be announced in chat.
+     * A {@linkplain Rule game rule} which regulates whether a player's advancements should be announced in chat.
      */
     public static final Key<BooleanRule> ANNOUNCE_ADVANCEMENTS = GameRules.register("announceAdvancements", Category.CHAT, BooleanRule.method_20755(true));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether raids should occur.
+     * A {@linkplain Rule game rule} which regulates whether raids should occur.
      * 
      * <p>If this rule is set to {@code true} while raids are occurring, the raids will be stopped.
      */
     public static final Key<BooleanRule> DISABLE_RAIDS = GameRules.register("disableRaids", Category.MOBS, BooleanRule.method_20755(false));
     public static final Key<BooleanRule> DO_INSOMNIA = GameRules.register("doInsomnia", Category.SPAWNING, BooleanRule.method_20755(true));
     /**
-     * A {@linkplain GameRule game rule} which regulates whether a player should immediately respawn upon death.
+     * A {@linkplain Rule game rule} which regulates whether a player should immediately respawn upon death.
      */
     public static final Key<BooleanRule> DO_IMMEDIATE_RESPAWN = GameRules.register("doImmediateRespawn", Category.PLAYER, BooleanRule.method_20757(false, (server, rule) -> {
         for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
@@ -163,7 +163,7 @@ public class GameRules {
     /**
      * Make the visitor visit all registered game rules.
      * 
-     * <p>The visitation involves calling both {@link #accept(GameRules.Key, GameRules.Type)} and {@code acceptX} for every game rule, where X is the current rule's concrete type such as a boolean.
+     * <p>The visitation involves calling both {@link Visitor#visit(GameRules.Key, GameRules.Type)} and {@code visitX} for every game rule, where X is the current rule's concrete type such as a boolean.
      */
     public static void accept(Visitor visitor) {
         RULE_TYPES.forEach((key, type) -> GameRules.accept(visitor, key, type));

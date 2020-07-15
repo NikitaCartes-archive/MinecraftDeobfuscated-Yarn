@@ -9,23 +9,23 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.class_5428;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class MegaPineFoliagePlacer
 extends FoliagePlacer {
-    public static final Codec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> MegaPineFoliagePlacer.method_30411(instance).and(((MapCodec)class_5428.method_30316(0, 16, 8).fieldOf("crown_height")).forGetter(megaPineFoliagePlacer -> megaPineFoliagePlacer.crownHeight)).apply((Applicative<MegaPineFoliagePlacer, ?>)instance, MegaPineFoliagePlacer::new));
-    private final class_5428 crownHeight;
+    public static final Codec<MegaPineFoliagePlacer> CODEC = RecordCodecBuilder.create(instance -> MegaPineFoliagePlacer.method_30411(instance).and(((MapCodec)UniformIntDistribution.createValidatedCodec(0, 16, 8).fieldOf("crown_height")).forGetter(megaPineFoliagePlacer -> megaPineFoliagePlacer.crownHeight)).apply((Applicative<MegaPineFoliagePlacer, ?>)instance, MegaPineFoliagePlacer::new));
+    private final UniformIntDistribution crownHeight;
 
-    public MegaPineFoliagePlacer(class_5428 arg, class_5428 arg2, class_5428 arg3) {
-        super(arg, arg2);
-        this.crownHeight = arg3;
+    public MegaPineFoliagePlacer(UniformIntDistribution uniformIntDistribution, UniformIntDistribution uniformIntDistribution2, UniformIntDistribution uniformIntDistribution3) {
+        super(uniformIntDistribution, uniformIntDistribution2);
+        this.crownHeight = uniformIntDistribution3;
     }
 
     @Override
@@ -48,7 +48,7 @@ extends FoliagePlacer {
 
     @Override
     public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
-        return this.crownHeight.method_30321(random);
+        return this.crownHeight.getValue(random);
     }
 
     @Override

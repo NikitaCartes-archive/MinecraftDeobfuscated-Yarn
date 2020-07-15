@@ -5,7 +5,7 @@ package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.command.arguments.MessageArgumentType;
+import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.command.CommandManager;

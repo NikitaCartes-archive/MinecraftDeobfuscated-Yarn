@@ -96,11 +96,11 @@ extends WorldChunk {
     }
 
     @Override
-    public void getEntities(@Nullable Entity except, Box box, List<Entity> entityList, Predicate<? super Entity> predicate) {
+    public void collectOtherEntities(@Nullable Entity except, Box box, List<Entity> entityList, Predicate<? super Entity> predicate) {
     }
 
     @Override
-    public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> entityList, Predicate<? super T> predicate) {
+    public <T extends Entity> void collectEntitiesByClass(Class<? extends T> entityClass, Box box, List<T> result, Predicate<? super T> predicate) {
     }
 
     @Override

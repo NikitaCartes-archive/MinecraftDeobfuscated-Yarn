@@ -40,7 +40,7 @@ extends Item {
         }
         Vec3d vec3d = user.getRotationVec(1.0f);
         double d = 5.0;
-        List<Entity> list = world.getEntities(user, user.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
+        List<Entity> list = world.getOtherEntities(user, user.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
         if (!list.isEmpty()) {
             Vec3d vec3d2 = user.getCameraPosVec(1.0f);
             for (Entity entity : list) {

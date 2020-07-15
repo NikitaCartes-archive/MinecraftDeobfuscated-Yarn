@@ -46,7 +46,7 @@ public class ScreenshotUtils {
         File file = new File(gameDirectory, "screenshots");
         file.mkdir();
         File file2 = fileName == null ? ScreenshotUtils.getScreenshotFilename(file) : new File(file, fileName);
-        Util.method_27958().execute(() -> {
+        Util.getIoWorkerExecutor().execute(() -> {
             try {
                 nativeImage.writeFile(file2);
                 MutableText text = new LiteralText(file2.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));

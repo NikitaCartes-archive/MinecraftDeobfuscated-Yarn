@@ -342,7 +342,7 @@ extends Entity {
         }
         this.setRotation(this.yaw, this.pitch);
         if (this.getMinecartType() == Type.RIDEABLE && AbstractMinecartEntity.squaredHorizontalLength(this.getVelocity()) > 0.01) {
-            List<Entity> list = this.world.getEntities(this, this.getBoundingBox().expand(0.2f, 0.0, 0.2f), EntityPredicates.canBePushedBy(this));
+            List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2f, 0.0, 0.2f), EntityPredicates.canBePushedBy(this));
             if (!list.isEmpty()) {
                 for (int n = 0; n < list.size(); ++n) {
                     Entity entity = list.get(n);
@@ -354,7 +354,7 @@ extends Entity {
                 }
             }
         } else {
-            for (Entity entity2 : this.world.getEntities(this, this.getBoundingBox().expand(0.2f, 0.0, 0.2f))) {
+            for (Entity entity2 : this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2f, 0.0, 0.2f))) {
                 if (this.hasPassenger(entity2) || !entity2.isPushable() || !(entity2 instanceof AbstractMinecartEntity)) continue;
                 entity2.pushAwayFrom(this);
             }

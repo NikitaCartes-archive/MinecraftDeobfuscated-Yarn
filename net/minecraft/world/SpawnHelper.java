@@ -250,7 +250,7 @@ public final class SpawnHelper {
         if (state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE)) {
             return false;
         }
-        return !entityType.method_29496(state);
+        return !entityType.isInvalidSpawn(state);
     }
 
     public static boolean canSpawn(SpawnRestriction.Location location, WorldView world, BlockPos pos, @Nullable EntityType<?> entityType) {

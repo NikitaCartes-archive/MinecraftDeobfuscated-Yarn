@@ -31,6 +31,7 @@ import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
+import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
@@ -59,8 +60,9 @@ public interface DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_CARVER_WORLDGEN, ConfiguredCarver.field_25832, false);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeature.field_25833, false);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, ConfiguredStructureFeature.field_25834, false);
-        DynamicRegistryManager.register(builder, Registry.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.field_25876, false);
+        DynamicRegistryManager.register(builder, Registry.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.PROCESSORS, false);
         DynamicRegistryManager.register(builder, Registry.TEMPLATE_POOL_WORLDGEN, StructurePool.field_25853, false);
+        DynamicRegistryManager.register(builder, Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorType.field_24780, false);
         return builder.build();
     });
 

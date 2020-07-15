@@ -30,11 +30,11 @@ extends Feature<DeltaFeatureConfig> {
     public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
         boolean bl = false;
         boolean bl2 = random.nextDouble() < 0.9;
-        int i = bl2 ? deltaFeatureConfig.method_30403().method_30321(random) : 0;
-        int j = bl2 ? deltaFeatureConfig.method_30403().method_30321(random) : 0;
+        int i = bl2 ? deltaFeatureConfig.method_30403().getValue(random) : 0;
+        int j = bl2 ? deltaFeatureConfig.method_30403().getValue(random) : 0;
         boolean bl3 = bl2 && i != 0 && j != 0;
-        int k = deltaFeatureConfig.method_30402().method_30321(random);
-        int l = deltaFeatureConfig.method_30402().method_30321(random);
+        int k = deltaFeatureConfig.method_30402().getValue(random);
+        int l = deltaFeatureConfig.method_30402().getValue(random);
         int m = Math.max(k, l);
         for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, k, 0, l)) {
             BlockPos blockPos3;

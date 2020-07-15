@@ -169,7 +169,7 @@ implements Tickable {
             this.targetEntity = this.findTargetEntity();
             this.targetUuid = null;
         } else if (this.targetEntity == null) {
-            List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity instanceof Monster && livingEntity.isTouchingWaterOrRain());
+            List<LivingEntity> list = this.world.getEntitiesByClass(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity instanceof Monster && livingEntity.isTouchingWaterOrRain());
             if (!list.isEmpty()) {
                 this.targetEntity = list.get(this.world.random.nextInt(list.size()));
             }
@@ -206,7 +206,7 @@ implements Tickable {
 
     @Nullable
     private LivingEntity findTargetEntity() {
-        List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity.getUuid().equals(this.targetUuid));
+        List<LivingEntity> list = this.world.getEntitiesByClass(LivingEntity.class, this.getAttackZone(), livingEntity -> livingEntity.getUuid().equals(this.targetUuid));
         if (list.size() == 1) {
             return list.get(0);
         }

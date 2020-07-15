@@ -14,6 +14,8 @@ public interface WorldProperties {
 
     public int getSpawnZ();
 
+    public float getSpawnAngle();
+
     public long getTime();
 
     public long getTimeOfDay();

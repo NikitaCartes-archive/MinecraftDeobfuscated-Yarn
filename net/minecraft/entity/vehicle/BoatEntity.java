@@ -290,7 +290,7 @@ extends Entity {
             this.paddlePhases[i] = 0.0f;
         }
         this.checkBlockCollision();
-        List<Entity> list = this.world.getEntities(this, this.getBoundingBox().expand(0.2f, -0.01f, 0.2f), EntityPredicates.canBePushedBy(this));
+        List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2f, -0.01f, 0.2f), EntityPredicates.canBePushedBy(this));
         if (!list.isEmpty()) {
             boolean bl = !this.world.isClient && !(this.getPrimaryPassenger() instanceof PlayerEntity);
             for (int j = 0; j < list.size(); ++j) {

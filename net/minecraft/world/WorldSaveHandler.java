@@ -35,7 +35,7 @@ public class WorldSaveHandler {
             NbtIo.method_30614(compoundTag, file);
             File file2 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
             File file3 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat_old");
-            Util.method_27760(file2, file, file3);
+            Util.backupAndReplace(file2, file, file3);
         } catch (Exception exception) {
             LOGGER.warn("Failed to save player data for {}", (Object)playerEntity.getName().getString());
         }

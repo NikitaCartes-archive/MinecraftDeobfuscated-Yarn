@@ -123,7 +123,7 @@ extends FishEntity {
     public void tickMovement() {
         super.tickMovement();
         if (this.isAlive() && this.getPuffState() > 0) {
-            List<LivingEntity> list = this.world.getEntities(MobEntity.class, this.getBoundingBox().expand(0.3), BLOW_UP_FILTER);
+            List<LivingEntity> list = this.world.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), BLOW_UP_FILTER);
             for (MobEntity mobEntity : list) {
                 if (!mobEntity.isAlive()) continue;
                 this.sting(mobEntity);
@@ -197,7 +197,7 @@ extends FishEntity {
 
         @Override
         public boolean canStart() {
-            List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), BLOW_UP_FILTER);
+            List<LivingEntity> list = this.pufferfish.world.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), BLOW_UP_FILTER);
             return !list.isEmpty();
         }
 
@@ -214,7 +214,7 @@ extends FishEntity {
 
         @Override
         public boolean shouldContinue() {
-            List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), BLOW_UP_FILTER);
+            List<LivingEntity> list = this.pufferfish.world.getEntitiesByClass(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), BLOW_UP_FILTER);
             return !list.isEmpty();
         }
     }

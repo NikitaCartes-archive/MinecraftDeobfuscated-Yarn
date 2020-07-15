@@ -21,7 +21,7 @@ extends Sensor<LivingEntity> {
 
     @Override
     protected void sense(ServerWorld world, LivingEntity entity) {
-        List<LivingEntity> list = world.getEntities(LivingEntity.class, entity.getBoundingBox().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != entity && livingEntity2.isAlive());
+        List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, entity.getBoundingBox().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != entity && livingEntity2.isAlive());
         list.sort(Comparator.comparingDouble(entity::squaredDistanceTo));
         Brain<?> brain = entity.getBrain();
         brain.remember(MemoryModuleType.MOBS, list);

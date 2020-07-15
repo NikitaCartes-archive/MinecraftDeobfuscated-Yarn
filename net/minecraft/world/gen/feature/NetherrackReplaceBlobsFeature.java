@@ -29,7 +29,7 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
         if (blockPos2 == null) {
             return false;
         }
-        int i = netherrackReplaceBlobsFeatureConfig.method_30405().method_30321(random);
+        int i = netherrackReplaceBlobsFeatureConfig.method_30405().getValue(random);
         boolean bl = false;
         for (BlockPos blockPos3 : BlockPos.iterateOutwards(blockPos2, i, i, i)) {
             if (blockPos3.getManhattanDistance(blockPos2) > i) break;

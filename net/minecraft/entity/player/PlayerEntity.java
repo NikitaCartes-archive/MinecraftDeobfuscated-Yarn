@@ -159,13 +159,13 @@ extends LivingEntity {
     @Nullable
     public FishingBobberEntity fishHook;
 
-    public PlayerEntity(World world, BlockPos blockPos, GameProfile gameProfile) {
+    public PlayerEntity(World world, BlockPos blockPos, float f, GameProfile gameProfile) {
         super((EntityType<? extends LivingEntity>)EntityType.PLAYER, world);
         this.setUuid(PlayerEntity.getUuidFromProfile(gameProfile));
         this.gameProfile = gameProfile;
         this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
         this.currentScreenHandler = this.playerScreenHandler;
-        this.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY() + 1, (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
+        this.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY() + 1, (double)blockPos.getZ() + 0.5, f, 0.0f);
         this.field_6215 = 180.0f;
     }
 
@@ -458,7 +458,7 @@ extends LivingEntity {
         this.strideDistance += (f - this.strideDistance) * 0.4f;
         if (this.getHealth() > 0.0f && !this.isSpectator()) {
             Box box = this.hasVehicle() && !this.getVehicle().removed ? this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0) : this.getBoundingBox().expand(1.0, 0.5, 1.0);
-            List<Entity> list = this.world.getEntities(this, box);
+            List<Entity> list = this.world.getOtherEntities(this, box);
             for (int i = 0; i < list.size(); ++i) {
                 Entity entity = list.get(i);
                 if (entity.removed) continue;
@@ -905,7 +905,7 @@ extends LivingEntity {
 
     @Override
     protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
-        if ((type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.method_30263()) {
+        if (!this.abilities.flying && (type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.method_30263()) {
             double d = movement.x;
             double e = movement.z;
             double f = 0.05;

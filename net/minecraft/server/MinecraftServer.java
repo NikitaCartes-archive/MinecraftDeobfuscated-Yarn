@@ -389,11 +389,11 @@ AutoCloseable {
         ChunkPos chunkPos;
         ChunkGenerator chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
         if (!bl3) {
-            serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()));
+            serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()), 0.0f);
             return;
         }
         if (bl2) {
-            serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up());
+            serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(), 0.0f);
             return;
         }
         BiomeSource biomeSource = chunkGenerator.getBiomeSource();
@@ -410,7 +410,7 @@ AutoCloseable {
             bl4 = true;
             break;
         }
-        serverWorldProperties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, chunkGenerator.getSpawnHeight(), 8));
+        serverWorldProperties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, chunkGenerator.getSpawnHeight(), 8), 0.0f);
         int i = 0;
         int j = 0;
         int k = 0;
@@ -419,7 +419,7 @@ AutoCloseable {
         for (int n = 0; n < 1024; ++n) {
             BlockPos blockPos2;
             if (i > -16 && i <= 16 && j > -16 && j <= 16 && (blockPos2 = SpawnLocating.findServerSpawnPoint(serverWorld, new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl4)) != null) {
-                serverWorldProperties.setSpawnPos(blockPos2);
+                serverWorldProperties.setSpawnPos(blockPos2, 0.0f);
                 break;
             }
             if (i == j || i < 0 && i == -j || i > 0 && i == 1 - j) {

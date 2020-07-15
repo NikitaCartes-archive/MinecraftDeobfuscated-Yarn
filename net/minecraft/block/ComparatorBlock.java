@@ -98,7 +98,7 @@ implements BlockEntityProvider {
 
     @Nullable
     private ItemFrameEntity getAttachedItemFrame(World world, Direction facing, BlockPos pos) {
-        List<ItemFrameEntity> list = world.getEntities(ItemFrameEntity.class, new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1), itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == facing);
+        List<ItemFrameEntity> list = world.getEntitiesByClass(ItemFrameEntity.class, new Box(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1), itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == facing);
         if (list.size() == 1) {
             return list.get(0);
         }

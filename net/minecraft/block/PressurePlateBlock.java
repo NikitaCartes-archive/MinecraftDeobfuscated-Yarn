@@ -66,7 +66,7 @@ extends AbstractPressurePlateBlock {
         Box box = BOX.offset(pos);
         switch (this.type) {
             case EVERYTHING: {
-                list = world.getEntities(null, box);
+                list = world.getOtherEntities(null, box);
                 break;
             }
             case MOBS: {
