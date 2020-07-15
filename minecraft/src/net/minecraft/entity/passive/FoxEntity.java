@@ -635,7 +635,8 @@ public class FoxEntity extends AnimalEntity {
 			return SoundEvents.ENTITY_FOX_SLEEP;
 		} else {
 			if (!this.world.isDay() && this.random.nextFloat() < 0.1F) {
-				List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR);
+				List<PlayerEntity> list = this.world
+					.getEntitiesByClass(PlayerEntity.class, this.getBoundingBox().expand(16.0, 16.0, 16.0), EntityPredicates.EXCEPT_SPECTATOR);
 				if (list.isEmpty()) {
 					return SoundEvents.ENTITY_FOX_SCREECH;
 				}
@@ -1304,7 +1305,7 @@ public class FoxEntity extends AnimalEntity {
 				return false;
 			} else {
 				List<ItemEntity> list = FoxEntity.this.world
-					.getEntities(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), FoxEntity.PICKABLE_DROP_FILTER);
+					.getEntitiesByClass(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), FoxEntity.PICKABLE_DROP_FILTER);
 				return !list.isEmpty() && FoxEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty();
 			}
 		}
@@ -1312,7 +1313,7 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			List<ItemEntity> list = FoxEntity.this.world
-				.getEntities(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), FoxEntity.PICKABLE_DROP_FILTER);
+				.getEntitiesByClass(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), FoxEntity.PICKABLE_DROP_FILTER);
 			ItemStack itemStack = FoxEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
 			if (itemStack.isEmpty() && !list.isEmpty()) {
 				FoxEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
@@ -1322,7 +1323,7 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		public void start() {
 			List<ItemEntity> list = FoxEntity.this.world
-				.getEntities(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), FoxEntity.PICKABLE_DROP_FILTER);
+				.getEntitiesByClass(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), FoxEntity.PICKABLE_DROP_FILTER);
 			if (!list.isEmpty()) {
 				FoxEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
 			}

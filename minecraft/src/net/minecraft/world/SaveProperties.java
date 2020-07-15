@@ -81,9 +81,9 @@ public interface SaveProperties {
 
 	CompoundTag getPlayerData();
 
-	CompoundTag method_29036();
+	CompoundTag getDragonFight();
 
-	void method_29037(CompoundTag compoundTag);
+	void setDragonFight(CompoundTag tag);
 
 	GeneratorOptions getGeneratorOptions();
 

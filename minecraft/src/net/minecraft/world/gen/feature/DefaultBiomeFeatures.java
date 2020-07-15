@@ -120,7 +120,7 @@ public class DefaultBiomeFeatures {
 	}
 
 	public static void addBirchTrees(Biome biome) {
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.BIRCH_BEES_0002);
+		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_BIRCH);
 	}
 
 	public static void addForestTrees(Biome biome) {
@@ -160,15 +160,7 @@ public class DefaultBiomeFeatures {
 	}
 
 	public static void addSnowySpruceTrees(Biome biome) {
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRUCE_SNOVY);
-	}
-
-	public static void addGiantSpruceTaigaTrees(Biome biome) {
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_GIANT_SPRUCE);
-	}
-
-	public static void addGiantTreeTaigaTrees(Biome biome) {
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_GIANT);
+		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRUCE_SNOWY);
 	}
 
 	public static void addJungleGrass(Biome biome) {
@@ -345,13 +337,34 @@ public class DefaultBiomeFeatures {
 		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.COW, 8, 4, 4));
 	}
 
-	private static void addBats(Biome biome) {
+	public static void addBats(Biome biome) {
 		biome.addSpawn(SpawnGroup.AMBIENT, new Biome.SpawnEntry(EntityType.BAT, 10, 8, 8));
 	}
 
 	public static void addBatsAndMonsters(Biome biome) {
 		addBats(biome);
 		addMonsters(biome, 95, 5, 100);
+	}
+
+	public static void addOceanMobs(Biome biome, int squidWeight, int squidMaxGroupSize, int codWeight) {
+		biome.addSpawn(SpawnGroup.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, squidWeight, 1, squidMaxGroupSize));
+		biome.addSpawn(SpawnGroup.WATER_AMBIENT, new Biome.SpawnEntry(EntityType.COD, codWeight, 3, 6));
+		addBatsAndMonsters(biome);
+		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.DROWNED, 5, 1, 1));
+	}
+
+	public static void addWarmOceanMobs(Biome biome, int squidWeight, int squidMinGroupSize) {
+		biome.addSpawn(SpawnGroup.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, squidWeight, squidMinGroupSize, 4));
+		biome.addSpawn(SpawnGroup.WATER_AMBIENT, new Biome.SpawnEntry(EntityType.TROPICAL_FISH, 25, 8, 8));
+		biome.addSpawn(SpawnGroup.WATER_CREATURE, new Biome.SpawnEntry(EntityType.DOLPHIN, 2, 1, 2));
+		addBatsAndMonsters(biome);
+	}
+
+	public static void addPlainsMobs(Biome biome) {
+		addFarmAnimals(biome);
+		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.HORSE, 5, 2, 6));
+		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.DONKEY, 1, 1, 3));
+		addBatsAndMonsters(biome);
 	}
 
 	public static void addSnowyMobs(Biome biome) {
@@ -369,16 +382,7 @@ public class DefaultBiomeFeatures {
 		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.HUSK, 80, 4, 4));
 	}
 
-	public static void addTaigaMobs(Biome biome) {
-		addFarmAnimals(biome);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.WOLF, 8, 4, 4));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.FOX, 8, 2, 4));
-		addBats(biome);
-		addMonsters(biome, 100, 25, 100);
-	}
-
-	private static void addMonsters(Biome biome, int zombieWeight, int zombieVillagerWeight, int skeletonWeight) {
+	public static void addMonsters(Biome biome, int zombieWeight, int zombieVillagerWeight, int skeletonWeight) {
 		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SPIDER, 100, 4, 4));
 		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE, zombieWeight, 4, 4));
 		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_VILLAGER, zombieVillagerWeight, 1, 1));

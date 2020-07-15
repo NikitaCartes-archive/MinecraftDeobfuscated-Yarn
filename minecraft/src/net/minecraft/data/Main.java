@@ -10,6 +10,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.minecraft.data.client.BlockStateDefinitionProvider;
 import net.minecraft.data.dev.NbtProvider;
+import net.minecraft.data.report.BiomeListProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
 import net.minecraft.data.report.ItemListProvider;
@@ -83,6 +84,7 @@ public class Main {
 			dataGenerator.install(new BlockListProvider(dataGenerator));
 			dataGenerator.install(new ItemListProvider(dataGenerator));
 			dataGenerator.install(new CommandSyntaxProvider(dataGenerator));
+			dataGenerator.install(new BiomeListProvider(dataGenerator));
 		}
 
 		return dataGenerator;

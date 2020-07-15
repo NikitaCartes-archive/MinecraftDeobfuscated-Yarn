@@ -27,7 +27,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	public final ClientWorld clientWorld;
 
 	public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
-		super(world, world.getSpawnPos(), profile);
+		super(world, world.getSpawnPos(), world.method_30671(), profile);
 		this.clientWorld = world;
 	}
 

@@ -84,7 +84,7 @@ public class Main {
 			CrashReport.initCrashReport();
 			Bootstrap.initialize();
 			Bootstrap.logMissing();
-			Util.method_29476();
+			Util.startTimerHack();
 			Path path = Paths.get("server.properties");
 			ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(path);
 			serverPropertiesLoader.store();

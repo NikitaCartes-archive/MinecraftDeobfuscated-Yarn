@@ -569,7 +569,7 @@ public class Raid {
 			.add(BannerPattern.BORDER, DyeColor.BLACK)
 			.toTag();
 		compoundTag.put("Patterns", listTag);
-		itemStack.method_30268(ItemStack.class_5422.field_25773);
+		itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);
 		itemStack.setCustomName(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
 		return itemStack;
 	}

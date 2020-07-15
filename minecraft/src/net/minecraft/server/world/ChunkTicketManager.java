@@ -45,7 +45,7 @@ public abstract class ChunkTicketManager {
 	private final Set<ChunkHolder> chunkHolders = Sets.<ChunkHolder>newHashSet();
 	private final ChunkTaskPrioritySystem levelUpdateListener;
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> playerTicketThrottler;
-	private final MessageListener<ChunkTaskPrioritySystem.SorterMessage> playerTicketThrottlerSorter;
+	private final MessageListener<ChunkTaskPrioritySystem.UnblockingMessage> playerTicketThrottlerUnblocker;
 	private final LongSet chunkPositions = new LongOpenHashSet();
 	private final Executor mainThreadExecutor;
 	private long age;
@@ -55,7 +55,7 @@ public abstract class ChunkTicketManager {
 		ChunkTaskPrioritySystem chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(ImmutableList.of(messageListener), workerExecutor, 4);
 		this.levelUpdateListener = chunkTaskPrioritySystem;
 		this.playerTicketThrottler = chunkTaskPrioritySystem.createExecutor(messageListener, true);
-		this.playerTicketThrottlerSorter = chunkTaskPrioritySystem.createSorterExecutor(messageListener);
+		this.playerTicketThrottlerUnblocker = chunkTaskPrioritySystem.createUnblockingExecutor(messageListener);
 		this.mainThreadExecutor = mainThreadExecutor;
 	}
 
@@ -113,7 +113,7 @@ public abstract class ChunkTicketManager {
 
 						CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getEntityTickingFuture();
 						completableFuture.thenAccept(
-							either -> this.mainThreadExecutor.execute(() -> this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> {
+							either -> this.mainThreadExecutor.execute(() -> this.playerTicketThrottlerUnblocker.send(ChunkTaskPrioritySystem.createUnblockingMessage(() -> {
 									}, l, false)))
 						);
 					}
@@ -307,14 +307,14 @@ public abstract class ChunkTicketManager {
 								ChunkTicketManager.this.addTicket(pos, chunkTicket);
 								ChunkTicketManager.this.chunkPositions.add(pos);
 							} else {
-								ChunkTicketManager.this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createSorterMessage(() -> {
+								ChunkTicketManager.this.playerTicketThrottlerUnblocker.send(ChunkTaskPrioritySystem.createUnblockingMessage(() -> {
 								}, pos, false));
 							}
 						}), pos, () -> distance));
 				} else {
-					ChunkTicketManager.this.playerTicketThrottlerSorter
+					ChunkTicketManager.this.playerTicketThrottlerUnblocker
 						.send(
-							ChunkTaskPrioritySystem.createSorterMessage(
+							ChunkTaskPrioritySystem.createUnblockingMessage(
 								() -> ChunkTicketManager.this.mainThreadExecutor.execute(() -> ChunkTicketManager.this.removeTicket(pos, chunkTicket)), pos, true
 							)
 						);

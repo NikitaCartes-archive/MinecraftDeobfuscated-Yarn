@@ -14,6 +14,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
+import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
@@ -45,6 +46,7 @@ public class BuiltinRegistries {
 	);
 	public static final Registry<StructurePool> TEMPLATE_POOL = addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, () -> TemplatePools.EMPTY);
 	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, () -> Biomes.DEFAULT);
+	public static final Registry<ChunkGeneratorType> field_26375 = addRegistry(Registry.NOISE_SETTINGS_WORLDGEN, () -> ChunkGeneratorType.field_26355);
 
 	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<T> defaultValueSupplier) {
 		return addRegistry(registryRef, Lifecycle.experimental(), defaultValueSupplier);

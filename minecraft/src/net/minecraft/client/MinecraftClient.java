@@ -1617,7 +1617,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.startIntegratedServer(
 			worldName,
 			registryTracker,
-			session -> levelInfo.method_29558(),
+			session -> levelInfo.getDataPackSettings(),
 			(session, impl2, resourceManager, dataPackSettings) -> {
 				RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, resourceManager, registryTracker);
 				DataResult<SimpleRegistry<DimensionOptions>> dataResult = registryOps.loadToRegistry(

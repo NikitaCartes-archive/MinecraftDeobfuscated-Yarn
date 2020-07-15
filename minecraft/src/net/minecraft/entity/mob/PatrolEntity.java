@@ -202,7 +202,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		private List<PatrolEntity> findPatrolTargets() {
 			return this.entity
 				.world
-				.getEntities(
+				.getEntitiesByClass(
 					PatrolEntity.class, this.entity.getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf(this.entity)
 				);
 		}

@@ -460,7 +460,7 @@ public class ZombieEntity extends HostileEntity {
 				this.setBaby(true);
 				if (zombieData.field_25607) {
 					if ((double)arg.getRandom().nextFloat() < 0.05) {
-						List<ChickenEntity> list = arg.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
+						List<ChickenEntity> list = arg.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
 						if (!list.isEmpty()) {
 							ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
 							chickenEntity.setHasJockey(true);

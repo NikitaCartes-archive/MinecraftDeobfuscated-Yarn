@@ -7,7 +7,7 @@ import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
-import net.minecraft.command.arguments.BlockArgumentParser;
+import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;

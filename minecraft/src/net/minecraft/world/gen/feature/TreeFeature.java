@@ -28,8 +28,8 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
+import net.minecraft.world.gen.tree.TreeDecorator;
 
 public class TreeFeature extends Feature<TreeFeatureConfig> {
 	public TreeFeature(Codec<TreeFeatureConfig> codec) {

@@ -93,7 +93,7 @@ public class LightningEntity extends Entity {
 			} else if (!this.cosmetic) {
 				double d = 3.0;
 				List<Entity> list = this.world
-					.getEntities(
+					.getOtherEntities(
 						this, new Box(this.getX() - 3.0, this.getY() - 3.0, this.getZ() - 3.0, this.getX() + 3.0, this.getY() + 6.0 + 3.0, this.getZ() + 3.0), Entity::isAlive
 					);
 

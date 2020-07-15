@@ -119,7 +119,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		} else {
 			BlockState blockState = this.world.getBlockState(this.attachmentPos.offset(this.facing.getOpposite()));
 			return blockState.getMaterial().isSolid() || this.facing.getAxis().isHorizontal() && AbstractRedstoneGateBlock.isRedstoneGate(blockState)
-				? this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty()
+				? this.world.getOtherEntities(this, this.getBoundingBox(), PREDICATE).isEmpty()
 				: false;
 		}
 	}

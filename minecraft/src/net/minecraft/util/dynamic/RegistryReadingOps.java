@@ -35,7 +35,7 @@ public class RegistryReadingOps<T> extends ForwardingDynamicOps<T> {
 	 * <p>This method is called by casting an arbitrary dynamic ops to a registry
 	 * reading ops.</p>
 	 * 
-	 * @see RegistryOps#decodeOrId(Object, RegistryKey, Codec)
+	 * @see RegistryOps#decodeOrId(Object, RegistryKey, MapCodec)
 	 */
 	protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<? extends Registry<E>> registryReference, MapCodec<E> mapCodec) {
 		Optional<MutableRegistry<E>> optional = this.manager.getOptional(registryReference);

@@ -126,7 +126,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 				}
 			}
 
-			return this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty();
+			return this.world.getOtherEntities(this, this.getBoundingBox(), PREDICATE).isEmpty();
 		}
 	}
 

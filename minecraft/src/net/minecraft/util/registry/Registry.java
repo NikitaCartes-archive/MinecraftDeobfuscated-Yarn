@@ -73,8 +73,8 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.decorator.TreeDecoratorType;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -85,6 +85,7 @@ import net.minecraft.world.gen.placer.BlockPlacerType;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
+import net.minecraft.world.gen.tree.TreeDecoratorType;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.commons.lang3.Validate;
@@ -162,6 +163,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final Registry<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = create(LOOT_POOL_ENTRY_TYPE_KEY, () -> LootPoolEntryTypes.EMPTY);
 	public static final Registry<LootFunctionType> LOOT_FUNCTION_TYPE = create(LOOT_FUNCTION_TYPE_KEY, () -> LootFunctionTypes.SET_COUNT);
 	public static final Registry<LootConditionType> LOOT_CONDITION_TYPE = create(LOOT_CONDITION_TYPE_KEY, () -> LootConditionTypes.INVERTED);
+	public static final RegistryKey<Registry<ChunkGeneratorType>> NOISE_SETTINGS_WORLDGEN = createRegistryKey("worldgen/noise_settings");
 	public static final RegistryKey<Registry<ConfiguredSurfaceBuilder<?>>> CONFIGURED_SURFACE_BUILDER_WORLDGEN = createRegistryKey(
 		"worldgen/configured_surface_builder"
 	);

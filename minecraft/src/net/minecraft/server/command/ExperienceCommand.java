@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;

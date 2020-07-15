@@ -2,46 +2,10 @@ package net.minecraft.world.biome;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.sound.BiomeMoodSound;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.feature.ConfiguredFeatures;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
-import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
-import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilders;
 
 public final class DarkForestBiome extends Biome {
-	public DarkForestBiome() {
-		super(
-			new Biome.Settings()
-				.configureSurfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.FOREST)
-				.depth(0.1F)
-				.scale(0.2F)
-				.temperature(0.7F)
-				.downfall(0.8F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
-				.parent(null)
-		);
-		this.addStructureFeature(ConfiguredStructureFeatures.MANSION);
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(this);
-		this.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(this);
-		DefaultBiomeFeatures.addDefaultLakes(this);
-		DefaultBiomeFeatures.addDungeons(this);
-		this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.DARK_FOREST_VEGETATION_BROWN);
-		DefaultBiomeFeatures.addForestFlowers(this);
-		DefaultBiomeFeatures.addMineables(this);
-		DefaultBiomeFeatures.addDefaultOres(this);
-		DefaultBiomeFeatures.addDefaultDisks(this);
-		DefaultBiomeFeatures.addDefaultFlowers(this);
-		DefaultBiomeFeatures.addForestGrass(this);
-		DefaultBiomeFeatures.addDefaultMushrooms(this);
-		DefaultBiomeFeatures.addDefaultVegetation(this);
-		DefaultBiomeFeatures.addSprings(this);
-		DefaultBiomeFeatures.addFrozenTopLayer(this);
-		DefaultBiomeFeatures.addFarmAnimals(this);
-		DefaultBiomeFeatures.addBatsAndMonsters(this);
+	public DarkForestBiome(Biome.Settings settings) {
+		super(settings);
 	}
 
 	@Environment(EnvType.CLIENT)

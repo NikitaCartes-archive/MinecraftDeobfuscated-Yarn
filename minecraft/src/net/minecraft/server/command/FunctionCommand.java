@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
-import net.minecraft.command.arguments.FunctionArgumentType;
+import net.minecraft.command.argument.FunctionArgumentType;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.TranslatableText;

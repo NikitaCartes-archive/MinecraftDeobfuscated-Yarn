@@ -147,7 +147,7 @@ public class Biome {
 			return long2FloatLinkedOpenHashMap;
 		}));
 
-	protected Biome(Biome.Settings settings) {
+	public Biome(Biome.Settings settings) {
 		if (settings.surfaceBuilder != null
 			&& settings.precipitation != null
 			&& settings.category != null
@@ -163,19 +163,19 @@ public class Biome {
 			this.scale = settings.scale;
 			this.temperature = settings.temperature;
 			this.downfall = settings.downfall;
-			this.skyColor = this.calculateSkyColor();
+			this.skyColor = settings.field_26354 != null ? settings.field_26354 : this.calculateSkyColor();
 			this.parent = settings.parent;
 			this.effects = settings.specialEffects;
-			this.carvers = Maps.newHashMap();
+			this.carvers = Maps.newLinkedHashMap();
 			this.structureFeatures = Lists.newArrayList();
 			this.features = Lists.newArrayList();
-			this.spawns = Maps.newHashMap();
+			this.spawns = Maps.newLinkedHashMap();
 
 			for(SpawnGroup spawnGroup : SpawnGroup.values()) {
 				this.spawns.put(spawnGroup, Lists.newArrayList());
 			}
 
-			this.spawnDensities = Maps.<EntityType<?>, Biome.SpawnDensity>newHashMap();
+			this.spawnDensities = Maps.<EntityType<?>, Biome.SpawnDensity>newLinkedHashMap();
 			this.flowerFeatures = Lists.<ConfiguredFeature<?, ?>>newArrayList();
 		} else {
 			throw new IllegalStateException("You are missing parameters to build a proper biome for " + this.getClass().getSimpleName() + "\n" + settings);
@@ -217,7 +217,8 @@ public class Biome {
 		this.flowerFeatures = (List)list.stream()
 			.flatMap(Collection::stream)
 			.map(Supplier::get)
-			.filter(configuredFeature -> configuredFeature.feature == Feature.DECORATED_FLOWER)
+			.flatMap(ConfiguredFeature::method_30648)
+			.filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER)
 			.collect(Collectors.toList());
 	}
 
@@ -241,7 +242,7 @@ public class Biome {
 		((List)this.spawns.get(group)).add(spawnEntry);
 	}
 
-	protected void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
+	public void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
 		this.spawnDensities.put(type, new Biome.SpawnDensity(mass, maxMass));
 	}
 
@@ -339,9 +340,10 @@ public class Biome {
 	}
 
 	public void addFeature(int stepIndex, Supplier<ConfiguredFeature<?, ?>> supplier) {
-		if (((ConfiguredFeature)supplier.get()).feature == Feature.DECORATED_FLOWER) {
-			this.flowerFeatures.add(supplier.get());
-		}
+		((ConfiguredFeature)supplier.get())
+			.method_30648()
+			.filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER)
+			.forEach(this.flowerFeatures::add);
 
 		while(this.features.size() <= stepIndex) {
 			this.features.add(Lists.newArrayList());
@@ -386,7 +388,7 @@ public class Biome {
 	}
 
 	/**
-	 * @return The lists of features configured for each {@link net.minecraft.world.gen.GenerationStep.Feature feature generation step}, up to the highest step that has a configured feature.
+	 * Returns the lists of features configured for each {@link net.minecraft.world.gen.GenerationStep.Feature feature generation step}, up to the highest step that has a configured feature.
 	 * Entries are guaranteed to not be null, but may be empty lists if an earlier step has no features, but a later step does.
 	 */
 	public List<List<Supplier<ConfiguredFeature<?, ?>>>> getFeatures() {
@@ -737,12 +739,14 @@ public class Biome {
 		@Nullable
 		private Float downfall;
 		@Nullable
+		private Integer field_26354;
+		@Nullable
 		private String parent;
 		@Nullable
 		private BiomeEffects specialEffects;
 
-		public Biome.Settings configureSurfaceBuilder(ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder) {
-			return this.surfaceBuilder(() -> configuredSurfaceBuilder);
+		public Biome.Settings surfaceBuilder(ConfiguredSurfaceBuilder<?> surfaceBuilder) {
+			return this.surfaceBuilder(() -> surfaceBuilder);
 		}
 
 		public Biome.Settings surfaceBuilder(Supplier<ConfiguredSurfaceBuilder<?>> supplier) {
@@ -780,6 +784,11 @@ public class Biome {
 			return this;
 		}
 
+		public Biome.Settings method_30637(int i) {
+			this.field_26354 = i;
+			return this;
+		}
+
 		/**
 		 * Sets the biome that this will replace as a modified version of the biome.
 		 * 
@@ -810,6 +819,8 @@ public class Biome {
 				+ this.temperature
 				+ ",\ndownfall="
 				+ this.downfall
+				+ ",\nskyColor="
+				+ this.field_26354
 				+ ",\nspecialEffects="
 				+ this.specialEffects
 				+ ",\nparent='"

@@ -209,7 +209,7 @@ public interface DispenserBehavior {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-				List<LivingEntity> list = pointer.getWorld().getEntities(LivingEntity.class, new Box(blockPos), livingEntity -> {
+				List<LivingEntity> list = pointer.getWorld().getEntitiesByClass(LivingEntity.class, new Box(blockPos), livingEntity -> {
 					if (!(livingEntity instanceof Saddleable)) {
 						return false;
 					} else {
@@ -233,7 +233,7 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 
 				for(HorseBaseEntity horseBaseEntity : pointer.getWorld()
-					.getEntities(HorseBaseEntity.class, new Box(blockPos), horseBaseEntityx -> horseBaseEntityx.isAlive() && horseBaseEntityx.canEquip())) {
+					.getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntityx -> horseBaseEntityx.isAlive() && horseBaseEntityx.canEquip())) {
 					if (horseBaseEntity.canEquip(stack) && !horseBaseEntity.setSaddled() && horseBaseEntity.isTame()) {
 						horseBaseEntity.equip(401, stack.split(1));
 						this.setSuccess(true);
@@ -272,7 +272,7 @@ public interface DispenserBehavior {
 					BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 	
 					for(AbstractDonkeyEntity abstractDonkeyEntity : pointer.getWorld()
-						.getEntities(
+						.getEntitiesByClass(
 							AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntityx -> abstractDonkeyEntityx.isAlive() && !abstractDonkeyEntityx.hasChest()
 						)) {
 						if (abstractDonkeyEntity.isTame() && abstractDonkeyEntity.equip(499, stack)) {

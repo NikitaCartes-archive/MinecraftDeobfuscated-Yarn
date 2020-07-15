@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.CustomizeBuffetLevelScreen;
@@ -33,7 +34,7 @@ public abstract class GeneratorType {
 	public static final GeneratorType DEFAULT = new GeneratorType("default") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26355);
 		}
 	};
 	private static final GeneratorType FLAT = new GeneratorType("flat") {
@@ -45,19 +46,19 @@ public abstract class GeneratorType {
 	private static final GeneratorType LARGE_BIOMES = new GeneratorType("large_biomes") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, true), seed, ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, true), seed, () -> ChunkGeneratorType.field_26355);
 		}
 	};
 	public static final GeneratorType AMPLIFIED = new GeneratorType("amplified") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, ChunkGeneratorType.Preset.AMPLIFIED.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26356);
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_SURFACE = new GeneratorType("single_biome_surface") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26355);
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_CAVES = new GeneratorType("single_biome_caves") {
@@ -70,13 +71,13 @@ public abstract class GeneratorType {
 
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, ChunkGeneratorType.Preset.CAVES.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26359);
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_FLOATING_ISLANDS = new GeneratorType("single_biome_floating_islands") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, ChunkGeneratorType.Preset.FLOATING_ISLANDS.getChunkGeneratorType());
+			return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26360);
 		}
 	};
 	private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states") {
@@ -136,20 +137,20 @@ public abstract class GeneratorType {
 
 	private static GeneratorOptions method_29079(GeneratorOptions generatorOptions, GeneratorType generatorType, Biome biome) {
 		BiomeSource biomeSource = new FixedBiomeSource(biome);
-		ChunkGeneratorType chunkGeneratorType;
+		Supplier<ChunkGeneratorType> supplier;
 		if (generatorType == SINGLE_BIOME_CAVES) {
-			chunkGeneratorType = ChunkGeneratorType.Preset.CAVES.getChunkGeneratorType();
+			supplier = () -> ChunkGeneratorType.field_26359;
 		} else if (generatorType == SINGLE_BIOME_FLOATING_ISLANDS) {
-			chunkGeneratorType = ChunkGeneratorType.Preset.FLOATING_ISLANDS.getChunkGeneratorType();
+			supplier = () -> ChunkGeneratorType.field_26360;
 		} else {
-			chunkGeneratorType = ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType();
+			supplier = () -> ChunkGeneratorType.field_26355;
 		}
 
 		return new GeneratorOptions(
 			generatorOptions.getSeed(),
 			generatorOptions.shouldGenerateStructures(),
 			generatorOptions.hasBonusChest(),
-			GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new SurfaceChunkGenerator(biomeSource, generatorOptions.getSeed(), chunkGeneratorType))
+			GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new SurfaceChunkGenerator(biomeSource, generatorOptions.getSeed(), supplier))
 		);
 	}
 

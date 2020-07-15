@@ -64,7 +64,7 @@ public class RespawnAnchorBlock extends Block {
 			if (!world.isClient) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
 				if (serverPlayerEntity.getSpawnPointDimension() != world.getRegistryKey() || !serverPlayerEntity.getSpawnPointPosition().equals(pos)) {
-					serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), pos, false, true);
+					serverPlayerEntity.setSpawnPoint(world.getRegistryKey(), pos, 0.0F, false, true);
 					world.playSound(
 						null,
 						(double)pos.getX() + 0.5,

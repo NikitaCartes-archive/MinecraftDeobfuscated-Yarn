@@ -296,7 +296,7 @@ public final class SpawnHelper {
 		} else if (state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE)) {
 			return false;
 		} else {
-			return !entityType.method_29496(state);
+			return !entityType.isInvalidSpawn(state);
 		}
 	}
 

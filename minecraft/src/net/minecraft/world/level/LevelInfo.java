@@ -9,23 +9,25 @@ import net.minecraft.world.GameRules;
 public final class LevelInfo {
 	private final String name;
 	private final GameMode gameMode;
-	private final boolean structures;
-	private final Difficulty difficulty;
 	private final boolean hardcore;
+	private final Difficulty difficulty;
+	private final boolean allowCommands;
 	private final GameRules gameRules;
-	private final DataPackSettings field_25403;
+	private final DataPackSettings dataPackSettings;
 
-	public LevelInfo(String name, GameMode gameMode, boolean bl, Difficulty difficulty, boolean bl2, GameRules gameRules, DataPackSettings dataPackSettings) {
+	public LevelInfo(
+		String name, GameMode gameMode, boolean hardcore, Difficulty difficulty, boolean allowCommands, GameRules gameRules, DataPackSettings dataPackSettings
+	) {
 		this.name = name;
 		this.gameMode = gameMode;
-		this.structures = bl;
+		this.hardcore = hardcore;
 		this.difficulty = difficulty;
-		this.hardcore = bl2;
+		this.allowCommands = allowCommands;
 		this.gameRules = gameRules;
-		this.field_25403 = dataPackSettings;
+		this.dataPackSettings = dataPackSettings;
 	}
 
-	public static LevelInfo method_28383(Dynamic<?> dynamic, DataPackSettings dataPackSettings) {
+	public static LevelInfo fromDynamic(Dynamic<?> dynamic, DataPackSettings dataPackSettings) {
 		GameMode gameMode = GameMode.byId(dynamic.get("GameType").asInt(0));
 		return new LevelInfo(
 			dynamic.get("LevelName").asString(""),
@@ -46,39 +48,39 @@ public final class LevelInfo {
 		return this.gameMode;
 	}
 
-	public boolean hasStructures() {
-		return this.structures;
+	public boolean isHardcore() {
+		return this.hardcore;
 	}
 
 	public Difficulty getDifficulty() {
 		return this.difficulty;
 	}
 
-	public boolean isHardcore() {
-		return this.hardcore;
+	public boolean areCommandsAllowed() {
+		return this.allowCommands;
 	}
 
 	public GameRules getGameRules() {
 		return this.gameRules;
 	}
 
-	public DataPackSettings method_29558() {
-		return this.field_25403;
+	public DataPackSettings getDataPackSettings() {
+		return this.dataPackSettings;
 	}
 
-	public LevelInfo method_28382(GameMode gameMode) {
-		return new LevelInfo(this.name, gameMode, this.structures, this.difficulty, this.hardcore, this.gameRules, this.field_25403);
+	public LevelInfo withGameMode(GameMode mode) {
+		return new LevelInfo(this.name, mode, this.hardcore, this.difficulty, this.allowCommands, this.gameRules, this.dataPackSettings);
 	}
 
-	public LevelInfo method_28381(Difficulty difficulty) {
-		return new LevelInfo(this.name, this.gameMode, this.structures, difficulty, this.hardcore, this.gameRules, this.field_25403);
+	public LevelInfo withDifficulty(Difficulty difficulty) {
+		return new LevelInfo(this.name, this.gameMode, this.hardcore, difficulty, this.allowCommands, this.gameRules, this.dataPackSettings);
 	}
 
-	public LevelInfo method_29557(DataPackSettings dataPackSettings) {
-		return new LevelInfo(this.name, this.gameMode, this.structures, this.difficulty, this.hardcore, this.gameRules, dataPackSettings);
+	public LevelInfo withDataPackSettings(DataPackSettings dataPackSettings) {
+		return new LevelInfo(this.name, this.gameMode, this.hardcore, this.difficulty, this.allowCommands, this.gameRules, dataPackSettings);
 	}
 
-	public LevelInfo method_28385() {
-		return new LevelInfo(this.name, this.gameMode, this.structures, this.difficulty, this.hardcore, this.gameRules.copy(), this.field_25403);
+	public LevelInfo withCopiedGameRules() {
+		return new LevelInfo(this.name, this.gameMode, this.hardcore, this.difficulty, this.allowCommands, this.gameRules.copy(), this.dataPackSettings);
 	}
 }

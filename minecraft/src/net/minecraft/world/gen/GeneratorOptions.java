@@ -93,7 +93,7 @@ public class GeneratorOptions {
 	}
 
 	public static SurfaceChunkGenerator createOverworldGenerator(long seed) {
-		return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType());
+		return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26355);
 	}
 
 	public long getSeed() {
@@ -232,19 +232,14 @@ public class GeneratorOptions {
 					l,
 					bl,
 					false,
-					method_28608(
-						simpleRegistry,
-						new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(l, false, false), l, ChunkGeneratorType.Preset.AMPLIFIED.getChunkGeneratorType())
-					)
+					method_28608(simpleRegistry, new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(l, false, false), l, () -> ChunkGeneratorType.field_26356))
 				);
 			case "largebiomes":
 				return new GeneratorOptions(
 					l,
 					bl,
 					false,
-					method_28608(
-						simpleRegistry, new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(l, false, true), l, ChunkGeneratorType.Preset.OVERWORLD.getChunkGeneratorType())
-					)
+					method_28608(simpleRegistry, new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(l, false, true), l, () -> ChunkGeneratorType.field_26355))
 				);
 			default:
 				return new GeneratorOptions(l, bl, false, method_28608(simpleRegistry, createOverworldGenerator(l)));

@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.predicate.NumberRange;
@@ -144,9 +144,9 @@ public class EntitySelector {
 
 	private void appendEntitiesFromWorld(List<Entity> list, ServerWorld serverWorld, Vec3d vec3d, Predicate<Entity> predicate) {
 		if (this.box != null) {
-			list.addAll(serverWorld.getEntities(this.type, this.box.offset(vec3d), predicate));
+			list.addAll(serverWorld.getEntitiesByType(this.type, this.box.offset(vec3d), predicate));
 		} else {
-			list.addAll(serverWorld.getEntities(this.type, predicate));
+			list.addAll(serverWorld.getEntitiesByType(this.type, predicate));
 		}
 	}
 

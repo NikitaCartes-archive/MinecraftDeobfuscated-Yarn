@@ -3,7 +3,7 @@ package net.minecraft.world.gen.decorator;
 import com.mojang.serialization.Codec;
 
 public class ChanceDecoratorConfig implements DecoratorConfig {
-	public static final Codec<ChanceDecoratorConfig> field_24980 = Codec.INT
+	public static final Codec<ChanceDecoratorConfig> CODEC = Codec.INT
 		.fieldOf("chance")
 		.<ChanceDecoratorConfig>xmap(ChanceDecoratorConfig::new, chanceDecoratorConfig -> chanceDecoratorConfig.chance)
 		.codec();

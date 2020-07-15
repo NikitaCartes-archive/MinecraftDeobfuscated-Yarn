@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 
@@ -25,7 +26,12 @@ public class DecoratedFeatureConfig implements FeatureConfig {
 
 	public String toString() {
 		return String.format(
-			"< %s [%s | %s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId(((ConfiguredFeature)this.feature.get()).method_30380()), this.decorator
+			"< %s [%s | %s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId(((ConfiguredFeature)this.feature.get()).getFeature()), this.decorator
 		);
+	}
+
+	@Override
+	public Stream<ConfiguredFeature<?, ?>> method_30649() {
+		return ((ConfiguredFeature)this.feature.get()).method_30648();
 	}
 }

@@ -72,5 +72,5 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 
 	void setTime(long time);
 
-	void setTimeOfDay(long time);
+	void setTimeOfDay(long timeOfDay);
 }

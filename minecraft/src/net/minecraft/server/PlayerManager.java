@@ -439,6 +439,7 @@ public abstract class PlayerManager {
 		this.players.remove(player);
 		player.getServerWorld().removePlayer(player);
 		BlockPos blockPos = player.getSpawnPointPosition();
+		float f = player.getSpawnAngle();
 		boolean bl = player.isSpawnPointSet();
 		ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
 		Optional<Vec3d> optional;
@@ -470,8 +471,8 @@ public abstract class PlayerManager {
 		boolean bl2 = false;
 		if (optional.isPresent()) {
 			Vec3d vec3d = (Vec3d)optional.get();
-			serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0F, 0.0F);
-			serverPlayerEntity.setSpawnPoint(serverWorld2.getRegistryKey(), blockPos, bl, false);
+			serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, 0.0F);
+			serverPlayerEntity.setSpawnPoint(serverWorld2.getRegistryKey(), blockPos, f, bl, false);
 			bl2 = !alive && serverWorld2.getBlockState(blockPos).getBlock() instanceof RespawnAnchorBlock;
 		} else if (blockPos != null) {
 			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0F));
@@ -497,7 +498,7 @@ public abstract class PlayerManager {
 			);
 		serverPlayerEntity.networkHandler
 			.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch);
-		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld2.getSpawnPos()));
+		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld2.getSpawnPos(), serverWorld2.method_30630()));
 		serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 		serverPlayerEntity.networkHandler
 			.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity.experienceProgress, serverPlayerEntity.totalExperience, serverPlayerEntity.experienceLevel));
@@ -688,7 +689,7 @@ public abstract class PlayerManager {
 		player.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
 		player.networkHandler
 			.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
-		player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos()));
+		player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos(), world.method_30630()));
 		if (world.isRaining()) {
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_STARTED, 0.0F));
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, world.getRainGradient(1.0F)));
