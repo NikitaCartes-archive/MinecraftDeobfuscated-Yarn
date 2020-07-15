@@ -30,7 +30,7 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.command.arguments.EntityAnchorArgumentType;
+import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.damage.DamageSource;
@@ -209,6 +209,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.dataTracker.startTracking(POSE, EntityPose.STANDING);
 		this.initDataTracker();
 		this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_30632(BlockPos blockPos, BlockState blockState) {
+		VoxelShape voxelShape = blockState.getCollisionShape(this.world, blockPos, ShapeContext.of(this));
+		VoxelShape voxelShape2 = voxelShape.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+		return VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(this.getBoundingBox()), BooleanBiFunction.AND);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -928,7 +935,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	private boolean isBeingRainedOn() {
 		BlockPos blockPos = this.getBlockPos();
-		return this.world.hasRain(blockPos) || this.world.hasRain(blockPos.add(0.0, (double)this.dimensions.height, 0.0));
+		return this.world.hasRain(blockPos) || this.world.hasRain(new BlockPos((double)blockPos.getX(), this.getBoundingBox().maxY, (double)blockPos.getZ()));
 	}
 
 	private boolean isInsideBubbleColumn() {
@@ -997,16 +1004,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
 		this.field_25599 = null;
 		double d = this.getEyeY() - 0.11111111F;
-		Vec3d vec3d = new Vec3d(this.getX(), d, this.getZ());
 		Entity entity = this.getVehicle();
 		if (entity instanceof BoatEntity) {
 			BoatEntity boatEntity = (BoatEntity)entity;
-			if (!boatEntity.isSubmergedInWater() && boatEntity.getBoundingBox().contains(vec3d)) {
+			if (!boatEntity.isSubmergedInWater() && boatEntity.getBoundingBox().maxY >= d && boatEntity.getBoundingBox().minY <= d) {
 				return;
 			}
 		}
 
-		BlockPos blockPos = new BlockPos(vec3d);
+		BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
 		FluidState fluidState = this.world.getFluidState(blockPos);
 
 		for (Tag<Fluid> tag : FluidTags.all()) {
@@ -1121,16 +1127,20 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-		double d = MathHelper.clamp(x, -3.0E7, 3.0E7);
-		double e = MathHelper.clamp(z, -3.0E7, 3.0E7);
-		this.prevX = d;
-		this.prevY = y;
-		this.prevZ = e;
-		this.updatePosition(d, y, e);
+		this.method_30634(x, y, z);
 		this.yaw = yaw % 360.0F;
 		this.pitch = MathHelper.clamp(pitch, -90.0F, 90.0F) % 360.0F;
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
+	}
+
+	public void method_30634(double d, double e, double f) {
+		double g = MathHelper.clamp(d, -3.0E7, 3.0E7);
+		double h = MathHelper.clamp(f, -3.0E7, 3.0E7);
+		this.prevX = g;
+		this.prevY = e;
+		this.prevZ = h;
+		this.updatePosition(g, e, h);
 	}
 
 	public void method_29495(Vec3d vec3d) {
@@ -2175,7 +2185,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 								class_5459.class_5460 lv = class_5459.method_30574(
 									this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState(blockPos) == blockState
 								);
-								vec3d = AreaHelper.method_30494(lv, axis, this.getPos(), this.getDimensions(this.getPose()));
+								vec3d = this.method_30633(axis, lv);
 							} else {
 								axis = Direction.Axis.X;
 								vec3d = new Vec3d(0.5, 0.0, 0.0);
@@ -2198,6 +2208,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 				new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), this.getVelocity(), this.yaw, this.pitch
 			);
 		}
+	}
+
+	protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
+		return AreaHelper.method_30494(arg, axis, this.getPos(), this.getDimensions(this.getPose()));
 	}
 
 	protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {

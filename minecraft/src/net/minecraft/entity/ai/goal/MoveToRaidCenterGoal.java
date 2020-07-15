@@ -58,7 +58,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			Set<RaiderEntity> set = Sets.<RaiderEntity>newHashSet();
 			List<RaiderEntity> list = this.actor
 				.world
-				.getEntities(
+				.getEntitiesByClass(
 					RaiderEntity.class,
 					this.actor.getBoundingBox().expand(16.0),
 					raiderEntityx -> !raiderEntityx.hasActiveRaid() && RaidManager.isValidRaiderFor(raiderEntityx, raid)

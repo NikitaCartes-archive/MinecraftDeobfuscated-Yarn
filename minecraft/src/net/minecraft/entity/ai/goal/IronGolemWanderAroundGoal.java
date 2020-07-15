@@ -51,7 +51,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 	@Nullable
 	private Vec3d method_27926() {
 		ServerWorld serverWorld = (ServerWorld)this.mob.world;
-		List<VillagerEntity> list = serverWorld.getEntities(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0), this::method_27922);
+		List<VillagerEntity> list = serverWorld.getEntitiesByType(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0), this::method_27922);
 		if (list.isEmpty()) {
 			return null;
 		} else {

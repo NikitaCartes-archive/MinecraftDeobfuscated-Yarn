@@ -290,7 +290,7 @@ public final class SpawnHelper {
 		} else if (!fluidState.isEmpty()) {
 			return false;
 		} else {
-			return state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE) ? false : !entityType.method_29496(state);
+			return state.isIn(BlockTags.PREVENT_MOB_SPAWNING_INSIDE) ? false : !entityType.isInvalidSpawn(state);
 		}
 	}
 

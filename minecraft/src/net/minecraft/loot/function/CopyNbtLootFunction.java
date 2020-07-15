@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.command.arguments.NbtPathArgumentType;
+import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;

@@ -33,22 +33,22 @@ public class TaigaVillageData {
 				new Identifier("village/taiga/streets"),
 				new Identifier("village/taiga/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/corner_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/corner_02", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/corner_03", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 4),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_02", ProcessorLists.STREET_SNOVY_OR_TAIGA), 4),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_03", ProcessorLists.STREET_SNOVY_OR_TAIGA), 4),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_04", ProcessorLists.STREET_SNOVY_OR_TAIGA), 7),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_05", ProcessorLists.STREET_SNOVY_OR_TAIGA), 7),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_06", ProcessorLists.STREET_SNOVY_OR_TAIGA), 4),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 1),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_02", ProcessorLists.STREET_SNOVY_OR_TAIGA), 1),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_03", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_04", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_05", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_06", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/turn_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 3)
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/corner_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/corner_02", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/corner_03", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_02", ProcessorLists.STREET_SNOWY_OR_TAIGA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_03", ProcessorLists.STREET_SNOWY_OR_TAIGA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_04", ProcessorLists.STREET_SNOWY_OR_TAIGA), 7),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_05", ProcessorLists.STREET_SNOWY_OR_TAIGA), 7),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/straight_06", ProcessorLists.STREET_SNOWY_OR_TAIGA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_02", ProcessorLists.STREET_SNOWY_OR_TAIGA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_03", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_04", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_05", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/crossroad_06", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/streets/turn_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 3)
 				),
 				StructurePool.Projection.TERRAIN_MATCHING
 			)
@@ -58,22 +58,22 @@ public class TaigaVillageData {
 				new Identifier("village/taiga/zombie/streets"),
 				new Identifier("village/taiga/terminators"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/corner_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/corner_02", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/corner_03", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 4),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_02", ProcessorLists.STREET_SNOVY_OR_TAIGA), 4),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_03", ProcessorLists.STREET_SNOVY_OR_TAIGA), 4),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_04", ProcessorLists.STREET_SNOVY_OR_TAIGA), 7),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_05", ProcessorLists.STREET_SNOVY_OR_TAIGA), 7),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_06", ProcessorLists.STREET_SNOVY_OR_TAIGA), 4),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 1),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_02", ProcessorLists.STREET_SNOVY_OR_TAIGA), 1),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_03", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_04", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_05", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_06", ProcessorLists.STREET_SNOVY_OR_TAIGA), 2),
-					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/turn_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 3)
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/corner_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/corner_02", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/corner_03", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_02", ProcessorLists.STREET_SNOWY_OR_TAIGA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_03", ProcessorLists.STREET_SNOWY_OR_TAIGA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_04", ProcessorLists.STREET_SNOWY_OR_TAIGA), 7),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_05", ProcessorLists.STREET_SNOWY_OR_TAIGA), 7),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/straight_06", ProcessorLists.STREET_SNOWY_OR_TAIGA), 4),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_02", ProcessorLists.STREET_SNOWY_OR_TAIGA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_03", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_04", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_05", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/crossroad_06", ProcessorLists.STREET_SNOWY_OR_TAIGA), 2),
+					Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/streets/turn_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 3)
 				),
 				StructurePool.Projection.TERRAIN_MATCHING
 			)
@@ -156,10 +156,10 @@ public class TaigaVillageData {
 				new Identifier("village/taiga/terminators"),
 				new Identifier("empty"),
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_01", ProcessorLists.STREET_SNOVY_OR_TAIGA), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_02", ProcessorLists.STREET_SNOVY_OR_TAIGA), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_03", ProcessorLists.STREET_SNOVY_OR_TAIGA), 1),
-					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_04", ProcessorLists.STREET_SNOVY_OR_TAIGA), 1)
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_01", ProcessorLists.STREET_SNOWY_OR_TAIGA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_02", ProcessorLists.STREET_SNOWY_OR_TAIGA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_03", ProcessorLists.STREET_SNOWY_OR_TAIGA), 1),
+					Pair.of(StructurePoolElement.method_30426("village/plains/terminators/terminator_04", ProcessorLists.STREET_SNOWY_OR_TAIGA), 1)
 				),
 				StructurePool.Projection.TERRAIN_MATCHING
 			)

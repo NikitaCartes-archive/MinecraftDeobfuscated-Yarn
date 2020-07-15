@@ -135,7 +135,7 @@ public class TripwireBlock extends Block {
 		BlockState blockState = world.getBlockState(pos);
 		boolean bl = (Boolean)blockState.get(POWERED);
 		boolean bl2 = false;
-		List<? extends Entity> list = world.getEntities(null, blockState.getOutlineShape(world, pos).getBoundingBox().offset(pos));
+		List<? extends Entity> list = world.getOtherEntities(null, blockState.getOutlineShape(world, pos).getBoundingBox().offset(pos));
 		if (!list.isEmpty()) {
 			for (Entity entity : list) {
 				if (!entity.canAvoidTraps()) {

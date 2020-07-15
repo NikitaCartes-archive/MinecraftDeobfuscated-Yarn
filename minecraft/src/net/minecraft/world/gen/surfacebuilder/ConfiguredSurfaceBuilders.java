@@ -64,7 +64,7 @@ public class ConfiguredSurfaceBuilders {
 		"wooded_badlands", SurfaceBuilder.WOODED_BADLANDS.method_30478(SurfaceBuilder.BADLANDS_CONFIG)
 	);
 
-	private static <SC extends SurfaceConfig> ConfiguredSurfaceBuilder<SC> register(String name, ConfiguredSurfaceBuilder<SC> configuredSurfaceBuilder) {
-		return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_SURFACE_BUILDER, name, configuredSurfaceBuilder);
+	private static <SC extends SurfaceConfig> ConfiguredSurfaceBuilder<SC> register(String id, ConfiguredSurfaceBuilder<SC> configuredSurfaceBuilder) {
+		return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_SURFACE_BUILDER, id, configuredSurfaceBuilder);
 	}
 }

@@ -3,11 +3,10 @@ package net.minecraft.world.gen.decorator;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.stream.Stream;
-import net.minecraft.class_5432;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
-public class ConfiguredDecorator<DC extends DecoratorConfig> implements class_5432<ConfiguredDecorator<?>> {
+public class ConfiguredDecorator<DC extends DecoratorConfig> implements Decoratable<ConfiguredDecorator<?>> {
 	public static final Codec<ConfiguredDecorator<?>> CODEC = Registry.DECORATOR
 		.dispatch("name", configuredDecorator -> configuredDecorator.decorator, Decorator::getCodec);
 	private final Decorator<DC> decorator;
@@ -26,7 +25,7 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> implements class_54
 		return String.format("[%s %s]", Registry.DECORATOR.getId(this.decorator), this.config);
 	}
 
-	public ConfiguredDecorator<?> method_30374(ConfiguredDecorator<?> configuredDecorator) {
+	public ConfiguredDecorator<?> decorate(ConfiguredDecorator<?> configuredDecorator) {
 		return new ConfiguredDecorator<>(Decorator.DECORATED, new DecoratedDecoratorConfig(configuredDecorator, this));
 	}
 

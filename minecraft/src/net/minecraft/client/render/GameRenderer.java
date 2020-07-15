@@ -548,7 +548,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			NativeImage nativeImage = ScreenshotUtils.takeScreenshot(
 				this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer()
 			);
-			Util.method_27958().execute(() -> {
+			Util.getIoWorkerExecutor().execute(() -> {
 				int i = nativeImage.getWidth();
 				int j = nativeImage.getHeight();
 				int k = 0;

@@ -165,7 +165,7 @@ public class ItemEntity extends Entity {
 	private void tryMerge() {
 		if (this.canMerge()) {
 			for (ItemEntity itemEntity : this.world
-				.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntityx -> itemEntityx != this && itemEntityx.canMerge())) {
+				.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntityx -> itemEntityx != this && itemEntityx.canMerge())) {
 				if (itemEntity.canMerge()) {
 					this.tryMerge(itemEntity);
 					if (this.removed) {

@@ -1,7 +1,7 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.command.arguments.MessageArgumentType;
+import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;

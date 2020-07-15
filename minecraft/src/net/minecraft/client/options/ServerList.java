@@ -57,7 +57,7 @@ public class ServerList {
 			NbtIo.write(compoundTag, file);
 			File file2 = new File(this.client.runDirectory, "servers.dat_old");
 			File file3 = new File(this.client.runDirectory, "servers.dat");
-			Util.method_27760(file3, file, file2);
+			Util.backupAndReplace(file3, file, file2);
 		} catch (Exception var6) {
 			LOGGER.error("Couldn't save server list", (Throwable)var6);
 		}

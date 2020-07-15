@@ -252,7 +252,8 @@ public class EntityType<T extends Entity> {
 			.trackingTickInterval(10)
 	);
 	public static final EntityType<FoxEntity> FOX = register(
-		"fox", EntityType.Builder.create(FoxEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8).method_29497(Blocks.SWEET_BERRY_BUSH)
+		"fox",
+		EntityType.Builder.create(FoxEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8).allowSpawningInside(Blocks.SWEET_BERRY_BUSH)
 	);
 	public static final EntityType<GhastEntity> GHAST = register(
 		"ghast", EntityType.Builder.create(GhastEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(4.0F, 4.0F).maxTrackingRange(10)
@@ -508,7 +509,7 @@ public class EntityType<T extends Entity> {
 		"wither",
 		EntityType.Builder.create(WitherEntity::new, SpawnGroup.MONSTER)
 			.makeFireImmune()
-			.method_29497(Blocks.WITHER_ROSE)
+			.allowSpawningInside(Blocks.WITHER_ROSE)
 			.setDimensions(0.9F, 3.5F)
 			.maxTrackingRange(10)
 	);
@@ -516,7 +517,7 @@ public class EntityType<T extends Entity> {
 		"wither_skeleton",
 		EntityType.Builder.create(WitherSkeletonEntity::new, SpawnGroup.MONSTER)
 			.makeFireImmune()
-			.method_29497(Blocks.WITHER_ROSE)
+			.allowSpawningInside(Blocks.WITHER_ROSE)
 			.setDimensions(0.7F, 2.4F)
 			.maxTrackingRange(8)
 	);
@@ -565,7 +566,7 @@ public class EntityType<T extends Entity> {
 	);
 	private final EntityType.EntityFactory<T> factory;
 	private final SpawnGroup spawnGroup;
-	private final ImmutableSet<Block> field_25355;
+	private final ImmutableSet<Block> canSpawnInside;
 	private final boolean saveable;
 	private final boolean summonable;
 	private final boolean fireImmune;
@@ -610,7 +611,7 @@ public class EntityType<T extends Entity> {
 		this.saveable = saveable;
 		this.summonable = summonable;
 		this.fireImmune = fireImmune;
-		this.field_25355 = immutableSet;
+		this.canSpawnInside = immutableSet;
 		this.dimensions = entityDimensions;
 		this.maxTrackDistance = i;
 		this.trackTickInterval = j;
@@ -809,8 +810,16 @@ public class EntityType<T extends Entity> {
 		return new Box(feetX - (double)f, feetY, feetZ - (double)f, feetX + (double)f, feetY + (double)this.getHeight(), feetZ + (double)f);
 	}
 
-	public boolean method_29496(BlockState blockState) {
-		if (this.field_25355.contains(blockState.getBlock())) {
+	/**
+	 * Returns whether the EntityType can spawn inside the given block.
+	 * 
+	 * <p>By default, non-fire-immune mobs can't spawn in/on blocks dealing fire damage.
+	 * Any mob can't spawn in wither roses, sweet berry bush, or cacti.
+	 * 
+	 * <p>This can be overwritten via {@link EntityType.Builder#allowSpawningInside(Block[])}
+	 */
+	public boolean isInvalidSpawn(BlockState blockState) {
+		if (this.canSpawnInside.contains(blockState.getBlock())) {
 			return false;
 		} else {
 			return this.fireImmune
@@ -887,7 +896,7 @@ public class EntityType<T extends Entity> {
 	public static class Builder<T extends Entity> {
 		private final EntityType.EntityFactory<T> factory;
 		private final SpawnGroup spawnGroup;
-		private ImmutableSet<Block> field_25356 = ImmutableSet.of();
+		private ImmutableSet<Block> canSpawnInside = ImmutableSet.of();
 		private boolean saveable = true;
 		private boolean summonable = true;
 		private boolean fireImmune;
@@ -930,8 +939,18 @@ public class EntityType<T extends Entity> {
 			return this;
 		}
 
-		public EntityType.Builder<T> method_29497(Block... blocks) {
-			this.field_25356 = ImmutableSet.copyOf(blocks);
+		/**
+		 * Allows this type of entity to spawn inside the given block, bypassing the default
+		 * wither rose, sweet berry bush, cactus, and fire-damage-dealing blocks for
+		 * non-fire-resistant mobs.
+		 * 
+		 * <p>{@code minecraft:prevent_mob_spawning_inside} tag overrides this.
+		 * With this setting, fire resistant mobs can spawn on/in fire damage dealing blocks,
+		 * and wither skeletons can spawn in wither roses. If a block added is not in the default
+		 * blacklist, the addition has no effect.
+		 */
+		public EntityType.Builder<T> allowSpawningInside(Block... blocks) {
+			this.canSpawnInside = ImmutableSet.copyOf(blocks);
 			return this;
 		}
 
@@ -962,7 +981,7 @@ public class EntityType<T extends Entity> {
 				this.summonable,
 				this.fireImmune,
 				this.spawnableFarFromPlayer,
-				this.field_25356,
+				this.canSpawnInside,
 				this.dimensions,
 				this.maxTrackingRange,
 				this.trackingTickInterval

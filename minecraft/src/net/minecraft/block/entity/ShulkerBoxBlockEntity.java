@@ -118,7 +118,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		if (blockState.getBlock() instanceof ShulkerBoxBlock) {
 			Direction direction = blockState.get(ShulkerBoxBlock.FACING);
 			Box box = this.getCollisionBox(direction).offset(this.pos);
-			List<Entity> list = this.world.getEntities(null, box);
+			List<Entity> list = this.world.getOtherEntities(null, box);
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {
 					Entity entity = (Entity)list.get(i);

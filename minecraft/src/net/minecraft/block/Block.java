@@ -102,7 +102,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		VoxelShape voxelShape = VoxelShapes.combine(from.getCollisionShape(world, pos), to.getCollisionShape(world, pos), BooleanBiFunction.ONLY_SECOND)
 			.offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 
-		for (Entity entity : world.getEntities(null, voxelShape.getBoundingBox())) {
+		for (Entity entity : world.getOtherEntities(null, voxelShape.getBoundingBox())) {
 			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
 			entity.requestTeleport(entity.getX(), entity.getY() + 1.0 + d, entity.getZ());
 		}

@@ -57,7 +57,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 		List<? extends Entity> list;
 		switch (this.type) {
 			case EVERYTHING:
-				list = world.getEntities(null, box);
+				list = world.getOtherEntities(null, box);
 				break;
 			case MOBS:
 				list = world.getNonSpectatingEntities(LivingEntity.class, box);

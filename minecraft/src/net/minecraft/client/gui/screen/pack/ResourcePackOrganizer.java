@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ResourcePackOrganizer {
-	private final ResourcePackManager field_25626;
+	private final ResourcePackManager resourcePackManager;
 	private final List<ResourcePackProfile> enabledPacks;
 	private final List<ResourcePackProfile> disabledPacks;
 	private final Function<ResourcePackProfile, Identifier> field_25785;
@@ -32,7 +32,7 @@ public class ResourcePackOrganizer {
 	) {
 		this.updateCallback = updateCallback;
 		this.field_25785 = function;
-		this.field_25626 = resourcePackManager;
+		this.resourcePackManager = resourcePackManager;
 		this.enabledPacks = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		Collections.reverse(this.enabledPacks);
 		this.disabledPacks = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getProfiles());
@@ -49,18 +49,18 @@ public class ResourcePackOrganizer {
 	}
 
 	public void apply() {
-		this.field_25626
+		this.resourcePackManager
 			.setEnabledProfiles((Collection<String>)Lists.reverse(this.enabledPacks).stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList()));
-		this.applier.accept(this.field_25626);
+		this.applier.accept(this.resourcePackManager);
 	}
 
-	public void method_29981() {
-		this.field_25626.scanPacks();
+	public void refresh() {
+		this.resourcePackManager.scanPacks();
 		this.enabledPacks.clear();
-		this.enabledPacks.addAll(this.field_25626.getEnabledProfiles());
+		this.enabledPacks.addAll(this.resourcePackManager.getEnabledProfiles());
 		Collections.reverse(this.enabledPacks);
 		this.disabledPacks.clear();
-		this.disabledPacks.addAll(this.field_25626.getProfiles());
+		this.disabledPacks.addAll(this.resourcePackManager.getProfiles());
 		this.disabledPacks.removeAll(this.enabledPacks);
 	}
 

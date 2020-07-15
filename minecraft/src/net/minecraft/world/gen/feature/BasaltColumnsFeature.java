@@ -38,7 +38,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		if (!method_30379(serverWorldAccess, i, blockPos.mutableCopy())) {
 			return false;
 		} else {
-			int j = basaltColumnsFeatureConfig.method_30394().method_30321(random);
+			int j = basaltColumnsFeatureConfig.method_30394().getValue(random);
 			boolean bl = random.nextFloat() < 0.9F;
 			int k = Math.min(j, bl ? 5 : 8);
 			int l = bl ? 50 : 15;
@@ -49,7 +49,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 			)) {
 				int m = j - blockPos2.getManhattanDistance(blockPos);
 				if (m >= 0) {
-					bl2 |= this.method_27096(serverWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.method_30391().method_30321(random));
+					bl2 |= this.method_27096(serverWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.method_30391().getValue(random));
 				}
 			}
 

@@ -88,7 +88,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 
 	@Nullable
 	private ItemFrameEntity getAttachedItemFrame(World world, Direction facing, BlockPos pos) {
-		List<ItemFrameEntity> list = world.getEntities(
+		List<ItemFrameEntity> list = world.getEntitiesByClass(
 			ItemFrameEntity.class,
 			new Box((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), (double)(pos.getX() + 1), (double)(pos.getY() + 1), (double)(pos.getZ() + 1)),
 			itemFrameEntity -> itemFrameEntity != null && itemFrameEntity.getHorizontalFacing() == facing

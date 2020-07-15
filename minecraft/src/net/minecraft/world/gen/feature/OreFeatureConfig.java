@@ -28,9 +28,9 @@ public class OreFeatureConfig implements FeatureConfig {
 		this.target = ruleTest;
 	}
 
-	public static final class class_5436 {
-		public static final RuleTest field_25845 = new TagMatchRuleTest(BlockTags.BASE_STONE_OVERWORLD);
-		public static final RuleTest field_25846 = new BlockMatchRuleTest(Blocks.NETHERRACK);
-		public static final RuleTest field_25847 = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
+	public static final class Rules {
+		public static final RuleTest BASE_STONE_OVERWORLD = new TagMatchRuleTest(BlockTags.BASE_STONE_OVERWORLD);
+		public static final RuleTest NETHERRACK = new BlockMatchRuleTest(Blocks.NETHERRACK);
+		public static final RuleTest BASE_STONE_NETHER = new TagMatchRuleTest(BlockTags.BASE_STONE_NETHER);
 	}
 }

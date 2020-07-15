@@ -33,7 +33,7 @@ public class ArmorStandItem extends Item {
 			ItemStack itemStack = context.getStack();
 			Vec3d vec3d = Vec3d.ofBottomCenter(blockPos);
 			Box box = EntityType.ARMOR_STAND.getDimensions().method_30231(vec3d.getX(), vec3d.getY(), vec3d.getZ());
-			if (world.doesNotCollide(null, box, entity -> true) && world.getEntities(null, box).isEmpty()) {
+			if (world.doesNotCollide(null, box, entity -> true) && world.getOtherEntities(null, box).isEmpty()) {
 				if (world instanceof ServerWorld) {
 					ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND
 						.create((ServerWorld)world, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);

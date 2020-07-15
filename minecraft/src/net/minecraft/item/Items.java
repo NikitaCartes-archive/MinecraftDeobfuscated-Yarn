@@ -619,9 +619,6 @@ public class Items {
 		"turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, EquipmentSlot.HEAD, new Item.Settings().group(ItemGroup.COMBAT))
 	);
 	public static final Item SCUTE = register("scute", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item IRON_SHOVEL = register("iron_shovel", new ShovelItem(ToolMaterials.IRON, 1.5F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item IRON_PICKAXE = register("iron_pickaxe", new PickaxeItem(ToolMaterials.IRON, 1, -2.8F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item IRON_AXE = register("iron_axe", new AxeItem(ToolMaterials.IRON, 6.0F, -3.1F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64).group(ItemGroup.TOOLS)));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
 	public static final Item BOW = register("bow", new BowItem(new Item.Settings().maxDamage(384).group(ItemGroup.COMBAT)));
@@ -633,15 +630,26 @@ public class Items {
 	public static final Item GOLD_INGOT = register("gold_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item NETHERITE_INGOT = register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
 	public static final Item NETHERITE_SCRAP = register("netherite_scrap", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
-	public static final Item IRON_SWORD = register("iron_sword", new SwordItem(ToolMaterials.IRON, 3, -2.4F, new Item.Settings().group(ItemGroup.COMBAT)));
 	public static final Item WOODEN_SWORD = register("wooden_sword", new SwordItem(ToolMaterials.WOOD, 3, -2.4F, new Item.Settings().group(ItemGroup.COMBAT)));
 	public static final Item WOODEN_SHOVEL = register("wooden_shovel", new ShovelItem(ToolMaterials.WOOD, 1.5F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item WOODEN_PICKAXE = register("wooden_pickaxe", new PickaxeItem(ToolMaterials.WOOD, 1, -2.8F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item WOODEN_AXE = register("wooden_axe", new AxeItem(ToolMaterials.WOOD, 6.0F, -3.2F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item WOODEN_HOE = register("wooden_hoe", new HoeItem(ToolMaterials.WOOD, 0, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item STONE_SWORD = register("stone_sword", new SwordItem(ToolMaterials.STONE, 3, -2.4F, new Item.Settings().group(ItemGroup.COMBAT)));
 	public static final Item STONE_SHOVEL = register("stone_shovel", new ShovelItem(ToolMaterials.STONE, 1.5F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item STONE_PICKAXE = register("stone_pickaxe", new PickaxeItem(ToolMaterials.STONE, 1, -2.8F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item STONE_AXE = register("stone_axe", new AxeItem(ToolMaterials.STONE, 7.0F, -3.2F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item STONE_HOE = register("stone_hoe", new HoeItem(ToolMaterials.STONE, -1, -2.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item GOLDEN_SWORD = register("golden_sword", new SwordItem(ToolMaterials.GOLD, 3, -2.4F, new Item.Settings().group(ItemGroup.COMBAT)));
+	public static final Item GOLDEN_SHOVEL = register("golden_shovel", new ShovelItem(ToolMaterials.GOLD, 1.5F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item GOLDEN_PICKAXE = register("golden_pickaxe", new PickaxeItem(ToolMaterials.GOLD, 1, -2.8F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item GOLDEN_AXE = register("golden_axe", new AxeItem(ToolMaterials.GOLD, 6.0F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item GOLDEN_HOE = register("golden_hoe", new HoeItem(ToolMaterials.GOLD, 0, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item IRON_SWORD = register("iron_sword", new SwordItem(ToolMaterials.IRON, 3, -2.4F, new Item.Settings().group(ItemGroup.COMBAT)));
+	public static final Item IRON_SHOVEL = register("iron_shovel", new ShovelItem(ToolMaterials.IRON, 1.5F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item IRON_PICKAXE = register("iron_pickaxe", new PickaxeItem(ToolMaterials.IRON, 1, -2.8F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item IRON_AXE = register("iron_axe", new AxeItem(ToolMaterials.IRON, 6.0F, -3.1F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item IRON_HOE = register("iron_hoe", new HoeItem(ToolMaterials.IRON, -2, -1.0F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item DIAMOND_SWORD = register("diamond_sword", new SwordItem(ToolMaterials.DIAMOND, 3, -2.4F, new Item.Settings().group(ItemGroup.COMBAT)));
 	public static final Item DIAMOND_SHOVEL = register(
 		"diamond_shovel", new ShovelItem(ToolMaterials.DIAMOND, 1.5F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS))
@@ -650,15 +658,7 @@ public class Items {
 		"diamond_pickaxe", new PickaxeItem(ToolMaterials.DIAMOND, 1, -2.8F, new Item.Settings().group(ItemGroup.TOOLS))
 	);
 	public static final Item DIAMOND_AXE = register("diamond_axe", new AxeItem(ToolMaterials.DIAMOND, 5.0F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item STICK = register("stick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item BOWL = register("bowl", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item MUSHROOM_STEW = register(
-		"mushroom_stew", new MushroomStewItem(new Item.Settings().maxCount(1).group(ItemGroup.FOOD).food(FoodComponents.MUSHROOM_STEW))
-	);
-	public static final Item GOLDEN_SWORD = register("golden_sword", new SwordItem(ToolMaterials.GOLD, 3, -2.4F, new Item.Settings().group(ItemGroup.COMBAT)));
-	public static final Item GOLDEN_SHOVEL = register("golden_shovel", new ShovelItem(ToolMaterials.GOLD, 1.5F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item GOLDEN_PICKAXE = register("golden_pickaxe", new PickaxeItem(ToolMaterials.GOLD, 1, -2.8F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item GOLDEN_AXE = register("golden_axe", new AxeItem(ToolMaterials.GOLD, 6.0F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item DIAMOND_HOE = register("diamond_hoe", new HoeItem(ToolMaterials.DIAMOND, -3, 0.0F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item NETHERITE_SWORD = register(
 		"netherite_sword", new SwordItem(ToolMaterials.NETHERITE, 3, -2.4F, new Item.Settings().group(ItemGroup.COMBAT).fireproof())
 	);
@@ -671,17 +671,17 @@ public class Items {
 	public static final Item NETHERITE_AXE = register(
 		"netherite_axe", new AxeItem(ToolMaterials.NETHERITE, 5.0F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS).fireproof())
 	);
-	public static final Item STRING = register("string", new AliasedBlockItem(Blocks.TRIPWIRE, new Item.Settings().group(ItemGroup.MISC)));
-	public static final Item FEATHER = register("feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item GUNPOWDER = register("gunpowder", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item WOODEN_HOE = register("wooden_hoe", new HoeItem(ToolMaterials.WOOD, 0, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item STONE_HOE = register("stone_hoe", new HoeItem(ToolMaterials.STONE, -1, -2.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item IRON_HOE = register("iron_hoe", new HoeItem(ToolMaterials.IRON, -2, -1.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item DIAMOND_HOE = register("diamond_hoe", new HoeItem(ToolMaterials.DIAMOND, -3, 0.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item GOLDEN_HOE = register("golden_hoe", new HoeItem(ToolMaterials.GOLD, 0, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item NETHERITE_HOE = register(
 		"netherite_hoe", new HoeItem(ToolMaterials.NETHERITE, -4, 0.0F, new Item.Settings().group(ItemGroup.TOOLS).fireproof())
 	);
+	public static final Item STICK = register("stick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+	public static final Item BOWL = register("bowl", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+	public static final Item MUSHROOM_STEW = register(
+		"mushroom_stew", new MushroomStewItem(new Item.Settings().maxCount(1).group(ItemGroup.FOOD).food(FoodComponents.MUSHROOM_STEW))
+	);
+	public static final Item STRING = register("string", new AliasedBlockItem(Blocks.TRIPWIRE, new Item.Settings().group(ItemGroup.MISC)));
+	public static final Item FEATHER = register("feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+	public static final Item GUNPOWDER = register("gunpowder", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item WHEAT_SEEDS = register("wheat_seeds", new AliasedBlockItem(Blocks.WHEAT, new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item WHEAT = register("wheat", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item BREAD = register("bread", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.BREAD)));

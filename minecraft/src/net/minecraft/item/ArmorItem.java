@@ -46,7 +46,7 @@ public class ArmorItem extends Item implements Wearable {
 	public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
 		BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 		List<LivingEntity> list = pointer.getWorld()
-			.getEntities(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(armor)));
+			.getEntitiesByClass(LivingEntity.class, new Box(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(armor)));
 		if (list.isEmpty()) {
 			return false;
 		} else {

@@ -22,6 +22,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.TransformingVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -180,9 +181,13 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
-		return glint
-			? VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
-			: vertexConsumers.getBuffer(layer);
+		if (glint) {
+			return MinecraftClient.isFabulousGraphicsOrBetter() && layer == TexturedRenderLayers.getItemEntityTranslucentCull()
+				? VertexConsumers.dual(vertexConsumers.getBuffer(RenderLayer.method_30676()), vertexConsumers.getBuffer(layer))
+				: VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer));
+		} else {
+			return vertexConsumers.getBuffer(layer);
+		}
 	}
 
 	public static VertexConsumer getDirectGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer layer, boolean bl, boolean glint) {

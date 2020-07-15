@@ -3,7 +3,7 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.Collection;
-import net.minecraft.command.arguments.FunctionArgumentType;
+import net.minecraft.command.argument.FunctionArgumentType;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.TranslatableText;

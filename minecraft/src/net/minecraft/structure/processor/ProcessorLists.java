@@ -83,8 +83,8 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ImmutableList<StructureProcessor> ZOMBIE_SNOVY = register(
-		"zombie_snovy",
+	public static final ImmutableList<StructureProcessor> ZOMBIE_SNOWY = register(
+		"zombie_snowy",
 		ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
@@ -221,8 +221,8 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ImmutableList<StructureProcessor> STREET_SNOVY_OR_TAIGA = register(
-		"street_snovy_or_taiga",
+	public static final ImmutableList<StructureProcessor> STREET_SNOWY_OR_TAIGA = register(
+		"street_snowy_or_taiga",
 		ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
@@ -256,8 +256,8 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ImmutableList<StructureProcessor> FARM_SNOVY = register(
-		"farm_snovy",
+	public static final ImmutableList<StructureProcessor> FARM_SNOWY = register(
+		"farm_snowy",
 		ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
@@ -509,7 +509,7 @@ public class ProcessorLists {
 		)
 	);
 
-	private static ImmutableList<StructureProcessor> register(String name, ImmutableList<StructureProcessor> processorList) {
-		return BuiltinRegistries.add(BuiltinRegistries.PROCESSOR_LIST, name, processorList);
+	private static ImmutableList<StructureProcessor> register(String id, ImmutableList<StructureProcessor> processorList) {
+		return BuiltinRegistries.add(BuiltinRegistries.PROCESSOR_LIST, id, processorList);
 	}
 }

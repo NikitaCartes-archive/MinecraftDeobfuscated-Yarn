@@ -15,7 +15,7 @@ public class ConfiguredCarvers {
 	);
 	public static final ConfiguredCarver<ProbabilityConfig> NETHER_CAVE = register("nether_cave", Carver.NETHER_CAVE.method_28614(new ProbabilityConfig(0.2F)));
 
-	private static <WC extends CarverConfig> ConfiguredCarver<WC> register(String name, ConfiguredCarver<WC> configuredCarver) {
-		return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_CARVER, name, configuredCarver);
+	private static <WC extends CarverConfig> ConfiguredCarver<WC> register(String id, ConfiguredCarver<WC> configuredCarver) {
+		return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_CARVER, id, configuredCarver);
 	}
 }

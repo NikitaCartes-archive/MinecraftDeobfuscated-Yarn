@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
-import net.minecraft.command.arguments.MessageArgumentType;
+import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.server.BannedIpEntry;
 import net.minecraft.server.BannedIpList;
 import net.minecraft.server.command.CommandManager;

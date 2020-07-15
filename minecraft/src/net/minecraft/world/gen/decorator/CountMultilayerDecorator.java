@@ -24,7 +24,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 		do {
 			bl = false;
 
-			for (int j = 0; j < countConfig.method_30396().method_30321(random); j++) {
+			for (int j = 0; j < countConfig.method_30396().getValue(random); j++) {
 				int k = random.nextInt(16) + blockPos.getX();
 				int l = random.nextInt(16) + blockPos.getZ();
 				int m = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);

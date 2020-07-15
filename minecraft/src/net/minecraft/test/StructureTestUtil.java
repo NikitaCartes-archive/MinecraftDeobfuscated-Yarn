@@ -18,7 +18,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
-import net.minecraft.command.arguments.BlockStateArgument;
+import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -134,7 +134,7 @@ public class StructureTestUtil {
 		world.getBlockTickScheduler().getScheduledTicks(blockBox, true, false);
 		world.clearUpdatesInArea(blockBox);
 		Box box = new Box((double)blockBox.minX, (double)blockBox.minY, (double)blockBox.minZ, (double)blockBox.maxX, (double)blockBox.maxY, (double)blockBox.maxZ);
-		List<Entity> list = world.getEntities(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
+		List<Entity> list = world.getEntitiesByClass(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
 		list.forEach(Entity::remove);
 	}
 

@@ -52,7 +52,7 @@ public class ScreenshotUtils {
 			file2 = new File(file, fileName);
 		}
 
-		Util.method_27958()
+		Util.getIoWorkerExecutor()
 			.execute(
 				() -> {
 					try {

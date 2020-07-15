@@ -109,7 +109,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 
 	private void damageEntitiesHurtByWater() {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, box, WATER_HURTS);
+		List<LivingEntity> list = this.world.getEntitiesByClass(LivingEntity.class, box, WATER_HURTS);
 		if (!list.isEmpty()) {
 			for (LivingEntity livingEntity : list) {
 				double d = this.squaredDistanceTo(livingEntity);

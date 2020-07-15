@@ -73,10 +73,9 @@ public class StateManager<O, S extends State<O, S>> {
 	private static <S extends State<?, S>, T extends Comparable<T>> MapCodec<S> method_30040(
 		MapCodec<S> mapCodec, Supplier<S> supplier, String string, Property<T> property
 	) {
-		return Codec.mapPair(mapCodec, property.method_30044().fieldOf(string).setPartial(() -> property.method_30041((State<?, ?>)supplier.get())))
+		return Codec.mapPair(mapCodec, property.getValueCodec().fieldOf(string).setPartial(() -> property.createValue((State<?, ?>)supplier.get())))
 			.xmap(
-				pair -> (State)((State)pair.getFirst()).with(property, ((Property.class_4933)pair.getSecond()).method_30045()),
-				state -> Pair.of(state, property.method_30041(state))
+				pair -> (State)((State)pair.getFirst()).with(property, ((Property.Value)pair.getSecond()).getValue()), state -> Pair.of(state, property.createValue(state))
 			);
 	}
 

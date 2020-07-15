@@ -221,7 +221,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	public static boolean imitateNearbyMob(World world, Entity parrot) {
 		if (parrot.isAlive() && !parrot.isSilent() && world.random.nextInt(2) == 0) {
-			List<MobEntity> list = world.getEntities(MobEntity.class, parrot.getBoundingBox().expand(20.0), CAN_IMITATE);
+			List<MobEntity> list = world.getEntitiesByClass(MobEntity.class, parrot.getBoundingBox().expand(20.0), CAN_IMITATE);
 			if (!list.isEmpty()) {
 				MobEntity mobEntity = (MobEntity)list.get(world.random.nextInt(list.size()));
 				if (!mobEntity.isSilent()) {

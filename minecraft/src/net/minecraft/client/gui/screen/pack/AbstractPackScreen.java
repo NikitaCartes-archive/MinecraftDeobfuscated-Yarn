@@ -50,11 +50,11 @@ public class AbstractPackScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.DARK_GRAY);
 	private static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");
-	private static final Identifier field_25786 = new Identifier("textures/misc/unknown_pack.png");
+	private static final Identifier UNKNOWN_PACK = new Identifier("textures/misc/unknown_pack.png");
 	private final ResourcePackOrganizer organizer;
 	private final Screen parent;
 	@Nullable
-	private AbstractPackScreen.class_5426 field_25787;
+	private AbstractPackScreen.DirectoryWatcher directoryWatcher;
 	private long field_25788;
 	private PackListWidget availablePackList;
 	private PackListWidget selectedPackList;
@@ -69,21 +69,21 @@ public class AbstractPackScreen extends Screen {
 		this.parent = screen;
 		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, resourcePackManager, consumer);
 		this.field_25474 = file;
-		this.field_25787 = AbstractPackScreen.class_5426.method_30293(file);
+		this.directoryWatcher = AbstractPackScreen.DirectoryWatcher.create(file);
 	}
 
 	@Override
 	public void onClose() {
 		this.organizer.apply();
 		this.client.openScreen(this.parent);
-		this.method_30291();
+		this.closeDirectoryWatcher();
 	}
 
-	private void method_30291() {
-		if (this.field_25787 != null) {
+	private void closeDirectoryWatcher() {
+		if (this.directoryWatcher != null) {
 			try {
-				this.field_25787.close();
-				this.field_25787 = null;
+				this.directoryWatcher.close();
+				this.directoryWatcher = null;
 			} catch (Exception var2) {
 			}
 		}
@@ -109,24 +109,24 @@ public class AbstractPackScreen extends Screen {
 		this.selectedPackList = new PackListWidget(this.client, 200, this.height, new TranslatableText("pack.selected.title"));
 		this.selectedPackList.setLeftPos(this.width / 2 + 4);
 		this.children.add(this.selectedPackList);
-		this.method_29680();
+		this.refresh();
 	}
 
 	@Override
 	public void tick() {
-		if (this.field_25787 != null) {
+		if (this.directoryWatcher != null) {
 			try {
-				if (this.field_25787.method_30292()) {
+				if (this.directoryWatcher.pollForChange()) {
 					this.field_25788 = 20L;
 				}
 			} catch (IOException var2) {
 				LOGGER.warn("Failed to poll for directory {} changes, stopping", this.field_25474);
-				this.method_30291();
+				this.closeDirectoryWatcher();
 			}
 		}
 
 		if (this.field_25788 > 0L && --this.field_25788 == 0L) {
-			this.method_29680();
+			this.refresh();
 		}
 	}
 
@@ -141,8 +141,8 @@ public class AbstractPackScreen extends Screen {
 		packs.forEach(pack -> widget.children().add(new PackListWidget.ResourcePackEntry(this.client, widget, this, pack)));
 	}
 
-	private void method_29680() {
-		this.organizer.method_29981();
+	private void refresh() {
+		this.organizer.refresh();
 		this.updatePackLists();
 		this.field_25788 = 0L;
 		this.field_25789.clear();
@@ -168,7 +168,7 @@ public class AbstractPackScreen extends Screen {
 				try {
 					stream.forEach(path3 -> {
 						try {
-							Util.method_29775(path2.getParent(), path, path3);
+							Util.relativeCopy(path2.getParent(), path, path3);
 						} catch (IOException var5) {
 							LOGGER.warn("Failed to copy datapack file  from {} to {}", path3, path, var5);
 							mutableBoolean.setTrue();
@@ -206,7 +206,7 @@ public class AbstractPackScreen extends Screen {
 		this.client.openScreen(new ConfirmScreen(bl -> {
 			if (bl) {
 				method_29669(this.client, paths, this.field_25474.toPath());
-				this.method_29680();
+				this.refresh();
 			}
 
 			this.client.openScreen(this);
@@ -222,7 +222,7 @@ public class AbstractPackScreen extends Screen {
 			try {
 				String string = resourcePackProfile.getName();
 				Identifier identifier = new Identifier(
-					"minecraft", "pack/" + Util.method_30309(string, Identifier::method_29184) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
+					"minecraft", "pack/" + Util.replaceInvalidChars(string, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
 				);
 				NativeImage nativeImage = NativeImage.read(inputStream);
 				textureManager.registerTexture(identifier, new NativeImageBackedTexture(nativeImage));
@@ -250,7 +250,7 @@ public class AbstractPackScreen extends Screen {
 			LOGGER.warn("Failed to load icon from pack {}", resourcePackProfile.getName(), var42);
 		}
 
-		return field_25786;
+		return UNKNOWN_PACK;
 	}
 
 	private Identifier method_30287(ResourcePackProfile resourcePackProfile) {
@@ -259,23 +259,23 @@ public class AbstractPackScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_5426 implements AutoCloseable {
-		private final WatchService field_25790;
-		private final Path field_25791;
+	static class DirectoryWatcher implements AutoCloseable {
+		private final WatchService watchService;
+		private final Path path;
 
-		public class_5426(File file) throws IOException {
-			this.field_25791 = file.toPath();
-			this.field_25790 = this.field_25791.getFileSystem().newWatchService();
+		public DirectoryWatcher(File file) throws IOException {
+			this.path = file.toPath();
+			this.watchService = this.path.getFileSystem().newWatchService();
 
 			try {
-				this.method_30294(this.field_25791);
-				DirectoryStream<Path> directoryStream = Files.newDirectoryStream(this.field_25791);
+				this.watchDirectory(this.path);
+				DirectoryStream<Path> directoryStream = Files.newDirectoryStream(this.path);
 				Throwable var3 = null;
 
 				try {
 					for (Path path : directoryStream) {
 						if (Files.isDirectory(path, new LinkOption[]{LinkOption.NOFOLLOW_LINKS})) {
-							this.method_30294(path);
+							this.watchDirectory(path);
 						}
 					}
 				} catch (Throwable var14) {
@@ -295,36 +295,36 @@ public class AbstractPackScreen extends Screen {
 					}
 				}
 			} catch (Exception var16) {
-				this.field_25790.close();
+				this.watchService.close();
 				throw var16;
 			}
 		}
 
 		@Nullable
-		public static AbstractPackScreen.class_5426 method_30293(File file) {
+		public static AbstractPackScreen.DirectoryWatcher create(File file) {
 			try {
-				return new AbstractPackScreen.class_5426(file);
+				return new AbstractPackScreen.DirectoryWatcher(file);
 			} catch (IOException var2) {
 				AbstractPackScreen.LOGGER.warn("Failed to initialize pack directory {} monitoring", file, var2);
 				return null;
 			}
 		}
 
-		private void method_30294(Path path) throws IOException {
-			path.register(this.field_25790, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+		private void watchDirectory(Path path) throws IOException {
+			path.register(this.watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
 		}
 
-		public boolean method_30292() throws IOException {
+		public boolean pollForChange() throws IOException {
 			boolean bl = false;
 
 			WatchKey watchKey;
-			while ((watchKey = this.field_25790.poll()) != null) {
+			while ((watchKey = this.watchService.poll()) != null) {
 				for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
 					bl = true;
-					if (watchKey.watchable() == this.field_25791 && watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
-						Path path = this.field_25791.resolve((Path)watchEvent.context());
+					if (watchKey.watchable() == this.path && watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+						Path path = this.path.resolve((Path)watchEvent.context());
 						if (Files.isDirectory(path, new LinkOption[]{LinkOption.NOFOLLOW_LINKS})) {
-							this.method_30294(path);
+							this.watchDirectory(path);
 						}
 					}
 				}
@@ -336,7 +336,7 @@ public class AbstractPackScreen extends Screen {
 		}
 
 		public void close() throws IOException {
-			this.field_25790.close();
+			this.watchService.close();
 		}
 	}
 }

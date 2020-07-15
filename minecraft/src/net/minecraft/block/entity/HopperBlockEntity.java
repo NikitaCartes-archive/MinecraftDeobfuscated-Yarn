@@ -307,7 +307,9 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			.stream()
 			.flatMap(
 				box -> hopper.getWorld()
-						.getEntities(ItemEntity.class, box.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY)
+						.getEntitiesByClass(
+							ItemEntity.class, box.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY
+						)
 						.stream()
 			)
 			.collect(Collectors.toList());
@@ -337,7 +339,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 
 		if (inventory == null) {
-			List<Entity> list = world.getEntities((Entity)null, new Box(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5), EntityPredicates.VALID_INVENTORIES);
+			List<Entity> list = world.getOtherEntities((Entity)null, new Box(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5), EntityPredicates.VALID_INVENTORIES);
 			if (!list.isEmpty()) {
 				inventory = (Inventory)list.get(world.random.nextInt(list.size()));
 			}

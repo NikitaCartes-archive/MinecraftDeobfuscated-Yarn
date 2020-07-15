@@ -18,7 +18,7 @@ public class SeaPickleFeature extends Feature<CountConfig> {
 
 	public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, CountConfig countConfig) {
 		int i = 0;
-		int j = countConfig.method_30396().method_30321(random);
+		int j = countConfig.method_30396().getValue(random);
 
 		for (int k = 0; k < j; k++) {
 			int l = random.nextInt(8) - random.nextInt(8);

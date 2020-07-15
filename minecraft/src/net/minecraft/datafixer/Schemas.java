@@ -202,7 +202,7 @@ public class Schemas {
 	private static DataFixer create() {
 		DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getWorldVersion());
 		build(dataFixerBuilder);
-		return dataFixerBuilder.build(Util.method_28124());
+		return dataFixerBuilder.build(Util.getBootstrapExecutor());
 	}
 
 	public static DataFixer getFixer() {

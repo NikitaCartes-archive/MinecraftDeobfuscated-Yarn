@@ -425,9 +425,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static void setupSpawn(ServerWorld serverWorld, ServerWorldProperties serverWorldProperties, boolean bl, boolean bl2, boolean bl3) {
 		ChunkGenerator chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
 		if (!bl3) {
-			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()));
+			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()), 0.0F);
 		} else if (bl2) {
-			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up());
+			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(), 0.0F);
 		} else {
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 			List<Biome> list = biomeSource.getSpawnBiomes();
@@ -447,7 +447,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				}
 			}
 
-			serverWorldProperties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, chunkGenerator.getSpawnHeight(), 8));
+			serverWorldProperties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, chunkGenerator.getSpawnHeight(), 8), 0.0F);
 			int i = 0;
 			int j = 0;
 			int k = 0;
@@ -458,7 +458,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				if (i > -16 && i <= 16 && j > -16 && j <= 16) {
 					BlockPos blockPos2 = SpawnLocating.findServerSpawnPoint(serverWorld, new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl4);
 					if (blockPos2 != null) {
-						serverWorldProperties.setSpawnPos(blockPos2);
+						serverWorldProperties.setSpawnPos(blockPos2, 0.0F);
 						break;
 					}
 				}

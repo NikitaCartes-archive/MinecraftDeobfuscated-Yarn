@@ -32,7 +32,7 @@ public class GameRules {
 	private static final Map<GameRules.Key<?>, GameRules.Type<?>> RULE_TYPES = Maps.newTreeMap(Comparator.comparing(key -> key.name));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_FIRE_TICK = register("doFireTick", GameRules.Category.UPDATES, GameRules.BooleanRule.create(true));
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether mobs can modify the world.
+	 * A {@linkplain Rule game rule} which regulates whether mobs can modify the world.
 	 * 
 	 * <p>Generally one is expected to test this rule before an entity modifies the world.
 	 * 
@@ -45,23 +45,23 @@ public class GameRules {
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_GRIEFING = register("mobGriefing", GameRules.Category.MOBS, GameRules.BooleanRule.create(true));
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether player inventories should be persist through respawning.
+	 * A {@linkplain Rule game rule} which regulates whether player inventories should be persist through respawning.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> KEEP_INVENTORY = register(
 		"keepInventory", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether mobs can spawn naturally.
+	 * A {@linkplain Rule game rule} which regulates whether mobs can spawn naturally.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_SPAWNING = register(
 		"doMobSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether mobs should drop loot on death.
+	 * A {@linkplain Rule game rule} which regulates whether mobs should drop loot on death.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_MOB_LOOT = register("doMobLoot", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether blocks should drop their items when broken.
+	 * A {@linkplain Rule game rule} which regulates whether blocks should drop their items when broken.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_TILE_DROPS = register("doTileDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_ENTITY_DROPS = register(
@@ -87,7 +87,7 @@ public class GameRules {
 		"sendCommandFeedback", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether clients' {@linkplain net.minecraft.client.gui.hud.DebugHud debug HUD}s show reduced information.
+	 * A {@linkplain Rule game rule} which regulates whether clients' {@linkplain net.minecraft.client.gui.hud.DebugHud debug HUD}s show reduced information.
 	 * 
 	 * <p>When the value of this rule is changed, all connected clients will be notified to update their display.
 	 * In vanilla, this includes the visibility of coordinates on the clients' debug HUDs.
@@ -109,7 +109,7 @@ public class GameRules {
 		"disableElytraMovementCheck", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false)
 	);
 	/**
-	 * A {@linkplain GameRule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
+	 * A {@linkplain Rule game rule} which regulates the number of entities that can be crammed into a block space before they incur cramming damage.
 	 */
 	public static final GameRules.Key<GameRules.IntRule> MAX_ENTITY_CRAMMING = register("maxEntityCramming", GameRules.Category.MOBS, GameRules.IntRule.create(24));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_WEATHER_CYCLE = register(
@@ -122,20 +122,20 @@ public class GameRules {
 		"maxCommandChainLength", GameRules.Category.MISC, GameRules.IntRule.create(65536)
 	);
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether a player's advancements should be announced in chat.
+	 * A {@linkplain Rule game rule} which regulates whether a player's advancements should be announced in chat.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> ANNOUNCE_ADVANCEMENTS = register(
 		"announceAdvancements", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)
 	);
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether raids should occur.
+	 * A {@linkplain Rule game rule} which regulates whether raids should occur.
 	 * 
 	 * <p>If this rule is set to {@code true} while raids are occurring, the raids will be stopped.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DISABLE_RAIDS = register("disableRaids", GameRules.Category.MOBS, GameRules.BooleanRule.create(false));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_INSOMNIA = register("doInsomnia", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true));
 	/**
-	 * A {@linkplain GameRule game rule} which regulates whether a player should immediately respawn upon death.
+	 * A {@linkplain Rule game rule} which regulates whether a player should immediately respawn upon death.
 	 */
 	public static final GameRules.Key<GameRules.BooleanRule> DO_IMMEDIATE_RESPAWN = register(
 		"doImmediateRespawn", GameRules.Category.PLAYER, GameRules.BooleanRule.create(false, (server, rule) -> {
@@ -214,7 +214,7 @@ public class GameRules {
 	/**
 	 * Make the visitor visit all registered game rules.
 	 * 
-	 * <p>The visitation involves calling both {@link #accept(GameRules.Key, GameRules.Type)} and {@code acceptX} for every game rule, where X is the current rule's concrete type such as a boolean.
+	 * <p>The visitation involves calling both {@link Visitor#visit(GameRules.Key, GameRules.Type)} and {@code visitX} for every game rule, where X is the current rule's concrete type such as a boolean.
 	 */
 	public static void accept(GameRules.Visitor visitor) {
 		RULE_TYPES.forEach((key, type) -> accept(visitor, key, type));
@@ -530,7 +530,7 @@ public class GameRules {
 		/**
 		 * Visit a boolean rule.
 		 * 
-		 * <p>Note {@link #accept(GameRules.Key, GameRules.Type)} will be called before this method.
+		 * <p>Note {@link #visit(GameRules.Key, GameRules.Type)} will be called before this method.
 		 */
 		default void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
 		}
@@ -538,7 +538,7 @@ public class GameRules {
 		/**
 		 * Visit an integer rule.
 		 * 
-		 * <p>Note {@link #accept(GameRules.Key, GameRules.Type)} will be called before this method.
+		 * <p>Note {@link #visit(GameRules.Key, GameRules.Type)} will be called before this method.
 		 */
 		default void visitInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
 		}

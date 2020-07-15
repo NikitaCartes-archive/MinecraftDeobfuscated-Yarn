@@ -139,7 +139,7 @@ public class Structure {
 	}
 
 	private void addEntitiesFromWorld(World world, BlockPos firstCorner, BlockPos secondCorner) {
-		List<Entity> list = world.getEntities(Entity.class, new Box(firstCorner, secondCorner), entityx -> !(entityx instanceof PlayerEntity));
+		List<Entity> list = world.getEntitiesByClass(Entity.class, new Box(firstCorner, secondCorner), entityx -> !(entityx instanceof PlayerEntity));
 		this.entities.clear();
 
 		for (Entity entity : list) {

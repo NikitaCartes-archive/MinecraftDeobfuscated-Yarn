@@ -101,9 +101,9 @@ public final class DimensionOptions {
 				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof SurfaceChunkGenerator) {
 				SurfaceChunkGenerator surfaceChunkGenerator = (SurfaceChunkGenerator)((DimensionOptions)entry2.getValue()).getChunkGenerator();
 				SurfaceChunkGenerator surfaceChunkGenerator2 = (SurfaceChunkGenerator)((DimensionOptions)entry3.getValue()).getChunkGenerator();
-				if (!surfaceChunkGenerator.method_28548(seed, ChunkGeneratorType.Preset.NETHER)) {
+				if (!surfaceChunkGenerator.method_28548(seed, ChunkGeneratorType.field_26357)) {
 					return false;
-				} else if (!surfaceChunkGenerator2.method_28548(seed, ChunkGeneratorType.Preset.END)) {
+				} else if (!surfaceChunkGenerator2.method_28548(seed, ChunkGeneratorType.field_26358)) {
 					return false;
 				} else if (!(surfaceChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
 					return false;

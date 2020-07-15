@@ -97,11 +97,12 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		"Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
 	public static final List<StructureFeature<?>> field_24861 = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
-	private static final Map<String, String> field_25839 = ImmutableMap.<String, String>builder()
-		.put("nvi", "jigsaw")
-		.put("pcp", "jigsaw")
-		.put("bastionremnant", "jigsaw")
-		.put("runtime", "jigsaw")
+	private static final Identifier field_26362 = new Identifier("jigsaw");
+	private static final Map<Identifier, Identifier> field_25839 = ImmutableMap.<Identifier, Identifier>builder()
+		.put(new Identifier("nvi"), field_26362)
+		.put(new Identifier("pcp"), field_26362)
+		.put(new Identifier("bastionremnant"), field_26362)
+		.put(new Identifier("runtime"), field_26362)
 		.build();
 	private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 
@@ -153,23 +154,24 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 					for (int l = 0; l < listTag.size(); l++) {
 						CompoundTag compoundTag = listTag.getCompound(l);
 						String string2 = compoundTag.getString("id").toLowerCase(Locale.ROOT);
-						String string3 = (String)field_25839.getOrDefault(string2, string2);
-						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string3));
+						Identifier identifier = new Identifier(string2);
+						Identifier identifier2 = (Identifier)field_25839.getOrDefault(identifier, identifier);
+						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(identifier2);
 						if (structurePieceType == null) {
-							LOGGER.error("Unknown structure piece id: {}", string3);
+							LOGGER.error("Unknown structure piece id: {}", identifier2);
 						} else {
 							try {
 								StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag);
 								structureStart.getChildren().add(structurePiece);
-							} catch (Exception var18) {
-								LOGGER.error("Exception loading structure piece with id {}", string3, var18);
+							} catch (Exception var19) {
+								LOGGER.error("Exception loading structure piece with id {}", identifier2, var19);
 							}
 						}
 					}
 
 					return structureStart;
-				} catch (Exception var19) {
-					LOGGER.error("Failed Start with id {}", string, var19);
+				} catch (Exception var20) {
+					LOGGER.error("Failed Start with id {}", string, var20);
 					return null;
 				}
 			}
@@ -192,7 +194,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	 * <p>
 	 * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
 	 * 
-	 * @return null if no structure could be found within the given search radius.
+	 * @return {@code null} if no structure could be found within the given search radius
 	 * 
 	 * @param searchRadius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
 	 */
@@ -288,7 +290,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 
 	/**
 	 * Checks if this structure can <em>actually</em> be placed at a potential structure position determined via
-	 * {@link #getStartChunk}. Specific structures override this method to reduce the spawn propability or
+	 * {@link #getStartChunk}. Specific structures override this method to reduce the spawn probability or
 	 * restrict the spawn in some other way.
 	 */
 	protected boolean shouldStartAt(

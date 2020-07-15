@@ -25,7 +25,7 @@ public class GlassBottleItem extends Item {
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		List<AreaEffectCloudEntity> list = world.getEntities(
+		List<AreaEffectCloudEntity> list = world.getEntitiesByClass(
 			AreaEffectCloudEntity.class,
 			user.getBoundingBox().expand(2.0),
 			entity -> entity != null && entity.isAlive() && entity.getOwner() instanceof EnderDragonEntity

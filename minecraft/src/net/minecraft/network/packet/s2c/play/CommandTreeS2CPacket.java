@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;

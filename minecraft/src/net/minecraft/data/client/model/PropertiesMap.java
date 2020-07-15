@@ -14,18 +14,18 @@ import net.minecraft.state.property.Property;
  */
 public final class PropertiesMap {
 	private static final PropertiesMap EMPTY = new PropertiesMap(ImmutableList.of());
-	private static final Comparator<Property.class_4933<?>> COMPARATOR = Comparator.comparing(arg -> arg.method_25815().getName());
-	private final List<Property.class_4933<?>> propertyValues;
+	private static final Comparator<Property.Value<?>> COMPARATOR = Comparator.comparing(value -> value.getProperty().getName());
+	private final List<Property.Value<?>> propertyValues;
 
-	public PropertiesMap method_25819(Property.class_4933<?> arg) {
-		return new PropertiesMap(ImmutableList.<Property.class_4933<?>>builder().addAll(this.propertyValues).add(arg).build());
+	public PropertiesMap method_25819(Property.Value<?> value) {
+		return new PropertiesMap(ImmutableList.<Property.Value<?>>builder().addAll(this.propertyValues).add(value).build());
 	}
 
 	public PropertiesMap with(PropertiesMap propertiesMap) {
-		return new PropertiesMap(ImmutableList.<Property.class_4933<?>>builder().addAll(this.propertyValues).addAll(propertiesMap.propertyValues).build());
+		return new PropertiesMap(ImmutableList.<Property.Value<?>>builder().addAll(this.propertyValues).addAll(propertiesMap.propertyValues).build());
 	}
 
-	private PropertiesMap(List<Property.class_4933<?>> list) {
+	private PropertiesMap(List<Property.Value<?>> list) {
 		this.propertyValues = list;
 	}
 
@@ -33,8 +33,8 @@ public final class PropertiesMap {
 		return EMPTY;
 	}
 
-	public static PropertiesMap method_25821(Property.class_4933<?>... args) {
-		return new PropertiesMap(ImmutableList.copyOf(args));
+	public static PropertiesMap method_25821(Property.Value<?>... values) {
+		return new PropertiesMap(ImmutableList.copyOf(values));
 	}
 
 	public boolean equals(Object object) {
@@ -46,7 +46,7 @@ public final class PropertiesMap {
 	}
 
 	public String asString() {
-		return (String)this.propertyValues.stream().sorted(COMPARATOR).map(Property.class_4933::toString).collect(Collectors.joining(","));
+		return (String)this.propertyValues.stream().sorted(COMPARATOR).map(Property.Value::toString).collect(Collectors.joining(","));
 	}
 
 	public String toString() {

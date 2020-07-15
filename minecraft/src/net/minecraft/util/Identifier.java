@@ -143,7 +143,7 @@ public class Identifier implements Comparable<Identifier> {
 
 	private static boolean isPathValid(String path) {
 		for (int i = 0; i < path.length(); i++) {
-			if (!method_29184(path.charAt(i))) {
+			if (!isPathCharacterValid(path.charAt(i))) {
 				return false;
 			}
 		}
@@ -153,7 +153,7 @@ public class Identifier implements Comparable<Identifier> {
 
 	private static boolean isNamespaceValid(String namespace) {
 		for (int i = 0; i < namespace.length(); i++) {
-			if (!method_29185(namespace.charAt(i))) {
+			if (!isNamespaceCharacterValid(namespace.charAt(i))) {
 				return false;
 			}
 		}
@@ -161,11 +161,11 @@ public class Identifier implements Comparable<Identifier> {
 		return true;
 	}
 
-	public static boolean method_29184(char c) {
+	public static boolean isPathCharacterValid(char c) {
 		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '.';
 	}
 
-	private static boolean method_29185(char c) {
+	private static boolean isNamespaceCharacterValid(char c) {
 		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
 	}
 

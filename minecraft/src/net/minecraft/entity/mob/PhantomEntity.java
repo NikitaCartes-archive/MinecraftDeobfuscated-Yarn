@@ -486,7 +486,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				} else {
 					if (PhantomEntity.this.age % 20 == 0) {
 						List<CatEntity> list = PhantomEntity.this.world
-							.getEntities(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
+							.getEntitiesByClass(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
 						if (!list.isEmpty()) {
 							for (CatEntity catEntity : list) {
 								catEntity.hiss();

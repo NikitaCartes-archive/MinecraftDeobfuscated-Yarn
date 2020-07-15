@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import java.io.IOException;
 import java.nio.file.Path;
-import net.minecraft.command.arguments.ArgumentTypes;
+import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;

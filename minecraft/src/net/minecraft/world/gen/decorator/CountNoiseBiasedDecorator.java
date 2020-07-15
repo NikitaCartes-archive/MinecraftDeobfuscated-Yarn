@@ -7,19 +7,15 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
-public class CountNoiseBiasedDecorator extends SimpleDecorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> {
-	public CountNoiseBiasedDecorator(Codec<TopSolidHeightmapNoiseBiasedDecoratorConfig> codec) {
+public class CountNoiseBiasedDecorator extends SimpleDecorator<CountNoiseBiasedDecoratorConfig> {
+	public CountNoiseBiasedDecorator(Codec<CountNoiseBiasedDecoratorConfig> codec) {
 		super(codec);
 	}
 
-	public Stream<BlockPos> getPositions(Random random, TopSolidHeightmapNoiseBiasedDecoratorConfig topSolidHeightmapNoiseBiasedDecoratorConfig, BlockPos blockPos) {
+	public Stream<BlockPos> getPositions(Random random, CountNoiseBiasedDecoratorConfig countNoiseBiasedDecoratorConfig, BlockPos blockPos) {
 		double d = Biome.FOLIAGE_NOISE
-			.sample(
-				(double)blockPos.getX() / topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor,
-				(double)blockPos.getZ() / topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor,
-				false
-			);
-		int i = (int)Math.ceil((d + topSolidHeightmapNoiseBiasedDecoratorConfig.noiseOffset) * (double)topSolidHeightmapNoiseBiasedDecoratorConfig.noiseToCountRatio);
+			.sample((double)blockPos.getX() / countNoiseBiasedDecoratorConfig.noiseFactor, (double)blockPos.getZ() / countNoiseBiasedDecoratorConfig.noiseFactor, false);
+		int i = (int)Math.ceil((d + countNoiseBiasedDecoratorConfig.noiseOffset) * (double)countNoiseBiasedDecoratorConfig.noiseToCountRatio);
 		return IntStream.range(0, i).mapToObj(ix -> blockPos);
 	}
 }

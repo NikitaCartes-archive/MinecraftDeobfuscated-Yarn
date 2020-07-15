@@ -101,7 +101,11 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 
 		IllagerEntity.State state = illagerEntity.getState();
 		if (state == IllagerEntity.State.ATTACKING) {
-			CrossbowPosing.method_29351(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, this.handSwingProgress, h);
+			if (illagerEntity.getMainHandStack().isEmpty()) {
+				CrossbowPosing.method_29352(this.leftAttackingArm, this.rightAttackingArm, true, this.handSwingProgress, h);
+			} else {
+				CrossbowPosing.method_29351(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, this.handSwingProgress, h);
+			}
 		} else if (state == IllagerEntity.State.SPELLCASTING) {
 			this.rightAttackingArm.pivotZ = 0.0F;
 			this.rightAttackingArm.pivotX = -5.0F;

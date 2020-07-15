@@ -694,7 +694,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Override
-	public List<Entity> getEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
+	public List<Entity> getOtherEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
 		this.getProfiler().visit("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
 		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
@@ -707,7 +707,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			for (int n = k; n <= l; n++) {
 				WorldChunk worldChunk = chunkManager.getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.getEntities(except, box, list, predicate);
+					worldChunk.collectOtherEntities(except, box, list, predicate);
 				}
 			}
 		}
@@ -715,7 +715,20 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return list;
 	}
 
-	public <T extends Entity> List<T> getEntities(@Nullable EntityType<T> type, Box box, Predicate<? super T> predicate) {
+	/**
+	 * Computes a list of entities of the given type within some region that satisfy the given predicate.
+	 * 
+	 * <strong>Warning:<strong> If {@code null} is passed as the entity type filter, care should be
+	 * taken that the type argument {@code T} is set to {@link Entity}, otherwise heap pollution
+	 * in the output list or {@link ClassCastException} can occur.
+	 * 
+	 * @return a list of entities
+	 * 
+	 * @param type the entity type of the returned entities, or {@code null} to return entities of all types
+	 * @param box the box in which to search for entities
+	 * @param predicate a predicate which entities must satisfy in order to be considered
+	 */
+	public <T extends Entity> List<T> getEntitiesByType(@Nullable EntityType<T> type, Box box, Predicate<? super T> predicate) {
 		this.getProfiler().visit("getEntities");
 		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
@@ -727,7 +740,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			for (int n = k; n < l; n++) {
 				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.getEntities(type, box, list, predicate);
+					worldChunk.collectEntities(type, box, list, predicate);
 				}
 			}
 		}
@@ -736,7 +749,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Override
-	public <T extends Entity> List<T> getEntities(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> List<T> getEntitiesByClass(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
 		this.getProfiler().visit("getEntities");
 		int i = MathHelper.floor((box.minX - 2.0) / 16.0);
 		int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
@@ -749,7 +762,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			for (int n = k; n < l; n++) {
 				WorldChunk worldChunk = chunkManager.getWorldChunk(m, n, false);
 				if (worldChunk != null) {
-					worldChunk.getEntities(entityClass, box, list, predicate);
+					worldChunk.collectEntitiesByClass(entityClass, box, list, predicate);
 				}
 			}
 		}
@@ -771,7 +784,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			for (int n = k; n < l; n++) {
 				WorldChunk worldChunk = chunkManager.getWorldChunk(m, n);
 				if (worldChunk != null) {
-					worldChunk.getEntities(entityClass, box, list, predicate);
+					worldChunk.collectEntitiesByClass(entityClass, box, list, predicate);
 				}
 			}
 		}

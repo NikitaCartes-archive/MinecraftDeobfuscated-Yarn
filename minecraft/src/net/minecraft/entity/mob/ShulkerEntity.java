@@ -237,7 +237,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			);
 			double g = d - e;
 			if (g > 0.0) {
-				List<Entity> list = this.world.getEntities(this, this.getBoundingBox());
+				List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox());
 				if (!list.isEmpty()) {
 					for (Entity entity : list) {
 						if (!(entity instanceof ShulkerEntity) && !entity.noClip) {

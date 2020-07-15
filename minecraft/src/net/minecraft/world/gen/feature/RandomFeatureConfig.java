@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class RandomFeatureConfig implements FeatureConfig {
 	public static final Codec<RandomFeatureConfig> CODEC = RecordCodecBuilder.create(
@@ -23,5 +24,13 @@ public class RandomFeatureConfig implements FeatureConfig {
 	private RandomFeatureConfig(List<RandomFeatureEntry> list, Supplier<ConfiguredFeature<?, ?>> supplier) {
 		this.features = list;
 		this.defaultFeature = supplier;
+	}
+
+	@Override
+	public Stream<ConfiguredFeature<?, ?>> method_30649() {
+		return Stream.concat(
+			this.features.stream().flatMap(randomFeatureEntry -> ((ConfiguredFeature)randomFeatureEntry.feature.get()).method_30648()),
+			((ConfiguredFeature)this.defaultFeature.get()).method_30648()
+		);
 	}
 }

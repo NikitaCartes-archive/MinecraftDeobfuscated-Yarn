@@ -198,7 +198,7 @@ public class Explosion {
 		int s = MathHelper.floor(this.y + (double)q + 1.0);
 		int t = MathHelper.floor(this.z - (double)q - 1.0);
 		int u = MathHelper.floor(this.z + (double)q + 1.0);
-		List<Entity> list = this.world.getEntities(this.entity, new Box((double)k, (double)r, (double)t, (double)lx, (double)s, (double)u));
+		List<Entity> list = this.world.getOtherEntities(this.entity, new Box((double)k, (double)r, (double)t, (double)lx, (double)s, (double)u));
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 
 		for (int v = 0; v < list.size(); v++) {

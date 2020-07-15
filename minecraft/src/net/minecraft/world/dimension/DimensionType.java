@@ -270,11 +270,11 @@ public class DimensionType {
 	}
 
 	private static ChunkGenerator createEndGenerator(long seed) {
-		return new SurfaceChunkGenerator(new TheEndBiomeSource(seed), seed, ChunkGeneratorType.Preset.END.getChunkGeneratorType());
+		return new SurfaceChunkGenerator(new TheEndBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26358);
 	}
 
 	private static ChunkGenerator createNetherGenerator(long seed) {
-		return new SurfaceChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, ChunkGeneratorType.Preset.NETHER.getChunkGeneratorType());
+		return new SurfaceChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26357);
 	}
 
 	public static SimpleRegistry<DimensionOptions> method_28517(long seed) {

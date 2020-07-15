@@ -31,7 +31,7 @@ public class StorageIoWorker implements AutoCloseable {
 
 	protected StorageIoWorker(File file, boolean bl, String string) {
 		this.storage = new RegionBasedStorage(file, bl);
-		this.field_24468 = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.method_27958(), "IOWorker-" + string);
+		this.field_24468 = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + string);
 	}
 
 	public CompletableFuture<Void> setResult(ChunkPos pos, CompoundTag nbt) {

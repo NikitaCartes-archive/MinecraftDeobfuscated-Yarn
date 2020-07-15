@@ -11,9 +11,9 @@ public abstract class SimpleDecorator<DC extends DecoratorConfig> extends Decora
 	}
 
 	@Override
-	public final Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, DC decoratorConfig, BlockPos blockPos) {
-		return this.getPositions(random, decoratorConfig, blockPos);
+	public final Stream<BlockPos> getPositions(DecoratorContext context, Random random, DC config, BlockPos pos) {
+		return this.getPositions(random, config, pos);
 	}
 
-	protected abstract Stream<BlockPos> getPositions(Random random, DC decoratorConfig, BlockPos blockPos);
+	protected abstract Stream<BlockPos> getPositions(Random random, DC config, BlockPos pos);
 }

@@ -303,7 +303,7 @@ public class BoatEntity extends Entity {
 		}
 
 		this.checkBlockCollision();
-		List<Entity> list = this.world.getEntities(this, this.getBoundingBox().expand(0.2F, -0.01F, 0.2F), EntityPredicates.canBePushedBy(this));
+		List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2F, -0.01F, 0.2F), EntityPredicates.canBePushedBy(this));
 		if (!list.isEmpty()) {
 			boolean bl = !this.world.isClient && !(this.getPrimaryPassenger() instanceof PlayerEntity);
 

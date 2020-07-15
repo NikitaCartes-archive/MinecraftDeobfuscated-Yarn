@@ -90,6 +90,6 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	public String toString() {
-		return "Feature[" + Registry.FEATURE.getId(((ConfiguredFeature)this.feature.get()).method_30380()) + "]";
+		return "Feature[" + Registry.FEATURE.getId(((ConfiguredFeature)this.feature.get()).getFeature()) + "]";
 	}
 }

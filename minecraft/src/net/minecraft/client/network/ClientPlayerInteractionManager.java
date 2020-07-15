@@ -12,7 +12,6 @@ import net.minecraft.block.StructureBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.math.PosAndRot;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -62,7 +61,7 @@ public class ClientPlayerInteractionManager {
 	private boolean breakingBlock;
 	private GameMode gameMode = GameMode.SURVIVAL;
 	private GameMode previousGameMode = GameMode.NOT_SET;
-	private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, PosAndRot> unacknowledgedPlayerActions = new Object2ObjectLinkedOpenHashMap<>();
+	private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, Vec3d> unacknowledgedPlayerActions = new Object2ObjectLinkedOpenHashMap<>();
 	private int lastSelectedSlot;
 
 	public ClientPlayerInteractionManager(MinecraftClient client, ClientPlayNetworkHandler networkHandler) {
@@ -425,18 +424,18 @@ public class ClientPlayerInteractionManager {
 
 	private void sendPlayerAction(PlayerActionC2SPacket.Action action, BlockPos pos, Direction direction) {
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
-		this.unacknowledgedPlayerActions.put(Pair.of(pos, action), new PosAndRot(clientPlayerEntity.getPos(), clientPlayerEntity.pitch, clientPlayerEntity.yaw));
+		this.unacknowledgedPlayerActions.put(Pair.of(pos, action), clientPlayerEntity.getPos());
 		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, pos, direction));
 	}
 
 	public void processPlayerActionResponse(ClientWorld world, BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved) {
-		PosAndRot posAndRot = this.unacknowledgedPlayerActions.remove(Pair.of(pos, action));
+		Vec3d vec3d = this.unacknowledgedPlayerActions.remove(Pair.of(pos, action));
 		BlockState blockState = world.getBlockState(pos);
-		if ((posAndRot == null || !approved || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && blockState != state) && blockState != state) {
+		if ((vec3d == null || !approved || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && blockState != state) && blockState != state) {
 			world.setBlockStateWithoutNeighborUpdates(pos, state);
-			if (posAndRot != null) {
-				Vec3d vec3d = posAndRot.getPos();
-				this.client.player.updatePositionAndAngles(vec3d.x, vec3d.y, vec3d.z, posAndRot.getYaw(), posAndRot.getPitch());
+			PlayerEntity playerEntity = this.client.player;
+			if (vec3d != null && world == playerEntity.world && playerEntity.method_30632(pos, state)) {
+				playerEntity.method_30634(vec3d.x, vec3d.y, vec3d.z);
 			}
 		}
 

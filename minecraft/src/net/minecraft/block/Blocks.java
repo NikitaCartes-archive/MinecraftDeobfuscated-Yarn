@@ -474,7 +474,14 @@ public class Blocks {
 	);
 	public static final Block FARMLAND = register(
 		"farmland",
-		new FarmlandBlock(AbstractBlock.Settings.of(Material.SOIL).ticksRandomly().strength(0.6F).sounds(BlockSoundGroup.GRAVEL).blockVision(Blocks::always))
+		new FarmlandBlock(
+			AbstractBlock.Settings.of(Material.SOIL)
+				.ticksRandomly()
+				.strength(0.6F)
+				.sounds(BlockSoundGroup.GRAVEL)
+				.blockVision(Blocks::always)
+				.suffocates(Blocks::always)
+		)
 	);
 	public static final Block FURNACE = register(
 		"furnace", new FurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).lightLevel(createLightLevelFromBlockState(13)))
@@ -697,6 +704,7 @@ public class Blocks {
 				.allowsSpawning(Blocks::always)
 				.solidBlock(Blocks::always)
 				.blockVision(Blocks::always)
+				.suffocates(Blocks::always)
 		)
 	);
 	public static final Block SOUL_SOIL = register(
@@ -1716,7 +1724,10 @@ public class Blocks {
 		"beetroots", new BeetrootsBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP))
 	);
 	public static final Block GRASS_PATH = register(
-		"grass_path", new GrassPathBlock(AbstractBlock.Settings.of(Material.SOIL).strength(0.65F).sounds(BlockSoundGroup.GRASS).blockVision(Blocks::always))
+		"grass_path",
+		new GrassPathBlock(
+			AbstractBlock.Settings.of(Material.SOIL).strength(0.65F).sounds(BlockSoundGroup.GRASS).blockVision(Blocks::always).suffocates(Blocks::always)
+		)
 	);
 	public static final Block END_GATEWAY = register(
 		"end_gateway",

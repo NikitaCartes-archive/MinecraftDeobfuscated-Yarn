@@ -113,7 +113,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		VoxelShape voxelShape = this.getHeadBlockState().getCollisionShape(this.world, this.getPos());
 		if (!voxelShape.isEmpty()) {
 			Box box = this.offsetHeadBox(voxelShape.getBoundingBox());
-			List<Entity> list = this.world.getEntities(null, Boxes.stretch(box, direction, d).union(box));
+			List<Entity> list = this.world.getOtherEntities(null, Boxes.stretch(box, direction, d).union(box));
 			if (!list.isEmpty()) {
 				List<Box> list2 = voxelShape.getBoundingBoxes();
 				boolean bl = this.pushedBlock.isOf(Blocks.SLIME_BLOCK);
@@ -193,7 +193,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 				Box box = this.offsetHeadBox(new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0));
 				double e = (double)(f - this.progress);
 
-				for (Entity entity : this.world.getEntities((Entity)null, box, entityx -> method_23671(box, entityx))) {
+				for (Entity entity : this.world.getOtherEntities((Entity)null, box, entityx -> method_23671(box, entityx))) {
 					method_23672(direction, entity, e, direction);
 				}
 			}

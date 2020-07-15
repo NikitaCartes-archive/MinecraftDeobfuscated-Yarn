@@ -32,7 +32,7 @@ public class EndCrystalItem extends Item {
 				double d = (double)blockPos2.getX();
 				double e = (double)blockPos2.getY();
 				double f = (double)blockPos2.getZ();
-				List<Entity> list = world.getEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
+				List<Entity> list = world.getOtherEntities(null, new Box(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
 					return ActionResult.FAIL;
 				} else {

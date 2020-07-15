@@ -1156,6 +1156,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		immediate.draw(RenderLayer.getArmorEntityGlint());
 		immediate.draw(RenderLayer.getGlint());
 		immediate.draw(RenderLayer.getGlintDirect());
+		immediate.draw(RenderLayer.method_30676());
 		immediate.draw(RenderLayer.getEntityGlint());
 		immediate.draw(RenderLayer.getEntityGlintDirect());
 		immediate.draw(RenderLayer.getWaterMask());
@@ -1178,12 +1179,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		} else {
 			profiler.swap("translucent");
 			this.renderLayer(RenderLayer.getTranslucent(), matrices, d, e, f);
+			immediate.draw(RenderLayer.getLines());
+			immediate.draw();
 			profiler.swap("string");
 			this.renderLayer(RenderLayer.getTripwire(), matrices, d, e, f);
 			profiler.swap("particles");
 			this.client.particleManager.renderParticles(matrices, immediate, lightmapTextureManager, camera, tickDelta);
-			immediate.draw(RenderLayer.getLines());
-			immediate.draw();
 		}
 
 		RenderSystem.pushMatrix();

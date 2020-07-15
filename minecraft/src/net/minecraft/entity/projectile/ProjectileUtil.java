@@ -47,7 +47,7 @@ public final class ProjectileUtil {
 		Entity entity2 = null;
 		Vec3d vec3d3 = null;
 
-		for (Entity entity3 : world.getEntities(entity, box, predicate)) {
+		for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
 			Box box2 = entity3.getBoundingBox().expand((double)entity3.getTargetingMargin());
 			Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
 			if (box2.contains(vec3d)) {
@@ -82,7 +82,7 @@ public final class ProjectileUtil {
 		double d = Double.MAX_VALUE;
 		Entity entity2 = null;
 
-		for (Entity entity3 : world.getEntities(entity, box, predicate)) {
+		for (Entity entity3 : world.getOtherEntities(entity, box, predicate)) {
 			Box box2 = entity3.getBoundingBox().expand(0.3F);
 			Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
 			if (optional.isPresent()) {

@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -88,17 +89,18 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 	protected final BlockState defaultBlock;
 	protected final BlockState defaultFluid;
 	private final long worldSeed;
-	protected final ChunkGeneratorType field_24774;
+	protected final Supplier<ChunkGeneratorType> field_24774;
 	private final int field_24779;
 
-	public SurfaceChunkGenerator(BiomeSource biomeSource, long l, ChunkGeneratorType chunkGeneratorType) {
-		this(biomeSource, biomeSource, l, chunkGeneratorType);
+	public SurfaceChunkGenerator(BiomeSource biomeSource, long l, Supplier<ChunkGeneratorType> supplier) {
+		this(biomeSource, biomeSource, l, supplier);
 	}
 
-	private SurfaceChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long worldSeed, ChunkGeneratorType chunkGeneratorType) {
-		super(biomeSource, biomeSource2, chunkGeneratorType.getConfig(), worldSeed);
+	private SurfaceChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long worldSeed, Supplier<ChunkGeneratorType> supplier) {
+		super(biomeSource, biomeSource2, ((ChunkGeneratorType)supplier.get()).getConfig(), worldSeed);
 		this.worldSeed = worldSeed;
-		this.field_24774 = chunkGeneratorType;
+		ChunkGeneratorType chunkGeneratorType = (ChunkGeneratorType)supplier.get();
+		this.field_24774 = supplier;
 		NoiseConfig noiseConfig = chunkGeneratorType.method_28559();
 		this.field_24779 = noiseConfig.getHeight();
 		this.verticalNoiseResolution = noiseConfig.getSizeVertical() * 4;
@@ -137,8 +139,8 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 		return new SurfaceChunkGenerator(this.biomeSource.withSeed(seed), seed, this.field_24774);
 	}
 
-	public boolean method_28548(long l, ChunkGeneratorType.Preset preset) {
-		return this.worldSeed == l && this.field_24774.method_28555(preset);
+	public boolean method_28548(long l, ChunkGeneratorType chunkGeneratorType) {
+		return this.worldSeed == l && ((ChunkGeneratorType)this.field_24774.get()).method_28555(chunkGeneratorType);
 	}
 
 	private double sampleNoise(int x, int y, int z, double horizontalScale, double verticalScale, double horizontalStretch, double verticalStretch) {
@@ -190,7 +192,7 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 	}
 
 	private void sampleNoiseColumn(double[] buffer, int x, int z) {
-		NoiseConfig noiseConfig = this.field_24774.method_28559();
+		NoiseConfig noiseConfig = ((ChunkGeneratorType)this.field_24774.get()).method_28559();
 		double d;
 		double e;
 		if (this.field_24777 != null) {
@@ -386,8 +388,9 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = chunk.getPos().getStartX();
 		int j = chunk.getPos().getStartZ();
-		int k = this.field_24774.getBedrockFloorY();
-		int l = this.field_24779 - 1 - this.field_24774.getBedrockCeilingY();
+		ChunkGeneratorType chunkGeneratorType = (ChunkGeneratorType)this.field_24774.get();
+		int k = chunkGeneratorType.getBedrockFloorY();
+		int l = this.field_24779 - 1 - chunkGeneratorType.getBedrockCeilingY();
 		int m = 5;
 		boolean bl = l + 4 >= 0 && l < this.field_24779;
 		boolean bl2 = k + 4 >= 0 && k < this.field_24779;
@@ -587,7 +590,7 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public int getSeaLevel() {
-		return this.field_24774.method_28561();
+		return ((ChunkGeneratorType)this.field_24774.get()).method_28561();
 	}
 
 	@Override
@@ -621,7 +624,7 @@ public final class SurfaceChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public void populateEntities(ChunkRegion region) {
-		if (!this.field_24774.method_28562()) {
+		if (!((ChunkGeneratorType)this.field_24774.get()).method_28562()) {
 			int i = region.getCenterChunkX();
 			int j = region.getCenterChunkZ();
 			Biome biome = region.getBiome(new ChunkPos(i, j).getCenterBlockPos());

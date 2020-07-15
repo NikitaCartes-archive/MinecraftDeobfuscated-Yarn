@@ -146,7 +146,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	protected <T extends AbstractMinecartEntity> List<T> getCarts(World world, BlockPos pos, Class<T> entityClass, @Nullable Predicate<Entity> entityPredicate) {
-		return world.getEntities(entityClass, this.getCartDetectionBox(pos), entityPredicate);
+		return world.getEntitiesByClass(entityClass, this.getCartDetectionBox(pos), entityPredicate);
 	}
 
 	private Box getCartDetectionBox(BlockPos pos) {

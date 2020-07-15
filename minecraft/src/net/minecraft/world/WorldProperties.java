@@ -10,6 +10,8 @@ public interface WorldProperties {
 
 	int getSpawnZ();
 
+	float getSpawnAngle();
+
 	long getTime();
 
 	long getTimeOfDay();

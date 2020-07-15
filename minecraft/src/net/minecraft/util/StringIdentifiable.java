@@ -18,7 +18,7 @@ public interface StringIdentifiable {
 
 	/**
 	 * Creates a codec that serializes an enum implementing this interface either
-	 * using its ordinals (when compressed) or using it's {@link #asString()} method
+	 * using its ordinals (when compressed) or using its {@link #asString()} method
 	 * and a given decode function.
 	 */
 	static <E extends Enum<E> & StringIdentifiable> Codec<E> createCodec(Supplier<E[]> enumValues, Function<? super String, ? extends E> fromString) {

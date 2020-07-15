@@ -101,12 +101,12 @@ public class CreateWorldScreen extends Screen {
 			new MoreOptionsDialog(impl, generatorOptions, GeneratorType.method_29078(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
 		);
 		this.levelName = levelInfo.getLevelName();
-		this.cheatsEnabled = levelInfo.isHardcore();
+		this.cheatsEnabled = levelInfo.areCommandsAllowed();
 		this.tweakedCheats = true;
 		this.field_24289 = levelInfo.getDifficulty();
 		this.field_24290 = this.field_24289;
 		this.gameRules.setAllValues(levelInfo.getGameRules(), null);
-		if (levelInfo.hasStructures()) {
+		if (levelInfo.isHardcore()) {
 			this.currentMode = CreateWorldScreen.Mode.HARDCORE;
 		} else if (levelInfo.getGameMode().isSurvivalLike()) {
 			this.currentMode = CreateWorldScreen.Mode.SURVIVAL;
@@ -549,7 +549,7 @@ public class CreateWorldScreen extends Screen {
 
 	private static void method_29687(Path path, Path path2, Path path3) {
 		try {
-			Util.method_29775(path, path2, path3);
+			Util.relativeCopy(path, path2, path3);
 		} catch (IOException var4) {
 			field_25480.warn("Failed to copy datapack file from {} to {}", path3, path2);
 			throw new CreateWorldScreen.WorldCreationException(var4);

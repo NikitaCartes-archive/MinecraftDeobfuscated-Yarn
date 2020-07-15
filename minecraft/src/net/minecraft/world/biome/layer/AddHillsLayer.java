@@ -53,7 +53,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 		if (!BiomeLayers.isShallowOcean(i) && j >= 2 && k == 1) {
 			Biome biome = BuiltinRegistries.BIOME.get(i);
 			if (biome == null || !biome.hasParent()) {
-				Biome biome2 = Biomes.method_30360(biome);
+				Biome biome2 = Biomes.getMutated(biome);
 				return biome2 == null ? i : BuiltinRegistries.BIOME.getRawId(biome2);
 			}
 		}
@@ -104,7 +104,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 			}
 
 			if (k == 0 && l != i) {
-				Biome biome2 = Biomes.method_30360(BuiltinRegistries.BIOME.get(l));
+				Biome biome2 = Biomes.getMutated(BuiltinRegistries.BIOME.get(l));
 				l = biome2 == null ? i : BuiltinRegistries.BIOME.getRawId(biome2);
 			}
 

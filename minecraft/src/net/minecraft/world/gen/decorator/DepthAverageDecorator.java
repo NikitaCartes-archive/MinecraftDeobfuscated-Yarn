@@ -5,14 +5,14 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
-public class DepthAverageDecorator extends SimpleDecorator<CountDepthDecoratorConfig> {
-	public DepthAverageDecorator(Codec<CountDepthDecoratorConfig> codec) {
+public class DepthAverageDecorator extends SimpleDecorator<DepthAverageDecoratorConfig> {
+	public DepthAverageDecorator(Codec<DepthAverageDecoratorConfig> codec) {
 		super(codec);
 	}
 
-	public Stream<BlockPos> getPositions(Random random, CountDepthDecoratorConfig countDepthDecoratorConfig, BlockPos blockPos) {
-		int i = countDepthDecoratorConfig.count;
-		int j = countDepthDecoratorConfig.spread;
+	public Stream<BlockPos> getPositions(Random random, DepthAverageDecoratorConfig depthAverageDecoratorConfig, BlockPos blockPos) {
+		int i = depthAverageDecoratorConfig.count;
+		int j = depthAverageDecoratorConfig.spread;
 		int k = blockPos.getX();
 		int l = blockPos.getZ();
 		int m = random.nextInt(j) + random.nextInt(j) - j + i;

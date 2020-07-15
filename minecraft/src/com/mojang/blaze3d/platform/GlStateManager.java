@@ -52,7 +52,7 @@ public class GlStateManager {
 	private static final GlStateManager.ColorMask COLOR_MASK = new GlStateManager.ColorMask();
 	private static final GlStateManager.Color4 COLOR = new GlStateManager.Color4();
 	private static GlStateManager.FBOMode fboMode;
-	private static GlStateManager.class_5343 field_25251;
+	private static GlStateManager.FBOBlitMode fboBlitMode;
 
 	@Deprecated
 	public static void pushLightingAttributes() {
@@ -230,11 +230,11 @@ public class GlStateManager {
 	public static String initFramebufferSupport(GLCapabilities capabilities) {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);
 		if (capabilities.OpenGL30) {
-			field_25251 = GlStateManager.class_5343.field_25253;
+			fboBlitMode = GlStateManager.FBOBlitMode.BASE;
 		} else if (capabilities.GL_EXT_framebuffer_blit) {
-			field_25251 = GlStateManager.class_5343.field_25254;
+			fboBlitMode = GlStateManager.FBOBlitMode.EXT;
 		} else {
-			field_25251 = GlStateManager.class_5343.field_25255;
+			fboBlitMode = GlStateManager.FBOBlitMode.NONE;
 		}
 
 		if (capabilities.OpenGL30) {
@@ -466,13 +466,13 @@ public class GlStateManager {
 
 	public static void blitFramebuffer(int i, int j, int k, int l, int m, int n, int o, int p, int q, int r) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		switch (field_25251) {
-			case field_25253:
+		switch (fboBlitMode) {
+			case BASE:
 				GL30.glBlitFramebuffer(i, j, k, l, m, n, o, p, q, r);
 				break;
-			case field_25254:
+			case EXT:
 				EXTFramebufferBlit.glBlitFramebufferEXT(i, j, k, l, m, n, o, p, q, r);
-			case field_25255:
+			case NONE:
 		}
 	}
 
@@ -1258,7 +1258,7 @@ public class GlStateManager {
 	}
 
 	public static boolean supportsGl30() {
-		return field_25251 != GlStateManager.class_5343.field_25255;
+		return fboBlitMode != GlStateManager.FBOBlitMode.NONE;
 	}
 
 	@Deprecated
@@ -1397,6 +1397,13 @@ public class GlStateManager {
 		private DstFactor(int j) {
 			this.field_22528 = j;
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum FBOBlitMode {
+		BASE,
+		EXT,
+		NONE;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1577,12 +1584,5 @@ public class GlStateManager {
 		protected int y;
 		protected int width;
 		protected int height;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum class_5343 {
-		field_25253,
-		field_25254,
-		field_25255;
 	}
 }

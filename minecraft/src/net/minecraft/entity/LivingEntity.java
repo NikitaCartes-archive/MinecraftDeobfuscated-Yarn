@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5459;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -28,7 +29,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.TrapdoorBlock;
-import net.minecraft.command.arguments.EntityAnchorArgumentType;
+import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -1138,7 +1139,7 @@ public abstract class LivingEntity extends Entity {
 				this.clearStatusEffects();
 				this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1));
 				this.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1));
-				this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 1));
+				this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 0));
 				this.world.sendEntityStatus(this, (byte)35);
 			}
 
@@ -2517,7 +2518,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void tickCramming() {
-		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
+		List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
 		if (!list.isEmpty()) {
 			int i = this.world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
 			if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
@@ -2543,7 +2544,7 @@ public abstract class LivingEntity extends Entity {
 
 	protected void tickRiptide(Box a, Box b) {
 		Box box = a.union(b);
-		List<Entity> list = this.world.getEntities(this, box);
+		List<Entity> list = this.world.getOtherEntities(this, box);
 		if (!list.isEmpty()) {
 			for (int i = 0; i < list.size(); i++) {
 				Entity entity = (Entity)list.get(i);
@@ -2668,7 +2669,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	public boolean isPushable() {
-		return this.isAlive() && !this.isClimbing();
+		return this.isAlive() && !this.isSpectator() && !this.isClimbing();
 	}
 
 	@Override
@@ -2689,6 +2690,12 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public void setYaw(float yaw) {
 		this.bodyYaw = yaw;
+	}
+
+	@Override
+	protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
+		Vec3d vec3d = super.method_30633(axis, arg);
+		return new Vec3d(vec3d.x, vec3d.y, 0.0);
 	}
 
 	public float getAbsorptionAmount() {

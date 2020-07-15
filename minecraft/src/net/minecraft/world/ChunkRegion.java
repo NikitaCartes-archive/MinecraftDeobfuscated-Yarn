@@ -357,12 +357,12 @@ public class ChunkRegion implements ServerWorldAccess {
 	}
 
 	@Override
-	public <T extends Entity> List<T> getEntities(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> List<T> getEntitiesByClass(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public List<Entity> getEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
+	public List<Entity> getOtherEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
 		return Collections.emptyList();
 	}
 

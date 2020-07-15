@@ -51,7 +51,7 @@ public class StructuresConfig {
 		.put(StructureFeature.NETHER_FOSSIL, new StructureConfig(2, 1, 14357921))
 		.build();
 	/**
-	 * Default placement settings for the Stronghold.
+	 * Default placement settings for the stronghold.
 	 */
 	public static final StrongholdConfig DEFAULT_STRONGHOLD;
 	private final Map<StructureFeature<?>, StructureConfig> structures;
@@ -70,7 +70,7 @@ public class StructuresConfig {
 	/**
 	 * Creates a new structure placement configuration with default values.
 	 * 
-	 * @param withStronghold Determines if the default stronghold configuration should be included.
+	 * @param withStronghold determines if the default stronghold configuration should be included
 	 */
 	public StructuresConfig(boolean withStronghold) {
 		this.structures = Maps.<StructureFeature<?>, StructureConfig>newHashMap(DEFAULT_STRUCTURES);
@@ -85,8 +85,9 @@ public class StructuresConfig {
 	 * Gets the placement configuration for a specific structure type, or
 	 * a default placement if placement for the structure was not explicitly configured.
 	 */
+	@Nullable
 	public StructureConfig getForType(StructureFeature<?> structureType) {
-		return (StructureConfig)this.structures.getOrDefault(structureType, new StructureConfig(1, 0, 0));
+		return (StructureConfig)this.structures.get(structureType);
 	}
 
 	@Nullable

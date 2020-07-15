@@ -155,12 +155,11 @@ public abstract class ChunkGenerator {
 	 * <p>
 	 * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
 	 * 
-	 * @return null if no structure could be found within the given search radius.
+	 * @return {@code null} if no structure could be found within the given search radius
 	 * 
 	 * @param radius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
 	 * This is ignored for strongholds.
-	 * @param skipExistingChunks Don't return structures that are aleady referenced by generated chunks (chunks past the STRUCTURE_STARTS stage).
-	 * This is ignored for strongholds.
+	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the STRUCTURE_STARTS stage) are returned, excluding strongholds
 	 */
 	@Nullable
 	public BlockPos locateStructure(ServerWorld world, StructureFeature<?> feature, BlockPos center, int radius, boolean skipExistingChunks) {
@@ -186,7 +185,10 @@ public abstract class ChunkGenerator {
 
 			return blockPos;
 		} else {
-			return feature.locateStructure(world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), this.config.getForType(feature));
+			StructureConfig structureConfig = this.config.getForType(feature);
+			return structureConfig == null
+				? null
+				: feature.locateStructure(world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), structureConfig);
 		}
 	}
 
@@ -263,10 +265,13 @@ public abstract class ChunkGenerator {
 	) {
 		StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), configuredStructureFeature.feature, chunk);
 		int i = structureStart != null ? structureStart.getReferences() : 0;
-		StructureStart<?> structureStart2 = configuredStructureFeature.tryPlaceStart(
-			dynamicRegistryManager, this, this.biomeSource, structureManager, worldSeed, chunkPos, biome, i, this.config.getForType(configuredStructureFeature.feature)
-		);
-		structureAccessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), configuredStructureFeature.feature, structureStart2, chunk);
+		StructureConfig structureConfig = this.config.getForType(configuredStructureFeature.feature);
+		if (structureConfig != null) {
+			StructureStart<?> structureStart2 = configuredStructureFeature.tryPlaceStart(
+				dynamicRegistryManager, this, this.biomeSource, structureManager, worldSeed, chunkPos, biome, i, structureConfig
+			);
+			structureAccessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), configuredStructureFeature.feature, structureStart2, chunk);
+		}
 	}
 
 	/**

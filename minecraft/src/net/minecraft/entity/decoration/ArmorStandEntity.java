@@ -302,7 +302,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	protected void tickCramming() {
-		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
+		List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
 
 		for (int i = 0; i < list.size(); i++) {
 			Entity entity = (Entity)list.get(i);

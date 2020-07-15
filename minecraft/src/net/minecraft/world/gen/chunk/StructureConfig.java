@@ -25,7 +25,7 @@ public class StructureConfig {
 	/**
 	 * Defines the width and height of a cell in the structure placement grid in chunks.
 	 * <p>
-	 * For each cell in the grid, the chunk generator will attept to place the start of a structure.
+	 * For each cell in the grid, the chunk generator will attempt to place the start of a structure.
 	 * <p>
 	 * Minimum is 1, which means the structure will potentially be placed in every chunk.
 	 * 2 leads to one structure per 2x2 chunks, and so on.

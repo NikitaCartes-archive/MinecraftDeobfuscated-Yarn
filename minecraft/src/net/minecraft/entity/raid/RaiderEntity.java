@@ -528,7 +528,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				if (raiderEntity == null || !raiderEntity.isAlive()) {
 					List<ItemEntity> list = this.actor
 						.world
-						.getEntities(ItemEntity.class, this.actor.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
+						.getEntitiesByClass(ItemEntity.class, this.actor.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
 					if (!list.isEmpty()) {
 						return this.actor.getNavigation().startMovingTo((Entity)list.get(0), 1.15F);
 					}
@@ -545,7 +545,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.actor.getNavigation().getTargetPos().isWithinDistance(this.actor.getPos(), 1.414)) {
 				List<ItemEntity> list = this.actor
 					.world
-					.getEntities(ItemEntity.class, this.actor.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
+					.getEntitiesByClass(ItemEntity.class, this.actor.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
 				if (!list.isEmpty()) {
 					this.actor.loot((ItemEntity)list.get(0));
 				}

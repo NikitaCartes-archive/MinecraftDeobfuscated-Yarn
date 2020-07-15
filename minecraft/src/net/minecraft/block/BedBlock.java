@@ -121,7 +121,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	private boolean isFree(World world, BlockPos pos) {
-		List<VillagerEntity> list = world.getEntities(VillagerEntity.class, new Box(pos), LivingEntity::isSleeping);
+		List<VillagerEntity> list = world.getEntitiesByClass(VillagerEntity.class, new Box(pos), LivingEntity::isSleeping);
 		if (list.isEmpty()) {
 			return false;
 		} else {
@@ -268,7 +268,9 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				} else {
 					Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
 					Box box = type.createSimpleBoundingBox(vec3d.x, vec3d.y, vec3d.z);
-					return world.doesNotCollide(box) && world.method_29546(box.stretch(0.0, -0.2F, 0.0)).noneMatch(type::method_29496) ? Optional.of(vec3d) : Optional.empty();
+					return world.doesNotCollide(box) && world.method_29546(box.stretch(0.0, -0.2F, 0.0)).noneMatch(type::isInvalidSpawn)
+						? Optional.of(vec3d)
+						: Optional.empty();
 				}
 			}
 		}

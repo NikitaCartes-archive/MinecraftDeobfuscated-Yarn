@@ -478,7 +478,7 @@ public class WorldChunk implements Chunk {
 		this.shouldSave = true;
 	}
 
-	public void getEntities(@Nullable Entity except, Box box, List<Entity> entityList, @Nullable Predicate<? super Entity> predicate) {
+	public void collectOtherEntities(@Nullable Entity except, Box box, List<Entity> entityList, @Nullable Predicate<? super Entity> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -508,7 +508,19 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public <T extends Entity> void getEntities(@Nullable EntityType<?> type, Box box, List<? super T> entityList, Predicate<? super T> predicate) {
+	/**
+	 * Collects a list of entities and appends them to the given list according to the specified criteria.
+	 * 
+	 * <strong>Warning:<strong> If {@code null} is passed as the entity type filter, care should be
+	 * taken that the type argument {@code T} is set to {@link Entity}, otherwise heap pollution in
+	 * the output list or {@link ClassCastException} can occur.
+	 * 
+	 * @param type the entity type of the entities to collect, or {@code null} to collect entities of all types.
+	 * @param box the box within which collected entities must be
+	 * @param result a list in which to store the collected entities
+	 * @param predicate a predicate which entities must satisfy in order to be collected
+	 */
+	public <T extends Entity> void collectEntities(@Nullable EntityType<?> type, Box box, List<? super T> result, Predicate<? super T> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -517,13 +529,22 @@ public class WorldChunk implements Chunk {
 		for (int k = i; k <= j; k++) {
 			for (Entity entity : this.entitySections[k].getAllOfType(Entity.class)) {
 				if ((type == null || entity.getType() == type) && entity.getBoundingBox().intersects(box) && predicate.test(entity)) {
-					entityList.add(entity);
+					result.add(entity);
 				}
 			}
 		}
 	}
 
-	public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> entityList, @Nullable Predicate<? super T> predicate) {
+	/**
+	 * Collects a list of entities of some runtime type and appends them to the given list. The runtime
+	 * class of each collected entity will be the same as or a subclass of the given class.
+	 * 
+	 * @param entityClass the class object representing the type collected entities must extend
+	 * @param box the box in which to collect entities
+	 * @param result a list in which to store the collected entities
+	 * @param predicate a predicate which entities must satisfy in order to be collected
+	 */
+	public <T extends Entity> void collectEntitiesByClass(Class<? extends T> entityClass, Box box, List<T> result, @Nullable Predicate<? super T> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -532,7 +553,7 @@ public class WorldChunk implements Chunk {
 		for (int k = i; k <= j; k++) {
 			for (T entity : this.entitySections[k].getAllOfType(entityClass)) {
 				if (entity.getBoundingBox().intersects(box) && (predicate == null || predicate.test(entity))) {
-					entityList.add(entity);
+					result.add(entity);
 				}
 			}
 		}

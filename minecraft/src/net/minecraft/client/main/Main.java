@@ -120,7 +120,7 @@ public class Main {
 		CrashReport.initCrashReport();
 		Bootstrap.initialize();
 		Bootstrap.logMissing();
-		Util.method_29476();
+		Util.startTimerHack();
 		Session session = new Session(optionSpec11.value(optionSet), string6, optionSpec13.value(optionSet), optionSpec22.value(optionSet));
 		RunArgs runArgs = new RunArgs(
 			new RunArgs.Network(session, propertyMap, propertyMap2, proxy),

@@ -417,65 +417,40 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	@Override
-	protected void pushOutOfBlocks(double x, double y, double z) {
-		BlockPos blockPos = new BlockPos(x, y, z);
-		if (this.cannotFitAt(blockPos)) {
-			double d = x - (double)blockPos.getX();
-			double e = z - (double)blockPos.getZ();
+	private void method_30673(double d, double e) {
+		BlockPos blockPos = new BlockPos(d, this.getY(), e);
+		if (this.method_30674(blockPos)) {
+			double f = d - (double)blockPos.getX();
+			double g = e - (double)blockPos.getZ();
 			Direction direction = null;
-			double f = 9999.0;
-			if (!this.cannotFitAt(blockPos.west()) && d < f) {
-				f = d;
-				direction = Direction.WEST;
-			}
+			double h = Double.MAX_VALUE;
+			Direction[] directions = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH};
 
-			if (!this.cannotFitAt(blockPos.east()) && 1.0 - d < f) {
-				f = 1.0 - d;
-				direction = Direction.EAST;
-			}
-
-			if (!this.cannotFitAt(blockPos.north()) && e < f) {
-				f = e;
-				direction = Direction.NORTH;
-			}
-
-			if (!this.cannotFitAt(blockPos.south()) && 1.0 - e < f) {
-				f = 1.0 - e;
-				direction = Direction.SOUTH;
+			for (Direction direction2 : directions) {
+				double i = direction2.getAxis().choose(f, 0.0, g);
+				double j = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - i : i;
+				if (j < h && !this.method_30674(blockPos.offset(direction2))) {
+					h = j;
+					direction = direction2;
+				}
 			}
 
 			if (direction != null) {
 				Vec3d vec3d = this.getVelocity();
-				switch (direction) {
-					case WEST:
-						this.setVelocity(-0.1, vec3d.y, vec3d.z);
-						break;
-					case EAST:
-						this.setVelocity(0.1, vec3d.y, vec3d.z);
-						break;
-					case NORTH:
-						this.setVelocity(vec3d.x, vec3d.y, -0.1);
-						break;
-					case SOUTH:
-						this.setVelocity(vec3d.x, vec3d.y, 0.1);
+				if (direction.getAxis() == Direction.Axis.X) {
+					this.setVelocity(0.1 * (double)direction.getOffsetX(), vec3d.y, vec3d.z);
+				} else {
+					this.setVelocity(vec3d.x, vec3d.y, 0.1 * (double)direction.getOffsetZ());
 				}
 			}
 		}
 	}
 
-	private boolean cannotFitAt(BlockPos pos) {
+	private boolean method_30674(BlockPos blockPos) {
 		Box box = this.getBoundingBox();
-		BlockPos.Mutable mutable = pos.mutableCopy();
-
-		for (int i = MathHelper.floor(box.minY); i < MathHelper.ceil(box.maxY); i++) {
-			mutable.setY(i);
-			if (!this.doesNotSuffocate(mutable)) {
-				return true;
-			}
-		}
-
-		return false;
+		Box box2 = new Box((double)blockPos.getX(), box.minY, (double)blockPos.getZ(), (double)blockPos.getX() + 1.0, box.maxY, (double)blockPos.getZ() + 1.0)
+			.contract(1.0E-7);
+		return !this.world.method_30635(this, box2, (blockState, blockPosx) -> blockState.shouldSuffocate(this.world, blockPosx));
 	}
 
 	@Override
@@ -686,10 +661,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (!this.noClip) {
-			this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
-			this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
-			this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
-			this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
+			this.method_30673(this.getX() - (double)this.getWidth() * 0.35, this.getZ() + (double)this.getWidth() * 0.35);
+			this.method_30673(this.getX() - (double)this.getWidth() * 0.35, this.getZ() - (double)this.getWidth() * 0.35);
+			this.method_30673(this.getX() + (double)this.getWidth() * 0.35, this.getZ() - (double)this.getWidth() * 0.35);
+			this.method_30673(this.getX() + (double)this.getWidth() * 0.35, this.getZ() + (double)this.getWidth() * 0.35);
 		}
 
 		if (bl2) {

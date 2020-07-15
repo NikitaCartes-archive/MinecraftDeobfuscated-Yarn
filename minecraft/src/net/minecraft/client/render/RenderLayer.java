@@ -82,7 +82,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_GUI_TRANSPARENCY)
+			.transparency(GLINT_TRANSPARENCY)
 			.texturing(GLINT_TEXTURING)
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
@@ -97,9 +97,24 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_GUI_TRANSPARENCY)
+			.transparency(GLINT_TRANSPARENCY)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.layering(VIEW_OFFSET_Z_LAYERING)
+			.build(false)
+	);
+	private static final RenderLayer GLINT_TRANSLUCENT = of(
+		"glint_translucent",
+		VertexFormats.POSITION_TEXTURE,
+		7,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.writeMaskState(COLOR_MASK)
+			.cull(DISABLE_CULLING)
+			.depthTest(EQUAL_DEPTH_TEST)
+			.transparency(GLINT_TRANSPARENCY)
+			.texturing(GLINT_TEXTURING)
+			.target(ITEM_TARGET)
 			.build(false)
 	);
 	private static final RenderLayer GLINT = of(
@@ -113,7 +128,6 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
-			.target(ITEM_TARGET)
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
@@ -127,7 +141,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_GUI_TRANSPARENCY)
+			.transparency(GLINT_TRANSPARENCY)
 			.texturing(GLINT_TEXTURING)
 			.build(false)
 	);
@@ -156,7 +170,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
-			.transparency(GLINT_GUI_TRANSPARENCY)
+			.transparency(GLINT_TRANSPARENCY)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
@@ -499,6 +513,10 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getArmorEntityGlint() {
 		return ARMOR_ENTITY_GLINT;
+	}
+
+	public static RenderLayer method_30676() {
+		return GLINT_TRANSLUCENT;
 	}
 
 	public static RenderLayer getGlint() {
