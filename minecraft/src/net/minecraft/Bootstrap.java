@@ -17,6 +17,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.util.Language;
 import net.minecraft.util.logging.DebugLoggerPrintStream;
@@ -94,6 +95,7 @@ public class Bootstrap {
 		} else {
 			if (SharedConstants.isDevelopment) {
 				getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: " + string));
+				CommandManager.method_30852();
 			}
 
 			DefaultAttributeRegistry.checkMissing();

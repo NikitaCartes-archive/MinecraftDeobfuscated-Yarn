@@ -60,7 +60,7 @@ public class PhantomSpawner implements Spawner {
 												PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);
 												phantomEntity.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
 												entityData = phantomEntity.initialize(world, localDifficulty, SpawnReason.NATURAL, entityData, null);
-												world.spawnEntity(phantomEntity);
+												world.spawnEntityAndPassengers(phantomEntity);
 											}
 
 											i += l;

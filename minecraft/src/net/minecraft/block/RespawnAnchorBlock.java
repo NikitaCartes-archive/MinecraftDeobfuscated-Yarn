@@ -1,9 +1,12 @@
 package net.minecraft.block;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
@@ -26,14 +29,31 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
 public class RespawnAnchorBlock extends Block {
 	public static final IntProperty CHARGES = Properties.CHARGES;
+	private static final ImmutableList<Vec3i> field_26442 = ImmutableList.of(
+		new Vec3i(0, 0, -1),
+		new Vec3i(-1, 0, 0),
+		new Vec3i(0, 0, 1),
+		new Vec3i(1, 0, 0),
+		new Vec3i(-1, 0, -1),
+		new Vec3i(1, 0, -1),
+		new Vec3i(-1, 0, 1),
+		new Vec3i(1, 0, 1)
+	);
+	private static final ImmutableList<Vec3i> field_26443 = new Builder<Vec3i>()
+		.addAll(field_26442)
+		.addAll(field_26442.stream().map(Vec3i::down).iterator())
+		.addAll(field_26442.stream().map(Vec3i::up).iterator())
+		.add(new Vec3i(0, 1, 0))
+		.build();
 
 	public RespawnAnchorBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -195,11 +215,19 @@ public class RespawnAnchorBlock extends Block {
 		return getLightLevel(state, 15);
 	}
 
-	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, WorldView world, BlockPos pos) {
-		for (BlockPos blockPos : BlockPos.iterate(pos.add(-1, -1, -1), pos.add(1, 1, 1))) {
-			Optional<Vec3d> optional = BedBlock.canWakeUpAt(entity, world, blockPos);
-			if (optional.isPresent()) {
-				return optional;
+	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView collisionView, BlockPos pos) {
+		Optional<Vec3d> optional = method_30842(entity, collisionView, pos, true);
+		return optional.isPresent() ? optional : method_30842(entity, collisionView, pos, false);
+	}
+
+	private static Optional<Vec3d> method_30842(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, boolean bl) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (Vec3i vec3i : field_26443) {
+			mutable.set(blockPos).method_30927(vec3i);
+			Vec3d vec3d = Dismounting.method_30769(entityType, collisionView, mutable, bl);
+			if (vec3d != null) {
+				return Optional.of(vec3d);
 			}
 		}
 

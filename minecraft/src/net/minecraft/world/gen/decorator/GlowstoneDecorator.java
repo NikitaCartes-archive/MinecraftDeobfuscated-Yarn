@@ -13,7 +13,7 @@ public class GlowstoneDecorator extends SimpleDecorator<CountConfig> {
 	}
 
 	public Stream<BlockPos> getPositions(Random random, CountConfig countConfig, BlockPos blockPos) {
-		return IntStream.range(0, random.nextInt(random.nextInt(countConfig.method_30396().getValue(random)) + 1)).mapToObj(i -> {
+		return IntStream.range(0, random.nextInt(random.nextInt(countConfig.getCount().getValue(random)) + 1)).mapToObj(i -> {
 			int j = random.nextInt(16) + blockPos.getX();
 			int k = random.nextInt(16) + blockPos.getZ();
 			int l = random.nextInt(120) + 4;

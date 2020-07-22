@@ -1,14 +1,13 @@
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.gui.screen;
 
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
 
 @Environment(EnvType.CLIENT)
-public class RealmsBridge extends RealmsScreen {
+public class RealmsBridgeScreen extends RealmsScreen {
 	private Screen previousScreen;
 
 	public void switchToRealms(Screen parentScreen) {

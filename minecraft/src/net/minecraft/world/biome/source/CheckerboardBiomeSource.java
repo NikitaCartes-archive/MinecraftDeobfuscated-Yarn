@@ -12,7 +12,7 @@ import net.minecraft.world.biome.Biome;
 public class CheckerboardBiomeSource extends BiomeSource {
 	public static final Codec<CheckerboardBiomeSource> field_24715 = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Biome.field_24677.listOf().fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
+					Biome.REGISTRY_CODEC.listOf().fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
 					Codec.intRange(0, 62).fieldOf("scale").orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)
 				)
 				.apply(instance, CheckerboardBiomeSource::new)

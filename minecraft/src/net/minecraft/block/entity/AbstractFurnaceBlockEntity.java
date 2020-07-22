@@ -159,13 +159,13 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		return map;
 	}
 
-	private static boolean isFlammableWood(Item item) {
+	private static boolean isNonFlammableWood(Item item) {
 		return ItemTags.NON_FLAMMABLE_WOOD.contains(item);
 	}
 
 	private static void addFuel(Map<Item, Integer> fuelTimes, Tag<Item> tag, int fuelTime) {
 		for (Item item : tag.values()) {
-			if (!isFlammableWood(item)) {
+			if (!isNonFlammableWood(item)) {
 				fuelTimes.put(item, fuelTime);
 			}
 		}
@@ -173,7 +173,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	private static void addFuel(Map<Item, Integer> map, ItemConvertible item, int fuelTime) {
 		Item item2 = item.asItem();
-		if (isFlammableWood(item2)) {
+		if (isNonFlammableWood(item2)) {
 			if (SharedConstants.isDevelopment) {
 				throw (IllegalStateException)Util.throwOrPause(
 					new IllegalStateException(

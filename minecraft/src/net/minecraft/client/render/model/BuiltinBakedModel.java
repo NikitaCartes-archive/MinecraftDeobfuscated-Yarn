@@ -17,13 +17,13 @@ public class BuiltinBakedModel implements BakedModel {
 	private final ModelTransformation transformation;
 	private final ModelOverrideList itemPropertyOverrides;
 	private final Sprite sprite;
-	private final boolean field_21862;
+	private final boolean sideLit;
 
-	public BuiltinBakedModel(ModelTransformation transformation, ModelOverrideList itemPropertyOverrides, Sprite sprite, boolean bl) {
+	public BuiltinBakedModel(ModelTransformation transformation, ModelOverrideList itemPropertyOverrides, Sprite sprite, boolean sideLit) {
 		this.transformation = transformation;
 		this.itemPropertyOverrides = itemPropertyOverrides;
 		this.sprite = sprite;
-		this.field_21862 = bl;
+		this.sideLit = sideLit;
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class BuiltinBakedModel implements BakedModel {
 
 	@Override
 	public boolean isSideLit() {
-		return this.field_21862;
+		return this.sideLit;
 	}
 
 	@Override

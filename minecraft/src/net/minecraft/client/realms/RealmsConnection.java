@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
@@ -17,13 +18,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class RealmsConnect {
+public class RealmsConnection {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Screen onlineScreen;
 	private volatile boolean aborted;
 	private ClientConnection connection;
 
-	public RealmsConnect(Screen onlineScreen) {
+	public RealmsConnection(Screen onlineScreen) {
 		this.onlineScreen = onlineScreen;
 	}
 
@@ -37,46 +38,46 @@ public class RealmsConnect {
 
 					try {
 						inetAddress = InetAddress.getByName(address);
-						if (RealmsConnect.this.aborted) {
+						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.this.connection = ClientConnection.connect(inetAddress, port, minecraftClient.options.shouldUseNativeTransport());
-						if (RealmsConnect.this.aborted) {
+						RealmsConnection.this.connection = ClientConnection.connect(inetAddress, port, minecraftClient.options.shouldUseNativeTransport());
+						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.this.connection
-							.setPacketListener(new ClientLoginNetworkHandler(RealmsConnect.this.connection, minecraftClient, RealmsConnect.this.onlineScreen, text -> {
+						RealmsConnection.this.connection
+							.setPacketListener(new ClientLoginNetworkHandler(RealmsConnection.this.connection, minecraftClient, RealmsConnection.this.onlineScreen, text -> {
 							}));
-						if (RealmsConnect.this.aborted) {
+						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
-						if (RealmsConnect.this.aborted) {
+						RealmsConnection.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
+						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getProfile()));
+						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getProfile()));
 					} catch (UnknownHostException var5) {
 						minecraftClient.getResourcePackDownloader().clear();
-						if (RealmsConnect.this.aborted) {
+						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.LOGGER.error("Couldn't connect to world", (Throwable)var5);
+						RealmsConnection.LOGGER.error("Couldn't connect to world", (Throwable)var5);
 						DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(
-							RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'")
+							RealmsConnection.this.onlineScreen, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'")
 						);
 						minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
 					} catch (Exception var6) {
 						minecraftClient.getResourcePackDownloader().clear();
-						if (RealmsConnect.this.aborted) {
+						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.LOGGER.error("Couldn't connect to world", (Throwable)var6);
+						RealmsConnection.LOGGER.error("Couldn't connect to world", (Throwable)var6);
 						String string = var6.toString();
 						if (inetAddress != null) {
 							String string2 = inetAddress + ":" + port;
@@ -84,7 +85,7 @@ public class RealmsConnect {
 						}
 
 						DisconnectedRealmsScreen disconnectedRealmsScreen2 = new DisconnectedRealmsScreen(
-							RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableText("disconnect.genericReason", string)
+							RealmsConnection.this.onlineScreen, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", string)
 						);
 						minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen2));
 					}

@@ -16,9 +16,9 @@ public class RangeDecoratorConfig implements DecoratorConfig {
 	public final int topOffset;
 	public final int maximum;
 
-	public RangeDecoratorConfig(int count, int bottomOffset, int topOffset) {
-		this.bottomOffset = count;
-		this.topOffset = bottomOffset;
-		this.maximum = topOffset;
+	public RangeDecoratorConfig(int bottomOffset, int topOffset, int maximum) {
+		this.bottomOffset = bottomOffset;
+		this.topOffset = topOffset;
+		this.maximum = maximum;
 	}
 }

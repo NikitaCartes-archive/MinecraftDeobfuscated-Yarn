@@ -3,7 +3,6 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -30,6 +29,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
@@ -240,31 +240,33 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
-				arg.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(arg.getFluidState(pos).isIn(FluidTags.WATER))), 2);
-				BlockEntity blockEntity = arg.getBlockEntity(pos);
+				serverWorldAccess.setBlockState(
+					pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(serverWorldAccess.getFluidState(pos).isIn(FluidTags.WATER))), 2
+				);
+				BlockEntity blockEntity = serverWorldAccess.getBlockEntity(pos);
 				if (blockEntity instanceof ChestBlockEntity) {
 					((ChestBlockEntity)blockEntity)
 						.setLootTable(this.large ? LootTables.UNDERWATER_RUIN_BIG_CHEST : LootTables.UNDERWATER_RUIN_SMALL_CHEST, random.nextLong());
 				}
 			} else if ("drowned".equals(metadata)) {
-				DrownedEntity drownedEntity = EntityType.DROWNED.create(arg.getWorld());
+				DrownedEntity drownedEntity = EntityType.DROWNED.create(serverWorldAccess.toServerWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-				drownedEntity.initialize(arg, arg.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
-				arg.spawnEntity(drownedEntity);
-				if (pos.getY() > arg.getSeaLevel()) {
-					arg.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+				drownedEntity.initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+				serverWorldAccess.spawnEntityAndPassengers(drownedEntity);
+				if (pos.getY() > serverWorldAccess.getSeaLevel()) {
+					serverWorldAccess.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 				} else {
-					arg.setBlockState(pos, Blocks.WATER.getDefaultState(), 2);
+					serverWorldAccess.setBlockState(pos, Blocks.WATER.getDefaultState(), 2);
 				}
 			}
 		}
 
 		@Override
 		public boolean generate(
-			ServerWorldAccess serverWorldAccess,
+			StructureWorldAccess structureWorldAccess,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
@@ -276,14 +278,14 @@ public class OceanRuinGenerator {
 				.clearProcessors()
 				.addProcessor(new BlockRotStructureProcessor(this.integrity))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-			int i = serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
+			int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
 			BlockPos blockPos2 = Structure.transformAround(
 					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.NONE, this.rotation, BlockPos.ORIGIN
 				)
 				.add(this.pos);
-			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, serverWorldAccess, blockPos2), this.pos.getZ());
-			return super.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, structureWorldAccess, blockPos2), this.pos.getZ());
+			return super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
 		}
 
 		private int method_14829(BlockPos blockPos, BlockView blockView, BlockPos blockPos2) {

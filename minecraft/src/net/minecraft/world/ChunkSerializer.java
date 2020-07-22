@@ -127,14 +127,14 @@ public class ChunkSerializer {
 			}
 
 			chunk = new WorldChunk(
-				world.getWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, chunkx -> writeEntities(compoundTag, chunkx)
+				world.toServerWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, chunkx -> writeEntities(compoundTag, chunkx)
 			);
 		} else {
 			ProtoChunk protoChunk = new ProtoChunk(pos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
 			protoChunk.setBiomes(biomeArray);
 			chunk = protoChunk;
 			protoChunk.setInhabitedTime(l);
-			protoChunk.setStatus(ChunkStatus.get(compoundTag.getString("Status")));
+			protoChunk.setStatus(ChunkStatus.byId(compoundTag.getString("Status")));
 			if (protoChunk.getStatus().isAtLeast(ChunkStatus.FEATURES)) {
 				protoChunk.setLightingProvider(lightingProvider);
 			}
@@ -350,7 +350,7 @@ public class ChunkSerializer {
 
 	public static ChunkStatus.ChunkType getChunkType(@Nullable CompoundTag tag) {
 		if (tag != null) {
-			ChunkStatus chunkStatus = ChunkStatus.get(tag.getCompound("Level").getString("Status"));
+			ChunkStatus chunkStatus = ChunkStatus.byId(tag.getCompound("Level").getString("Status"));
 			if (chunkStatus != null) {
 				return chunkStatus.getChunkType();
 			}

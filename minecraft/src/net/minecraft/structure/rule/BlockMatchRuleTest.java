@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.registry.Registry;
 
 public class BlockMatchRuleTest extends RuleTest {
-	public static final Codec<BlockMatchRuleTest> field_24999 = Registry.BLOCK
+	public static final Codec<BlockMatchRuleTest> CODEC = Registry.BLOCK
 		.fieldOf("block")
 		.<BlockMatchRuleTest>xmap(BlockMatchRuleTest::new, blockMatchRuleTest -> blockMatchRuleTest.block)
 		.codec();

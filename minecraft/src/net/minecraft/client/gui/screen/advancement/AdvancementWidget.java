@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementProgress;
@@ -18,6 +19,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -27,9 +29,9 @@ public class AdvancementWidget extends DrawableHelper {
 	private final AdvancementTab tab;
 	private final Advancement advancement;
 	private final AdvancementDisplay display;
-	private final StringRenderable title;
+	private final class_5481 title;
 	private final int width;
-	private final List<StringRenderable> description;
+	private final List<class_5481> description;
 	private final MinecraftClient client;
 	private AdvancementWidget parent;
 	private final List<AdvancementWidget> children = Lists.<AdvancementWidget>newArrayList();
@@ -42,19 +44,20 @@ public class AdvancementWidget extends DrawableHelper {
 		this.advancement = advancement;
 		this.display = display;
 		this.client = client;
-		this.title = client.textRenderer.trimToWidth(display.getTitle(), 163);
+		this.title = Language.getInstance().method_30934(client.textRenderer.trimToWidth(display.getTitle(), 163));
 		this.xPos = MathHelper.floor(display.getX() * 28.0F);
 		this.yPos = MathHelper.floor(display.getY() * 27.0F);
 		int i = advancement.getRequirementCount();
 		int j = String.valueOf(i).length();
 		int k = i > 1 ? client.textRenderer.getWidth("  ") + client.textRenderer.getWidth("0") * j * 2 + client.textRenderer.getWidth("/") : 0;
-		int l = 29 + client.textRenderer.getWidth(this.title) + k;
-		this.description = this.wrapDescription(
-			Texts.setStyleIfAbsent(display.getDescription().shallowCopy(), Style.EMPTY.withColor(display.getFrame().getTitleFormat())), l
-		);
+		int l = 29 + client.textRenderer.method_30880(this.title) + k;
+		this.description = Language.getInstance()
+			.method_30933(
+				this.wrapDescription(Texts.setStyleIfAbsent(display.getDescription().shallowCopy(), Style.EMPTY.withColor(display.getFrame().getTitleFormat())), l)
+			);
 
-		for (StringRenderable stringRenderable : this.description) {
-			l = Math.max(l, client.textRenderer.getWidth(stringRenderable));
+		for (class_5481 lv : this.description) {
+			l = Math.max(l, client.textRenderer.method_30880(lv));
 		}
 
 		this.width = l + 3 + 5;
@@ -135,7 +138,7 @@ public class AdvancementWidget extends DrawableHelper {
 
 			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
 			this.drawTexture(
-				matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
+				matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
 			);
 			this.client.getItemRenderer().renderInGui(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 		}
@@ -208,7 +211,7 @@ public class AdvancementWidget extends DrawableHelper {
 		this.drawTexture(matrixStack, p, o, 0, advancementObtainedStatus.getSpriteIndex() * 26, m, 26);
 		this.drawTexture(matrixStack, p + m, o, 200 - n, advancementObtainedStatus2.getSpriteIndex() * 26, n, 26);
 		this.drawTexture(
-			matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26
+			matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26
 		);
 		if (bl) {
 			this.client.textRenderer.drawWithShadow(matrixStack, this.title, (float)(p + 5), (float)(j + this.yPos + 9), -1);
@@ -224,11 +227,11 @@ public class AdvancementWidget extends DrawableHelper {
 
 		if (bl2) {
 			for (int r = 0; r < this.description.size(); r++) {
-				this.client.textRenderer.draw(matrixStack, (StringRenderable)this.description.get(r), (float)(p + 5), (float)(o + 26 - q + 7 + r * 9), -5592406);
+				this.client.textRenderer.draw(matrixStack, (class_5481)this.description.get(r), (float)(p + 5), (float)(o + 26 - q + 7 + r * 9), -5592406);
 			}
 		} else {
 			for (int r = 0; r < this.description.size(); r++) {
-				this.client.textRenderer.draw(matrixStack, (StringRenderable)this.description.get(r), (float)(p + 5), (float)(j + this.yPos + 9 + 17 + r * 9), -5592406);
+				this.client.textRenderer.draw(matrixStack, (class_5481)this.description.get(r), (float)(p + 5), (float)(j + this.yPos + 9 + 17 + r * 9), -5592406);
 			}
 		}
 

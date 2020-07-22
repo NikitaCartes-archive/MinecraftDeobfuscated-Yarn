@@ -26,7 +26,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	private final PropertyDelegate propertyDelegate;
 	protected final World world;
 	private final RecipeType<? extends AbstractCookingRecipe> recipeType;
-	private final RecipeBookCategory field_25762;
+	private final RecipeBookCategory category;
 
 	protected AbstractFurnaceScreenHandler(
 		ScreenHandlerType<?> type,
@@ -49,7 +49,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	) {
 		super(type, i);
 		this.recipeType = recipeType;
-		this.field_25762 = recipeBookCategory;
+		this.category = recipeBookCategory;
 		checkSize(inventory, 3);
 		checkDataCount(propertyDelegate, 4);
 		this.inventory = inventory;
@@ -202,6 +202,6 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 	@Environment(EnvType.CLIENT)
 	@Override
 	public RecipeBookCategory getCategory() {
-		return this.field_25762;
+		return this.category;
 	}
 }

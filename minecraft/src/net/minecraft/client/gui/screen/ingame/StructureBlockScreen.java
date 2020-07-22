@@ -13,10 +13,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -24,6 +24,15 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class StructureBlockScreen extends Screen {
+	private static final Text field_26572 = new TranslatableText("structure_block.structure_name");
+	private static final Text field_26573 = new TranslatableText("structure_block.position");
+	private static final Text field_26574 = new TranslatableText("structure_block.size");
+	private static final Text field_26575 = new TranslatableText("structure_block.integrity");
+	private static final Text field_26576 = new TranslatableText("structure_block.custom_data");
+	private static final Text field_26577 = new TranslatableText("structure_block.include_entities");
+	private static final Text field_26578 = new TranslatableText("structure_block.detect_size");
+	private static final Text field_26579 = new TranslatableText("structure_block.show_air");
+	private static final Text field_26580 = new TranslatableText("structure_block.show_boundingbox");
 	private final StructureBlockBlockEntity structureBlock;
 	private BlockMirror mirror = BlockMirror.NONE;
 	private BlockRotation rotation = BlockRotation.NONE;
@@ -444,51 +453,42 @@ public class StructureBlockScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		StructureBlockMode structureBlockMode = this.structureBlock.getMode();
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		if (structureBlockMode != StructureBlockMode.DATA) {
-			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.structure_name"), this.width / 2 - 153, 30, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26572, this.width / 2 - 153, 30, 10526880);
 			this.inputName.render(matrices, mouseX, mouseY, delta);
 		}
 
 		if (structureBlockMode == StructureBlockMode.LOAD || structureBlockMode == StructureBlockMode.SAVE) {
-			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.position"), this.width / 2 - 153, 70, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26573, this.width / 2 - 153, 70, 10526880);
 			this.inputPosX.render(matrices, mouseX, mouseY, delta);
 			this.inputPosY.render(matrices, mouseX, mouseY, delta);
 			this.inputPosZ.render(matrices, mouseX, mouseY, delta);
-			String string = I18n.translate("structure_block.include_entities");
-			int i = this.textRenderer.getWidth(string);
-			this.drawStringWithShadow(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 150, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26577, this.width / 2 + 154 - this.textRenderer.getWidth(field_26577), 150, 10526880);
 		}
 
 		if (structureBlockMode == StructureBlockMode.SAVE) {
-			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.size"), this.width / 2 - 153, 110, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26574, this.width / 2 - 153, 110, 10526880);
 			this.inputSizeX.render(matrices, mouseX, mouseY, delta);
 			this.inputSizeY.render(matrices, mouseX, mouseY, delta);
 			this.inputSizeZ.render(matrices, mouseX, mouseY, delta);
-			String string = I18n.translate("structure_block.detect_size");
-			int i = this.textRenderer.getWidth(string);
-			this.drawStringWithShadow(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 110, 10526880);
-			String string2 = I18n.translate("structure_block.show_air");
-			int j = this.textRenderer.getWidth(string2);
-			this.drawStringWithShadow(matrices, this.textRenderer, string2, this.width / 2 + 154 - j, 70, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26578, this.width / 2 + 154 - this.textRenderer.getWidth(field_26578), 110, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26579, this.width / 2 + 154 - this.textRenderer.getWidth(field_26579), 70, 10526880);
 		}
 
 		if (structureBlockMode == StructureBlockMode.LOAD) {
-			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.integrity"), this.width / 2 - 153, 110, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26575, this.width / 2 - 153, 110, 10526880);
 			this.inputIntegrity.render(matrices, mouseX, mouseY, delta);
 			this.inputSeed.render(matrices, mouseX, mouseY, delta);
-			String string = I18n.translate("structure_block.show_boundingbox");
-			int i = this.textRenderer.getWidth(string);
-			this.drawStringWithShadow(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 70, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26580, this.width / 2 + 154 - this.textRenderer.getWidth(field_26580), 70, 10526880);
 		}
 
 		if (structureBlockMode == StructureBlockMode.DATA) {
-			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.custom_data"), this.width / 2 - 153, 110, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, field_26576, this.width / 2 - 153, 110, 10526880);
 			this.inputMetadata.render(matrices, mouseX, mouseY, delta);
 		}
 
-		String string = "structure_block.mode_info." + structureBlockMode.asString();
-		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate(string), this.width / 2 - 153, 174, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, structureBlockMode.method_30844(), this.width / 2 - 153, 174, 10526880);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

@@ -5,13 +5,22 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsClientOutdatedScreen extends RealmsScreen {
+	private static final Text field_26475 = new TranslatableText("mco.client.outdated.title");
+	private static final Text[] field_26476 = new Text[]{
+		new TranslatableText("mco.client.outdated.msg.line1"), new TranslatableText("mco.client.outdated.msg.line2")
+	};
+	private static final Text field_26477 = new TranslatableText("mco.client.incompatible.title");
+	private static final Text[] field_26478 = new Text[]{
+		new TranslatableText("mco.client.incompatible.msg.line1"),
+		new TranslatableText("mco.client.incompatible.msg.line2"),
+		new TranslatableText("mco.client.incompatible.msg.line3")
+	};
 	private final Screen parent;
 	private final boolean outdated;
 
@@ -28,13 +37,20 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		Text text = new TranslatableText(this.outdated ? "mco.client.outdated.title" : "mco.client.incompatible.title");
-		this.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, row(3), 16711680);
-		int i = this.outdated ? 2 : 3;
+		Text text;
+		Text[] texts;
+		if (this.outdated) {
+			text = field_26477;
+			texts = field_26478;
+		} else {
+			text = field_26475;
+			texts = field_26476;
+		}
 
-		for (int j = 0; j < i; j++) {
-			String string = (this.outdated ? "mco.client.outdated.msg.line" : "mco.client.incompatible.msg.line") + (j + 1);
-			this.drawCenteredText(matrices, this.textRenderer, new TranslatableText(string), this.width / 2, row(5) + j * 12, 16777215);
+		drawCenteredText(matrices, this.textRenderer, text, this.width / 2, row(3), 16711680);
+
+		for (int i = 0; i < texts.length; i++) {
+			drawCenteredText(matrices, this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, 16777215);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

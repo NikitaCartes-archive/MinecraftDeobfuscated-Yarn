@@ -6,7 +6,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -17,9 +17,9 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (serverWorldAccess.isAir(blockPos) && !serverWorldAccess.isAir(blockPos.up())) {
+		if (structureWorldAccess.isAir(blockPos) && !structureWorldAccess.isAir(blockPos.up())) {
 			BlockPos.Mutable mutable = blockPos.mutableCopy();
 			BlockPos.Mutable mutable2 = blockPos.mutableCopy();
 			boolean bl = true;
@@ -27,24 +27,24 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 			boolean bl3 = true;
 			boolean bl4 = true;
 
-			while (serverWorldAccess.isAir(mutable)) {
+			while (structureWorldAccess.isAir(mutable)) {
 				if (World.isHeightInvalid(mutable)) {
 					return true;
 				}
 
-				serverWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
-				bl = bl && this.stopOrPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
-				bl2 = bl2 && this.stopOrPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
-				bl3 = bl3 && this.stopOrPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.WEST));
-				bl4 = bl4 && this.stopOrPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.EAST));
+				structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
+				bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
+				bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
+				bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.WEST));
+				bl4 = bl4 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.EAST));
 				mutable.move(Direction.DOWN);
 			}
 
 			mutable.move(Direction.UP);
-			this.tryPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
-			this.tryPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
-			this.tryPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.WEST));
-			this.tryPlaceBasalt(serverWorldAccess, random, mutable2.set(mutable, Direction.EAST));
+			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
+			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
+			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.WEST));
+			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.EAST));
 			mutable.move(Direction.DOWN);
 			BlockPos.Mutable mutable3 = new BlockPos.Mutable();
 
@@ -55,15 +55,15 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 						mutable3.set(mutable.add(i, 0, j));
 						int l = 3;
 
-						while (serverWorldAccess.isAir(mutable2.set(mutable3, Direction.DOWN))) {
+						while (structureWorldAccess.isAir(mutable2.set(mutable3, Direction.DOWN))) {
 							mutable3.move(Direction.DOWN);
 							if (--l <= 0) {
 								break;
 							}
 						}
 
-						if (!serverWorldAccess.isAir(mutable2.set(mutable3, Direction.DOWN))) {
-							serverWorldAccess.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), 2);
+						if (!structureWorldAccess.isAir(mutable2.set(mutable3, Direction.DOWN))) {
+							structureWorldAccess.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), 2);
 						}
 					}
 				}

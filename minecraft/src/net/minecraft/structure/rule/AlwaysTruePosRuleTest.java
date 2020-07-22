@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import net.minecraft.util.math.BlockPos;
 
 public class AlwaysTruePosRuleTest extends PosRuleTest {
-	public static final Codec<AlwaysTruePosRuleTest> field_25006 = Codec.unit((Supplier<AlwaysTruePosRuleTest>)(() -> AlwaysTruePosRuleTest.INSTANCE));
+	public static final Codec<AlwaysTruePosRuleTest> CODEC = Codec.unit((Supplier<AlwaysTruePosRuleTest>)(() -> AlwaysTruePosRuleTest.INSTANCE));
 	public static final AlwaysTruePosRuleTest INSTANCE = new AlwaysTruePosRuleTest();
 
 	private AlwaysTruePosRuleTest() {

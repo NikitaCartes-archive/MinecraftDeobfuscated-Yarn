@@ -95,7 +95,7 @@ public class SoundLoader {
 				} catch (IOException var62) {
 					throw new CompletionException(var62);
 				}
-			}, Util.getServerWorkerExecutor()));
+			}, Util.getMainWorkerExecutor()));
 	}
 
 	public CompletableFuture<AudioStream> loadStreamed(Identifier id, boolean repeatInstantly) {
@@ -107,7 +107,7 @@ public class SoundLoader {
 			} catch (IOException var5) {
 				throw new CompletionException(var5);
 			}
-		}, Util.getServerWorkerExecutor());
+		}, Util.getMainWorkerExecutor());
 	}
 
 	public void close() {

@@ -34,9 +34,9 @@ public interface Tag<T> {
 	static <T> Codec<Tag<T>> codec(Supplier<TagGroup<T>> groupGetter) {
 		return Identifier.CODEC
 			.flatXmap(
-				identifier -> (DataResult)Optional.ofNullable(((TagGroup)groupGetter.get()).getTag(identifier))
+				id -> (DataResult)Optional.ofNullable(((TagGroup)groupGetter.get()).getTag(id))
 						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error("Unknown tag: " + identifier)),
+						.orElseGet(() -> DataResult.error("Unknown tag: " + id)),
 				tag -> (DataResult)Optional.ofNullable(((TagGroup)groupGetter.get()).getUncheckedTagId(tag))
 						.map(DataResult::success)
 						.orElseGet(() -> DataResult.error("Unknown tag: " + tag))
@@ -110,12 +110,7 @@ public interface Tag<T> {
 			List<Tag.Entry> list = Lists.<Tag.Entry>newArrayList();
 
 			for (JsonElement jsonElement : jsonArray) {
-				String string = JsonHelper.asString(jsonElement, "value");
-				if (string.startsWith("#")) {
-					list.add(new Tag.TagEntry(new Identifier(string.substring(1))));
-				} else {
-					list.add(new Tag.ObjectEntry(new Identifier(string)));
-				}
+				list.add(resolveEntry(jsonElement));
 			}
 
 			if (JsonHelper.getBoolean(json, "replace", false)) {
@@ -124,6 +119,27 @@ public interface Tag<T> {
 
 			list.forEach(entry -> this.entries.add(new Tag.TrackedEntry(entry, source)));
 			return this;
+		}
+
+		private static Tag.Entry resolveEntry(JsonElement json) {
+			String string;
+			boolean bl;
+			if (json.isJsonObject()) {
+				JsonObject jsonObject = json.getAsJsonObject();
+				string = JsonHelper.getString(jsonObject, "id");
+				bl = JsonHelper.getBoolean(jsonObject, "required", true);
+			} else {
+				string = JsonHelper.asString(json, "id");
+				bl = true;
+			}
+
+			if (string.startsWith("#")) {
+				Identifier identifier = new Identifier(string.substring(1));
+				return (Tag.Entry)(bl ? new Tag.TagEntry(identifier) : new Tag.OptionalTagEntry(identifier));
+			} else {
+				Identifier identifier = new Identifier(string);
+				return (Tag.Entry)(bl ? new Tag.ObjectEntry(identifier) : new Tag.OptionalObjectEntry(identifier));
+			}
 		}
 
 		public JsonObject toJson() {
@@ -175,6 +191,66 @@ public interface Tag<T> {
 
 		public String toString() {
 			return this.id.toString();
+		}
+	}
+
+	public static class OptionalObjectEntry implements Tag.Entry {
+		private final Identifier id;
+
+		public OptionalObjectEntry(Identifier id) {
+			this.id = id;
+		}
+
+		@Override
+		public <T> boolean resolve(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter, Consumer<T> collector) {
+			T object = (T)objectGetter.apply(this.id);
+			if (object != null) {
+				collector.accept(object);
+			}
+
+			return true;
+		}
+
+		@Override
+		public void addToJson(JsonArray json) {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("id", this.id.toString());
+			jsonObject.addProperty("required", false);
+			json.add(jsonObject);
+		}
+
+		public String toString() {
+			return this.id.toString() + "?";
+		}
+	}
+
+	public static class OptionalTagEntry implements Tag.Entry {
+		private final Identifier id;
+
+		public OptionalTagEntry(Identifier id) {
+			this.id = id;
+		}
+
+		@Override
+		public <T> boolean resolve(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter, Consumer<T> collector) {
+			Tag<T> tag = (Tag<T>)tagGetter.apply(this.id);
+			if (tag != null) {
+				tag.values().forEach(collector);
+			}
+
+			return true;
+		}
+
+		@Override
+		public void addToJson(JsonArray json) {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("id", "#" + this.id);
+			jsonObject.addProperty("required", false);
+			json.add(jsonObject);
+		}
+
+		public String toString() {
+			return "#" + this.id + "?";
 		}
 	}
 

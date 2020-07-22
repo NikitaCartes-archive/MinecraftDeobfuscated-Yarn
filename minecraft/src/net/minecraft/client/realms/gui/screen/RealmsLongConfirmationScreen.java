@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.Realms;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -51,9 +50,9 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawCenteredString(matrices, this.textRenderer, this.type.text, this.width / 2, row(2), this.type.colorCode);
-		this.drawCenteredText(matrices, this.textRenderer, this.line2, this.width / 2, row(4), 16777215);
-		this.drawCenteredText(matrices, this.textRenderer, this.line3, this.width / 2, row(6), 16777215);
+		drawCenteredString(matrices, this.textRenderer, this.type.text, this.width / 2, row(2), this.type.colorCode);
+		drawCenteredText(matrices, this.textRenderer, this.line2, this.width / 2, row(4), 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.line3, this.width / 2, row(6), 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

@@ -28,13 +28,13 @@ import net.minecraft.util.JsonHelper;
  */
 public class Style {
 	/**
-	 * The identifier for the default font of a style.
-	 */
-	public static final Identifier DEFAULT_FONT_ID = new Identifier("minecraft", "default");
-	/**
 	 * An empty style.
 	 */
 	public static final Style EMPTY = new Style(null, null, null, null, null, null, null, null, null, null);
+	/**
+	 * The identifier for the default font of a style.
+	 */
+	public static final Identifier DEFAULT_FONT_ID = new Identifier("minecraft", "default");
 	@Nullable
 	private final TextColor color;
 	@Nullable
@@ -219,6 +219,13 @@ public class Style {
 	public Style withItalic(@Nullable Boolean italic) {
 		return new Style(
 			this.color, this.bold, italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
+		);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Style method_30938(@Nullable Boolean boolean_) {
+		return new Style(
+			this.color, this.bold, this.italic, boolean_, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
 		);
 	}
 

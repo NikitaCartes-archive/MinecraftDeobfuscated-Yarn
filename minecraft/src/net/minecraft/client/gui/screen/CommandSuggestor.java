@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -38,7 +39,6 @@ import net.minecraft.client.util.Rect2i;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -67,7 +67,7 @@ public class CommandSuggestor {
 	private final int maxSuggestionSize;
 	private final boolean chatScreenSized;
 	private final int color;
-	private final List<StringRenderable> messages = Lists.<StringRenderable>newArrayList();
+	private final List<class_5481> messages = Lists.<class_5481>newArrayList();
 	private int x;
 	private int width;
 	private ParseResults<CommandSource> parse;
@@ -223,13 +223,15 @@ public class CommandSuggestor {
 		}
 	}
 
-	private static StringRenderable method_30505(CommandSyntaxException commandSyntaxException) {
+	private static class_5481 method_30505(CommandSyntaxException commandSyntaxException) {
 		Text text = Texts.toText(commandSyntaxException.getRawMessage());
 		String string = commandSyntaxException.getContext();
-		return (StringRenderable)(string == null ? text : new TranslatableText("command.context.parse_error", text, commandSyntaxException.getCursor(), string));
+		return string == null
+			? text.method_30937()
+			: new TranslatableText("command.context.parse_error", text, commandSyntaxException.getCursor(), string).method_30937();
 	}
 
-	public void show() {
+	private void show() {
 		if (this.textField.getCursor() == this.textField.getText().length()) {
 			if (((Suggestions)this.pendingSuggestions.join()).isEmpty() && !this.parse.getExceptions().isEmpty()) {
 				int i = 0;
@@ -271,13 +273,13 @@ public class CommandSuggestor {
 			.networkHandler
 			.getCommandDispatcher()
 			.getSmartUsage(suggestionContext.parent, this.client.player.networkHandler.getCommandSource());
-		List<StringRenderable> list = Lists.<StringRenderable>newArrayList();
+		List<class_5481> list = Lists.<class_5481>newArrayList();
 		int i = 0;
 		Style style = Style.EMPTY.withColor(formatting);
 
 		for (Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
 			if (!(entry.getKey() instanceof LiteralCommandNode)) {
-				list.add(StringRenderable.styled((String)entry.getValue(), style));
+				list.add(class_5481.method_30747((String)entry.getValue(), style));
 				i = Math.max(i, this.textRenderer.getWidth((String)entry.getValue()));
 			}
 		}
@@ -289,8 +291,8 @@ public class CommandSuggestor {
 		}
 	}
 
-	private StringRenderable provideRenderText(String original, int firstCharacterIndex) {
-		return this.parse != null ? highlight(this.parse, original, firstCharacterIndex) : StringRenderable.plain(original);
+	private class_5481 provideRenderText(String original, int firstCharacterIndex) {
+		return this.parse != null ? highlight(this.parse, original, firstCharacterIndex) : class_5481.method_30747(original, Style.EMPTY);
 	}
 
 	@Nullable
@@ -298,8 +300,8 @@ public class CommandSuggestor {
 		return suggestion.startsWith(original) ? suggestion.substring(original.length()) : null;
 	}
 
-	private static StringRenderable highlight(ParseResults<CommandSource> parse, String original, int firstCharacterIndex) {
-		List<StringRenderable> list = Lists.<StringRenderable>newArrayList();
+	private static class_5481 highlight(ParseResults<CommandSource> parse, String original, int firstCharacterIndex) {
+		List<class_5481> list = Lists.<class_5481>newArrayList();
 		int i = 0;
 		int j = -1;
 		CommandContextBuilder<CommandSource> commandContextBuilder = parse.getContext().getLastChild();
@@ -316,8 +318,8 @@ public class CommandSuggestor {
 
 			int l = Math.min(parsedArgument.getRange().getEnd() - firstCharacterIndex, original.length());
 			if (l > 0) {
-				list.add(StringRenderable.styled(original.substring(i, k), field_25886));
-				list.add(StringRenderable.styled(original.substring(k, l), (Style)field_25887.get(j)));
+				list.add(class_5481.method_30747(original.substring(i, k), field_25886));
+				list.add(class_5481.method_30747(original.substring(k, l), (Style)field_25887.get(j)));
 				i = l;
 			}
 		}
@@ -326,14 +328,14 @@ public class CommandSuggestor {
 			int m = Math.max(parse.getReader().getCursor() - firstCharacterIndex, 0);
 			if (m < original.length()) {
 				int n = Math.min(m + parse.getReader().getRemainingLength(), original.length());
-				list.add(StringRenderable.styled(original.substring(i, m), field_25886));
-				list.add(StringRenderable.styled(original.substring(m, n), field_25885));
+				list.add(class_5481.method_30747(original.substring(i, m), field_25886));
+				list.add(class_5481.method_30747(original.substring(m, n), field_25885));
 				i = n;
 			}
 		}
 
-		list.add(StringRenderable.styled(original.substring(i), field_25886));
-		return StringRenderable.concat(list);
+		list.add(class_5481.method_30747(original.substring(i), field_25886));
+		return class_5481.method_30749(list);
 	}
 
 	public void render(MatrixStack matrixStack, int i, int j) {
@@ -342,10 +344,10 @@ public class CommandSuggestor {
 		} else {
 			int k = 0;
 
-			for (StringRenderable stringRenderable : this.messages) {
+			for (class_5481 lv : this.messages) {
 				int l = this.chatScreenSized ? this.owner.height - 14 - 13 - 12 * k : 72 + 12 * k;
 				DrawableHelper.fill(matrixStack, this.x - 1, l, this.x + this.width + 1, l + 12, this.color);
-				this.textRenderer.drawWithShadow(matrixStack, stringRenderable, (float)this.x, (float)(l + 2), -1);
+				this.textRenderer.drawWithShadow(matrixStack, lv, (float)this.x, (float)(l + 2), -1);
 				k++;
 			}
 		}

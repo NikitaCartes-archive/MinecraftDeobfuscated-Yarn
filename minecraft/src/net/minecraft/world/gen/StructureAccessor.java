@@ -22,9 +22,9 @@ public class StructureAccessor {
 		this.options = options;
 	}
 
-	public StructureAccessor method_29951(ChunkRegion region) {
-		if (region.getWorld() != this.world) {
-			throw new IllegalStateException("Using invalid feature manager (source level: " + region.getWorld() + ", region: " + region);
+	public StructureAccessor forRegion(ChunkRegion region) {
+		if (region.toServerWorld() != this.world) {
+			throw new IllegalStateException("Using invalid feature manager (source level: " + region.toServerWorld() + ", region: " + region);
 		} else {
 			return new StructureAccessor(region, this.options);
 		}
@@ -57,11 +57,11 @@ public class StructureAccessor {
 		return this.options.shouldGenerateStructures();
 	}
 
-	public StructureStart<?> method_28388(BlockPos blockPos, boolean bl, StructureFeature<?> structureFeature) {
+	public StructureStart<?> getStructureAt(BlockPos pos, boolean matchChildren, StructureFeature<?> feature) {
 		return DataFixUtils.orElse(
-			this.getStructuresWithChildren(ChunkSectionPos.from(blockPos), structureFeature)
-				.filter(structureStart -> structureStart.getBoundingBox().contains(blockPos))
-				.filter(structureStart -> !bl || structureStart.getChildren().stream().anyMatch(piece -> piece.getBoundingBox().contains(blockPos)))
+			this.getStructuresWithChildren(ChunkSectionPos.from(pos), feature)
+				.filter(structureStart -> structureStart.getBoundingBox().contains(pos))
+				.filter(structureStart -> !matchChildren || structureStart.getChildren().stream().anyMatch(piece -> piece.getBoundingBox().contains(pos)))
 				.findFirst(),
 			StructureStart.DEFAULT
 		);

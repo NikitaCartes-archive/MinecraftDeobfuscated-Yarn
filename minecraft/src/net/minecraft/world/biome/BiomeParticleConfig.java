@@ -11,22 +11,22 @@ import net.minecraft.particle.ParticleTypes;
 public class BiomeParticleConfig {
 	public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ParticleTypes.field_25125.fieldOf("options").forGetter(biomeParticleConfig -> biomeParticleConfig.field_24676),
+					ParticleTypes.field_25125.fieldOf("options").forGetter(biomeParticleConfig -> biomeParticleConfig.particle),
 					Codec.FLOAT.fieldOf("probability").forGetter(biomeParticleConfig -> biomeParticleConfig.chance)
 				)
 				.apply(instance, BiomeParticleConfig::new)
 	);
-	private final ParticleEffect field_24676;
+	private final ParticleEffect particle;
 	private final float chance;
 
-	public BiomeParticleConfig(ParticleEffect particleEffect, float f) {
-		this.field_24676 = particleEffect;
+	public BiomeParticleConfig(ParticleEffect particle, float f) {
+		this.particle = particle;
 		this.chance = f;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ParticleEffect getParticleType() {
-		return this.field_24676;
+	public ParticleEffect getParticle() {
+		return this.particle;
 	}
 
 	@Environment(EnvType.CLIENT)

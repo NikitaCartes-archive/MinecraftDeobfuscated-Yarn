@@ -6,7 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
@@ -15,12 +15,12 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig
 	) {
 		BlockState blockState = randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
 		BlockPos blockPos2;
 		if (randomPatchFeatureConfig.project) {
-			blockPos2 = serverWorldAccess.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, blockPos);
+			blockPos2 = structureWorldAccess.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, blockPos);
 		} else {
 			blockPos2 = blockPos;
 		}
@@ -36,19 +36,19 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 				random.nextInt(randomPatchFeatureConfig.spreadZ + 1) - random.nextInt(randomPatchFeatureConfig.spreadZ + 1)
 			);
 			BlockPos blockPos3 = mutable.down();
-			BlockState blockState2 = serverWorldAccess.getBlockState(blockPos3);
-			if ((serverWorldAccess.isAir(mutable) || randomPatchFeatureConfig.canReplace && serverWorldAccess.getBlockState(mutable).getMaterial().isReplaceable())
-				&& blockState.canPlaceAt(serverWorldAccess, mutable)
+			BlockState blockState2 = structureWorldAccess.getBlockState(blockPos3);
+			if ((structureWorldAccess.isAir(mutable) || randomPatchFeatureConfig.canReplace && structureWorldAccess.getBlockState(mutable).getMaterial().isReplaceable())
+				&& blockState.canPlaceAt(structureWorldAccess, mutable)
 				&& (randomPatchFeatureConfig.whitelist.isEmpty() || randomPatchFeatureConfig.whitelist.contains(blockState2.getBlock()))
 				&& !randomPatchFeatureConfig.blacklist.contains(blockState2)
 				&& (
 					!randomPatchFeatureConfig.needsWater
-						|| serverWorldAccess.getFluidState(blockPos3.west()).isIn(FluidTags.WATER)
-						|| serverWorldAccess.getFluidState(blockPos3.east()).isIn(FluidTags.WATER)
-						|| serverWorldAccess.getFluidState(blockPos3.north()).isIn(FluidTags.WATER)
-						|| serverWorldAccess.getFluidState(blockPos3.south()).isIn(FluidTags.WATER)
+						|| structureWorldAccess.getFluidState(blockPos3.west()).isIn(FluidTags.WATER)
+						|| structureWorldAccess.getFluidState(blockPos3.east()).isIn(FluidTags.WATER)
+						|| structureWorldAccess.getFluidState(blockPos3.north()).isIn(FluidTags.WATER)
+						|| structureWorldAccess.getFluidState(blockPos3.south()).isIn(FluidTags.WATER)
 				)) {
-				randomPatchFeatureConfig.blockPlacer.method_23403(serverWorldAccess, mutable, blockState, random);
+				randomPatchFeatureConfig.blockPlacer.method_23403(structureWorldAccess, mutable, blockState, random);
 				i++;
 			}
 		}

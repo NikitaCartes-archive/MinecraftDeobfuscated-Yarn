@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 
 public class SummonCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed"));
+	private static final SimpleCommandExceptionType field_26629 = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed.uuid"));
 	private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.summon.invalidPosition")
 	);
@@ -79,7 +80,7 @@ public class SummonCommand {
 			ServerWorld serverWorld = source.getWorld();
 			Entity entity2 = EntityType.loadEntityWithPassengers(compoundTag, serverWorld, entityx -> {
 				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.yaw, entityx.pitch);
-				return !serverWorld.tryLoadEntity(entityx) ? null : entityx;
+				return entityx;
 			});
 			if (entity2 == null) {
 				throw FAILED_EXCEPTION.create();
@@ -88,8 +89,12 @@ public class SummonCommand {
 					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity2.getBlockPos()), SpawnReason.COMMAND, null, null);
 				}
 
-				source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
-				return 1;
+				if (!serverWorld.method_30736(entity2)) {
+					throw field_26629.create();
+				} else {
+					source.sendFeedback(new TranslatableText("commands.summon.success", entity2.getDisplayName()), true);
+					return 1;
+				}
 			}
 		}
 	}

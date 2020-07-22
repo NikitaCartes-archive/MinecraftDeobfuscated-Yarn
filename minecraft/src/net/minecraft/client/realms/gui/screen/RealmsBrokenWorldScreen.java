@@ -12,19 +12,16 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.OpenServerTask;
 import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsMainScreen;
-import net.minecraft.client.realms.RealmsScreen;
-import net.minecraft.client.realms.SwitchSlotTask;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.RealmsWorldSlotButton;
+import net.minecraft.client.realms.task.OpenServerTask;
+import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.realms.util.RealmsTextureManager;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -96,7 +93,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 								}
 							);
 							realmsResetWorldScreen.setSlot(i);
-							realmsResetWorldScreen.setResetTitle(I18n.translate("mco.create.world.reset.title"));
+							realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
 							this.client.openScreen(realmsResetWorldScreen);
 						} else {
 							this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.field_20492.id, i, this::method_25123)));
@@ -146,10 +143,10 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		super.render(matrices, mouseX, mouseY, delta);
-		this.drawCenteredText(matrices, this.textRenderer, this.field_24204, this.width / 2, 17, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.field_24204, this.width / 2, 17, 16777215);
 
 		for (int i = 0; i < this.message.length; i++) {
-			this.drawCenteredText(matrices, this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, 10526880);
+			drawCenteredText(matrices, this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, 10526880);
 		}
 
 		if (this.field_20492 != null) {
@@ -302,6 +299,6 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		}
 
 		DrawableHelper.drawTexture(matrixStack, y, xm, 0.0F, 0.0F, 80, 80, 80, 80);
-		this.drawCenteredString(matrixStack, this.textRenderer, string, y + 40, xm + 66, 16777215);
+		drawCenteredString(matrixStack, this.textRenderer, string, y + 40, xm + 66, 16777215);
 	}
 }

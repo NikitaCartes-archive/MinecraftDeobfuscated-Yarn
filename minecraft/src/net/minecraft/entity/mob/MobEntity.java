@@ -9,7 +9,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -73,6 +72,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -159,7 +159,10 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean method_29244(PathNodeType pathNodeType) {
-		return pathNodeType != PathNodeType.DANGER_FIRE && pathNodeType != PathNodeType.DANGER_CACTUS && pathNodeType != PathNodeType.DANGER_OTHER;
+		return pathNodeType != PathNodeType.DANGER_FIRE
+			&& pathNodeType != PathNodeType.DANGER_CACTUS
+			&& pathNodeType != PathNodeType.DANGER_OTHER
+			&& pathNodeType != PathNodeType.WALKABLE_DOOR;
 	}
 
 	protected BodyControl createBodyControl() {
@@ -963,25 +966,33 @@ public abstract class MobEntity extends LivingEntity {
 
 	protected void updateEnchantments(LocalDifficulty difficulty) {
 		float f = difficulty.getClampedLocalDifficulty();
+		this.method_30759(f);
+
+		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+			if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
+				this.method_30758(f, equipmentSlot);
+			}
+		}
+	}
+
+	protected void method_30759(float f) {
 		if (!this.getMainHandStack().isEmpty() && this.random.nextFloat() < 0.25F * f) {
 			this.equipStack(
 				EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0F + f * (float)this.random.nextInt(18)), false)
 			);
 		}
+	}
 
-		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-			if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
-				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-				if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5F * f) {
-					this.equipStack(equipmentSlot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0F + f * (float)this.random.nextInt(18)), false));
-				}
-			}
+	protected void method_30758(float f, EquipmentSlot equipmentSlot) {
+		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+		if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5F * f) {
+			this.equipStack(equipmentSlot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0F + f * (float)this.random.nextInt(18)), false));
 		}
 	}
 
 	@Nullable
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));

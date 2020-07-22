@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -14,13 +15,13 @@ import net.minecraft.text.Text;
 public class DialogScreen extends Screen {
 	private final StringRenderable message;
 	private final ImmutableList<DialogScreen.ChoiceButton> choiceButtons;
-	private List<StringRenderable> lines;
+	private class_5489 lines = class_5489.field_26528;
 	private int linesY;
 	private int buttonWidth;
 
-	protected DialogScreen(Text title, List<StringRenderable> messageParts, ImmutableList<DialogScreen.ChoiceButton> choiceButtons) {
+	protected DialogScreen(Text title, List<StringRenderable> list, ImmutableList<DialogScreen.ChoiceButton> choiceButtons) {
 		super(title);
-		this.message = StringRenderable.concat(messageParts);
+		this.message = StringRenderable.concat(list);
 		this.choiceButtons = choiceButtons;
 	}
 
@@ -39,8 +40,8 @@ public class DialogScreen extends Screen {
 
 		int i = 5 + this.buttonWidth + 5;
 		int j = i * this.choiceButtons.size();
-		this.lines = this.textRenderer.wrapLines(this.message, j);
-		int k = this.lines.size() * 9;
+		this.lines = class_5489.method_30890(this.textRenderer, this.message, j);
+		int k = this.lines.method_30887() * 9;
 		this.linesY = (int)((double)height / 2.0 - (double)k / 2.0);
 		int l = this.linesY + k + 9 * 2;
 		int m = (int)((double)width / 2.0 - (double)j / 2.0);
@@ -54,14 +55,8 @@ public class DialogScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackgroundTexture(0);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.linesY - 9 * 2, -1);
-		int i = this.linesY;
-
-		for (StringRenderable stringRenderable : this.lines) {
-			this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, -1);
-			i += 9;
-		}
-
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.linesY - 9 * 2, -1);
+		this.lines.method_30888(matrices, this.width / 2, this.linesY);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

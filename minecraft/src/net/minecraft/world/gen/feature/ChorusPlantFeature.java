@@ -5,7 +5,7 @@ import java.util.Random;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChorusFlowerBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ChorusPlantFeature extends Feature<DefaultFeatureConfig> {
@@ -14,10 +14,10 @@ public class ChorusPlantFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (serverWorldAccess.isAir(blockPos) && serverWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.END_STONE)) {
-			ChorusFlowerBlock.generate(serverWorldAccess, blockPos, random, 8);
+		if (structureWorldAccess.isAir(blockPos) && structureWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.END_STONE)) {
+			ChorusFlowerBlock.generate(structureWorldAccess, blockPos, random, 8);
 			return true;
 		} else {
 			return false;

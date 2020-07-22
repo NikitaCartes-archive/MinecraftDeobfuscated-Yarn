@@ -8,18 +8,16 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.CloseServerTask;
-import net.minecraft.client.realms.OpenServerTask;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsMainScreen;
-import net.minecraft.client.realms.SwitchMinigameTask;
-import net.minecraft.client.realms.SwitchSlotTask;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.RealmsWorldSlotButton;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.task.CloseServerTask;
+import net.minecraft.client.realms.task.OpenServerTask;
+import net.minecraft.client.realms.task.SwitchMinigameTask;
+import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -34,6 +32,15 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	private static final Identifier OFF_ICON = new Identifier("realms", "textures/gui/realms/off_icon.png");
 	private static final Identifier EXPIRED_ICON = new Identifier("realms", "textures/gui/realms/expired_icon.png");
 	private static final Identifier EXPIRES_SOON_ICON = new Identifier("realms", "textures/gui/realms/expires_soon_icon.png");
+	private static final Text field_26479 = new TranslatableText("mco.configure.worlds.title");
+	private static final Text field_26480 = new TranslatableText("mco.configure.world.title");
+	private static final Text field_26481 = new TranslatableText("mco.configure.current.minigame").append(": ");
+	private static final Text field_26482 = new TranslatableText("mco.selectServer.expired");
+	private static final Text field_26483 = new TranslatableText("mco.selectServer.expires.soon");
+	private static final Text field_26484 = new TranslatableText("mco.selectServer.expires.day");
+	private static final Text field_26485 = new TranslatableText("mco.selectServer.open");
+	private static final Text field_26486 = new TranslatableText("mco.selectServer.closed");
+	@Nullable
 	private Text toolTip;
 	private final RealmsMainScreen parent;
 	@Nullable
@@ -219,28 +226,22 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.toolTip = null;
 		this.renderBackground(matrices);
-		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("mco.configure.worlds.title"), this.width / 2, row(4), 16777215);
+		drawCenteredText(matrices, this.textRenderer, field_26479, this.width / 2, row(4), 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.server == null) {
-			this.drawCenteredString(matrices, this.textRenderer, I18n.translate("mco.configure.world.title"), this.width / 2, 17, 16777215);
+			drawCenteredText(matrices, this.textRenderer, field_26480, this.width / 2, 17, 16777215);
 		} else {
 			String string = this.server.getName();
 			int i = this.textRenderer.getWidth(string);
 			int j = this.server.state == RealmsServer.State.CLOSED ? 10526880 : 8388479;
-			int k = this.textRenderer.getWidth(I18n.translate("mco.configure.world.title"));
-			this.drawCenteredString(matrices, this.textRenderer, I18n.translate("mco.configure.world.title"), this.width / 2, 12, 16777215);
-			this.drawCenteredString(matrices, this.textRenderer, string, this.width / 2, 24, j);
+			int k = this.textRenderer.getWidth(field_26480);
+			drawCenteredText(matrices, this.textRenderer, field_26480, this.width / 2, 12, 16777215);
+			drawCenteredString(matrices, this.textRenderer, string, this.width / 2, 24, j);
 			int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
 			this.drawServerStatus(matrices, l, 7, mouseX, mouseY);
 			if (this.isMinigame()) {
 				this.textRenderer
-					.draw(
-						matrices,
-						I18n.translate("mco.configure.current.minigame") + ": " + this.server.getMinigameName(),
-						(float)(this.left_x + 80 + 20 + 10),
-						(float)row(13),
-						16777215
-					);
+					.method_30883(matrices, field_26481.shallowCopy().append(this.server.getMinigameName()), (float)(this.left_x + 80 + 20 + 10), (float)row(13), 16777215);
 			}
 
 			if (this.toolTip != null) {
@@ -364,7 +365,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 								() -> this.client.openScreen(this.getNewScreen())
 							);
 							realmsResetWorldScreen.setSlot(selectedSlot);
-							realmsResetWorldScreen.setResetTitle(I18n.translate("mco.create.world.reset.title"));
+							realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
 							this.client.openScreen(realmsResetWorldScreen);
 						} else {
 							this.client.openScreen(this);
@@ -378,7 +379,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 			);
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrixStack, Text text, int i, int j) {
+	protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
 		int k = i + 12;
 		int l = j - 12;
 		int m = this.textRenderer.getWidth(text);
@@ -387,7 +388,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 		}
 
 		this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-		this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 16777215);
+		this.textRenderer.method_30881(matrixStack, text, (float)k, (float)l, 16777215);
 	}
 
 	private void drawServerStatus(MatrixStack matrixStack, int i, int j, int k, int l) {
@@ -409,7 +410,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
-			this.toolTip = new TranslatableText("mco.selectServer.expired");
+			this.toolTip = field_26482;
 		}
 	}
 
@@ -424,9 +425,9 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
 			if (m <= 0) {
-				this.toolTip = new TranslatableText("mco.selectServer.expires.soon");
+				this.toolTip = field_26483;
 			} else if (m == 1) {
-				this.toolTip = new TranslatableText("mco.selectServer.expires.day");
+				this.toolTip = field_26484;
 			} else {
 				this.toolTip = new TranslatableText("mco.selectServer.expires.days", m);
 			}
@@ -438,7 +439,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
-			this.toolTip = new TranslatableText("mco.selectServer.open");
+			this.toolTip = field_26485;
 		}
 	}
 
@@ -447,7 +448,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
-			this.toolTip = new TranslatableText("mco.selectServer.closed");
+			this.toolTip = field_26486;
 		}
 	}
 

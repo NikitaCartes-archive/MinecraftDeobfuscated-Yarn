@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -35,10 +36,10 @@ public class QueryResponseHandler extends RconBase {
 	private long lastResponseTime;
 	private final DedicatedServer field_23964;
 
-	public QueryResponseHandler(DedicatedServer server) {
+	private QueryResponseHandler(DedicatedServer server, int i) {
 		super("Query Listener");
 		this.field_23964 = server;
-		this.queryPort = server.getProperties().queryPort;
+		this.queryPort = i;
 		this.hostname = server.getHostname();
 		this.port = server.getPort();
 		this.motd = server.getMotd();
@@ -54,13 +55,25 @@ public class QueryResponseHandler extends RconBase {
 			try {
 				InetAddress inetAddress = InetAddress.getLocalHost();
 				this.ip = inetAddress.getHostAddress();
-			} catch (UnknownHostException var3) {
-				field_23963.warn("Unable to determine local host IP, please set server-ip in server.properties", (Throwable)var3);
+			} catch (UnknownHostException var4) {
+				field_23963.warn("Unable to determine local host IP, please set server-ip in server.properties", (Throwable)var4);
 			}
 		}
 
 		this.data = new DataStreamHelper(1460);
 		this.queries = Maps.<SocketAddress, QueryResponseHandler.Query>newHashMap();
+	}
+
+	@Nullable
+	public static QueryResponseHandler method_30737(DedicatedServer dedicatedServer) {
+		int i = dedicatedServer.getProperties().queryPort;
+		if (0 < i && 65535 >= i) {
+			QueryResponseHandler queryResponseHandler = new QueryResponseHandler(dedicatedServer, i);
+			return !queryResponseHandler.start() ? null : queryResponseHandler;
+		} else {
+			field_23963.warn("Invalid query port {} found in server.properties (queries disabled)", i);
+			return null;
+		}
 	}
 
 	private void reply(byte[] buf, DatagramPacket datagramPacket) throws IOException {
@@ -217,15 +230,11 @@ public class QueryResponseHandler extends RconBase {
 	}
 
 	@Override
-	public void start() {
-		if (!this.running) {
-			if (0 < this.queryPort && 65535 >= this.queryPort) {
-				if (this.initialize()) {
-					super.start();
-				}
-			} else {
-				field_23963.warn("Invalid query port {} found in server.properties (queries disabled)", this.queryPort);
-			}
+	public boolean start() {
+		if (this.running) {
+			return true;
+		} else {
+			return !this.initialize() ? false : super.start();
 		}
 	}
 

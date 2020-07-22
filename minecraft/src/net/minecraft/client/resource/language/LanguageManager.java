@@ -25,7 +25,7 @@ public class LanguageManager implements SynchronousResourceReloadListener {
 	private static final LanguageDefinition field_25291 = new LanguageDefinition("en_us", "US", "English", false);
 	private Map<String, LanguageDefinition> languageDefs = ImmutableMap.of("en_us", field_25291);
 	private String currentLanguageCode;
-	private LanguageDefinition field_25292 = field_25291;
+	private LanguageDefinition language = field_25291;
 
 	public LanguageManager(String string) {
 		this.currentLanguageCode = string;
@@ -52,10 +52,10 @@ public class LanguageManager implements SynchronousResourceReloadListener {
 	public void apply(ResourceManager manager) {
 		this.languageDefs = method_29393(manager.streamResourcePacks());
 		LanguageDefinition languageDefinition = (LanguageDefinition)this.languageDefs.getOrDefault("en_us", field_25291);
-		this.field_25292 = (LanguageDefinition)this.languageDefs.getOrDefault(this.currentLanguageCode, languageDefinition);
+		this.language = (LanguageDefinition)this.languageDefs.getOrDefault(this.currentLanguageCode, languageDefinition);
 		List<LanguageDefinition> list = Lists.<LanguageDefinition>newArrayList(languageDefinition);
-		if (this.field_25292 != languageDefinition) {
-			list.add(this.field_25292);
+		if (this.language != languageDefinition) {
+			list.add(this.language);
 		}
 
 		TranslationStorage translationStorage = TranslationStorage.load(manager, list);
@@ -65,11 +65,11 @@ public class LanguageManager implements SynchronousResourceReloadListener {
 
 	public void setLanguage(LanguageDefinition languageDefinition) {
 		this.currentLanguageCode = languageDefinition.getCode();
-		this.field_25292 = languageDefinition;
+		this.language = languageDefinition;
 	}
 
 	public LanguageDefinition getLanguage() {
-		return this.field_25292;
+		return this.language;
 	}
 
 	public SortedSet<LanguageDefinition> getAllLanguages() {

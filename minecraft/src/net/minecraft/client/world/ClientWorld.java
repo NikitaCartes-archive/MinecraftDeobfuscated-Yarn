@@ -385,7 +385,7 @@ public class ClientWorld extends World {
 					biomeParticleConfig -> {
 						if (biomeParticleConfig.shouldAddParticle(this.random)) {
 							this.addParticle(
-								biomeParticleConfig.getParticleType(),
+								biomeParticleConfig.getParticle(),
 								(double)pos.getX() + this.random.nextDouble(),
 								(double)pos.getY() + this.random.nextDouble(),
 								(double)pos.getZ() + this.random.nextDouble(),
@@ -817,7 +817,7 @@ public class ClientWorld extends World {
 		private int spawnX;
 		private int spawnY;
 		private int spawnZ;
-		private float field_26372;
+		private float spawnAngle;
 		private long time;
 		private long timeOfDay;
 		private boolean raining;
@@ -848,7 +848,7 @@ public class ClientWorld extends World {
 
 		@Override
 		public float getSpawnAngle() {
-			return this.field_26372;
+			return this.spawnAngle;
 		}
 
 		@Override
@@ -878,7 +878,7 @@ public class ClientWorld extends World {
 
 		@Override
 		public void setSpawnAngle(float angle) {
-			this.field_26372 = angle;
+			this.spawnAngle = angle;
 		}
 
 		public void setTime(long difficulty) {
@@ -894,7 +894,7 @@ public class ClientWorld extends World {
 			this.spawnX = pos.getX();
 			this.spawnY = pos.getY();
 			this.spawnZ = pos.getZ();
-			this.field_26372 = angle;
+			this.spawnAngle = angle;
 		}
 
 		@Override
@@ -933,8 +933,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void populateCrashReport(CrashReportSection crashReportSection) {
-			MutableWorldProperties.super.populateCrashReport(crashReportSection);
+		public void populateCrashReport(CrashReportSection reportSection) {
+			MutableWorldProperties.super.populateCrashReport(reportSection);
 		}
 
 		public void setDifficulty(Difficulty difficulty) {

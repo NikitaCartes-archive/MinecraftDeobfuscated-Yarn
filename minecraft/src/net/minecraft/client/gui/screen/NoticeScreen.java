@@ -1,20 +1,18 @@
 package net.minecraft.client.gui.screen;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class NoticeScreen extends Screen {
 	private final Runnable actionHandler;
 	protected final Text notice;
-	private final List<StringRenderable> noticeLines = Lists.<StringRenderable>newArrayList();
+	private class_5489 noticeLines = class_5489.field_26528;
 	protected final Text buttonString;
 	private int field_2347;
 
@@ -33,21 +31,14 @@ public class NoticeScreen extends Screen {
 	protected void init() {
 		super.init();
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, this.buttonString, buttonWidget -> this.actionHandler.run()));
-		this.noticeLines.clear();
-		this.noticeLines.addAll(this.textRenderer.wrapLines(this.notice, this.width - 50));
+		this.noticeLines = class_5489.method_30890(this.textRenderer, this.notice, this.width - 50);
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
-		int i = 90;
-
-		for (StringRenderable stringRenderable : this.noticeLines) {
-			this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 16777215);
-			i += 9;
-		}
-
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
+		this.noticeLines.method_30888(matrices, this.width / 2, 90);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

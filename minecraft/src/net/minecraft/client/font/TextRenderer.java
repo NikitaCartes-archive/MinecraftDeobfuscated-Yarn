@@ -11,6 +11,8 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.CharacterVisitor;
+import net.minecraft.class_5481;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -19,6 +21,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
@@ -56,14 +59,24 @@ public class TextRenderer {
 		return this.draw(text, x, y, color, matrices.peek().getModel(), false, this.isRightToLeft());
 	}
 
-	public int drawWithShadow(MatrixStack matrices, StringRenderable text, float x, float y, int color) {
+	public int drawWithShadow(MatrixStack matrices, class_5481 arg, float x, float y, int color) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(text, x, y, color, matrices.peek().getModel(), true);
+		return this.draw(arg, x, y, color, matrices.peek().getModel(), true);
 	}
 
-	public int draw(MatrixStack matrices, StringRenderable text, float x, float y, int color) {
+	public int method_30881(MatrixStack matrixStack, Text text, float f, float g, int i) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(text, x, y, color, matrices.peek().getModel(), false);
+		return this.draw(text.method_30937(), f, g, i, matrixStack.peek().getModel(), true);
+	}
+
+	public int draw(MatrixStack matrices, class_5481 arg, float x, float y, int color) {
+		RenderSystem.enableAlphaTest();
+		return this.draw(arg, x, y, color, matrices.peek().getModel(), false);
+	}
+
+	public int method_30883(MatrixStack matrixStack, Text text, float f, float g, int i) {
+		RenderSystem.enableAlphaTest();
+		return this.draw(text.method_30937(), f, g, i, matrixStack.peek().getModel(), false);
 	}
 
 	public String mirror(String text) {
@@ -87,9 +100,9 @@ public class TextRenderer {
 		}
 	}
 
-	private int draw(StringRenderable text, float x, float y, int color, Matrix4f matrix, boolean shadow) {
+	private int draw(class_5481 arg, float x, float y, int color, Matrix4f matrix, boolean shadow) {
 		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-		int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 15728880);
+		int i = this.draw(arg, x, y, color, shadow, matrix, immediate, false, 0, 15728880);
 		immediate.draw();
 		return i;
 	}
@@ -125,8 +138,14 @@ public class TextRenderer {
 		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light, rightToLeft);
 	}
 
+	public int method_30882(
+		Text text, float f, float g, int i, boolean bl, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, boolean bl2, int j, int k
+	) {
+		return this.draw(text.method_30937(), f, g, i, bl, matrix4f, vertexConsumerProvider, bl2, j, k);
+	}
+
 	public int draw(
-		StringRenderable text,
+		class_5481 arg,
 		float x,
 		float y,
 		int color,
@@ -137,7 +156,7 @@ public class TextRenderer {
 		int backgroundColor,
 		int light
 	) {
-		return this.drawInternal(text, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
+		return this.drawInternal(arg, x, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
 	}
 
 	private static int tweakTransparency(int argb) {
@@ -173,7 +192,7 @@ public class TextRenderer {
 	}
 
 	private int drawInternal(
-		StringRenderable text,
+		class_5481 arg,
 		float x,
 		float y,
 		int color,
@@ -187,11 +206,11 @@ public class TextRenderer {
 		color = tweakTransparency(color);
 		Matrix4f matrix4f = matrix.copy();
 		if (shadow) {
-			this.drawLayer(text, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
+			this.drawLayer(arg, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
 			matrix4f.addToLastColumn(FORWARD_SHIFT);
 		}
 
-		x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
+		x = this.drawLayer(arg, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
 		return (int)x + (shadow ? 1 : 0);
 	}
 
@@ -213,7 +232,7 @@ public class TextRenderer {
 	}
 
 	private float drawLayer(
-		StringRenderable text,
+		class_5481 arg,
 		float x,
 		float y,
 		int color,
@@ -225,7 +244,7 @@ public class TextRenderer {
 		int light
 	) {
 		TextRenderer.Drawer drawer = new TextRenderer.Drawer(vertexConsumerProvider, x, y, color, shadow, matrix, seeThrough, light);
-		TextVisitFactory.visitFormatted(text, Style.EMPTY, drawer);
+		arg.accept(drawer);
 		return drawer.drawLayer(underlineColor, x);
 	}
 
@@ -258,6 +277,10 @@ public class TextRenderer {
 		return MathHelper.ceil(this.handler.getWidth(stringRenderable));
 	}
 
+	public int method_30880(class_5481 arg) {
+		return MathHelper.ceil(this.handler.method_30875(arg));
+	}
+
 	public String trimToWidth(String text, int maxWidth, boolean backwards) {
 		return backwards ? this.handler.trimToWidthBackwards(text, maxWidth, Style.EMPTY) : this.handler.trimToWidth(text, maxWidth, Style.EMPTY);
 	}
@@ -273,8 +296,8 @@ public class TextRenderer {
 	public void drawTrimmed(StringRenderable text, int x, int y, int maxWidth, int color) {
 		Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
 
-		for (StringRenderable stringRenderable : this.wrapLines(text, maxWidth)) {
-			this.draw(stringRenderable, (float)x, (float)y, color, matrix4f, false);
+		for (class_5481 lv : this.wrapLines(text, maxWidth)) {
+			this.draw(lv, (float)x, (float)y, color, matrix4f, false);
 			y += 9;
 		}
 	}
@@ -283,8 +306,8 @@ public class TextRenderer {
 		return 9 * this.handler.wrapLines(text, maxWidth, Style.EMPTY).size();
 	}
 
-	public List<StringRenderable> wrapLines(StringRenderable text, int width) {
-		return this.handler.wrapLines(text, width, Style.EMPTY);
+	public List<class_5481> wrapLines(StringRenderable text, int width) {
+		return Language.getInstance().method_30933(this.handler.wrapLines(text, width, Style.EMPTY));
 	}
 
 	public boolean isRightToLeft() {
@@ -296,7 +319,7 @@ public class TextRenderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class Drawer implements TextVisitFactory.CharacterVisitor {
+	class Drawer implements CharacterVisitor {
 		final VertexConsumerProvider vertexConsumers;
 		private final boolean shadow;
 		private final float brightnessMultiplier;
@@ -336,7 +359,7 @@ public class TextRenderer {
 		}
 
 		@Override
-		public boolean onChar(int i, Style style, int j) {
+		public boolean accept(int i, Style style, int j) {
 			FontStorage fontStorage = TextRenderer.this.getFontStorage(style.getFont());
 			Glyph glyph = fontStorage.getGlyph(j);
 			GlyphRenderer glyphRenderer = style.isObfuscated() && j != 32 ? fontStorage.getObfuscatedGlyphRenderer(glyph) : fontStorage.getGlyphRenderer(j);
@@ -360,7 +383,7 @@ public class TextRenderer {
 			if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
 				float m = bl ? glyph.getBoldOffset() : 0.0F;
 				float n = this.shadow ? glyph.getShadowOffset() : 0.0F;
-				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.method_24045(this.seeThrough));
+				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.seeThrough));
 				TextRenderer.this.drawGlyph(glyphRenderer, bl, style.isItalic(), m, this.x + n, this.y + n, this.matrix, vertexConsumer, g, h, l, f, this.light);
 			}
 
@@ -389,7 +412,7 @@ public class TextRenderer {
 
 			if (this.rectangles != null) {
 				GlyphRenderer glyphRenderer = TextRenderer.this.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();
-				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.method_24045(this.seeThrough));
+				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.seeThrough));
 
 				for (GlyphRenderer.Rectangle rectangle : this.rectangles) {
 					glyphRenderer.drawRectangle(rectangle, this.matrix, vertexConsumer, this.light);

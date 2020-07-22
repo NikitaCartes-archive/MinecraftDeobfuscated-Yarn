@@ -10,25 +10,23 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ListPoolElement extends StructurePoolElement {
-	public static final Codec<ListPoolElement> field_24950 = RecordCodecBuilder.create(
-		instance -> instance.group(
-					StructurePoolElement.field_24953.listOf().fieldOf("elements").forGetter(listPoolElement -> listPoolElement.elements), method_28883()
-				)
+	public static final Codec<ListPoolElement> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(StructurePoolElement.CODEC.listOf().fieldOf("elements").forGetter(listPoolElement -> listPoolElement.elements), method_28883())
 				.apply(instance, ListPoolElement::new)
 	);
 	private final List<StructurePoolElement> elements;
 
-	public ListPoolElement(List<StructurePoolElement> list, StructurePool.Projection projection) {
+	public ListPoolElement(List<StructurePoolElement> elements, StructurePool.Projection projection) {
 		super(projection);
-		if (list.isEmpty()) {
+		if (elements.isEmpty()) {
 			throw new IllegalArgumentException("Elements are empty");
 		} else {
-			this.elements = list;
+			this.elements = elements;
 			this.setAllElementsProjection(projection);
 		}
 	}
@@ -53,7 +51,7 @@ public class ListPoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		ServerWorldAccess serverWorldAccess,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		BlockPos blockPos,
@@ -65,7 +63,7 @@ public class ListPoolElement extends StructurePoolElement {
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
 			if (!structurePoolElement.generate(
-				structureManager, serverWorldAccess, structureAccessor, chunkGenerator, blockPos, blockPos2, blockRotation, blockBox, random, keepJigsaws
+				structureManager, structureWorldAccess, structureAccessor, chunkGenerator, blockPos, blockPos2, blockRotation, blockBox, random, keepJigsaws
 			)) {
 				return false;
 			}

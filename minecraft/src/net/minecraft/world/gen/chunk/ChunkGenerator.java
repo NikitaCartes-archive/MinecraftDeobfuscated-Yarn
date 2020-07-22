@@ -28,7 +28,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -50,7 +50,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
  * Biome placement starts here, however all vanilla and most modded chunk generators delegate this to a {@linkplain net.minecraft.world.biome.source.BiomeSource biome source}.
  */
 public abstract class ChunkGenerator {
-	public static final Codec<ChunkGenerator> field_24746 = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::method_28506, Function.identity());
+	public static final Codec<ChunkGenerator> field_24746 = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::getCodec, Function.identity());
 	protected final BiomeSource biomeSource;
 	protected final BiomeSource field_24747;
 	private final StructuresConfig config;
@@ -113,7 +113,7 @@ public abstract class ChunkGenerator {
 		}
 	}
 
-	protected abstract Codec<? extends ChunkGenerator> method_28506();
+	protected abstract Codec<? extends ChunkGenerator> getCodec();
 
 	@Environment(EnvType.CLIENT)
 	public abstract ChunkGenerator withSeed(long seed);
@@ -278,7 +278,7 @@ public abstract class ChunkGenerator {
 	 * Finds all structures that the given chunk intersects, and adds references to their starting chunks to it.
 	 * A radius of 8 chunks around the given chunk will be searched for structure starts.
 	 */
-	public void addStructureReferences(ServerWorldAccess serverWorldAccess, StructureAccessor accessor, Chunk chunk) {
+	public void addStructureReferences(StructureWorldAccess structureWorldAccess, StructureAccessor accessor, Chunk chunk) {
 		int i = 8;
 		int j = chunk.getPos().x;
 		int k = chunk.getPos().z;
@@ -290,11 +290,11 @@ public abstract class ChunkGenerator {
 			for (int o = k - 8; o <= k + 8; o++) {
 				long p = ChunkPos.toLong(n, o);
 
-				for (StructureStart<?> structureStart : serverWorldAccess.getChunk(n, o).getStructureStarts().values()) {
+				for (StructureStart<?> structureStart : structureWorldAccess.getChunk(n, o).getStructureStarts().values()) {
 					try {
 						if (structureStart != StructureStart.DEFAULT && structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) {
 							accessor.addStructureReference(chunkSectionPos, structureStart.getFeature(), p, chunk);
-							DebugInfoSender.sendStructureStart(serverWorldAccess, structureStart);
+							DebugInfoSender.sendStructureStart(structureWorldAccess, structureStart);
 						}
 					} catch (Exception var19) {
 						CrashReport crashReport = CrashReport.create(var19, "Generating structure reference");
@@ -336,7 +336,7 @@ public abstract class ChunkGenerator {
 	}
 
 	static {
-		Registry.register(Registry.CHUNK_GENERATOR, "noise", SurfaceChunkGenerator.CODEC);
+		Registry.register(Registry.CHUNK_GENERATOR, "noise", NoiseChunkGenerator.CODEC);
 		Registry.register(Registry.CHUNK_GENERATOR, "flat", FlatChunkGenerator.field_24769);
 		Registry.register(Registry.CHUNK_GENERATOR, "debug", DebugChunkGenerator.field_24768);
 	}

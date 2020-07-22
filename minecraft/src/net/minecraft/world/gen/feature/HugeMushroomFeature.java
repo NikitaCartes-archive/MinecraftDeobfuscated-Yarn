@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -62,15 +62,19 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig
+		StructureWorldAccess structureWorldAccess,
+		ChunkGenerator chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		HugeMushroomFeatureConfig hugeMushroomFeatureConfig
 	) {
 		int i = this.getHeight(random);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		if (!this.canGenerate(serverWorldAccess, blockPos, i, mutable, hugeMushroomFeatureConfig)) {
+		if (!this.canGenerate(structureWorldAccess, blockPos, i, mutable, hugeMushroomFeatureConfig)) {
 			return false;
 		} else {
-			this.generateCap(serverWorldAccess, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
-			this.generateStem(serverWorldAccess, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
+			this.generateCap(structureWorldAccess, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
+			this.generateStem(structureWorldAccess, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
 			return true;
 		}
 	}

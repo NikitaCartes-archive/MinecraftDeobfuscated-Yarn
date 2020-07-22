@@ -6,24 +6,24 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public class DecoratedDecoratorConfig implements DecoratorConfig {
 	public static final Codec<DecoratedDecoratorConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ConfiguredDecorator.CODEC.fieldOf("outer").forGetter(DecoratedDecoratorConfig::method_30455),
-					ConfiguredDecorator.CODEC.fieldOf("inner").forGetter(DecoratedDecoratorConfig::method_30457)
+					ConfiguredDecorator.CODEC.fieldOf("outer").forGetter(DecoratedDecoratorConfig::getOuter),
+					ConfiguredDecorator.CODEC.fieldOf("inner").forGetter(DecoratedDecoratorConfig::getInner)
 				)
 				.apply(instance, DecoratedDecoratorConfig::new)
 	);
-	private final ConfiguredDecorator<?> field_25855;
-	private final ConfiguredDecorator<?> field_25856;
+	private final ConfiguredDecorator<?> outer;
+	private final ConfiguredDecorator<?> inner;
 
-	public DecoratedDecoratorConfig(ConfiguredDecorator<?> configuredDecorator, ConfiguredDecorator<?> configuredDecorator2) {
-		this.field_25855 = configuredDecorator;
-		this.field_25856 = configuredDecorator2;
+	public DecoratedDecoratorConfig(ConfiguredDecorator<?> outer, ConfiguredDecorator<?> inner) {
+		this.outer = outer;
+		this.inner = inner;
 	}
 
-	public ConfiguredDecorator<?> method_30455() {
-		return this.field_25855;
+	public ConfiguredDecorator<?> getOuter() {
+		return this.outer;
 	}
 
-	public ConfiguredDecorator<?> method_30457() {
-		return this.field_25856;
+	public ConfiguredDecorator<?> getInner() {
+		return this.inner;
 	}
 }

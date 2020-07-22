@@ -49,13 +49,13 @@ public interface DynamicRegistryManager {
 	Map<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> INFOS = Util.make(() -> {
 		Builder<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> builder = ImmutableMap.builder();
 		register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, true);
-		register(builder, Registry.BIOME_KEY, Biome.field_25819, true);
+		register(builder, Registry.BIOME_KEY, Biome.CODEC, true);
 		register(builder, Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, ConfiguredSurfaceBuilder.field_25878, false);
 		register(builder, Registry.CONFIGURED_CARVER_WORLDGEN, ConfiguredCarver.field_25832, false);
 		register(builder, Registry.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeature.field_25833, false);
-		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, ConfiguredStructureFeature.field_25834, false);
+		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, ConfiguredStructureFeature.CODEC, false);
 		register(builder, Registry.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.PROCESSORS, false);
-		register(builder, Registry.TEMPLATE_POOL_WORLDGEN, StructurePool.field_25853, false);
+		register(builder, Registry.TEMPLATE_POOL_WORLDGEN, StructurePool.CODEC, false);
 		register(builder, Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorType.field_24780, false);
 		return builder.build();
 	});
@@ -121,7 +121,7 @@ public interface DynamicRegistryManager {
 			.orElseThrow(() -> new IllegalStateException("Missing registry: " + registry.getKey()));
 
 		for (Entry<RegistryKey<E>, E> entry : registry.getEntries()) {
-			mutableRegistry.add((RegistryKey<E>)entry.getKey(), entry.getValue());
+			mutableRegistry.set(registry.getRawId((E)entry.getValue()), (RegistryKey<E>)entry.getKey(), entry.getValue());
 		}
 	}
 

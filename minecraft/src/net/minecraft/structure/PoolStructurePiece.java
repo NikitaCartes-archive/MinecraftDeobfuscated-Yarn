@@ -13,7 +13,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +45,7 @@ public class PoolStructurePiece extends StructurePiece {
 		this.structureManager = manager;
 		this.pos = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
 		this.groundLevelDelta = tag.getInt("ground_level_delta");
-		this.poolElement = (StructurePoolElement)StructurePoolElement.field_24953
+		this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC
 			.parse(NbtOps.INSTANCE, tag.getCompound("pool_element"))
 			.resultOrPartial(field_24991::error)
 			.orElse(EmptyPoolElement.INSTANCE);
@@ -62,7 +62,7 @@ public class PoolStructurePiece extends StructurePiece {
 		tag.putInt("PosY", this.pos.getY());
 		tag.putInt("PosZ", this.pos.getZ());
 		tag.putInt("ground_level_delta", this.groundLevelDelta);
-		StructurePoolElement.field_24953
+		StructurePoolElement.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.poolElement)
 			.resultOrPartial(field_24991::error)
 			.ifPresent(tagx -> tag.put("pool_element", tagx));
@@ -78,7 +78,7 @@ public class PoolStructurePiece extends StructurePiece {
 
 	@Override
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
@@ -86,11 +86,11 @@ public class PoolStructurePiece extends StructurePiece {
 		ChunkPos chunkPos,
 		BlockPos blockPos
 	) {
-		return this.method_27236(serverWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, blockPos, false);
+		return this.method_27236(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, blockPos, false);
 	}
 
 	public boolean method_27236(
-		ServerWorldAccess serverWorldAccess,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
@@ -99,7 +99,7 @@ public class PoolStructurePiece extends StructurePiece {
 		boolean keepJigsaws
 	) {
 		return this.poolElement
-			.generate(this.structureManager, serverWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, keepJigsaws);
+			.generate(this.structureManager, structureWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, keepJigsaws);
 	}
 
 	@Override

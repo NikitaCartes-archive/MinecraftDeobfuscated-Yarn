@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -32,7 +33,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -115,23 +115,27 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	}
 
 	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-		this.renderTooltip(matrices, this.getTooltipFromItem(stack), x, y);
+		this.method_30901(matrices, this.getTooltipFromItem(stack), x, y);
 	}
 
 	public List<Text> getTooltipFromItem(ItemStack stack) {
 		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
 	}
 
-	public void renderTooltip(MatrixStack matrices, StringRenderable text, int x, int y) {
-		this.renderTooltip(matrices, Arrays.asList(text), x, y);
+	public void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
+		this.renderTooltip(matrices, Arrays.asList(text.method_30937()), x, y);
 	}
 
-	public void renderTooltip(MatrixStack matrices, List<? extends StringRenderable> lines, int x, int y) {
+	public void method_30901(MatrixStack matrixStack, List<Text> list, int i, int j) {
+		this.renderTooltip(matrixStack, Lists.transform(list, Text::method_30937), i, j);
+	}
+
+	public void renderTooltip(MatrixStack matrices, List<? extends class_5481> lines, int x, int y) {
 		if (!lines.isEmpty()) {
 			int i = 0;
 
-			for (StringRenderable stringRenderable : lines) {
-				int j = this.textRenderer.getWidth(stringRenderable);
+			for (class_5481 lv : lines) {
+				int j = this.textRenderer.method_30880(lv);
 				if (j > i) {
 					i = j;
 				}
@@ -184,9 +188,9 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 			matrices.translate(0.0, 0.0, 400.0);
 
 			for (int r = 0; r < lines.size(); r++) {
-				StringRenderable stringRenderable2 = (StringRenderable)lines.get(r);
-				if (stringRenderable2 != null) {
-					this.textRenderer.draw(stringRenderable2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
+				class_5481 lv2 = (class_5481)lines.get(r);
+				if (lv2 != null) {
+					this.textRenderer.draw(lv2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
 				}
 
 				if (r == 0) {
@@ -211,7 +215,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 				HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
 				if (entityContent != null) {
 					if (this.client.options.advancedItemTooltips) {
-						this.renderTooltip(matrices, entityContent.asTooltip(), i, j);
+						this.method_30901(matrices, entityContent.asTooltip(), i, j);
 					}
 				} else {
 					Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);

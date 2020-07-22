@@ -1,12 +1,12 @@
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RetryCallException;
-import net.minecraft.client.realms.gui.LongRunningTask;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class CloseServerTask extends LongRunningTask {
@@ -19,7 +19,7 @@ public class CloseServerTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(I18n.translate("mco.configure.world.closing"));
+		this.setTitle(new TranslatableText("mco.configure.world.closing"));
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 
 		for (int i = 0; i < 25; i++) {

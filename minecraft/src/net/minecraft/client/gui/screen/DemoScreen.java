@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
@@ -13,6 +14,8 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class DemoScreen extends Screen {
 	private static final Identifier DEMO_BG = new Identifier("textures/gui/demo_background.png");
+	private class_5489 field_26538 = class_5489.field_26528;
+	private class_5489 field_26539 = class_5489.field_26528;
 
 	public DemoScreen() {
 		super(new TranslatableText("demo.help.title"));
@@ -29,6 +32,21 @@ public class DemoScreen extends Screen {
 			this.client.openScreen(null);
 			this.client.mouse.lockCursor();
 		}));
+		GameOptions gameOptions = this.client.options;
+		this.field_26538 = class_5489.method_30892(
+			this.textRenderer,
+			new TranslatableText(
+				"demo.help.movementShort",
+				gameOptions.keyForward.getBoundKeyLocalizedText(),
+				gameOptions.keyLeft.getBoundKeyLocalizedText(),
+				gameOptions.keyBack.getBoundKeyLocalizedText(),
+				gameOptions.keyRight.getBoundKeyLocalizedText()
+			),
+			new TranslatableText("demo.help.movementMouse"),
+			new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()),
+			new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText())
+		);
+		this.field_26539 = class_5489.method_30890(this.textRenderer, new TranslatableText("demo.help.fullWrapped"), 218);
 	}
 
 	@Override
@@ -46,28 +64,9 @@ public class DemoScreen extends Screen {
 		this.renderBackground(matrices);
 		int i = (this.width - 248) / 2 + 10;
 		int j = (this.height - 166) / 2 + 8;
-		this.textRenderer.draw(matrices, this.title, (float)i, (float)j, 2039583);
-		j += 12;
-		GameOptions gameOptions = this.client.options;
-		this.textRenderer
-			.draw(
-				matrices,
-				new TranslatableText(
-					"demo.help.movementShort",
-					gameOptions.keyForward.getBoundKeyLocalizedText(),
-					gameOptions.keyLeft.getBoundKeyLocalizedText(),
-					gameOptions.keyBack.getBoundKeyLocalizedText(),
-					gameOptions.keyRight.getBoundKeyLocalizedText()
-				),
-				(float)i,
-				(float)j,
-				5197647
-			);
-		this.textRenderer.draw(matrices, new TranslatableText("demo.help.movementMouse"), (float)i, (float)(j + 12), 5197647);
-		this.textRenderer.draw(matrices, new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()), (float)i, (float)(j + 24), 5197647);
-		this.textRenderer
-			.draw(matrices, new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()), (float)i, (float)(j + 36), 5197647);
-		this.textRenderer.drawTrimmed(new TranslatableText("demo.help.fullWrapped"), i, j + 68, 218, 2039583);
+		this.textRenderer.method_30883(matrices, this.title, (float)i, (float)j, 2039583);
+		j = this.field_26538.method_30896(matrices, i, j + 12, 12, 5197647);
+		this.field_26539.method_30896(matrices, i, j + 20, 9, 2039583);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

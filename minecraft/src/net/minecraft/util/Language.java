@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
@@ -10,12 +11,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
+import net.minecraft.client.font.TextVisitFactory;
+import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Style;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,9 +80,13 @@ public abstract class Language {
 				return false;
 			}
 
+			@Environment(EnvType.CLIENT)
 			@Override
-			public String reorder(String string, boolean allowTokens) {
-				return string;
+			public class_5481 method_30934(StringRenderable stringRenderable) {
+				return characterVisitor -> stringRenderable.visit(
+							(style, string) -> TextVisitFactory.visitFormatted(string, style, characterVisitor) ? Optional.empty() : StringRenderable.TERMINATE_VISIT, Style.EMPTY
+						)
+						.isPresent();
 			}
 		};
 	}
@@ -105,5 +116,11 @@ public abstract class Language {
 	@Environment(EnvType.CLIENT)
 	public abstract boolean isRightToLeft();
 
-	public abstract String reorder(String string, boolean allowTokens);
+	@Environment(EnvType.CLIENT)
+	public abstract class_5481 method_30934(StringRenderable stringRenderable);
+
+	@Environment(EnvType.CLIENT)
+	public List<class_5481> method_30933(List<StringRenderable> list) {
+		return (List<class_5481>)list.stream().map(getInstance()::method_30934).collect(ImmutableList.toImmutableList());
+	}
 }

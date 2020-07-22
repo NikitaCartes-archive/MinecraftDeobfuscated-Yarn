@@ -21,6 +21,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
+	private static final Text field_26618 = new TranslatableText("spectatorMenu.team_teleport");
+	private static final Text field_26619 = new TranslatableText("spectatorMenu.team_teleport.prompt");
 	private final List<SpectatorMenuCommand> commands = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeamTeleportSpectatorMenu() {
@@ -38,7 +40,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 
 	@Override
 	public Text getPrompt() {
-		return new TranslatableText("spectatorMenu.team_teleport.prompt");
+		return field_26619;
 	}
 
 	@Override
@@ -48,7 +50,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 
 	@Override
 	public Text getName() {
-		return new TranslatableText("spectatorMenu.team_teleport");
+		return field_26618;
 	}
 
 	@Override

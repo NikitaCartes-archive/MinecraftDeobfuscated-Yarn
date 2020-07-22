@@ -8,6 +8,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
@@ -19,6 +20,12 @@ import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilders;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
 public class DefaultBiomeCreator {
+	private static int getSkyColor(float temperature) {
+		float f = temperature / 3.0F;
+		f = MathHelper.clamp(f, -1.0F, 1.0F);
+		return MathHelper.hsvToRgb(0.62222224F - f * 0.05F, 0.5F + f * 0.1F, 1.0F);
+	}
+
 	public static Biome createGiantTreeTaiga(float depth, float scale, float temperature, boolean spruce, @Nullable String parent) {
 		Biome biome = new Biome(
 			new Biome.Settings()
@@ -29,7 +36,15 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(temperature)
 				.downfall(0.8F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(4159204)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(temperature))
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(parent)
 		);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
@@ -74,7 +89,9 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(0.6F)
 				.downfall(0.6F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.6F)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(parent)
 		);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
@@ -162,7 +179,15 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(0.95F)
 				.downfall(downfall)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(4159204)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(0.95F))
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(parent)
 		);
 		if (!edge && !modified) {
@@ -214,7 +239,9 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(0.2F)
 				.downfall(0.3F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.2F)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(parent)
 		);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
@@ -255,7 +282,9 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(2.0F)
 				.downfall(0.0F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(2.0F)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(parent)
 		);
 		if (illagerStructures) {
@@ -301,7 +330,9 @@ public class DefaultBiomeCreator {
 				.scale(0.05F)
 				.temperature(0.8F)
 				.downfall(0.4F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.8F)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(parent)
 		);
 		if (!sunflower) {
@@ -350,8 +381,7 @@ public class DefaultBiomeCreator {
 				.scale(0.2F)
 				.temperature(0.5F)
 				.downfall(0.5F)
-				.method_30637(0)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).skyColor(0).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
 		DefaultBiomeFeatures.addEndMobs(biome);
@@ -393,7 +423,9 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(0.9F)
 				.downfall(1.0F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.9F)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(null)
 		);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
@@ -423,7 +455,15 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(temperature)
 				.downfall(0.0F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(4159204)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(temperature))
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(parent)
 		);
 		if (!tall && !shattered) {
@@ -473,7 +513,7 @@ public class DefaultBiomeCreator {
 	private static Biome createBadlands(
 		@Nullable String parent, ConfiguredSurfaceBuilder<TernarySurfaceConfig> surfaceBuilder, float depth, float scale, boolean plateau, boolean trees
 	) {
-		Biome biome = new BadlandsBiome(
+		Biome biome = new Biome(
 			new Biome.Settings()
 				.surfaceBuilder(surfaceBuilder)
 				.precipitation(Biome.Precipitation.NONE)
@@ -482,7 +522,17 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(2.0F)
 				.downfall(0.0F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(4159204)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(2.0F))
+						.foliageColor(10387789)
+						.grassColor(9470285)
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(parent)
 		);
 		DefaultBiomeFeatures.addBadlandsUndergroundStructures(biome);
@@ -536,7 +586,15 @@ public class DefaultBiomeCreator {
 				.scale(0.1F)
 				.temperature(0.5F)
 				.downfall(0.5F)
-				.effects(new BiomeEffects.Builder().waterColor(waterColor).waterFogColor(waterFogColor).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(waterColor)
+						.waterFogColor(waterFogColor)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(0.5F))
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(null)
 		);
 		ConfiguredStructureFeature<?, ?> configuredStructureFeature = warm
@@ -639,16 +697,20 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createFrozenOcean(boolean monument) {
-		Biome biome = new FrozenOceanBiome(
+		float f = monument ? 0.5F : 0.0F;
+		Biome biome = new Biome(
 			new Biome.Settings()
 				.surfaceBuilder(ConfiguredSurfaceBuilders.FROZEN_OCEAN)
 				.precipitation(monument ? Biome.Precipitation.RAIN : Biome.Precipitation.SNOW)
 				.category(Biome.Category.OCEAN)
 				.depth(monument ? -1.8F : -1.0F)
 				.scale(0.1F)
-				.temperature(monument ? 0.5F : 0.0F)
+				.temperature(f)
+				.temperatureModifier(Biome.TemperatureModifier.FROZEN)
 				.downfall(0.5F)
-				.effects(new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(f)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(null)
 		);
 		biome.addStructureFeature(ConfiguredStructureFeatures.OCEAN_RUIN_COLD);
@@ -691,7 +753,9 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(0.7F)
 				.downfall(0.8F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.7F)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(parent)
 		);
 		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
@@ -740,6 +804,7 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createTaiga(@Nullable String parent, float depth, float scale, boolean snowy, boolean mountains, boolean villages, boolean igloos) {
+		float f = snowy ? -0.5F : 0.25F;
 		Biome biome = new Biome(
 			new Biome.Settings()
 				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
@@ -747,9 +812,17 @@ public class DefaultBiomeCreator {
 				.category(Biome.Category.TAIGA)
 				.depth(depth)
 				.scale(scale)
-				.temperature(snowy ? -0.5F : 0.25F)
+				.temperature(f)
 				.downfall(snowy ? 0.4F : 0.8F)
-				.effects(new BiomeEffects.Builder().waterColor(snowy ? 4020182 : 4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(snowy ? 4020182 : 4159204)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(f))
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(parent)
 		);
 		if (villages) {
@@ -792,7 +865,7 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createDarkForest(@Nullable String parent, float depth, float scale, boolean redMushrooms) {
-		Biome biome = new DarkForestBiome(
+		Biome biome = new Biome(
 			new Biome.Settings()
 				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
 				.precipitation(Biome.Precipitation.RAIN)
@@ -801,7 +874,16 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(0.7F)
 				.downfall(0.8F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(4159204)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(0.7F))
+						.grassColorModifier(BiomeEffects.GrassColorModifier.DARK_FOREST)
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(parent)
 		);
 		biome.addStructureFeature(ConfiguredStructureFeatures.MANSION);
@@ -829,7 +911,7 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createSwamp(@Nullable String parent, float depth, float scale, boolean hills) {
-		Biome biome = new SwampBiome(
+		Biome biome = new Biome(
 			new Biome.Settings()
 				.surfaceBuilder(ConfiguredSurfaceBuilders.SWAMP)
 				.precipitation(Biome.Precipitation.RAIN)
@@ -838,7 +920,17 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(0.8F)
 				.downfall(0.9F)
-				.effects(new BiomeEffects.Builder().waterColor(6388580).waterFogColor(2302743).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(6388580)
+						.waterFogColor(2302743)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(0.8F))
+						.foliageColor(6975545)
+						.grassColorModifier(BiomeEffects.GrassColorModifier.SWAMP)
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(parent)
 		);
 		if (!hills) {
@@ -875,7 +967,7 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createSnowyTundra(@Nullable String parent, float depth, float scale, boolean iceSpikes, boolean snowyMountains) {
-		Biome biome = new SnowyTundraBiome(
+		Biome biome = new Biome(
 			new Biome.Settings()
 				.surfaceBuilder(iceSpikes ? ConfiguredSurfaceBuilders.ICE_SPIKES : ConfiguredSurfaceBuilders.GRASS)
 				.precipitation(Biome.Precipitation.SNOW)
@@ -884,7 +976,10 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(0.0F)
 				.downfall(0.5F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.creatureGenerationProbability(0.07F)
+				.effects(
+					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.0F)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(parent)
 		);
 		if (!iceSpikes && !snowyMountains) {
@@ -930,7 +1025,15 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(temperature)
 				.downfall(0.5F)
-				.effects(new BiomeEffects.Builder().waterColor(waterColor).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(waterColor)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(temperature))
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(null)
 		);
 		biome.addStructureFeature(ConfiguredStructureFeatures.MINESHAFT);
@@ -969,7 +1072,15 @@ public class DefaultBiomeCreator {
 				.scale(scale)
 				.temperature(temperature)
 				.downfall(downfall)
-				.effects(new BiomeEffects.Builder().waterColor(waterColor).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(waterColor)
+						.waterFogColor(329011)
+						.fogColor(12638463)
+						.skyColor(getSkyColor(temperature))
+						.moodSound(BiomeMoodSound.CAVE)
+						.build()
+				)
 				.parent(null)
 		);
 		if (stony) {
@@ -1011,7 +1122,9 @@ public class DefaultBiomeCreator {
 				.scale(0.2F)
 				.temperature(0.5F)
 				.downfall(0.5F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
+				.effects(
+					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.5F)).moodSound(BiomeMoodSound.CAVE).build()
+				)
 				.parent(null)
 		);
 		biome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, ConfiguredFeatures.VOID_START_PLATFORM);
@@ -1033,6 +1146,7 @@ public class DefaultBiomeCreator {
 						.waterColor(4159204)
 						.waterFogColor(329011)
 						.fogColor(3344392)
+						.skyColor(getSkyColor(2.0F))
 						.loopSound(SoundEvents.AMBIENT_NETHER_WASTES_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD, 6000, 8, 2.0))
 						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS, 0.0111))
@@ -1081,6 +1195,7 @@ public class DefaultBiomeCreator {
 						.waterColor(4159204)
 						.waterFogColor(329011)
 						.fogColor(1787717)
+						.skyColor(getSkyColor(2.0F))
 						.particleConfig(new BiomeParticleConfig(ParticleTypes.ASH, 0.00625F))
 						.loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD, 6000, 8, 2.0))
@@ -1135,6 +1250,7 @@ public class DefaultBiomeCreator {
 						.waterColor(4159204)
 						.waterFogColor(4341314)
 						.fogColor(6840176)
+						.skyColor(getSkyColor(2.0F))
 						.particleConfig(new BiomeParticleConfig(ParticleTypes.WHITE_ASH, 0.118093334F))
 						.loopSound(SoundEvents.AMBIENT_BASALT_DELTAS_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_BASALT_DELTAS_MOOD, 6000, 8, 2.0))
@@ -1186,6 +1302,7 @@ public class DefaultBiomeCreator {
 						.waterColor(4159204)
 						.waterFogColor(329011)
 						.fogColor(3343107)
+						.skyColor(getSkyColor(2.0F))
 						.particleConfig(new BiomeParticleConfig(ParticleTypes.CRIMSON_SPORE, 0.025F))
 						.loopSound(SoundEvents.AMBIENT_CRIMSON_FOREST_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD, 6000, 8, 2.0))
@@ -1233,6 +1350,7 @@ public class DefaultBiomeCreator {
 						.waterColor(4159204)
 						.waterFogColor(329011)
 						.fogColor(1705242)
+						.skyColor(getSkyColor(2.0F))
 						.particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428F))
 						.loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD, 6000, 8, 2.0))

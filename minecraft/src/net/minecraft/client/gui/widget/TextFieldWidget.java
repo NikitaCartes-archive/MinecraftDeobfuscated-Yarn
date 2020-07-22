@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
@@ -21,7 +22,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -45,7 +46,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	private String suggestion;
 	private Consumer<String> changedListener;
 	private Predicate<String> textPredicate = Objects::nonNull;
-	private BiFunction<String, Integer, StringRenderable> renderTextProvider = (string, integer) -> StringRenderable.plain(string);
+	private BiFunction<String, Integer, class_5481> renderTextProvider = (string, integer) -> class_5481.method_30747(string, Style.EMPTY);
 
 	public TextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
 		this(textRenderer, x, y, width, height, null, text);
@@ -63,7 +64,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		this.changedListener = changedListener;
 	}
 
-	public void setRenderTextProvider(BiFunction<String, Integer, StringRenderable> renderTextProvider) {
+	public void setRenderTextProvider(BiFunction<String, Integer, class_5481> renderTextProvider) {
 		this.renderTextProvider = renderTextProvider;
 	}
 
@@ -387,7 +388,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 
 			if (!string.isEmpty()) {
 				String string2 = bl ? string.substring(0, j) : string;
-				n = this.textRenderer.drawWithShadow(matrices, (StringRenderable)this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float)l, (float)m, i);
+				n = this.textRenderer.drawWithShadow(matrices, (class_5481)this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float)l, (float)m, i);
 			}
 
 			boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
@@ -400,8 +401,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 			}
 
 			if (!string.isEmpty() && bl && j < string.length()) {
-				this.textRenderer
-					.drawWithShadow(matrices, (StringRenderable)this.renderTextProvider.apply(string.substring(j), this.selectionStart), (float)n, (float)m, i);
+				this.textRenderer.drawWithShadow(matrices, (class_5481)this.renderTextProvider.apply(string.substring(j), this.selectionStart), (float)n, (float)m, i);
 			}
 
 			if (!bl3 && this.suggestion != null) {

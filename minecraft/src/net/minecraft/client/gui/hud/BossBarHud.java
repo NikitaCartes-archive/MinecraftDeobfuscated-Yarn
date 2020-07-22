@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BossBarHud extends DrawableHelper {
-	private static final Identifier BAR_TEX = new Identifier("textures/gui/bars.png");
+	private static final Identifier BARS_TEXTURE = new Identifier("textures/gui/bars.png");
 	private final MinecraftClient client;
 	private final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();
 
@@ -24,7 +24,7 @@ public class BossBarHud extends DrawableHelper {
 		this.client = client;
 	}
 
-	public void render(MatrixStack matrixStack) {
+	public void render(MatrixStack matrices) {
 		if (!this.bossBars.isEmpty()) {
 			int i = this.client.getWindow().getScaledWidth();
 			int j = 12;
@@ -32,13 +32,13 @@ public class BossBarHud extends DrawableHelper {
 			for (ClientBossBar clientBossBar : this.bossBars.values()) {
 				int k = i / 2 - 91;
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.client.getTextureManager().bindTexture(BAR_TEX);
-				this.renderBossBar(matrixStack, k, j, clientBossBar);
+				this.client.getTextureManager().bindTexture(BARS_TEXTURE);
+				this.renderBossBar(matrices, k, j, clientBossBar);
 				Text text = clientBossBar.getName();
 				int m = this.client.textRenderer.getWidth(text);
 				int n = i / 2 - m / 2;
 				int o = j - 9;
-				this.client.textRenderer.drawWithShadow(matrixStack, text, (float)n, (float)o, 16777215);
+				this.client.textRenderer.method_30881(matrices, text, (float)n, (float)o, 16777215);
 				j += 10 + 9;
 				if (j >= this.client.getWindow().getScaledHeight() / 3) {
 					break;
@@ -47,17 +47,17 @@ public class BossBarHud extends DrawableHelper {
 		}
 	}
 
-	private void renderBossBar(MatrixStack matrixStack, int i, int j, BossBar bossBar) {
-		this.drawTexture(matrixStack, i, j, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
+	private void renderBossBar(MatrixStack matrices, int x, int y, BossBar bossBar) {
+		this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
 		if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
-			this.drawTexture(matrixStack, i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
+			this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
 		}
 
-		int k = (int)(bossBar.getPercent() * 183.0F);
-		if (k > 0) {
-			this.drawTexture(matrixStack, i, j, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, k, 5);
+		int i = (int)(bossBar.getPercent() * 183.0F);
+		if (i > 0) {
+			this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, i, 5);
 			if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
-				this.drawTexture(matrixStack, i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, k, 5);
+				this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
 			}
 		}
 	}

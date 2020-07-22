@@ -182,7 +182,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return false;
 		} else if (pathNode4.visited) {
 			return false;
-		} else if (pathNode3.y <= pathNode.y && pathNode2.y <= pathNode.y) {
+		} else if (pathNode3.y > pathNode.y || pathNode2.y > pathNode.y) {
+			return false;
+		} else if (pathNode2.type != PathNodeType.WALKABLE_DOOR && pathNode3.type != PathNodeType.WALKABLE_DOOR && pathNode4.type != PathNodeType.WALKABLE_DOOR) {
 			boolean bl = pathNode3.type == PathNodeType.FENCE && pathNode2.type == PathNodeType.FENCE && (double)this.entity.getWidth() < 0.5;
 			return pathNode4.penalty >= 0.0F
 				&& (pathNode3.y < pathNode.y || pathNode3.penalty >= 0.0F || bl)
@@ -400,7 +402,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 	protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
 		if (type == PathNodeType.DOOR_WOOD_CLOSED && canOpenDoors && canEnterOpenDoors) {
-			type = PathNodeType.WALKABLE;
+			type = PathNodeType.WALKABLE_DOOR;
 		}
 
 		if (type == PathNodeType.DOOR_OPEN && !canEnterOpenDoors) {
@@ -499,13 +501,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							return PathNodeType.DANGER_FIRE;
 						}
 
-						FluidState fluidState = blockView.getFluidState(mutable);
-						if (fluidState.isIn(FluidTags.WATER)) {
+						if (blockView.getFluidState(mutable).isIn(FluidTags.WATER)) {
 							return PathNodeType.WATER_BORDER;
-						}
-
-						if (fluidState.isIn(FluidTags.LAVA)) {
-							return PathNodeType.LAVA;
 						}
 					}
 				}
@@ -531,37 +528,35 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.STICKY_HONEY;
 		} else if (blockState.isOf(Blocks.COCOA)) {
 			return PathNodeType.COCOA;
-		} else if (method_27138(blockState)) {
-			return PathNodeType.DAMAGE_FIRE;
-		} else if (DoorBlock.isWoodenDoor(blockState) && !(Boolean)blockState.get(DoorBlock.OPEN)) {
-			return PathNodeType.DOOR_WOOD_CLOSED;
-		} else if (block instanceof DoorBlock && material == Material.METAL && !(Boolean)blockState.get(DoorBlock.OPEN)) {
-			return PathNodeType.DOOR_IRON_CLOSED;
-		} else if (block instanceof DoorBlock && (Boolean)blockState.get(DoorBlock.OPEN)) {
-			return PathNodeType.DOOR_OPEN;
-		} else if (block instanceof AbstractRailBlock) {
-			return PathNodeType.RAIL;
-		} else if (block instanceof LeavesBlock) {
-			return PathNodeType.LEAVES;
-		} else if (!block.isIn(BlockTags.FENCES)
-			&& !block.isIn(BlockTags.WALLS)
-			&& (!(block instanceof FenceGateBlock) || (Boolean)blockState.get(FenceGateBlock.OPEN))) {
-			if (!blockState.canPathfindThrough(blockView, blockPos, NavigationType.LAND)) {
-				return PathNodeType.BLOCKED;
-			} else {
-				FluidState fluidState = blockView.getFluidState(blockPos);
-				if (fluidState.isIn(FluidTags.WATER)) {
-					return PathNodeType.WATER;
-				} else {
-					return fluidState.isIn(FluidTags.LAVA) ? PathNodeType.LAVA : PathNodeType.OPEN;
-				}
-			}
 		} else {
-			return PathNodeType.FENCE;
+			FluidState fluidState = blockView.getFluidState(blockPos);
+			if (fluidState.isIn(FluidTags.WATER)) {
+				return PathNodeType.WATER;
+			} else if (fluidState.isIn(FluidTags.LAVA)) {
+				return PathNodeType.LAVA;
+			} else if (method_27138(blockState)) {
+				return PathNodeType.DAMAGE_FIRE;
+			} else if (DoorBlock.isWoodenDoor(blockState) && !(Boolean)blockState.get(DoorBlock.OPEN)) {
+				return PathNodeType.DOOR_WOOD_CLOSED;
+			} else if (block instanceof DoorBlock && material == Material.METAL && !(Boolean)blockState.get(DoorBlock.OPEN)) {
+				return PathNodeType.DOOR_IRON_CLOSED;
+			} else if (block instanceof DoorBlock && (Boolean)blockState.get(DoorBlock.OPEN)) {
+				return PathNodeType.DOOR_OPEN;
+			} else if (block instanceof AbstractRailBlock) {
+				return PathNodeType.RAIL;
+			} else if (block instanceof LeavesBlock) {
+				return PathNodeType.LEAVES;
+			} else if (!block.isIn(BlockTags.FENCES)
+				&& !block.isIn(BlockTags.WALLS)
+				&& (!(block instanceof FenceGateBlock) || (Boolean)blockState.get(FenceGateBlock.OPEN))) {
+				return !blockState.canPathfindThrough(blockView, blockPos, NavigationType.LAND) ? PathNodeType.BLOCKED : PathNodeType.OPEN;
+			} else {
+				return PathNodeType.FENCE;
+			}
 		}
 	}
 
 	private static boolean method_27138(BlockState blockState) {
-		return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
+		return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
 	}
 }

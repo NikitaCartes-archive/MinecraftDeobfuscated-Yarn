@@ -78,13 +78,13 @@ public class RunArgs {
 	@Environment(EnvType.CLIENT)
 	public static class Network {
 		public final Session session;
-		public final PropertyMap field_3298;
+		public final PropertyMap userProperties;
 		public final PropertyMap profileProperties;
 		public final Proxy netProxy;
 
-		public Network(Session session, PropertyMap propertyMap, PropertyMap profileProperties, Proxy proxy) {
+		public Network(Session session, PropertyMap userProperties, PropertyMap profileProperties, Proxy proxy) {
 			this.session = session;
-			this.field_3298 = propertyMap;
+			this.userProperties = userProperties;
 			this.profileProperties = profileProperties;
 			this.netProxy = proxy;
 		}

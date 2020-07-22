@@ -1,4 +1,4 @@
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.gui.screen;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,6 +7,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.realms.Realms;
+import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.util.NarratorManager;
 
 @Environment(EnvType.CLIENT)

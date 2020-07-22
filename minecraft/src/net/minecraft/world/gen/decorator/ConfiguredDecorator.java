@@ -8,7 +8,7 @@ import net.minecraft.util.registry.Registry;
 
 public class ConfiguredDecorator<DC extends DecoratorConfig> implements Decoratable<ConfiguredDecorator<?>> {
 	public static final Codec<ConfiguredDecorator<?>> CODEC = Registry.DECORATOR
-		.dispatch("name", configuredDecorator -> configuredDecorator.decorator, Decorator::getCodec);
+		.dispatch("type", configuredDecorator -> configuredDecorator.decorator, Decorator::getCodec);
 	private final Decorator<DC> decorator;
 	private final DC config;
 
@@ -17,8 +17,8 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> implements Decorata
 		this.config = config;
 	}
 
-	public Stream<BlockPos> method_30444(DecoratorContext decoratorContext, Random random, BlockPos blockPos) {
-		return this.decorator.getPositions(decoratorContext, random, this.config, blockPos);
+	public Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos) {
+		return this.decorator.getPositions(context, random, this.config, pos);
 	}
 
 	public String toString() {

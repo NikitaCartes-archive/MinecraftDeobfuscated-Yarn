@@ -103,7 +103,7 @@ public class PillagerSpawner implements Spawner {
 
 				patrolEntity.updatePosition((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 				patrolEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.PATROL, null, null);
-				world.spawnEntity(patrolEntity);
+				world.spawnEntityAndPassengers(patrolEntity);
 				return true;
 			} else {
 				return false;

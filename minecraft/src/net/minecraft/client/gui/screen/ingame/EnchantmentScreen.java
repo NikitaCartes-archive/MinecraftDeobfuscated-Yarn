@@ -216,7 +216,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 					}
 				}
 
-				this.renderTooltip(matrices, list, mouseX, mouseY);
+				this.method_30901(matrices, list, mouseX, mouseY);
 				break;
 			}
 		}

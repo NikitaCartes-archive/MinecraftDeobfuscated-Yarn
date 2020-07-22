@@ -1,12 +1,12 @@
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.exception.RetryCallException;
-import net.minecraft.client.realms.gui.LongRunningTask;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SwitchMinigameTask extends LongRunningTask {
@@ -22,8 +22,7 @@ public class SwitchMinigameTask extends LongRunningTask {
 
 	public void run() {
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
-		String string = I18n.translate("mco.minigame.world.starting.screen.title");
-		this.setTitle(string);
+		this.setTitle(new TranslatableText("mco.minigame.world.starting.screen.title"));
 
 		for (int i = 0; i < 25; i++) {
 			try {
@@ -35,19 +34,19 @@ public class SwitchMinigameTask extends LongRunningTask {
 					setScreen(this.lastScreen);
 					break;
 				}
-			} catch (RetryCallException var5) {
+			} catch (RetryCallException var4) {
 				if (this.aborted()) {
 					return;
 				}
 
-				pause(var5.delaySeconds);
-			} catch (Exception var6) {
+				pause(var4.delaySeconds);
+			} catch (Exception var5) {
 				if (this.aborted()) {
 					return;
 				}
 
 				LOGGER.error("Couldn't start mini game!");
-				this.error(var6.toString());
+				this.error(var5.toString());
 			}
 		}
 	}

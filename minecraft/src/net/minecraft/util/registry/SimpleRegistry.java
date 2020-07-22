@@ -43,6 +43,15 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return Codec.mapPair(Identifier.CODEC.<RegistryKey<T>>xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("name"), mapCodec);
 	}
 
+	public static <T> MapCodec<Pair<Pair<RegistryKey<T>, Integer>, T>> method_30929(RegistryKey<? extends Registry<T>> registryKey, MapCodec<T> mapCodec) {
+		return Codec.mapPair(
+			Codec.mapPair(
+				Identifier.CODEC.<RegistryKey<T>>xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("name"), Codec.INT.fieldOf("id")
+			),
+			mapCodec
+		);
+	}
+
 	@Override
 	public <V extends T> V set(int rawId, RegistryKey<T> key, V entry) {
 		this.indexedEntries.put((T)entry, rawId);
@@ -51,6 +60,10 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		this.randomEntries = null;
 		if (this.entriesByKey.containsKey(key)) {
 			LOGGER.debug("Adding duplicate key '{}' to registry", key);
+		}
+
+		if (this.entriesById.containsValue(entry)) {
+			LOGGER.error("Adding duplicate value '{}' to registry", entry);
 		}
 
 		this.entriesById.put(key.getValue(), (T)entry);
@@ -150,19 +163,19 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, MapCodec<T> mapCodec) {
-		return method_30516(registryKey, mapCodec).codec().listOf().xmap(list -> {
+		return method_30929(registryKey, mapCodec).codec().listOf().xmap(list -> {
 			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
 
-			for (Pair<RegistryKey<T>, T> pair : list) {
-				simpleRegistry.add(pair.getFirst(), pair.getSecond());
+			for (Pair<Pair<RegistryKey<T>, Integer>, T> pair : list) {
+				simpleRegistry.set(pair.getFirst().getSecond(), pair.getFirst().getFirst(), pair.getSecond());
 			}
 
 			return simpleRegistry;
 		}, simpleRegistry -> {
-			com.google.common.collect.ImmutableList.Builder<Pair<RegistryKey<T>, T>> builder = ImmutableList.builder();
+			com.google.common.collect.ImmutableList.Builder<Pair<Pair<RegistryKey<T>, Integer>, T>> builder = ImmutableList.builder();
 
 			for (T object : simpleRegistry.indexedEntries) {
-				builder.add(Pair.of((RegistryKey<T>)simpleRegistry.getKey(object).get(), object));
+				builder.add(Pair.of(Pair.of((RegistryKey<T>)simpleRegistry.getKey(object).get(), simpleRegistry.getRawId(object)), object));
 			}
 
 			return builder.build();

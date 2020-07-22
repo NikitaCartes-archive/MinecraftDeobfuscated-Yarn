@@ -34,7 +34,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
-import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
+import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -91,8 +91,8 @@ public class GeneratorOptions {
 		return new GeneratorOptions(l, true, false, method_28608(DimensionType.method_28517(l), createOverworldGenerator(l)));
 	}
 
-	public static SurfaceChunkGenerator createOverworldGenerator(long seed) {
-		return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26355);
+	public static NoiseChunkGenerator createOverworldGenerator(long seed) {
+		return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26355);
 	}
 
 	public long getSeed() {
@@ -231,14 +231,14 @@ public class GeneratorOptions {
 					l,
 					bl,
 					false,
-					method_28608(simpleRegistry, new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(l, false, false), l, () -> ChunkGeneratorType.field_26356))
+					method_28608(simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false), l, () -> ChunkGeneratorType.field_26356))
 				);
 			case "largebiomes":
 				return new GeneratorOptions(
 					l,
 					bl,
 					false,
-					method_28608(simpleRegistry, new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(l, false, true), l, () -> ChunkGeneratorType.field_26355))
+					method_28608(simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true), l, () -> ChunkGeneratorType.field_26355))
 				);
 			default:
 				return new GeneratorOptions(l, bl, false, method_28608(simpleRegistry, createOverworldGenerator(l)));

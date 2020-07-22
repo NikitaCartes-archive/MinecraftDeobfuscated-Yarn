@@ -67,7 +67,7 @@ public class Brain<E extends LivingEntity> {
 					@Override
 					public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
 						return memoryModules.stream()
-							.flatMap(memoryModuleType -> Util.stream(memoryModuleType.getFactory().map(codec -> Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType))))
+							.flatMap(memoryModuleType -> Util.stream(memoryModuleType.getCodec().map(codec -> Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType))))
 							.map(identifier -> dynamicOps.createString(identifier.toString()));
 					}
 
@@ -92,7 +92,7 @@ public class Brain<E extends LivingEntity> {
 					}
 
 					private <T, U> DataResult<Brain.MemoryEntry<U>> method_28320(MemoryModuleType<U> memoryModuleType, DynamicOps<T> dynamicOps, T object) {
-						return ((DataResult)memoryModuleType.getFactory().map(DataResult::success).orElseGet(() -> DataResult.error("No codec for memory: " + memoryModuleType)))
+						return ((DataResult)memoryModuleType.getCodec().map(DataResult::success).orElseGet(() -> DataResult.error("No codec for memory: " + memoryModuleType)))
 							.flatMap(codec -> codec.parse(dynamicOps, object))
 							.map(memory -> new Brain.MemoryEntry(memoryModuleType, Optional.of(memory)));
 					}
@@ -456,7 +456,7 @@ public class Brain<E extends LivingEntity> {
 
 		public <T> void serialize(DynamicOps<T> ops, RecordBuilder<T> builder) {
 			this.type
-				.getFactory()
+				.getCodec()
 				.ifPresent(codec -> this.data.ifPresent(memory -> builder.add(Registry.MEMORY_MODULE_TYPE.encodeStart(ops, (T)this.type), codec.encodeStart(ops, memory))));
 		}
 	}

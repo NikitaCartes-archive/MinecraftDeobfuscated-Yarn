@@ -12,17 +12,16 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.DownloadTask;
 import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
-import net.minecraft.client.realms.RealmsScreen;
-import net.minecraft.client.realms.RestoreTask;
 import net.minecraft.client.realms.dto.Backup;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.exception.RealmsServiceException;
+import net.minecraft.client.realms.task.DownloadTask;
+import net.minecraft.client.realms.task.RestoreTask;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
@@ -37,10 +36,15 @@ public class RealmsBackupScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier field_22686 = new Identifier("realms", "textures/gui/realms/plus_icon.png");
 	private static final Identifier field_22687 = new Identifier("realms", "textures/gui/realms/restore_icon.png");
+	private static final Text field_26471 = new TranslatableText("mco.backup.button.restore");
+	private static final Text field_26472 = new TranslatableText("mco.backup.changes.tooltip");
+	private static final Text field_26473 = new TranslatableText("mco.configure.world.backup");
+	private static final Text field_26474 = new TranslatableText("mco.backup.nobackups");
 	private static int lastScrollPosition = -1;
 	private final RealmsConfigureWorldScreen parent;
 	private List<Backup> backups = Collections.emptyList();
-	private String toolTip;
+	@Nullable
+	private Text toolTip;
 	private RealmsBackupScreen.BackupObjectSelectionList backupObjectSelectionList;
 	private int selectedBackup = -1;
 	private final int slotId;
@@ -218,9 +222,9 @@ public class RealmsBackupScreen extends RealmsScreen {
 		this.renderBackground(matrices);
 		this.backupObjectSelectionList.render(matrices, mouseX, mouseY, delta);
 		this.titleLabel.render(this, matrices);
-		this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.backup"), (float)((this.width - 150) / 2 - 90), 20.0F, 10526880);
+		this.textRenderer.method_30883(matrices, field_26473, (float)((this.width - 150) / 2 - 90), 20.0F, 10526880);
 		if (this.noBackups) {
-			this.textRenderer.draw(matrices, I18n.translate("mco.backup.nobackups"), 20.0F, (float)(this.height / 2 - 10), 16777215);
+			this.textRenderer.method_30883(matrices, field_26474, 20.0F, (float)(this.height / 2 - 10), 16777215);
 		}
 
 		this.downloadButton.active = !this.noBackups;
@@ -230,13 +234,13 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrixStack, String string, int i, int j) {
-		if (string != null) {
+	protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
+		if (text != null) {
 			int k = i + 12;
 			int l = j - 12;
-			int m = this.textRenderer.getWidth(string);
+			int m = this.textRenderer.getWidth(text);
 			this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.drawWithShadow(matrixStack, string, (float)k, (float)l, 16777215);
+			this.textRenderer.method_30881(matrixStack, text, (float)k, (float)l, 16777215);
 		}
 	}
 
@@ -380,7 +384,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 			DrawableHelper.drawTexture(matrixStack, i * 2, j * 2, 0.0F, f, 23, 28, 23, 56);
 			RenderSystem.popMatrix();
 			if (bl) {
-				RealmsBackupScreen.this.toolTip = I18n.translate("mco.backup.button.restore");
+				RealmsBackupScreen.this.toolTip = RealmsBackupScreen.field_26471;
 			}
 		}
 
@@ -394,7 +398,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 			DrawableHelper.drawTexture(matrixStack, i * 2, j * 2, 0.0F, f, 15, 15, 15, 30);
 			RenderSystem.popMatrix();
 			if (bl) {
-				RealmsBackupScreen.this.toolTip = I18n.translate("mco.backup.changes.tooltip");
+				RealmsBackupScreen.this.toolTip = RealmsBackupScreen.field_26472;
 			}
 		}
 	}

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -74,6 +73,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
@@ -289,9 +289,9 @@ public class FoxEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		Biome biome = arg.getBiome(this.getBlockPos());
+		Biome biome = serverWorldAccess.getBiome(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
@@ -308,12 +308,12 @@ public class FoxEntity extends AnimalEntity {
 			this.setBreedingAge(-24000);
 		}
 
-		if (arg instanceof ServerWorld) {
+		if (serverWorldAccess instanceof ServerWorld) {
 			this.addTypeSpecificGoals();
 		}
 
 		this.initEquipment(difficulty);
-		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private void addTypeSpecificGoals() {
@@ -1191,7 +1191,8 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		protected void breed() {
-			FoxEntity foxEntity = (FoxEntity)this.animal.createChild((ServerWorld)this.world, this.mate);
+			ServerWorld serverWorld = (ServerWorld)this.world;
+			FoxEntity foxEntity = (FoxEntity)this.animal.createChild(serverWorld, this.mate);
 			if (foxEntity != null) {
 				ServerPlayerEntity serverPlayerEntity = this.animal.getLovingPlayer();
 				ServerPlayerEntity serverPlayerEntity2 = this.mate.getLovingPlayer();
@@ -1217,7 +1218,7 @@ public class FoxEntity extends AnimalEntity {
 				this.mate.resetLoveTicks();
 				foxEntity.setBreedingAge(-24000);
 				foxEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0F, 0.0F);
-				this.world.spawnEntity(foxEntity);
+				serverWorld.spawnEntityAndPassengers(foxEntity);
 				this.world.sendEntityStatus(this.animal, (byte)18);
 				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 					this.world

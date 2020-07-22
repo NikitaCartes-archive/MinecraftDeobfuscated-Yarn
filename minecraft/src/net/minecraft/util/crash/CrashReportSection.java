@@ -172,7 +172,7 @@ public class CrashReportSection {
 		private final String name;
 		private final String detail;
 
-		public Element(String name, Object detail) {
+		public Element(String name, @Nullable Object detail) {
 			this.name = name;
 			if (detail == null) {
 				this.detail = "~~NULL~~";

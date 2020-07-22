@@ -12,6 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.Tessellator;
@@ -30,13 +31,13 @@ import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen implements StatsListener {
+	private static final Text field_26546 = new TranslatableText("multiplayer.downloadingStats");
 	protected final Screen parent;
 	private StatsScreen.GeneralStatsListWidget generalStats;
 	private StatsScreen.ItemStatsListWidget itemStats;
@@ -92,8 +93,8 @@ public class StatsScreen extends Screen implements StatsListener {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.downloadingStats) {
 			this.renderBackground(matrices);
-			this.drawCenteredString(matrices, this.textRenderer, I18n.translate("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
-			this.drawCenteredString(
+			drawCenteredText(matrices, this.textRenderer, field_26546, this.width / 2, this.height / 2, 16777215);
+			drawCenteredString(
 				matrices,
 				this.textRenderer,
 				PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)],
@@ -103,7 +104,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			);
 		} else {
 			this.getSelectedStatList().render(matrices, mouseX, mouseY, delta);
-			this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+			drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 			super.render(matrices, mouseX, mouseY, delta);
 		}
 	}
@@ -180,33 +181,41 @@ public class StatsScreen extends Screen implements StatsListener {
 		@Environment(EnvType.CLIENT)
 		class Entry extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.EntityStatsListWidget.Entry> {
 			private final EntityType<?> entityType;
+			private final Text field_26548;
+			private final Text field_26549;
+			private final boolean field_26550;
+			private final Text field_26551;
+			private final boolean field_26552;
 
 			public Entry(EntityType<?> entityType) {
 				this.entityType = entityType;
+				this.field_26548 = entityType.getName();
+				int i = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType));
+				if (i == 0) {
+					this.field_26549 = new TranslatableText("stat_type.minecraft.killed.none", this.field_26548);
+					this.field_26550 = false;
+				} else {
+					this.field_26549 = new TranslatableText("stat_type.minecraft.killed", i, this.field_26548);
+					this.field_26550 = true;
+				}
+
+				int j = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType));
+				if (j == 0) {
+					this.field_26551 = new TranslatableText("stat_type.minecraft.killed_by.none", this.field_26548);
+					this.field_26552 = false;
+				} else {
+					this.field_26551 = new TranslatableText("stat_type.minecraft.killed_by", j, this.field_26548);
+					this.field_26552 = true;
+				}
 			}
 
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				String string = I18n.translate(Util.createTranslationKey("entity", EntityType.getId(this.entityType)));
-				int i = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(this.entityType));
-				int j = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(this.entityType));
-				EntityStatsListWidget.this.drawStringWithShadow(matrices, StatsScreen.this.textRenderer, string, x + 2, y + 1, 16777215);
-				EntityStatsListWidget.this.drawStringWithShadow(
-					matrices, StatsScreen.this.textRenderer, this.getKilledString(string, i), x + 2 + 10, y + 1 + 9, i == 0 ? 6316128 : 9474192
+				DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.field_26548, x + 2, y + 1, 16777215);
+				DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.field_26549, x + 2 + 10, y + 1 + 9, this.field_26550 ? 9474192 : 6316128);
+				DrawableHelper.drawTextWithShadow(
+					matrices, StatsScreen.this.textRenderer, this.field_26551, x + 2 + 10, y + 1 + 9 * 2, this.field_26552 ? 9474192 : 6316128
 				);
-				EntityStatsListWidget.this.drawStringWithShadow(
-					matrices, StatsScreen.this.textRenderer, this.getKilledByString(string, j), x + 2 + 10, y + 1 + 9 * 2, j == 0 ? 6316128 : 9474192
-				);
-			}
-
-			private String getKilledString(String entityName, int killCount) {
-				String string = Stats.KILLED.getTranslationKey();
-				return killCount == 0 ? I18n.translate(string + ".none", entityName) : I18n.translate(string, killCount, entityName);
-			}
-
-			private String getKilledByString(String entityName, int killCount) {
-				String string = Stats.KILLED_BY.getTranslationKey();
-				return killCount == 0 ? I18n.translate(string + ".none", entityName) : I18n.translate(string, entityName, killCount);
 			}
 		}
 	}
@@ -231,19 +240,18 @@ public class StatsScreen extends Screen implements StatsListener {
 		@Environment(EnvType.CLIENT)
 		class Entry extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.GeneralStatsListWidget.Entry> {
 			private final Stat<Identifier> stat;
+			private final Text field_26547;
 
 			private Entry(Stat<Identifier> stat) {
 				this.stat = stat;
+				this.field_26547 = new TranslatableText(StatsScreen.method_27027(stat));
 			}
 
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				Text text = new TranslatableText(StatsScreen.method_27027(this.stat)).formatted(Formatting.GRAY);
-				GeneralStatsListWidget.this.drawStringWithShadow(
-					matrices, StatsScreen.this.textRenderer, text.getString(), x + 2, y + 1, index % 2 == 0 ? 16777215 : 9474192
-				);
+				DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.field_26547, x + 2, y + 1, index % 2 == 0 ? 16777215 : 9474192);
 				String string = this.stat.format(StatsScreen.this.statHandler.getStat(this.stat));
-				GeneralStatsListWidget.this.drawStringWithShadow(
+				DrawableHelper.drawStringWithShadow(
 					matrices, StatsScreen.this.textRenderer, string, x + 2 + 213 - StatsScreen.this.textRenderer.getWidth(string), y + 1, index % 2 == 0 ? 16777215 : 9474192
 				);
 			}
@@ -396,7 +404,7 @@ public class StatsScreen extends Screen implements StatsListener {
 					for (int m = 0; m < this.HEADER_ICON_SPRITE_INDICES.length; m++) {
 						int n = StatsScreen.this.getColumnX(m);
 						if (l >= n - 18 && l <= n) {
-							text = new TranslatableText(this.getStatType(m).getTranslationKey());
+							text = this.getStatType(m).method_30739();
 							break;
 						}
 					}
@@ -414,7 +422,7 @@ public class StatsScreen extends Screen implements StatsListener {
 				this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
 				RenderSystem.pushMatrix();
 				RenderSystem.translatef(0.0F, 0.0F, 400.0F);
-				StatsScreen.this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, -1);
+				StatsScreen.this.textRenderer.method_30881(matrixStack, text, (float)k, (float)l, -1);
 				RenderSystem.popMatrix();
 			}
 		}
@@ -471,7 +479,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			protected void render(MatrixStack matrixStack, @Nullable Stat<?> stat, int i, int j, boolean bl) {
 				String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
-				ItemStatsListWidget.this.drawStringWithShadow(
+				DrawableHelper.drawStringWithShadow(
 					matrixStack, StatsScreen.this.textRenderer, string, i - StatsScreen.this.textRenderer.getWidth(string), j + 5, bl ? 16777215 : 9474192
 				);
 			}

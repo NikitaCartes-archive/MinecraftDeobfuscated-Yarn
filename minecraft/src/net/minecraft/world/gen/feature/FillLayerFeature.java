@@ -3,7 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
@@ -12,7 +12,7 @@ public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, FillLayerFeatureConfig fillLayerFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, FillLayerFeatureConfig fillLayerFeatureConfig
 	) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -22,8 +22,8 @@ public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
 				int l = blockPos.getZ() + j;
 				int m = fillLayerFeatureConfig.height;
 				mutable.set(k, m, l);
-				if (serverWorldAccess.getBlockState(mutable).isAir()) {
-					serverWorldAccess.setBlockState(mutable, fillLayerFeatureConfig.state, 2);
+				if (structureWorldAccess.getBlockState(mutable).isAir()) {
+					structureWorldAccess.setBlockState(mutable, fillLayerFeatureConfig.state, 2);
 				}
 			}
 		}

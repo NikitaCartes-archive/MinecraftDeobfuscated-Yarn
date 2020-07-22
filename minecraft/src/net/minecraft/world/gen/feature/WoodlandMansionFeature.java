@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -101,15 +101,20 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 		@Override
 		public void generateStructure(
-			ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
+			StructureWorldAccess structureWorldAccess,
+			StructureAccessor structureAccessor,
+			ChunkGenerator chunkGenerator,
+			Random random,
+			BlockBox blockBox,
+			ChunkPos chunkPos
 		) {
-			super.generateStructure(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
+			super.generateStructure(structureWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
 			int i = this.boundingBox.minY;
 
 			for (int j = blockBox.minX; j <= blockBox.maxX; j++) {
 				for (int k = blockBox.minZ; k <= blockBox.maxZ; k++) {
 					BlockPos blockPos = new BlockPos(j, i, k);
-					if (!serverWorldAccess.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
+					if (!structureWorldAccess.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
 						boolean bl = false;
 
 						for (StructurePiece structurePiece : this.children) {
@@ -122,11 +127,11 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 						if (bl) {
 							for (int l = i - 1; l > 1; l--) {
 								BlockPos blockPos2 = new BlockPos(j, l, k);
-								if (!serverWorldAccess.isAir(blockPos2) && !serverWorldAccess.getBlockState(blockPos2).getMaterial().isLiquid()) {
+								if (!structureWorldAccess.isAir(blockPos2) && !structureWorldAccess.getBlockState(blockPos2).getMaterial().isLiquid()) {
 									break;
 								}
 
-								serverWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+								structureWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
 							}
 						}
 					}

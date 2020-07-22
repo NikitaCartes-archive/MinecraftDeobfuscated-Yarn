@@ -62,7 +62,7 @@ public class LevelLoadingScreen extends Screen {
 		int j = this.height / 2;
 		int k = 30;
 		drawChunkMap(matrices, this.progressProvider, i, j + 30, 2, 0);
-		this.drawCenteredString(matrices, this.textRenderer, string, i, j - 9 / 2 - 30, 16777215);
+		drawCenteredString(matrices, this.textRenderer, string, i, j - 9 / 2 - 30, 16777215);
 	}
 
 	public static void drawChunkMap(MatrixStack matrixStack, WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {

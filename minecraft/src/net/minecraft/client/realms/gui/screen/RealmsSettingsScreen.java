@@ -6,15 +6,15 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.RealmsServer;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSettingsScreen extends RealmsScreen {
+	private static final Text field_26514 = new TranslatableText("mco.configure.world.name");
+	private static final Text field_26515 = new TranslatableText("mco.configure.world.description");
 	private final RealmsConfigureWorldScreen parent;
 	private final RealmsServer serverData;
 	private ButtonWidget doneButton;
@@ -91,8 +91,8 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.titleLabel.render(this, matrices);
-		this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.name"), (float)(this.width / 2 - 106), (float)row(3), 10526880);
-		this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.description"), (float)(this.width / 2 - 106), (float)row(7), 10526880);
+		this.textRenderer.method_30883(matrices, field_26514, (float)(this.width / 2 - 106), (float)row(3), 10526880);
+		this.textRenderer.method_30883(matrices, field_26515, (float)(this.width / 2 - 106), (float)row(7), 10526880);
 		this.nameEdit.render(matrices, mouseX, mouseY, delta);
 		this.descEdit.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);

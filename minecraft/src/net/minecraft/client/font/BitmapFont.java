@@ -22,14 +22,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class TextureFont implements Font {
+public class BitmapFont implements Font {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final NativeImage image;
-	private final Int2ObjectMap<TextureFont.TextureFontGlyph> glyphs;
+	private final Int2ObjectMap<BitmapFont.BitmapFontGlyph> glyphs;
 
-	private TextureFont(NativeImage image, Int2ObjectMap<TextureFont.TextureFontGlyph> int2ObjectMap) {
+	private BitmapFont(NativeImage image, Int2ObjectMap<BitmapFont.BitmapFontGlyph> glyphs) {
 		this.image = image;
-		this.glyphs = int2ObjectMap;
+		this.glyphs = glyphs;
 	}
 
 	@Override
@@ -39,136 +39,17 @@ public class TextureFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(int i) {
-		return this.glyphs.get(i);
+	public RenderableGlyph getGlyph(int codePoint) {
+		return this.glyphs.get(codePoint);
 	}
 
 	@Override
-	public IntSet method_27442() {
+	public IntSet getProvidedGlyphs() {
 		return IntSets.unmodifiable(this.glyphs.keySet());
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Loader implements FontLoader {
-		private final Identifier filename;
-		private final List<int[]> chars;
-		private final int height;
-		private final int ascent;
-
-		public Loader(Identifier id, int height, int ascent, List<int[]> chars) {
-			this.filename = new Identifier(id.getNamespace(), "textures/" + id.getPath());
-			this.chars = chars;
-			this.height = height;
-			this.ascent = ascent;
-		}
-
-		public static TextureFont.Loader fromJson(JsonObject json) {
-			int i = JsonHelper.getInt(json, "height", 8);
-			int j = JsonHelper.getInt(json, "ascent");
-			if (j > i) {
-				throw new JsonParseException("Ascent " + j + " higher than height " + i);
-			} else {
-				List<int[]> list = Lists.<int[]>newArrayList();
-				JsonArray jsonArray = JsonHelper.getArray(json, "chars");
-
-				for (int k = 0; k < jsonArray.size(); k++) {
-					String string = JsonHelper.asString(jsonArray.get(k), "chars[" + k + "]");
-					int[] is = string.codePoints().toArray();
-					if (k > 0) {
-						int l = ((int[])list.get(0)).length;
-						if (is.length != l) {
-							throw new JsonParseException("Elements of chars have to be the same length (found: " + is.length + ", expected: " + l + "), pad with space or \\u0000");
-						}
-					}
-
-					list.add(is);
-				}
-
-				if (!list.isEmpty() && ((int[])list.get(0)).length != 0) {
-					return new TextureFont.Loader(new Identifier(JsonHelper.getString(json, "file")), i, j, list);
-				} else {
-					throw new JsonParseException("Expected to find data in chars, found none.");
-				}
-			}
-		}
-
-		@Nullable
-		@Override
-		public Font load(ResourceManager manager) {
-			try {
-				Resource resource = manager.getResource(this.filename);
-				Throwable var3 = null;
-
-				TextureFont var31;
-				try {
-					NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
-					int i = nativeImage.getWidth();
-					int j = nativeImage.getHeight();
-					int k = i / ((int[])this.chars.get(0)).length;
-					int l = j / this.chars.size();
-					float f = (float)this.height / (float)l;
-					Int2ObjectMap<TextureFont.TextureFontGlyph> int2ObjectMap = new Int2ObjectOpenHashMap<>();
-
-					for (int m = 0; m < this.chars.size(); m++) {
-						int n = 0;
-
-						for (int o : (int[])this.chars.get(m)) {
-							int p = n++;
-							if (o != 0 && o != 32) {
-								int q = this.findCharacterStartX(nativeImage, k, l, p, m);
-								TextureFont.TextureFontGlyph textureFontGlyph = int2ObjectMap.put(
-									o, new TextureFont.TextureFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)q * f)) + 1, this.ascent)
-								);
-								if (textureFontGlyph != null) {
-									TextureFont.LOGGER.warn("Codepoint '{}' declared multiple times in {}", Integer.toHexString(o), this.filename);
-								}
-							}
-						}
-					}
-
-					var31 = new TextureFont(nativeImage, int2ObjectMap);
-				} catch (Throwable var28) {
-					var3 = var28;
-					throw var28;
-				} finally {
-					if (resource != null) {
-						if (var3 != null) {
-							try {
-								resource.close();
-							} catch (Throwable var27) {
-								var3.addSuppressed(var27);
-							}
-						} else {
-							resource.close();
-						}
-					}
-				}
-
-				return var31;
-			} catch (IOException var30) {
-				throw new RuntimeException(var30.getMessage());
-			}
-		}
-
-		private int findCharacterStartX(NativeImage image, int characterWidth, int characterHeight, int charPosX, int charPosY) {
-			int i;
-			for (i = characterWidth - 1; i >= 0; i--) {
-				int j = charPosX * characterWidth + i;
-
-				for (int k = 0; k < characterHeight; k++) {
-					int l = charPosY * characterHeight + k;
-					if (image.getPixelOpacity(j, l) != 0) {
-						return i + 1;
-					}
-				}
-			}
-
-			return i + 1;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static final class TextureFontGlyph implements RenderableGlyph {
+	static final class BitmapFontGlyph implements RenderableGlyph {
 		private final float scaleFactor;
 		private final NativeImage image;
 		private final int x;
@@ -178,7 +59,7 @@ public class TextureFont implements Font {
 		private final int advance;
 		private final int ascent;
 
-		private TextureFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
+		private BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
 			this.scaleFactor = scaleFactor;
 			this.image = image;
 			this.x = x;
@@ -222,6 +103,125 @@ public class TextureFont implements Font {
 		@Override
 		public boolean hasColor() {
 			return this.image.getFormat().getChannelCount() > 1;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class Loader implements FontLoader {
+		private final Identifier filename;
+		private final List<int[]> chars;
+		private final int height;
+		private final int ascent;
+
+		public Loader(Identifier id, int height, int ascent, List<int[]> chars) {
+			this.filename = new Identifier(id.getNamespace(), "textures/" + id.getPath());
+			this.chars = chars;
+			this.height = height;
+			this.ascent = ascent;
+		}
+
+		public static BitmapFont.Loader fromJson(JsonObject json) {
+			int i = JsonHelper.getInt(json, "height", 8);
+			int j = JsonHelper.getInt(json, "ascent");
+			if (j > i) {
+				throw new JsonParseException("Ascent " + j + " higher than height " + i);
+			} else {
+				List<int[]> list = Lists.<int[]>newArrayList();
+				JsonArray jsonArray = JsonHelper.getArray(json, "chars");
+
+				for (int k = 0; k < jsonArray.size(); k++) {
+					String string = JsonHelper.asString(jsonArray.get(k), "chars[" + k + "]");
+					int[] is = string.codePoints().toArray();
+					if (k > 0) {
+						int l = ((int[])list.get(0)).length;
+						if (is.length != l) {
+							throw new JsonParseException("Elements of chars have to be the same length (found: " + is.length + ", expected: " + l + "), pad with space or \\u0000");
+						}
+					}
+
+					list.add(is);
+				}
+
+				if (!list.isEmpty() && ((int[])list.get(0)).length != 0) {
+					return new BitmapFont.Loader(new Identifier(JsonHelper.getString(json, "file")), i, j, list);
+				} else {
+					throw new JsonParseException("Expected to find data in chars, found none.");
+				}
+			}
+		}
+
+		@Nullable
+		@Override
+		public Font load(ResourceManager manager) {
+			try {
+				Resource resource = manager.getResource(this.filename);
+				Throwable var3 = null;
+
+				BitmapFont var31;
+				try {
+					NativeImage nativeImage = NativeImage.read(NativeImage.Format.ABGR, resource.getInputStream());
+					int i = nativeImage.getWidth();
+					int j = nativeImage.getHeight();
+					int k = i / ((int[])this.chars.get(0)).length;
+					int l = j / this.chars.size();
+					float f = (float)this.height / (float)l;
+					Int2ObjectMap<BitmapFont.BitmapFontGlyph> int2ObjectMap = new Int2ObjectOpenHashMap<>();
+
+					for (int m = 0; m < this.chars.size(); m++) {
+						int n = 0;
+
+						for (int o : (int[])this.chars.get(m)) {
+							int p = n++;
+							if (o != 0 && o != 32) {
+								int q = this.findCharacterStartX(nativeImage, k, l, p, m);
+								BitmapFont.BitmapFontGlyph bitmapFontGlyph = int2ObjectMap.put(
+									o, new BitmapFont.BitmapFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)q * f)) + 1, this.ascent)
+								);
+								if (bitmapFontGlyph != null) {
+									BitmapFont.LOGGER.warn("Codepoint '{}' declared multiple times in {}", Integer.toHexString(o), this.filename);
+								}
+							}
+						}
+					}
+
+					var31 = new BitmapFont(nativeImage, int2ObjectMap);
+				} catch (Throwable var28) {
+					var3 = var28;
+					throw var28;
+				} finally {
+					if (resource != null) {
+						if (var3 != null) {
+							try {
+								resource.close();
+							} catch (Throwable var27) {
+								var3.addSuppressed(var27);
+							}
+						} else {
+							resource.close();
+						}
+					}
+				}
+
+				return var31;
+			} catch (IOException var30) {
+				throw new RuntimeException(var30.getMessage());
+			}
+		}
+
+		private int findCharacterStartX(NativeImage image, int characterWidth, int characterHeight, int charPosX, int charPosY) {
+			int i;
+			for (i = characterWidth - 1; i >= 0; i--) {
+				int j = charPosX * characterWidth + i;
+
+				for (int k = 0; k < characterHeight; k++) {
+					int l = charPosY * characterHeight + k;
+					if (image.getPixelOpacity(j, l) != 0) {
+						return i + 1;
+					}
+				}
+			}
+
+			return i + 1;
 		}
 	}
 }

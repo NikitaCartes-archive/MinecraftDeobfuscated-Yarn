@@ -43,7 +43,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Entity> RIDE_TARGET = register("ride_target");
 	public static final MemoryModuleType<Path> PATH = register("path");
 	public static final MemoryModuleType<List<GlobalPos>> INTERACTABLE_DOORS = register("interactable_doors");
-	public static final MemoryModuleType<Set<GlobalPos>> OPENED_DOORS = register("opened_doors");
+	public static final MemoryModuleType<Set<GlobalPos>> DOORS_TO_CLOSE = register("doors_to_close");
 	public static final MemoryModuleType<BlockPos> NEAREST_BED = register("nearest_bed");
 	public static final MemoryModuleType<DamageSource> HURT_BY = register("hurt_by");
 	public static final MemoryModuleType<LivingEntity> HURT_BY_ENTITY = register("hurt_by_entity");
@@ -82,18 +82,18 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Boolean> ATE_RECENTLY = register("ate_recently");
 	public static final MemoryModuleType<BlockPos> NEAREST_REPELLENT = register("nearest_repellent");
 	public static final MemoryModuleType<Boolean> PACIFIED = register("pacified");
-	private final Optional<Codec<Memory<U>>> field_24668;
+	private final Optional<Codec<Memory<U>>> codec;
 
 	private MemoryModuleType(Optional<Codec<U>> factory) {
-		this.field_24668 = factory.map(Memory::method_28353);
+		this.codec = factory.map(Memory::method_28353);
 	}
 
 	public String toString() {
 		return Registry.MEMORY_MODULE_TYPE.getId(this).toString();
 	}
 
-	public Optional<Codec<Memory<U>>> getFactory() {
-		return this.field_24668;
+	public Optional<Codec<Memory<U>>> getCodec() {
+		return this.codec;
 	}
 
 	private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {

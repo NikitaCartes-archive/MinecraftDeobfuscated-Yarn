@@ -183,7 +183,7 @@ public class ServerChunkManager extends ChunkManager {
 			if (chunkHolder == null) {
 				return null;
 			} else {
-				Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)chunkHolder.getNowFuture(ChunkStatus.FULL).getNow(null);
+				Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)chunkHolder.getValidFutureFor(ChunkStatus.FULL).getNow(null);
 				if (either == null) {
 					return null;
 				} else {
@@ -225,7 +225,7 @@ public class ServerChunkManager extends ChunkManager {
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFuture(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
 		ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
 		long l = chunkPos.toLong();
-		int i = 33 + ChunkStatus.getTargetGenerationRadius(leastStatus);
+		int i = 33 + ChunkStatus.getDistanceFromFull(leastStatus);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
 		if (create) {
 			this.ticketManager.addTicketWithLevel(ChunkTicketType.field_14032, chunkPos, i, chunkPos);
@@ -241,7 +241,7 @@ public class ServerChunkManager extends ChunkManager {
 			}
 		}
 
-		return this.isMissingForLevel(chunkHolder, i) ? ChunkHolder.UNLOADED_CHUNK_FUTURE : chunkHolder.createFuture(leastStatus, this.threadedAnvilChunkStorage);
+		return this.isMissingForLevel(chunkHolder, i) ? ChunkHolder.UNLOADED_CHUNK_FUTURE : chunkHolder.getChunkAt(leastStatus, this.threadedAnvilChunkStorage);
 	}
 
 	private boolean isMissingForLevel(@Nullable ChunkHolder holder, int maxLevel) {
@@ -251,7 +251,7 @@ public class ServerChunkManager extends ChunkManager {
 	@Override
 	public boolean isChunkLoaded(int x, int z) {
 		ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(x, z).toLong());
-		int i = 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FULL);
+		int i = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL);
 		return !this.isMissingForLevel(chunkHolder, i);
 	}
 
@@ -266,7 +266,7 @@ public class ServerChunkManager extends ChunkManager {
 
 			while (true) {
 				ChunkStatus chunkStatus = (ChunkStatus)CHUNK_STATUSES.get(i);
-				Optional<Chunk> optional = ((Either)chunkHolder.getFuture(chunkStatus).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
+				Optional<Chunk> optional = ((Either)chunkHolder.getFutureFor(chunkStatus).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
 				if (optional.isPresent()) {
 					return (BlockView)optional.get();
 				}
@@ -405,7 +405,7 @@ public class ServerChunkManager extends ChunkManager {
 	private void ifChunkLoaded(long pos, Consumer<WorldChunk> chunkConsumer) {
 		ChunkHolder chunkHolder = this.getChunkHolder(pos);
 		if (chunkHolder != null) {
-			((Either)chunkHolder.getBorderFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left().ifPresent(chunkConsumer);
+			((Either)chunkHolder.getAccessibleFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left().ifPresent(chunkConsumer);
 		}
 	}
 
@@ -500,8 +500,8 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_23273(ChunkPos chunkPos) {
-		return this.threadedAnvilChunkStorage.method_23272(chunkPos);
+	public String getChunkLoadingDebugInfo(ChunkPos chunkPos) {
+		return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(chunkPos);
 	}
 
 	public PersistentStateManager getPersistentStateManager() {

@@ -93,28 +93,28 @@ public class DebugHud extends DrawableHelper {
 		this.chunk = null;
 	}
 
-	public void render(MatrixStack matrixStack) {
+	public void render(MatrixStack matrices) {
 		this.client.getProfiler().push("debug");
 		RenderSystem.pushMatrix();
 		Entity entity = this.client.getCameraEntity();
 		this.blockHit = entity.rayTrace(20.0, 0.0F, false);
 		this.fluidHit = entity.rayTrace(20.0, 0.0F, true);
-		this.renderLeftText(matrixStack);
-		this.renderRightText(matrixStack);
+		this.renderLeftText(matrices);
+		this.renderRightText(matrices);
 		RenderSystem.popMatrix();
 		if (this.client.options.debugTpsEnabled) {
 			int i = this.client.getWindow().getScaledWidth();
-			this.drawMetricsData(matrixStack, this.client.getMetricsData(), 0, i / 2, true);
+			this.drawMetricsData(matrices, this.client.getMetricsData(), 0, i / 2, true);
 			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
-				this.drawMetricsData(matrixStack, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
+				this.drawMetricsData(matrices, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
 			}
 		}
 
 		this.client.getProfiler().pop();
 	}
 
-	protected void renderLeftText(MatrixStack matrixStack) {
+	protected void renderLeftText(MatrixStack matrices) {
 		List<String> list = this.getLeftText();
 		list.add("");
 		boolean bl = this.client.getServer() != null;
@@ -134,13 +134,13 @@ public class DebugHud extends DrawableHelper {
 				int k = this.fontRenderer.getWidth(string);
 				int l = 2;
 				int m = 2 + j * i;
-				fill(matrixStack, 1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
-				this.fontRenderer.draw(matrixStack, string, 2.0F, (float)m, 14737632);
+				fill(matrices, 1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
+				this.fontRenderer.draw(matrices, string, 2.0F, (float)m, 14737632);
 			}
 		}
 	}
 
-	protected void renderRightText(MatrixStack matrixStack) {
+	protected void renderRightText(MatrixStack matrices) {
 		List<String> list = this.getRightText();
 
 		for (int i = 0; i < list.size(); i++) {
@@ -150,8 +150,8 @@ public class DebugHud extends DrawableHelper {
 				int k = this.fontRenderer.getWidth(string);
 				int l = this.client.getWindow().getScaledWidth() - 2 - k;
 				int m = 2 + j * i;
-				fill(matrixStack, l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
-				this.fontRenderer.draw(matrixStack, string, (float)l, (float)m, 14737632);
+				fill(matrices, l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
+				this.fontRenderer.draw(matrices, string, (float)l, (float)m, 14737632);
 			}
 		}
 	}

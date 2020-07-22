@@ -282,6 +282,13 @@ public enum Direction implements StringIdentifiable {
 		return this.vector;
 	}
 
+	public boolean method_30928(float f) {
+		float g = f * (float) (Math.PI / 180.0);
+		float h = -MathHelper.sin(g);
+		float i = MathHelper.cos(g);
+		return (float)this.vector.getX() * h + (float)this.vector.getZ() * i > 0.0F;
+	}
+
 	public static enum Axis implements StringIdentifiable, Predicate<Direction> {
 		X("x") {
 			@Override

@@ -1,15 +1,15 @@
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
-import net.minecraft.client.realms.gui.LongRunningTask;
 import net.minecraft.client.realms.gui.screen.RealmsDownloadLatestWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class DownloadTask extends LongRunningTask {
@@ -26,7 +26,7 @@ public class DownloadTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(I18n.translate("mco.download.preparing"));
+		this.setTitle(new TranslatableText("mco.download.preparing"));
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 		int i = 0;
 

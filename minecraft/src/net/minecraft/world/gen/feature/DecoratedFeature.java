@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.DecoratorContext;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -15,11 +15,11 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig
 	) {
 		MutableBoolean mutableBoolean = new MutableBoolean();
-		decoratedFeatureConfig.decorator.method_30444(new DecoratorContext(serverWorldAccess, chunkGenerator), random, blockPos).forEach(blockPosx -> {
-			if (((ConfiguredFeature)decoratedFeatureConfig.feature.get()).generate(serverWorldAccess, chunkGenerator, random, blockPosx)) {
+		decoratedFeatureConfig.decorator.getPositions(new DecoratorContext(structureWorldAccess, chunkGenerator), random, blockPos).forEach(blockPosx -> {
+			if (((ConfiguredFeature)decoratedFeatureConfig.feature.get()).generate(structureWorldAccess, chunkGenerator, random, blockPosx)) {
 				mutableBoolean.setTrue();
 			}
 		});

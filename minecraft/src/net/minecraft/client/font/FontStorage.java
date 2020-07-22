@@ -38,7 +38,7 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public void setFonts(List<Font> fonts) {
-		this.method_24290();
+		this.closeFonts();
 		this.closeGlyphAtlases();
 		this.glyphRendererCache.clear();
 		this.glyphCache.clear();
@@ -48,7 +48,7 @@ public class FontStorage implements AutoCloseable {
 		IntSet intSet = new IntOpenHashSet();
 
 		for (Font font : fonts) {
-			intSet.addAll(font.method_27442());
+			intSet.addAll(font.getProvidedGlyphs());
 		}
 
 		Set<Font> set = Sets.<Font>newHashSet();
@@ -68,11 +68,11 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public void close() {
-		this.method_24290();
+		this.closeFonts();
 		this.closeGlyphAtlases();
 	}
 
-	private void method_24290() {
+	private void closeFonts() {
 		for (Font font : this.fonts) {
 			font.close();
 		}

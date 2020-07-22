@@ -35,8 +35,8 @@ public class FunctionLoader implements ResourceReloadListener {
 	private static final int PATH_PREFIX_LENGTH = "functions/".length();
 	private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
-	private final TagGroupLoader<CommandFunction> tags = new TagGroupLoader<>(this::get, "tags/functions", "function");
-	private volatile TagGroup<CommandFunction> field_25801 = TagGroup.createEmpty();
+	private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader<>(this::get, "tags/functions", "function");
+	private volatile TagGroup<CommandFunction> tags = TagGroup.createEmpty();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;
 
@@ -49,11 +49,11 @@ public class FunctionLoader implements ResourceReloadListener {
 	}
 
 	public TagGroup<CommandFunction> getTags() {
-		return this.field_25801;
+		return this.tags;
 	}
 
 	public Tag<CommandFunction> getOrCreateTag(Identifier id) {
-		return this.field_25801.getTagOrEmpty(id);
+		return this.tags.getTagOrEmpty(id);
 	}
 
 	public FunctionLoader(int level, CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -70,7 +70,7 @@ public class FunctionLoader implements ResourceReloadListener {
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = this.tags.prepareReload(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = this.tagLoader.prepareReload(manager, prepareExecutor);
 		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction>>> completableFuture2 = CompletableFuture.supplyAsync(
 				() -> manager.findResources("functions", string -> string.endsWith(".mcfunction")), prepareExecutor
 			)
@@ -107,7 +107,7 @@ public class FunctionLoader implements ResourceReloadListener {
 					return null;
 				}).join());
 			this.functions = builder.build();
-			this.field_25801 = this.tags.applyReload((Map<Identifier, Tag.Builder>)pair.getFirst());
+			this.tags = this.tagLoader.applyReload((Map<Identifier, Tag.Builder>)pair.getFirst());
 		}, applyExecutor);
 	}
 

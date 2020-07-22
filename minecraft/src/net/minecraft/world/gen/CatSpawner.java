@@ -45,7 +45,7 @@ public class CatSpawner implements Spawner {
 								return this.spawnInHouse(world, blockPos);
 							}
 
-							if (world.getStructureAccessor().method_28388(blockPos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
+							if (world.getStructureAccessor().getStructureAt(blockPos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
 								return this.spawnInSwampHut(world, blockPos);
 							}
 						}
@@ -85,7 +85,7 @@ public class CatSpawner implements Spawner {
 		} else {
 			catEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
 			catEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-			serverWorld.spawnEntity(catEntity);
+			serverWorld.spawnEntityAndPassengers(catEntity);
 			return 1;
 		}
 	}

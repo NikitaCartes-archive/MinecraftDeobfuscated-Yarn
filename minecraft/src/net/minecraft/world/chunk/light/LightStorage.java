@@ -180,9 +180,9 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 		if (storage.getPendingUpdateCount() < 8192) {
 			storage.removePendingUpdateIf(mx -> ChunkSectionPos.fromBlockPos(mx) == sectionPos);
 		} else {
-			int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(sectionPos));
-			int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(sectionPos));
-			int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(sectionPos));
+			int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(sectionPos));
+			int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(sectionPos));
+			int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(sectionPos));
 
 			for (int l = 0; l < 16; l++) {
 				for (int m = 0; m < 16; m++) {
@@ -208,7 +208,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 				this.removeSection(lightProvider, l);
 				ChunkNibbleArray chunkNibbleArray = this.queuedSections.remove(l);
 				ChunkNibbleArray chunkNibbleArray2 = this.storage.removeChunk(l);
-				if (this.columnsToRetain.contains(ChunkSectionPos.withZeroZ(l))) {
+				if (this.columnsToRetain.contains(ChunkSectionPos.withZeroY(l))) {
 					if (chunkNibbleArray != null) {
 						this.queuedSections.put(l, chunkNibbleArray);
 					} else if (chunkNibbleArray2 != null) {
@@ -272,9 +272,9 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 
 	private void updateSection(ChunkLightProvider<M, ?> lightProvider, long sectionPos) {
 		if (this.hasSection(sectionPos)) {
-			int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(sectionPos));
-			int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(sectionPos));
-			int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(sectionPos));
+			int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(sectionPos));
+			int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(sectionPos));
+			int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(sectionPos));
 
 			for (Direction direction : DIRECTIONS) {
 				long l = ChunkSectionPos.offset(sectionPos, direction);

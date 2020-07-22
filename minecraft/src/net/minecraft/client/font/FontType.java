@@ -10,7 +10,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public enum FontType {
-	BITMAP("bitmap", TextureFont.Loader::fromJson),
+	BITMAP("bitmap", BitmapFont.Loader::fromJson),
 	TTF("ttf", TrueTypeFontLoader::fromJson),
 	LEGACY_UNICODE("legacy_unicode", UnicodeTextureFont.Loader::fromJson);
 

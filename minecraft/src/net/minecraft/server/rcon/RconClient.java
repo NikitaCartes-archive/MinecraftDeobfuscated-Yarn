@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import net.minecraft.server.dedicated.DedicatedServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 public class RconClient extends RconBase {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private boolean authenticated;
-	private Socket socket;
+	private final Socket socket;
 	private final byte[] packetBuffer = new byte[1460];
 	private final String password;
 	private final DedicatedServer server;
@@ -60,8 +60,8 @@ public class RconClient extends RconBase {
 
 								try {
 									this.respond(l, this.server.executeRconCommand(string2));
-								} catch (Exception var16) {
-									this.respond(l, "Error executing: " + string2 + " (" + var16.getMessage() + ")");
+								} catch (Exception var15) {
+									this.respond(l, "Error executing: " + string2 + " (" + var15.getMessage() + ")");
 								}
 								break;
 							}
@@ -86,10 +86,9 @@ public class RconClient extends RconBase {
 				}
 
 				return;
-			} catch (SocketTimeoutException var17) {
-			} catch (IOException var18) {
-			} catch (Exception var19) {
-				LOGGER.error("Exception whilst parsing RCON input", (Throwable)var19);
+			} catch (IOException var16) {
+			} catch (Exception var17) {
+				LOGGER.error("Exception whilst parsing RCON input", (Throwable)var17);
 			}
 		} finally {
 			this.close();
@@ -101,7 +100,7 @@ public class RconClient extends RconBase {
 	private void respond(int sessionToken, int responseType, String message) throws IOException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1248);
 		DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-		byte[] bs = message.getBytes("UTF-8");
+		byte[] bs = message.getBytes(StandardCharsets.UTF_8);
 		dataOutputStream.writeInt(Integer.reverseBytes(bs.length + 10));
 		dataOutputStream.writeInt(Integer.reverseBytes(sessionToken));
 		dataOutputStream.writeInt(Integer.reverseBytes(responseType));
@@ -134,14 +133,10 @@ public class RconClient extends RconBase {
 	}
 
 	private void close() {
-		if (null != this.socket) {
-			try {
-				this.socket.close();
-			} catch (IOException var2) {
-				LOGGER.warn("Failed to close socket", (Throwable)var2);
-			}
-
-			this.socket = null;
+		try {
+			this.socket.close();
+		} catch (IOException var2) {
+			LOGGER.warn("Failed to close socket", (Throwable)var2);
 		}
 	}
 }

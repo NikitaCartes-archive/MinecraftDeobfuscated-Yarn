@@ -9,7 +9,7 @@ import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -19,7 +19,7 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
 	) {
 		blockPos = new BlockPos(blockPos.getX(), chunkGenerator.getSeaLevel(), blockPos.getZ());
 		boolean bl = random.nextDouble() > 0.7;
@@ -43,13 +43,13 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 				for (int r = 0; r < l; r++) {
 					int s = bl2 ? this.method_13417(r, l, n) : this.method_13419(random, r, l, n);
 					if (bl2 || p < s) {
-						this.method_13426(serverWorldAccess, random, blockPos, l, p, r, q, s, o, bl2, j, d, bl, blockState);
+						this.method_13426(structureWorldAccess, random, blockPos, l, p, r, q, s, o, bl2, j, d, bl, blockState);
 					}
 				}
 			}
 		}
 
-		this.method_13418(serverWorldAccess, blockPos, n, l, bl2, i);
+		this.method_13418(structureWorldAccess, blockPos, n, l, bl2, i);
 
 		for (int p = -o; p < o; p++) {
 			for (int q = -o; q < o; q++) {
@@ -57,7 +57,7 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 					int s = bl2 ? MathHelper.ceil((float)o * (1.0F - (float)Math.pow((double)rx, 2.0) / ((float)m * 8.0F))) : o;
 					int t = this.method_13427(random, -rx, m, n);
 					if (p < t) {
-						this.method_13426(serverWorldAccess, random, blockPos, m, p, rx, q, t, s, bl2, j, d, bl, blockState);
+						this.method_13426(structureWorldAccess, random, blockPos, m, p, rx, q, t, s, bl2, j, d, bl, blockState);
 					}
 				}
 			}
@@ -65,7 +65,7 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 
 		boolean bl3 = bl2 ? random.nextDouble() > 0.1 : random.nextDouble() > 0.7;
 		if (bl3) {
-			this.method_13428(random, serverWorldAccess, n, l, blockPos, bl2, i, d, j);
+			this.method_13428(random, structureWorldAccess, n, l, blockPos, bl2, i, d, j);
 		}
 
 		return true;

@@ -69,7 +69,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.realms.DisconnectedRealmsScreen;
-import net.minecraft.client.realms.RealmsScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
@@ -307,6 +307,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Text field_26620 = new TranslatableText("disconnect.lost");
 	private final ClientConnection connection;
 	private final GameProfile profile;
 	private final Screen loginScreen;
@@ -725,7 +726,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		packet.method_30621(this.world::setBlockStateWithoutNeighborUpdates);
+		packet.visitUpdates(this.world::setBlockStateWithoutNeighborUpdates);
 	}
 
 	@Override
@@ -753,7 +754,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			}
 		}
 
-		if (!packet.method_30144()) {
+		if (!packet.shouldRetainLighting()) {
 			this.world.getLightingProvider().setColumnEnabled(worldChunk.getPos(), false);
 			int k = packet.getVerticalStripBitmask();
 
@@ -803,12 +804,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.disconnect();
 		if (this.loginScreen != null) {
 			if (this.loginScreen instanceof RealmsScreen) {
-				this.client.openScreen(new DisconnectedRealmsScreen(this.loginScreen, "disconnect.lost", reason));
+				this.client.openScreen(new DisconnectedRealmsScreen(this.loginScreen, field_26620, reason));
 			} else {
-				this.client.openScreen(new DisconnectedScreen(this.loginScreen, "disconnect.lost", reason));
+				this.client.openScreen(new DisconnectedScreen(this.loginScreen, field_26620, reason));
 			}
 		} else {
-			this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), "disconnect.lost", reason));
+			this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), field_26620, reason));
 		}
 	}
 
@@ -859,7 +860,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 			this.client
 				.particleManager
-				.addParticle(new ItemPickupParticle(this.client.getEntityRenderManager(), this.client.getBufferBuilders(), this.world, entity, livingEntity));
+				.addParticle(new ItemPickupParticle(this.client.getEntityRenderDispatcher(), this.client.getBufferBuilders(), this.world, entity, livingEntity));
 			if (entity instanceof ItemEntity) {
 				ItemEntity itemEntity = (ItemEntity)entity;
 				ItemStack itemStack = itemEntity.getStack();
@@ -1468,7 +1469,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onUnlockRecipes(UnlockRecipesS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.setOptions(packet.isFurnaceFilteringCraftable());
+		clientRecipeBook.setOptions(packet.getOptions());
 		UnlockRecipesS2CPacket.Action action = packet.getAction();
 		switch (action) {
 			case REMOVE:

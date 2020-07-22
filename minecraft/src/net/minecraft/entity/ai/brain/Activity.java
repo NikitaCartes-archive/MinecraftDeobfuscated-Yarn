@@ -19,11 +19,11 @@ public class Activity {
 	public static final Activity AVOID = register("avoid");
 	public static final Activity RIDE = register("ride");
 	private final String id;
-	private final int field_23827;
+	private final int hashCode;
 
 	private Activity(String id) {
 		this.id = id;
-		this.field_23827 = id.hashCode();
+		this.hashCode = id.hashCode();
 	}
 
 	public String getId() {
@@ -46,7 +46,7 @@ public class Activity {
 	}
 
 	public int hashCode() {
-		return this.field_23827;
+		return this.hashCode;
 	}
 
 	public String toString() {

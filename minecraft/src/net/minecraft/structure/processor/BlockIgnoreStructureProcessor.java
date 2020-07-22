@@ -27,8 +27,8 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 	);
 	private final ImmutableList<Block> blocks;
 
-	public BlockIgnoreStructureProcessor(List<Block> list) {
-		this.blocks = ImmutableList.copyOf(list);
+	public BlockIgnoreStructureProcessor(List<Block> blocks) {
+		this.blocks = ImmutableList.copyOf(blocks);
 	}
 
 	@Nullable

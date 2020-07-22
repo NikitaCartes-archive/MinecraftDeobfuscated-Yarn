@@ -4,15 +4,19 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.CharacterVisitor;
+import net.minecraft.class_5481;
 import net.minecraft.client.util.TextCollector;
 import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 @Environment(EnvType.CLIENT)
 public class TextHandler {
@@ -30,8 +34,8 @@ public class TextHandler {
 			return 0.0F;
 		} else {
 			MutableFloat mutableFloat = new MutableFloat();
-			TextVisitFactory.visitFormatted(text, Style.EMPTY, (i, style, j) -> {
-				mutableFloat.add(this.widthRetriever.getWidth(j, style));
+			TextVisitFactory.visitFormatted(text, Style.EMPTY, (unused, style, codePoint) -> {
+				mutableFloat.add(this.widthRetriever.getWidth(codePoint, style));
 				return true;
 			});
 			return mutableFloat.floatValue();
@@ -43,7 +47,16 @@ public class TextHandler {
 	 */
 	public float getWidth(StringRenderable text) {
 		MutableFloat mutableFloat = new MutableFloat();
-		TextVisitFactory.visitFormatted(text, Style.EMPTY, (i, style, j) -> {
+		TextVisitFactory.visitFormatted(text, Style.EMPTY, (unused, style, codePoint) -> {
+			mutableFloat.add(this.widthRetriever.getWidth(codePoint, style));
+			return true;
+		});
+		return mutableFloat.floatValue();
+	}
+
+	public float method_30875(class_5481 arg) {
+		MutableFloat mutableFloat = new MutableFloat();
+		arg.accept((i, style, j) -> {
 			mutableFloat.add(this.widthRetriever.getWidth(j, style));
 			return true;
 		});
@@ -89,8 +102,8 @@ public class TextHandler {
 	public String trimToWidthBackwards(String text, int maxWidth, Style style) {
 		MutableFloat mutableFloat = new MutableFloat();
 		MutableInt mutableInt = new MutableInt(text.length());
-		TextVisitFactory.visitBackwards(text, style, (j, stylex, k) -> {
-			float f = mutableFloat.addAndGet(this.widthRetriever.getWidth(k, stylex));
+		TextVisitFactory.visitBackwards(text, style, (j, stylex, codePoint) -> {
+			float f = mutableFloat.addAndGet(this.widthRetriever.getWidth(codePoint, stylex));
 			if (f > (float)maxWidth) {
 				return false;
 			} else {
@@ -115,6 +128,21 @@ public class TextHandler {
 				(style, string) -> TextVisitFactory.visitFormatted(string, style, widthLimitingVisitor) ? Optional.empty() : Optional.of(style), Style.EMPTY
 			)
 			.orElse(null);
+	}
+
+	@Nullable
+	public Style method_30876(class_5481 arg, int i) {
+		TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)i);
+		MutableObject<Style> mutableObject = new MutableObject<>();
+		arg.accept((ix, style, j) -> {
+			if (!widthLimitingVisitor.accept(ix, style, j)) {
+				mutableObject.setValue(style);
+				return false;
+			} else {
+				return true;
+			}
+		});
+		return mutableObject.getValue();
 	}
 
 	public StringRenderable trimToWidth(StringRenderable text, int width, Style style) {
@@ -213,20 +241,21 @@ public class TextHandler {
 	}
 
 	public List<StringRenderable> wrapLines(StringRenderable stringRenderable, int maxWidth, Style style) {
-		return this.method_29971(stringRenderable, maxWidth, style, null);
+		List<StringRenderable> list = Lists.<StringRenderable>newArrayList();
+		this.method_29971(stringRenderable, maxWidth, style, (stringRenderablex, boolean_) -> list.add(stringRenderablex));
+		return list;
 	}
 
-	public List<StringRenderable> method_29971(StringRenderable stringRenderable, int i, Style style, @Nullable StringRenderable stringRenderable2) {
-		List<StringRenderable> list = Lists.<StringRenderable>newArrayList();
-		List<TextHandler.StyledString> list2 = Lists.<TextHandler.StyledString>newArrayList();
+	public void method_29971(StringRenderable stringRenderable, int i, Style style, BiConsumer<StringRenderable, Boolean> biConsumer) {
+		List<TextHandler.StyledString> list = Lists.<TextHandler.StyledString>newArrayList();
 		stringRenderable.visit((stylex, string) -> {
 			if (!string.isEmpty()) {
-				list2.add(new TextHandler.StyledString(string, stylex));
+				list.add(new TextHandler.StyledString(string, stylex));
 			}
 
 			return Optional.empty();
 		}, style);
-		TextHandler.LineWrappingCollector lineWrappingCollector = new TextHandler.LineWrappingCollector(list2);
+		TextHandler.LineWrappingCollector lineWrappingCollector = new TextHandler.LineWrappingCollector(list);
 		boolean bl = true;
 		boolean bl2 = false;
 		boolean bl3 = false;
@@ -244,8 +273,8 @@ public class TextHandler {
 					boolean bl5 = c == '\n';
 					boolean bl6 = bl5 || c == ' ';
 					bl2 = bl5;
-					StringRenderable stringRenderable3 = lineWrappingCollector.collectLine(j, bl6 ? 1 : 0, style2);
-					list.add(this.method_29972(stringRenderable3, bl3, stringRenderable2));
+					StringRenderable stringRenderable2 = lineWrappingCollector.collectLine(j, bl6 ? 1 : 0, style2);
+					biConsumer.accept(stringRenderable2, bl3);
 					bl3 = !bl5;
 					bl = true;
 					break;
@@ -255,22 +284,16 @@ public class TextHandler {
 			}
 		}
 
-		StringRenderable stringRenderable4 = lineWrappingCollector.collectRemainers();
-		if (stringRenderable4 != null) {
-			list.add(this.method_29972(stringRenderable4, bl3, stringRenderable2));
+		StringRenderable stringRenderable3 = lineWrappingCollector.collectRemainers();
+		if (stringRenderable3 != null) {
+			biConsumer.accept(stringRenderable3, bl3);
 		} else if (bl2) {
-			list.add(StringRenderable.EMPTY);
+			biConsumer.accept(StringRenderable.EMPTY, false);
 		}
-
-		return list;
-	}
-
-	private StringRenderable method_29972(StringRenderable stringRenderable, boolean bl, StringRenderable stringRenderable2) {
-		return bl && stringRenderable2 != null ? StringRenderable.concat(stringRenderable2, stringRenderable) : stringRenderable;
 	}
 
 	@Environment(EnvType.CLIENT)
-	class LineBreakingVisitor implements TextVisitFactory.CharacterVisitor {
+	class LineBreakingVisitor implements CharacterVisitor {
 		private final float maxWidth;
 		private int endIndex = -1;
 		private Style endStyle = Style.EMPTY;
@@ -286,7 +309,7 @@ public class TextHandler {
 		}
 
 		@Override
-		public boolean onChar(int i, Style style, int j) {
+		public boolean accept(int i, Style style, int j) {
 			int k = i + this.startOffset;
 			switch (j) {
 				case 10:
@@ -437,7 +460,7 @@ public class TextHandler {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class WidthLimitingVisitor implements TextVisitFactory.CharacterVisitor {
+	class WidthLimitingVisitor implements CharacterVisitor {
 		private float widthLeft;
 		private int length;
 
@@ -446,7 +469,7 @@ public class TextHandler {
 		}
 
 		@Override
-		public boolean onChar(int i, Style style, int j) {
+		public boolean accept(int i, Style style, int j) {
 			this.widthLeft = this.widthLeft - TextHandler.this.widthRetriever.getWidth(j, style);
 			if (this.widthLeft >= 0.0F) {
 				this.length = i + Character.charCount(j);

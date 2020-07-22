@@ -1,17 +1,15 @@
 package net.minecraft.client.gui.screen;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class DatapackFailureScreen extends Screen {
-	private final List<StringRenderable> wrappedText = Lists.<StringRenderable>newArrayList();
+	private class_5489 wrappedText = class_5489.field_26528;
 	private final Runnable field_25452;
 
 	public DatapackFailureScreen(Runnable runnable) {
@@ -22,8 +20,7 @@ public class DatapackFailureScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.wrappedText.clear();
-		this.wrappedText.addAll(this.textRenderer.wrapLines(this.getTitle(), this.width - 50));
+		this.wrappedText = class_5489.method_30890(this.textRenderer, this.getTitle(), this.width - 50);
 		this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 155, this.height / 6 + 96, 150, 20, new TranslatableText("datapackFailure.safeMode"), buttonWidget -> this.field_25452.run()
@@ -39,13 +36,7 @@ public class DatapackFailureScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		int i = 70;
-
-		for (StringRenderable stringRenderable : this.wrappedText) {
-			this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 16777215);
-			i += 9;
-		}
-
+		this.wrappedText.method_30888(matrices, this.width / 2, 70);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

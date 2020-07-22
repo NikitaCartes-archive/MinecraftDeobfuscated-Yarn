@@ -729,8 +729,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 	}
 
-	private void worldChanged(ServerWorld targetWorld) {
-		RegistryKey<World> registryKey = targetWorld.getRegistryKey();
+	private void worldChanged(ServerWorld origin) {
+		RegistryKey<World> registryKey = origin.getRegistryKey();
 		RegistryKey<World> registryKey2 = this.world.getRegistryKey();
 		Criteria.CHANGED_DIMENSION.trigger(this, registryKey, registryKey2);
 		if (registryKey == World.NETHER && registryKey2 == World.OVERWORLD && this.enteredNetherPos != null) {
@@ -778,7 +778,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		} else if (this.isBedObstructed(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
 		} else {
-			this.setSpawnPoint(this.world.getRegistryKey(), pos, 0.0F, false, true);
+			this.setSpawnPoint(this.world.getRegistryKey(), pos, this.yaw, false, true);
 			if (this.world.isDay()) {
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			} else {

@@ -24,14 +24,14 @@ public class AxisAlignedLinearPosRuleTest extends PosRuleTest {
 	private final int maxDistance;
 	private final Direction.Axis axis;
 
-	public AxisAlignedLinearPosRuleTest(float f, float g, int i, int j, Direction.Axis axis) {
-		if (i >= j) {
-			throw new IllegalArgumentException("Invalid range: [" + i + "," + j + "]");
+	public AxisAlignedLinearPosRuleTest(float minChance, float maxChance, int minDistance, int maxDistance, Direction.Axis axis) {
+		if (minDistance >= maxDistance) {
+			throw new IllegalArgumentException("Invalid range: [" + minDistance + "," + maxDistance + "]");
 		} else {
-			this.minChance = f;
-			this.maxChance = g;
-			this.minDistance = i;
-			this.maxDistance = j;
+			this.minChance = minChance;
+			this.maxChance = maxChance;
+			this.minDistance = minDistance;
+			this.maxDistance = maxDistance;
 			this.axis = axis;
 		}
 	}

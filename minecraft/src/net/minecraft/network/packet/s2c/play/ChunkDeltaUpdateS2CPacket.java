@@ -13,50 +13,58 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkSection;
 
 public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
-	private ChunkSectionPos field_26345;
-	private short[] field_26346;
-	private BlockState[] field_26347;
+	private ChunkSectionPos sectionPos;
+	/**
+	 * The packed local positions {@see ChunkSectionPos#getPackedLocalPos} for
+	 * each entry in {@see #blockState}.
+	 */
+	private short[] packedLocalPos;
+	private BlockState[] blockState;
 
 	public ChunkDeltaUpdateS2CPacket() {
 	}
 
-	public ChunkDeltaUpdateS2CPacket(ChunkSectionPos chunkSectionPos, ShortSet shortSet, ChunkSection chunkSection) {
-		this.field_26345 = chunkSectionPos;
-		this.method_30620(shortSet.size());
+	/**
+	 * @param sectionPos the position of the given chunk section that will be sent to the client
+	 * @param updatedLocalPosSet the set of packed local positions within the given chunk section that should be included in the packet
+	 */
+	public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet updatedLocalPosSet, ChunkSection section) {
+		this.sectionPos = sectionPos;
+		this.allocateBuffers(updatedLocalPosSet.size());
 		int i = 0;
 
-		for (short s : shortSet) {
-			this.field_26346[i] = s;
-			this.field_26347[i] = chunkSection.getBlockState(ChunkSectionPos.method_30551(s), ChunkSectionPos.method_30552(s), ChunkSectionPos.method_30553(s));
+		for (short s : updatedLocalPosSet) {
+			this.packedLocalPos[i] = s;
+			this.blockState[i] = section.getBlockState(ChunkSectionPos.unpackLocalX(s), ChunkSectionPos.unpackLocalY(s), ChunkSectionPos.unpackLocalZ(s));
 			i++;
 		}
 	}
 
-	private void method_30620(int i) {
-		this.field_26346 = new short[i];
-		this.field_26347 = new BlockState[i];
+	private void allocateBuffers(int posCount) {
+		this.packedLocalPos = new short[posCount];
+		this.blockState = new BlockState[posCount];
 	}
 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
-		this.field_26345 = ChunkSectionPos.from(buf.readLong());
+		this.sectionPos = ChunkSectionPos.from(buf.readLong());
 		int i = buf.readVarInt();
-		this.method_30620(i);
+		this.allocateBuffers(i);
 
-		for (int j = 0; j < this.field_26346.length; j++) {
+		for (int j = 0; j < this.packedLocalPos.length; j++) {
 			long l = buf.readVarLong();
-			this.field_26346[j] = (short)((int)(l & 4095L));
-			this.field_26347[j] = Block.STATE_IDS.get((int)(l >>> 12));
+			this.packedLocalPos[j] = (short)((int)(l & 4095L));
+			this.blockState[j] = Block.STATE_IDS.get((int)(l >>> 12));
 		}
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
-		buf.writeLong(this.field_26345.asLong());
-		buf.writeVarInt(this.field_26346.length);
+		buf.writeLong(this.sectionPos.asLong());
+		buf.writeVarInt(this.packedLocalPos.length);
 
-		for (int i = 0; i < this.field_26346.length; i++) {
-			buf.writeVarLong((long)(Block.getRawIdFromState(this.field_26347[i]) << 12 | this.field_26346[i]));
+		for (int i = 0; i < this.packedLocalPos.length; i++) {
+			buf.writeVarLong((long)(Block.getRawIdFromState(this.blockState[i]) << 12 | this.packedLocalPos[i]));
 		}
 	}
 
@@ -64,13 +72,16 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 		clientPlayPacketListener.onChunkDeltaUpdate(this);
 	}
 
-	public void method_30621(BiConsumer<BlockPos, BlockState> biConsumer) {
+	/**
+	 * Calls the given consumer for each pair of block position and block state contained in this packet.
+	 */
+	public void visitUpdates(BiConsumer<BlockPos, BlockState> biConsumer) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int i = 0; i < this.field_26346.length; i++) {
-			short s = this.field_26346[i];
-			mutable.set(this.field_26345.method_30554(s), this.field_26345.method_30555(s), this.field_26345.method_30556(s));
-			biConsumer.accept(mutable, this.field_26347[i]);
+		for (int i = 0; i < this.packedLocalPos.length; i++) {
+			short s = this.packedLocalPos[i];
+			mutable.set(this.sectionPos.unpackBlockX(s), this.sectionPos.unpackBlockY(s), this.sectionPos.unpackBlockZ(s));
+			biConsumer.accept(mutable, this.blockState[i]);
 		}
 	}
 }

@@ -1,14 +1,12 @@
 package net.minecraft.client.gui.screen;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -19,7 +17,7 @@ public class BackupPromptScreen extends Screen {
 	protected final BackupPromptScreen.Callback callback;
 	private final Text subtitle;
 	private final boolean showEraseCacheCheckbox;
-	private final List<StringRenderable> wrappedText = Lists.<StringRenderable>newArrayList();
+	private class_5489 wrappedText = class_5489.field_26528;
 	private CheckboxWidget eraseCacheCheckbox;
 
 	public BackupPromptScreen(@Nullable Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
@@ -33,9 +31,8 @@ public class BackupPromptScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.wrappedText.clear();
-		this.wrappedText.addAll(this.textRenderer.wrapLines(this.subtitle, this.width - 50));
-		int i = (this.wrappedText.size() + 1) * 9;
+		this.wrappedText = class_5489.method_30890(this.textRenderer, this.subtitle, this.width - 50);
+		int i = (this.wrappedText.method_30887() + 1) * 9;
 		this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 155,
@@ -66,14 +63,8 @@ public class BackupPromptScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
-		int i = 70;
-
-		for (StringRenderable stringRenderable : this.wrappedText) {
-			this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 16777215);
-			i += 9;
-		}
-
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
+		this.wrappedText.method_30888(matrices, this.width / 2, 70);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

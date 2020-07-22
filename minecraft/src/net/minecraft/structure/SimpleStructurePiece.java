@@ -3,7 +3,6 @@ package net.minecraft.structure;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Random;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
@@ -15,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +52,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 
 	@Override
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
@@ -62,12 +62,12 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	) {
 		this.placementData.setBoundingBox(boundingBox);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (this.structure.place(serverWorldAccess, this.pos, blockPos, this.placementData, random, 2)) {
+		if (this.structure.place(structureWorldAccess, this.pos, blockPos, this.placementData, random, 2)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.tag != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
 					if (structureBlockMode == StructureBlockMode.DATA) {
-						this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, serverWorldAccess, random, boundingBox);
+						this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, structureWorldAccess, random, boundingBox);
 					}
 				}
 			}
@@ -90,7 +90,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 					}
 
-					serverWorldAccess.setBlockState(structureBlockInfo2.pos, blockState, 3);
+					structureWorldAccess.setBlockState(structureBlockInfo2.pos, blockState, 3);
 				}
 			}
 		}
@@ -98,7 +98,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		return true;
 	}
 
-	protected abstract void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox);
+	protected abstract void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox);
 
 	@Override
 	public void translate(int x, int y, int z) {

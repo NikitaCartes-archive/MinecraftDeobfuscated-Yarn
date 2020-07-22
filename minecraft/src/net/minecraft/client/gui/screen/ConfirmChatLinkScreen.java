@@ -47,7 +47,7 @@ public class ConfirmChatLinkScreen extends ConfirmScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.drawWarning) {
-			this.drawCenteredText(matrices, this.textRenderer, this.warning, this.width / 2, 110, 16764108);
+			drawCenteredText(matrices, this.textRenderer, this.warning, this.width / 2, 110, 16764108);
 		}
 	}
 }

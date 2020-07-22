@@ -19,13 +19,13 @@ public class TemplatePools {
 		return BuiltinRegistries.add(BuiltinRegistries.TEMPLATE_POOL, templatePool.getId(), templatePool);
 	}
 
-	public static void method_30599() {
+	public static void initDefaultPools() {
 		BastionRemnantGenerator.init();
 		PillagerOutpostGenerator.init();
 		VillageGenerator.init();
 	}
 
 	static {
-		method_30599();
+		initDefaultPools();
 	}
 }

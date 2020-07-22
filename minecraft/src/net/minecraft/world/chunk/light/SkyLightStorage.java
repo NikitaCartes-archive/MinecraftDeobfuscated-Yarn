@@ -30,9 +30,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	@Override
 	protected int getLight(long blockPos) {
 		long l = ChunkSectionPos.fromBlockPos(blockPos);
-		int i = ChunkSectionPos.getY(l);
+		int i = ChunkSectionPos.unpackY(l);
 		SkyLightStorage.Data data = this.uncachedStorage;
-		int j = data.columnToTopSection.get(ChunkSectionPos.withZeroZ(l));
+		int j = data.columnToTopSection.get(ChunkSectionPos.withZeroY(l));
 		if (j != data.minSectionY && i < j) {
 			ChunkNibbleArray chunkNibbleArray = this.getLightSection(data, l);
 			if (chunkNibbleArray == null) {
@@ -58,20 +58,20 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 	@Override
 	protected void onLoadSection(long sectionPos) {
-		int i = ChunkSectionPos.getY(sectionPos);
+		int i = ChunkSectionPos.unpackY(sectionPos);
 		if (this.storage.minSectionY > i) {
 			this.storage.minSectionY = i;
 			this.storage.columnToTopSection.defaultReturnValue(this.storage.minSectionY);
 		}
 
-		long l = ChunkSectionPos.withZeroZ(sectionPos);
+		long l = ChunkSectionPos.withZeroY(sectionPos);
 		int j = this.storage.columnToTopSection.get(l);
 		if (j < i + 1) {
 			this.storage.columnToTopSection.put(l, i + 1);
 			if (this.enabledColumns.contains(l)) {
 				this.enqueueAddSection(sectionPos);
 				if (j > this.storage.minSectionY) {
-					long m = ChunkSectionPos.asLong(ChunkSectionPos.getX(sectionPos), j - 1, ChunkSectionPos.getZ(sectionPos));
+					long m = ChunkSectionPos.asLong(ChunkSectionPos.unpackX(sectionPos), j - 1, ChunkSectionPos.unpackZ(sectionPos));
 					this.enqueueRemoveSection(m);
 				}
 
@@ -96,13 +96,13 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 	@Override
 	protected void onUnloadSection(long sectionPos) {
-		long l = ChunkSectionPos.withZeroZ(sectionPos);
+		long l = ChunkSectionPos.withZeroY(sectionPos);
 		boolean bl = this.enabledColumns.contains(l);
 		if (bl) {
 			this.enqueueRemoveSection(sectionPos);
 		}
 
-		int i = ChunkSectionPos.getY(sectionPos);
+		int i = ChunkSectionPos.unpackY(sectionPos);
 		if (this.storage.columnToTopSection.get(l) == i + 1) {
 			long m;
 			for (m = sectionPos; !this.hasSection(m) && this.isAboveMinHeight(i); m = ChunkSectionPos.offset(m, Direction.DOWN)) {
@@ -130,7 +130,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		if (enabled && this.enabledColumns.add(columnPos)) {
 			int i = this.storage.columnToTopSection.get(columnPos);
 			if (i != this.storage.minSectionY) {
-				long l = ChunkSectionPos.asLong(ChunkSectionPos.getX(columnPos), i - 1, ChunkSectionPos.getZ(columnPos));
+				long l = ChunkSectionPos.asLong(ChunkSectionPos.unpackX(columnPos), i - 1, ChunkSectionPos.unpackZ(columnPos));
 				this.enqueueAddSection(l);
 				this.checkForUpdates();
 			}
@@ -151,8 +151,8 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			return chunkNibbleArray;
 		} else {
 			long l = ChunkSectionPos.offset(sectionPos, Direction.UP);
-			int i = this.storage.columnToTopSection.get(ChunkSectionPos.withZeroZ(sectionPos));
-			if (i != this.storage.minSectionY && ChunkSectionPos.getY(l) < i) {
+			int i = this.storage.columnToTopSection.get(ChunkSectionPos.withZeroY(sectionPos));
+			if (i != this.storage.minSectionY && ChunkSectionPos.unpackY(l) < i) {
 				ChunkNibbleArray chunkNibbleArray2;
 				while ((chunkNibbleArray2 = this.getLightSection(l, true)) == null) {
 					l = ChunkSectionPos.offset(l, Direction.UP);
@@ -183,9 +183,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							}
 
 							Arrays.fill(this.getLightSection(l, true).asByteArray(), (byte)-1);
-							int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l));
-							int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l));
-							int m = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l));
+							int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l));
+							int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l));
+							int m = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l));
 
 							for (Direction direction : LIGHT_REDUCTION_DIRECTIONS) {
 								long n = ChunkSectionPos.offset(l, direction);
@@ -221,14 +221,14 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							for (int s = 0; s < 16; s++) {
 								for (int t = 0; t < 16; t++) {
 									long u = BlockPos.asLong(
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l)) + s,
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l)),
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l)) + t
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l)) + s,
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)),
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l)) + t
 									);
 									long n = BlockPos.asLong(
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l)) + s,
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l)) - 1,
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l)) + t
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l)) + s,
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)) - 1,
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l)) + t
 									);
 									lightProvider.updateLevel(u, n, lightProvider.getPropagatedLevel(u, n, 0), true);
 								}
@@ -237,9 +237,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							for (int j = 0; j < 16; j++) {
 								for (int k = 0; k < 16; k++) {
 									long v = BlockPos.asLong(
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l)) + j,
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l)) + 16 - 1,
-										ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l)) + k
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l)) + j,
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)) + 16 - 1,
+										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l)) + k
 									);
 									lightProvider.updateLevel(Long.MAX_VALUE, v, 0, true);
 								}
@@ -259,9 +259,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 						for (int i = 0; i < 16; i++) {
 							for (int j = 0; j < 16; j++) {
 								long w = BlockPos.asLong(
-									ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l)) + i,
-									ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l)) + 16 - 1,
-									ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l)) + j
+									ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l)) + i,
+									ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)) + 16 - 1,
+									ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l)) + j
 								);
 								lightProvider.updateLevel(Long.MAX_VALUE, w, 15, false);
 							}
@@ -285,7 +285,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			return false;
 		} else {
 			long l = ChunkSectionPos.fromBlockPos(blockPos);
-			long m = ChunkSectionPos.withZeroZ(l);
+			long m = ChunkSectionPos.withZeroY(l);
 			if (!this.enabledColumns.contains(m)) {
 				return false;
 			} else {
@@ -296,13 +296,13 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	}
 
 	protected boolean isAtOrAboveTopmostSection(long sectionPos) {
-		long l = ChunkSectionPos.withZeroZ(sectionPos);
+		long l = ChunkSectionPos.withZeroY(sectionPos);
 		int i = this.storage.columnToTopSection.get(l);
-		return i == this.storage.minSectionY || ChunkSectionPos.getY(sectionPos) >= i;
+		return i == this.storage.minSectionY || ChunkSectionPos.unpackY(sectionPos) >= i;
 	}
 
 	protected boolean isSectionEnabled(long sectionPos) {
-		long l = ChunkSectionPos.withZeroZ(sectionPos);
+		long l = ChunkSectionPos.withZeroY(sectionPos);
 		return this.enabledColumns.contains(l);
 	}
 

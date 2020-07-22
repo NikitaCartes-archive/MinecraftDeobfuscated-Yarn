@@ -21,14 +21,14 @@ public class LinearPosRuleTest extends PosRuleTest {
 	private final int minDistance;
 	private final int maxDistance;
 
-	public LinearPosRuleTest(float f, float g, int i, int j) {
-		if (i >= j) {
-			throw new IllegalArgumentException("Invalid range: [" + i + "," + j + "]");
+	public LinearPosRuleTest(float minChance, float maxChance, int minDistance, int maxDistance) {
+		if (minDistance >= maxDistance) {
+			throw new IllegalArgumentException("Invalid range: [" + minDistance + "," + maxDistance + "]");
 		} else {
-			this.minChance = f;
-			this.maxChance = g;
-			this.minDistance = i;
-			this.maxDistance = j;
+			this.minChance = minChance;
+			this.maxChance = maxChance;
+			this.minDistance = minDistance;
+			this.maxDistance = maxDistance;
 		}
 	}
 

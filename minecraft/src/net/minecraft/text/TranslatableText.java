@@ -43,7 +43,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 			String string = language.get(this.key);
 
 			try {
-				this.setTranslation(language.reorder(string, true), language);
+				this.setTranslation(string);
 			} catch (TranslationException var4) {
 				this.translations.clear();
 				this.translations.add(StringRenderable.plain(string));
@@ -51,7 +51,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 		}
 	}
 
-	private void setTranslation(String translation, Language language) {
+	private void setTranslation(String translation) {
 		Matcher matcher = ARG_FORMAT.matcher(translation);
 
 		try {
@@ -82,7 +82,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 					String string3 = matcher.group(1);
 					int m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
 					if (m < this.args.length) {
-						this.translations.add(this.method_29434(m, language));
+						this.translations.add(this.method_29434(m));
 					}
 				}
 
@@ -97,12 +97,12 @@ public class TranslatableText extends BaseText implements ParsableText {
 
 				this.translations.add(StringRenderable.plain(string4));
 			}
-		} catch (IllegalArgumentException var12) {
-			throw new TranslationException(this, var12);
+		} catch (IllegalArgumentException var11) {
+			throw new TranslationException(this, var11);
 		}
 	}
 
-	private StringRenderable method_29434(int i, Language language) {
+	private StringRenderable method_29434(int i) {
 		if (i >= this.args.length) {
 			throw new TranslationException(this, i);
 		} else {
@@ -110,7 +110,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 			if (object instanceof Text) {
 				return (Text)object;
 			} else {
-				return object == null ? NULL_ARGUMENT : StringRenderable.plain(language.reorder(object.toString(), false));
+				return object == null ? NULL_ARGUMENT : StringRenderable.plain(object.toString());
 			}
 		}
 	}

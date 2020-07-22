@@ -1,16 +1,14 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -23,7 +21,7 @@ public class MultiplayerWarningScreen extends Screen {
 	private static final Text checkMessage = new TranslatableText("multiplayerWarning.check");
 	private static final Text proceedText = header.shallowCopy().append("\n").append(message);
 	private CheckboxWidget checkbox;
-	private final List<StringRenderable> lines = Lists.<StringRenderable>newArrayList();
+	private class_5489 lines = class_5489.field_26528;
 
 	public MultiplayerWarningScreen(Screen parent) {
 		super(NarratorManager.EMPTY);
@@ -33,9 +31,8 @@ public class MultiplayerWarningScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.lines.clear();
-		this.lines.addAll(this.textRenderer.wrapLines(message, this.width - 50));
-		int i = (this.lines.size() + 1) * 9;
+		this.lines = class_5489.method_30890(this.textRenderer, message, this.width - 50);
+		int i = (this.lines.method_30887() + 1) * 9;
 		this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, ScreenTexts.PROCEED, buttonWidget -> {
 			if (this.checkbox.isChecked()) {
 				this.client.options.skipMultiplayerWarning = true;
@@ -57,14 +54,8 @@ public class MultiplayerWarningScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackgroundTexture(0);
-		this.drawCenteredText(matrices, this.textRenderer, header, this.width / 2, 30, 16777215);
-		int i = 70;
-
-		for (StringRenderable stringRenderable : this.lines) {
-			this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 16777215);
-			i += 9;
-		}
-
+		drawCenteredText(matrices, this.textRenderer, header, this.width / 2, 30, 16777215);
+		this.lines.method_30888(matrices, this.width / 2, 70);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

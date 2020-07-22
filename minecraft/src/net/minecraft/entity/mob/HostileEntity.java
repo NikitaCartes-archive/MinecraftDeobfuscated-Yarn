@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import java.util.function.Predicate;
-import net.minecraft.class_5425;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -18,6 +17,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -87,17 +87,21 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 		return 0.5F - world.getBrightness(pos);
 	}
 
-	public static boolean isSpawnDark(class_5425 arg, BlockPos pos, Random random) {
-		if (arg.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+	public static boolean isSpawnDark(ServerWorldAccess serverWorldAccess, BlockPos pos, Random random) {
+		if (serverWorldAccess.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
 			return false;
 		} else {
-			int i = arg.getWorld().isThundering() ? arg.getLightLevel(pos, 10) : arg.getLightLevel(pos);
+			int i = serverWorldAccess.toServerWorld().isThundering() ? serverWorldAccess.getLightLevel(pos, 10) : serverWorldAccess.getLightLevel(pos);
 			return i <= random.nextInt(8);
 		}
 	}
 
-	public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, class_5425 arg, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return arg.getDifficulty() != Difficulty.PEACEFUL && isSpawnDark(arg, pos, random) && canMobSpawn(type, arg, spawnReason, pos, random);
+	public static boolean canSpawnInDark(
+		EntityType<? extends HostileEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random
+	) {
+		return serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL
+			&& isSpawnDark(serverWorldAccess, pos, random)
+			&& canMobSpawn(type, serverWorldAccess, spawnReason, pos, random);
 	}
 
 	public static boolean canSpawnIgnoreLightLevel(

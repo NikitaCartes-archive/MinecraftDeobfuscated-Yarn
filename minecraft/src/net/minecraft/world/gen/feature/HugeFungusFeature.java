@@ -9,7 +9,7 @@ import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -19,11 +19,11 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, HugeFungusFeatureConfig hugeFungusFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, HugeFungusFeatureConfig hugeFungusFeatureConfig
 	) {
 		Block block = hugeFungusFeatureConfig.validBaseBlock.getBlock();
 		BlockPos blockPos2 = null;
-		Block block2 = serverWorldAccess.getBlockState(blockPos.down()).getBlock();
+		Block block2 = structureWorldAccess.getBlockState(blockPos.down()).getBlock();
 		if (block2 == block) {
 			blockPos2 = blockPos;
 		}
@@ -44,9 +44,9 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 			}
 
 			boolean bl = !hugeFungusFeatureConfig.planted && random.nextFloat() < 0.06F;
-			serverWorldAccess.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
-			this.generateStem(serverWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
-			this.generateHat(serverWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
+			structureWorldAccess.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
+			this.generateStem(structureWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
+			this.generateHat(structureWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
 			return true;
 		}
 	}

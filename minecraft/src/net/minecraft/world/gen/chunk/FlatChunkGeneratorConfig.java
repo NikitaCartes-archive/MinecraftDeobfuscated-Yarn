@@ -38,7 +38,7 @@ public class FlatChunkGeneratorConfig {
 						FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers").forGetter(FlatChunkGeneratorConfig::getLayers),
 						Codec.BOOL.fieldOf("lakes").orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24977),
 						Codec.BOOL.fieldOf("features").orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24976),
-						Biome.field_24677
+						Biome.REGISTRY_CODEC
 							.fieldOf("biome")
 							.orElseGet(Util.method_29188("Unknown biome, defaulting to plains", LOGGER::error), () -> () -> Biomes.PLAINS)
 							.forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)
@@ -137,11 +137,10 @@ public class FlatChunkGeneratorConfig {
 				.depth(biome.getDepth())
 				.scale(biome.getScale())
 				.temperature(biome.getTemperature())
-				.downfall(biome.getRainfall())
+				.downfall(biome.getDownfall())
 				.effects(biome.getEffects())
 				.parent(biome.getParent())
-		) {
-		};
+		);
 		if (this.field_24977) {
 			biome2.addFeature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_WATER);
 			biome2.addFeature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);

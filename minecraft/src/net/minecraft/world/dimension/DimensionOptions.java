@@ -18,7 +18,7 @@ import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
-import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
+import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 public final class DimensionOptions {
 	public static final MapCodec<DimensionOptions> CODEC = RecordCodecBuilder.mapCodec(
@@ -97,24 +97,24 @@ public final class DimensionOptions {
 				return false;
 			} else if (((DimensionOptions)entry3.getValue()).getDimensionType() != DimensionType.THE_END) {
 				return false;
-			} else if (((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof SurfaceChunkGenerator
-				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof SurfaceChunkGenerator) {
-				SurfaceChunkGenerator surfaceChunkGenerator = (SurfaceChunkGenerator)((DimensionOptions)entry2.getValue()).getChunkGenerator();
-				SurfaceChunkGenerator surfaceChunkGenerator2 = (SurfaceChunkGenerator)((DimensionOptions)entry3.getValue()).getChunkGenerator();
-				if (!surfaceChunkGenerator.method_28548(seed, ChunkGeneratorType.field_26357)) {
+			} else if (((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator
+				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator) {
+				NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)((DimensionOptions)entry2.getValue()).getChunkGenerator();
+				NoiseChunkGenerator noiseChunkGenerator2 = (NoiseChunkGenerator)((DimensionOptions)entry3.getValue()).getChunkGenerator();
+				if (!noiseChunkGenerator.method_28548(seed, ChunkGeneratorType.field_26357)) {
 					return false;
-				} else if (!surfaceChunkGenerator2.method_28548(seed, ChunkGeneratorType.field_26358)) {
+				} else if (!noiseChunkGenerator2.method_28548(seed, ChunkGeneratorType.field_26358)) {
 					return false;
-				} else if (!(surfaceChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
+				} else if (!(noiseChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
 					return false;
 				} else {
-					MultiNoiseBiomeSource multiNoiseBiomeSource = (MultiNoiseBiomeSource)surfaceChunkGenerator.getBiomeSource();
+					MultiNoiseBiomeSource multiNoiseBiomeSource = (MultiNoiseBiomeSource)noiseChunkGenerator.getBiomeSource();
 					if (!multiNoiseBiomeSource.method_28462(seed)) {
 						return false;
-					} else if (!(surfaceChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
+					} else if (!(noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
 						return false;
 					} else {
-						TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)surfaceChunkGenerator2.getBiomeSource();
+						TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
 						return theEndBiomeSource.method_28479(seed);
 					}
 				}

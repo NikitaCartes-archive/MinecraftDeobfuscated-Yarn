@@ -221,7 +221,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 			other.resetLoveTicks();
 			passiveEntity.setBaby(true);
 			passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
-			serverWorld.spawnEntity(passiveEntity);
+			serverWorld.spawnEntityAndPassengers(passiveEntity);
 			serverWorld.sendEntityStatus(this, (byte)18);
 			if (serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 				serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));

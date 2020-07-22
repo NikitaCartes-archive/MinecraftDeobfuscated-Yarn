@@ -25,10 +25,10 @@ public interface SaveProperties {
 
 	void addServerBrand(String brand, boolean modded);
 
-	default void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.getServerBrands())));
-		crashReportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.isModded())));
-		crashReportSection.add("Level storage version", (CrashCallable<String>)(() -> {
+	default void populateCrashReport(CrashReportSection reportSection) {
+		reportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.getServerBrands())));
+		reportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.isModded())));
+		reportSection.add("Level storage version", (CrashCallable<String>)(() -> {
 			int i = this.getVersion();
 			return String.format("0x%05X - %s", i, this.getFormatName(i));
 		}));

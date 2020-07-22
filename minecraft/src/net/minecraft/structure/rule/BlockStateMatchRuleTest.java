@@ -5,7 +5,7 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 
 public class BlockStateMatchRuleTest extends RuleTest {
-	public static final Codec<BlockStateMatchRuleTest> field_25001 = BlockState.CODEC
+	public static final Codec<BlockStateMatchRuleTest> CODEC = BlockState.CODEC
 		.fieldOf("block_state")
 		.<BlockStateMatchRuleTest>xmap(BlockStateMatchRuleTest::new, blockStateMatchRuleTest -> blockStateMatchRuleTest.blockState)
 		.codec();

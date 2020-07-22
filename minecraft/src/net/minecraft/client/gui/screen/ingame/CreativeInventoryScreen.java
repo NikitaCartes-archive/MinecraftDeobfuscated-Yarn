@@ -19,7 +19,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.HotbarStorage;
 import net.minecraft.client.options.HotbarStorageEntry;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.Searchable;
 import net.minecraft.client.util.InputUtil;
@@ -45,7 +44,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Language;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -54,6 +52,7 @@ import net.minecraft.util.registry.Registry;
 public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
 	private static final SimpleInventory inventory = new SimpleInventory(45);
+	private static final Text field_26563 = new TranslatableText("inventory.binSlot");
 	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
 	private float scrollPosition;
 	private boolean scrolling;
@@ -348,7 +347,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				searchable = this.client.getSearchableContainer(SearchManager.ITEM_TAG);
 				this.searchForTags(string);
 			} else {
-				string = Language.getInstance().reorder(string, false);
 				searchable = this.client.getSearchableContainer(SearchManager.ITEM_TOOLTIP);
 			}
 
@@ -381,7 +379,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
 		if (itemGroup.hasTooltip()) {
 			RenderSystem.disableBlend();
-			this.textRenderer.draw(matrices, I18n.translate(itemGroup.getTranslationKey()), 8.0F, 6.0F, 4210752);
+			this.textRenderer.method_30883(matrices, itemGroup.getTranslationKey(), 8.0F, 6.0F, 4210752);
 		}
 	}
 
@@ -589,7 +587,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.deleteItemSlot != null
 			&& selectedTab == ItemGroup.INVENTORY.getIndex()
 			&& this.isPointWithinBounds(this.deleteItemSlot.x, this.deleteItemSlot.y, 16, 16, (double)mouseX, (double)mouseY)) {
-			this.renderTooltip(matrices, new TranslatableText("inventory.binSlot"), mouseX, mouseY);
+			this.renderTooltip(matrices, field_26563, mouseX, mouseY);
 		}
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -625,10 +623,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				}
 			});
 			if (itemGroup != null) {
-				list2.add(1, new TranslatableText(itemGroup.getTranslationKey()).formatted(Formatting.BLUE));
+				list2.add(1, itemGroup.getTranslationKey().shallowCopy().formatted(Formatting.BLUE));
 			}
 
-			this.renderTooltip(matrices, list2, x, y);
+			this.method_30901(matrices, list2, x, y);
 		} else {
 			super.renderTooltip(matrices, stack, x, y);
 		}
@@ -700,7 +698,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		if (this.isPointWithinBounds(l + 3, m + 3, 23, 27, (double)i, (double)j)) {
-			this.renderTooltip(matrixStack, new TranslatableText(itemGroup.getTranslationKey()), i, j);
+			this.renderTooltip(matrixStack, itemGroup.getTranslationKey(), i, j);
 			return true;
 		} else {
 			return false;

@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
@@ -23,6 +22,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class JigsawBlockScreen extends Screen {
+	private static final Text field_26564 = new TranslatableText("jigsaw_block.joint_label");
+	private static final Text field_26565 = new TranslatableText("jigsaw_block.pool");
+	private static final Text field_26566 = new TranslatableText("jigsaw_block.name");
+	private static final Text field_26567 = new TranslatableText("jigsaw_block.target");
+	private static final Text field_26568 = new TranslatableText("jigsaw_block.final_state");
 	private final JigsawBlockEntity jigsaw;
 	private TextFieldWidget nameField;
 	private TextFieldWidget targetField;
@@ -103,7 +107,7 @@ public class JigsawBlockScreen extends Screen {
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.children.add(this.finalStateField);
 		this.joint = this.jigsaw.getJoint();
-		int i = this.textRenderer.getWidth(I18n.translate("jigsaw_block.joint_label")) + 10;
+		int i = this.textRenderer.getWidth(field_26564) + 10;
 		this.jointRotationButton = this.addButton(new ButtonWidget(this.width / 2 - 152 + i, 150, 300 - i, 20, this.getLocalizedJointName(), buttonWidget -> {
 			JigsawBlockEntity.Joint[] joints = JigsawBlockEntity.Joint.values();
 			int ix = (this.joint.ordinal() + 1) % joints.length;
@@ -195,16 +199,16 @@ public class JigsawBlockScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.pool"), this.width / 2 - 153, 10, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, field_26565, this.width / 2 - 153, 10, 10526880);
 		this.poolField.render(matrices, mouseX, mouseY, delta);
-		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.name"), this.width / 2 - 153, 45, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, field_26566, this.width / 2 - 153, 45, 10526880);
 		this.nameField.render(matrices, mouseX, mouseY, delta);
-		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.target"), this.width / 2 - 153, 80, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, field_26567, this.width / 2 - 153, 80, 10526880);
 		this.targetField.render(matrices, mouseX, mouseY, delta);
-		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 115, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, field_26568, this.width / 2 - 153, 115, 10526880);
 		this.finalStateField.render(matrices, mouseX, mouseY, delta);
 		if (JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical()) {
-			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.joint_label"), this.width / 2 - 153, 156, 16777215);
+			drawTextWithShadow(matrices, this.textRenderer, field_26564, this.width / 2 - 153, 156, 16777215);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

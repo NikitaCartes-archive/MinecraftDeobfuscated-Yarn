@@ -1,6 +1,7 @@
 package net.minecraft.command.argument;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
@@ -11,6 +12,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
@@ -65,6 +67,7 @@ public class ArgumentTypes {
 		register("objective_criteria", ObjectiveCriteriaArgumentType.class, new ConstantArgumentSerializer(ObjectiveCriteriaArgumentType::objectiveCriteria));
 		register("operation", OperationArgumentType.class, new ConstantArgumentSerializer(OperationArgumentType::operation));
 		register("particle", ParticleArgumentType.class, new ConstantArgumentSerializer(ParticleArgumentType::particle));
+		register("angle", AngleArgumentType.class, new ConstantArgumentSerializer(AngleArgumentType::angle));
 		register("rotation", RotationArgumentType.class, new ConstantArgumentSerializer(RotationArgumentType::rotation));
 		register("scoreboard_slot", ScoreboardSlotArgumentType.class, new ConstantArgumentSerializer(ScoreboardSlotArgumentType::scoreboardSlot));
 		register("score_holder", ScoreHolderArgumentType.class, new ScoreHolderArgumentType.Serializer());
@@ -75,8 +78,8 @@ public class ArgumentTypes {
 		register("mob_effect", MobEffectArgumentType.class, new ConstantArgumentSerializer(MobEffectArgumentType::mobEffect));
 		register("function", FunctionArgumentType.class, new ConstantArgumentSerializer(FunctionArgumentType::function));
 		register("entity_anchor", EntityAnchorArgumentType.class, new ConstantArgumentSerializer(EntityAnchorArgumentType::entityAnchor));
-		register("int_range", NumberRangeArgumentType.IntRangeArgumentType.class, new NumberRangeArgumentType.IntRangeArgumentType.Serializer());
-		register("float_range", NumberRangeArgumentType.FloatRangeArgumentType.class, new NumberRangeArgumentType.FloatRangeArgumentType.Serializer());
+		register("int_range", NumberRangeArgumentType.IntRangeArgumentType.class, new ConstantArgumentSerializer(NumberRangeArgumentType::numberRange));
+		register("float_range", NumberRangeArgumentType.FloatRangeArgumentType.class, new ConstantArgumentSerializer(NumberRangeArgumentType::method_30918));
 		register("item_enchantment", ItemEnchantmentArgumentType.class, new ConstantArgumentSerializer(ItemEnchantmentArgumentType::itemEnchantment));
 		register("entity_summon", EntitySummonArgumentType.class, new ConstantArgumentSerializer(EntitySummonArgumentType::entitySummon));
 		register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer(DimensionArgumentType::dimension));
@@ -178,6 +181,31 @@ public class ArgumentTypes {
 		}
 
 		return jsonObject;
+	}
+
+	public static boolean method_30923(ArgumentType<?> argumentType) {
+		return byClass(argumentType) != null;
+	}
+
+	public static <T> Set<ArgumentType<?>> method_30924(CommandNode<T> commandNode) {
+		Set<CommandNode<T>> set = Sets.newIdentityHashSet();
+		Set<ArgumentType<?>> set2 = Sets.<ArgumentType<?>>newHashSet();
+		method_30925(commandNode, set2, set);
+		return set2;
+	}
+
+	private static <T> void method_30925(CommandNode<T> commandNode, Set<ArgumentType<?>> set, Set<CommandNode<T>> set2) {
+		if (set2.add(commandNode)) {
+			if (commandNode instanceof ArgumentCommandNode) {
+				set.add(((ArgumentCommandNode)commandNode).getType());
+			}
+
+			commandNode.getChildren().forEach(commandNodex -> method_30925(commandNodex, set, set2));
+			CommandNode<T> commandNode2 = commandNode.getRedirect();
+			if (commandNode2 != null) {
+				method_30925(commandNode2, set, set2);
+			}
+		}
 	}
 
 	static class Entry<T extends ArgumentType<?>> {

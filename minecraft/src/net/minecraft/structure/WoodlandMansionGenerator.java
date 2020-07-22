@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -22,6 +21,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.ServerWorldAccess;
 
 public class WoodlandMansionGenerator {
 	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<WoodlandMansionGenerator.Piece> pieces, Random random) {
@@ -1052,7 +1052,7 @@ public class WoodlandMansionGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 			if (metadata.startsWith("Chest")) {
 				BlockRotation blockRotation = this.placementData.getRotation();
 				BlockState blockState = Blocks.CHEST.getDefaultState();
@@ -1066,15 +1066,15 @@ public class WoodlandMansionGenerator {
 					blockState = blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.NORTH));
 				}
 
-				this.addChest(arg, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
+				this.addChest(serverWorldAccess, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
 			} else {
 				IllagerEntity illagerEntity;
 				switch (metadata) {
 					case "Mage":
-						illagerEntity = EntityType.EVOKER.create(arg.getWorld());
+						illagerEntity = EntityType.EVOKER.create(serverWorldAccess.toServerWorld());
 						break;
 					case "Warrior":
-						illagerEntity = EntityType.VINDICATOR.create(arg.getWorld());
+						illagerEntity = EntityType.VINDICATOR.create(serverWorldAccess.toServerWorld());
 						break;
 					default:
 						return;
@@ -1082,9 +1082,9 @@ public class WoodlandMansionGenerator {
 
 				illagerEntity.setPersistent();
 				illagerEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-				illagerEntity.initialize(arg, arg.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
-				arg.spawnEntity(illagerEntity);
-				arg.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+				illagerEntity.initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+				serverWorldAccess.spawnEntityAndPassengers(illagerEntity);
+				serverWorldAccess.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 			}
 		}
 	}

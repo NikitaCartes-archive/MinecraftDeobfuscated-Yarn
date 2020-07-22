@@ -135,7 +135,7 @@ public class FontManager implements AutoCloseable {
 				IntSet intSet = new IntOpenHashSet();
 
 				for (Font font2 : list) {
-					intSet.addAll(font2.method_27442());
+					intSet.addAll(font2.getProvidedGlyphs());
 				}
 
 				intSet.forEach(ix -> {

@@ -156,7 +156,11 @@ public abstract class MobSpawnerLogic {
 								}
 							}
 
-							this.spawnEntity(entity);
+							if (!serverWorld.method_30736(entity)) {
+								this.updateSpawns();
+								return;
+							}
+
 							world.syncWorldEvent(2004, blockPos, 0);
 							if (entity instanceof MobEntity) {
 								((MobEntity)entity).playSpawnEffects();
@@ -170,14 +174,6 @@ public abstract class MobSpawnerLogic {
 				if (bl) {
 					this.updateSpawns();
 				}
-			}
-		}
-	}
-
-	private void spawnEntity(Entity entity) {
-		if (this.getWorld().spawnEntity(entity)) {
-			for (Entity entity2 : entity.getPassengerList()) {
-				this.spawnEntity(entity2);
 			}
 		}
 	}

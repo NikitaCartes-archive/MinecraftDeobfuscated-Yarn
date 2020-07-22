@@ -31,7 +31,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 	);
 	Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
 	MapCodec<ImmutableList<StructureProcessor>> PROCESSORS = method_30652("processors", CODEC.listOf().xmap(ImmutableList::copyOf, Function.identity()));
-	Codec<Supplier<ImmutableList<StructureProcessor>>> field_25877 = RegistryElementCodec.of(Registry.PROCESSOR_LIST_WORLDGEN, PROCESSORS);
+	Codec<Supplier<ImmutableList<StructureProcessor>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.PROCESSOR_LIST_WORLDGEN, PROCESSORS);
 
 	Codec<P> codec();
 

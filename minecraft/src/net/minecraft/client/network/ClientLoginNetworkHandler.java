@@ -15,8 +15,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.realms.DisconnectedRealmsScreen;
-import net.minecraft.client.realms.RealmsScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkEncryptionUtils;
@@ -103,9 +104,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onDisconnected(Text reason) {
 		if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
-			this.client.openScreen(new DisconnectedRealmsScreen(this.parentGui, "connect.failed", reason));
+			this.client.openScreen(new DisconnectedRealmsScreen(this.parentGui, ScreenTexts.field_26625, reason));
 		} else {
-			this.client.openScreen(new DisconnectedScreen(this.parentGui, "connect.failed", reason));
+			this.client.openScreen(new DisconnectedScreen(this.parentGui, ScreenTexts.field_26625, reason));
 		}
 	}
 

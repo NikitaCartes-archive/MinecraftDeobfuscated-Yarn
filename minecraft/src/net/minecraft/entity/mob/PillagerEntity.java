@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -51,6 +50,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
@@ -167,23 +167,30 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
-		ItemStack itemStack = new ItemStack(Items.CROSSBOW);
-		if (this.random.nextInt(300) == 0) {
-			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-			map.put(Enchantments.PIERCING, 1);
-			EnchantmentHelper.set(map, itemStack);
-		}
+		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
+	}
 
-		this.equipStack(EquipmentSlot.MAINHAND, itemStack);
+	@Override
+	protected void method_30759(float f) {
+		super.method_30759(f);
+		if (this.random.nextInt(300) == 0) {
+			ItemStack itemStack = this.getMainHandStack();
+			if (itemStack.getItem() == Items.CROSSBOW) {
+				Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack);
+				map.putIfAbsent(Enchantments.PIERCING, 1);
+				EnchantmentHelper.set(map, itemStack);
+				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
+			}
+		}
 	}
 
 	@Override

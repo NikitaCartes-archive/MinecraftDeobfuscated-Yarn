@@ -31,7 +31,7 @@ public class ChunkStatus {
 	/**
 	 * A load task which only bumps the chunk status of the chunk.
 	 */
-	private static final ChunkStatus.LoadTask STATUS_BUMP_NO_GEN_TASK = (targetStatus, world, structureManager, lightingProvider, function, chunk) -> {
+	private static final ChunkStatus.LoadTask STATUS_BUMP_LOAD_TASK = (targetStatus, world, structureManager, lightingProvider, function, chunk) -> {
 		if (chunk instanceof ProtoChunk && !chunk.getStatus().isAtLeast(targetStatus)) {
 			((ProtoChunk)chunk).setStatus(targetStatus);
 		}
@@ -65,7 +65,7 @@ public class ChunkStatus {
 	public static final ChunkStatus STRUCTURE_REFERENCES = register(
 		"structure_references", STRUCTURE_STARTS, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
 			ChunkRegion chunkRegion = new ChunkRegion(world, surroundingChunks);
-			generator.addStructureReferences(chunkRegion, world.getStructureAccessor().method_29951(chunkRegion), chunk);
+			generator.addStructureReferences(chunkRegion, world.getStructureAccessor().forRegion(chunkRegion), chunk);
 		}
 	);
 	public static final ChunkStatus BIOMES = register(
@@ -79,7 +79,7 @@ public class ChunkStatus {
 	public static final ChunkStatus NOISE = register(
 		"noise", BIOMES, 8, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.field_12808, (world, generator, surroundingChunks, chunk) -> {
 			ChunkRegion chunkRegion = new ChunkRegion(world, surroundingChunks);
-			generator.populateNoise(chunkRegion, world.getStructureAccessor().method_29951(chunkRegion), chunk);
+			generator.populateNoise(chunkRegion, world.getStructureAccessor().forRegion(chunkRegion), chunk);
 		}
 	);
 	public static final ChunkStatus SURFACE = register(
@@ -120,7 +120,7 @@ public class ChunkStatus {
 					chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE)
 				);
 				ChunkRegion chunkRegion = new ChunkRegion(world, surroundingChunks);
-				generator.generateFeatures(chunkRegion, world.getStructureAccessor().method_29951(chunkRegion));
+				generator.generateFeatures(chunkRegion, world.getStructureAccessor().forRegion(chunkRegion));
 				protoChunk.setStatus(status);
 			}
 
@@ -161,7 +161,7 @@ public class ChunkStatus {
 			),
 		(status, world, structureManager, lightingProvider, function, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(chunk)
 	);
-	private static final List<ChunkStatus> DISTANCE_TO_TARGET_GENERATION_STATUS = ImmutableList.of(
+	private static final List<ChunkStatus> DISTANCE_TO_STATUS = ImmutableList.of(
 		FULL,
 		FEATURES,
 		LIQUID_CARVERS,
@@ -174,11 +174,11 @@ public class ChunkStatus {
 		STRUCTURE_STARTS,
 		STRUCTURE_STARTS
 	);
-	private static final IntList STATUS_TO_TARGET_GENERATION_RADIUS = Util.make(new IntArrayList(createOrderedList().size()), intArrayList -> {
+	private static final IntList STATUS_TO_DISTANCE = Util.make(new IntArrayList(createOrderedList().size()), intArrayList -> {
 		int i = 0;
 
 		for (int j = createOrderedList().size() - 1; j >= 0; j--) {
-			while (i + 1 < DISTANCE_TO_TARGET_GENERATION_STATUS.size() && j <= ((ChunkStatus)DISTANCE_TO_TARGET_GENERATION_STATUS.get(i + 1)).getIndex()) {
+			while (i + 1 < DISTANCE_TO_STATUS.size() && j <= ((ChunkStatus)DISTANCE_TO_STATUS.get(i + 1)).getIndex()) {
 				i++;
 			}
 
@@ -224,7 +224,7 @@ public class ChunkStatus {
 		ChunkStatus.ChunkType chunkType,
 		ChunkStatus.GenerationTask task
 	) {
-		return register(id, previous, taskMargin, heightMapTypes, chunkType, task, STATUS_BUMP_NO_GEN_TASK);
+		return register(id, previous, taskMargin, heightMapTypes, chunkType, task, STATUS_BUMP_LOAD_TASK);
 	}
 
 	private static ChunkStatus register(
@@ -256,20 +256,20 @@ public class ChunkStatus {
 		return chunk.getStatus().isAtLeast(status) && chunk.isLightOn();
 	}
 
-	public static ChunkStatus getTargetGenerationStatus(int distance) {
-		if (distance >= DISTANCE_TO_TARGET_GENERATION_STATUS.size()) {
+	public static ChunkStatus byDistanceFromFull(int level) {
+		if (level >= DISTANCE_TO_STATUS.size()) {
 			return EMPTY;
 		} else {
-			return distance < 0 ? FULL : (ChunkStatus)DISTANCE_TO_TARGET_GENERATION_STATUS.get(distance);
+			return level < 0 ? FULL : (ChunkStatus)DISTANCE_TO_STATUS.get(level);
 		}
 	}
 
-	public static int getMaxTargetGenerationRadius() {
-		return DISTANCE_TO_TARGET_GENERATION_STATUS.size();
+	public static int getMaxDistanceFromFull() {
+		return DISTANCE_TO_STATUS.size();
 	}
 
-	public static int getTargetGenerationRadius(ChunkStatus status) {
-		return STATUS_TO_TARGET_GENERATION_RADIUS.getInt(status.getIndex());
+	public static int getDistanceFromFull(ChunkStatus status) {
+		return STATUS_TO_DISTANCE.getInt(status.getIndex());
 	}
 
 	ChunkStatus(
@@ -332,7 +332,7 @@ public class ChunkStatus {
 		return this.chunkType;
 	}
 
-	public static ChunkStatus get(String id) {
+	public static ChunkStatus byId(String id) {
 		return Registry.CHUNK_STATUS.get(Identifier.tryParse(id));
 	}
 

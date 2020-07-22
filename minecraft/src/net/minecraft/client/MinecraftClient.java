@@ -499,7 +499,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setOverlay(
 			new SplashScreen(
 				this,
-				this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+				this.resourceManager.beginMonitoredReload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 				optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
 						if (SharedConstants.isDevelopment) {
 							this.checkGameData();
@@ -684,18 +684,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.versionType;
 	}
 
-	public void setCrashReport(CrashReport crashReport) {
-		this.crashReport = crashReport;
+	public void setCrashReport(CrashReport report) {
+		this.crashReport = report;
 	}
 
-	public static void printCrashReport(CrashReport crashReport) {
+	public static void printCrashReport(CrashReport report) {
 		File file = new File(getInstance().runDirectory, "crash-reports");
 		File file2 = new File(file, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
-		Bootstrap.println(crashReport.asString());
-		if (crashReport.getFile() != null) {
-			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + crashReport.getFile());
+		Bootstrap.println(report.asString());
+		if (report.getFile() != null) {
+			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + report.getFile());
 			System.exit(-1);
-		} else if (crashReport.writeToFile(file2)) {
+		} else if (report.writeToFile(file2)) {
 			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + file2.getAbsolutePath());
 			System.exit(-1);
 		} else {
@@ -722,7 +722,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.setOverlay(
 					new SplashScreen(
 						this,
-						this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+						this.resourceManager.beginMonitoredReload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 						optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
 								this.worldRenderer.reload();
 								completableFuture.complete(null);
@@ -881,7 +881,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.paintingManager.close();
 			this.textureManager.close();
 			this.resourceManager.close();
-			Util.shutdownServerWorkerExecutor();
+			Util.shutdownExecutors();
 		} catch (Throwable var5) {
 			LOGGER.error("Shutdown failure!", var5);
 			throw var5;
@@ -1112,7 +1112,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private void drawProfilerResults(MatrixStack matrixStack, ProfileResult profileResult) {
+	private void drawProfilerResults(MatrixStack matrices, ProfileResult profileResult) {
 		List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
 		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
 		RenderSystem.clear(256, IS_SYSTEM_MAC);
@@ -1188,9 +1188,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		int m = 16777215;
-		this.textRenderer.drawWithShadow(matrixStack, string2, (float)(j - 160), (float)(k - 80 - 16), 16777215);
+		this.textRenderer.drawWithShadow(matrices, string2, (float)(j - 160), (float)(k - 80 - 16), 16777215);
 		string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-		this.textRenderer.drawWithShadow(matrixStack, string2, (float)(j + 160 - this.textRenderer.getWidth(string2)), (float)(k - 80 - 16), 16777215);
+		this.textRenderer.drawWithShadow(matrices, string2, (float)(j + 160 - this.textRenderer.getWidth(string2)), (float)(k - 80 - 16), 16777215);
 
 		for (int r = 0; r < list.size(); r++) {
 			ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(r);
@@ -1202,13 +1202,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 
 			String string3 = stringBuilder.append(profilerTiming3.name).toString();
-			this.textRenderer.drawWithShadow(matrixStack, string3, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+			this.textRenderer.drawWithShadow(matrices, string3, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
 			string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
 			this.textRenderer
-				.drawWithShadow(matrixStack, string3, (float)(j + 160 - 50 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+				.drawWithShadow(matrices, string3, (float)(j + 160 - 50 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
 			string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
 			this.textRenderer
-				.drawWithShadow(matrixStack, string3, (float)(j + 160 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+				.drawWithShadow(matrices, string3, (float)(j + 160 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
 		}
 	}
 
@@ -1818,7 +1818,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		try {
 			DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(resourcePackManager, dataPackSettings, bl);
 			CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
-				resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this
+				resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), this
 			);
 			this.runTasks(completableFuture::isDone);
 			ServerResourceManager serverResourceManager = (ServerResourceManager)completableFuture.get();
@@ -2100,9 +2100,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		crashReportSection.add(
 			"Is Modded",
 			(CrashCallable<String>)(() -> {
-				String string = ClientBrandRetriever.getClientModName();
-				if (!"vanilla".equals(string)) {
-					return "Definitely; Client brand changed to '" + string + "'";
+				String stringx = ClientBrandRetriever.getClientModName();
+				if (!"vanilla".equals(stringx)) {
+					return "Definitely; Client brand changed to '" + stringx + "'";
 				} else {
 					return MinecraftClient.class.getSigners() == null
 						? "Very likely; Jar signature invalidated"
@@ -2112,16 +2112,24 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		);
 		crashReportSection.add("Type", "Client (map_client.txt)");
 		if (options != null) {
+			if (instance != null) {
+				String string = instance.getVideoWarningManager().method_30920();
+				if (string != null) {
+					crashReportSection.add("GPU Warnings", string);
+				}
+			}
+
+			crashReportSection.add("Graphics mode", options.graphicsMode);
 			crashReportSection.add("Resource Packs", (CrashCallable<String>)(() -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
-				for (String string : options.resourcePacks) {
+				for (String stringx : options.resourcePacks) {
 					if (stringBuilder.length() > 0) {
 						stringBuilder.append(", ");
 					}
 
-					stringBuilder.append(string);
-					if (options.incompatibleResourcePacks.contains(string)) {
+					stringBuilder.append(stringx);
+					if (options.incompatibleResourcePacks.contains(stringx)) {
 						stringBuilder.append(" (incompatible)");
 					}
 				}
@@ -2254,8 +2262,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.languageManager;
 	}
 
-	public Function<Identifier, Sprite> getSpriteAtlas(Identifier identifier) {
-		return this.bakedModelManager.method_24153(identifier)::getSprite;
+	public Function<Identifier, Sprite> getSpriteAtlas(Identifier id) {
+		return this.bakedModelManager.method_24153(id)::getSprite;
 	}
 
 	public boolean is64Bit() {
@@ -2286,7 +2294,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					&& (!this.player.isSubmergedInWater() || category != Biome.Category.OCEAN && category != Biome.Category.RIVER)) {
 					return this.player.world.getRegistryKey() != World.NETHER && this.player.abilities.creativeMode && this.player.abilities.allowFlying
 						? MusicType.CREATIVE
-						: (MusicSound)this.world.getBiomeAccess().method_27344(this.player.getBlockPos()).method_27343().orElse(MusicType.GAME);
+						: (MusicSound)this.world.getBiomeAccess().method_27344(this.player.getBlockPos()).getMusic().orElse(MusicType.GAME);
 				} else {
 					return MusicType.UNDERWATER;
 				}
@@ -2314,7 +2322,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.gameRenderer.onCameraEntitySet(entity);
 	}
 
-	public boolean method_27022(Entity entity) {
+	/**
+	 * Checks if the provided {@code entity} should display an outline around its model.
+	 */
+	public boolean hasOutline(Entity entity) {
 		return entity.isGlowing()
 			|| this.player != null && this.player.isSpectator() && this.options.keySpectatorOutlines.isPressed() && entity.getType() == EntityType.PLAYER;
 	}
@@ -2338,7 +2349,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.blockRenderManager;
 	}
 
-	public EntityRenderDispatcher getEntityRenderManager() {
+	public EntityRenderDispatcher getEntityRenderDispatcher() {
 		return this.entityRenderDispatcher;
 	}
 
@@ -2449,33 +2460,33 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private static ResourcePackProfile createResourcePackProfile(
-		String string,
-		boolean bl,
-		Supplier<ResourcePack> supplier,
-		ResourcePack resourcePack,
-		PackResourceMetadata packResourceMetadata,
+		String name,
+		boolean alwaysEnabled,
+		Supplier<ResourcePack> packFactory,
+		ResourcePack pack,
+		PackResourceMetadata metadata,
 		ResourcePackProfile.InsertionPosition insertionPosition,
-		ResourcePackSource resourcePackSource
+		ResourcePackSource source
 	) {
-		int i = packResourceMetadata.getPackFormat();
-		Supplier<ResourcePack> supplier2 = supplier;
+		int i = metadata.getPackFormat();
+		Supplier<ResourcePack> supplier = packFactory;
 		if (i <= 3) {
-			supplier2 = createV3ResourcePackFactory(supplier);
+			supplier = createV3ResourcePackFactory(packFactory);
 		}
 
 		if (i <= 4) {
-			supplier2 = createV4ResourcePackFactory(supplier2);
+			supplier = createV4ResourcePackFactory(supplier);
 		}
 
-		return new ResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition, resourcePackSource);
+		return new ResourcePackProfile(name, alwaysEnabled, supplier, pack, metadata, insertionPosition, source);
 	}
 
-	private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> supplier) {
-		return () -> new Format3ResourcePack((ResourcePack)supplier.get(), Format3ResourcePack.NEW_TO_OLD_MAP);
+	private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> packFactory) {
+		return () -> new Format3ResourcePack((ResourcePack)packFactory.get(), Format3ResourcePack.NEW_TO_OLD_MAP);
 	}
 
-	private static Supplier<ResourcePack> createV4ResourcePackFactory(Supplier<ResourcePack> supplier) {
-		return () -> new Format4ResourcePack((ResourcePack)supplier.get());
+	private static Supplier<ResourcePack> createV4ResourcePackFactory(Supplier<ResourcePack> packFactory) {
+		return () -> new Format4ResourcePack((ResourcePack)packFactory.get());
 	}
 
 	public void resetMipmapLevels(int mipmapLevels) {

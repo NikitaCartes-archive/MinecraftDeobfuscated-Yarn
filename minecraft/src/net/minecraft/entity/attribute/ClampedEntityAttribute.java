@@ -2,6 +2,9 @@ package net.minecraft.entity.attribute;
 
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents a type of attribute with minimum and maximum value limits.
+ */
 public class ClampedEntityAttribute extends EntityAttribute {
 	private final double minValue;
 	private final double maxValue;

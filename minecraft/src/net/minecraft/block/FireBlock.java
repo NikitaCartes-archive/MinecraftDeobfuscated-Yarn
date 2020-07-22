@@ -59,26 +59,26 @@ public class FireBlock extends AbstractFireBlock {
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		VoxelShape voxelShape = VoxelShapes.empty();
 		if ((Boolean)state.get(UP)) {
-			voxelShape = field_22497;
+			voxelShape = UP_SHAPE;
 		}
 
 		if ((Boolean)state.get(WEST)) {
-			voxelShape = VoxelShapes.union(voxelShape, field_22499);
+			voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
 		}
 
 		if ((Boolean)state.get(EAST)) {
-			voxelShape = VoxelShapes.union(voxelShape, field_22500);
+			voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
 		}
 
 		if ((Boolean)state.get(NORTH)) {
-			voxelShape = VoxelShapes.union(voxelShape, field_22501);
+			voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
 		}
 
 		if ((Boolean)state.get(SOUTH)) {
-			voxelShape = VoxelShapes.union(voxelShape, field_22502);
+			voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
 		}
 
-		return voxelShape == VoxelShapes.empty() ? field_22498 : voxelShape;
+		return voxelShape == VoxelShapes.empty() ? BASE_SHAPE : voxelShape;
 	}
 
 	@Override

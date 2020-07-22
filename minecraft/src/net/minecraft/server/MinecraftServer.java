@@ -260,7 +260,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.commandFunctionManager = new CommandFunctionManager(this, serverResourceManager.getFunctionLoader());
 		this.structureManager = new StructureManager(serverResourceManager.getResourceManager(), session, dataFixer);
 		this.serverThread = thread;
-		this.workerExecutor = Util.getServerWorkerExecutor();
+		this.workerExecutor = Util.getMainWorkerExecutor();
 	}
 
 	private void initScoreboard(PersistentStateManager persistentStateManager) {
@@ -1528,7 +1528,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			writer.write(String.format("pending_tasks: %d\n", this.getTaskCount()));
 			writer.write(String.format("average_tick_time: %f\n", this.getTickTime()));
 			writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
-			writer.write(String.format("queue: %s\n", Util.getServerWorkerExecutor()));
+			writer.write(String.format("queue: %s\n", Util.getMainWorkerExecutor()));
 		} catch (Throwable var12) {
 			var3 = var12;
 			throw var12;

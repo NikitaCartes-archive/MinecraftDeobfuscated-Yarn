@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -61,6 +60,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -183,7 +183,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public double getMountedHeightOffset() {
 		float f = Math.min(0.25F, this.limbDistance);
 		float g = this.limbAngle;
-		return (double)this.getHeight() - 0.2 + (double)(0.12F * MathHelper.cos(g * 1.5F) * 2.0F * f);
+		return (double)this.getHeight() - 0.3 + (double)(0.12F * MathHelper.cos(g * 1.5F) * 2.0F * f);
 	}
 
 	@Override
@@ -442,33 +442,32 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (this.isBaby()) {
-			return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+			return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 		} else {
 			Object var7;
 			if (this.random.nextInt(30) == 0) {
-				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(arg.getWorld());
-				var7 = this.method_30336(arg, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false));
+				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorldAccess.toServerWorld());
+				var7 = this.method_30336(serverWorldAccess, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false));
 				this.saddle(null);
 			} else if (this.random.nextInt(10) == 0) {
-				PassiveEntity passiveEntity = EntityType.STRIDER.create(arg.getWorld());
+				PassiveEntity passiveEntity = EntityType.STRIDER.create(serverWorldAccess.toServerWorld());
 				passiveEntity.setBreedingAge(-24000);
-				var7 = this.method_30336(arg, difficulty, passiveEntity, null);
+				var7 = this.method_30336(serverWorldAccess, difficulty, passiveEntity, null);
 			} else {
 				var7 = new PassiveEntity.PassiveData(0.5F);
 			}
 
-			return super.initialize(arg, difficulty, spawnReason, (EntityData)var7, entityTag);
+			return super.initialize(serverWorldAccess, difficulty, spawnReason, (EntityData)var7, entityTag);
 		}
 	}
 
-	private EntityData method_30336(class_5425 arg, LocalDifficulty localDifficulty, MobEntity mobEntity, @Nullable EntityData entityData) {
+	private EntityData method_30336(ServerWorldAccess serverWorldAccess, LocalDifficulty localDifficulty, MobEntity mobEntity, @Nullable EntityData entityData) {
 		mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-		mobEntity.initialize(arg, localDifficulty, SpawnReason.JOCKEY, entityData, null);
+		mobEntity.initialize(serverWorldAccess, localDifficulty, SpawnReason.JOCKEY, entityData, null);
 		mobEntity.startRiding(this, true);
-		arg.spawnEntity(mobEntity);
 		return new PassiveEntity.PassiveData(0.0F);
 	}
 

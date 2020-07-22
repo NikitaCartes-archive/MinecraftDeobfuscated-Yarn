@@ -651,7 +651,10 @@ public class EntityType<T extends Entity> {
 		boolean invertY
 	) {
 		T entity = this.create(serverWorld, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
-		serverWorld.spawnEntity(entity);
+		if (entity != null) {
+			serverWorld.spawnEntityAndPassengers(entity);
+		}
+
 		return entity;
 	}
 
@@ -971,7 +974,7 @@ public class EntityType<T extends Entity> {
 
 		public EntityType<T> build(String id) {
 			if (this.saveable) {
-				Util.method_29187(TypeReferences.ENTITY_TREE, id);
+				Util.getChoiceType(TypeReferences.ENTITY_TREE, id);
 			}
 
 			return new EntityType<>(

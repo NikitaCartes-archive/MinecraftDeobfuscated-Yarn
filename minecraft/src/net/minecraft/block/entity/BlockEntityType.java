@@ -214,7 +214,7 @@ public class BlockEntityType<T extends BlockEntity> {
 			LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", string);
 		}
 
-		Type<?> type = Util.method_29187(TypeReferences.BLOCK_ENTITY, string);
+		Type<?> type = Util.getChoiceType(TypeReferences.BLOCK_ENTITY, string);
 		return Registry.register(Registry.BLOCK_ENTITY_TYPE, string, builder.build(type));
 	}
 

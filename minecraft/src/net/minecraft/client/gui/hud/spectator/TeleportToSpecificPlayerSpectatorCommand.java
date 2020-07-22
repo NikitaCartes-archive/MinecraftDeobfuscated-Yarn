@@ -21,6 +21,7 @@ import net.minecraft.util.Identifier;
 public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCommand {
 	private final GameProfile gameProfile;
 	private final Identifier skinId;
+	private final LiteralText name;
 
 	public TeleportToSpecificPlayerSpectatorCommand(GameProfile gameProfile) {
 		this.gameProfile = gameProfile;
@@ -31,6 +32,8 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 		} else {
 			this.skinId = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
 		}
+
+		this.name = new LiteralText(gameProfile.getName());
 	}
 
 	@Override
@@ -40,7 +43,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 
 	@Override
 	public Text getName() {
-		return new LiteralText(this.gameProfile.getName());
+		return this.name;
 	}
 
 	@Override

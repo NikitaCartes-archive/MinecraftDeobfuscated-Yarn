@@ -81,7 +81,9 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.client
 						.execute(
 							() -> ConnectScreen.this.client
-									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host")))
+									.openScreen(
+										new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", "Unknown host"))
+									)
 						);
 				} catch (Exception var5) {
 					if (ConnectScreen.this.connectingCancelled) {
@@ -93,7 +95,7 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.client
 						.execute(
 							() -> ConnectScreen.this.client
-									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", string)))
+									.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", string)))
 						);
 				}
 			}
@@ -143,7 +145,7 @@ public class ConnectScreen extends Screen {
 			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
 		}
 
-		this.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

@@ -16,7 +16,7 @@ public class FireDecorator extends SimpleDecorator<CountConfig> {
 	public Stream<BlockPos> getPositions(Random random, CountConfig countConfig, BlockPos blockPos) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
 
-		for (int i = 0; i < random.nextInt(random.nextInt(countConfig.method_30396().getValue(random)) + 1) + 1; i++) {
+		for (int i = 0; i < random.nextInt(random.nextInt(countConfig.getCount().getValue(random)) + 1) + 1; i++) {
 			int j = random.nextInt(16) + blockPos.getX();
 			int k = random.nextInt(16) + blockPos.getZ();
 			int l = random.nextInt(120) + 4;

@@ -30,11 +30,11 @@ import org.apache.logging.log4j.Logger;
 
 public class StructurePool {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final MapCodec<StructurePool> field_25853 = RecordCodecBuilder.mapCodec(
+	public static final MapCodec<StructurePool> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("name").forGetter(StructurePool::getId),
 					Identifier.CODEC.fieldOf("fallback").forGetter(StructurePool::getTerminatorsId),
-					Codec.mapPair(StructurePoolElement.field_24953.fieldOf("element"), Codec.INT.fieldOf("weight"))
+					Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.INT.fieldOf("weight"))
 						.codec()
 						.listOf()
 						.promotePartial(Util.method_29188("Pool element: ", LOGGER::error))
@@ -43,7 +43,7 @@ public class StructurePool {
 				)
 				.apply(instance, StructurePool::new)
 	);
-	public static final Codec<Supplier<StructurePool>> CODEC = RegistryElementCodec.of(Registry.TEMPLATE_POOL_WORLDGEN, field_25853);
+	public static final Codec<Supplier<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.TEMPLATE_POOL_WORLDGEN, CODEC);
 	private final Identifier id;
 	private final List<Pair<StructurePoolElement, Integer>> elementCounts;
 	private final List<StructurePoolElement> elements;

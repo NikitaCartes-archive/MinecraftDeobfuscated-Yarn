@@ -107,7 +107,7 @@ public class PlayerSkinProvider {
 						}
 					})));
 		};
-		Util.getServerWorkerExecutor().execute(runnable);
+		Util.getMainWorkerExecutor().execute(runnable);
 	}
 
 	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {

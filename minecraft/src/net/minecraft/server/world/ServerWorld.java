@@ -117,8 +117,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.ScheduledTick;
-import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -139,7 +139,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerWorld extends World implements ServerWorldAccess {
+public class ServerWorld extends World implements StructureWorldAccess {
 	public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectLinkedOpenHashMap<>();
@@ -470,7 +470,7 @@ public class ServerWorld extends World implements ServerWorldAccess {
 
 				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this);
 				lightningEntity.method_29495(Vec3d.ofBottomCenter(blockPos));
-				lightningEntity.method_29498(bl2);
+				lightningEntity.setCosmetic(bl2);
 				this.spawnEntity(lightningEntity);
 			}
 		}
@@ -835,11 +835,46 @@ public class ServerWorld extends World implements ServerWorldAccess {
 	}
 
 	private boolean checkUuid(Entity entity) {
-		Entity entity2 = (Entity)this.entitiesByUuid.get(entity.getUuid());
+		UUID uUID = entity.getUuid();
+		Entity entity2 = this.method_30735(uUID);
 		if (entity2 == null) {
 			return false;
 		} else {
-			LOGGER.warn("Keeping entity {} that already exists with UUID {}", EntityType.getId(entity2.getType()), entity.getUuid().toString());
+			LOGGER.warn(
+				"Trying to add entity with duplicated UUID {}. Existing {}#{}, new: {}#{}",
+				uUID,
+				EntityType.getId(entity2.getType()),
+				entity2.getEntityId(),
+				EntityType.getId(entity.getType()),
+				entity.getEntityId()
+			);
+			return true;
+		}
+	}
+
+	@Nullable
+	private Entity method_30735(UUID uUID) {
+		Entity entity = (Entity)this.entitiesByUuid.get(uUID);
+		if (entity != null) {
+			return entity;
+		} else {
+			if (this.inEntityTick) {
+				for (Entity entity2 : this.entitiesToLoad) {
+					if (entity2.getUuid().equals(uUID)) {
+						return entity2;
+					}
+				}
+			}
+
+			return null;
+		}
+	}
+
+	public boolean method_30736(Entity entity) {
+		if (entity.streamPassengersRecursively().anyMatch(this::checkUuid)) {
+			return false;
+		} else {
+			this.spawnEntityAndPassengers(entity);
 			return true;
 		}
 	}
@@ -1499,12 +1534,12 @@ public class ServerWorld extends World implements ServerWorldAccess {
 	}
 
 	@Override
-	public Stream<? extends StructureStart<?>> method_30275(ChunkSectionPos chunkSectionPos, StructureFeature<?> structureFeature) {
-		return this.getStructureAccessor().getStructuresWithChildren(chunkSectionPos, structureFeature);
+	public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
+		return this.getStructureAccessor().getStructuresWithChildren(pos, feature);
 	}
 
 	@Override
-	public World getWorld() {
+	public ServerWorld toServerWorld() {
 		return this;
 	}
 

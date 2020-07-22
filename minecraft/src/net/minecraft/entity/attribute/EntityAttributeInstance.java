@@ -18,12 +18,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.registry.Registry;
 
+/**
+ * A double-valued attribute.
+ */
 public class EntityAttributeInstance {
 	private final EntityAttribute type;
 	private final Map<EntityAttributeModifier.Operation, Set<EntityAttributeModifier>> operationToModifiers = Maps.newEnumMap(
 		EntityAttributeModifier.Operation.class
 	);
-	private final Map<UUID, EntityAttributeModifier> byId = new Object2ObjectArrayMap<>();
+	private final Map<UUID, EntityAttributeModifier> idToModifiers = new Object2ObjectArrayMap<>();
 	private final Set<EntityAttributeModifier> persistentModifiers = new ObjectArraySet<>();
 	private double baseValue;
 	private boolean dirty = true;
@@ -40,6 +43,10 @@ public class EntityAttributeInstance {
 		return this.type;
 	}
 
+	/**
+	 * Gets the base value of this attribute instance.
+	 * This is the value before any attribute modifiers are applied.
+	 */
 	public double getBaseValue() {
 		return this.baseValue;
 	}
@@ -56,20 +63,20 @@ public class EntityAttributeInstance {
 	}
 
 	public Set<EntityAttributeModifier> getModifiers() {
-		return ImmutableSet.copyOf(this.byId.values());
+		return ImmutableSet.copyOf(this.idToModifiers.values());
 	}
 
 	@Nullable
 	public EntityAttributeModifier getModifier(UUID uuid) {
-		return (EntityAttributeModifier)this.byId.get(uuid);
+		return (EntityAttributeModifier)this.idToModifiers.get(uuid);
 	}
 
 	public boolean hasModifier(EntityAttributeModifier modifier) {
-		return this.byId.get(modifier.getId()) != null;
+		return this.idToModifiers.get(modifier.getId()) != null;
 	}
 
 	private void addModifier(EntityAttributeModifier modifier) {
-		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.byId.putIfAbsent(modifier.getId(), modifier);
+		EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)this.idToModifiers.putIfAbsent(modifier.getId(), modifier);
 		if (entityAttributeModifier != null) {
 			throw new IllegalArgumentException("Modifier is already applied on this attribute!");
 		} else {
@@ -78,6 +85,10 @@ public class EntityAttributeInstance {
 		}
 	}
 
+	/**
+	 * Adds a temporary attribute modifier.
+	 * The modifier will not be serialized.
+	 */
 	public void addTemporaryModifier(EntityAttributeModifier modifier) {
 		this.addModifier(modifier);
 	}
@@ -94,7 +105,7 @@ public class EntityAttributeInstance {
 
 	public void removeModifier(EntityAttributeModifier modifier) {
 		this.getModifiers(modifier.getOperation()).remove(modifier);
-		this.byId.remove(modifier.getId());
+		this.idToModifiers.remove(modifier.getId());
 		this.persistentModifiers.remove(modifier);
 		this.onUpdate();
 	}
@@ -132,6 +143,15 @@ public class EntityAttributeInstance {
 		return this.value;
 	}
 
+	/**
+	 * Computes this attribute's value, taking modifiers into account.
+	 * 
+	 * <p>Attribute modifiers are applied in order by operation:
+	 * <ul><li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#ADDITION ADDITION} // Adds the value of the modifier to the attribute's base value.</li>
+	 * <li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#MULTIPLY_BASE MULTIPLY_BASE} // Multiplies the value of the modifier to the attributes base value, and then adds it to the total value.</li>
+	 * <li>{@link net.minecraft.entity.attribute.EntityAttributeModifier.Operation#MULTIPLY_TOTAL MULTIPLY_TOTAL} // Adds 1 to the value of the attribute modifier. Then multiplies the attribute's value by the total value of the attribute after addition and multiplication of the base value occur.</li>
+	 * </ul>
+	 */
 	private double computeValue() {
 		double d = this.getBaseValue();
 
@@ -156,14 +176,19 @@ public class EntityAttributeInstance {
 		return (Collection<EntityAttributeModifier>)this.operationToModifiers.getOrDefault(operation, Collections.emptySet());
 	}
 
+	/**
+	 * Copies the values of an attribute to this attribute.
+	 * 
+	 * <p>Temporary modifiers are copied when using the operation.
+	 */
 	public void setFrom(EntityAttributeInstance other) {
 		this.baseValue = other.baseValue;
-		this.byId.clear();
-		this.byId.putAll(other.byId);
+		this.idToModifiers.clear();
+		this.idToModifiers.putAll(other.idToModifiers);
 		this.persistentModifiers.clear();
 		this.persistentModifiers.addAll(other.persistentModifiers);
 		this.operationToModifiers.clear();
-		other.operationToModifiers.forEach((operation, set) -> this.getModifiers(operation).addAll(set));
+		other.operationToModifiers.forEach((operation, modifiers) -> this.getModifiers(operation).addAll(modifiers));
 		this.onUpdate();
 	}
 
@@ -192,7 +217,7 @@ public class EntityAttributeInstance {
 			for (int i = 0; i < listTag.size(); i++) {
 				EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromTag(listTag.getCompound(i));
 				if (entityAttributeModifier != null) {
-					this.byId.put(entityAttributeModifier.getId(), entityAttributeModifier);
+					this.idToModifiers.put(entityAttributeModifier.getId(), entityAttributeModifier);
 					this.getModifiers(entityAttributeModifier.getOperation()).add(entityAttributeModifier);
 					this.persistentModifiers.add(entityAttributeModifier);
 				}

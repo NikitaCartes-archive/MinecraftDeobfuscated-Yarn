@@ -15,7 +15,7 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
@@ -35,7 +35,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(ServerWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+	public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
 		if (!(random.nextFloat() >= this.probability)) {
 			Direction direction = BeehiveBlock.getRandomGenerationDirection(random);
 			int i = !leavesPositions.isEmpty()
@@ -54,7 +54,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 						int j = 2 + random.nextInt(2);
 
 						for (int k = 0; k < j; k++) {
-							BeeEntity beeEntity = new BeeEntity(EntityType.BEE, world.getWorld());
+							BeeEntity beeEntity = new BeeEntity(EntityType.BEE, world.toServerWorld());
 							beehiveBlockEntity.tryEnterHive(beeEntity, false, random.nextInt(599));
 						}
 					}

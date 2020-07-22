@@ -36,7 +36,10 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 	public void setAngles(VexEntity vexEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(vexEntity, f, g, h, i, j);
 		if (vexEntity.isCharging()) {
-			if (vexEntity.getMainArm() == Arm.RIGHT) {
+			if (vexEntity.getMainHandStack().isEmpty()) {
+				this.rightArm.pitch = (float) (Math.PI * 3.0 / 2.0);
+				this.leftArm.pitch = (float) (Math.PI * 3.0 / 2.0);
+			} else if (vexEntity.getMainArm() == Arm.RIGHT) {
 				this.rightArm.pitch = 3.7699115F;
 			} else {
 				this.leftArm.pitch = 3.7699115F;

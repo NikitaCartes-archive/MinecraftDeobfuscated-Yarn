@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -31,7 +31,7 @@ public class BuriedTreasureGenerator {
 
 		@Override
 		public boolean generate(
-			ServerWorldAccess serverWorldAccess,
+			StructureWorldAccess structureWorldAccess,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
@@ -39,12 +39,12 @@ public class BuriedTreasureGenerator {
 			ChunkPos chunkPos,
 			BlockPos blockPos
 		) {
-			int i = serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
+			int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
 
 			while (mutable.getY() > 0) {
-				BlockState blockState = serverWorldAccess.getBlockState(mutable);
-				BlockState blockState2 = serverWorldAccess.getBlockState(mutable.down());
+				BlockState blockState = structureWorldAccess.getBlockState(mutable);
+				BlockState blockState2 = structureWorldAccess.getBlockState(mutable.down());
 				if (blockState2 == Blocks.SANDSTONE.getDefaultState()
 					|| blockState2 == Blocks.STONE.getDefaultState()
 					|| blockState2 == Blocks.ANDESITE.getDefaultState()
@@ -54,20 +54,20 @@ public class BuriedTreasureGenerator {
 
 					for (Direction direction : Direction.values()) {
 						BlockPos blockPos2 = mutable.offset(direction);
-						BlockState blockState4 = serverWorldAccess.getBlockState(blockPos2);
+						BlockState blockState4 = structureWorldAccess.getBlockState(blockPos2);
 						if (blockState4.isAir() || this.isLiquid(blockState4)) {
 							BlockPos blockPos3 = blockPos2.down();
-							BlockState blockState5 = serverWorldAccess.getBlockState(blockPos3);
+							BlockState blockState5 = structureWorldAccess.getBlockState(blockPos3);
 							if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
-								serverWorldAccess.setBlockState(blockPos2, blockState2, 3);
+								structureWorldAccess.setBlockState(blockPos2, blockState2, 3);
 							} else {
-								serverWorldAccess.setBlockState(blockPos2, blockState3, 3);
+								structureWorldAccess.setBlockState(blockPos2, blockState3, 3);
 							}
 						}
 					}
 
 					this.boundingBox = new BlockBox(mutable.getX(), mutable.getY(), mutable.getZ(), mutable.getX(), mutable.getY(), mutable.getZ());
-					return this.addChest(serverWorldAccess, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
+					return this.addChest(structureWorldAccess, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
 				}
 
 				mutable.move(0, -1, 0);

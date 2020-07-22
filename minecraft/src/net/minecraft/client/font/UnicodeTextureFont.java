@@ -78,21 +78,21 @@ public class UnicodeTextureFont implements Font {
 		this.images.values().forEach(NativeImage::close);
 	}
 
-	private Identifier getImageId(int i) {
-		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", i / 256)));
+	private Identifier getImageId(int codePoint) {
+		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", codePoint / 256)));
 		return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
 	}
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(int i) {
-		if (i >= 0 && i <= 65535) {
-			byte b = this.sizes[i];
+	public RenderableGlyph getGlyph(int codePoint) {
+		if (codePoint >= 0 && codePoint <= 65535) {
+			byte b = this.sizes[codePoint];
 			if (b != 0) {
-				NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getImageId(i), this::getGlyphImage);
+				NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getImageId(codePoint), this::getGlyphImage);
 				if (nativeImage != null) {
-					int j = getStart(b);
-					return new UnicodeTextureFont.UnicodeTextureGlyph(i % 16 * 16 + j, (i & 0xFF) / 16 * 16, getEnd(b) - j, 16, nativeImage);
+					int i = getStart(b);
+					return new UnicodeTextureFont.UnicodeTextureGlyph(codePoint % 16 * 16 + i, (codePoint & 0xFF) / 16 * 16, getEnd(b) - i, 16, nativeImage);
 				}
 			}
 
@@ -103,7 +103,7 @@ public class UnicodeTextureFont implements Font {
 	}
 
 	@Override
-	public IntSet method_27442() {
+	public IntSet getProvidedGlyphs() {
 		IntSet intSet = new IntOpenHashSet();
 
 		for (int i = 0; i < 65535; i++) {

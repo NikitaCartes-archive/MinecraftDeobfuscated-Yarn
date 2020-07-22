@@ -13,8 +13,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Spawner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ZombieSiegeManager implements Spawner {
+	private static final Logger field_26390 = LogManager.getLogger();
 	private boolean spawned;
 	private ZombieSiegeManager.State state = ZombieSiegeManager.State.SIEGE_DONE;
 	private int remaining;
@@ -97,12 +100,12 @@ public class ZombieSiegeManager implements Spawner {
 				zombieEntity = new ZombieEntity(world);
 				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.EVENT, null, null);
 			} catch (Exception var5) {
-				var5.printStackTrace();
+				field_26390.warn("Failed to create zombie for village siege at {}", vec3d, var5);
 				return;
 			}
 
 			zombieEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, world.random.nextFloat() * 360.0F, 0.0F);
-			world.spawnEntity(zombieEntity);
+			world.spawnEntityAndPassengers(zombieEntity);
 		}
 	}
 

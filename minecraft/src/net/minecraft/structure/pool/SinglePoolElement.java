@@ -26,7 +26,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -46,7 +46,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Supplier<ImmutableList<StructureProcessor>>> method_28880() {
-		return StructureProcessorType.field_25877.fieldOf("processors").forGetter(singlePoolElement -> singlePoolElement.processors);
+		return StructureProcessorType.REGISTRY_CODEC.fieldOf("processors").forGetter(singlePoolElement -> singlePoolElement.processors);
 	}
 
 	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> method_28882() {
@@ -105,7 +105,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		ServerWorldAccess serverWorldAccess,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		BlockPos blockPos,
@@ -117,13 +117,13 @@ public class SinglePoolElement extends StructurePoolElement {
 	) {
 		Structure structure = this.method_27233(structureManager);
 		StructurePlacementData structurePlacementData = this.createPlacementData(blockRotation, blockBox, keepJigsaws);
-		if (!structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData, random, 18)) {
+		if (!structure.place(structureWorldAccess, blockPos, blockPos2, structurePlacementData, random, 18)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(
-				serverWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false)
+				structureWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false)
 			)) {
-				this.method_16756(serverWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);
+				this.method_16756(structureWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);
 			}
 
 			return true;

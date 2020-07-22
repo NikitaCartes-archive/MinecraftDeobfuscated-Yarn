@@ -2,20 +2,18 @@ package net.minecraft.client.resource.language;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.ibm.icu.text.ArabicShaping;
-import com.ibm.icu.text.ArabicShapingException;
-import com.ibm.icu.text.Bidi;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
+import net.minecraft.class_5491;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class TranslationStorage extends Language {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern field_25288 = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z])");
 	private final Map<String, String> translations;
 	private final boolean rightToLeft;
 
@@ -101,42 +98,7 @@ public class TranslationStorage extends Language {
 	}
 
 	@Override
-	public String reorder(String string, boolean allowTokens) {
-		if (!this.rightToLeft) {
-			return string;
-		} else {
-			if (allowTokens && string.indexOf(37) != -1) {
-				string = method_29389(string);
-			}
-
-			return this.reorder(string);
-		}
-	}
-
-	public static String method_29389(String string) {
-		Matcher matcher = field_25288.matcher(string);
-		StringBuffer stringBuffer = new StringBuffer();
-		int i = 1;
-
-		while (matcher.find()) {
-			String string2 = matcher.group(1);
-			String string3 = string2 != null ? string2 : Integer.toString(i++);
-			String string4 = matcher.group(2);
-			String string5 = Matcher.quoteReplacement("\u2066%" + string3 + "$" + string4 + "\u2069");
-			matcher.appendReplacement(stringBuffer, string5);
-		}
-
-		matcher.appendTail(stringBuffer);
-		return stringBuffer.toString();
-	}
-
-	private String reorder(String string) {
-		try {
-			Bidi bidi = new Bidi(new ArabicShaping(8).shape(string), 127);
-			bidi.setReorderingMode(0);
-			return bidi.writeReordered(10);
-		} catch (ArabicShapingException var3) {
-			return string;
-		}
+	public class_5481 method_30934(StringRenderable stringRenderable) {
+		return class_5491.method_30922(stringRenderable, this.rightToLeft);
 	}
 }

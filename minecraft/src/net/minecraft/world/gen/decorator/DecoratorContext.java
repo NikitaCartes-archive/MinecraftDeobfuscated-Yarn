@@ -5,16 +5,16 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DecoratorContext {
-	private final ServerWorldAccess world;
+	private final StructureWorldAccess world;
 	private final ChunkGenerator generator;
 
-	public DecoratorContext(ServerWorldAccess world, ChunkGenerator generator) {
+	public DecoratorContext(StructureWorldAccess world, ChunkGenerator generator) {
 		this.world = world;
 		this.generator = generator;
 	}

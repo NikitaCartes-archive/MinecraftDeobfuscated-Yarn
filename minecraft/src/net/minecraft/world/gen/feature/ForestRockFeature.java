@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
@@ -13,11 +13,11 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
 	) {
 		while (blockPos.getY() > 3) {
-			if (!serverWorldAccess.isAir(blockPos.down())) {
-				Block block = serverWorldAccess.getBlockState(blockPos.down()).getBlock();
+			if (!structureWorldAccess.isAir(blockPos.down())) {
+				Block block = structureWorldAccess.getBlockState(blockPos.down()).getBlock();
 				if (isSoil(block) || isStone(block)) {
 					break;
 				}
@@ -37,7 +37,7 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 
 				for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-j, -k, -l), blockPos.add(j, k, l))) {
 					if (blockPos2.getSquaredDistance(blockPos) <= (double)(f * f)) {
-						serverWorldAccess.setBlockState(blockPos2, singleStateFeatureConfig.state, 4);
+						structureWorldAccess.setBlockState(blockPos2, singleStateFeatureConfig.state, 4);
 					}
 				}
 

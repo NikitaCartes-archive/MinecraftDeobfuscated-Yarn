@@ -126,8 +126,15 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 				}
 			}
 		} catch (Exception var25) {
+			String string2x;
+			if (resource2 != null) {
+				string2x = " (" + resource2.getResourcePackName() + ")";
+			} else {
+				string2x = "";
+			}
+
 			ShaderParseException shaderParseException4 = ShaderParseException.wrap(var25);
-			shaderParseException4.addFaultyFile(identifier.getPath());
+			shaderParseException4.addFaultyFile(identifier.getPath() + string2x);
 			throw shaderParseException4;
 		} finally {
 			IOUtils.closeQuietly(resource2);
@@ -143,7 +150,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 			Resource resource = resourceManager.getResource(identifier);
 
 			try {
-				glShader = GlShader.createFromResource(type, name, resource.getInputStream());
+				glShader = GlShader.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName());
 			} finally {
 				IOUtils.closeQuietly(resource);
 			}

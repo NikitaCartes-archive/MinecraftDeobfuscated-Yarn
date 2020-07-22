@@ -7,10 +7,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -33,6 +31,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	private static final Text field_24207 = new TranslatableText("mco.configure.world.on");
 	private static final Text field_24208 = new TranslatableText("mco.configure.world.off");
 	private static final Text field_25884 = new TranslatableText("selectWorld.gameMode");
+	private static final Text field_26516 = new TranslatableText("mco.configure.world.edit.slot.name");
 	private TextFieldWidget nameEdit;
 	protected final RealmsConfigureWorldScreen parent;
 	private int column1_x;
@@ -237,9 +236,10 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		String string = I18n.translate("mco.configure.world.edit.slot.name");
 		this.textRenderer
-			.draw(matrices, string, (float)(this.column1_x + this.column_width / 2 - this.textRenderer.getWidth(string) / 2), (float)(row(0) - 5), 16777215);
+			.method_30883(
+				matrices, field_26516, (float)(this.column1_x + this.column_width / 2 - this.textRenderer.getWidth(field_26516) / 2), (float)(row(0) - 5), 16777215
+			);
 		this.titleLabel.render(this, matrices);
 		if (this.toastMessage != null) {
 			this.toastMessage.render(this, matrices);

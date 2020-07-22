@@ -115,10 +115,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.layers.render(matrices, mouseX, mouseY, delta);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		int i = this.width / 2 - 92 - 16;
-		this.drawTextWithShadow(matrices, this.textRenderer, this.tileText, i, 32, 16777215);
-		this.drawTextWithShadow(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 16777215);
+		drawTextWithShadow(matrices, this.textRenderer, this.tileText, i, 32, 16777215);
+		drawTextWithShadow(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -200,7 +200,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 				ItemStack itemStack = new ItemStack(item);
 				this.method_19375(matrices, x, y, itemStack);
-				CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, item.getName(itemStack), (float)(x + 18 + 5), (float)(y + 3), 16777215);
+				CustomizeFlatLevelScreen.this.textRenderer.method_30883(matrices, item.getName(itemStack), (float)(x + 18 + 5), (float)(y + 3), 16777215);
 				String string;
 				if (index == 0) {
 					string = I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness());

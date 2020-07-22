@@ -57,13 +57,13 @@ public class DefaultAttributeContainer {
 		return new DefaultAttributeContainer.Builder();
 	}
 
-	public boolean method_27310(EntityAttribute entityAttribute) {
-		return this.instances.containsKey(entityAttribute);
+	public boolean has(EntityAttribute type) {
+		return this.instances.containsKey(type);
 	}
 
-	public boolean method_27309(EntityAttribute entityAttribute, UUID uUID) {
-		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(entityAttribute);
-		return entityAttributeInstance != null && entityAttributeInstance.getModifier(uUID) != null;
+	public boolean hasModifier(EntityAttribute type, UUID uuid) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(type);
+		return entityAttributeInstance != null && entityAttributeInstance.getModifier(uuid) != null;
 	}
 
 	public static class Builder {
@@ -71,7 +71,7 @@ public class DefaultAttributeContainer {
 		private boolean unmodifiable;
 
 		private EntityAttributeInstance checkedAdd(EntityAttribute attribute) {
-			EntityAttributeInstance entityAttributeInstance = new EntityAttributeInstance(attribute, entityAttributeInstancex -> {
+			EntityAttributeInstance entityAttributeInstance = new EntityAttributeInstance(attribute, attributex -> {
 				if (this.unmodifiable) {
 					throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + Registry.ATTRIBUTE.getId(attribute));
 				}

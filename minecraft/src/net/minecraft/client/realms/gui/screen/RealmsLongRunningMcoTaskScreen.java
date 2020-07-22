@@ -2,18 +2,19 @@ package net.minecraft.client.realms.gui.screen;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.Errable;
 import net.minecraft.client.realms.Realms;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.exception.RealmsDefaultUncaughtExceptionHandler;
-import net.minecraft.client.realms.gui.LongRunningTask;
+import net.minecraft.client.realms.task.LongRunningTask;
+import net.minecraft.client.realms.util.Errable;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,8 +23,8 @@ import org.apache.logging.log4j.Logger;
 public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Errable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Screen parent;
-	private volatile String title = "";
-	private volatile boolean error;
+	private volatile Text title = LiteralText.EMPTY;
+	@Nullable
 	private volatile Text errorMessage;
 	private volatile boolean aborted;
 	private int animTicks;
@@ -64,7 +65,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	@Override
 	public void tick() {
 		super.tick();
-		Realms.narrateRepeatedly(this.title);
+		Realms.narrateRepeatedly(this.title.getString());
 		this.animTicks++;
 		this.task.tick();
 	}
@@ -94,13 +95,12 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawCenteredString(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16777215);
-		if (!this.error) {
-			this.drawCenteredString(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, row(8), 8421504);
-		}
-
-		if (this.error) {
-			this.drawCenteredText(matrices, this.textRenderer, this.errorMessage, this.width / 2, row(8), 16711680);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16777215);
+		Text text = this.errorMessage;
+		if (text == null) {
+			drawCenteredString(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, row(8), 8421504);
+		} else {
+			drawCenteredText(matrices, this.textRenderer, text, this.width / 2, row(8), 16711680);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);
@@ -108,7 +108,6 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 
 	@Override
 	public void error(Text text) {
-		this.error = true;
 		this.errorMessage = text;
 		Realms.narrateNow(text.getString());
 		this.onError();
@@ -117,14 +116,14 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 		);
 	}
 
-	public void onError() {
+	private void onError() {
 		Set<Element> set = Sets.<Element>newHashSet(this.buttons);
 		this.children.removeIf(set::contains);
 		this.buttons.clear();
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setTitle(Text text) {
+		this.title = text;
 	}
 
 	public boolean aborted() {

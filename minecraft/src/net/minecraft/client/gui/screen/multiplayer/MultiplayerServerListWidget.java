@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -22,13 +23,11 @@ import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.ServerList;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -47,6 +46,13 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	);
 	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	private static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
+	private static final Text field_26581 = new TranslatableText("lanServer.scanning");
+	private static final Text field_26582 = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
+	private static final Text field_26583 = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+	private static final Text field_26584 = new TranslatableText("multiplayer.status.client_out_of_date");
+	private static final Text field_26585 = new TranslatableText("multiplayer.status.server_out_of_date");
+	private static final Text field_26586 = new TranslatableText("multiplayer.status.no_connection");
+	private static final Text field_26587 = new TranslatableText("multiplayer.status.pinging");
 	private final MultiplayerScreen screen;
 	private final List<MultiplayerServerListWidget.ServerEntry> servers = Lists.<MultiplayerServerListWidget.ServerEntry>newArrayList();
 	private final MultiplayerServerListWidget.Entry scanningEntry = new MultiplayerServerListWidget.ScanningEntry();
@@ -126,6 +132,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 	@Environment(EnvType.CLIENT)
 	public static class LanServerEntry extends MultiplayerServerListWidget.Entry {
+		private static final Text field_26588 = new TranslatableText("lanServer.title");
+		private static final Text field_26589 = new TranslatableText("selectServer.hiddenAddress");
 		private final MultiplayerScreen screen;
 		protected final MinecraftClient client;
 		protected final LanServerInfo server;
@@ -139,10 +147,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.client.textRenderer.draw(matrices, I18n.translate("lanServer.title"), (float)(x + 32 + 3), (float)(y + 1), 16777215);
+			this.client.textRenderer.method_30883(matrices, field_26588, (float)(x + 32 + 3), (float)(y + 1), 16777215);
 			this.client.textRenderer.draw(matrices, this.server.getMotd(), (float)(x + 32 + 3), (float)(y + 12), 8421504);
 			if (this.client.options.hideServerAddress) {
-				this.client.textRenderer.draw(matrices, I18n.translate("selectServer.hiddenAddress"), (float)(x + 32 + 3), (float)(y + 12 + 11), 3158064);
+				this.client.textRenderer.method_30883(matrices, field_26589, (float)(x + 32 + 3), (float)(y + 12 + 11), 3158064);
 			} else {
 				this.client.textRenderer.draw(matrices, this.server.getAddressPort(), (float)(x + 32 + 3), (float)(y + 12 + 11), 3158064);
 			}
@@ -173,10 +181,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			int i = y + entryHeight / 2 - 9 / 2;
 			this.client
 				.textRenderer
-				.draw(
+				.method_30883(
 					matrices,
-					I18n.translate("lanServer.scanning"),
-					(float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(I18n.translate("lanServer.scanning")) / 2),
+					MultiplayerServerListWidget.field_26581,
+					(float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(MultiplayerServerListWidget.field_26581) / 2),
 					(float)i,
 					16777215
 				);
@@ -230,10 +238,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 						this.screen.getServerListPinger().add(this.server, () -> this.client.execute(this::method_29978));
 					} catch (UnknownHostException var2) {
 						this.server.ping = -1L;
-						this.server.label = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
+						this.server.label = MultiplayerServerListWidget.field_26582;
 					} catch (Exception var3) {
 						this.server.ping = -1L;
-						this.server.label = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+						this.server.label = MultiplayerServerListWidget.field_26583;
 					}
 				});
 			}
@@ -242,22 +250,22 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			boolean bl2 = this.server.protocolVersion < SharedConstants.getGameVersion().getProtocolVersion();
 			boolean bl3 = bl || bl2;
 			this.client.textRenderer.draw(matrices, this.server.name, (float)(x + 32 + 3), (float)(y + 1), 16777215);
-			List<StringRenderable> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
+			List<class_5481> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
 
 			for (int i = 0; i < Math.min(list.size(), 2); i++) {
-				this.client.textRenderer.draw(matrices, (StringRenderable)list.get(i), (float)(x + 32 + 3), (float)(y + 12 + 9 * i), 8421504);
+				this.client.textRenderer.draw(matrices, (class_5481)list.get(i), (float)(x + 32 + 3), (float)(y + 12 + 9 * i), 8421504);
 			}
 
 			Text text = (Text)(bl3 ? this.server.version.shallowCopy().formatted(Formatting.DARK_RED) : this.server.playerCountLabel);
 			int j = this.client.textRenderer.getWidth(text);
-			this.client.textRenderer.draw(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 8421504);
+			this.client.textRenderer.method_30883(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 8421504);
 			int k = 0;
 			int l;
 			List<Text> list2;
 			Text text2;
 			if (bl3) {
 				l = 5;
-				text2 = new TranslatableText(bl ? "multiplayer.status.client_out_of_date" : "multiplayer.status.server_out_of_date");
+				text2 = bl ? MultiplayerServerListWidget.field_26584 : MultiplayerServerListWidget.field_26585;
 				list2 = this.server.playerListSummary;
 			} else if (this.server.online && this.server.ping != -2L) {
 				if (this.server.ping < 0L) {
@@ -275,7 +283,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 
 				if (this.server.ping < 0L) {
-					text2 = new TranslatableText("multiplayer.status.no_connection");
+					text2 = MultiplayerServerListWidget.field_26586;
 					list2 = Collections.emptyList();
 				} else {
 					text2 = new TranslatableText("multiplayer.status.ping", this.server.ping);
@@ -288,7 +296,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 					l = 8 - l;
 				}
 
-				text2 = new TranslatableText("multiplayer.status.pinging");
+				text2 = MultiplayerServerListWidget.field_26587;
 				list2 = Collections.emptyList();
 			}
 

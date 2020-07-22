@@ -6,12 +6,16 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -20,6 +24,7 @@ import net.minecraft.world.biome.Biome;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen extends Screen {
+	private static final Text field_26535 = new TranslatableText("createWorld.customize.buffet.biome");
 	private final Screen field_24562;
 	private final Consumer<Biome> field_24563;
 	private final MutableRegistry<Biome> field_25888;
@@ -69,8 +74,8 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackgroundTexture(0);
 		this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
-		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 28, 10526880);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		drawCenteredText(matrices, this.textRenderer, field_26535, this.width / 2, 28, 10526880);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -111,21 +116,22 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		@Environment(EnvType.CLIENT)
 		class BuffetBiomeItem extends AlwaysSelectedEntryListWidget.Entry<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
 			private final Biome field_24564;
+			private final Text field_26536;
 
 			public BuffetBiomeItem(Biome biome) {
 				this.field_24564 = biome;
+				Identifier identifier = CustomizeBuffetLevelScreen.this.field_25888.getId(biome);
+				String string = "biome." + identifier.getNamespace() + "." + identifier.getPath();
+				if (Language.getInstance().hasTranslation(string)) {
+					this.field_26536 = new TranslatableText(string);
+				} else {
+					this.field_26536 = new LiteralText(identifier.toString());
+				}
 			}
 
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				BuffetBiomesListWidget.this.drawStringWithShadow(
-					matrices,
-					CustomizeBuffetLevelScreen.this.textRenderer,
-					CustomizeBuffetLevelScreen.this.field_25888.getId(this.field_24564).toString(),
-					x + 5,
-					y + 2,
-					16777215
-				);
+				DrawableHelper.drawTextWithShadow(matrices, CustomizeBuffetLevelScreen.this.textRenderer, this.field_26536, x + 5, y + 2, 16777215);
 			}
 
 			@Override

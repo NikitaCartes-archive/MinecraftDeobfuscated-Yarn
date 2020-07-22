@@ -7,6 +7,7 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CartographyTableBlock extends Block {
-	private static final TranslatableText TITLE = new TranslatableText("container.cartography_table");
+	private static final Text TITLE = new TranslatableText("container.cartography_table");
 
 	protected CartographyTableBlock(AbstractBlock.Settings settings) {
 		super(settings);

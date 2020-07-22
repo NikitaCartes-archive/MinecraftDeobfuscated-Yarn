@@ -12,7 +12,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
@@ -85,7 +85,12 @@ public abstract class StructureStart<C extends FeatureConfig> {
 	}
 
 	public void generateStructure(
-		ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
+		StructureWorldAccess structureWorldAccess,
+		StructureAccessor structureAccessor,
+		ChunkGenerator chunkGenerator,
+		Random random,
+		BlockBox blockBox,
+		ChunkPos chunkPos
 	) {
 		synchronized (this.children) {
 			if (!this.children.isEmpty()) {
@@ -97,7 +102,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 				while (iterator.hasNext()) {
 					StructurePiece structurePiece = (StructurePiece)iterator.next();
 					if (structurePiece.getBoundingBox().intersects(blockBox)
-						&& !structurePiece.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) {
+						&& !structurePiece.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) {
 						iterator.remove();
 					}
 				}

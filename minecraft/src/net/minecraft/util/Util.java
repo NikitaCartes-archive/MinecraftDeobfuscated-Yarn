@@ -64,9 +64,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Util {
-	private static final AtomicInteger NEXT_SERVER_WORKER_ID = new AtomicInteger(1);
+	private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
 	private static final ExecutorService BOOTSTRAP_EXECUTOR = createWorker("Bootstrap");
-	private static final ExecutorService SERVER_WORKER_EXECUTOR = createWorker("Main");
+	private static final ExecutorService MAIN_WORKER_EXECUTOR = createWorker("Main");
 	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
 	public static final UUID NIL_UUID = new UUID(0L, 0L);
@@ -114,7 +114,7 @@ public class Util {
 						super.onTermination(throwable);
 					}
 				};
-				forkJoinWorkerThread.setName("Worker-" + string + "-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
+				forkJoinWorkerThread.setName("Worker-" + string + "-" + NEXT_WORKER_ID.getAndIncrement());
 				return forkJoinWorkerThread;
 			}, Util::method_18347, true);
 		}
@@ -126,16 +126,16 @@ public class Util {
 		return BOOTSTRAP_EXECUTOR;
 	}
 
-	public static Executor getServerWorkerExecutor() {
-		return SERVER_WORKER_EXECUTOR;
+	public static Executor getMainWorkerExecutor() {
+		return MAIN_WORKER_EXECUTOR;
 	}
 
 	public static Executor getIoWorkerExecutor() {
 		return IO_WORKER_EXECUTOR;
 	}
 
-	public static void shutdownServerWorkerExecutor() {
-		attemptShutdown(SERVER_WORKER_EXECUTOR);
+	public static void shutdownExecutors() {
+		attemptShutdown(MAIN_WORKER_EXECUTOR);
 		attemptShutdown(IO_WORKER_EXECUTOR);
 	}
 
@@ -157,7 +157,7 @@ public class Util {
 	private static ExecutorService createIoWorker() {
 		return Executors.newCachedThreadPool(runnable -> {
 			Thread thread = new Thread(runnable);
-			thread.setName("IO-Worker-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
+			thread.setName("IO-Worker-" + NEXT_WORKER_ID.getAndIncrement());
 			thread.setUncaughtExceptionHandler(Util::method_18347);
 			return thread;
 		});
@@ -190,18 +190,18 @@ public class Util {
 	}
 
 	@Nullable
-	public static Type<?> method_29187(TypeReference typeReference, String string) {
-		return !SharedConstants.field_25135 ? null : method_29191(typeReference, string);
+	public static Type<?> getChoiceType(TypeReference typeReference, String id) {
+		return !SharedConstants.useChoiceTypeRegistrations ? null : getChoiceTypeInternal(typeReference, id);
 	}
 
 	@Nullable
-	private static Type<?> method_29191(TypeReference typeReference, String string) {
+	private static Type<?> getChoiceTypeInternal(TypeReference typeReference, String id) {
 		Type<?> type = null;
 
 		try {
-			type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(typeReference, string);
+			type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(typeReference, id);
 		} catch (IllegalArgumentException var4) {
-			LOGGER.error("No data fixer registered for {}", string);
+			LOGGER.error("No data fixer registered for {}", id);
 			if (SharedConstants.isDevelopment) {
 				throw var4;
 			}

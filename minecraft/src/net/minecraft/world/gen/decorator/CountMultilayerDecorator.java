@@ -24,11 +24,11 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 		do {
 			bl = false;
 
-			for (int j = 0; j < countConfig.method_30396().getValue(random); j++) {
+			for (int j = 0; j < countConfig.getCount().getValue(random); j++) {
 				int k = random.nextInt(16) + blockPos.getX();
 				int l = random.nextInt(16) + blockPos.getZ();
 				int m = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);
-				int n = method_30473(decoratorContext, k, m, l, i);
+				int n = findPos(decoratorContext, k, m, l, i);
 				if (n != Integer.MAX_VALUE) {
 					list.add(new BlockPos(k, n, l));
 					bl = true;
@@ -41,20 +41,20 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 		return list.stream();
 	}
 
-	private static int method_30473(DecoratorContext decoratorContext, int i, int j, int k, int l) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(i, j, k);
-		int m = 0;
-		BlockState blockState = decoratorContext.getBlockState(mutable);
+	private static int findPos(DecoratorContext context, int x, int y, int z, int targetY) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
+		int i = 0;
+		BlockState blockState = context.getBlockState(mutable);
 
-		for (int n = j; n >= 1; n--) {
-			mutable.setY(n - 1);
-			BlockState blockState2 = decoratorContext.getBlockState(mutable);
-			if (!method_30472(blockState2) && method_30472(blockState) && !blockState2.isOf(Blocks.BEDROCK)) {
-				if (m == l) {
+		for (int j = y; j >= 1; j--) {
+			mutable.setY(j - 1);
+			BlockState blockState2 = context.getBlockState(mutable);
+			if (!blocksSpawn(blockState2) && blocksSpawn(blockState) && !blockState2.isOf(Blocks.BEDROCK)) {
+				if (i == targetY) {
 					return mutable.getY() + 1;
 				}
 
-				m++;
+				i++;
 			}
 
 			blockState = blockState2;
@@ -63,7 +63,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 		return Integer.MAX_VALUE;
 	}
 
-	private static boolean method_30472(BlockState blockState) {
-		return blockState.isAir() || blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA);
+	private static boolean blocksSpawn(BlockState state) {
+		return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.LAVA);
 	}
 }

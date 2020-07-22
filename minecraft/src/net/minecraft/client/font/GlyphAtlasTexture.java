@@ -13,8 +13,8 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class GlyphAtlasTexture extends AbstractTexture {
 	private final Identifier id;
-	private final RenderLayer field_21690;
-	private final RenderLayer field_21691;
+	private final RenderLayer textLayer;
+	private final RenderLayer seeThroughTextLayer;
 	private final boolean hasColor;
 	private final GlyphAtlasTexture.Slot rootSlot;
 
@@ -23,8 +23,8 @@ public class GlyphAtlasTexture extends AbstractTexture {
 		this.hasColor = hasColor;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
 		TextureUtil.allocate(hasColor ? NativeImage.GLFormat.ABGR : NativeImage.GLFormat.INTENSITY, this.getGlId(), 256, 256);
-		this.field_21690 = RenderLayer.getText(id);
-		this.field_21691 = RenderLayer.getTextSeeThrough(id);
+		this.textLayer = RenderLayer.getText(id);
+		this.seeThroughTextLayer = RenderLayer.getTextSeeThrough(id);
 	}
 
 	@Override
@@ -49,8 +49,8 @@ public class GlyphAtlasTexture extends AbstractTexture {
 				float g = 256.0F;
 				float h = 0.01F;
 				return new GlyphRenderer(
-					this.field_21690,
-					this.field_21691,
+					this.textLayer,
+					this.seeThroughTextLayer,
 					((float)slot.x + 0.01F) / 256.0F,
 					((float)slot.x - 0.01F + (float)glyph.getWidth()) / 256.0F,
 					((float)slot.y + 0.01F) / 256.0F,

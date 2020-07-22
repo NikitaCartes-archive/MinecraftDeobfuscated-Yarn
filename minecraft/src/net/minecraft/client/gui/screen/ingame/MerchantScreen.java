@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -22,6 +21,9 @@ import net.minecraft.village.VillagerData;
 @Environment(EnvType.CLIENT)
 public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
+	private static final Text field_26569 = new TranslatableText("merchant.trades");
+	private static final Text field_26570 = new LiteralText(" - ");
+	private static final Text field_26571 = new TranslatableText("merchant.deprecated");
 	private int selectedIndex;
 	private final MerchantScreen.WidgetButtonPage[] offers = new MerchantScreen.WidgetButtonPage[7];
 	private int indexStartOffset;
@@ -61,21 +63,18 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		int i = this.handler.getLevelProgress();
 		if (i > 0 && i <= 5 && this.handler.isLeveled()) {
-			String string = "- " + I18n.translate("merchant.level." + i);
-			int j = this.textRenderer.getWidth(this.title);
-			int k = this.textRenderer.getWidth(string);
-			int l = j + k + 3;
-			int m = 49 + this.backgroundWidth / 2 - l / 2;
-			this.textRenderer.draw(matrices, this.title, (float)m, 6.0F, 4210752);
-			this.textRenderer.draw(matrices, string, (float)(m + j + 3), 6.0F, 4210752);
+			Text text = this.title.shallowCopy().append(field_26570).append(new TranslatableText("merchant.level." + i));
+			int j = this.textRenderer.getWidth(text);
+			int k = 49 + this.backgroundWidth / 2 - j / 2;
+			this.textRenderer.method_30883(matrices, text, (float)k, 6.0F, 4210752);
 		} else {
-			this.textRenderer.draw(matrices, this.title, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
+			this.textRenderer.method_30883(matrices, this.title, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
 		}
 
-		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 4210752);
-		String string = I18n.translate("merchant.trades");
-		int j = this.textRenderer.getWidth(string);
-		this.textRenderer.draw(matrices, string, (float)(5 - j / 2 + 48), 6.0F, 4210752);
+		this.textRenderer
+			.method_30883(matrices, this.playerInventory.getDisplayName(), (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 4210752);
+		int l = this.textRenderer.getWidth(field_26569);
+		this.textRenderer.method_30883(matrices, field_26569, (float)(5 - l / 2 + 48), 6.0F, 4210752);
 	}
 
 	@Override
@@ -187,7 +186,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 			}
 
 			if (tradeOfferx.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, (double)mouseX, (double)mouseY) && this.handler.canRefreshTrades()) {
-				this.renderTooltip(matrices, new TranslatableText("merchant.deprecated"), mouseX, mouseY);
+				this.renderTooltip(matrices, field_26571, mouseX, mouseY);
 			}
 
 			for (MerchantScreen.WidgetButtonPage widgetButtonPage : this.offers) {

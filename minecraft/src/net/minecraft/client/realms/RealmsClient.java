@@ -1,7 +1,5 @@
 package net.minecraft.client.realms;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -263,18 +261,10 @@ public class RealmsClient {
 		return WorldDownload.parse(string2);
 	}
 
-	public UploadInfo upload(long worldId, String uploadToken) throws RealmsServiceException {
-		String string = this.url("worlds" + "/$WORLD_ID/backups/upload".replace("$WORLD_ID", String.valueOf(worldId)));
-		UploadInfo uploadInfo = new UploadInfo();
-		if (uploadToken != null) {
-			uploadInfo.setToken(uploadToken);
-		}
-
-		GsonBuilder gsonBuilder = new GsonBuilder();
-		gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-		Gson gson = gsonBuilder.create();
-		String string2 = gson.toJson(uploadInfo);
-		return UploadInfo.parse(this.execute(Request.put(string, string2)));
+	@Nullable
+	public UploadInfo upload(long worldId, @Nullable String string) throws RealmsServiceException {
+		String string2 = this.url("worlds" + "/$WORLD_ID/backups/upload".replace("$WORLD_ID", String.valueOf(worldId)));
+		return UploadInfo.parse(this.execute(Request.put(string2, UploadInfo.method_30864(string))));
 	}
 
 	public void rejectInvitation(String invitationId) throws RealmsServiceException {

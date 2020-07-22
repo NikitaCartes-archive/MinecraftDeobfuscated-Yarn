@@ -12,7 +12,7 @@ import net.minecraft.structure.pool.StructurePool;
 public class StructurePoolFeatureConfig implements FeatureConfig {
 	public static final Codec<StructurePoolFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					StructurePool.CODEC.fieldOf("start_pool").forGetter(StructurePoolFeatureConfig::getStartPool),
+					StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(StructurePoolFeatureConfig::getStartPool),
 					Codec.intRange(0, 7).fieldOf("size").forGetter(StructurePoolFeatureConfig::getSize)
 				)
 				.apply(instance, StructurePoolFeatureConfig::new)

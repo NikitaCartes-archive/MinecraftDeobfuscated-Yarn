@@ -6,7 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
@@ -15,24 +15,24 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (!serverWorldAccess.isAir(blockPos)) {
+		if (!structureWorldAccess.isAir(blockPos)) {
 			return false;
 		} else {
-			BlockState blockState = serverWorldAccess.getBlockState(blockPos.up());
+			BlockState blockState = structureWorldAccess.getBlockState(blockPos.up());
 			if (!blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.BASALT) && !blockState.isOf(Blocks.BLACKSTONE)) {
 				return false;
 			} else {
-				serverWorldAccess.setBlockState(blockPos, Blocks.GLOWSTONE.getDefaultState(), 2);
+				structureWorldAccess.setBlockState(blockPos, Blocks.GLOWSTONE.getDefaultState(), 2);
 
 				for (int i = 0; i < 1500; i++) {
 					BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), -random.nextInt(12), random.nextInt(8) - random.nextInt(8));
-					if (serverWorldAccess.getBlockState(blockPos2).isAir()) {
+					if (structureWorldAccess.getBlockState(blockPos2).isAir()) {
 						int j = 0;
 
 						for (Direction direction : Direction.values()) {
-							if (serverWorldAccess.getBlockState(blockPos2.offset(direction)).isOf(Blocks.GLOWSTONE)) {
+							if (structureWorldAccess.getBlockState(blockPos2.offset(direction)).isOf(Blocks.GLOWSTONE)) {
 								j++;
 							}
 
@@ -42,7 +42,7 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 						}
 
 						if (j == 1) {
-							serverWorldAccess.setBlockState(blockPos2, Blocks.GLOWSTONE.getDefaultState(), 2);
+							structureWorldAccess.setBlockState(blockPos2, Blocks.GLOWSTONE.getDefaultState(), 2);
 						}
 					}
 				}

@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -53,7 +54,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.ENTITY_DISTANCE_SCALING
 	};
 	@Nullable
-	private List<StringRenderable> tooltip;
+	private List<class_5481> tooltip;
 	private ButtonListWidget list;
 	private final VideoWarningManager warningManager;
 	private final int mipmapLevels;
@@ -161,13 +162,13 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.tooltip = null;
 		Optional<AbstractButtonWidget> optional = this.list.getHoveredButton((double)mouseX, (double)mouseY);
 		if (optional.isPresent() && optional.get() instanceof OptionButtonWidget) {
-			Optional<List<StringRenderable>> optional2 = ((OptionButtonWidget)optional.get()).getOption().getTooltip();
+			Optional<List<class_5481>> optional2 = ((OptionButtonWidget)optional.get()).getOption().getTooltip();
 			optional2.ifPresent(tooltip -> this.tooltip = tooltip);
 		}
 
 		this.renderBackground(matrices);
 		this.list.render(matrices, mouseX, mouseY, delta);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.tooltip != null) {
 			this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);

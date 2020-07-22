@@ -74,4 +74,21 @@ public class Dismounting {
 
 		return Double.POSITIVE_INFINITY;
 	}
+
+	@Nullable
+	public static Vec3d method_30769(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, boolean bl) {
+		if (bl && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos))) {
+			return null;
+		} else {
+			double d = collisionView.getDismountHeight(getCollisionShape(collisionView, blockPos), () -> getCollisionShape(collisionView, blockPos.down()));
+			if (!canDismountInBlock(d)) {
+				return null;
+			} else if (bl && d <= 0.0 && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos.down()))) {
+				return null;
+			} else {
+				Vec3d vec3d = Vec3d.ofCenter(blockPos, d);
+				return collisionView.getBlockCollisions(null, entityType.getDimensions().method_30757(vec3d)).allMatch(VoxelShape::isEmpty) ? vec3d : null;
+			}
+		}
+	}
 }

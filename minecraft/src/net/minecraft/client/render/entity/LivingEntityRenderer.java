@@ -110,7 +110,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		boolean bl = this.isVisible(livingEntity);
 		boolean bl2 = !bl && !livingEntity.isInvisibleTo(minecraftClient.player);
-		boolean bl3 = minecraftClient.method_27022(livingEntity);
+		boolean bl3 = minecraftClient.hasOutline(livingEntity);
 		RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2, bl3);
 		if (renderLayer != null) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
@@ -132,14 +132,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	 * Gets the render layer appropriate for rendering the passed entity. Returns null if the entity should not be rendered.
 	 */
 	@Nullable
-	protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl) {
+	protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean showOutline) {
 		Identifier identifier = this.getTexture(entity);
 		if (translucent) {
 			return RenderLayer.getItemEntityTranslucentCull(identifier);
 		} else if (showBody) {
 			return this.model.getLayer(identifier);
 		} else {
-			return bl ? RenderLayer.getOutline(identifier) : null;
+			return showOutline ? RenderLayer.getOutline(identifier) : null;
 		}
 	}
 

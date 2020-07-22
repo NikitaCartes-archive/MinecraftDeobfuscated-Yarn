@@ -17,18 +17,18 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	private UnlockRecipesS2CPacket.Action action;
 	private List<Identifier> recipeIdsToChange;
 	private List<Identifier> recipeIdsToInit;
-	private RecipeBookOptions field_25797;
+	private RecipeBookOptions options;
 
 	public UnlockRecipesS2CPacket() {
 	}
 
 	public UnlockRecipesS2CPacket(
-		UnlockRecipesS2CPacket.Action action, Collection<Identifier> collection, Collection<Identifier> collection2, RecipeBookOptions recipeBookOptions
+		UnlockRecipesS2CPacket.Action action, Collection<Identifier> collection, Collection<Identifier> collection2, RecipeBookOptions options
 	) {
 		this.action = action;
 		this.recipeIdsToChange = ImmutableList.copyOf(collection);
 		this.recipeIdsToInit = ImmutableList.copyOf(collection2);
-		this.field_25797 = recipeBookOptions;
+		this.options = options;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -38,7 +38,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	@Override
 	public void read(PacketByteBuf buf) throws IOException {
 		this.action = buf.readEnumConstant(UnlockRecipesS2CPacket.Action.class);
-		this.field_25797 = RecipeBookOptions.fromPacket(buf);
+		this.options = RecipeBookOptions.fromPacket(buf);
 		int i = buf.readVarInt();
 		this.recipeIdsToChange = Lists.<Identifier>newArrayList();
 
@@ -59,7 +59,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	@Override
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeEnumConstant(this.action);
-		this.field_25797.toPacket(buf);
+		this.options.toPacket(buf);
 		buf.writeVarInt(this.recipeIdsToChange.size());
 
 		for (Identifier identifier : this.recipeIdsToChange) {
@@ -86,8 +86,8 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public RecipeBookOptions isFurnaceFilteringCraftable() {
-		return this.field_25797;
+	public RecipeBookOptions getOptions() {
+		return this.options;
 	}
 
 	@Environment(EnvType.CLIENT)

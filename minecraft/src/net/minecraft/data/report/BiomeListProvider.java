@@ -37,7 +37,7 @@ public class BiomeListProvider implements DataProvider {
 		for (Entry<RegistryKey<Biome>, Biome> entry : BuiltinRegistries.BIOME.getEntries()) {
 			Path path2 = getPath(path, ((RegistryKey)entry.getKey()).getValue());
 			Biome biome = (Biome)entry.getValue();
-			Function<Supplier<Biome>, DataResult<JsonElement>> function = JsonOps.INSTANCE.withEncoder(Biome.field_24677);
+			Function<Supplier<Biome>, DataResult<JsonElement>> function = JsonOps.INSTANCE.withEncoder(Biome.REGISTRY_CODEC);
 
 			try {
 				Optional<JsonElement> optional = ((DataResult)function.apply((Supplier)() -> biome)).result();

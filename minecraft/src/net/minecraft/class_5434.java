@@ -49,7 +49,7 @@ public class class_5434 extends StructureFeature<StructurePoolFeatureConfig> {
 			StructurePoolFeatureConfig structurePoolFeatureConfig
 		) {
 			BlockPos blockPos = new BlockPos(i * 16, this.field_25838.field_25835, j * 16);
-			TemplatePools.method_30599();
+			TemplatePools.initDefaultPools();
 			StructurePoolBasedGenerator.method_30419(
 				dynamicRegistryManager,
 				structurePoolFeatureConfig,

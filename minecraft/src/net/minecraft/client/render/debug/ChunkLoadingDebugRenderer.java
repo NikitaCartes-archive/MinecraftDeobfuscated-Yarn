@@ -121,7 +121,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 					for (int kx = i - 12; kx <= i + 12; kx++) {
 						for (int lx = j - 12; lx <= j + 12; lx++) {
 							ChunkPos chunkPosx = new ChunkPos(kx, lx);
-							builderx.put(chunkPosx, "Server: " + serverChunkManager.method_23273(chunkPosx));
+							builderx.put(chunkPosx, "Server: " + serverChunkManager.getChunkLoadingDebugInfo(chunkPosx));
 						}
 					}
 

@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
@@ -85,6 +84,7 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -125,8 +125,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		MemoryModuleType.INTERACTION_TARGET,
 		MemoryModuleType.BREED_TARGET,
 		MemoryModuleType.PATH,
-		MemoryModuleType.INTERACTABLE_DOORS,
-		MemoryModuleType.OPENED_DOORS,
+		MemoryModuleType.DOORS_TO_CLOSE,
 		MemoryModuleType.NEAREST_BED,
 		MemoryModuleType.HURT_BY,
 		MemoryModuleType.HURT_BY_ENTITY,
@@ -144,7 +143,6 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		SensorType.NEAREST_LIVING_ENTITIES,
 		SensorType.NEAREST_PLAYERS,
 		SensorType.NEAREST_ITEMS,
-		SensorType.INTERACTABLE_DOORS,
 		SensorType.NEAREST_BED,
 		SensorType.HURT_BY,
 		SensorType.VILLAGER_HOSTILES,
@@ -708,21 +706,21 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason == SpawnReason.BREEDING) {
 			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
 		}
 
 		if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
-			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(arg.getBiome(this.getBlockPos()))));
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(serverWorldAccess.getBiome(this.getBlockPos()))));
 		}
 
 		if (spawnReason == SpawnReason.STRUCTURE) {
 			this.natural = true;
 		}
 
-		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public VillagerEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
@@ -755,7 +753,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			}
 
 			witchEntity.setPersistent();
-			serverWorld.spawnEntity(witchEntity);
+			serverWorld.spawnEntityAndPassengers(witchEntity);
 			this.remove();
 		} else {
 			super.onStruckByLightning(serverWorld, lightningEntity);
@@ -873,7 +871,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(serverWorld, null, null, null, blockPos2, SpawnReason.MOB_SUMMONED, false, false);
 				if (ironGolemEntity != null) {
 					if (ironGolemEntity.canSpawn(serverWorld, SpawnReason.MOB_SUMMONED) && ironGolemEntity.canSpawn(serverWorld)) {
-						serverWorld.spawnEntity(ironGolemEntity);
+						serverWorld.spawnEntityAndPassengers(ironGolemEntity);
 						return ironGolemEntity;
 					}
 

@@ -2,21 +2,20 @@ package net.minecraft.client.gui.hud;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.StringRenderable;
 
 @Environment(EnvType.CLIENT)
-public class ChatHudLine {
+public class ChatHudLine<T> {
 	private final int creationTick;
-	private final StringRenderable text;
+	private final T text;
 	private final int id;
 
-	public ChatHudLine(int creationTick, StringRenderable stringRenderable, int id) {
-		this.text = stringRenderable;
+	public ChatHudLine(int creationTick, T text, int id) {
+		this.text = text;
 		this.creationTick = creationTick;
 		this.id = id;
 	}
 
-	public StringRenderable getText() {
+	public T getText() {
 		return this.text;
 	}
 

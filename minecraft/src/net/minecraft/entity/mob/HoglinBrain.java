@@ -54,7 +54,7 @@ public class HoglinBrain {
 	}
 
 	private static void addCoreTasks(Brain<HoglinEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(200)));
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
 	}
 
 	private static void addIdleTasks(Brain<HoglinEntity> brain) {

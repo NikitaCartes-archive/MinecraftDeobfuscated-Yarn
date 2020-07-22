@@ -177,7 +177,7 @@ public class SpawnEggItem extends Item {
 					return Optional.empty();
 				} else {
 					mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
-					serverWorld.spawnEntity(mobEntity2);
+					serverWorld.spawnEntityAndPassengers(mobEntity2);
 					if (itemStack.hasCustomName()) {
 						mobEntity2.setCustomName(itemStack.getName());
 					}

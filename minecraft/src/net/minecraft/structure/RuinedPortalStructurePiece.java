@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-import net.minecraft.class_5425;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -37,6 +36,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -133,7 +133,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 
 	@Override
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
@@ -145,17 +145,17 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			return true;
 		} else {
 			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			boolean bl = super.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
-			this.placeNetherrackBase(random, serverWorldAccess);
-			this.updateNetherracksInBound(random, serverWorldAccess);
+			boolean bl = super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+			this.placeNetherrackBase(random, structureWorldAccess);
+			this.updateNetherracksInBound(random, structureWorldAccess);
 			if (this.properties.vines || this.properties.overgrown) {
 				BlockPos.stream(this.getBoundingBox()).forEach(blockPosx -> {
 					if (this.properties.vines) {
-						this.generateVines(random, serverWorldAccess, blockPosx);
+						this.generateVines(random, structureWorldAccess, blockPosx);
 					}
 
 					if (this.properties.overgrown) {
-						this.generateOvergrownLeaves(random, serverWorldAccess, blockPosx);
+						this.generateOvergrownLeaves(random, structureWorldAccess, blockPosx);
 					}
 				});
 			}
@@ -165,7 +165,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox) {
+	protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
 	}
 
 	private void generateVines(Random random, WorldAccess world, BlockPos pos) {

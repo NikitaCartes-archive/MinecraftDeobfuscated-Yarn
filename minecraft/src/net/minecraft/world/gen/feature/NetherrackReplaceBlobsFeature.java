@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -17,14 +17,14 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess,
+		StructureWorldAccess structureWorldAccess,
 		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig
 	) {
 		Block block = netherrackReplaceBlobsFeatureConfig.field_25849.getBlock();
-		BlockPos blockPos2 = method_27107(serverWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, serverWorldAccess.getHeight() - 1), block);
+		BlockPos blockPos2 = method_27107(structureWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, structureWorldAccess.getHeight() - 1), block);
 		if (blockPos2 == null) {
 			return false;
 		} else {
@@ -36,9 +36,9 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 					break;
 				}
 
-				BlockState blockState = serverWorldAccess.getBlockState(blockPos3);
+				BlockState blockState = structureWorldAccess.getBlockState(blockPos3);
 				if (blockState.isOf(block)) {
-					this.setBlockState(serverWorldAccess, blockPos3, netherrackReplaceBlobsFeatureConfig.field_25850);
+					this.setBlockState(structureWorldAccess, blockPos3, netherrackReplaceBlobsFeatureConfig.field_25850);
 					bl = true;
 				}
 			}

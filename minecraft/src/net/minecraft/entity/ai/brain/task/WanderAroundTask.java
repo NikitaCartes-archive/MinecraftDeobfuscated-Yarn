@@ -17,14 +17,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundTask extends Task<MobEntity> {
+	private int pathUpdateCountdownTicks;
 	@Nullable
 	private Path path;
 	@Nullable
 	private BlockPos lookTargetPos;
 	private float speed;
-	private int pathUpdateCountdownTicks;
 
-	public WanderAroundTask(int runTime) {
+	public WanderAroundTask() {
+		this(150, 250);
+	}
+
+	public WanderAroundTask(int i, int j) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
@@ -34,24 +38,30 @@ public class WanderAroundTask extends Task<MobEntity> {
 				MemoryModuleType.WALK_TARGET,
 				MemoryModuleState.VALUE_PRESENT
 			),
-			runTime
+			i,
+			j
 		);
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-		Brain<?> brain = mobEntity.getBrain();
-		WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
-		boolean bl = this.hasReached(mobEntity, walkTarget);
-		if (!bl && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
-			this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
-			return true;
-		} else {
-			brain.forget(MemoryModuleType.WALK_TARGET);
-			if (bl) {
-				brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
-			}
-
+		if (this.pathUpdateCountdownTicks > 0) {
+			this.pathUpdateCountdownTicks--;
 			return false;
+		} else {
+			Brain<?> brain = mobEntity.getBrain();
+			WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+			boolean bl = this.hasReached(mobEntity, walkTarget);
+			if (!bl && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
+				this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
+				return true;
+			} else {
+				brain.forget(MemoryModuleType.WALK_TARGET);
+				if (bl) {
+					brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+				}
+
+				return false;
+			}
 		}
 	}
 
@@ -66,6 +76,11 @@ public class WanderAroundTask extends Task<MobEntity> {
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+		if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)
+			&& !this.hasReached(mobEntity, (WalkTarget)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get())) {
+			this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(40);
+		}
+
 		mobEntity.getNavigation().stop();
 		mobEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
 		mobEntity.getBrain().forget(MemoryModuleType.PATH);
@@ -75,26 +90,22 @@ public class WanderAroundTask extends Task<MobEntity> {
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		mobEntity.getBrain().remember(MemoryModuleType.PATH, this.path);
 		mobEntity.getNavigation().startMovingAlong(this.path, (double)this.speed);
-		this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(10);
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		this.pathUpdateCountdownTicks--;
-		if (this.pathUpdateCountdownTicks <= 0) {
-			Path path = mobEntity.getNavigation().getCurrentPath();
-			Brain<?> brain = mobEntity.getBrain();
-			if (this.path != path) {
-				this.path = path;
-				brain.remember(MemoryModuleType.PATH, path);
-			}
+		Path path = mobEntity.getNavigation().getCurrentPath();
+		Brain<?> brain = mobEntity.getBrain();
+		if (this.path != path) {
+			this.path = path;
+			brain.remember(MemoryModuleType.PATH, path);
+		}
 
-			if (path != null && this.lookTargetPos != null) {
-				WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
-				if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.lookTargetPos) > 4.0
-					&& this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
-					this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
-					this.run(serverWorld, mobEntity, l);
-				}
+		if (path != null && this.lookTargetPos != null) {
+			WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+			if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.lookTargetPos) > 4.0
+				&& this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
+				this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
+				this.run(serverWorld, mobEntity, l);
 			}
 		}
 	}

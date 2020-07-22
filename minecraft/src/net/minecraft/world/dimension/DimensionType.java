@@ -31,7 +31,7 @@ import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.biome.source.VoronoiBiomeAccessType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
-import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
+import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 public class DimensionType {
 	public static final MapCodec<DimensionType> CODEC = RecordCodecBuilder.mapCodec(
@@ -270,11 +270,11 @@ public class DimensionType {
 	}
 
 	private static ChunkGenerator createEndGenerator(long seed) {
-		return new SurfaceChunkGenerator(new TheEndBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26358);
+		return new NoiseChunkGenerator(new TheEndBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26358);
 	}
 
 	private static ChunkGenerator createNetherGenerator(long seed) {
-		return new SurfaceChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26357);
+		return new NoiseChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26357);
 	}
 
 	public static SimpleRegistry<DimensionOptions> method_28517(long seed) {

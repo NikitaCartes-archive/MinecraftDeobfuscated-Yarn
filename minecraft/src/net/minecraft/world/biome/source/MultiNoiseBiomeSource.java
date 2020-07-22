@@ -8,6 +8,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,6 @@ import java.util.function.Function;
 import java.util.function.LongFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
@@ -27,18 +28,23 @@ import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class MultiNoiseBiomeSource extends BiomeSource {
+	private static final MultiNoiseBiomeSource.class_5487 field_26433 = new MultiNoiseBiomeSource.class_5487(-7, ImmutableList.of(1.0, 1.0));
 	public static final MapCodec<MultiNoiseBiomeSource> field_24718 = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Codec.LONG.fieldOf("seed").forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.seed),
 					RecordCodecBuilder.create(
 							instancex -> instancex.group(
-										Biome.MixedNoisePoint.CODEC.fieldOf("parameters").forGetter(Pair::getFirst), Biome.field_24677.fieldOf("biome").forGetter(Pair::getSecond)
+										Biome.MixedNoisePoint.CODEC.fieldOf("parameters").forGetter(Pair::getFirst), Biome.REGISTRY_CODEC.fieldOf("biome").forGetter(Pair::getSecond)
 									)
 									.apply(instancex, Pair::of)
 						)
 						.listOf()
 						.fieldOf("biomes")
-						.forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.biomePoints)
+						.forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.biomePoints),
+					MultiNoiseBiomeSource.class_5487.field_26438.fieldOf("temperature_noise").forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.field_26434),
+					MultiNoiseBiomeSource.class_5487.field_26438.fieldOf("humidity_noise").forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.field_26435),
+					MultiNoiseBiomeSource.class_5487.field_26438.fieldOf("altitude_noise").forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.field_26436),
+					MultiNoiseBiomeSource.class_5487.field_26438.fieldOf("weirdness_noise").forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.field_26437)
 				)
 				.apply(instance, MultiNoiseBiomeSource::new)
 	);
@@ -50,6 +56,10 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 					.orElseGet(() -> Either.right(multiNoiseBiomeSource))
 		)
 		.codec();
+	private final MultiNoiseBiomeSource.class_5487 field_26434;
+	private final MultiNoiseBiomeSource.class_5487 field_26435;
+	private final MultiNoiseBiomeSource.class_5487 field_26436;
+	private final MultiNoiseBiomeSource.class_5487 field_26437;
 	private final DoublePerlinNoiseSampler temperatureNoise;
 	private final DoublePerlinNoiseSampler humidityNoise;
 	private final DoublePerlinNoiseSampler altitudeNoise;
@@ -59,22 +69,41 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	private final long seed;
 	private final Optional<MultiNoiseBiomeSource.Preset> field_24721;
 
-	private MultiNoiseBiomeSource(long seed, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> biomePoints) {
-		this(seed, biomePoints, Optional.empty());
+	public MultiNoiseBiomeSource(long seed, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list, Optional<MultiNoiseBiomeSource.Preset> optional) {
+		this(seed, list, field_26433, field_26433, field_26433, field_26433, optional);
 	}
 
-	public MultiNoiseBiomeSource(long seed, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list, Optional<MultiNoiseBiomeSource.Preset> optional) {
+	public MultiNoiseBiomeSource(
+		long l,
+		List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list,
+		MultiNoiseBiomeSource.class_5487 arg,
+		MultiNoiseBiomeSource.class_5487 arg2,
+		MultiNoiseBiomeSource.class_5487 arg3,
+		MultiNoiseBiomeSource.class_5487 arg4
+	) {
+		this(l, list, arg, arg2, arg3, arg4, Optional.empty());
+	}
+
+	public MultiNoiseBiomeSource(
+		long l,
+		List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list,
+		MultiNoiseBiomeSource.class_5487 arg,
+		MultiNoiseBiomeSource.class_5487 arg2,
+		MultiNoiseBiomeSource.class_5487 arg3,
+		MultiNoiseBiomeSource.class_5487 arg4,
+		Optional<MultiNoiseBiomeSource.Preset> optional
+	) {
 		super((List<Biome>)list.stream().map(Pair::getSecond).map(Supplier::get).collect(Collectors.toList()));
-		this.seed = seed;
+		this.seed = l;
 		this.field_24721 = optional;
-		IntStream intStream = IntStream.rangeClosed(-7, -6);
-		IntStream intStream2 = IntStream.rangeClosed(-7, -6);
-		IntStream intStream3 = IntStream.rangeClosed(-7, -6);
-		IntStream intStream4 = IntStream.rangeClosed(-7, -6);
-		this.temperatureNoise = new DoublePerlinNoiseSampler(new ChunkRandom(seed), intStream);
-		this.humidityNoise = new DoublePerlinNoiseSampler(new ChunkRandom(seed + 1L), intStream2);
-		this.altitudeNoise = new DoublePerlinNoiseSampler(new ChunkRandom(seed + 2L), intStream3);
-		this.weirdnessNoise = new DoublePerlinNoiseSampler(new ChunkRandom(seed + 3L), intStream4);
+		this.field_26434 = arg;
+		this.field_26435 = arg2;
+		this.field_26436 = arg3;
+		this.field_26437 = arg4;
+		this.temperatureNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l), arg.method_30832(), arg.method_30834());
+		this.humidityNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 1L), arg2.method_30832(), arg2.method_30834());
+		this.altitudeNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 2L), arg3.method_30832(), arg3.method_30834());
+		this.weirdnessNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 3L), arg4.method_30832(), arg4.method_30834());
 		this.biomePoints = list;
 		this.threeDimensionalSampling = false;
 	}
@@ -101,7 +130,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public BiomeSource withSeed(long seed) {
-		return new MultiNoiseBiomeSource(seed, this.biomePoints, this.field_24721);
+		return new MultiNoiseBiomeSource(seed, this.biomePoints, this.field_26434, this.field_26435, this.field_26436, this.field_26437, this.field_24721);
 	}
 
 	@Override
@@ -154,6 +183,31 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 
 		public MultiNoiseBiomeSource getBiomeSource(long seed) {
 			return (MultiNoiseBiomeSource)this.biomeSourceFunction.apply(seed);
+		}
+	}
+
+	static class class_5487 {
+		private final int field_26439;
+		private final DoubleList field_26440;
+		public static final Codec<MultiNoiseBiomeSource.class_5487> field_26438 = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codec.INT.fieldOf("firstOctave").forGetter(MultiNoiseBiomeSource.class_5487::method_30832),
+						Codec.DOUBLE.listOf().fieldOf("amplitudes").forGetter(MultiNoiseBiomeSource.class_5487::method_30834)
+					)
+					.apply(instance, MultiNoiseBiomeSource.class_5487::new)
+		);
+
+		public class_5487(int i, List<Double> list) {
+			this.field_26439 = i;
+			this.field_26440 = new DoubleArrayList(list);
+		}
+
+		public int method_30832() {
+			return this.field_26439;
+		}
+
+		public DoubleList method_30834() {
+			return this.field_26440;
 		}
 	}
 }
