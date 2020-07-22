@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.gui.screen;
 
 import java.util.List;
 import java.util.stream.Collectors;

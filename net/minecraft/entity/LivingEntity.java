@@ -2737,11 +2737,15 @@ extends Entity {
             BlockState blockState = this.world.getBlockState((BlockPos)blockPos);
             if (blockState.getBlock() instanceof BedBlock) {
                 this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), 3);
-                Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, blockPos, 0).orElseGet(() -> {
+                Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, blockPos, this.yaw).orElseGet(() -> {
                     BlockPos blockPos2 = blockPos.up();
                     return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
                 });
+                Vec3d vec3d2 = Vec3d.ofBottomCenter(blockPos).subtract(vec3d).normalize();
+                float f = (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d2.z, vec3d2.x) * 57.2957763671875 - 90.0);
                 this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
+                this.yaw = f;
+                this.pitch = 0.0f;
             }
         });
         Vec3d vec3d = this.getPos();

@@ -5,11 +5,11 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.Maps;
 import java.util.HashMap;
+import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5425;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -56,6 +56,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
@@ -170,21 +171,27 @@ implements CrossbowUser {
 
     @Override
     @Nullable
-    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);
-        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
     protected void initEquipment(LocalDifficulty difficulty) {
-        ItemStack itemStack = new ItemStack(Items.CROSSBOW);
-        if (this.random.nextInt(300) == 0) {
-            HashMap<Enchantment, Integer> map = Maps.newHashMap();
-            map.put(Enchantments.PIERCING, 1);
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
+    }
+
+    @Override
+    protected void method_30759(float f) {
+        ItemStack itemStack;
+        super.method_30759(f);
+        if (this.random.nextInt(300) == 0 && (itemStack = this.getMainHandStack()).getItem() == Items.CROSSBOW) {
+            Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack);
+            map.putIfAbsent(Enchantments.PIERCING, 1);
             EnchantmentHelper.set(map, itemStack);
+            this.equipStack(EquipmentSlot.MAINHAND, itemStack);
         }
-        this.equipStack(EquipmentSlot.MAINHAND, itemStack);
     }
 
     @Override

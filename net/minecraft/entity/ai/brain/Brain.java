@@ -69,7 +69,7 @@ public class Brain<E extends LivingEntity> {
 
             @Override
             public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
-                return memoryModules.stream().flatMap((? super T memoryModuleType) -> Util.stream(memoryModuleType.getFactory().map((? super T codec) -> Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)memoryModuleType)))).map((? super T identifier) -> dynamicOps.createString(identifier.toString()));
+                return memoryModules.stream().flatMap((? super T memoryModuleType) -> Util.stream(memoryModuleType.getCodec().map((? super T codec) -> Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)memoryModuleType)))).map((? super T identifier) -> dynamicOps.createString(identifier.toString()));
             }
 
             @Override
@@ -85,7 +85,7 @@ public class Brain<E extends LivingEntity> {
             }
 
             private <T, U> DataResult<MemoryEntry<U>> method_28320(MemoryModuleType<U> memoryModuleType, DynamicOps<T> dynamicOps, T object) {
-                return memoryModuleType.getFactory().map(DataResult::success).orElseGet(() -> DataResult.error("No codec for memory: " + memoryModuleType)).flatMap((? super R codec) -> codec.parse(dynamicOps, object)).map((? super R memory) -> new MemoryEntry(memoryModuleType, Optional.of(memory)));
+                return memoryModuleType.getCodec().map(DataResult::success).orElseGet(() -> DataResult.error("No codec for memory: " + memoryModuleType)).flatMap((? super R codec) -> codec.parse(dynamicOps, object)).map((? super R memory) -> new MemoryEntry(memoryModuleType, Optional.of(memory)));
             }
 
             @Override
@@ -406,7 +406,7 @@ public class Brain<E extends LivingEntity> {
         }
 
         public <T> void serialize(DynamicOps<T> ops, RecordBuilder<T> builder) {
-            this.type.getFactory().ifPresent(codec -> this.data.ifPresent(memory -> builder.add(Registry.MEMORY_MODULE_TYPE.encodeStart(ops, this.type), codec.encodeStart(ops, memory))));
+            this.type.getCodec().ifPresent(codec -> this.data.ifPresent(memory -> builder.add(Registry.MEMORY_MODULE_TYPE.encodeStart(ops, this.type), codec.encodeStart(ops, memory))));
         }
     }
 

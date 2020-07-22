@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -105,6 +106,9 @@ StringRenderable {
      * <p>A shallow copy is made for the siblings.</p>
      */
     public MutableText shallowCopy();
+
+    @Environment(value=EnvType.CLIENT)
+    public class_5481 method_30937();
 
     @Override
     @Environment(value=EnvType.CLIENT)

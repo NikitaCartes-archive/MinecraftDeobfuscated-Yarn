@@ -114,7 +114,7 @@ Element {
         this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
         this.renderBg(matrices, minecraftClient, mouseX, mouseY);
         int j = this.active ? 0xFFFFFF : 0xA0A0A0;
-        this.drawCenteredText(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0f) << 24);
+        AbstractButtonWidget.drawCenteredText(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 
     protected void renderBg(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {

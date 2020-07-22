@@ -11,7 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DeltaFeatureConfig;
@@ -27,7 +27,7 @@ extends Feature<DeltaFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
         boolean bl = false;
         boolean bl2 = random.nextDouble() < 0.9;
         int i = bl2 ? deltaFeatureConfig.method_30403().getValue(random) : 0;
@@ -39,14 +39,14 @@ extends Feature<DeltaFeatureConfig> {
         for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, k, 0, l)) {
             BlockPos blockPos3;
             if (blockPos2.getManhattanDistance(blockPos) > m) break;
-            if (!DeltaFeature.method_27103(serverWorldAccess, blockPos2, deltaFeatureConfig)) continue;
+            if (!DeltaFeature.method_27103(structureWorldAccess, blockPos2, deltaFeatureConfig)) continue;
             if (bl3) {
                 bl = true;
-                this.setBlockState(serverWorldAccess, blockPos2, deltaFeatureConfig.method_30400());
+                this.setBlockState(structureWorldAccess, blockPos2, deltaFeatureConfig.method_30400());
             }
-            if (!DeltaFeature.method_27103(serverWorldAccess, blockPos3 = blockPos2.add(i, 0, j), deltaFeatureConfig)) continue;
+            if (!DeltaFeature.method_27103(structureWorldAccess, blockPos3 = blockPos2.add(i, 0, j), deltaFeatureConfig)) continue;
             bl = true;
-            this.setBlockState(serverWorldAccess, blockPos3, deltaFeatureConfig.method_30397());
+            this.setBlockState(structureWorldAccess, blockPos3, deltaFeatureConfig.method_30397());
         }
         return bl;
     }

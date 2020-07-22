@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class FixedBiomeSource
 extends BiomeSource {
-    public static final Codec<FixedBiomeSource> field_24717 = ((MapCodec)Biome.field_24677.fieldOf("biome")).xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome).stable().codec();
+    public static final Codec<FixedBiomeSource> field_24717 = ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome).stable().codec();
     private final Supplier<Biome> biome;
 
     public FixedBiomeSource(Biome biome) {

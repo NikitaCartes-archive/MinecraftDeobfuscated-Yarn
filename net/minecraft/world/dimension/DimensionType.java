@@ -36,7 +36,7 @@ import net.minecraft.world.biome.source.VoronoiBiomeAccessType;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
-import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
+import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 public class DimensionType {
     public static final MapCodec<DimensionType> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(Codec.LONG.optionalFieldOf("fixed_time").xmap(optional -> optional.map(OptionalLong::of).orElseGet(OptionalLong::empty), optionalLong -> optionalLong.isPresent() ? Optional.of(optionalLong.getAsLong()) : Optional.empty()).forGetter(dimensionType -> dimensionType.fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::isUltrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::isNatural), ((MapCodec)Codec.BOOL.fieldOf("shrunk")).forGetter(DimensionType::isShrunk), ((MapCodec)Codec.BOOL.fieldOf("piglin_safe")).forGetter(DimensionType::isPiglinSafe), ((MapCodec)Codec.BOOL.fieldOf("bed_works")).forGetter(DimensionType::isBedWorking), ((MapCodec)Codec.BOOL.fieldOf("respawn_anchor_works")).forGetter(DimensionType::isRespawnAnchorWorking), ((MapCodec)Codec.BOOL.fieldOf("has_raids")).forGetter(DimensionType::hasRaids), ((MapCodec)Codec.intRange(0, 256).fieldOf("logical_height")).forGetter(DimensionType::getLogicalHeight), ((MapCodec)Identifier.CODEC.fieldOf("infiniburn")).forGetter(dimensionType -> dimensionType.infiniburn), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(dimensionType -> Float.valueOf(dimensionType.ambientLight))).apply((Applicative<DimensionType, ?>)instance, DimensionType::new));
@@ -137,11 +137,11 @@ public class DimensionType {
     }
 
     private static ChunkGenerator createEndGenerator(long seed) {
-        return new SurfaceChunkGenerator(new TheEndBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26358);
+        return new NoiseChunkGenerator(new TheEndBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26358);
     }
 
     private static ChunkGenerator createNetherGenerator(long seed) {
-        return new SurfaceChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26357);
+        return new NoiseChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26357);
     }
 
     public static SimpleRegistry<DimensionOptions> method_28517(long seed) {

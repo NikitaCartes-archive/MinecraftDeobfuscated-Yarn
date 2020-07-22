@@ -97,7 +97,7 @@ implements AutoCloseable {
                 profiler.push("caching");
                 IntOpenHashSet intSet = new IntOpenHashSet();
                 for (Font font2 : list) {
-                    intSet.addAll(font2.method_27442());
+                    intSet.addAll(font2.getProvidedGlyphs());
                 }
                 intSet.forEach(i -> {
                     Font font;

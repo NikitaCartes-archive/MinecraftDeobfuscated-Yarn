@@ -151,7 +151,7 @@ extends Item {
             return Optional.empty();
         }
         mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0f, 0.0f);
-        serverWorld.spawnEntity(mobEntity2);
+        serverWorld.spawnEntityAndPassengers(mobEntity2);
         if (itemStack.hasCustomName()) {
             mobEntity2.setCustomName(itemStack.getName());
         }

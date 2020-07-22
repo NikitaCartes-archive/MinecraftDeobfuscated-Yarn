@@ -11,7 +11,7 @@ import net.minecraft.structure.rule.RuleTestType;
 
 public class AlwaysTrueRuleTest
 extends RuleTest {
-    public static final Codec<AlwaysTrueRuleTest> field_24994 = Codec.unit(() -> INSTANCE);
+    public static final Codec<AlwaysTrueRuleTest> CODEC = Codec.unit(() -> INSTANCE);
     public static final AlwaysTrueRuleTest INSTANCE = new AlwaysTrueRuleTest();
 
     private AlwaysTrueRuleTest() {

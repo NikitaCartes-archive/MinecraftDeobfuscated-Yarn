@@ -27,8 +27,8 @@ extends StructureProcessor {
     public static final BlockIgnoreStructureProcessor IGNORE_AIR_AND_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.AIR, Blocks.STRUCTURE_BLOCK));
     private final ImmutableList<Block> blocks;
 
-    public BlockIgnoreStructureProcessor(List<Block> list) {
-        this.blocks = ImmutableList.copyOf(list);
+    public BlockIgnoreStructureProcessor(List<Block> blocks) {
+        this.blocks = ImmutableList.copyOf(blocks);
     }
 
     @Override

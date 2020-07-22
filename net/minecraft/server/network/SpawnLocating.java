@@ -38,7 +38,7 @@ public class SpawnLocating {
             BlockState blockState2 = world.getBlockState(mutable);
             if (!blockState2.getFluidState().isEmpty()) break;
             if (!blockState2.equals(blockState)) continue;
-            return mutable.up().toImmutable();
+            return ((BlockPos)mutable.up()).toImmutable();
         }
         return null;
     }

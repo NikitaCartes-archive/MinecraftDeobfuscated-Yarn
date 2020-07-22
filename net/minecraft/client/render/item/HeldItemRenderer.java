@@ -47,7 +47,7 @@ public class HeldItemRenderer {
 
     public HeldItemRenderer(MinecraftClient client) {
         this.client = client;
-        this.renderManager = client.getEntityRenderManager();
+        this.renderManager = client.getEntityRenderDispatcher();
         this.itemRenderer = client.getItemRenderer();
     }
 

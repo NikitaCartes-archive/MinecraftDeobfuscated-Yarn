@@ -214,12 +214,12 @@ implements ChunkLightingView {
     }
 
     public void setColumnEnabled(ChunkPos pos, boolean enabled) {
-        long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
+        long l = ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(pos.x, 0, pos.z));
         ((LightStorage)this.lightStorage).setColumnEnabled(l, enabled);
     }
 
     public void setRetainColumn(ChunkPos pos, boolean retainData) {
-        long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
+        long l = ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(pos.x, 0, pos.z));
         ((LightStorage)this.lightStorage).setRetainColumn(l, retainData);
     }
 }

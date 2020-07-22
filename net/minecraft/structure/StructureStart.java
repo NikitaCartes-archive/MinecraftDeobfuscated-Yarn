@@ -17,7 +17,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
@@ -78,7 +78,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void generateStructure(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+    public void generateStructure(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
         List<StructurePiece> list = this.children;
         synchronized (list) {
             if (this.children.isEmpty()) {
@@ -90,7 +90,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
             Iterator<StructurePiece> iterator = this.children.iterator();
             while (iterator.hasNext()) {
                 StructurePiece structurePiece = iterator.next();
-                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) continue;
+                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) continue;
                 iterator.remove();
             }
             this.setBoundingBoxFromChildren();

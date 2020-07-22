@@ -63,7 +63,7 @@ implements DataProvider {
         Path path3 = this.root.getOutput();
         ArrayList list = Lists.newArrayList();
         for (Path path22 : this.root.getInputs()) {
-            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".snbt")).forEach(path2 -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt((Path)path2, this.getFileName(path22, (Path)path2)), Util.getServerWorkerExecutor())));
+            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".snbt")).forEach(path2 -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt((Path)path2, this.getFileName(path22, (Path)path2)), Util.getMainWorkerExecutor())));
         }
         Util.combine(list).join().stream().filter(Objects::nonNull).forEach(compressedData -> this.write(cache, (CompressedData)compressedData, path3));
     }

@@ -43,7 +43,7 @@ extends Goal {
     protected void setDoorOpen(boolean open) {
         BlockState blockState;
         if (this.doorValid && (blockState = this.mob.world.getBlockState(this.doorPos)).getBlock() instanceof DoorBlock) {
-            ((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, this.doorPos, open);
+            ((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, blockState, this.doorPos, open);
         }
     }
 

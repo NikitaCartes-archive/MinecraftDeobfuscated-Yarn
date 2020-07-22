@@ -39,18 +39,22 @@ extends class_5434 {
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
+        return !this.method_30845(chunkGenerator, l, chunkRandom, i, j);
+    }
+
+    private boolean method_30845(ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j) {
         StructureConfig structureConfig = chunkGenerator.getConfig().getForType(StructureFeature.VILLAGE);
         if (structureConfig == null) {
-            return true;
+            return false;
         }
-        for (int n = i - 10; n <= i + 10; ++n) {
-            for (int o = j - 10; o <= j + 10; ++o) {
-                ChunkPos chunkPos2 = StructureFeature.VILLAGE.getStartChunk(structureConfig, l, chunkRandom, n, o);
-                if (n != chunkPos2.x || o != chunkPos2.z) continue;
-                return false;
+        for (int k = i - 10; k <= i + 10; ++k) {
+            for (int m = j - 10; m <= j + 10; ++m) {
+                ChunkPos chunkPos = StructureFeature.VILLAGE.getStartChunk(structureConfig, l, chunkRandom, k, m);
+                if (k != chunkPos.x || m != chunkPos.z) continue;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }
 

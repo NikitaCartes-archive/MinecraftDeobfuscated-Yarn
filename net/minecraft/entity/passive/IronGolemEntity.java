@@ -67,8 +67,8 @@ implements Angerable {
     private int attackTicksLeft;
     private int lookingAtVillagerTicksLeft;
     private static final IntRange field_25365 = Durations.betweenSeconds(20, 39);
-    private int field_25366;
-    private UUID field_25367;
+    private int angerTime;
+    private UUID angryAt;
 
     public IronGolemEntity(EntityType<? extends IronGolemEntity> entityType, World world) {
         super((EntityType<? extends GolemEntity>)entityType, world);
@@ -167,22 +167,22 @@ implements Angerable {
 
     @Override
     public void setAngerTime(int ticks) {
-        this.field_25366 = ticks;
+        this.angerTime = ticks;
     }
 
     @Override
     public int getAngerTime() {
-        return this.field_25366;
+        return this.angerTime;
     }
 
     @Override
     public void setAngryAt(@Nullable UUID uuid) {
-        this.field_25367 = uuid;
+        this.angryAt = uuid;
     }
 
     @Override
     public UUID getAngryAt() {
-        return this.field_25367;
+        return this.angryAt;
     }
 
     private float getAttackDamage() {

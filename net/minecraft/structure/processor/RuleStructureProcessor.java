@@ -24,8 +24,8 @@ extends StructureProcessor {
     public static final Codec<RuleStructureProcessor> CODEC = ((MapCodec)StructureProcessorRule.CODEC.listOf().fieldOf("rules")).xmap(RuleStructureProcessor::new, ruleStructureProcessor -> ruleStructureProcessor.rules).codec();
     private final ImmutableList<StructureProcessorRule> rules;
 
-    public RuleStructureProcessor(List<? extends StructureProcessorRule> list) {
-        this.rules = ImmutableList.copyOf(list);
+    public RuleStructureProcessor(List<? extends StructureProcessorRule> rules) {
+        this.rules = ImmutableList.copyOf(rules);
     }
 
     @Override

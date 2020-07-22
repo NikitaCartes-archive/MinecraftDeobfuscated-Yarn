@@ -15,7 +15,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -40,6 +39,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
@@ -139,7 +139,7 @@ public final class SpawnHelper {
                 if (!SpawnHelper.isValidSpawn(world, mobEntity, f)) continue;
                 entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.NATURAL, entityData, null);
                 ++p;
-                world.spawnEntity(mobEntity);
+                world.spawnEntityAndPassengers(mobEntity);
                 runner.run(mobEntity, chunk);
                 if (++j >= mobEntity.getLimitPerChunk()) {
                     return;
@@ -222,7 +222,7 @@ public final class SpawnHelper {
     }
 
     private static List<Biome.SpawnEntry> method_29950(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos blockPos, @Nullable Biome biome) {
-        if (spawnGroup == SpawnGroup.MONSTER && serverWorld.getBlockState(blockPos.down()).getBlock() == Blocks.NETHER_BRICKS && structureAccessor.method_28388(blockPos, false, StructureFeature.FORTRESS).hasChildren()) {
+        if (spawnGroup == SpawnGroup.MONSTER && serverWorld.getBlockState(blockPos.down()).getBlock() == Blocks.NETHER_BRICKS && structureAccessor.getStructureAt(blockPos, false, StructureFeature.FORTRESS).hasChildren()) {
             return StructureFeature.FORTRESS.getMonsterSpawns();
         }
         return chunkGenerator.getEntitySpawnList(biome != null ? biome : serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos);
@@ -279,7 +279,7 @@ public final class SpawnHelper {
         return SpawnHelper.isClearForSpawn(world, pos, blockState, fluidState, entityType) && SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos), entityType);
     }
 
-    public static void populateEntities(class_5425 arg, Biome biome, int chunkX, int chunkZ, Random random) {
+    public static void populateEntities(ServerWorldAccess serverWorldAccess, Biome biome, int chunkX, int chunkZ, Random random) {
         List<Biome.SpawnEntry> list = biome.getEntitySpawnList(SpawnGroup.CREATURE);
         if (list.isEmpty()) {
             return;
@@ -297,24 +297,24 @@ public final class SpawnHelper {
             for (int p = 0; p < k; ++p) {
                 boolean bl = false;
                 for (int q = 0; !bl && q < 4; ++q) {
-                    BlockPos blockPos = SpawnHelper.getEntitySpawnPos(arg, spawnEntry.type, l, m);
-                    if (spawnEntry.type.isSummonable() && SpawnHelper.canSpawn(SpawnRestriction.getLocation(spawnEntry.type), arg, blockPos, spawnEntry.type)) {
+                    BlockPos blockPos = SpawnHelper.getEntitySpawnPos(serverWorldAccess, spawnEntry.type, l, m);
+                    if (spawnEntry.type.isSummonable() && SpawnHelper.canSpawn(SpawnRestriction.getLocation(spawnEntry.type), serverWorldAccess, blockPos, spawnEntry.type)) {
                         MobEntity mobEntity;
                         Object entity;
                         float f = spawnEntry.type.getWidth();
                         double d = MathHelper.clamp((double)l, (double)i + (double)f, (double)i + 16.0 - (double)f);
                         double e = MathHelper.clamp((double)m, (double)j + (double)f, (double)j + 16.0 - (double)f);
-                        if (!arg.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.canSpawn(spawnEntry.type, arg, SpawnReason.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), arg.getRandom())) continue;
+                        if (!serverWorldAccess.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.canSpawn(spawnEntry.type, serverWorldAccess, SpawnReason.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), serverWorldAccess.getRandom())) continue;
                         try {
-                            entity = spawnEntry.type.create(arg.getWorld());
+                            entity = spawnEntry.type.create(serverWorldAccess.toServerWorld());
                         } catch (Exception exception) {
                             LOGGER.warn("Failed to create mob", (Throwable)exception);
                             continue;
                         }
                         ((Entity)entity).refreshPositionAndAngles(d, blockPos.getY(), e, random.nextFloat() * 360.0f, 0.0f);
-                        if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).canSpawn(arg, SpawnReason.CHUNK_GENERATION) && mobEntity.canSpawn(arg)) {
-                            entityData = mobEntity.initialize(arg, arg.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.CHUNK_GENERATION, entityData, null);
-                            arg.spawnEntity(mobEntity);
+                        if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).canSpawn(serverWorldAccess, SpawnReason.CHUNK_GENERATION) && mobEntity.canSpawn(serverWorldAccess)) {
+                            entityData = mobEntity.initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.CHUNK_GENERATION, entityData, null);
+                            serverWorldAccess.spawnEntityAndPassengers(mobEntity);
                             bl = true;
                         }
                     }

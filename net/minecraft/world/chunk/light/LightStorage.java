@@ -180,9 +180,9 @@ extends SectionDistanceLevelPropagator {
             storage.removePendingUpdateIf(m -> ChunkSectionPos.fromBlockPos(m) == sectionPos);
             return;
         }
-        int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(sectionPos));
-        int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(sectionPos));
-        int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(sectionPos));
+        int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(sectionPos));
+        int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(sectionPos));
+        int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(sectionPos));
         for (int l = 0; l < 16; ++l) {
             for (int m2 = 0; m2 < 16; ++m2) {
                 for (int n = 0; n < 16; ++n) {
@@ -210,7 +210,7 @@ extends SectionDistanceLevelPropagator {
             this.removeSection(lightProvider, l);
             ChunkNibbleArray chunkNibbleArray = (ChunkNibbleArray)this.queuedSections.remove(l);
             chunkNibbleArray2 = ((ChunkToNibbleArrayMap)this.storage).removeChunk(l);
-            if (!this.columnsToRetain.contains(ChunkSectionPos.withZeroZ(l))) continue;
+            if (!this.columnsToRetain.contains(ChunkSectionPos.withZeroY(l))) continue;
             if (chunkNibbleArray != null) {
                 this.queuedSections.put(l, chunkNibbleArray);
                 continue;
@@ -259,9 +259,9 @@ extends SectionDistanceLevelPropagator {
         if (!this.hasSection(sectionPos)) {
             return;
         }
-        int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(sectionPos));
-        int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(sectionPos));
-        int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(sectionPos));
+        int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(sectionPos));
+        int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(sectionPos));
+        int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(sectionPos));
         for (Direction direction : DIRECTIONS) {
             long l = ChunkSectionPos.offset(sectionPos, direction);
             if (this.queuedSections.containsKey(l) || !this.hasSection(l)) continue;

@@ -24,7 +24,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(0);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
+        SaveLevelScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

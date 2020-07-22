@@ -17,12 +17,12 @@ public class BlankFont
 implements Font {
     @Override
     @Nullable
-    public RenderableGlyph getGlyph(int i) {
+    public RenderableGlyph getGlyph(int codePoint) {
         return BlankGlyph.INSTANCE;
     }
 
     @Override
-    public IntSet method_27442() {
+    public IntSet getProvidedGlyphs() {
         return IntSets.EMPTY_SET;
     }
 }

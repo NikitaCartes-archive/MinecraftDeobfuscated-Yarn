@@ -51,28 +51,28 @@ extends Block {
     public static final EnumProperty<WireConnection> WIRE_CONNECTION_WEST = Properties.WEST_WIRE_CONNECTION;
     public static final IntProperty POWER = Properties.POWER;
     public static final Map<Direction, EnumProperty<WireConnection>> DIRECTION_TO_WIRE_CONNECTION_PROPERTY = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, WIRE_CONNECTION_NORTH, Direction.EAST, WIRE_CONNECTION_EAST, Direction.SOUTH, WIRE_CONNECTION_SOUTH, Direction.WEST, WIRE_CONNECTION_WEST));
-    private static final VoxelShape field_24413 = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0);
+    private static final VoxelShape DOT_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0);
     private static final Map<Direction, VoxelShape> field_24414 = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, Block.createCuboidShape(3.0, 0.0, 0.0, 13.0, 1.0, 13.0), Direction.SOUTH, Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 16.0), Direction.EAST, Block.createCuboidShape(3.0, 0.0, 3.0, 16.0, 1.0, 13.0), Direction.WEST, Block.createCuboidShape(0.0, 0.0, 3.0, 13.0, 1.0, 13.0)));
     private static final Map<Direction, VoxelShape> field_24415 = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, VoxelShapes.union(field_24414.get(Direction.NORTH), Block.createCuboidShape(3.0, 0.0, 0.0, 13.0, 16.0, 1.0)), Direction.SOUTH, VoxelShapes.union(field_24414.get(Direction.SOUTH), Block.createCuboidShape(3.0, 0.0, 15.0, 13.0, 16.0, 16.0)), Direction.EAST, VoxelShapes.union(field_24414.get(Direction.EAST), Block.createCuboidShape(15.0, 0.0, 3.0, 16.0, 16.0, 13.0)), Direction.WEST, VoxelShapes.union(field_24414.get(Direction.WEST), Block.createCuboidShape(0.0, 0.0, 3.0, 1.0, 16.0, 13.0))));
     private final Map<BlockState, VoxelShape> field_24416 = Maps.newHashMap();
     private static final Vector3f[] field_24466 = new Vector3f[16];
-    private final BlockState dotShape;
+    private final BlockState dotState;
     private boolean wiresGivePower = true;
 
     public RedstoneWireBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(WIRE_CONNECTION_NORTH, WireConnection.NONE)).with(WIRE_CONNECTION_EAST, WireConnection.NONE)).with(WIRE_CONNECTION_SOUTH, WireConnection.NONE)).with(WIRE_CONNECTION_WEST, WireConnection.NONE)).with(POWER, 0));
-        this.dotShape = (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WIRE_CONNECTION_NORTH, WireConnection.SIDE)).with(WIRE_CONNECTION_EAST, WireConnection.SIDE)).with(WIRE_CONNECTION_SOUTH, WireConnection.SIDE)).with(WIRE_CONNECTION_WEST, WireConnection.SIDE);
+        this.dotState = (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WIRE_CONNECTION_NORTH, WireConnection.SIDE)).with(WIRE_CONNECTION_EAST, WireConnection.SIDE)).with(WIRE_CONNECTION_SOUTH, WireConnection.SIDE)).with(WIRE_CONNECTION_WEST, WireConnection.SIDE);
         for (BlockState blockState : this.getStateManager().getStates()) {
             if (blockState.get(POWER) != 0) continue;
             this.field_24416.put(blockState, this.method_27845(blockState));
         }
     }
 
-    private VoxelShape method_27845(BlockState blockState) {
-        VoxelShape voxelShape = field_24413;
+    private VoxelShape method_27845(BlockState state) {
+        VoxelShape voxelShape = DOT_SHAPE;
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            WireConnection wireConnection = (WireConnection)blockState.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
+            WireConnection wireConnection = (WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
             if (wireConnection == WireConnection.SIDE) {
                 voxelShape = VoxelShapes.union(voxelShape, field_24414.get(direction));
                 continue;
@@ -90,7 +90,7 @@ extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.method_27840(ctx.getWorld(), this.dotShape, ctx.getBlockPos());
+        return this.method_27840(ctx.getWorld(), this.dotState, ctx.getBlockPos());
     }
 
     private BlockState method_27840(BlockView world, BlockState state, BlockPos pos) {
@@ -121,14 +121,14 @@ extends Block {
         return state;
     }
 
-    private BlockState method_27843(BlockView blockView, BlockState blockState, BlockPos blockPos) {
-        boolean bl = !blockView.getBlockState(blockPos.up()).isSolidBlock(blockView, blockPos);
+    private BlockState method_27843(BlockView world, BlockState state, BlockPos pos) {
+        boolean bl = !world.getBlockState(pos.up()).isSolidBlock(world, pos);
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            if (((WireConnection)blockState.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected()) continue;
-            WireConnection wireConnection = this.method_27841(blockView, blockPos, direction, bl);
-            blockState = (BlockState)blockState.with(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), wireConnection);
+            if (((WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected()) continue;
+            WireConnection wireConnection = this.method_27841(world, pos, direction, bl);
+            state = (BlockState)state.with(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), wireConnection);
         }
-        return blockState;
+        return state;
     }
 
     @Override
@@ -143,7 +143,7 @@ extends Block {
         if (wireConnection.isConnected() == ((WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() && !RedstoneWireBlock.isFullyConnected(state)) {
             return (BlockState)state.with(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), wireConnection);
         }
-        return this.method_27840(world, (BlockState)((BlockState)this.dotShape.with(POWER, state.get(POWER))).with(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), wireConnection), pos);
+        return this.method_27840(world, (BlockState)((BlockState)this.dotState.with(POWER, state.get(POWER))).with(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), wireConnection), pos);
     }
 
     private static boolean isFullyConnected(BlockState state) {
@@ -208,7 +208,7 @@ extends Block {
     }
 
     private void update(World world, BlockPos pos, BlockState state) {
-        int i = this.method_27842(world, pos);
+        int i = this.getReceivedRedstonePower(world, pos);
         if (state.get(POWER) != i) {
             if (world.getBlockState(pos) == state) {
                 world.setBlockState(pos, (BlockState)state.with(POWER, i), 2);
@@ -224,23 +224,23 @@ extends Block {
         }
     }
 
-    private int method_27842(World world, BlockPos blockPos) {
+    private int getReceivedRedstonePower(World world, BlockPos pos) {
         this.wiresGivePower = false;
-        int i = world.getReceivedRedstonePower(blockPos);
+        int i = world.getReceivedRedstonePower(pos);
         this.wiresGivePower = true;
         int j = 0;
         if (i < 15) {
             for (Direction direction : Direction.Type.HORIZONTAL) {
-                BlockPos blockPos2 = blockPos.offset(direction);
-                BlockState blockState = world.getBlockState(blockPos2);
+                BlockPos blockPos = pos.offset(direction);
+                BlockState blockState = world.getBlockState(blockPos);
                 j = Math.max(j, this.increasePower(blockState));
-                BlockPos blockPos3 = blockPos.up();
-                if (blockState.isSolidBlock(world, blockPos2) && !world.getBlockState(blockPos3).isSolidBlock(world, blockPos3)) {
-                    j = Math.max(j, this.increasePower(world.getBlockState(blockPos2.up())));
+                BlockPos blockPos2 = pos.up();
+                if (blockState.isSolidBlock(world, blockPos) && !world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) {
+                    j = Math.max(j, this.increasePower(world.getBlockState(blockPos.up())));
                     continue;
                 }
-                if (blockState.isSolidBlock(world, blockPos2)) continue;
-                j = Math.max(j, this.increasePower(world.getBlockState(blockPos2.down())));
+                if (blockState.isSolidBlock(world, blockPos)) continue;
+                j = Math.max(j, this.increasePower(world.getBlockState(blockPos.down())));
             }
         }
         return Math.max(i, j - 1);
@@ -288,17 +288,17 @@ extends Block {
         this.method_27844(world, pos);
     }
 
-    private void method_27844(World world, BlockPos blockPos) {
+    private void method_27844(World world, BlockPos pos) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            this.updateNeighbors(world, blockPos.offset(direction));
+            this.updateNeighbors(world, pos.offset(direction));
         }
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockPos blockPos2 = blockPos.offset(direction);
-            if (world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) {
-                this.updateNeighbors(world, blockPos2.up());
+            BlockPos blockPos = pos.offset(direction);
+            if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
+                this.updateNeighbors(world, blockPos.up());
                 continue;
             }
-            this.updateNeighbors(world, blockPos2.down());
+            this.updateNeighbors(world, blockPos.down());
         }
     }
 
@@ -368,7 +368,7 @@ extends Block {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void method_27936(World world, Random random, BlockPos blockPos, Vector3f vector3f, Direction direction, Direction direction2, float f, float g) {
+    private void method_27936(World world, Random random, BlockPos pos, Vector3f vector3f, Direction direction, Direction direction2, float f, float g) {
         float h = g - f;
         if (random.nextFloat() >= 0.2f * h) {
             return;
@@ -378,7 +378,7 @@ extends Block {
         double d = 0.5 + (double)(0.4375f * (float)direction.getOffsetX()) + (double)(j * (float)direction2.getOffsetX());
         double e = 0.5 + (double)(0.4375f * (float)direction.getOffsetY()) + (double)(j * (float)direction2.getOffsetY());
         double k = 0.5 + (double)(0.4375f * (float)direction.getOffsetZ()) + (double)(j * (float)direction2.getOffsetZ());
-        world.addParticle(new DustParticleEffect(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0f), (double)blockPos.getX() + d, (double)blockPos.getY() + e, (double)blockPos.getZ() + k, 0.0, 0.0, 0.0);
+        world.addParticle(new DustParticleEffect(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0f), (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + k, 0.0, 0.0, 0.0);
     }
 
     @Override
@@ -443,7 +443,7 @@ extends Block {
             return ActionResult.PASS;
         }
         if (RedstoneWireBlock.isFullyConnected(state) || RedstoneWireBlock.isNotConnected(state)) {
-            BlockState blockState = RedstoneWireBlock.isFullyConnected(state) ? this.getDefaultState() : this.dotShape;
+            BlockState blockState = RedstoneWireBlock.isFullyConnected(state) ? this.getDefaultState() : this.dotState;
             blockState = (BlockState)blockState.with(POWER, state.get(POWER));
             if ((blockState = this.method_27840(world, blockState, pos)) != state) {
                 world.setBlockState(pos, blockState, 3);
@@ -454,11 +454,11 @@ extends Block {
         return ActionResult.PASS;
     }
 
-    private void method_28482(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+    private void method_28482(World world, BlockPos pos, BlockState blockState, BlockState blockState2) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockPos blockPos2 = blockPos.offset(direction);
-            if (((WireConnection)blockState.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() == ((WireConnection)blockState2.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() || !world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) continue;
-            world.updateNeighborsExcept(blockPos2, blockState2.getBlock(), direction.getOpposite());
+            BlockPos blockPos = pos.offset(direction);
+            if (((WireConnection)blockState.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() == ((WireConnection)blockState2.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() || !world.getBlockState(blockPos).isSolidBlock(world, blockPos)) continue;
+            world.updateNeighborsExcept(blockPos, blockState2.getBlock(), direction.getOpposite());
         }
     }
 

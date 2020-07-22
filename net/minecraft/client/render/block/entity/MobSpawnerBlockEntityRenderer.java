@@ -40,7 +40,7 @@ extends BlockEntityRenderer<MobSpawnerBlockEntity> {
             matrixStack.translate(0.0, -0.2f, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-30.0f));
             matrixStack.scale(g, g, g);
-            MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
+            MinecraftClient.getInstance().getEntityRenderDispatcher().render(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
         }
         matrixStack.pop();
     }

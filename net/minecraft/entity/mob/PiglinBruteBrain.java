@@ -52,7 +52,7 @@ public class PiglinBruteBrain {
     }
 
     private static void method_30257(PiglinBruteEntity piglinBruteEntity, Brain<PiglinBruteEntity> brain) {
-        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(200), new OpenDoorsTask(), new ForgetAngryAtTargetTask()));
+        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(), new OpenDoorsTask(), new ForgetAngryAtTargetTask()));
     }
 
     private static void method_30260(PiglinBruteEntity piglinBruteEntity, Brain<PiglinBruteEntity> brain) {

@@ -42,7 +42,7 @@ implements Wearable {
     private BlockPattern ironGolemDispenserPattern;
     @Nullable
     private BlockPattern ironGolemPattern;
-    private static final Predicate<BlockState> IS_PUMPKIN_PREDICATE = blockState -> blockState != null && (blockState.isOf(Blocks.CARVED_PUMPKIN) || blockState.isOf(Blocks.JACK_O_LANTERN));
+    private static final Predicate<BlockState> IS_GOLEM_HEAD_PREDICATE = state -> state != null && (state.isOf(Blocks.CARVED_PUMPKIN) || state.isOf(Blocks.JACK_O_LANTERN));
 
     protected CarvedPumpkinBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -130,7 +130,7 @@ implements Wearable {
 
     private BlockPattern getSnowGolemPattern() {
         if (this.snowGolemPattern == null) {
-            this.snowGolemPattern = BlockPatternBuilder.start().aisle("^", "#", "#").where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE)).where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SNOW_BLOCK))).build();
+            this.snowGolemPattern = BlockPatternBuilder.start().aisle("^", "#", "#").where('^', CachedBlockPosition.matchesBlockState(IS_GOLEM_HEAD_PREDICATE)).where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.SNOW_BLOCK))).build();
         }
         return this.snowGolemPattern;
     }
@@ -144,7 +144,7 @@ implements Wearable {
 
     private BlockPattern getIronGolemPattern() {
         if (this.ironGolemPattern == null) {
-            this.ironGolemPattern = BlockPatternBuilder.start().aisle("~^~", "###", "~#~").where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE)).where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
+            this.ironGolemPattern = BlockPatternBuilder.start().aisle("~^~", "###", "~#~").where('^', CachedBlockPosition.matchesBlockState(IS_GOLEM_HEAD_PREDICATE)).where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
         }
         return this.ironGolemPattern;
     }

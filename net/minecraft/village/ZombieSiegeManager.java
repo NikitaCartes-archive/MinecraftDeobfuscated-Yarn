@@ -15,10 +15,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Spawner;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ZombieSiegeManager
 implements Spawner {
+    private static final Logger field_26390 = LogManager.getLogger();
     private boolean spawned;
     private State state = State.SIEGE_DONE;
     private int remaining;
@@ -91,11 +94,11 @@ implements Spawner {
             zombieEntity = new ZombieEntity(world);
             zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.EVENT, null, null);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            field_26390.warn("Failed to create zombie for village siege at {}", (Object)vec3d, (Object)exception);
             return;
         }
         zombieEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, world.random.nextFloat() * 360.0f, 0.0f);
-        world.spawnEntity(zombieEntity);
+        world.spawnEntityAndPassengers(zombieEntity);
     }
 
     @Nullable

@@ -64,7 +64,12 @@ import org.jetbrains.annotations.Nullable;
 public class CreateWorldScreen
 extends Screen {
     private static final Logger field_25480 = LogManager.getLogger();
-    private static final TranslatableText field_25898 = new TranslatableText("selectWorld.gameMode");
+    private static final Text field_25898 = new TranslatableText("selectWorld.gameMode");
+    private static final Text field_26598 = new TranslatableText("selectWorld.enterSeed");
+    private static final Text field_26599 = new TranslatableText("selectWorld.seedInfo");
+    private static final Text field_26600 = new TranslatableText("selectWorld.enterName");
+    private static final Text field_26601 = new TranslatableText("selectWorld.resultFolder");
+    private static final Text field_26602 = new TranslatableText("selectWorld.allowCommands.info");
     private final Screen parent;
     private TextFieldWidget levelNameField;
     private String saveDirectoryName;
@@ -360,19 +365,19 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
+        CreateWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
         if (this.moreOptionsOpen) {
-            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.enterSeed", new Object[0]), this.width / 2 - 100, 47, -6250336);
-            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.seedInfo", new Object[0]), this.width / 2 - 100, 85, -6250336);
+            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, field_26598, this.width / 2 - 100, 47, -6250336);
+            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, field_26599, this.width / 2 - 100, 85, -6250336);
             this.moreOptionsDialog.render(matrices, mouseX, mouseY, delta);
         } else {
-            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.enterName", new Object[0]), this.width / 2 - 100, 47, -6250336);
-            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.resultFolder", new Object[0]) + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
+            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, field_26600, this.width / 2 - 100, 47, -6250336);
+            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, new LiteralText("").append(field_26601).append(" ").append(this.saveDirectoryName), this.width / 2 - 100, 85, -6250336);
             this.levelNameField.render(matrices, mouseX, mouseY, delta);
-            this.drawTextWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 150, 122, -6250336);
-            this.drawTextWithShadow(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 150, 134, -6250336);
+            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 150, 122, -6250336);
+            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 150, 134, -6250336);
             if (this.enableCheatsButton.visible) {
-                this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.allowCommands.info", new Object[0]), this.width / 2 - 150, 172, -6250336);
+                CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, field_26602, this.width / 2 - 150, 172, -6250336);
             }
         }
         super.render(matrices, mouseX, mouseY, delta);
@@ -418,7 +423,7 @@ extends Screen {
             return;
         }
         this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
-        ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), this.client).handle((serverResourceManager, throwable) -> {
+        ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), this.client).handle((serverResourceManager, throwable) -> {
             if (throwable != null) {
                 field_25480.warn("Failed to validate datapack", (Throwable)throwable);
                 this.client.send(() -> this.client.openScreen(new ConfirmScreen(bl -> {

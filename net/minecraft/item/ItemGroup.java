@@ -12,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -129,6 +131,7 @@ public abstract class ItemGroup {
     }.setTexture("inventory.png").setNoScrollbar().setNoTooltip();
     private final int index;
     private final String id;
+    private final Text translationKey;
     private String name;
     private String texture = "items.png";
     private boolean scrollbar = true;
@@ -139,6 +142,7 @@ public abstract class ItemGroup {
     public ItemGroup(int index, String id) {
         this.index = index;
         this.id = id;
+        this.translationKey = new TranslatableText("itemGroup." + id);
         this.icon = ItemStack.EMPTY;
         ItemGroup.GROUPS[index] = this;
     }
@@ -148,18 +152,13 @@ public abstract class ItemGroup {
         return this.index;
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public String getId() {
-        return this.id;
-    }
-
     public String getName() {
         return this.name == null ? this.id : this.name;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public String getTranslationKey() {
-        return "itemGroup." + this.getId();
+    public Text getTranslationKey() {
+        return this.translationKey;
     }
 
     @Environment(value=EnvType.CLIENT)

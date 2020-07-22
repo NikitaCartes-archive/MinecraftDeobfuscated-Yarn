@@ -6,7 +6,6 @@ package net.minecraft.entity;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Random;
-import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -40,6 +39,7 @@ import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.ServerWorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class SpawnRestriction {
@@ -62,9 +62,9 @@ public class SpawnRestriction {
         return entry == null ? Heightmap.Type.MOTION_BLOCKING_NO_LEAVES : entry.heightmapType;
     }
 
-    public static <T extends Entity> boolean canSpawn(EntityType<T> type, class_5425 arg, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static <T extends Entity> boolean canSpawn(EntityType<T> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random) {
         Entry entry = RESTRICTIONS.get(type);
-        return entry == null || entry.predicate.test(type, arg, spawnReason, pos, random);
+        return entry == null || entry.predicate.test(type, serverWorldAccess, spawnReason, pos, random);
     }
 
     static {
@@ -159,7 +159,7 @@ public class SpawnRestriction {
 
     @FunctionalInterface
     public static interface SpawnPredicate<T extends Entity> {
-        public boolean test(EntityType<T> var1, class_5425 var2, SpawnReason var3, BlockPos var4, Random var5);
+        public boolean test(EntityType<T> var1, ServerWorldAccess var2, SpawnReason var3, BlockPos var4, Random var5);
     }
 }
 

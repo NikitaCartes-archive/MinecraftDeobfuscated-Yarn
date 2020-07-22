@@ -9,15 +9,15 @@ import java.util.Map;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.BitmapFont;
 import net.minecraft.client.font.FontLoader;
-import net.minecraft.client.font.TextureFont;
 import net.minecraft.client.font.TrueTypeFontLoader;
 import net.minecraft.client.font.UnicodeTextureFont;
 import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public enum FontType {
-    BITMAP("bitmap", TextureFont.Loader::fromJson),
+    BITMAP("bitmap", BitmapFont.Loader::fromJson),
     TTF("ttf", TrueTypeFontLoader::fromJson),
     LEGACY_UNICODE("legacy_unicode", UnicodeTextureFont.Loader::fromJson);
 

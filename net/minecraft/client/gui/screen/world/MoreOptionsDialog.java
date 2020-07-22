@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
@@ -32,7 +33,6 @@ import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorType;
@@ -63,6 +63,8 @@ Drawable {
     private static final Logger field_25046 = LogManager.getLogger();
     private static final Text field_25047 = new TranslatableText("generator.custom");
     private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
+    private static final Text field_26604 = new TranslatableText("selectWorld.mapFeatures.info");
+    private class_5489 field_26605 = class_5489.field_26528;
     private TextRenderer textRenderer;
     private int parentWidth;
     private TextFieldWidget seedTextField;
@@ -170,7 +172,7 @@ Drawable {
             ResourcePackManager resourcePackManager = new ResourcePackManager(new VanillaDataPackProvider(), new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
             try {
                 MinecraftServer.loadDataPacks(resourcePackManager, createWorldScreen.field_25479, false);
-                CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getServerWorkerExecutor(), client);
+                CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), client);
                 client.runTasks(completableFuture::isDone);
                 serverResourceManager = completableFuture.get();
             } catch (InterruptedException | ExecutionException exception) {
@@ -215,6 +217,7 @@ Drawable {
             });
         }));
         this.field_25048.visible = false;
+        this.field_26605 = class_5489.method_30890(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
     }
 
     private void method_29073(DynamicRegistryManager.Impl impl, GeneratorOptions generatorOptions) {
@@ -234,11 +237,11 @@ Drawable {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (this.mapFeaturesButton.visible) {
-            this.textRenderer.drawWithShadow(matrices, I18n.translate("selectWorld.mapFeatures.info", new Object[0]), (float)(this.parentWidth / 2 - 150), 122.0f, -6250336);
+            this.textRenderer.method_30881(matrices, field_26604, this.parentWidth / 2 - 150, 122.0f, -6250336);
         }
         this.seedTextField.render(matrices, mouseX, mouseY, delta);
         if (this.field_25049.equals(Optional.of(GeneratorType.AMPLIFIED))) {
-            this.textRenderer.drawTrimmed(AMPLIFIED_INFO_TEXT, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, this.mapTypeButton.getWidth(), 0xA0A0A0);
+            this.field_26605.method_30893(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, this.textRenderer.fontHeight, 0xA0A0A0);
         }
     }
 

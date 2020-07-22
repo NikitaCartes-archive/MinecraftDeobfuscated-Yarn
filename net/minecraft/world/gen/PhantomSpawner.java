@@ -62,7 +62,7 @@ implements Spawner {
                 PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);
                 phantomEntity.refreshPositionAndAngles(blockPos2, 0.0f, 0.0f);
                 entityData = phantomEntity.initialize(world, localDifficulty, SpawnReason.NATURAL, entityData, null);
-                world.spawnEntity(phantomEntity);
+                world.spawnEntityAndPassengers(phantomEntity);
             }
             i += l;
         }

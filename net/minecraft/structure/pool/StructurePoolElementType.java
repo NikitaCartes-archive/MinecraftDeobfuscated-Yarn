@@ -14,9 +14,9 @@ import net.minecraft.util.registry.Registry;
 
 public interface StructurePoolElementType<P extends StructurePoolElement> {
     public static final StructurePoolElementType<SinglePoolElement> SINGLE_POOL_ELEMENT = StructurePoolElementType.method_28885("single_pool_element", SinglePoolElement.field_24952);
-    public static final StructurePoolElementType<ListPoolElement> LIST_POOL_ELEMENT = StructurePoolElementType.method_28885("list_pool_element", ListPoolElement.field_24950);
+    public static final StructurePoolElementType<ListPoolElement> LIST_POOL_ELEMENT = StructurePoolElementType.method_28885("list_pool_element", ListPoolElement.CODEC);
     public static final StructurePoolElementType<FeaturePoolElement> FEATURE_POOL_ELEMENT = StructurePoolElementType.method_28885("feature_pool_element", FeaturePoolElement.CODEC);
-    public static final StructurePoolElementType<EmptyPoolElement> EMPTY_POOL_ELEMENT = StructurePoolElementType.method_28885("empty_pool_element", EmptyPoolElement.field_24947);
+    public static final StructurePoolElementType<EmptyPoolElement> EMPTY_POOL_ELEMENT = StructurePoolElementType.method_28885("empty_pool_element", EmptyPoolElement.CODEC);
     public static final StructurePoolElementType<LegacySinglePoolElement> LEGACY_SINGLE_POOL_ELEMENT = StructurePoolElementType.method_28885("legacy_single_pool_element", LegacySinglePoolElement.CODEC);
 
     public Codec<P> codec();

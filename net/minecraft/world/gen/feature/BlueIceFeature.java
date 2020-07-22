@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -22,23 +22,23 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        if (blockPos.getY() > serverWorldAccess.getSeaLevel() - 1) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+        if (blockPos.getY() > structureWorldAccess.getSeaLevel() - 1) {
             return false;
         }
-        if (!serverWorldAccess.getBlockState(blockPos).isOf(Blocks.WATER) && !serverWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.WATER)) {
+        if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.WATER) && !structureWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.WATER)) {
             return false;
         }
         boolean bl = false;
         for (Direction direction : Direction.values()) {
-            if (direction == Direction.DOWN || !serverWorldAccess.getBlockState(blockPos.offset(direction)).isOf(Blocks.PACKED_ICE)) continue;
+            if (direction == Direction.DOWN || !structureWorldAccess.getBlockState(blockPos.offset(direction)).isOf(Blocks.PACKED_ICE)) continue;
             bl = true;
             break;
         }
         if (!bl) {
             return false;
         }
-        serverWorldAccess.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), 2);
+        structureWorldAccess.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), 2);
         block1: for (int i = 0; i < 200; ++i) {
             BlockPos blockPos2;
             BlockState blockState;
@@ -47,11 +47,11 @@ extends Feature<DefaultFeatureConfig> {
             if (j < 2) {
                 k += j / 2;
             }
-            if (k < 1 || (blockState = serverWorldAccess.getBlockState(blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k)))).getMaterial() != Material.AIR && !blockState.isOf(Blocks.WATER) && !blockState.isOf(Blocks.PACKED_ICE) && !blockState.isOf(Blocks.ICE)) continue;
+            if (k < 1 || (blockState = structureWorldAccess.getBlockState(blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k)))).getMaterial() != Material.AIR && !blockState.isOf(Blocks.WATER) && !blockState.isOf(Blocks.PACKED_ICE) && !blockState.isOf(Blocks.ICE)) continue;
             for (Direction direction2 : Direction.values()) {
-                BlockState blockState2 = serverWorldAccess.getBlockState(blockPos2.offset(direction2));
+                BlockState blockState2 = structureWorldAccess.getBlockState(blockPos2.offset(direction2));
                 if (!blockState2.isOf(Blocks.BLUE_ICE)) continue;
-                serverWorldAccess.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), 2);
+                structureWorldAccess.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), 2);
                 continue block1;
             }
         }

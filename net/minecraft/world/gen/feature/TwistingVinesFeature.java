@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -25,8 +25,8 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        return TwistingVinesFeature.method_26265(serverWorldAccess, random, blockPos, 8, 4, 8);
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+        return TwistingVinesFeature.method_26265(structureWorldAccess, random, blockPos, 8, 4, 8);
     }
 
     public static boolean method_26265(WorldAccess worldAccess, Random random, BlockPos blockPos, int i, int j, int k) {
@@ -68,7 +68,7 @@ extends Feature<DefaultFeatureConfig> {
     public static void generateVineColumn(WorldAccess world, Random random, BlockPos.Mutable pos, int maxLength, int minAge, int maxAge) {
         for (int i = 1; i <= maxLength; ++i) {
             if (world.isAir(pos)) {
-                if (i == maxLength || !world.isAir(pos.up())) {
+                if (i == maxLength || !world.isAir((BlockPos)pos.up())) {
                     world.setBlockState(pos, (BlockState)Blocks.TWISTING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, MathHelper.nextInt(random, minAge, maxAge)), 2);
                     break;
                 }

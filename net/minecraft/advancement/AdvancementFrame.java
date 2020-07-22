@@ -5,6 +5,8 @@ package net.minecraft.advancement;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public enum AdvancementFrame {
@@ -13,13 +15,15 @@ public enum AdvancementFrame {
     GOAL("goal", 52, Formatting.GREEN);
 
     private final String id;
-    private final int texV;
+    private final int textureV;
     private final Formatting titleFormat;
+    private final Text toastText;
 
     private AdvancementFrame(String id, int texV, Formatting titleFormat) {
         this.id = id;
-        this.texV = texV;
+        this.textureV = texV;
         this.titleFormat = titleFormat;
+        this.toastText = new TranslatableText("advancements.toast." + id);
     }
 
     public String getId() {
@@ -27,8 +31,8 @@ public enum AdvancementFrame {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int texV() {
-        return this.texV;
+    public int getTextureV() {
+        return this.textureV;
     }
 
     public static AdvancementFrame forName(String name) {
@@ -41,6 +45,11 @@ public enum AdvancementFrame {
 
     public Formatting getTitleFormat() {
         return this.titleFormat;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Text getToastText() {
+        return this.toastText;
     }
 }
 

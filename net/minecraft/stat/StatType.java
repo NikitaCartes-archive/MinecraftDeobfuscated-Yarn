@@ -10,12 +10,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatFormatter;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Nullable;
 
 public class StatType<T>
 implements Iterable<Stat<T>> {
     private final Registry<T> registry;
     private final Map<T, Stat<T>> stats = new IdentityHashMap<T, Stat<T>>();
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    private Text field_26382;
 
     public StatType(Registry<T> registry) {
         this.registry = registry;
@@ -46,6 +52,14 @@ implements Iterable<Stat<T>> {
     @Environment(value=EnvType.CLIENT)
     public String getTranslationKey() {
         return "stat_type." + Registry.STAT_TYPE.getId(this).toString().replace(':', '.');
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Text method_30739() {
+        if (this.field_26382 == null) {
+            this.field_26382 = new TranslatableText(this.getTranslationKey());
+        }
+        return this.field_26382;
     }
 }
 

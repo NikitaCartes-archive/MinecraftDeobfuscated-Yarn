@@ -42,7 +42,6 @@ import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.CloudRenderMode;
-import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.options.ParticlesOption;
@@ -224,7 +223,7 @@ AutoCloseable {
 
     public WorldRenderer(MinecraftClient client, BufferBuilderStorage bufferBuilders) {
         this.client = client;
-        this.entityRenderDispatcher = client.getEntityRenderManager();
+        this.entityRenderDispatcher = client.getEntityRenderDispatcher();
         this.bufferBuilders = bufferBuilders;
         this.textureManager = client.getTextureManager();
         for (int i = 0; i < 32; ++i) {
@@ -456,10 +455,14 @@ AutoCloseable {
             this.cloudsFramebuffer = framebuffer5;
         } catch (Exception exception) {
             String string = exception instanceof JsonSyntaxException ? "parse" : "load";
-            GameOptions gameOptions = MinecraftClient.getInstance().options;
-            gameOptions.graphicsMode = GraphicsMode.FANCY;
-            gameOptions.write();
-            throw new ShaderException("Failed to " + string + " shader: " + identifier, exception);
+            String string2 = "Failed to " + string + " shader: " + identifier;
+            ShaderException shaderException = new ShaderException(string2, exception);
+            CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, shaderException));
+            this.client.options.graphicsMode = GraphicsMode.FANCY;
+            this.client.options.write();
+            LOGGER.fatal(string2, (Throwable)shaderException);
+            this.client.cleanUpAfterCrash();
+            MinecraftClient.printCrashReport(crashReport);
         }
     }
 
@@ -631,7 +634,7 @@ AutoCloseable {
         }
         this.world.reloadColor();
         if (this.chunkBuilder == null) {
-            this.chunkBuilder = new ChunkBuilder(this.world, this, Util.getServerWorkerExecutor(), this.client.is64Bit(), this.bufferBuilders.getBlockBufferBuilders());
+            this.chunkBuilder = new ChunkBuilder(this.world, this, Util.getMainWorkerExecutor(), this.client.is64Bit(), this.bufferBuilders.getBlockBufferBuilders());
         } else {
             this.chunkBuilder.setWorld(this.world);
         }
@@ -918,7 +921,7 @@ AutoCloseable {
                 entity.lastRenderY = entity.getY();
                 entity.lastRenderZ = entity.getZ();
             }
-            if (this.canDrawEntityOutlines() && this.client.method_27022(entity)) {
+            if (this.canDrawEntityOutlines() && this.client.hasOutline(entity)) {
                 bl32 = true;
                 OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
                 vertexConsumerProvider = outlineVertexConsumerProvider;

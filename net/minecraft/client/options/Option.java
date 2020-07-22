@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -29,7 +30,6 @@ import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -333,11 +333,10 @@ public abstract class Option {
         gameOptions.bobView = boolean_;
     });
     private final Text key;
-    private Optional<List<StringRenderable>> tooltip;
+    private Optional<List<class_5481>> tooltip = Optional.empty();
 
     public Option(String key) {
         this.key = new TranslatableText(key);
-        this.tooltip = Optional.empty();
     }
 
     public abstract AbstractButtonWidget createButton(GameOptions var1, int var2, int var3, int var4);
@@ -346,11 +345,11 @@ public abstract class Option {
         return this.key;
     }
 
-    public void setTooltip(List<StringRenderable> tooltip) {
+    public void setTooltip(List<class_5481> tooltip) {
         this.tooltip = Optional.of(tooltip);
     }
 
-    public Optional<List<StringRenderable>> getTooltip() {
+    public Optional<List<class_5481>> getTooltip() {
         return this.tooltip;
     }
 

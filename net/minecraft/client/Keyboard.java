@@ -76,8 +76,8 @@ public class Keyboard {
                 return true;
             }
             case 66: {
-                boolean bl = !this.client.getEntityRenderManager().shouldRenderHitboxes();
-                this.client.getEntityRenderManager().setRenderHitboxes(bl);
+                boolean bl = !this.client.getEntityRenderDispatcher().shouldRenderHitboxes();
+                this.client.getEntityRenderDispatcher().setRenderHitboxes(bl);
                 this.debugWarn(bl ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off", new Object[0]);
                 return true;
             }

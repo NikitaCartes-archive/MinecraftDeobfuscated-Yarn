@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
@@ -28,6 +27,7 @@ extends Screen {
     private int ticksSinceDeath;
     private final Text message;
     private final boolean isHardcore;
+    private Text field_26537;
 
     public DeathScreen(@Nullable Text message, boolean isHardcore) {
         super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
@@ -57,6 +57,7 @@ extends Screen {
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
             abstractButtonWidget.active = false;
         }
+        this.field_26537 = new TranslatableText("deathScreen.score").append(": ").append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
     }
 
     @Override
@@ -86,12 +87,12 @@ extends Screen {
         this.fillGradient(matrices, 0, 0, this.width, this.height, 0x60500000, -1602211792);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(2.0f, 2.0f, 2.0f);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 0xFFFFFF);
+        DeathScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 0xFFFFFF);
         RenderSystem.popMatrix();
         if (this.message != null) {
-            this.drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
+            DeathScreen.drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
         }
-        this.drawCenteredString(matrices, this.textRenderer, I18n.translate("deathScreen.score", new Object[0]) + ": " + (Object)((Object)Formatting.YELLOW) + this.client.player.getScore(), this.width / 2, 100, 0xFFFFFF);
+        DeathScreen.drawCenteredText(matrices, this.textRenderer, this.field_26537, this.width / 2, 100, 0xFFFFFF);
         if (this.message != null && mouseY > 85 && mouseY < 85 + this.textRenderer.fontHeight) {
             Style style = this.getTextComponentUnderMouse(mouseX);
             this.renderTextHoverEffect(matrices, style, mouseX, mouseY);

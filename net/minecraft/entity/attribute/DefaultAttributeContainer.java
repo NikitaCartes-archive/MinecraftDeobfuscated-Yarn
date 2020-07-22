@@ -60,27 +60,27 @@ public class DefaultAttributeContainer {
         return new Builder();
     }
 
-    public boolean method_27310(EntityAttribute entityAttribute) {
-        return this.instances.containsKey(entityAttribute);
+    public boolean has(EntityAttribute type) {
+        return this.instances.containsKey(type);
     }
 
-    public boolean method_27309(EntityAttribute entityAttribute, UUID uUID) {
-        EntityAttributeInstance entityAttributeInstance = this.instances.get(entityAttribute);
-        return entityAttributeInstance != null && entityAttributeInstance.getModifier(uUID) != null;
+    public boolean hasModifier(EntityAttribute type, UUID uuid) {
+        EntityAttributeInstance entityAttributeInstance = this.instances.get(type);
+        return entityAttributeInstance != null && entityAttributeInstance.getModifier(uuid) != null;
     }
 
     public static class Builder {
         private final Map<EntityAttribute, EntityAttributeInstance> instances = Maps.newHashMap();
         private boolean unmodifiable;
 
-        private EntityAttributeInstance checkedAdd(EntityAttribute attribute) {
-            EntityAttributeInstance entityAttributeInstance2 = new EntityAttributeInstance(attribute, entityAttributeInstance -> {
+        private EntityAttributeInstance checkedAdd(EntityAttribute attribute2) {
+            EntityAttributeInstance entityAttributeInstance = new EntityAttributeInstance(attribute2, attribute -> {
                 if (this.unmodifiable) {
-                    throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + Registry.ATTRIBUTE.getId(attribute));
+                    throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + Registry.ATTRIBUTE.getId(attribute2));
                 }
             });
-            this.instances.put(attribute, entityAttributeInstance2);
-            return entityAttributeInstance2;
+            this.instances.put(attribute2, entityAttributeInstance);
+            return entityAttributeInstance;
         }
 
         public Builder add(EntityAttribute attribute) {

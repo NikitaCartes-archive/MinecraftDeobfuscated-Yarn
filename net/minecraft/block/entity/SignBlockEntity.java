@@ -4,12 +4,13 @@
 package net.minecraft.block.entity;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_5481;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -20,7 +21,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -34,7 +34,7 @@ extends BlockEntity {
     private final Text[] text = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
     private boolean editable = true;
     private PlayerEntity editor;
-    private final StringRenderable[] textBeingEdited = new StringRenderable[4];
+    private final class_5481[] textBeingEdited = new class_5481[4];
     private DyeColor textColor = DyeColor.BLACK;
 
     public SignBlockEntity() {
@@ -73,6 +73,11 @@ extends BlockEntity {
         }
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public Text method_30843(int i) {
+        return this.text[i];
+    }
+
     public void setTextOnRow(int row, Text text) {
         this.text[row] = text;
         this.textBeingEdited[row] = null;
@@ -80,9 +85,9 @@ extends BlockEntity {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public StringRenderable getTextBeingEditedOnRow(int row, UnaryOperator<StringRenderable> unaryOperator) {
+    public class_5481 getTextBeingEditedOnRow(int row, Function<Text, class_5481> function) {
         if (this.textBeingEdited[row] == null && this.text[row] != null) {
-            this.textBeingEdited[row] = (StringRenderable)unaryOperator.apply(this.text[row]);
+            this.textBeingEdited[row] = function.apply(this.text[row]);
         }
         return this.textBeingEdited[row];
     }

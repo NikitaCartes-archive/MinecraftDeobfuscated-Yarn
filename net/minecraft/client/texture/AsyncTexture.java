@@ -42,7 +42,7 @@ extends ResourceTexture {
 
     @Override
     public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
-        this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, this.location), Util.getServerWorkerExecutor());
+        this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, this.location), Util.getMainWorkerExecutor());
         this.future.thenRunAsync(() -> textureManager.registerTexture(this.location, this), AsyncTexture.method_22808(executor));
     }
 

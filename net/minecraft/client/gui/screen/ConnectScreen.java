@@ -79,14 +79,14 @@ extends Screen {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)unknownHostException);
-                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host"))));
+                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", "Unknown host"))));
                 } catch (Exception exception) {
                     if (ConnectScreen.this.connectingCancelled) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)exception);
                     String string = inetAddress == null ? exception.toString() : exception.toString().replaceAll(inetAddress + ":" + port, "");
-                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", string))));
+                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.field_26625, new TranslatableText("disconnect.genericReason", string))));
                 }
             }
         };
@@ -133,7 +133,7 @@ extends Screen {
             this.narratorTimer = l;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
         }
-        this.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+        ConnectScreen.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

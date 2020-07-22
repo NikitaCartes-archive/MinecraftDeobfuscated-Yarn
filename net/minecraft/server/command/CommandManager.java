@@ -16,9 +16,12 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
+import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.server.command.AdvancementCommand;
@@ -313,6 +316,16 @@ public class CommandManager {
             return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
         return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
+    }
+
+    public static void method_30852() {
+        RootCommandNode<ServerCommandSource> rootCommandNode = new CommandManager(RegistrationEnvironment.ALL).getDispatcher().getRoot();
+        Set<ArgumentType<?>> set = ArgumentTypes.method_30924(rootCommandNode);
+        Set set2 = set.stream().filter(argumentType -> !ArgumentTypes.method_30923(argumentType)).collect(Collectors.toSet());
+        if (!set2.isEmpty()) {
+            LOGGER.warn("Missing type registration for following arguments:\n {}", (Object)set2.stream().map(argumentType -> "\t" + argumentType).collect(Collectors.joining(",\n")));
+            throw new IllegalStateException("Unregistered argument types");
+        }
     }
 
     public static enum RegistrationEnvironment {

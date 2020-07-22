@@ -17,16 +17,17 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.RealmsMainScreen;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.PendingInvite;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsAcceptRejectButton;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -39,8 +40,12 @@ extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Identifier ACCEPT_ICON = new Identifier("realms", "textures/gui/realms/accept_icon.png");
     private static final Identifier REJECT_ICON = new Identifier("realms", "textures/gui/realms/reject_icon.png");
+    private static final Text field_26493 = new TranslatableText("mco.invites.nopending");
+    private static final Text field_26494 = new TranslatableText("mco.invites.button.accept");
+    private static final Text field_26495 = new TranslatableText("mco.invites.button.reject");
     private final Screen parent;
-    private String toolTip;
+    @Nullable
+    private Text toolTip;
     private boolean loaded;
     private PendingInvitationSelectionList pendingInvitationSelectionList;
     private RealmsLabel titleLabel;
@@ -152,20 +157,20 @@ extends RealmsScreen {
             this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
         }
         if (this.pendingInvitationSelectionList.getItemCount() == 0 && this.loaded) {
-            this.drawCenteredString(matrices, this.textRenderer, I18n.translate("mco.invites.nopending", new Object[0]), this.width / 2, this.height / 2 - 20, 0xFFFFFF);
+            RealmsPendingInvitesScreen.drawCenteredText(matrices, this.textRenderer, field_26493, this.width / 2, this.height / 2 - 20, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    protected void renderMousehoverTooltip(MatrixStack matrixStack, String string, int i, int j) {
-        if (string == null) {
+    protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
+        if (text == null) {
             return;
         }
         int k = i + 12;
         int l = j - 12;
-        int m = this.textRenderer.getWidth(string);
+        int m = this.textRenderer.getWidth(text);
         this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.drawWithShadow(matrixStack, string, (float)k, (float)l, 0xFFFFFF);
+        this.textRenderer.method_30881(matrixStack, text, k, l, 0xFFFFFF);
     }
 
     private void updateButtonStates() {
@@ -225,7 +230,7 @@ extends RealmsScreen {
                 float f = bl ? 19.0f : 0.0f;
                 DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0f, 18, 18, 37, 18);
                 if (bl) {
-                    RealmsPendingInvitesScreen.this.toolTip = I18n.translate("mco.invites.button.reject", new Object[0]);
+                    RealmsPendingInvitesScreen.this.toolTip = field_26495;
                 }
             }
 
@@ -249,7 +254,7 @@ extends RealmsScreen {
                 float f = bl ? 19.0f : 0.0f;
                 DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0f, 18, 18, 37, 18);
                 if (bl) {
-                    RealmsPendingInvitesScreen.this.toolTip = I18n.translate("mco.invites.button.accept", new Object[0]);
+                    RealmsPendingInvitesScreen.this.toolTip = field_26494;
                 }
             }
 

@@ -21,13 +21,13 @@ import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PaneBlock;
-import net.minecraft.class_5425;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -40,34 +40,34 @@ extends Feature<EndSpikeFeatureConfig> {
         super(codec);
     }
 
-    public static List<Spike> getSpikes(ServerWorldAccess serverWorldAccess) {
-        Random random = new Random(serverWorldAccess.getSeed());
+    public static List<Spike> getSpikes(StructureWorldAccess structureWorldAccess) {
+        Random random = new Random(structureWorldAccess.getSeed());
         long l = random.nextLong() & 0xFFFFL;
         return CACHE.getUnchecked(l);
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig) {
         List<Spike> list = endSpikeFeatureConfig.getSpikes();
         if (list.isEmpty()) {
-            list = EndSpikeFeature.getSpikes(serverWorldAccess);
+            list = EndSpikeFeature.getSpikes(structureWorldAccess);
         }
         for (Spike spike : list) {
             if (!spike.isInChunk(blockPos)) continue;
-            this.generateSpike(serverWorldAccess, random, endSpikeFeatureConfig, spike);
+            this.generateSpike(structureWorldAccess, random, endSpikeFeatureConfig, spike);
         }
         return true;
     }
 
-    private void generateSpike(class_5425 arg, Random random, EndSpikeFeatureConfig config, Spike spike) {
+    private void generateSpike(ServerWorldAccess serverWorldAccess, Random random, EndSpikeFeatureConfig config, Spike spike) {
         int i = spike.getRadius();
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ(), false) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {
-                this.setBlockState(arg, blockPos, Blocks.OBSIDIAN.getDefaultState());
+                this.setBlockState(serverWorldAccess, blockPos, Blocks.OBSIDIAN.getDefaultState());
                 continue;
             }
             if (blockPos.getY() <= 65) continue;
-            this.setBlockState(arg, blockPos, Blocks.AIR.getDefaultState());
+            this.setBlockState(serverWorldAccess, blockPos, Blocks.AIR.getDefaultState());
         }
         if (spike.isGuarded()) {
             int j = -2;
@@ -85,17 +85,17 @@ extends Feature<EndSpikeFeatureConfig> {
                         boolean bl42 = m == -2 || m == 2 || bl3;
                         boolean bl5 = n == -2 || n == 2 || bl3;
                         BlockState blockState = (BlockState)((BlockState)((BlockState)((BlockState)Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, bl42 && n != -2)).with(PaneBlock.SOUTH, bl42 && n != 2)).with(PaneBlock.WEST, bl5 && m != -2)).with(PaneBlock.EAST, bl5 && m != 2);
-                        this.setBlockState(arg, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
+                        this.setBlockState(serverWorldAccess, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
                     }
                 }
             }
         }
-        EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(arg.getWorld());
+        EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(serverWorldAccess.toServerWorld());
         endCrystalEntity.setBeamTarget(config.getPos());
         endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());
         endCrystalEntity.refreshPositionAndAngles((double)spike.getCenterX() + 0.5, spike.getHeight() + 1, (double)spike.getCenterZ() + 0.5, random.nextFloat() * 360.0f, 0.0f);
-        arg.spawnEntity(endCrystalEntity);
-        this.setBlockState(arg, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
+        serverWorldAccess.spawnEntity(endCrystalEntity);
+        this.setBlockState(serverWorldAccess, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
     }
 
     static class SpikeCache

@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -25,13 +26,11 @@ import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.ServerList;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -50,6 +49,13 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     private static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build());
     private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
     private static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
+    private static final Text field_26581 = new TranslatableText("lanServer.scanning");
+    private static final Text field_26582 = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
+    private static final Text field_26583 = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+    private static final Text field_26584 = new TranslatableText("multiplayer.status.client_out_of_date");
+    private static final Text field_26585 = new TranslatableText("multiplayer.status.server_out_of_date");
+    private static final Text field_26586 = new TranslatableText("multiplayer.status.no_connection");
+    private static final Text field_26587 = new TranslatableText("multiplayer.status.pinging");
     private final MultiplayerScreen screen;
     private final List<ServerEntry> servers = Lists.newArrayList();
     private final Entry scanningEntry = new ScanningEntry();
@@ -140,7 +146,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             List<Text> list2;
-            TranslatableText text2;
+            Text text2;
             int l;
             if (!this.server.online) {
                 this.server.online = true;
@@ -152,10 +158,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                         this.screen.getServerListPinger().add(this.server, () -> this.client.execute(this::method_29978));
                     } catch (UnknownHostException unknownHostException) {
                         this.server.ping = -1L;
-                        this.server.label = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
+                        this.server.label = field_26582;
                     } catch (Exception exception) {
                         this.server.ping = -1L;
-                        this.server.label = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+                        this.server.label = field_26583;
                     }
                 });
             }
@@ -163,22 +169,22 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             boolean bl2 = this.server.protocolVersion < SharedConstants.getGameVersion().getProtocolVersion();
             boolean bl3 = bl || bl2;
             this.client.textRenderer.draw(matrices, this.server.name, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
-            List<StringRenderable> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
+            List<class_5481> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
             for (int i = 0; i < Math.min(list.size(), 2); ++i) {
                 this.client.textRenderer.draw(matrices, list.get(i), (float)(x + 32 + 3), (float)(y + 12 + this.client.textRenderer.fontHeight * i), 0x808080);
             }
             Text text = bl3 ? this.server.version.shallowCopy().formatted(Formatting.DARK_RED) : this.server.playerCountLabel;
             int j = this.client.textRenderer.getWidth(text);
-            this.client.textRenderer.draw(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 0x808080);
+            this.client.textRenderer.method_30883(matrices, text, x + entryWidth - j - 15 - 2, y + 1, 0x808080);
             int k = 0;
             if (bl3) {
                 l = 5;
-                text2 = new TranslatableText(bl ? "multiplayer.status.client_out_of_date" : "multiplayer.status.server_out_of_date");
+                text2 = bl ? field_26584 : field_26585;
                 list2 = this.server.playerListSummary;
             } else if (this.server.online && this.server.ping != -2L) {
                 l = this.server.ping < 0L ? 5 : (this.server.ping < 150L ? 0 : (this.server.ping < 300L ? 1 : (this.server.ping < 600L ? 2 : (this.server.ping < 1000L ? 3 : 4))));
                 if (this.server.ping < 0L) {
-                    text2 = new TranslatableText("multiplayer.status.no_connection");
+                    text2 = field_26586;
                     list2 = Collections.emptyList();
                 } else {
                     text2 = new TranslatableText("multiplayer.status.ping", this.server.ping);
@@ -190,7 +196,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 if (l > 4) {
                     l = 8 - l;
                 }
-                text2 = new TranslatableText("multiplayer.status.pinging");
+                text2 = field_26587;
                 list2 = Collections.emptyList();
             }
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -346,6 +352,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     @Environment(value=EnvType.CLIENT)
     public static class LanServerEntry
     extends Entry {
+        private static final Text field_26588 = new TranslatableText("lanServer.title");
+        private static final Text field_26589 = new TranslatableText("selectServer.hiddenAddress");
         private final MultiplayerScreen screen;
         protected final MinecraftClient client;
         protected final LanServerInfo server;
@@ -359,10 +367,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            this.client.textRenderer.draw(matrices, I18n.translate("lanServer.title", new Object[0]), (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
+            this.client.textRenderer.method_30883(matrices, field_26588, x + 32 + 3, y + 1, 0xFFFFFF);
             this.client.textRenderer.draw(matrices, this.server.getMotd(), (float)(x + 32 + 3), (float)(y + 12), 0x808080);
             if (this.client.options.hideServerAddress) {
-                this.client.textRenderer.draw(matrices, I18n.translate("selectServer.hiddenAddress", new Object[0]), (float)(x + 32 + 3), (float)(y + 12 + 11), 0x303030);
+                this.client.textRenderer.method_30883(matrices, field_26589, x + 32 + 3, y + 12 + 11, 0x303030);
             } else {
                 this.client.textRenderer.draw(matrices, this.server.getAddressPort(), (float)(x + 32 + 3), (float)(y + 12 + 11), 0x303030);
             }
@@ -392,7 +400,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             String string;
             int i = y + entryHeight / 2 - this.client.textRenderer.fontHeight / 2;
-            this.client.textRenderer.draw(matrices, I18n.translate("lanServer.scanning", new Object[0]), (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(I18n.translate("lanServer.scanning", new Object[0])) / 2), (float)i, 0xFFFFFF);
+            this.client.textRenderer.method_30883(matrices, field_26581, this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(field_26581) / 2, i, 0xFFFFFF);
             switch ((int)(Util.getMeasuringTimeMs() / 300L % 4L)) {
                 default: {
                     string = "O o o";

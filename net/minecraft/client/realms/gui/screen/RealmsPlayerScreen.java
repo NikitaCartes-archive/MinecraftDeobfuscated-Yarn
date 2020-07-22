@@ -14,7 +14,6 @@ import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.Ops;
 import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsServer;
@@ -22,6 +21,7 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsConfirmScreen;
 import net.minecraft.client.realms.gui.screen.RealmsInviteScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -29,6 +29,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +44,12 @@ extends RealmsScreen {
     private static final Identifier USER_ICON = new Identifier("realms", "textures/gui/realms/user_icon.png");
     private static final Identifier CROSS_PLAYER_ICON = new Identifier("realms", "textures/gui/realms/cross_player_icon.png");
     private static final Identifier OPTIONS_BACKGROUND = new Identifier("minecraft", "textures/gui/options_background.png");
-    private String tooltipText;
+    private static final Text field_26497 = new TranslatableText("mco.configure.world.activityfeed.disabled");
+    private static final Text field_26498 = new TranslatableText("mco.configure.world.invites.normal.tooltip");
+    private static final Text field_26499 = new TranslatableText("mco.configure.world.invites.ops.tooltip");
+    private static final Text field_26500 = new TranslatableText("mco.configure.world.invites.remove.tooltip");
+    private static final Text field_26501 = new TranslatableText("mco.configure.world.invited");
+    private Text tooltipText;
     private final RealmsConfigureWorldScreen parent;
     private final RealmsServer serverData;
     private InvitedObjectSelectionList invitedObjectSelectionList;
@@ -57,9 +63,10 @@ extends RealmsScreen {
     private int player = -1;
     private boolean stateChanged;
     private RealmsLabel titleLabel;
+    private class_5488 field_26496 = class_5488.field_26504;
 
-    public RealmsPlayerScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData) {
-        this.parent = parent;
+    public RealmsPlayerScreen(RealmsConfigureWorldScreen realmsConfigureWorldScreen, RealmsServer serverData) {
+        this.parent = realmsConfigureWorldScreen;
         this.serverData = serverData;
     }
 
@@ -181,6 +188,7 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.tooltipText = null;
+        this.field_26496 = class_5488.field_26504;
         this.renderBackground(matrices);
         if (this.invitedObjectSelectionList != null) {
             this.invitedObjectSelectionList.render(matrices, mouseX, mouseY, delta);
@@ -199,20 +207,18 @@ extends RealmsScreen {
         tessellator.draw();
         this.titleLabel.render(this, matrices);
         if (this.serverData != null && this.serverData.players != null) {
-            this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.invited", new Object[0]) + " (" + this.serverData.players.size() + ")", (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
+            this.textRenderer.method_30883(matrices, new LiteralText("").append(field_26501).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"), this.column1_x, RealmsPlayerScreen.row(0), 0xA0A0A0);
         } else {
-            this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.invited", new Object[0]), (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
+            this.textRenderer.method_30883(matrices, field_26501, this.column1_x, RealmsPlayerScreen.row(0), 0xA0A0A0);
         }
         super.render(matrices, mouseX, mouseY, delta);
         if (this.serverData == null) {
             return;
         }
-        if (this.tooltipText != null) {
-            this.renderMousehoverTooltip(matrices, this.tooltipText, mouseX, mouseY);
-        }
+        this.renderMousehoverTooltip(matrices, this.tooltipText, mouseX, mouseY);
     }
 
-    protected void renderMousehoverTooltip(MatrixStack matrices, String text, int mouseX, int mouseY) {
+    protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int mouseX, int mouseY) {
         if (text == null) {
             return;
         }
@@ -220,7 +226,7 @@ extends RealmsScreen {
         int j = mouseY - 12;
         int k = this.textRenderer.getWidth(text);
         this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, 0xFFFFFF);
+        this.textRenderer.method_30881(matrices, text, i, j, 0xFFFFFF);
     }
 
     private void drawRemoveIcon(MatrixStack matrixStack, int i, int j, int k, int l) {
@@ -230,7 +236,8 @@ extends RealmsScreen {
         float f = bl ? 7.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 7, 8, 14);
         if (bl) {
-            this.tooltipText = I18n.translate("mco.configure.world.invites.remove.tooltip", new Object[0]);
+            this.tooltipText = field_26500;
+            this.field_26496 = class_5488.field_26503;
         }
     }
 
@@ -241,7 +248,8 @@ extends RealmsScreen {
         float f = bl ? 8.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
-            this.tooltipText = I18n.translate("mco.configure.world.invites.ops.tooltip", new Object[0]);
+            this.tooltipText = field_26499;
+            this.field_26496 = class_5488.field_26502;
         }
     }
 
@@ -252,7 +260,8 @@ extends RealmsScreen {
         float f = bl ? 8.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
-            this.tooltipText = I18n.translate("mco.configure.world.invites.normal.tooltip", new Object[0]);
+            this.tooltipText = field_26498;
+            this.field_26496 = class_5488.field_26502;
         }
     }
 
@@ -279,7 +288,7 @@ extends RealmsScreen {
                 RealmsPlayerScreen.this.drawNormal(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 10, y + 1, mouseX, mouseY);
             }
             RealmsPlayerScreen.this.drawRemoveIcon(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, y + 2, mouseX, mouseY);
-            RealmsPlayerScreen.this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.activityfeed.disabled", new Object[0]), (float)RealmsPlayerScreen.this.column2_x, (float)RealmsPlayerScreen.row(5), 0xA0A0A0);
+            RealmsPlayerScreen.this.textRenderer.method_30883(matrices, field_26497, RealmsPlayerScreen.this.column2_x, RealmsPlayerScreen.row(5), 0xA0A0A0);
             RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0f, 8.0f, 8, 8, 64, 64);
@@ -327,16 +336,16 @@ extends RealmsScreen {
 
         @Override
         public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
-            if (selectionIndex < 0 || selectionIndex > ((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.size() || RealmsPlayerScreen.this.tooltipText == null) {
+            if (selectionIndex < 0 || selectionIndex > ((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.size() || RealmsPlayerScreen.this.field_26496 == class_5488.field_26504) {
                 return;
             }
-            if (RealmsPlayerScreen.this.tooltipText.equals(I18n.translate("mco.configure.world.invites.ops.tooltip", new Object[0])) || RealmsPlayerScreen.this.tooltipText.equals(I18n.translate("mco.configure.world.invites.normal.tooltip", new Object[0]))) {
+            if (RealmsPlayerScreen.this.field_26496 == class_5488.field_26502) {
                 if (((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.get(selectionIndex).isOperator()) {
                     RealmsPlayerScreen.this.deop(selectionIndex);
                 } else {
                     RealmsPlayerScreen.this.op(selectionIndex);
                 }
-            } else if (RealmsPlayerScreen.this.tooltipText.equals(I18n.translate("mco.configure.world.invites.remove.tooltip", new Object[0]))) {
+            } else if (RealmsPlayerScreen.this.field_26496 == class_5488.field_26503) {
                 RealmsPlayerScreen.this.uninvite(selectionIndex);
             }
         }
@@ -376,6 +385,14 @@ extends RealmsScreen {
         public int getMaxPosition() {
             return this.getItemCount() * 13;
         }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static enum class_5488 {
+        field_26502,
+        field_26503,
+        field_26504;
+
     }
 }
 

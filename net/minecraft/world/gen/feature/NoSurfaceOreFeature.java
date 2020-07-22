@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
@@ -20,13 +20,13 @@ extends Feature<OreFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig) {
         int i = random.nextInt(oreFeatureConfig.size + 1);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int j = 0; j < i; ++j) {
             this.getStartPos(mutable, random, blockPos, Math.min(j, 7));
-            if (!oreFeatureConfig.target.test(serverWorldAccess.getBlockState(mutable), random) || this.checkAir(serverWorldAccess, mutable)) continue;
-            serverWorldAccess.setBlockState(mutable, oreFeatureConfig.state, 2);
+            if (!oreFeatureConfig.target.test(structureWorldAccess.getBlockState(mutable), random) || this.checkAir(structureWorldAccess, mutable)) continue;
+            structureWorldAccess.setBlockState(mutable, oreFeatureConfig.state, 2);
         }
         return true;
     }

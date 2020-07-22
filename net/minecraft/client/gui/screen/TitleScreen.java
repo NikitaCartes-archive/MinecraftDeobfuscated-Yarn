@@ -29,7 +29,7 @@ import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.realms.RealmsBridge;
+import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
@@ -124,8 +124,8 @@ extends Screen {
         this.addButton(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, buttonWidget -> this.client.openScreen(new AccessibilityOptionsScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
         this.client.setConnectedToRealms(false);
         if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
-            RealmsBridge realmsBridge = new RealmsBridge();
-            this.realmsNotificationGui = realmsBridge.getNotificationScreen(this);
+            RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
+            this.realmsNotificationGui = realmsBridgeScreen.getNotificationScreen(this);
             this.realmsNotificationsInitialized = true;
         }
         if (this.areRealmsNotificationsEnabled()) {
@@ -171,8 +171,8 @@ extends Screen {
     }
 
     private void switchToRealms() {
-        RealmsBridge realmsBridge = new RealmsBridge();
-        realmsBridge.switchToRealms(this);
+        RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
+        realmsBridgeScreen.switchToRealms(this);
     }
 
     @Override
@@ -221,7 +221,7 @@ extends Screen {
             float h = 1.8f - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0f * ((float)Math.PI * 2)) * 0.1f);
             h = h * 100.0f / (float)(this.textRenderer.getWidth(this.splashText) + 32);
             RenderSystem.scalef(h, h, h);
-            this.drawCenteredString(matrices, this.textRenderer, this.splashText, 0, -8, 0xFFFF00 | l);
+            TitleScreen.drawCenteredString(matrices, this.textRenderer, this.splashText, 0, -8, 0xFFFF00 | l);
             RenderSystem.popMatrix();
         }
         String string = "Minecraft " + SharedConstants.getGameVersion().getName();
@@ -229,8 +229,8 @@ extends Screen {
         if (this.client.isModded()) {
             string = string + I18n.translate("menu.modded", new Object[0]);
         }
-        this.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | l);
-        this.drawStringWithShadow(matrices, this.textRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
+        TitleScreen.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | l);
+        TitleScreen.drawStringWithShadow(matrices, this.textRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
         if (mouseX > this.copyrightTextX && mouseX < this.copyrightTextX + this.copyrightTextWidth && mouseY > this.height - 10 && mouseY < this.height) {
             TitleScreen.fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 0xFFFFFF | l);
         }

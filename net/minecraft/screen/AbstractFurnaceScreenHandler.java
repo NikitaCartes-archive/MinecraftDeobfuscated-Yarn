@@ -34,7 +34,7 @@ extends AbstractRecipeScreenHandler<Inventory> {
     private final PropertyDelegate propertyDelegate;
     protected final World world;
     private final RecipeType<? extends AbstractCookingRecipe> recipeType;
-    private final RecipeBookCategory field_25762;
+    private final RecipeBookCategory category;
 
     protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, RecipeBookCategory recipeBookCategory, int i, PlayerInventory playerInventory) {
         this(type, recipeType, recipeBookCategory, i, playerInventory, new SimpleInventory(3), new ArrayPropertyDelegate(4));
@@ -44,7 +44,7 @@ extends AbstractRecipeScreenHandler<Inventory> {
         super(type, i);
         int j;
         this.recipeType = recipeType;
-        this.field_25762 = recipeBookCategory;
+        this.category = recipeBookCategory;
         AbstractFurnaceScreenHandler.checkSize(inventory, 3);
         AbstractFurnaceScreenHandler.checkDataCount(propertyDelegate, 4);
         this.inventory = inventory;
@@ -175,7 +175,7 @@ extends AbstractRecipeScreenHandler<Inventory> {
     @Override
     @Environment(value=EnvType.CLIENT)
     public RecipeBookCategory getCategory() {
-        return this.field_25762;
+        return this.category;
     }
 }
 

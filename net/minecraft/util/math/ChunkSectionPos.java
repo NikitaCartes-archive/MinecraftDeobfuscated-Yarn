@@ -21,6 +21,9 @@ extends Vec3i {
         super(x, y, z);
     }
 
+    /**
+     * Creates a chunk section position from its x-, y- and z-coordinates.
+     */
     public static ChunkSectionPos from(int x, int y, int z) {
         return new ChunkSectionPos(x, y, z);
     }
@@ -29,6 +32,9 @@ extends Vec3i {
         return new ChunkSectionPos(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getY()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
 
+    /**
+     * Creates a chunk section position from a chunk position and the y-coordinate of the vertical section.
+     */
     public static ChunkSectionPos from(ChunkPos chunkPos, int y) {
         return new ChunkSectionPos(chunkPos.x, y, chunkPos.z);
     }
@@ -37,74 +43,140 @@ extends Vec3i {
         return new ChunkSectionPos(ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.getX())), ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.getY())), ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.getZ())));
     }
 
+    /**
+     * Creates a chunk section position from its packed representation.
+     * @see #asLong
+     */
     public static ChunkSectionPos from(long packed) {
-        return new ChunkSectionPos(ChunkSectionPos.getX(packed), ChunkSectionPos.getY(packed), ChunkSectionPos.getZ(packed));
+        return new ChunkSectionPos(ChunkSectionPos.unpackX(packed), ChunkSectionPos.unpackY(packed), ChunkSectionPos.unpackZ(packed));
     }
 
+    /**
+     * Offsets a packed chunk section position in the given direction.
+     * @see #asLong
+     */
     public static long offset(long packed, Direction direction) {
         return ChunkSectionPos.offset(packed, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
     }
 
+    /**
+     * Offsets a packed chunk section position by the given offsets.
+     * @see #asLong
+     */
     public static long offset(long packed, int x, int y, int z) {
-        return ChunkSectionPos.asLong(ChunkSectionPos.getX(packed) + x, ChunkSectionPos.getY(packed) + y, ChunkSectionPos.getZ(packed) + z);
+        return ChunkSectionPos.asLong(ChunkSectionPos.unpackX(packed) + x, ChunkSectionPos.unpackY(packed) + y, ChunkSectionPos.unpackZ(packed) + z);
     }
 
+    /**
+     * Converts a world coordinate to the corresponding chunk-section coordinate.
+     */
     public static int getSectionCoord(int coord) {
         return coord >> 4;
     }
 
+    /**
+     * Converts a world coordinate to the local coordinate system (0-15) of its corresponding chunk section.
+     */
     public static int getLocalCoord(int coord) {
         return coord & 0xF;
     }
 
-    public static short getPackedLocalPos(BlockPos pos) {
+    /**
+     * Returns the local position of the given block position relative to
+     * its respective chunk section, packed into a short.
+     */
+    public static short packLocal(BlockPos pos) {
         int i = ChunkSectionPos.getLocalCoord(pos.getX());
         int j = ChunkSectionPos.getLocalCoord(pos.getY());
         int k = ChunkSectionPos.getLocalCoord(pos.getZ());
         return (short)(i << 8 | k << 4 | j << 0);
     }
 
-    public static int method_30551(short s) {
-        return s >>> 8 & 0xF;
+    /**
+     * Gets the local x-coordinate from the given packed local position.
+     * @see #packLocal
+     */
+    public static int unpackLocalX(short packedLocalPos) {
+        return packedLocalPos >>> 8 & 0xF;
     }
 
-    public static int method_30552(short s) {
-        return s >>> 0 & 0xF;
+    /**
+     * Gets the local y-coordinate from the given packed local position.
+     * @see #packLocal
+     */
+    public static int unpackLocalY(short packedLocalPos) {
+        return packedLocalPos >>> 0 & 0xF;
     }
 
-    public static int method_30553(short s) {
-        return s >>> 4 & 0xF;
+    /**
+     * Gets the local z-coordinate from the given packed local position.
+     * @see #packLocal
+     */
+    public static int unpackLocalZ(short packedLocalPos) {
+        return packedLocalPos >>> 4 & 0xF;
     }
 
-    public int method_30554(short s) {
-        return this.getMinX() + ChunkSectionPos.method_30551(s);
+    /**
+     * Gets the world x-coordinate of the given local position within this chunk section.
+     * @see #packLocal
+     */
+    public int unpackBlockX(short packedLocalPos) {
+        return this.getMinX() + ChunkSectionPos.unpackLocalX(packedLocalPos);
     }
 
-    public int method_30555(short s) {
-        return this.getMinY() + ChunkSectionPos.method_30552(s);
+    /**
+     * Gets the world y-coordinate of the given local position within this chunk section.
+     * @see #packLocal
+     */
+    public int unpackBlockY(short packedLocalPos) {
+        return this.getMinY() + ChunkSectionPos.unpackLocalY(packedLocalPos);
     }
 
-    public int method_30556(short s) {
-        return this.getMinZ() + ChunkSectionPos.method_30553(s);
+    /**
+     * Gets the world z-coordinate of the given local position within this chunk section.
+     * @see #packLocal
+     */
+    public int unpackBlockZ(short packedLocalPos) {
+        return this.getMinZ() + ChunkSectionPos.unpackLocalZ(packedLocalPos);
     }
 
-    public BlockPos method_30557(short s) {
-        return new BlockPos(this.method_30554(s), this.method_30555(s), this.method_30556(s));
+    /**
+     * Gets the world position of the given local position within this chunk section.
+     * @see #packLocal
+     */
+    public BlockPos unpackBlockPos(short packedLocalPos) {
+        return new BlockPos(this.unpackBlockX(packedLocalPos), this.unpackBlockY(packedLocalPos), this.unpackBlockZ(packedLocalPos));
     }
 
+    /**
+     * Converts the given chunk section coordinate to the world coordinate system.
+     * The returned coordinate will always be at the origin of the chunk section in world space.
+     */
     public static int getBlockCoord(int sectionCoord) {
         return sectionCoord << 4;
     }
 
-    public static int getX(long packed) {
+    /**
+     * Gets the chunk section x-coordinate from the given packed chunk section coordinate.
+     * @see #asLong
+     */
+    public static int unpackX(long packed) {
         return (int)(packed << 0 >> 42);
     }
 
-    public static int getY(long packed) {
+    /**
+     * Gets the chunk section y-coordinate from the given packed chunk section coordinate.
+     * @see #asLong
+     */
+    public static int unpackY(long packed) {
         return (int)(packed << 44 >> 44);
     }
 
-    public static int getZ(long packed) {
+    /**
+     * Gets the chunk section z-coordinate from the given packed chunk section coordinate.
+     * @see #asLong
+     */
+    public static int unpackZ(long packed) {
         return (int)(packed << 22 >> 42);
     }
 
@@ -144,11 +216,21 @@ extends Vec3i {
         return (this.getSectionZ() << 4) + 15;
     }
 
+    /**
+     * Gets the packed chunk section coordinate for a given packed {@link BlockPos}.
+     * @see #asLong
+     * @see BlockPos#asLong
+     */
     public static long fromBlockPos(long blockPos) {
         return ChunkSectionPos.asLong(ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(blockPos)), ChunkSectionPos.getSectionCoord(BlockPos.unpackLongY(blockPos)), ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(blockPos)));
     }
 
-    public static long withZeroZ(long pos) {
+    /**
+     * Gets the packed chunk section coordinate at y=0 for the same chunk as
+     * the given packed chunk section coordinate.
+     * @see #asLong
+     */
+    public static long withZeroY(long pos) {
         return pos & 0xFFFFFFFFFFF00000L;
     }
 

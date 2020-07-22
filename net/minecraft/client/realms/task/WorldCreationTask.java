@@ -1,15 +1,15 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.exception.RealmsServiceException;
-import net.minecraft.client.realms.gui.LongRunningTask;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.task.LongRunningTask;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldCreationTask
@@ -28,8 +28,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        String string = I18n.translate("mco.create.world.wait", new Object[0]);
-        this.setTitle(string);
+        this.setTitle(new TranslatableText("mco.create.world.wait"));
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         try {
             realmsClient.initializeWorld(this.worldId, this.name, this.motd);

@@ -8,13 +8,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.SelectVillagerTradeC2SPacket;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -27,6 +27,9 @@ import net.minecraft.village.VillagerData;
 public class MerchantScreen
 extends HandledScreen<MerchantScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
+    private static final Text field_26569 = new TranslatableText("merchant.trades");
+    private static final Text field_26570 = new LiteralText(" - ");
+    private static final Text field_26571 = new TranslatableText("merchant.deprecated");
     private int selectedIndex;
     private final WidgetButtonPage[] offers = new WidgetButtonPage[7];
     private int indexStartOffset;
@@ -63,24 +66,18 @@ extends HandledScreen<MerchantScreenHandler> {
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        int j;
-        String string;
         int i = ((MerchantScreenHandler)this.handler).getLevelProgress();
         if (i > 0 && i <= 5 && ((MerchantScreenHandler)this.handler).isLeveled()) {
-            string = "- " + I18n.translate("merchant.level." + i, new Object[0]);
-            j = this.textRenderer.getWidth(this.title);
-            int k = this.textRenderer.getWidth(string);
-            int l = j + k + 3;
-            int m = 49 + this.backgroundWidth / 2 - l / 2;
-            this.textRenderer.draw(matrices, this.title, (float)m, 6.0f, 0x404040);
-            this.textRenderer.draw(matrices, string, (float)(m + j + 3), 6.0f, 0x404040);
+            MutableText text = this.title.shallowCopy().append(field_26570).append(new TranslatableText("merchant.level." + i));
+            int j = this.textRenderer.getWidth(text);
+            int k = 49 + this.backgroundWidth / 2 - j / 2;
+            this.textRenderer.method_30883(matrices, text, k, 6.0f, 0x404040);
         } else {
-            this.textRenderer.draw(matrices, this.title, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0f, 0x404040);
+            this.textRenderer.method_30883(matrices, this.title, 49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2, 6.0f, 0x404040);
         }
-        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
-        string = I18n.translate("merchant.trades", new Object[0]);
-        j = this.textRenderer.getWidth(string);
-        this.textRenderer.draw(matrices, string, (float)(5 - j / 2 + 48), 6.0f, 0x404040);
+        this.textRenderer.method_30883(matrices, this.playerInventory.getDisplayName(), this.playerInventoryTitleX, this.playerInventoryTitleY, 0x404040);
+        int l = this.textRenderer.getWidth(field_26569);
+        this.textRenderer.method_30883(matrices, field_26569, 5 - l / 2 + 48, 6.0f, 0x404040);
     }
 
     @Override
@@ -189,7 +186,7 @@ extends HandledScreen<MerchantScreenHandler> {
                 this.drawLevelInfo(matrices, i, j, tradeOffer2);
             }
             if (tradeOffer2.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, mouseX, mouseY) && ((MerchantScreenHandler)this.handler).canRefreshTrades()) {
-                this.renderTooltip(matrices, new TranslatableText("merchant.deprecated"), mouseX, mouseY);
+                this.renderTooltip(matrices, field_26571, mouseX, mouseY);
             }
             for (WidgetButtonPage widgetButtonPage : this.offers) {
                 if (widgetButtonPage.isHovered()) {

@@ -26,15 +26,15 @@ import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorType {
-    public static final MapCodec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorType::getConfig), ((MapCodec)NoiseConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorType::method_28559), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorType::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorType::getDefaultFluid), ((MapCodec)Codec.intRange(-20, 276).fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorType::getBedrockCeilingY), ((MapCodec)Codec.intRange(-20, 276).fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorType::getBedrockFloorY), ((MapCodec)Codec.intRange(0, 255).fieldOf("sea_level")).forGetter(ChunkGeneratorType::method_28561), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorType::method_28562)).apply((Applicative<ChunkGeneratorType, ?>)instance, ChunkGeneratorType::new));
+    public static final MapCodec<ChunkGeneratorType> field_24780 = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorType::getConfig), ((MapCodec)NoiseConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorType::getNoiseConfig), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorType::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorType::getDefaultFluid), ((MapCodec)Codec.intRange(-20, 276).fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorType::getBedrockCeilingY), ((MapCodec)Codec.intRange(-20, 276).fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorType::getBedrockFloorY), ((MapCodec)Codec.intRange(0, 255).fieldOf("sea_level")).forGetter(ChunkGeneratorType::getSeaLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorType::method_28562)).apply((Applicative<ChunkGeneratorType, ?>)instance, ChunkGeneratorType::new));
     public static final Codec<Supplier<ChunkGeneratorType>> field_24781 = RegistryElementCodec.of(Registry.NOISE_SETTINGS_WORLDGEN, field_24780);
     private final StructuresConfig config;
-    private final NoiseConfig field_24782;
+    private final NoiseConfig noiseConfig;
     private final BlockState defaultBlock;
     private final BlockState defaultFluid;
     private final int bedrockCeilingY;
     private final int bedrockFloorY;
-    private final int field_24785;
+    private final int seaLevel;
     private final boolean field_24786;
     private final Optional<Identifier> field_24787;
     public static final ChunkGeneratorType field_26355 = ChunkGeneratorType.method_30644(ChunkGeneratorType.method_30643(new StructuresConfig(true), false, new Identifier("overworld")));
@@ -44,18 +44,18 @@ public final class ChunkGeneratorType {
     public static final ChunkGeneratorType field_26359 = ChunkGeneratorType.method_30644(ChunkGeneratorType.method_30641(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), new Identifier("caves")));
     public static final ChunkGeneratorType field_26360 = ChunkGeneratorType.method_30644(ChunkGeneratorType.method_30642(new StructuresConfig(false), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), new Identifier("floating_islands"), false, false));
 
-    private ChunkGeneratorType(StructuresConfig config, NoiseConfig noiseConfig, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int k, boolean bl) {
-        this(config, noiseConfig, defaultBlock, defaultFluid, i, j, k, bl, Optional.empty());
+    private ChunkGeneratorType(StructuresConfig config, NoiseConfig noiseConfig, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int seaLevel, boolean bl) {
+        this(config, noiseConfig, defaultBlock, defaultFluid, i, j, seaLevel, bl, Optional.empty());
     }
 
-    private ChunkGeneratorType(StructuresConfig config, NoiseConfig noiseConfig, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int k, boolean bl, Optional<Identifier> optional) {
+    private ChunkGeneratorType(StructuresConfig config, NoiseConfig noiseConfig, BlockState defaultBlock, BlockState defaultFluid, int i, int j, int seaLevel, boolean bl, Optional<Identifier> optional) {
         this.config = config;
-        this.field_24782 = noiseConfig;
+        this.noiseConfig = noiseConfig;
         this.defaultBlock = defaultBlock;
         this.defaultFluid = defaultFluid;
         this.bedrockCeilingY = i;
         this.bedrockFloorY = j;
-        this.field_24785 = k;
+        this.seaLevel = seaLevel;
         this.field_24786 = bl;
         this.field_24787 = optional;
     }
@@ -64,8 +64,8 @@ public final class ChunkGeneratorType {
         return this.config;
     }
 
-    public NoiseConfig method_28559() {
-        return this.field_24782;
+    public NoiseConfig getNoiseConfig() {
+        return this.noiseConfig;
     }
 
     public BlockState getDefaultBlock() {
@@ -94,8 +94,8 @@ public final class ChunkGeneratorType {
         return this.bedrockFloorY;
     }
 
-    public int method_28561() {
-        return this.field_24785;
+    public int getSeaLevel() {
+        return this.seaLevel;
     }
 
     @Deprecated

@@ -17,7 +17,7 @@ public class SilverfishEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
     private final ModelPart[] field_3560;
     private final ModelPart[] field_3557;
-    private final ImmutableList<ModelPart> field_20941;
+    private final ImmutableList<ModelPart> parts;
     private final float[] field_3561 = new float[7];
     private static final int[][] field_3558 = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
     private static final int[][] field_3559 = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
@@ -46,11 +46,11 @@ extends CompositeEntityModel<T> {
         ImmutableList.Builder builder = ImmutableList.builder();
         builder.addAll(Arrays.asList(this.field_3560));
         builder.addAll(Arrays.asList(this.field_3557));
-        this.field_20941 = builder.build();
+        this.parts = builder.build();
     }
 
     public ImmutableList<ModelPart> getParts() {
-        return this.field_20941;
+        return this.parts;
     }
 
     @Override

@@ -49,7 +49,7 @@ implements AutoCloseable {
     }
 
     public void setFonts(List<Font> fonts) {
-        this.method_24290();
+        this.closeFonts();
         this.closeGlyphAtlases();
         this.glyphRendererCache.clear();
         this.glyphCache.clear();
@@ -58,7 +58,7 @@ implements AutoCloseable {
         this.whiteRectangleGlyphRenderer = this.getGlyphRenderer(WhiteRectangleGlyph.INSTANCE);
         IntOpenHashSet intSet = new IntOpenHashSet();
         for (Font font : fonts) {
-            intSet.addAll(font.method_27442());
+            intSet.addAll(font.getProvidedGlyphs());
         }
         HashSet set = Sets.newHashSet();
         intSet.forEach(i2 -> {
@@ -76,11 +76,11 @@ implements AutoCloseable {
 
     @Override
     public void close() {
-        this.method_24290();
+        this.closeFonts();
         this.closeGlyphAtlases();
     }
 
-    private void method_24290() {
+    private void closeFonts() {
         for (Font font : this.fonts) {
             font.close();
         }

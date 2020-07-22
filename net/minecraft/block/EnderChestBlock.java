@@ -34,6 +34,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -53,7 +54,7 @@ implements Waterloggable {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-    public static final TranslatableText CONTAINER_NAME = new TranslatableText("container.enderchest");
+    private static final Text CONTAINER_NAME = new TranslatableText("container.enderchest");
 
     protected EnderChestBlock(AbstractBlock.Settings settings) {
         super(settings, () -> BlockEntityType.ENDER_CHEST);

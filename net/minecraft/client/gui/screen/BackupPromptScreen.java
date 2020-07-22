@@ -3,16 +3,14 @@
  */
 package net.minecraft.client.gui.screen;
 
-import com.google.common.collect.Lists;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5489;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +23,7 @@ extends Screen {
     protected final Callback callback;
     private final Text subtitle;
     private final boolean showEraseCacheCheckbox;
-    private final List<StringRenderable> wrappedText = Lists.newArrayList();
+    private class_5489 wrappedText = class_5489.field_26528;
     private CheckboxWidget eraseCacheCheckbox;
 
     public BackupPromptScreen(@Nullable Screen parent, Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
@@ -39,9 +37,8 @@ extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.wrappedText.clear();
-        this.wrappedText.addAll(this.textRenderer.wrapLines(this.subtitle, this.width - 50));
-        int i = (this.wrappedText.size() + 1) * this.textRenderer.fontHeight;
+        this.wrappedText = class_5489.method_30890(this.textRenderer, this.subtitle, this.width - 50);
+        int i = (this.wrappedText.method_30887() + 1) * this.textRenderer.fontHeight;
         this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, new TranslatableText("selectWorld.backupJoinConfirmButton"), buttonWidget -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked())));
         this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, 100 + i, 150, 20, new TranslatableText("selectWorld.backupJoinSkipButton"), buttonWidget -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked())));
         this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
@@ -54,12 +51,8 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
-        int i = 70;
-        for (StringRenderable stringRenderable : this.wrappedText) {
-            this.drawCenteredText(matrices, this.textRenderer, stringRenderable, this.width / 2, i, 0xFFFFFF);
-            i += this.textRenderer.fontHeight;
-        }
+        BackupPromptScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
+        this.wrappedText.method_30888(matrices, this.width / 2, 70);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

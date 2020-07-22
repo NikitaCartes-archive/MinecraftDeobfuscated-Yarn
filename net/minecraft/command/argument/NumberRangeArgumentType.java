@@ -3,15 +3,12 @@
  */
 package net.minecraft.command.argument;
 
-import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
-import net.minecraft.command.argument.serialize.ArgumentSerializer;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -21,15 +18,8 @@ extends ArgumentType<T> {
         return new IntRangeArgumentType();
     }
 
-    public static abstract class NumberSerializer<T extends NumberRangeArgumentType<?>>
-    implements ArgumentSerializer<T> {
-        @Override
-        public void toPacket(T numberRangeArgumentType, PacketByteBuf packetByteBuf) {
-        }
-
-        @Override
-        public void toJson(T numberRangeArgumentType, JsonObject jsonObject) {
-        }
+    public static FloatRangeArgumentType method_30918() {
+        return new FloatRangeArgumentType();
     }
 
     public static class FloatRangeArgumentType
@@ -49,19 +39,6 @@ extends ArgumentType<T> {
         @Override
         public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
             return this.parse(stringReader);
-        }
-
-        public static class Serializer
-        extends NumberSerializer<FloatRangeArgumentType> {
-            @Override
-            public FloatRangeArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-                return new FloatRangeArgumentType();
-            }
-
-            @Override
-            public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-                return this.fromPacket(packetByteBuf);
-            }
         }
     }
 
@@ -86,19 +63,6 @@ extends ArgumentType<T> {
         @Override
         public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
             return this.parse(stringReader);
-        }
-
-        public static class Serializer
-        extends NumberSerializer<IntRangeArgumentType> {
-            @Override
-            public IntRangeArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-                return new IntRangeArgumentType();
-            }
-
-            @Override
-            public /* synthetic */ ArgumentType fromPacket(PacketByteBuf packetByteBuf) {
-                return this.fromPacket(packetByteBuf);
-            }
         }
     }
 }

@@ -162,7 +162,7 @@ implements TextureTickListener {
                     return;
                 }
                 concurrentLinkedQueue.add(info);
-            }, Util.getServerWorkerExecutor()));
+            }, Util.getMainWorkerExecutor()));
         }
         CompletableFuture.allOf(list.toArray(new CompletableFuture[0])).join();
         return concurrentLinkedQueue;
@@ -181,7 +181,7 @@ implements TextureTickListener {
                     if (sprite != null) {
                         concurrentLinkedQueue.add(sprite);
                     }
-                }, Util.getServerWorkerExecutor()));
+                }, Util.getMainWorkerExecutor()));
             }
         });
         CompletableFuture.allOf(list.toArray(new CompletableFuture[0])).join();

@@ -265,7 +265,7 @@ AutoCloseable {
         this.commandFunctionManager = new CommandFunctionManager(this, serverResourceManager.getFunctionLoader());
         this.structureManager = new StructureManager(serverResourceManager.getResourceManager(), session, dataFixer);
         this.serverThread = thread;
-        this.workerExecutor = Util.getServerWorkerExecutor();
+        this.workerExecutor = Util.getMainWorkerExecutor();
     }
 
     private void initScoreboard(PersistentStateManager persistentStateManager) {
@@ -1387,7 +1387,7 @@ AutoCloseable {
             writer.write(String.format("pending_tasks: %d\n", this.getTaskCount()));
             writer.write(String.format("average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
             writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
-            writer.write(String.format("queue: %s\n", Util.getServerWorkerExecutor()));
+            writer.write(String.format("queue: %s\n", Util.getMainWorkerExecutor()));
         }
     }
 

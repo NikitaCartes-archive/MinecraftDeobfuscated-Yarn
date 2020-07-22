@@ -6,7 +6,6 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5425;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -44,6 +43,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,20 +153,19 @@ extends HostileEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         StatusEffect statusEffect;
-        entityData = super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
-        if (arg.getRandom().nextInt(100) == 0) {
+        entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
+        if (serverWorldAccess.getRandom().nextInt(100) == 0) {
             SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
             skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
-            skeletonEntity.initialize(arg, difficulty, spawnReason, null, null);
+            skeletonEntity.initialize(serverWorldAccess, difficulty, spawnReason, null, null);
             skeletonEntity.startRiding(this);
-            arg.spawnEntity(skeletonEntity);
         }
         if (entityData == null) {
             entityData = new SpiderData();
-            if (arg.getDifficulty() == Difficulty.HARD && arg.getRandom().nextFloat() < 0.1f * difficulty.getClampedLocalDifficulty()) {
-                ((SpiderData)entityData).setEffect(arg.getRandom());
+            if (serverWorldAccess.getDifficulty() == Difficulty.HARD && serverWorldAccess.getRandom().nextFloat() < 0.1f * difficulty.getClampedLocalDifficulty()) {
+                ((SpiderData)entityData).setEffect(serverWorldAccess.getRandom());
             }
         }
         if (entityData instanceof SpiderData && (statusEffect = ((SpiderData)entityData).effect) != null) {

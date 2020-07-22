@@ -61,22 +61,22 @@ extends AbstractFireBlock {
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         VoxelShape voxelShape = VoxelShapes.empty();
         if (state.get(UP).booleanValue()) {
-            voxelShape = field_22497;
+            voxelShape = UP_SHAPE;
         }
         if (state.get(WEST).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, field_22499);
+            voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
         }
         if (state.get(EAST).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, field_22500);
+            voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
         }
         if (state.get(NORTH).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, field_22501);
+            voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
         }
         if (state.get(SOUTH).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, field_22502);
+            voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
         }
         if (voxelShape == VoxelShapes.empty()) {
-            return field_22498;
+            return BASE_SHAPE;
         }
         return voxelShape;
     }

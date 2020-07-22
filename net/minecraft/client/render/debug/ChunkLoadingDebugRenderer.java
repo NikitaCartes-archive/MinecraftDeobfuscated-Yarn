@@ -111,7 +111,7 @@ implements DebugRenderer.Renderer {
                 for (int k = i - 12; k <= i + 12; ++k) {
                     for (int l = j - 12; l <= j + 12; ++l) {
                         ChunkPos chunkPos = new ChunkPos(k, l);
-                        builder.put(chunkPos, "Server: " + serverChunkManager.method_23273(chunkPos));
+                        builder.put(chunkPos, "Server: " + serverChunkManager.getChunkLoadingDebugInfo(chunkPos));
                     }
                 }
                 return builder.build();

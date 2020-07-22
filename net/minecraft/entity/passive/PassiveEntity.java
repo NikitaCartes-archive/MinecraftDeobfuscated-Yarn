@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.passive;
 
-import net.minecraft.class_5425;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -15,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ extends PathAwareEntity {
     }
 
     @Override
-    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         PassiveData passiveData;
         if (entityData == null) {
             entityData = new PassiveData(true);
@@ -39,7 +39,7 @@ extends PathAwareEntity {
             this.setBreedingAge(-24000);
         }
         passiveData.countSpawned();
-        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Nullable

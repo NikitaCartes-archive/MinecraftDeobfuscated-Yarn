@@ -98,8 +98,9 @@ implements AutoCloseable {
                 }
             } catch (Exception exception2) {
                 try {
+                    String string = resource != null ? " (" + resource.getResourcePackName() + ")" : "";
                     ShaderParseException shaderParseException2 = ShaderParseException.wrap(exception2);
-                    shaderParseException2.addFaultyFile(location.getPath());
+                    shaderParseException2.addFaultyFile(location.getPath() + string);
                     throw shaderParseException2;
                 } catch (Throwable throwable) {
                     IOUtils.closeQuietly(resource);

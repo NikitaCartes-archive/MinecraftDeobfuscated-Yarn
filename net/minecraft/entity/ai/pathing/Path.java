@@ -42,6 +42,10 @@ public class Path {
         ++this.currentNodeIndex;
     }
 
+    public boolean method_30849() {
+        return this.currentNodeIndex <= 0;
+    }
+
     public boolean isFinished() {
         return this.currentNodeIndex >= this.nodes.size();
     }
@@ -56,10 +60,6 @@ public class Path {
 
     public PathNode getNode(int index) {
         return this.nodes.get(index);
-    }
-
-    public List<PathNode> getNodes() {
-        return this.nodes;
     }
 
     public void setLength(int length) {
@@ -103,6 +103,11 @@ public class Path {
 
     public PathNode method_29301() {
         return this.nodes.get(this.currentNodeIndex);
+    }
+
+    @Nullable
+    public PathNode method_30850() {
+        return this.currentNodeIndex > 0 ? this.nodes.get(this.currentNodeIndex - 1) : null;
     }
 
     public boolean equalsPath(@Nullable Path path) {

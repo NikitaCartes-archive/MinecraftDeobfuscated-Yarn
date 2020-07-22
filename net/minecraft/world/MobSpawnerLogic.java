@@ -132,7 +132,10 @@ public abstract class MobSpawnerLogic {
                         ((MobEntity)entity2).initialize(serverWorld, world.getLocalDifficulty(entity2.getBlockPos()), SpawnReason.SPAWNER, null, null);
                     }
                 }
-                this.spawnEntity(entity2);
+                if (!serverWorld.method_30736(entity2)) {
+                    this.updateSpawns();
+                    return;
+                }
                 world.syncWorldEvent(2004, blockPos, 0);
                 if (entity2 instanceof MobEntity) {
                     ((MobEntity)entity2).playSpawnEffects();
@@ -142,15 +145,6 @@ public abstract class MobSpawnerLogic {
             if (bl) {
                 this.updateSpawns();
             }
-        }
-    }
-
-    private void spawnEntity(Entity entity) {
-        if (!this.getWorld().spawnEntity(entity)) {
-            return;
-        }
-        for (Entity entity2 : entity.getPassengerList()) {
-            this.spawnEntity(entity2);
         }
     }
 

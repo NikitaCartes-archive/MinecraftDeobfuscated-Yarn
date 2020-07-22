@@ -33,7 +33,7 @@ public class ClientRecipeBook
 extends RecipeBook {
     private static final Logger field_25622 = LogManager.getLogger();
     private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
-    private List<RecipeResultCollection> field_25778 = ImmutableList.of();
+    private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
     public void reload(Iterable<Recipe<?>> iterable) {
         Map<RecipeBookGroup, List<List<Recipe<?>>>> map = ClientRecipeBook.method_30283(iterable);
@@ -46,7 +46,7 @@ extends RecipeBook {
             List cfr_ignored_0 = map2.put(recipeBookGroup2, list.stream().flatMap(recipeBookGroup -> ((List)map2.getOrDefault(recipeBookGroup, ImmutableList.of())).stream()).collect(ImmutableList.toImmutableList()));
         });
         this.resultsByGroup = ImmutableMap.copyOf(map2);
-        this.field_25778 = builder.build();
+        this.orderedResults = builder.build();
     }
 
     private static Map<RecipeBookGroup, List<List<Recipe<?>>>> method_30283(Iterable<Recipe<?>> iterable) {
@@ -122,7 +122,7 @@ extends RecipeBook {
     }
 
     public List<RecipeResultCollection> getOrderedResults() {
-        return this.field_25778;
+        return this.orderedResults;
     }
 
     public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup category) {

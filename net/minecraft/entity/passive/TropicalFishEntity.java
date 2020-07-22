@@ -6,7 +6,6 @@ package net.minecraft.entity.passive;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -24,6 +23,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -179,12 +179,12 @@ extends SchoolingFishEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int l;
         int k;
         int j;
         int i;
-        entityData = super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+        entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
         if (entityTag != null && entityTag.contains("BucketVariantTag", 3)) {
             this.setVariant(entityTag.getInt("BucketVariantTag"));
             return entityData;

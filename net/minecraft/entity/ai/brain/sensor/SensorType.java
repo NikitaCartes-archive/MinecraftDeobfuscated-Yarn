@@ -8,7 +8,6 @@ import net.minecraft.entity.ai.brain.sensor.DummySensor;
 import net.minecraft.entity.ai.brain.sensor.GolemLastSeenSensor;
 import net.minecraft.entity.ai.brain.sensor.HoglinSpecificSensor;
 import net.minecraft.entity.ai.brain.sensor.HurtBySensor;
-import net.minecraft.entity.ai.brain.sensor.InteractableDoorsSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestBedSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestItemsSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestLivingEntitiesSensor;
@@ -28,7 +27,6 @@ public class SensorType<U extends Sensor<?>> {
     public static final SensorType<NearestItemsSensor> NEAREST_ITEMS = SensorType.register("nearest_items", NearestItemsSensor::new);
     public static final SensorType<NearestLivingEntitiesSensor> NEAREST_LIVING_ENTITIES = SensorType.register("nearest_living_entities", NearestLivingEntitiesSensor::new);
     public static final SensorType<NearestPlayersSensor> NEAREST_PLAYERS = SensorType.register("nearest_players", NearestPlayersSensor::new);
-    public static final SensorType<InteractableDoorsSensor> INTERACTABLE_DOORS = SensorType.register("interactable_doors", InteractableDoorsSensor::new);
     public static final SensorType<NearestBedSensor> NEAREST_BED = SensorType.register("nearest_bed", NearestBedSensor::new);
     public static final SensorType<HurtBySensor> HURT_BY = SensorType.register("hurt_by", HurtBySensor::new);
     public static final SensorType<VillagerHostilesSensor> VILLAGER_HOSTILES = SensorType.register("villager_hostiles", VillagerHostilesSensor::new);

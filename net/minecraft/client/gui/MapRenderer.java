@@ -150,7 +150,7 @@ implements AutoCloseable {
                     matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f - p * q / 2.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f + 4.0f, -0.025f);
                     matrixStack.scale(q, q, 1.0f);
                     matrixStack.translate(0.0, 0.0, -0.1f);
-                    textRenderer.draw(text, 0.0f, 0.0f, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
+                    textRenderer.method_30882(text, 0.0f, 0.0f, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
                     matrixStack.pop();
                 }
                 ++l;

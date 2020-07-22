@@ -1,14 +1,14 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.exception.RetryCallException;
-import net.minecraft.client.realms.gui.LongRunningTask;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.task.LongRunningTask;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class SwitchSlotTask
@@ -26,8 +26,7 @@ extends LongRunningTask {
     @Override
     public void run() {
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
-        String string = I18n.translate("mco.minigame.world.slot.screen.title", new Object[0]);
-        this.setTitle(string);
+        this.setTitle(new TranslatableText("mco.minigame.world.slot.screen.title"));
         for (int i = 0; i < 25; ++i) {
             try {
                 if (this.aborted()) {

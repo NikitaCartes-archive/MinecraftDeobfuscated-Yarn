@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -22,6 +23,7 @@ import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
@@ -50,9 +52,9 @@ extends Screen {
     public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
     private Contents contents;
     private int pageIndex;
-    private List<StringRenderable> cachedPage = Collections.emptyList();
+    private List<class_5481> cachedPage = Collections.emptyList();
     private int cachedPageIndex = -1;
-    private StringRenderable field_25897 = StringRenderable.EMPTY;
+    private Text field_25897 = LiteralText.EMPTY;
     private PageTurnWidget nextPageButton;
     private PageTurnWidget previousPageButton;
     private final boolean pageTurnSound;
@@ -162,16 +164,16 @@ extends Screen {
         this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
         if (this.cachedPageIndex != this.pageIndex) {
             StringRenderable stringRenderable = this.contents.getPage(this.pageIndex);
-            this.cachedPage = this.textRenderer.getTextHandler().wrapLines(stringRenderable, 114, Style.EMPTY);
+            this.cachedPage = this.textRenderer.wrapLines(stringRenderable, 114);
             this.field_25897 = new TranslatableText("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
         }
         this.cachedPageIndex = this.pageIndex;
         int k = this.textRenderer.getWidth(this.field_25897);
-        this.textRenderer.draw(matrices, this.field_25897, (float)(i - k + 192 - 44), 18.0f, 0);
+        this.textRenderer.method_30883(matrices, this.field_25897, i - k + 192 - 44, 18.0f, 0);
         int l = Math.min(128 / this.textRenderer.fontHeight, this.cachedPage.size());
         for (int m = 0; m < l; ++m) {
-            StringRenderable stringRenderable2 = this.cachedPage.get(m);
-            this.textRenderer.draw(matrices, stringRenderable2, (float)(i + 36), (float)(32 + m * this.textRenderer.fontHeight), 0);
+            class_5481 lv = this.cachedPage.get(m);
+            this.textRenderer.draw(matrices, lv, (float)(i + 36), (float)(32 + m * this.textRenderer.fontHeight), 0);
         }
         Style style = this.getTextAt(mouseX, mouseY);
         if (style != null) {
@@ -213,7 +215,7 @@ extends Screen {
 
     @Nullable
     public Style getTextAt(double x, double y) {
-        if (this.cachedPage == null) {
+        if (this.cachedPage.isEmpty()) {
             return null;
         }
         int i = MathHelper.floor(x - (double)((this.width - 192) / 2) - 36.0);
@@ -225,8 +227,8 @@ extends Screen {
         if (i <= 114 && j < this.client.textRenderer.fontHeight * k + k) {
             int l = j / this.client.textRenderer.fontHeight;
             if (l >= 0 && l < this.cachedPage.size()) {
-                StringRenderable stringRenderable = this.cachedPage.get(l);
-                return this.client.textRenderer.getTextHandler().trimToWidth(stringRenderable, i);
+                class_5481 lv = this.cachedPage.get(l);
+                return this.client.textRenderer.getTextHandler().method_30876(lv, i);
             }
             return null;
         }

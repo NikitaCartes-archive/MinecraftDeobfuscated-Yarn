@@ -21,16 +21,16 @@ implements Packet<ClientPlayPacketListener> {
     private Action action;
     private List<Identifier> recipeIdsToChange;
     private List<Identifier> recipeIdsToInit;
-    private RecipeBookOptions field_25797;
+    private RecipeBookOptions options;
 
     public UnlockRecipesS2CPacket() {
     }
 
-    public UnlockRecipesS2CPacket(Action action, Collection<Identifier> collection, Collection<Identifier> collection2, RecipeBookOptions recipeBookOptions) {
+    public UnlockRecipesS2CPacket(Action action, Collection<Identifier> collection, Collection<Identifier> collection2, RecipeBookOptions options) {
         this.action = action;
         this.recipeIdsToChange = ImmutableList.copyOf(collection);
         this.recipeIdsToInit = ImmutableList.copyOf(collection2);
-        this.field_25797 = recipeBookOptions;
+        this.options = options;
     }
 
     @Override
@@ -42,7 +42,7 @@ implements Packet<ClientPlayPacketListener> {
     public void read(PacketByteBuf buf) throws IOException {
         int j;
         this.action = buf.readEnumConstant(Action.class);
-        this.field_25797 = RecipeBookOptions.fromPacket(buf);
+        this.options = RecipeBookOptions.fromPacket(buf);
         int i = buf.readVarInt();
         this.recipeIdsToChange = Lists.newArrayList();
         for (j = 0; j < i; ++j) {
@@ -60,7 +60,7 @@ implements Packet<ClientPlayPacketListener> {
     @Override
     public void write(PacketByteBuf buf) throws IOException {
         buf.writeEnumConstant(this.action);
-        this.field_25797.toPacket(buf);
+        this.options.toPacket(buf);
         buf.writeVarInt(this.recipeIdsToChange.size());
         for (Identifier identifier : this.recipeIdsToChange) {
             buf.writeIdentifier(identifier);
@@ -84,8 +84,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public RecipeBookOptions isFurnaceFilteringCraftable() {
-        return this.field_25797;
+    public RecipeBookOptions getOptions() {
+        return this.options;
     }
 
     @Environment(value=EnvType.CLIENT)

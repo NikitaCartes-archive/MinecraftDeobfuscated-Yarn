@@ -29,10 +29,10 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.world.OptimizeWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
@@ -51,6 +51,7 @@ public class EditWorldScreen
 extends Screen {
     private static final Logger field_23776 = LogManager.getLogger();
     private static final Gson field_25481 = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
+    private static final Text field_26603 = new TranslatableText("selectWorld.enterName");
     private ButtonWidget saveButton;
     private final BooleanConsumer callback;
     private TextFieldWidget levelNameTextField;
@@ -196,8 +197,8 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 15, 0xFFFFFF);
-        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.enterName", new Object[0]), this.width / 2 - 100, 24, 0xA0A0A0);
+        EditWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 15, 0xFFFFFF);
+        EditWorldScreen.drawTextWithShadow(matrices, this.textRenderer, field_26603, this.width / 2 - 100, 24, 0xA0A0A0);
         this.levelNameTextField.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }

@@ -15,7 +15,7 @@ public interface Decoratable<R> {
     public R decorate(ConfiguredDecorator<?> var1);
 
     /**
-     * Applies the {@code minecraft:chance} decorators, which only
+     * Applies the {@code minecraft:chance} decorator, which only
      * allows positions with a {@code 1 / count} chance,
      * e.g. a count of 2 would give approximately half of the input positions.
      */

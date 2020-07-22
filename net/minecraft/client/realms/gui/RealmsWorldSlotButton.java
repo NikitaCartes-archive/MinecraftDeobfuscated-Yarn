@@ -34,6 +34,9 @@ implements TickableElement {
     public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
     public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
     public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
+    private static final Text field_26468 = new TranslatableText("mco.configure.world.slot.tooltip.active");
+    private static final Text field_26469 = new TranslatableText("mco.configure.world.slot.tooltip.minigame");
+    private static final Text field_26470 = new TranslatableText("mco.configure.world.slot.tooltip");
     private final Supplier<RealmsServer> serverDataProvider;
     private final Consumer<Text> toolTipSetter;
     private final int slotIndex;
@@ -107,7 +110,7 @@ implements TickableElement {
             return Pair.of(null, new LiteralText(string));
         }
         Text text = bl2 ? (bl ? LiteralText.EMPTY : new LiteralText(" ").append(string).append(" ").append(realmsServer.minigameName)) : new LiteralText(" ").append(string);
-        TranslatableText text2 = action == Action.JOIN ? new TranslatableText("mco.configure.world.slot.tooltip.active") : (bl2 ? new TranslatableText("mco.configure.world.slot.tooltip.minigame") : new TranslatableText("mco.configure.world.slot.tooltip"));
+        Text text2 = action == Action.JOIN ? field_26468 : (bl2 ? field_26469 : field_26470);
         MutableText text3 = text2.shallowCopy().append(text);
         return Pair.of(text2, text3);
     }
@@ -158,7 +161,7 @@ implements TickableElement {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         }
         RealmsWorldSlotButton.drawTexture(matrices, x, y, 0.0f, 0.0f, 80, 80, 80, 80);
-        this.drawCenteredString(matrices, minecraftClient.textRenderer, text, x + 40, y + 66, 0xFFFFFF);
+        RealmsWorldSlotButton.drawCenteredString(matrices, minecraftClient.textRenderer, text, x + 40, y + 66, 0xFFFFFF);
     }
 
     @Environment(value=EnvType.CLIENT)

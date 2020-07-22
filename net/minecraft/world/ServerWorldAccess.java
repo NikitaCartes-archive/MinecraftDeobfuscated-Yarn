@@ -3,16 +3,22 @@
  */
 package net.minecraft.world;
 
-import java.util.stream.Stream;
-import net.minecraft.class_5425;
-import net.minecraft.structure.StructureStart;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.WorldAccess;
 
+/**
+ * Represents access to a world on a logical Minecraft server.
+ */
 public interface ServerWorldAccess
-extends class_5425 {
-    public long getSeed();
+extends WorldAccess {
+    public ServerWorld toServerWorld();
 
-    public Stream<? extends StructureStart<?>> method_30275(ChunkSectionPos var1, StructureFeature<?> var2);
+    /**
+     * Spawns an entity and all its passengers (recursively) into the world.
+     */
+    default public void spawnEntityAndPassengers(Entity entity) {
+        entity.streamPassengersRecursively().forEach(this::spawnEntity);
+    }
 }
 

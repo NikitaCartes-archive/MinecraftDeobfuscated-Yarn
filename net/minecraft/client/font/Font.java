@@ -18,10 +18,15 @@ extends Closeable {
     }
 
     @Nullable
-    default public RenderableGlyph getGlyph(int i) {
+    default public RenderableGlyph getGlyph(int codePoint) {
         return null;
     }
 
-    public IntSet method_27442();
+    /**
+     * Returns the set of code points for which this font can provide glyphs.
+     * 
+     * @return a set of integer code points.
+     */
+    public IntSet getProvidedGlyphs();
 }
 

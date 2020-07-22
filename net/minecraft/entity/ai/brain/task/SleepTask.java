@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import net.minecraft.block.BedBlock;
@@ -60,7 +59,7 @@ extends Task<LivingEntity> {
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
         if (time > this.startTime) {
-            entity.getBrain().getOptionalMemory(MemoryModuleType.OPENED_DOORS).ifPresent(set -> OpenDoorsTask.closeOpenedDoors(world, ImmutableList.of(), 0, entity, entity.getBrain()));
+            OpenDoorsTask.method_30760(world, entity, null, null);
             entity.sleep(entity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get().getPos());
         }
     }

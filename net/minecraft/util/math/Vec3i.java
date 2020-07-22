@@ -89,6 +89,14 @@ implements Comparable<Vec3i> {
         this.z = z;
     }
 
+    public Vec3i up() {
+        return this.up(1);
+    }
+
+    public Vec3i up(int i) {
+        return this.offset(Direction.UP, i);
+    }
+
     public Vec3i down() {
         return this.down(1);
     }

@@ -73,6 +73,11 @@ extends HostileEntity {
     }
 
     @Override
+    public double getHeightOffset() {
+        return this.isBaby() ? -0.05 : -0.45;
+    }
+
+    @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));

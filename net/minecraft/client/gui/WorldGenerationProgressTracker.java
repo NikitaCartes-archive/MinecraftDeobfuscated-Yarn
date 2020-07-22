@@ -26,7 +26,7 @@ implements WorldGenerationProgressListener {
     public WorldGenerationProgressTracker(int radius) {
         this.progressLogger = new WorldGenerationProgressLogger(radius);
         this.centerSize = radius * 2 + 1;
-        this.radius = radius + ChunkStatus.getMaxTargetGenerationRadius();
+        this.radius = radius + ChunkStatus.getMaxDistanceFromFull();
         this.size = this.radius * 2 + 1;
         this.chunkStatuses = new Long2ObjectOpenHashMap();
     }

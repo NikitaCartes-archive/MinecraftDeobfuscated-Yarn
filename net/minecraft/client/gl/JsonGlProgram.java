@@ -128,8 +128,9 @@ AutoCloseable {
                 }
             }
         } catch (Exception exception4) {
+            String string2 = resource2 != null ? " (" + resource2.getResourcePackName() + ")" : "";
             ShaderParseException shaderParseException4 = ShaderParseException.wrap(exception4);
-            shaderParseException4.addFaultyFile(identifier.getPath());
+            shaderParseException4.addFaultyFile(identifier.getPath() + string2);
             throw shaderParseException4;
         } finally {
             IOUtils.closeQuietly((Closeable)resource2);
@@ -146,7 +147,7 @@ AutoCloseable {
             Identifier identifier = new Identifier("shaders/program/" + name + type.getFileExtension());
             Resource resource = resourceManager.getResource(identifier);
             try {
-                glShader = GlShader.createFromResource(type, name, resource.getInputStream());
+                glShader = GlShader.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName());
             } finally {
                 IOUtils.closeQuietly((Closeable)resource);
             }

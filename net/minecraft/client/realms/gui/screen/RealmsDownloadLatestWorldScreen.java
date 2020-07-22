@@ -19,10 +19,10 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.FileDownload;
 import net.minecraft.client.realms.Realms;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.SizeUnit;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -144,11 +144,8 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        if (this.extracting && !this.finished) {
-            this.status = new TranslatableText("mco.download.extracting");
-        }
-        this.drawCenteredText(matrices, this.textRenderer, this.downloadTitle, this.width / 2, 20, 0xFFFFFF);
-        this.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, 50, 0xFFFFFF);
+        RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.downloadTitle, this.width / 2, 20, 0xFFFFFF);
+        RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, 50, 0xFFFFFF);
         if (this.showDots) {
             this.drawDots(matrices);
         }
@@ -157,7 +154,7 @@ extends RealmsScreen {
             this.drawDownloadSpeed(matrices);
         }
         if (this.field_20494 != null) {
-            this.drawCenteredText(matrices, this.textRenderer, this.field_20494, this.width / 2, 110, 0xFF0000);
+            RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.field_20494, this.width / 2, 110, 0xFF0000);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -171,8 +168,8 @@ extends RealmsScreen {
     }
 
     private void drawProgressBar(MatrixStack matrixStack) {
-        double d = this.downloadStatus.bytesWritten.doubleValue() / this.downloadStatus.totalBytes.doubleValue() * 100.0;
-        this.progress = String.format(Locale.ROOT, "%.1f", d);
+        double d = Math.min((double)this.downloadStatus.bytesWritten / (double)this.downloadStatus.totalBytes, 1.0);
+        this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
@@ -181,16 +178,16 @@ extends RealmsScreen {
         double e = this.width / 2 - 100;
         double f = 0.5;
         bufferBuilder.vertex(e - 0.5, 95.5, 0.0).color(217, 210, 210, 255).next();
-        bufferBuilder.vertex(e + 200.0 * d / 100.0 + 0.5, 95.5, 0.0).color(217, 210, 210, 255).next();
-        bufferBuilder.vertex(e + 200.0 * d / 100.0 + 0.5, 79.5, 0.0).color(217, 210, 210, 255).next();
+        bufferBuilder.vertex(e + 200.0 * d + 0.5, 95.5, 0.0).color(217, 210, 210, 255).next();
+        bufferBuilder.vertex(e + 200.0 * d + 0.5, 79.5, 0.0).color(217, 210, 210, 255).next();
         bufferBuilder.vertex(e - 0.5, 79.5, 0.0).color(217, 210, 210, 255).next();
         bufferBuilder.vertex(e, 95.0, 0.0).color(128, 128, 128, 255).next();
-        bufferBuilder.vertex(e + 200.0 * d / 100.0, 95.0, 0.0).color(128, 128, 128, 255).next();
-        bufferBuilder.vertex(e + 200.0 * d / 100.0, 80.0, 0.0).color(128, 128, 128, 255).next();
+        bufferBuilder.vertex(e + 200.0 * d, 95.0, 0.0).color(128, 128, 128, 255).next();
+        bufferBuilder.vertex(e + 200.0 * d, 80.0, 0.0).color(128, 128, 128, 255).next();
         bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
         tessellator.draw();
         RenderSystem.enableTexture();
-        this.drawCenteredString(matrixStack, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
+        RealmsDownloadLatestWorldScreen.drawCenteredString(matrixStack, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
     }
 
     private void drawDownloadSpeed(MatrixStack matrixStack) {
@@ -241,6 +238,9 @@ extends RealmsScreen {
                         return;
                     }
                     if (fileDownload.isExtracting()) {
+                        if (!this.extracting) {
+                            this.status = new TranslatableText("mco.download.extracting");
+                        }
                         this.extracting = true;
                     }
                     if (this.cancelled) {
@@ -279,8 +279,8 @@ extends RealmsScreen {
 
     @Environment(value=EnvType.CLIENT)
     public class DownloadStatus {
-        public volatile Long bytesWritten = 0L;
-        public volatile Long totalBytes = 0L;
+        public volatile long bytesWritten;
+        public volatile long totalBytes;
     }
 }
 

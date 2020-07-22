@@ -93,7 +93,7 @@ implements SpectatorMenuCloseCallback {
             RenderSystem.popMatrix();
             if (k > 3 && spectatorMenuCommand.isEnabled()) {
                 Text text = this.client.options.keysHotbar[i].getBoundKeyLocalizedText();
-                this.client.textRenderer.drawWithShadow(matrixStack, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0f + 3.0f, 0xFFFFFF + (k << 24));
+                this.client.textRenderer.method_30881(matrixStack, text, j + 19 - 2 - this.client.textRenderer.getWidth(text), f + 6.0f + 3.0f, 0xFFFFFF + (k << 24));
             }
         }
     }
@@ -110,7 +110,7 @@ implements SpectatorMenuCloseCallback {
                 RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                this.client.textRenderer.drawWithShadow(matrixStack, text, (float)j, (float)k, 0xFFFFFF + (i << 24));
+                this.client.textRenderer.method_30881(matrixStack, text, j, k, 0xFFFFFF + (i << 24));
                 RenderSystem.disableBlend();
                 RenderSystem.popMatrix();
             }

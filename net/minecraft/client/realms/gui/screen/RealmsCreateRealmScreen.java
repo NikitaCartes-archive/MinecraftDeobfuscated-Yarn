@@ -9,19 +9,21 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.RealmsMainScreen;
-import net.minecraft.client.realms.RealmsScreen;
-import net.minecraft.client.realms.WorldCreationTask;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsResetWorldScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
+import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsCreateRealmScreen
 extends RealmsScreen {
+    private static final Text field_26487 = new TranslatableText("mco.configure.world.name");
+    private static final Text field_26488 = new TranslatableText("mco.configure.world.description");
     private final RealmsServer server;
     private final RealmsMainScreen parent;
     private TextFieldWidget nameBox;
@@ -86,7 +88,7 @@ extends RealmsScreen {
     private void createWorld() {
         if (this.valid()) {
             RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this.parent, this.server, new TranslatableText("mco.selectServer.create"), new TranslatableText("mco.create.world.subtitle"), 0xA0A0A0, new TranslatableText("mco.create.world.skip"), () -> this.client.openScreen(this.parent.newScreen()), () -> this.client.openScreen(this.parent.newScreen()));
-            realmsResetWorldScreen.setResetTitle(I18n.translate("mco.create.world.reset.title", new Object[0]));
+            realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
             this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new WorldCreationTask(this.server.id, this.nameBox.getText(), this.descriptionBox.getText(), realmsResetWorldScreen)));
         }
     }
@@ -99,8 +101,8 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.createRealmLabel.render(this, matrices);
-        this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.name", new Object[0]), (float)(this.width / 2 - 100), 52.0f, 0xA0A0A0);
-        this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.description", new Object[0]), (float)(this.width / 2 - 100), 102.0f, 0xA0A0A0);
+        this.textRenderer.method_30883(matrices, field_26487, this.width / 2 - 100, 52.0f, 0xA0A0A0);
+        this.textRenderer.method_30883(matrices, field_26488, this.width / 2 - 100, 102.0f, 0xA0A0A0);
         if (this.nameBox != null) {
             this.nameBox.render(matrices, mouseX, mouseY, delta);
         }

@@ -89,7 +89,7 @@ extends Fluid {
         if (state.get(FALLING).booleanValue()) {
             for (Direction direction2 : Direction.Type.HORIZONTAL) {
                 mutable.set(pos, direction2);
-                if (!this.method_15749(world, mutable, direction2) && !this.method_15749(world, mutable.up(), direction2)) continue;
+                if (!this.method_15749(world, mutable, direction2) && !this.method_15749(world, (BlockPos)mutable.up(), direction2)) continue;
                 vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
                 break;
             }

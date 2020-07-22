@@ -6,6 +6,7 @@ package net.minecraft.client.font;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.CharacterVisitor;
 import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
@@ -21,9 +22,9 @@ public class TextVisitFactory {
 
     private static boolean visitRegularCharacter(Style style, CharacterVisitor visitor, int index, char c) {
         if (Character.isSurrogate(c)) {
-            return visitor.onChar(index, style, 65533);
+            return visitor.accept(index, style, 65533);
         }
-        return visitor.onChar(index, style, c);
+        return visitor.accept(index, style, c);
     }
 
     /**
@@ -42,18 +43,18 @@ public class TextVisitFactory {
             char c = text.charAt(j);
             if (Character.isHighSurrogate(c)) {
                 if (j + 1 >= i) {
-                    if (visitor.onChar(j, style, 65533)) break;
+                    if (visitor.accept(j, style, 65533)) break;
                     return false;
                 }
                 char d = text.charAt(j + 1);
                 if (Character.isLowSurrogate(d)) {
-                    if (!visitor.onChar(j, style, Character.toCodePoint(c, d))) {
+                    if (!visitor.accept(j, style, Character.toCodePoint(c, d))) {
                         return false;
                     }
                     ++j;
                     continue;
                 }
-                if (visitor.onChar(j, style, 65533)) continue;
+                if (visitor.accept(j, style, 65533)) continue;
                 return false;
             }
             if (TextVisitFactory.visitRegularCharacter(style, visitor, j, c)) continue;
@@ -78,11 +79,11 @@ public class TextVisitFactory {
             char c = text.charAt(j);
             if (Character.isLowSurrogate(c)) {
                 if (j - 1 < 0) {
-                    if (visitor.onChar(0, style, 65533)) break;
+                    if (visitor.accept(0, style, 65533)) break;
                     return false;
                 }
                 char d = text.charAt(j - 1);
-                if (!(Character.isHighSurrogate(d) ? !visitor.onChar(--j, style, Character.toCodePoint(d, c)) : !visitor.onChar(j, style, 65533))) continue;
+                if (!(Character.isHighSurrogate(d) ? !visitor.accept(--j, style, Character.toCodePoint(d, c)) : !visitor.accept(j, style, 65533))) continue;
                 return false;
             }
             if (TextVisitFactory.visitRegularCharacter(style, visitor, j, c)) continue;
@@ -155,18 +156,18 @@ public class TextVisitFactory {
             }
             if (Character.isHighSurrogate(c)) {
                 if (j + 1 >= i) {
-                    if (visitor.onChar(j, style, 65533)) break;
+                    if (visitor.accept(j, style, 65533)) break;
                     return false;
                 }
                 d = text.charAt(j + 1);
                 if (Character.isLowSurrogate(d)) {
-                    if (!visitor.onChar(j, style, Character.toCodePoint(c, d))) {
+                    if (!visitor.accept(j, style, Character.toCodePoint(c, d))) {
                         return false;
                     }
                     ++j;
                     continue;
                 }
-                if (visitor.onChar(j, style, 65533)) continue;
+                if (visitor.accept(j, style, 65533)) continue;
                 return false;
             }
             if (TextVisitFactory.visitRegularCharacter(style, visitor, j, c)) continue;
@@ -202,12 +203,6 @@ public class TextVisitFactory {
             return true;
         });
         return stringBuilder.toString();
-    }
-
-    @FunctionalInterface
-    @Environment(value=EnvType.CLIENT)
-    public static interface CharacterVisitor {
-        public boolean onChar(int var1, Style var2, int var3);
     }
 }
 

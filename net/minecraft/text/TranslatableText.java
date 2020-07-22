@@ -57,14 +57,14 @@ implements ParsableText {
         this.translations.clear();
         String string = language.get(this.key);
         try {
-            this.setTranslation(language.reorder(string, true), language);
+            this.setTranslation(string);
         } catch (TranslationException translationException) {
             this.translations.clear();
             this.translations.add(StringRenderable.plain(string));
         }
     }
 
-    private void setTranslation(String translation, Language language) {
+    private void setTranslation(String translation) {
         Matcher matcher = ARG_FORMAT.matcher(translation);
         try {
             int i = 0;
@@ -89,7 +89,7 @@ implements ParsableText {
                     String string3 = matcher.group(1);
                     int n = m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
                     if (m < this.args.length) {
-                        this.translations.add(this.method_29434(m, language));
+                        this.translations.add(this.method_29434(m));
                     }
                 } else {
                     throw new TranslationException(this, "Unsupported format: '" + string2 + "'");
@@ -108,7 +108,7 @@ implements ParsableText {
         }
     }
 
-    private StringRenderable method_29434(int i, Language language) {
+    private StringRenderable method_29434(int i) {
         if (i >= this.args.length) {
             throw new TranslationException(this, i);
         }
@@ -116,7 +116,7 @@ implements ParsableText {
         if (object instanceof Text) {
             return (Text)object;
         }
-        return object == null ? NULL_ARGUMENT : StringRenderable.plain(language.reorder(object.toString(), false));
+        return object == null ? NULL_ARGUMENT : StringRenderable.plain(object.toString());
     }
 
     @Override

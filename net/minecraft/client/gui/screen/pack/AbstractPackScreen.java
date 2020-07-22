@@ -63,8 +63,8 @@ extends Screen {
     private ButtonWidget doneButton;
     private final Map<String, Identifier> field_25789 = Maps.newHashMap();
 
-    public AbstractPackScreen(Screen screen, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> consumer, File file, TranslatableText translatableText) {
-        super(translatableText);
+    public AbstractPackScreen(Screen screen, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> consumer, File file, Text text) {
+        super(text);
         this.parent = screen;
         this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, resourcePackManager, consumer);
         this.field_25474 = file;
@@ -142,8 +142,8 @@ extends Screen {
         this.renderBackgroundTexture(0);
         this.availablePackList.render(matrices, mouseX, mouseY, delta);
         this.selectedPackList.render(matrices, mouseX, mouseY, delta);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
-        this.drawCenteredText(matrices, this.textRenderer, DROP_INFO, this.width / 2, 20, 0xFFFFFF);
+        AbstractPackScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        AbstractPackScreen.drawCenteredText(matrices, this.textRenderer, DROP_INFO, this.width / 2, 20, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

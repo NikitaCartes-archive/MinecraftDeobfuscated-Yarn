@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.KelpBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -22,26 +22,26 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         int i = 0;
-        int j = serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
+        int j = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
-        if (serverWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
+        if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
             BlockState blockState = Blocks.KELP.getDefaultState();
             BlockState blockState2 = Blocks.KELP_PLANT.getDefaultState();
             int k = 1 + random.nextInt(10);
             for (int l = 0; l <= k; ++l) {
-                if (serverWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER) && serverWorldAccess.getBlockState(blockPos2.up()).isOf(Blocks.WATER) && blockState2.canPlaceAt(serverWorldAccess, blockPos2)) {
+                if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER) && structureWorldAccess.getBlockState(blockPos2.up()).isOf(Blocks.WATER) && blockState2.canPlaceAt(structureWorldAccess, blockPos2)) {
                     if (l == k) {
-                        serverWorldAccess.setBlockState(blockPos2, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
+                        structureWorldAccess.setBlockState(blockPos2, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
                         ++i;
                     } else {
-                        serverWorldAccess.setBlockState(blockPos2, blockState2, 2);
+                        structureWorldAccess.setBlockState(blockPos2, blockState2, 2);
                     }
                 } else if (l > 0) {
                     BlockPos blockPos3 = blockPos2.down();
-                    if (!blockState.canPlaceAt(serverWorldAccess, blockPos3) || serverWorldAccess.getBlockState(blockPos3.down()).isOf(Blocks.KELP)) break;
-                    serverWorldAccess.setBlockState(blockPos3, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
+                    if (!blockState.canPlaceAt(structureWorldAccess, blockPos3) || structureWorldAccess.getBlockState(blockPos3.down()).isOf(Blocks.KELP)) break;
+                    structureWorldAccess.setBlockState(blockPos3, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(4) + 20), 2);
                     ++i;
                     break;
                 }

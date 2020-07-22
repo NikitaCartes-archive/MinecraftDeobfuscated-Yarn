@@ -114,13 +114,13 @@ public class ChunkSerializer {
         if (chunkType == ChunkStatus.ChunkType.field_12807) {
             TickScheduler<Block> tickScheduler = compoundTag.contains("TileTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get) : chunkTickScheduler;
             TickScheduler<Fluid> tickScheduler2 = compoundTag.contains("LiquidTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get) : chunkTickScheduler2;
-            WorldChunk chunk3 = new WorldChunk(world.getWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, chunk -> ChunkSerializer.writeEntities(compoundTag, chunk));
+            WorldChunk chunk3 = new WorldChunk(world.toServerWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, chunk -> ChunkSerializer.writeEntities(compoundTag, chunk));
         } else {
             ProtoChunk protoChunk = new ProtoChunk(pos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
             protoChunk.setBiomes(biomeArray);
             chunk2 = protoChunk;
             chunk2.setInhabitedTime(l);
-            protoChunk.setStatus(ChunkStatus.get(compoundTag.getString("Status")));
+            protoChunk.setStatus(ChunkStatus.byId(compoundTag.getString("Status")));
             if (chunk2.getStatus().isAtLeast(ChunkStatus.FEATURES)) {
                 protoChunk.setLightingProvider(lightingProvider);
             }
@@ -293,7 +293,7 @@ public class ChunkSerializer {
 
     public static ChunkStatus.ChunkType getChunkType(@Nullable CompoundTag tag) {
         ChunkStatus chunkStatus;
-        if (tag != null && (chunkStatus = ChunkStatus.get(tag.getCompound("Level").getString("Status"))) != null) {
+        if (tag != null && (chunkStatus = ChunkStatus.byId(tag.getCompound("Level").getString("Status"))) != null) {
             return chunkStatus.getChunkType();
         }
         return ChunkStatus.ChunkType.field_12808;

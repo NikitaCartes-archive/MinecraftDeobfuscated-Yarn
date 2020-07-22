@@ -297,6 +297,13 @@ public enum Direction implements StringIdentifiable
         return this.vector;
     }
 
+    public boolean method_30928(float f) {
+        float g = f * ((float)Math.PI / 180);
+        float h = -MathHelper.sin(g);
+        float i = MathHelper.cos(g);
+        return (float)this.vector.getX() * h + (float)this.vector.getZ() * i > 0.0f;
+    }
+
     static {
         ALL = Direction.values();
         NAME_MAP = Arrays.stream(ALL).collect(Collectors.toMap(Direction::getName, direction -> direction));

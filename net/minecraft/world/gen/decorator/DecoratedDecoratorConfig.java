@@ -12,21 +12,21 @@ import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public class DecoratedDecoratorConfig
 implements DecoratorConfig {
-    public static final Codec<DecoratedDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredDecorator.CODEC.fieldOf("outer")).forGetter(DecoratedDecoratorConfig::method_30455), ((MapCodec)ConfiguredDecorator.CODEC.fieldOf("inner")).forGetter(DecoratedDecoratorConfig::method_30457)).apply((Applicative<DecoratedDecoratorConfig, ?>)instance, DecoratedDecoratorConfig::new));
-    private final ConfiguredDecorator<?> field_25855;
-    private final ConfiguredDecorator<?> field_25856;
+    public static final Codec<DecoratedDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredDecorator.CODEC.fieldOf("outer")).forGetter(DecoratedDecoratorConfig::getOuter), ((MapCodec)ConfiguredDecorator.CODEC.fieldOf("inner")).forGetter(DecoratedDecoratorConfig::getInner)).apply((Applicative<DecoratedDecoratorConfig, ?>)instance, DecoratedDecoratorConfig::new));
+    private final ConfiguredDecorator<?> outer;
+    private final ConfiguredDecorator<?> inner;
 
-    public DecoratedDecoratorConfig(ConfiguredDecorator<?> configuredDecorator, ConfiguredDecorator<?> configuredDecorator2) {
-        this.field_25855 = configuredDecorator;
-        this.field_25856 = configuredDecorator2;
+    public DecoratedDecoratorConfig(ConfiguredDecorator<?> outer, ConfiguredDecorator<?> inner) {
+        this.outer = outer;
+        this.inner = inner;
     }
 
-    public ConfiguredDecorator<?> method_30455() {
-        return this.field_25855;
+    public ConfiguredDecorator<?> getOuter() {
+        return this.outer;
     }
 
-    public ConfiguredDecorator<?> method_30457() {
-        return this.field_25856;
+    public ConfiguredDecorator<?> getInner() {
+        return this.inner;
     }
 }
 

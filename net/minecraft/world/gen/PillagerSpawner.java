@@ -101,7 +101,7 @@ implements Spawner {
             }
             patrolEntity.updatePosition(pos.getX(), pos.getY(), pos.getZ());
             patrolEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.PATROL, null, null);
-            world.spawnEntity(patrolEntity);
+            world.spawnEntityAndPassengers(patrolEntity);
             return true;
         }
         return false;

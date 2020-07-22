@@ -89,6 +89,13 @@ extends SinglePreparationResourceReloadListener<WarningPatternLoader> {
         return this.warnings.get("vendor");
     }
 
+    @Nullable
+    public String method_30920() {
+        StringBuilder stringBuilder = new StringBuilder();
+        this.warnings.forEach((string, string2) -> stringBuilder.append((String)string).append(": ").append((String)string2));
+        return stringBuilder.length() == 0 ? null : stringBuilder.toString();
+    }
+
     @Override
     protected WarningPatternLoader prepare(ResourceManager resourceManager, Profiler profiler) {
         ArrayList<Pattern> list = Lists.newArrayList();

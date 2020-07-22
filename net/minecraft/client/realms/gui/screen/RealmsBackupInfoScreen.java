@@ -8,12 +8,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.Backup;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsSlotOptionsScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -61,7 +62,7 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredString(matrices, this.textRenderer, "Changes from last backup", this.width / 2, 10, 0xFFFFFF);
+        RealmsBackupInfoScreen.drawCenteredString(matrices, this.textRenderer, "Changes from last backup", this.width / 2, 10, 0xFFFFFF);
         this.backupInfoList.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -119,8 +120,8 @@ extends RealmsScreen {
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             TextRenderer textRenderer = ((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).client.textRenderer;
-            RealmsBackupInfoScreen.this.drawStringWithShadow(matrices, textRenderer, this.key, x, y, 0xA0A0A0);
-            RealmsBackupInfoScreen.this.drawTextWithShadow(matrices, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, 0xFFFFFF);
+            DrawableHelper.drawStringWithShadow(matrices, textRenderer, this.key, x, y, 0xA0A0A0);
+            DrawableHelper.drawTextWithShadow(matrices, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, 0xFFFFFF);
         }
     }
 }

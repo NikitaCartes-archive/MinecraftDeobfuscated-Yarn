@@ -11,7 +11,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -23,6 +22,9 @@ import net.minecraft.world.CommandBlockExecutor;
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractCommandBlockScreen
 extends Screen {
+    private static final Text field_26556 = new TranslatableText("advMode.setCommand");
+    private static final Text field_26557 = new TranslatableText("advMode.command");
+    private static final Text field_26558 = new TranslatableText("advMode.previousOutput");
     protected TextFieldWidget consoleCommandTextField;
     protected TextFieldWidget previousOutputTextField;
     protected ButtonWidget doneButton;
@@ -154,12 +156,12 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredString(matrices, this.textRenderer, I18n.translate("advMode.setCommand", new Object[0]), this.width / 2, 20, 0xFFFFFF);
-        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("advMode.command", new Object[0]), this.width / 2 - 150, 40, 0xA0A0A0);
+        AbstractCommandBlockScreen.drawCenteredText(matrices, this.textRenderer, field_26556, this.width / 2, 20, 0xFFFFFF);
+        AbstractCommandBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26557, this.width / 2 - 150, 40, 0xA0A0A0);
         this.consoleCommandTextField.render(matrices, mouseX, mouseY, delta);
         int i = 75;
         if (!this.previousOutputTextField.getText().isEmpty()) {
-            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (i += 5 * this.textRenderer.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
+            AbstractCommandBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26558, this.width / 2 - 150, (i += 5 * this.textRenderer.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
             this.previousOutputTextField.render(matrices, mouseX, mouseY, delta);
         }
         super.render(matrices, mouseX, mouseY, delta);

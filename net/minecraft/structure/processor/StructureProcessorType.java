@@ -41,7 +41,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
     public static final StructureProcessorType<LavaSubmergedBlockStructureProcessor> LAVA_SUBMERGED_BLOCK = StructureProcessorType.register("lava_submerged_block", LavaSubmergedBlockStructureProcessor.CODEC);
     public static final Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
     public static final MapCodec<ImmutableList<StructureProcessor>> PROCESSORS = StructureProcessorType.method_30652("processors", CODEC.listOf().xmap(ImmutableList::copyOf, Function.identity()));
-    public static final Codec<Supplier<ImmutableList<StructureProcessor>>> field_25877 = RegistryElementCodec.of(Registry.PROCESSOR_LIST_WORLDGEN, PROCESSORS);
+    public static final Codec<Supplier<ImmutableList<StructureProcessor>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.PROCESSOR_LIST_WORLDGEN, PROCESSORS);
 
     public Codec<P> codec();
 

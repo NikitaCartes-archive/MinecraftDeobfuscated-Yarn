@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 public class FlatChunkGeneratorConfig {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(FlatChunkGeneratorConfig::getConfig), ((MapCodec)FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers")).forGetter(FlatChunkGeneratorConfig::getLayers), ((MapCodec)Codec.BOOL.fieldOf("lakes")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24977), ((MapCodec)Codec.BOOL.fieldOf("features")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24976), ((MapCodec)Biome.field_24677.fieldOf("biome")).orElseGet(Util.method_29188("Unknown biome, defaulting to plains", LOGGER::error), () -> () -> Biomes.PLAINS).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)).apply((Applicative<FlatChunkGeneratorConfig, ?>)instance, FlatChunkGeneratorConfig::new)).stable();
+    public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(FlatChunkGeneratorConfig::getConfig), ((MapCodec)FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers")).forGetter(FlatChunkGeneratorConfig::getLayers), ((MapCodec)Codec.BOOL.fieldOf("lakes")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24977), ((MapCodec)Codec.BOOL.fieldOf("features")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24976), ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).orElseGet(Util.method_29188("Unknown biome, defaulting to plains", LOGGER::error), () -> () -> Biomes.PLAINS).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)).apply((Applicative<FlatChunkGeneratorConfig, ?>)instance, FlatChunkGeneratorConfig::new)).stable();
     private static final Map<StructureFeature<?>, ConfiguredStructureFeature<?, ?>> STRUCTURE_TO_FEATURES = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(StructureFeature.MINESHAFT, ConfiguredStructureFeatures.MINESHAFT);
         hashMap.put(StructureFeature.VILLAGE, ConfiguredStructureFeatures.VILLAGE_PLAINS);
@@ -117,7 +117,7 @@ public class FlatChunkGeneratorConfig {
         int i;
         boolean bl;
         Biome biome = this.getBiome();
-        Biome biome2 = new Biome(new Biome.Settings().surfaceBuilder(biome.getSurfaceBuilder()).precipitation(biome.getPrecipitation()).category(biome.getCategory()).depth(biome.getDepth()).scale(biome.getScale()).temperature(biome.getTemperature()).downfall(biome.getRainfall()).effects(biome.getEffects()).parent(biome.getParent())){};
+        Biome biome2 = new Biome(new Biome.Settings().surfaceBuilder(biome.getSurfaceBuilder()).precipitation(biome.getPrecipitation()).category(biome.getCategory()).depth(biome.getDepth()).scale(biome.getScale()).temperature(biome.getTemperature()).downfall(biome.getDownfall()).effects(biome.getEffects()).parent(biome.getParent()));
         if (this.field_24977) {
             biome2.addFeature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_WATER);
             biome2.addFeature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);

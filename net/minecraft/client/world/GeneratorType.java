@@ -29,7 +29,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
-import net.minecraft.world.gen.chunk.SurfaceChunkGenerator;
+import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class GeneratorType {
@@ -37,7 +37,7 @@ public abstract class GeneratorType {
 
         @Override
         protected ChunkGenerator getChunkGenerator(long seed) {
-            return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26355);
+            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26355);
         }
     };
     private static final GeneratorType FLAT = new GeneratorType("flat"){
@@ -51,21 +51,21 @@ public abstract class GeneratorType {
 
         @Override
         protected ChunkGenerator getChunkGenerator(long seed) {
-            return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, true), seed, () -> ChunkGeneratorType.field_26355);
+            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, true), seed, () -> ChunkGeneratorType.field_26355);
         }
     };
     public static final GeneratorType AMPLIFIED = new GeneratorType("amplified"){
 
         @Override
         protected ChunkGenerator getChunkGenerator(long seed) {
-            return new SurfaceChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26356);
+            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26356);
         }
     };
     private static final GeneratorType SINGLE_BIOME_SURFACE = new GeneratorType("single_biome_surface"){
 
         @Override
         protected ChunkGenerator getChunkGenerator(long seed) {
-            return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26355);
+            return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26355);
         }
     };
     private static final GeneratorType SINGLE_BIOME_CAVES = new GeneratorType("single_biome_caves"){
@@ -77,14 +77,14 @@ public abstract class GeneratorType {
 
         @Override
         protected ChunkGenerator getChunkGenerator(long seed) {
-            return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26359);
+            return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26359);
         }
     };
     private static final GeneratorType SINGLE_BIOME_FLOATING_ISLANDS = new GeneratorType("single_biome_floating_islands"){
 
         @Override
         protected ChunkGenerator getChunkGenerator(long seed) {
-            return new SurfaceChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26360);
+            return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26360);
         }
     };
     private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states"){
@@ -108,7 +108,7 @@ public abstract class GeneratorType {
     private static GeneratorOptions method_29079(GeneratorOptions generatorOptions, GeneratorType generatorType, Biome biome) {
         FixedBiomeSource biomeSource = new FixedBiomeSource(biome);
         Supplier<ChunkGeneratorType> supplier = generatorType == SINGLE_BIOME_CAVES ? () -> ChunkGeneratorType.field_26359 : (generatorType == SINGLE_BIOME_FLOATING_ISLANDS ? () -> ChunkGeneratorType.field_26360 : () -> ChunkGeneratorType.field_26355);
-        return new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new SurfaceChunkGenerator(biomeSource, generatorOptions.getSeed(), supplier)));
+        return new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new NoiseChunkGenerator(biomeSource, generatorOptions.getSeed(), supplier)));
     }
 
     private static Biome getFirstBiome(GeneratorOptions options) {

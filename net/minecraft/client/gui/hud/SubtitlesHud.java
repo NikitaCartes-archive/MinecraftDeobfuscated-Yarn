@@ -32,7 +32,7 @@ implements SoundInstanceListener {
         this.client = client;
     }
 
-    public void render(MatrixStack matrixStack) {
+    public void render(MatrixStack matrices) {
         if (!this.enabled && this.client.options.showSubtitles) {
             this.client.getSoundManager().registerListener(this);
             this.enabled = true;
@@ -79,16 +79,16 @@ implements SoundInstanceListener {
             RenderSystem.pushMatrix();
             RenderSystem.translatef((float)this.client.getWindow().getScaledWidth() - (float)l * 1.0f - 2.0f, (float)(this.client.getWindow().getScaledHeight() - 30) - (float)(i * (m + 1)) * 1.0f, 0.0f);
             RenderSystem.scalef(1.0f, 1.0f, 1.0f);
-            SubtitlesHud.fill(matrixStack, -l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8f));
+            SubtitlesHud.fill(matrices, -l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8f));
             RenderSystem.enableBlend();
             if (!bl) {
                 if (d > 0.0) {
-                    this.client.textRenderer.draw(matrixStack, ">", (float)(l - this.client.textRenderer.getWidth(">")), (float)(-n), q + -16777216);
+                    this.client.textRenderer.draw(matrices, ">", (float)(l - this.client.textRenderer.getWidth(">")), (float)(-n), q + -16777216);
                 } else if (d < 0.0) {
-                    this.client.textRenderer.draw(matrixStack, "<", (float)(-l), (float)(-n), q + -16777216);
+                    this.client.textRenderer.draw(matrices, "<", (float)(-l), (float)(-n), q + -16777216);
                 }
             }
-            this.client.textRenderer.draw(matrixStack, text, (float)(-o / 2), (float)(-n), q + -16777216);
+            this.client.textRenderer.method_30883(matrices, text, -o / 2, -n, q + -16777216);
             RenderSystem.popMatrix();
             ++i;
         }

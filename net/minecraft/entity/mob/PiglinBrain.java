@@ -111,7 +111,7 @@ public class PiglinBrain {
     }
 
     private static void addCoreActivities(Brain<PiglinEntity> piglin) {
-        piglin.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(200), new OpenDoorsTask(), PiglinBrain.method_30090(), PiglinBrain.makeGoToZombifiedPiglinTask(), new RemoveOffHandItemTask(), new AdmireItemTask(120), new DefeatTargetTask(300, PiglinBrain::method_29276), new ForgetAngryAtTargetTask()));
+        piglin.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(), new OpenDoorsTask(), PiglinBrain.method_30090(), PiglinBrain.makeGoToZombifiedPiglinTask(), new RemoveOffHandItemTask(), new AdmireItemTask(120), new DefeatTargetTask(300, PiglinBrain::method_29276), new ForgetAngryAtTargetTask()));
     }
 
     private static void addIdleActivities(Brain<PiglinEntity> piglin) {

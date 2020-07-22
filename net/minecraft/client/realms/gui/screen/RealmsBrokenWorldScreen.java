@@ -15,12 +15,8 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.OpenServerTask;
 import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsMainScreen;
-import net.minecraft.client.realms.RealmsScreen;
-import net.minecraft.client.realms.SwitchSlotTask;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.dto.WorldDownload;
@@ -30,9 +26,12 @@ import net.minecraft.client.realms.gui.screen.RealmsDownloadLatestWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsResetWorldScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
+import net.minecraft.client.realms.task.OpenServerTask;
+import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.realms.util.RealmsTextureManager;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -87,7 +86,7 @@ extends RealmsScreen {
                         this.method_25123();
                     });
                     realmsResetWorldScreen.setSlot(i);
-                    realmsResetWorldScreen.setResetTitle(I18n.translate("mco.create.world.reset.title", new Object[0]));
+                    realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
                     this.client.openScreen(realmsResetWorldScreen);
                 } else {
                     this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.field_20492.id, i, this::method_25123)));
@@ -130,9 +129,9 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
-        this.drawCenteredText(matrices, this.textRenderer, this.field_24204, this.width / 2, 17, 0xFFFFFF);
+        RealmsBrokenWorldScreen.drawCenteredText(matrices, this.textRenderer, this.field_24204, this.width / 2, 17, 0xFFFFFF);
         for (int i = 0; i < this.message.length; ++i) {
-            this.drawCenteredText(matrices, this.textRenderer, this.message[i], this.width / 2, RealmsBrokenWorldScreen.row(-1) + 3 + i * 12, 0xA0A0A0);
+            RealmsBrokenWorldScreen.drawCenteredText(matrices, this.textRenderer, this.message[i], this.width / 2, RealmsBrokenWorldScreen.row(-1) + 3 + i * 12, 0xA0A0A0);
         }
         if (this.field_20492 == null) {
             return;
@@ -249,7 +248,7 @@ extends RealmsScreen {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         }
         DrawableHelper.drawTexture(matrixStack, y, xm, 0.0f, 0.0f, 80, 80, 80, 80);
-        this.drawCenteredString(matrixStack, this.textRenderer, string, y + 40, xm + 66, 0xFFFFFF);
+        RealmsBrokenWorldScreen.drawCenteredString(matrixStack, this.textRenderer, string, y + 40, xm + 66, 0xFFFFFF);
     }
 }
 

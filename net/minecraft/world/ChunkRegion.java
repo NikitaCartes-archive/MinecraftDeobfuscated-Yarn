@@ -36,9 +36,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.MultiTickScheduler;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TickScheduler;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -54,7 +53,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkRegion
-implements ServerWorldAccess {
+implements StructureWorldAccess {
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<Chunk> chunks;
     private final int centerChunkX;
@@ -277,7 +276,7 @@ implements ServerWorldAccess {
 
     @Override
     @Deprecated
-    public ServerWorld getWorld() {
+    public ServerWorld toServerWorld() {
         return this.world;
     }
 
@@ -366,14 +365,8 @@ implements ServerWorldAccess {
     }
 
     @Override
-    public Stream<? extends StructureStart<?>> method_30275(ChunkSectionPos chunkSectionPos, StructureFeature<?> structureFeature) {
-        return this.world.method_30275(chunkSectionPos, structureFeature);
-    }
-
-    @Override
-    @Deprecated
-    public /* synthetic */ World getWorld() {
-        return this.getWorld();
+    public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
+        return this.world.getStructures(pos, feature);
     }
 }
 

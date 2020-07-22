@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -21,6 +20,7 @@ public class OpenToLanScreen
 extends Screen {
     private static final Text field_25889 = new TranslatableText("selectWorld.allowCommands");
     private static final Text field_25890 = new TranslatableText("selectWorld.gameMode");
+    private static final Text field_26545 = new TranslatableText("lanServer.otherPlayers");
     private final Screen parent;
     private ButtonWidget buttonAllowCommands;
     private ButtonWidget buttonGameMode;
@@ -61,8 +61,8 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
-        this.drawCenteredString(matrices, this.textRenderer, I18n.translate("lanServer.otherPlayers", new Object[0]), this.width / 2, 82, 0xFFFFFF);
+        OpenToLanScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
+        OpenToLanScreen.drawCenteredText(matrices, this.textRenderer, field_26545, this.width / 2, 82, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

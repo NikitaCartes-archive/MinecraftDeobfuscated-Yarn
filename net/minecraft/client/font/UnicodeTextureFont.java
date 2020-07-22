@@ -63,28 +63,28 @@ implements Font {
         this.images.values().forEach(NativeImage::close);
     }
 
-    private Identifier getImageId(int i) {
-        Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", i / 256)));
+    private Identifier getImageId(int codePoint) {
+        Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", codePoint / 256)));
         return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
     }
 
     @Override
     @Nullable
-    public RenderableGlyph getGlyph(int i) {
+    public RenderableGlyph getGlyph(int codePoint) {
         NativeImage nativeImage;
-        if (i < 0 || i > 65535) {
+        if (codePoint < 0 || codePoint > 65535) {
             return null;
         }
-        byte b = this.sizes[i];
-        if (b != 0 && (nativeImage = this.images.computeIfAbsent(this.getImageId(i), this::getGlyphImage)) != null) {
-            int j = UnicodeTextureFont.getStart(b);
-            return new UnicodeTextureGlyph(i % 16 * 16 + j, (i & 0xFF) / 16 * 16, UnicodeTextureFont.getEnd(b) - j, 16, nativeImage);
+        byte b = this.sizes[codePoint];
+        if (b != 0 && (nativeImage = this.images.computeIfAbsent(this.getImageId(codePoint), this::getGlyphImage)) != null) {
+            int i = UnicodeTextureFont.getStart(b);
+            return new UnicodeTextureGlyph(codePoint % 16 * 16 + i, (codePoint & 0xFF) / 16 * 16, UnicodeTextureFont.getEnd(b) - i, 16, nativeImage);
         }
         return null;
     }
 
     @Override
-    public IntSet method_27442() {
+    public IntSet getProvidedGlyphs() {
         IntOpenHashSet intSet = new IntOpenHashSet();
         for (int i = 0; i < 65535; ++i) {
             if (this.sizes[i] == 0) continue;

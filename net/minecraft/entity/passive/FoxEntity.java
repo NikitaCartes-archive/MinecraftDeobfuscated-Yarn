@@ -21,7 +21,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
-import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -87,6 +86,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
@@ -250,8 +250,8 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        Biome biome = arg.getBiome(this.getBlockPos());
+    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        Biome biome = serverWorldAccess.getBiome(this.getBlockPos());
         Type type = Type.fromBiome(biome);
         boolean bl = false;
         if (entityData instanceof FoxData) {
@@ -266,11 +266,11 @@ extends AnimalEntity {
         if (bl) {
             this.setBreedingAge(-24000);
         }
-        if (arg instanceof ServerWorld) {
+        if (serverWorldAccess instanceof ServerWorld) {
             this.addTypeSpecificGoals();
         }
         this.initEquipment(difficulty);
-        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
     }
 
     private void addTypeSpecificGoals() {
@@ -1194,7 +1194,8 @@ extends AnimalEntity {
 
         @Override
         protected void breed() {
-            FoxEntity foxEntity = (FoxEntity)this.animal.createChild((ServerWorld)this.world, this.mate);
+            ServerWorld serverWorld = (ServerWorld)this.world;
+            FoxEntity foxEntity = (FoxEntity)this.animal.createChild(serverWorld, this.mate);
             if (foxEntity == null) {
                 return;
             }
@@ -1219,7 +1220,7 @@ extends AnimalEntity {
             this.mate.resetLoveTicks();
             foxEntity.setBreedingAge(-24000);
             foxEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0f, 0.0f);
-            this.world.spawnEntity(foxEntity);
+            serverWorld.spawnEntityAndPassengers(foxEntity);
             this.world.sendEntityStatus(this.animal, (byte)18);
             if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
                 this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));

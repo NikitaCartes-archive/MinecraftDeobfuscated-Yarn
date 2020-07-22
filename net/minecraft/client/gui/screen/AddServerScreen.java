@@ -14,7 +14,6 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -23,6 +22,8 @@ import net.minecraft.util.ChatUtil;
 @Environment(value=EnvType.CLIENT)
 public class AddServerScreen
 extends Screen {
+    private static final Text field_26541 = new TranslatableText("addServer.enterName");
+    private static final Text field_26542 = new TranslatableText("addServer.enterIp");
     private ButtonWidget buttonAdd;
     private final BooleanConsumer callback;
     private final ServerInfo server;
@@ -125,9 +126,9 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 0xFFFFFF);
-        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("addServer.enterName", new Object[0]), this.width / 2 - 100, 53, 0xA0A0A0);
-        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 94, 0xA0A0A0);
+        AddServerScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 0xFFFFFF);
+        AddServerScreen.drawTextWithShadow(matrices, this.textRenderer, field_26541, this.width / 2 - 100, 53, 0xA0A0A0);
+        AddServerScreen.drawTextWithShadow(matrices, this.textRenderer, field_26542, this.width / 2 - 100, 94, 0xA0A0A0);
         this.serverNameField.render(matrices, mouseX, mouseY, delta);
         this.addressField.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);

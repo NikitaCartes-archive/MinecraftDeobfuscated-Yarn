@@ -124,7 +124,7 @@ extends ResourceTexture {
                     httpURLConnection.disconnect();
                 }
             }
-        }, Util.getServerWorkerExecutor());
+        }, Util.getMainWorkerExecutor());
     }
 
     @Nullable

@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 public class GhastEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
     private final ModelPart[] field_3372 = new ModelPart[9];
-    private final ImmutableList<ModelPart> field_20929;
+    private final ImmutableList<ModelPart> parts;
 
     public GhastEntityModel() {
         ImmutableList.Builder builder = ImmutableList.builder();
@@ -36,7 +36,7 @@ extends CompositeEntityModel<T> {
             this.field_3372[i].pivotY = 24.6f;
             builder.add(this.field_3372[i]);
         }
-        this.field_20929 = builder.build();
+        this.parts = builder.build();
     }
 
     @Override
@@ -48,7 +48,7 @@ extends CompositeEntityModel<T> {
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return this.field_20929;
+        return this.parts;
     }
 }
 

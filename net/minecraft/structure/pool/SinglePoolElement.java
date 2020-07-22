@@ -35,7 +35,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -55,7 +55,7 @@ extends StructurePoolElement {
     }
 
     protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Supplier<ImmutableList<StructureProcessor>>> method_28880() {
-        return ((MapCodec)StructureProcessorType.field_25877.fieldOf("processors")).forGetter(singlePoolElement -> singlePoolElement.processors);
+        return ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("processors")).forGetter(singlePoolElement -> singlePoolElement.processors);
     }
 
     protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> method_28882() {
@@ -103,13 +103,13 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
+    public boolean generate(StructureManager structureManager, StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
         StructurePlacementData structurePlacementData;
         Structure structure = this.method_27233(structureManager);
-        if (structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox, keepJigsaws), random, 18)) {
-            List<Structure.StructureBlockInfo> list = Structure.process(serverWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
+        if (structure.place(structureWorldAccess, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox, keepJigsaws), random, 18)) {
+            List<Structure.StructureBlockInfo> list = Structure.process(structureWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
-                this.method_16756(serverWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);
+                this.method_16756(structureWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);
             }
             return true;
         }

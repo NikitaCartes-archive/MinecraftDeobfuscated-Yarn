@@ -29,7 +29,7 @@ import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -136,12 +136,12 @@ extends Feature<TreeFeatureConfig> {
     }
 
     @Override
-    public final boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
+    public final boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
         HashSet<BlockPos> set = Sets.newHashSet();
         HashSet<BlockPos> set2 = Sets.newHashSet();
         HashSet<BlockPos> set3 = Sets.newHashSet();
         BlockBox blockBox = BlockBox.empty();
-        boolean bl = this.generate(serverWorldAccess, random, blockPos, set, set2, blockBox, treeFeatureConfig);
+        boolean bl = this.generate(structureWorldAccess, random, blockPos, set, set2, blockBox, treeFeatureConfig);
         if (blockBox.minX > blockBox.maxX || !bl || set.isEmpty()) {
             return false;
         }
@@ -150,10 +150,10 @@ extends Feature<TreeFeatureConfig> {
             ArrayList<BlockPos> list2 = Lists.newArrayList(set2);
             list.sort(Comparator.comparingInt(Vec3i::getY));
             list2.sort(Comparator.comparingInt(Vec3i::getY));
-            treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(serverWorldAccess, random, list, list2, set3, blockBox));
+            treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(structureWorldAccess, random, list, list2, set3, blockBox));
         }
-        VoxelSet voxelSet = this.placeLogsAndLeaves(serverWorldAccess, blockBox, set, set3);
-        Structure.updateCorner(serverWorldAccess, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
+        VoxelSet voxelSet = this.placeLogsAndLeaves(structureWorldAccess, blockBox, set, set3);
+        Structure.updateCorner(structureWorldAccess, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
         return true;
     }
 

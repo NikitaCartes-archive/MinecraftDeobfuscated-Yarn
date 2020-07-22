@@ -1,19 +1,19 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.realms.RealmsMainScreen;
-import net.minecraft.client.realms.RealmsScreen;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class RealmsBridge
+public class RealmsBridgeScreen
 extends RealmsScreen {
     private Screen previousScreen;
 

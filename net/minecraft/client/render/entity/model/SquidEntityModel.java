@@ -16,7 +16,7 @@ public class SquidEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
     private final ModelPart head;
     private final ModelPart[] field_3574 = new ModelPart[8];
-    private final ImmutableList<ModelPart> field_20942;
+    private final ImmutableList<ModelPart> parts;
 
     public SquidEntityModel() {
         int i = -16;
@@ -38,7 +38,7 @@ extends CompositeEntityModel<T> {
         ImmutableList.Builder builder = ImmutableList.builder();
         builder.add(this.head);
         builder.addAll(Arrays.asList(this.field_3574));
-        this.field_20942 = builder.build();
+        this.parts = builder.build();
     }
 
     @Override
@@ -50,7 +50,7 @@ extends CompositeEntityModel<T> {
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return this.field_20942;
+        return this.parts;
     }
 }
 

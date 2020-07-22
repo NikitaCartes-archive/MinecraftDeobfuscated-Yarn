@@ -175,8 +175,8 @@ implements ScreenHandlerProvider<T> {
     }
 
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 0x404040);
-        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
+        this.textRenderer.method_30883(matrices, this.title, this.titleX, this.titleY, 0x404040);
+        this.textRenderer.method_30883(matrices, this.playerInventory.getDisplayName(), this.playerInventoryTitleX, this.playerInventoryTitleY, 0x404040);
     }
 
     protected abstract void drawBackground(MatrixStack var1, float var2, int var3, int var4);

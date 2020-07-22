@@ -1,18 +1,18 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsMainScreen;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RetryCallException;
-import net.minecraft.client.realms.gui.LongRunningTask;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.client.realms.task.LongRunningTask;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class OpenServerTask
@@ -31,7 +31,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        this.setTitle(I18n.translate("mco.configure.world.opening", new Object[0]));
+        this.setTitle(new TranslatableText("mco.configure.world.opening"));
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         for (int i = 0; i < 25; ++i) {
             if (this.aborted()) {

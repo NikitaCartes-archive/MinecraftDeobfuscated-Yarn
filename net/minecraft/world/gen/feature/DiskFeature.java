@@ -8,7 +8,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -20,7 +20,7 @@ extends Feature<DiskFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
         boolean bl = false;
         int i = diskFeatureConfig.radius.getValue(random);
         for (int j = blockPos.getX() - i; j <= blockPos.getX() + i; ++j) {
@@ -30,10 +30,10 @@ extends Feature<DiskFeatureConfig> {
                 if (l * l + (m = k - blockPos.getZ()) * m > i * i) continue;
                 block2: for (int n = blockPos.getY() - diskFeatureConfig.ySize; n <= blockPos.getY() + diskFeatureConfig.ySize; ++n) {
                     BlockPos blockPos2 = new BlockPos(j, n, k);
-                    Block block = serverWorldAccess.getBlockState(blockPos2).getBlock();
+                    Block block = structureWorldAccess.getBlockState(blockPos2).getBlock();
                     for (BlockState blockState : diskFeatureConfig.targets) {
                         if (!blockState.isOf(block)) continue;
-                        serverWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, 2);
+                        structureWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, 2);
                         bl = true;
                         continue block2;
                     }

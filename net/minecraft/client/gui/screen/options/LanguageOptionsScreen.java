@@ -14,17 +14,19 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class LanguageOptionsScreen
 extends GameOptionsScreen {
+    private static final Text field_26543 = new LiteralText("(").append(new TranslatableText("options.languageWarning")).append(")");
     private LanguageSelectionListWidget languageSelectionList;
     private final LanguageManager languageManager;
     private OptionButtonWidget forceUnicodeButton;
@@ -63,8 +65,8 @@ extends GameOptionsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.languageSelectionList.render(matrices, mouseX, mouseY, delta);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
-        this.drawCenteredString(matrices, this.textRenderer, "(" + I18n.translate("options.languageWarning", new Object[0]) + ")", this.width / 2, this.height - 56, 0x808080);
+        LanguageOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
+        LanguageOptionsScreen.drawCenteredText(matrices, this.textRenderer, field_26543, this.width / 2, this.height - 56, 0x808080);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

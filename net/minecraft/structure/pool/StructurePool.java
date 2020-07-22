@@ -36,8 +36,8 @@ import org.apache.logging.log4j.Logger;
 
 public class StructurePool {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final MapCodec<StructurePool> field_25853 = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.fieldOf("name")).forGetter(StructurePool::getId), ((MapCodec)Identifier.CODEC.fieldOf("fallback")).forGetter(StructurePool::getTerminatorsId), ((MapCodec)Codec.mapPair(StructurePoolElement.field_24953.fieldOf("element"), Codec.INT.fieldOf("weight")).codec().listOf().promotePartial((Consumer)Util.method_29188("Pool element: ", LOGGER::error)).fieldOf("elements")).forGetter(structurePool -> structurePool.elementCounts)).apply((Applicative<StructurePool, ?>)instance, StructurePool::new));
-    public static final Codec<Supplier<StructurePool>> CODEC = RegistryElementCodec.of(Registry.TEMPLATE_POOL_WORLDGEN, field_25853);
+    public static final MapCodec<StructurePool> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.fieldOf("name")).forGetter(StructurePool::getId), ((MapCodec)Identifier.CODEC.fieldOf("fallback")).forGetter(StructurePool::getTerminatorsId), ((MapCodec)Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.INT.fieldOf("weight")).codec().listOf().promotePartial((Consumer)Util.method_29188("Pool element: ", LOGGER::error)).fieldOf("elements")).forGetter(structurePool -> structurePool.elementCounts)).apply((Applicative<StructurePool, ?>)instance, StructurePool::new));
+    public static final Codec<Supplier<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.TEMPLATE_POOL_WORLDGEN, CODEC);
     private final Identifier id;
     private final List<Pair<StructurePoolElement, Integer>> elementCounts;
     private final List<StructurePoolElement> elements;

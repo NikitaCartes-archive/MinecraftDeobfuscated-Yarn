@@ -36,9 +36,9 @@ extends LightStorage<Data> {
     @Override
     protected int getLight(long blockPos) {
         long l = ChunkSectionPos.fromBlockPos(blockPos);
-        int i = ChunkSectionPos.getY(l);
+        int i = ChunkSectionPos.unpackY(l);
         Data data = (Data)this.uncachedStorage;
-        int j = data.columnToTopSection.get(ChunkSectionPos.withZeroZ(l));
+        int j = data.columnToTopSection.get(ChunkSectionPos.withZeroY(l));
         if (j == data.minSectionY || i >= j) {
             return 15;
         }
@@ -59,19 +59,19 @@ extends LightStorage<Data> {
 
     @Override
     protected void onLoadSection(long sectionPos) {
-        int i = ChunkSectionPos.getY(sectionPos);
+        int i = ChunkSectionPos.unpackY(sectionPos);
         if (((Data)this.storage).minSectionY > i) {
             ((Data)this.storage).minSectionY = i;
             ((Data)this.storage).columnToTopSection.defaultReturnValue(((Data)this.storage).minSectionY);
         }
-        long l = ChunkSectionPos.withZeroZ(sectionPos);
+        long l = ChunkSectionPos.withZeroY(sectionPos);
         int j = ((Data)this.storage).columnToTopSection.get(l);
         if (j < i + 1) {
             ((Data)this.storage).columnToTopSection.put(l, i + 1);
             if (this.enabledColumns.contains(l)) {
                 this.enqueueAddSection(sectionPos);
                 if (j > ((Data)this.storage).minSectionY) {
-                    long m = ChunkSectionPos.asLong(ChunkSectionPos.getX(sectionPos), j - 1, ChunkSectionPos.getZ(sectionPos));
+                    long m = ChunkSectionPos.asLong(ChunkSectionPos.unpackX(sectionPos), j - 1, ChunkSectionPos.unpackZ(sectionPos));
                     this.enqueueRemoveSection(m);
                 }
                 this.checkForUpdates();
@@ -95,12 +95,12 @@ extends LightStorage<Data> {
 
     @Override
     protected void onUnloadSection(long sectionPos) {
-        long l = ChunkSectionPos.withZeroZ(sectionPos);
+        long l = ChunkSectionPos.withZeroY(sectionPos);
         boolean bl = this.enabledColumns.contains(l);
         if (bl) {
             this.enqueueRemoveSection(sectionPos);
         }
-        int i = ChunkSectionPos.getY(sectionPos);
+        int i = ChunkSectionPos.unpackY(sectionPos);
         if (((Data)this.storage).columnToTopSection.get(l) == i + 1) {
             long m = sectionPos;
             while (!this.hasSection(m) && this.isAboveMinHeight(i)) {
@@ -127,7 +127,7 @@ extends LightStorage<Data> {
         if (enabled && this.enabledColumns.add(columnPos)) {
             int i = ((Data)this.storage).columnToTopSection.get(columnPos);
             if (i != ((Data)this.storage).minSectionY) {
-                long l = ChunkSectionPos.asLong(ChunkSectionPos.getX(columnPos), i - 1, ChunkSectionPos.getZ(columnPos));
+                long l = ChunkSectionPos.asLong(ChunkSectionPos.unpackX(columnPos), i - 1, ChunkSectionPos.unpackZ(columnPos));
                 this.enqueueAddSection(l);
                 this.checkForUpdates();
             }
@@ -149,8 +149,8 @@ extends LightStorage<Data> {
             return chunkNibbleArray;
         }
         long l = ChunkSectionPos.offset(sectionPos, Direction.UP);
-        int i = ((Data)this.storage).columnToTopSection.get(ChunkSectionPos.withZeroZ(sectionPos));
-        if (i == ((Data)this.storage).minSectionY || ChunkSectionPos.getY(l) >= i) {
+        int i = ((Data)this.storage).columnToTopSection.get(ChunkSectionPos.withZeroY(sectionPos));
+        if (i == ((Data)this.storage).minSectionY || ChunkSectionPos.unpackY(l) >= i) {
             return new ChunkNibbleArray();
         }
         while ((chunkNibbleArray2 = this.getLightSection(l, true)) == null) {
@@ -183,9 +183,9 @@ extends LightStorage<Data> {
                         ((Data)this.storage).replaceWithCopy(l);
                     }
                     Arrays.fill(this.getLightSection(l, true).asByteArray(), (byte)-1);
-                    j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l));
-                    k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l));
-                    int m = ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l));
+                    j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l));
+                    k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l));
+                    int m = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l));
                     for (Direction direction : LIGHT_REDUCTION_DIRECTIONS) {
                         n = ChunkSectionPos.offset(l, direction);
                         if (!this.sectionsToRemove.contains(n) && (this.field_15820.contains(n) || this.sectionsToUpdate.contains(n)) || !this.hasSection(n)) continue;
@@ -220,8 +220,8 @@ extends LightStorage<Data> {
                     }
                     for (int s = 0; s < 16; ++s) {
                         for (int t = 0; t < 16; ++t) {
-                            long u = BlockPos.asLong(ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l)) + s, ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l)), ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l)) + t);
-                            n = BlockPos.asLong(ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l)) + s, ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l)) - 1, ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l)) + t);
+                            long u = BlockPos.asLong(ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l)) + s, ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)), ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l)) + t);
+                            n = BlockPos.asLong(ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l)) + s, ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)) - 1, ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l)) + t);
                             lightProvider.updateLevel(u, n, lightProvider.getPropagatedLevel(u, n, 0), true);
                         }
                     }
@@ -229,7 +229,7 @@ extends LightStorage<Data> {
                 }
                 for (j = 0; j < 16; ++j) {
                     for (k = 0; k < 16; ++k) {
-                        long v = BlockPos.asLong(ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l)) + j, ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l)) + 16 - 1, ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l)) + k);
+                        long v = BlockPos.asLong(ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l)) + j, ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)) + 16 - 1, ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l)) + k);
                         lightProvider.updateLevel(Long.MAX_VALUE, v, 0, true);
                     }
                 }
@@ -243,7 +243,7 @@ extends LightStorage<Data> {
                 if (!this.field_15820.remove(l) || !this.hasSection(l)) continue;
                 for (i = 0; i < 16; ++i) {
                     for (j = 0; j < 16; ++j) {
-                        long w = BlockPos.asLong(ChunkSectionPos.getBlockCoord(ChunkSectionPos.getX(l)) + i, ChunkSectionPos.getBlockCoord(ChunkSectionPos.getY(l)) + 16 - 1, ChunkSectionPos.getBlockCoord(ChunkSectionPos.getZ(l)) + j);
+                        long w = BlockPos.asLong(ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l)) + i, ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)) + 16 - 1, ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l)) + j);
                         lightProvider.updateLevel(Long.MAX_VALUE, w, 15, false);
                     }
                 }
@@ -263,7 +263,7 @@ extends LightStorage<Data> {
             return false;
         }
         long l = ChunkSectionPos.fromBlockPos(blockPos);
-        long m = ChunkSectionPos.withZeroZ(l);
+        long m = ChunkSectionPos.withZeroY(l);
         if (!this.enabledColumns.contains(m)) {
             return false;
         }
@@ -272,13 +272,13 @@ extends LightStorage<Data> {
     }
 
     protected boolean isAtOrAboveTopmostSection(long sectionPos) {
-        long l = ChunkSectionPos.withZeroZ(sectionPos);
+        long l = ChunkSectionPos.withZeroY(sectionPos);
         int i = ((Data)this.storage).columnToTopSection.get(l);
-        return i == ((Data)this.storage).minSectionY || ChunkSectionPos.getY(sectionPos) >= i;
+        return i == ((Data)this.storage).minSectionY || ChunkSectionPos.unpackY(sectionPos) >= i;
     }
 
     protected boolean isSectionEnabled(long sectionPos) {
-        long l = ChunkSectionPos.withZeroZ(sectionPos);
+        long l = ChunkSectionPos.withZeroY(sectionPos);
         return this.enabledColumns.contains(l);
     }
 

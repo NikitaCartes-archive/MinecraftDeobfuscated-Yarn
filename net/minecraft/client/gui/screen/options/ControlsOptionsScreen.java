@@ -77,7 +77,7 @@ extends GameOptionsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.keyBindingListWidget.render(matrices, mouseX, mouseY, delta);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        ControlsOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         boolean bl = false;
         for (KeyBinding keyBinding : this.gameOptions.keysAll) {
             if (keyBinding.isDefault()) continue;

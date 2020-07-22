@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DiskFeature;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
@@ -19,11 +19,11 @@ extends DiskFeature {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
-        if (!serverWorldAccess.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
+        if (!structureWorldAccess.getFluidState(blockPos).isIn(FluidTags.WATER)) {
             return false;
         }
-        return super.generate(serverWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig);
+        return super.generate(structureWorldAccess, chunkGenerator, random, blockPos, diskFeatureConfig);
     }
 }
 

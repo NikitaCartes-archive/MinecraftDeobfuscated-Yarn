@@ -11,7 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.class_5425;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.SimpleStructurePiece;
@@ -29,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -85,30 +85,30 @@ public class IglooGenerator {
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, class_5425 arg, Random random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
             if (!"chest".equals(metadata)) {
                 return;
             }
-            arg.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
-            BlockEntity blockEntity = arg.getBlockEntity(pos.down());
+            serverWorldAccess.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+            BlockEntity blockEntity = serverWorldAccess.getBlockEntity(pos.down());
             if (blockEntity instanceof ChestBlockEntity) {
                 ((ChestBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
             }
         }
 
         @Override
-        public boolean generate(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
+        public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
             BlockPos blockPos5;
             BlockState blockState;
             StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirror(BlockMirror.NONE).setPosition((BlockPos)field_14408.get(this.template)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
             BlockPos blockPos2 = (BlockPos)field_14406.get(this.template);
             BlockPos blockPos3 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos2.getX(), 0, 0 - blockPos2.getZ())));
-            int i = serverWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos3.getX(), blockPos3.getZ());
+            int i = structureWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos3.getX(), blockPos3.getZ());
             BlockPos blockPos4 = this.pos;
             this.pos = this.pos.add(0, i - 90 - 1, 0);
-            boolean bl = super.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
-            if (this.template.equals(TOP_TEMPLATE) && !(blockState = serverWorldAccess.getBlockState((blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && !blockState.isOf(Blocks.LADDER)) {
-                serverWorldAccess.setBlockState(blockPos5, Blocks.SNOW_BLOCK.getDefaultState(), 3);
+            boolean bl = super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+            if (this.template.equals(TOP_TEMPLATE) && !(blockState = structureWorldAccess.getBlockState((blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && !blockState.isOf(Blocks.LADDER)) {
+                structureWorldAccess.setBlockState(blockPos5, Blocks.SNOW_BLOCK.getDefaultState(), 3);
             }
             this.pos = blockPos4;
             return bl;

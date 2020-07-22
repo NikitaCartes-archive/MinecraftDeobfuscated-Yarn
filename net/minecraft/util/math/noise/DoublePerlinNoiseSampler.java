@@ -3,9 +3,8 @@
  */
 package net.minecraft.util.math.noise;
 
-import com.google.common.collect.ImmutableList;
-import java.util.List;
-import java.util.stream.IntStream;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.gen.ChunkRandom;
 
@@ -14,16 +13,24 @@ public class DoublePerlinNoiseSampler {
     private final OctavePerlinNoiseSampler firstSampler;
     private final OctavePerlinNoiseSampler secondSampler;
 
-    public DoublePerlinNoiseSampler(ChunkRandom chunkRandom, IntStream intStream) {
-        this(chunkRandom, intStream.boxed().collect(ImmutableList.toImmutableList()));
+    public static DoublePerlinNoiseSampler method_30846(ChunkRandom chunkRandom, int i, DoubleList doubleList) {
+        return new DoublePerlinNoiseSampler(chunkRandom, i, doubleList);
     }
 
-    public DoublePerlinNoiseSampler(ChunkRandom chunkRandom, List<Integer> octaves) {
-        this.firstSampler = new OctavePerlinNoiseSampler(chunkRandom, octaves);
-        this.secondSampler = new OctavePerlinNoiseSampler(chunkRandom, octaves);
-        int i = octaves.stream().min(Integer::compareTo).orElse(0);
-        int j = octaves.stream().max(Integer::compareTo).orElse(0);
-        this.amplitude = 0.16666666666666666 / DoublePerlinNoiseSampler.createAmplitude(j - i);
+    private DoublePerlinNoiseSampler(ChunkRandom chunkRandom, int i, DoubleList doubleList) {
+        this.firstSampler = OctavePerlinNoiseSampler.method_30847(chunkRandom, i, doubleList);
+        this.secondSampler = OctavePerlinNoiseSampler.method_30847(chunkRandom, i, doubleList);
+        int j = Integer.MAX_VALUE;
+        int k = Integer.MIN_VALUE;
+        DoubleListIterator doubleListIterator = doubleList.iterator();
+        while (doubleListIterator.hasNext()) {
+            int l = doubleListIterator.nextIndex();
+            double d = doubleListIterator.nextDouble();
+            if (d == 0.0) continue;
+            j = Math.min(j, l);
+            k = Math.max(k, l);
+        }
+        this.amplitude = 0.16666666666666666 / DoublePerlinNoiseSampler.createAmplitude(k - j);
     }
 
     private static double createAmplitude(int octaves) {

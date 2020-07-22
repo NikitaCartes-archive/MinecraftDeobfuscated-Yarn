@@ -40,7 +40,7 @@ implements DataProvider {
         for (Map.Entry<RegistryKey<Biome>, Biome> entry : BuiltinRegistries.BIOME.getEntries()) {
             Path path2 = BiomeListProvider.getPath(path, entry.getKey().getValue());
             Biome biome = entry.getValue();
-            Function<Supplier<Biome>, DataResult<Supplier<Biome>>> function = JsonOps.INSTANCE.withEncoder(Biome.field_24677);
+            Function<Supplier<Biome>, DataResult<Supplier<Biome>>> function = JsonOps.INSTANCE.withEncoder(Biome.REGISTRY_CODEC);
             try {
                 Optional optional = function.apply(() -> biome).result();
                 if (optional.isPresent()) {

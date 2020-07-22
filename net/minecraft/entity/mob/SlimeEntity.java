@@ -5,7 +5,6 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import java.util.Random;
-import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -41,6 +40,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
@@ -283,11 +283,11 @@ implements Monster {
             if (biome == Biomes.SWAMP && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < world.method_30272() && world.getLightLevel(pos) <= random.nextInt(8)) {
                 return SlimeEntity.canMobSpawn(type, world, spawnReason, pos, random);
             }
-            if (!(world instanceof ServerWorldAccess)) {
+            if (!(world instanceof StructureWorldAccess)) {
                 return false;
             }
             ChunkPos chunkPos = new ChunkPos(pos);
-            boolean bl2 = bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((ServerWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
+            boolean bl2 = bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((StructureWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
             if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
                 return SlimeEntity.canMobSpawn(type, world, spawnReason, pos, random);
             }
@@ -318,14 +318,14 @@ implements Monster {
 
     @Override
     @Nullable
-    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int i = this.random.nextInt(3);
         if (i < 2 && this.random.nextFloat() < 0.5f * difficulty.getClampedLocalDifficulty()) {
             ++i;
         }
         int j = 1 << i;
         this.setSize(j, true);
-        return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
     }
 
     private float getJumpSoundPitch() {

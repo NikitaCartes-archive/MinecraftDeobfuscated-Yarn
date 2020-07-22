@@ -15,13 +15,13 @@ import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class EmptyPoolElement
 extends StructurePoolElement {
-    public static final Codec<EmptyPoolElement> field_24947 = Codec.unit(() -> INSTANCE);
+    public static final Codec<EmptyPoolElement> CODEC = Codec.unit(() -> INSTANCE);
     public static final EmptyPoolElement INSTANCE = new EmptyPoolElement();
 
     private EmptyPoolElement() {
@@ -39,7 +39,7 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
+    public boolean generate(StructureManager structureManager, StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
         return true;
     }
 

@@ -45,11 +45,12 @@ extends Item {
             return ActionResult.FAIL;
         }
         if (world instanceof ServerWorld) {
-            ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create((ServerWorld)world, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
+            ServerWorld serverWorld = (ServerWorld)world;
+            ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
             if (armorStandEntity == null) {
                 return ActionResult.FAIL;
             }
-            world.spawnEntity(armorStandEntity);
+            serverWorld.spawnEntityAndPassengers(armorStandEntity);
             float f = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0f) + 22.5f) / 45.0f) * 45.0f;
             armorStandEntity.refreshPositionAndAngles(armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), f, 0.0f);
             this.setRotations(armorStandEntity, world.random);

@@ -113,7 +113,7 @@ implements FeatureRendererContext<T, M> {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         boolean bl = this.isVisible(livingEntity);
         boolean bl2 = !bl && !((Entity)livingEntity).isInvisibleTo(minecraftClient.player);
-        boolean bl3 = minecraftClient.method_27022((Entity)livingEntity);
+        boolean bl3 = minecraftClient.hasOutline((Entity)livingEntity);
         RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2, bl3);
         if (renderLayer != null) {
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
@@ -133,7 +133,7 @@ implements FeatureRendererContext<T, M> {
      * Gets the render layer appropriate for rendering the passed entity. Returns null if the entity should not be rendered.
      */
     @Nullable
-    protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl) {
+    protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean showOutline) {
         Identifier identifier = this.getTexture(entity);
         if (translucent) {
             return RenderLayer.getItemEntityTranslucentCull(identifier);
@@ -141,7 +141,7 @@ implements FeatureRendererContext<T, M> {
         if (showBody) {
             return ((Model)this.model).getLayer(identifier);
         }
-        if (bl) {
+        if (showOutline) {
             return RenderLayer.getOutline(identifier);
         }
         return null;

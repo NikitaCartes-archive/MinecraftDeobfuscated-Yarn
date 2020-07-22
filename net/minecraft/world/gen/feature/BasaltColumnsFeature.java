@@ -11,7 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
@@ -27,9 +27,9 @@ extends Feature<BasaltColumnsFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BasaltColumnsFeatureConfig basaltColumnsFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BasaltColumnsFeatureConfig basaltColumnsFeatureConfig) {
         int i = chunkGenerator.getSeaLevel();
-        if (!BasaltColumnsFeature.method_30379(serverWorldAccess, i, blockPos.mutableCopy())) {
+        if (!BasaltColumnsFeature.method_30379(structureWorldAccess, i, blockPos.mutableCopy())) {
             return false;
         }
         int j = basaltColumnsFeatureConfig.method_30394().getValue(random);
@@ -40,7 +40,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
         for (BlockPos blockPos2 : BlockPos.method_27156(random, l, blockPos.getX() - k, blockPos.getY(), blockPos.getZ() - k, blockPos.getX() + k, blockPos.getY(), blockPos.getZ() + k)) {
             int m = j - blockPos2.getManhattanDistance(blockPos);
             if (m < 0) continue;
-            bl2 |= this.method_27096(serverWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.method_30391().getValue(random));
+            bl2 |= this.method_27096(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.method_30391().getValue(random));
         }
         return bl2;
     }

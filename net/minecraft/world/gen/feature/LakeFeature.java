@@ -11,7 +11,7 @@ import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
@@ -27,16 +27,16 @@ extends Feature<SingleStateFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
         int t;
         int j;
-        while (blockPos.getY() > 5 && serverWorldAccess.isAir(blockPos)) {
+        while (blockPos.getY() > 5 && structureWorldAccess.isAir(blockPos)) {
             blockPos = blockPos.down();
         }
         if (blockPos.getY() <= 4) {
             return false;
         }
-        if (serverWorldAccess.method_30275(ChunkSectionPos.from(blockPos = blockPos.down(4)), StructureFeature.VILLAGE).findAny().isPresent()) {
+        if (structureWorldAccess.getStructures(ChunkSectionPos.from(blockPos = blockPos.down(4)), StructureFeature.VILLAGE).findAny().isPresent()) {
             return false;
         }
         boolean[] bls = new boolean[2048];
@@ -67,11 +67,11 @@ extends Feature<SingleStateFeatureConfig> {
                     boolean bl;
                     boolean bl2 = bl = !bls[(j * 16 + s) * 8 + t] && (j < 15 && bls[((j + 1) * 16 + s) * 8 + t] || j > 0 && bls[((j - 1) * 16 + s) * 8 + t] || s < 15 && bls[(j * 16 + s + 1) * 8 + t] || s > 0 && bls[(j * 16 + (s - 1)) * 8 + t] || t < 7 && bls[(j * 16 + s) * 8 + t + 1] || t > 0 && bls[(j * 16 + s) * 8 + (t - 1)]);
                     if (!bl) continue;
-                    Material material = serverWorldAccess.getBlockState(blockPos.add(j, t, s)).getMaterial();
+                    Material material = structureWorldAccess.getBlockState(blockPos.add(j, t, s)).getMaterial();
                     if (t >= 4 && material.isLiquid()) {
                         return false;
                     }
-                    if (t >= 4 || material.isSolid() || serverWorldAccess.getBlockState(blockPos.add(j, t, s)) == singleStateFeatureConfig.state) continue;
+                    if (t >= 4 || material.isSolid() || structureWorldAccess.getBlockState(blockPos.add(j, t, s)) == singleStateFeatureConfig.state) continue;
                     return false;
                 }
             }
@@ -80,7 +80,7 @@ extends Feature<SingleStateFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 0; t < 8; ++t) {
                     if (!bls[(j * 16 + s) * 8 + t]) continue;
-                    serverWorldAccess.setBlockState(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, 2);
+                    structureWorldAccess.setBlockState(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, 2);
                 }
             }
         }
@@ -88,13 +88,13 @@ extends Feature<SingleStateFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 4; t < 8; ++t) {
                     BlockPos blockPos2;
-                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isSoil(serverWorldAccess.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || serverWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
-                    Biome biome = serverWorldAccess.getBiome(blockPos2);
+                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isSoil(structureWorldAccess.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
+                    Biome biome = structureWorldAccess.getBiome(blockPos2);
                     if (biome.getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
-                        serverWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
+                        structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
                         continue;
                     }
-                    serverWorldAccess.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), 2);
+                    structureWorldAccess.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), 2);
                 }
             }
         }
@@ -104,8 +104,8 @@ extends Feature<SingleStateFeatureConfig> {
                     for (t = 0; t < 8; ++t) {
                         boolean bl;
                         boolean bl3 = bl = !bls[(j * 16 + s) * 8 + t] && (j < 15 && bls[((j + 1) * 16 + s) * 8 + t] || j > 0 && bls[((j - 1) * 16 + s) * 8 + t] || s < 15 && bls[(j * 16 + s + 1) * 8 + t] || s > 0 && bls[(j * 16 + (s - 1)) * 8 + t] || t < 7 && bls[(j * 16 + s) * 8 + t + 1] || t > 0 && bls[(j * 16 + s) * 8 + (t - 1)]);
-                        if (!bl || t >= 4 && random.nextInt(2) == 0 || !serverWorldAccess.getBlockState(blockPos.add(j, t, s)).getMaterial().isSolid()) continue;
-                        serverWorldAccess.setBlockState(blockPos.add(j, t, s), Blocks.STONE.getDefaultState(), 2);
+                        if (!bl || t >= 4 && random.nextInt(2) == 0 || !structureWorldAccess.getBlockState(blockPos.add(j, t, s)).getMaterial().isSolid()) continue;
+                        structureWorldAccess.setBlockState(blockPos.add(j, t, s), Blocks.STONE.getDefaultState(), 2);
                     }
                 }
             }
@@ -115,8 +115,8 @@ extends Feature<SingleStateFeatureConfig> {
                 for (int s = 0; s < 16; ++s) {
                     t = 4;
                     BlockPos blockPos2 = blockPos.add(j, 4, s);
-                    if (!serverWorldAccess.getBiome(blockPos2).canSetIce(serverWorldAccess, blockPos2, false)) continue;
-                    serverWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), 2);
+                    if (!structureWorldAccess.getBiome(blockPos2).canSetIce(structureWorldAccess, blockPos2, false)) continue;
+                    structureWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), 2);
                 }
             }
         }

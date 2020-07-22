@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.rcon.BufferHelper;
 import net.minecraft.server.rcon.RconBase;
@@ -19,7 +19,7 @@ public class RconClient
 extends RconBase {
     private static final Logger LOGGER = LogManager.getLogger();
     private boolean authenticated;
-    private Socket socket;
+    private final Socket socket;
     private final byte[] packetBuffer = new byte[1460];
     private final String password;
     private final DedicatedServer server;
@@ -87,7 +87,6 @@ extends RconBase {
                     }
                 }
             }
-        } catch (SocketTimeoutException bufferedInputStream) {
         } catch (IOException bufferedInputStream) {
         } catch (Exception exception2) {
             LOGGER.error("Exception whilst parsing RCON input", (Throwable)exception2);
@@ -101,7 +100,7 @@ extends RconBase {
     private void respond(int sessionToken, int responseType, String message) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1248);
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-        byte[] bs = message.getBytes("UTF-8");
+        byte[] bs = message.getBytes(StandardCharsets.UTF_8);
         dataOutputStream.writeInt(Integer.reverseBytes(bs.length + 10));
         dataOutputStream.writeInt(Integer.reverseBytes(sessionToken));
         dataOutputStream.writeInt(Integer.reverseBytes(responseType));
@@ -132,15 +131,11 @@ extends RconBase {
     }
 
     private void close() {
-        if (null == this.socket) {
-            return;
-        }
         try {
             this.socket.close();
         } catch (IOException iOException) {
             LOGGER.warn("Failed to close socket", (Throwable)iOException);
         }
-        this.socket = null;
     }
 }
 

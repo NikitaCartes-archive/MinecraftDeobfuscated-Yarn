@@ -8,8 +8,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.Realms;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.exception.RealmsServiceException;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -68,8 +68,8 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredText(matrices, this.textRenderer, this.line1, this.width / 2, 80, 0xFFFFFF);
-        this.drawCenteredText(matrices, this.textRenderer, this.line2, this.width / 2, 100, 0xFF0000);
+        RealmsGenericErrorScreen.drawCenteredText(matrices, this.textRenderer, this.line1, this.width / 2, 80, 0xFFFFFF);
+        RealmsGenericErrorScreen.drawCenteredText(matrices, this.textRenderer, this.line2, this.width / 2, 100, 0xFF0000);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

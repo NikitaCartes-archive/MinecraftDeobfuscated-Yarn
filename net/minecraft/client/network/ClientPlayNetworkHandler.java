@@ -77,7 +77,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.realms.DisconnectedRealmsScreen;
-import net.minecraft.client.realms.RealmsScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
@@ -317,6 +317,7 @@ import org.jetbrains.annotations.Nullable;
 public class ClientPlayNetworkHandler
 implements ClientPlayPacketListener {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final Text field_26620 = new TranslatableText("disconnect.lost");
     private final ClientConnection connection;
     private final GameProfile profile;
     private final Screen loginScreen;
@@ -661,7 +662,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        packet.method_30621(this.world::setBlockStateWithoutNeighborUpdates);
+        packet.visitUpdates(this.world::setBlockStateWithoutNeighborUpdates);
     }
 
     @Override
@@ -683,7 +684,7 @@ implements ClientPlayPacketListener {
             if (blockEntity == null) continue;
             blockEntity.fromTag(this.world.getBlockState(blockPos2), compoundTag);
         }
-        if (!packet.method_30144()) {
+        if (!packet.shouldRetainLighting()) {
             this.world.getLightingProvider().setColumnEnabled(worldChunk.getPos(), false);
             int k = packet.getVerticalStripBitmask();
             for (int l = 0; l < 16; ++l) {
@@ -728,12 +729,12 @@ implements ClientPlayPacketListener {
         this.client.disconnect();
         if (this.loginScreen != null) {
             if (this.loginScreen instanceof RealmsScreen) {
-                this.client.openScreen(new DisconnectedRealmsScreen(this.loginScreen, "disconnect.lost", reason));
+                this.client.openScreen(new DisconnectedRealmsScreen(this.loginScreen, field_26620, reason));
             } else {
-                this.client.openScreen(new DisconnectedScreen(this.loginScreen, "disconnect.lost", reason));
+                this.client.openScreen(new DisconnectedScreen(this.loginScreen, field_26620, reason));
             }
         } else {
-            this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), "disconnect.lost", reason));
+            this.client.openScreen(new DisconnectedScreen(new MultiplayerScreen(new TitleScreen()), field_26620, reason));
         }
     }
 
@@ -760,7 +761,7 @@ implements ClientPlayPacketListener {
             } else {
                 this.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, (this.random.nextFloat() - this.random.nextFloat()) * 1.4f + 2.0f, false);
             }
-            this.client.particleManager.addParticle(new ItemPickupParticle(this.client.getEntityRenderManager(), this.client.getBufferBuilders(), this.world, entity, livingEntity));
+            this.client.particleManager.addParticle(new ItemPickupParticle(this.client.getEntityRenderDispatcher(), this.client.getBufferBuilders(), this.world, entity, livingEntity));
             if (entity instanceof ItemEntity) {
                 ItemEntity itemEntity = (ItemEntity)entity;
                 ItemStack itemStack = itemEntity.getStack();
@@ -1285,7 +1286,7 @@ implements ClientPlayPacketListener {
     public void onUnlockRecipes(UnlockRecipesS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-        clientRecipeBook.setOptions(packet.isFurnaceFilteringCraftable());
+        clientRecipeBook.setOptions(packet.getOptions());
         UnlockRecipesS2CPacket.Action action = packet.getAction();
         switch (action) {
             case REMOVE: {

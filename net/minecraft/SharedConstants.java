@@ -13,7 +13,10 @@ import net.minecraft.command.TranslatableBuiltInExceptions;
 public class SharedConstants {
     public static final ResourceLeakDetector.Level RESOURCE_LEAK_DETECTOR_DISABLED = ResourceLeakDetector.Level.DISABLED;
     public static final long field_22251 = Duration.ofMillis(300L).toNanos();
-    public static boolean field_25135 = true;
+    /**
+     * Specifies whether Minecraft should use choice type registrations from the game's schema when entity types or block entity types are created.
+     */
+    public static boolean useChoiceTypeRegistrations = true;
     public static boolean isDevelopment;
     public static final char[] INVALID_CHARS_LEVEL_NAME;
     private static GameVersion gameVersion;

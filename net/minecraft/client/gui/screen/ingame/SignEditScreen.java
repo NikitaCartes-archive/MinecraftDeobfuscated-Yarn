@@ -5,7 +5,7 @@ package net.minecraft.client.gui.screen.ingame;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.util.Arrays;
+import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -29,8 +29,8 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
@@ -41,7 +41,7 @@ extends Screen {
     private int ticksSinceOpened;
     private int currentRow;
     private SelectionManager selectionManager;
-    private final String[] field_24285 = Util.make(new String[4], strings -> Arrays.fill(strings, ""));
+    private final String[] field_24285 = (String[])IntStream.range(0, 4).mapToObj(signBlockEntity::method_30843).map(Text::getString).toArray(String[]::new);
 
     public SignEditScreen(SignBlockEntity signBlockEntity) {
         super(new TranslatableText("sign.edit"));
@@ -119,7 +119,7 @@ extends Screen {
         int m;
         DiffuseLighting.disableGuiDepthLighting();
         this.renderBackground(matrices);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 40, 0xFFFFFF);
+        SignEditScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 40, 0xFFFFFF);
         matrices.push();
         matrices.translate(this.width / 2, 0.0, 50.0);
         float f = 93.75f;

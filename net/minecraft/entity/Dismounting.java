@@ -7,6 +7,7 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -64,6 +65,25 @@ public class Dismounting {
             mutable.move(Direction.UP);
         }
         return Double.POSITIVE_INFINITY;
+    }
+
+    @Nullable
+    public static Vec3d method_30769(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, boolean bl) {
+        if (bl && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos))) {
+            return null;
+        }
+        double d = collisionView.getDismountHeight(Dismounting.getCollisionShape(collisionView, blockPos), () -> Dismounting.getCollisionShape(collisionView, blockPos.down()));
+        if (!Dismounting.canDismountInBlock(d)) {
+            return null;
+        }
+        if (bl && d <= 0.0 && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos.down()))) {
+            return null;
+        }
+        Vec3d vec3d = Vec3d.ofCenter(blockPos, d);
+        if (collisionView.getBlockCollisions(null, entityType.getDimensions().method_30757(vec3d)).allMatch(VoxelShape::isEmpty)) {
+            return vec3d;
+        }
+        return null;
     }
 }
 

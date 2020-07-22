@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.village.raid.Raid;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,7 +68,7 @@ public class DebugInfoSender {
     public static void sendNeighborUpdate(World world, BlockPos pos) {
     }
 
-    public static void sendStructureStart(ServerWorldAccess serverWorldAccess, StructureStart<?> structureStart) {
+    public static void sendStructureStart(StructureWorldAccess structureWorldAccess, StructureStart<?> structureStart) {
     }
 
     public static void sendGoalSelector(World world, MobEntity mob, GoalSelector goalSelector) {
@@ -91,7 +91,7 @@ public class DebugInfoSender {
 
     private static void sendToAll(ServerWorld world, PacketByteBuf buf, Identifier channel) {
         CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(channel, buf);
-        for (PlayerEntity playerEntity : world.getWorld().getPlayers()) {
+        for (PlayerEntity playerEntity : world.toServerWorld().getPlayers()) {
             ((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(packet);
         }
     }

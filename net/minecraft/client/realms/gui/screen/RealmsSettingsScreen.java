@@ -9,17 +9,19 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsSettingsScreen
 extends RealmsScreen {
+    private static final Text field_26514 = new TranslatableText("mco.configure.world.name");
+    private static final Text field_26515 = new TranslatableText("mco.configure.world.description");
     private final RealmsConfigureWorldScreen parent;
     private final RealmsServer serverData;
     private ButtonWidget doneButton;
@@ -93,8 +95,8 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.titleLabel.render(this, matrices);
-        this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.name", new Object[0]), (float)(this.width / 2 - 106), (float)RealmsSettingsScreen.row(3), 0xA0A0A0);
-        this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.description", new Object[0]), (float)(this.width / 2 - 106), (float)RealmsSettingsScreen.row(7), 0xA0A0A0);
+        this.textRenderer.method_30883(matrices, field_26514, this.width / 2 - 106, RealmsSettingsScreen.row(3), 0xA0A0A0);
+        this.textRenderer.method_30883(matrices, field_26515, this.width / 2 - 106, RealmsSettingsScreen.row(7), 0xA0A0A0);
         this.nameEdit.render(matrices, mouseX, mouseY, delta);
         this.descEdit.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);

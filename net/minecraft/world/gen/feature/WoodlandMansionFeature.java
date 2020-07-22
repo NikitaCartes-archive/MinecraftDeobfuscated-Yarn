@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -91,14 +91,14 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
-            super.generateStructure(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
+        public void generateStructure(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+            super.generateStructure(structureWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
             int i = this.boundingBox.minY;
             for (int j = blockBox.minX; j <= blockBox.maxX; ++j) {
                 for (int k = blockBox.minZ; k <= blockBox.maxZ; ++k) {
                     BlockPos blockPos2;
                     BlockPos blockPos = new BlockPos(j, i, k);
-                    if (serverWorldAccess.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
+                    if (structureWorldAccess.isAir(blockPos) || !this.boundingBox.contains(blockPos)) continue;
                     boolean bl = false;
                     for (StructurePiece structurePiece : this.children) {
                         if (!structurePiece.getBoundingBox().contains(blockPos)) continue;
@@ -106,8 +106,8 @@ extends StructureFeature<DefaultFeatureConfig> {
                         break;
                     }
                     if (!bl) continue;
-                    for (int l = i - 1; l > 1 && (serverWorldAccess.isAir(blockPos2 = new BlockPos(j, l, k)) || serverWorldAccess.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
-                        serverWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+                    for (int l = i - 1; l > 1 && (structureWorldAccess.isAir(blockPos2 = new BlockPos(j, l, k)) || structureWorldAccess.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
+                        structureWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
                     }
                 }
             }

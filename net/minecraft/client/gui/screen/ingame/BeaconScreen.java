@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffect;
@@ -35,6 +34,8 @@ import net.minecraft.util.collection.DefaultedList;
 public class BeaconScreen
 extends HandledScreen<BeaconScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
+    private static final Text field_26560 = new TranslatableText("block.minecraft.beacon.primary");
+    private static final Text field_26561 = new TranslatableText("block.minecraft.beacon.secondary");
     private DoneButtonWidget doneButton;
     private boolean consumeGem;
     private StatusEffect primaryEffect;
@@ -128,8 +129,8 @@ extends HandledScreen<BeaconScreenHandler> {
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        this.drawCenteredString(matrices, this.textRenderer, I18n.translate("block.minecraft.beacon.primary", new Object[0]), 62, 10, 0xE0E0E0);
-        this.drawCenteredString(matrices, this.textRenderer, I18n.translate("block.minecraft.beacon.secondary", new Object[0]), 169, 10, 0xE0E0E0);
+        BeaconScreen.drawCenteredText(matrices, this.textRenderer, field_26560, 62, 10, 0xE0E0E0);
+        BeaconScreen.drawCenteredText(matrices, this.textRenderer, field_26561, 169, 10, 0xE0E0E0);
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
             if (!abstractButtonWidget.isHovered()) continue;
             abstractButtonWidget.renderToolTip(matrices, mouseX - this.x, mouseY - this.y);
@@ -223,12 +224,22 @@ extends HandledScreen<BeaconScreenHandler> {
         private final StatusEffect effect;
         private final Sprite sprite;
         private final boolean primary;
+        private final Text field_26562;
 
         public EffectButtonWidget(int x, int y, StatusEffect statusEffect, boolean primary) {
             super(x, y);
             this.effect = statusEffect;
             this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect);
             this.primary = primary;
+            this.field_26562 = this.method_30902(statusEffect, primary);
+        }
+
+        private Text method_30902(StatusEffect statusEffect, boolean bl) {
+            TranslatableText mutableText = new TranslatableText(statusEffect.getTranslationKey());
+            if (!bl && statusEffect != StatusEffects.REGENERATION) {
+                mutableText.append(" II");
+            }
+            return mutableText;
         }
 
         @Override
@@ -249,11 +260,7 @@ extends HandledScreen<BeaconScreenHandler> {
 
         @Override
         public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
-            TranslatableText mutableText = new TranslatableText(this.effect.getTranslationKey());
-            if (!this.primary && this.effect != StatusEffects.REGENERATION) {
-                mutableText.append(" II");
-            }
-            BeaconScreen.this.renderTooltip(matrices, mutableText, mouseX, mouseY);
+            BeaconScreen.this.renderTooltip(matrices, this.field_26562, mouseX, mouseY);
         }
 
         @Override

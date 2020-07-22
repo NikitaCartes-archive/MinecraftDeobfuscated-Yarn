@@ -12,18 +12,18 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 public class CountConfig
 implements DecoratorConfig,
 FeatureConfig {
-    public static final Codec<CountConfig> CODEC = ((MapCodec)UniformIntDistribution.createValidatedCodec(-10, 128, 128).fieldOf("count")).xmap(CountConfig::new, CountConfig::method_30396).codec();
+    public static final Codec<CountConfig> CODEC = ((MapCodec)UniformIntDistribution.createValidatedCodec(-10, 128, 128).fieldOf("count")).xmap(CountConfig::new, CountConfig::getCount).codec();
     private final UniformIntDistribution count;
 
     public CountConfig(int count) {
         this.count = UniformIntDistribution.of(count);
     }
 
-    public CountConfig(UniformIntDistribution uniformIntDistribution) {
-        this.count = uniformIntDistribution;
+    public CountConfig(UniformIntDistribution distribution) {
+        this.count = distribution;
     }
 
-    public UniformIntDistribution method_30396() {
+    public UniformIntDistribution getCount() {
         return this.count;
     }
 }

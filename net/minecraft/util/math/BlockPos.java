@@ -134,10 +134,12 @@ extends Vec3i {
         return this.add(-pos.getX(), -pos.getY(), -pos.getZ());
     }
 
+    @Override
     public BlockPos up() {
         return this.offset(Direction.UP);
     }
 
+    @Override
     public BlockPos up(int distance) {
         return this.offset(Direction.UP, distance);
     }
@@ -469,6 +471,16 @@ extends Vec3i {
         return this.down();
     }
 
+    @Override
+    public /* synthetic */ Vec3i up(int i) {
+        return this.up(i);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i up() {
+        return this.up();
+    }
+
     static {
         SIZE_BITS_Z = SIZE_BITS_X = 1 + MathHelper.log2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
         SIZE_BITS_Y = 64 - SIZE_BITS_X - SIZE_BITS_Z;
@@ -561,6 +573,10 @@ extends Vec3i {
             return this.set(this.getX() + dx, this.getY() + dy, this.getZ() + dz);
         }
 
+        public Mutable method_30927(Vec3i vec3i) {
+            return this.set(this.getX() + vec3i.getX(), this.getY() + vec3i.getY(), this.getZ() + vec3i.getZ());
+        }
+
         public Mutable method_27158(Direction.Axis axis, int i, int j) {
             switch (axis) {
                 case X: {
@@ -614,6 +630,16 @@ extends Vec3i {
         @Override
         public /* synthetic */ Vec3i down() {
             return super.down();
+        }
+
+        @Override
+        public /* synthetic */ Vec3i up(int i) {
+            return super.up(i);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i up() {
+            return super.up();
         }
     }
 }

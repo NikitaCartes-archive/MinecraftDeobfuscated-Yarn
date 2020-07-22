@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +45,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -71,6 +70,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
     private static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
+    private static final Text field_26606 = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
+    private static final Text field_26607 = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
+    private static final Text field_26608 = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
+    private static final Text field_26609 = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
+    private static final Text field_26610 = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
     private final SelectWorldScreen parent;
     @Nullable
     private List<LevelSummary> levels;
@@ -182,7 +186,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             Text text = this.level.method_27429();
             this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
             this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + 3), 0x808080);
-            this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3), 0x808080);
+            this.client.textRenderer.method_30883(matrices, text, x + 32 + 3, y + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3, 0x808080);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : UNKNOWN_SERVER_LOCATION);
             RenderSystem.enableBlend();
@@ -199,20 +203,19 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 if (this.level.isLocked()) {
                     DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                     if (bl) {
-                        MutableText stringRenderable = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
-                        this.screen.setTooltip(this.client.textRenderer.wrapLines(stringRenderable, 175));
+                        this.screen.setTooltip(this.client.textRenderer.wrapLines(field_26610, 175));
                     }
                 } else if (this.level.isDifferentVersion()) {
                     DrawableHelper.drawTexture(matrices, x, y, 32.0f, j, 32, 32, 256, 256);
                     if (this.level.isFutureLevel()) {
                         DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            this.screen.setTooltip(Arrays.asList(new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED), new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED)));
+                            this.screen.setTooltip(ImmutableList.of(field_26606.method_30937(), field_26607.method_30937()));
                         }
                     } else if (!SharedConstants.getGameVersion().isStable()) {
                         DrawableHelper.drawTexture(matrices, x, y, 64.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            this.screen.setTooltip(Arrays.asList(new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD), new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD)));
+                            this.screen.setTooltip(ImmutableList.of(field_26608.method_30937(), field_26609.method_30937()));
                         }
                     }
                 } else {

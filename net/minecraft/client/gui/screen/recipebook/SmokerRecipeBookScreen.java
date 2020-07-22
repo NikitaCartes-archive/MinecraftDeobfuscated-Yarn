@@ -15,9 +15,11 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class SmokerRecipeBookScreen
 extends AbstractFurnaceRecipeBookScreen {
+    private static final Text field_26597 = new TranslatableText("gui.recipebook.toggleRecipes.smokable");
+
     @Override
     protected Text getToggleCraftableButtonText() {
-        return new TranslatableText("gui.recipebook.toggleRecipes.smokable");
+        return field_26597;
     }
 
     @Override

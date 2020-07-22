@@ -29,15 +29,15 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class TextureFont
+public class BitmapFont
 implements Font {
     private static final Logger LOGGER = LogManager.getLogger();
     private final NativeImage image;
-    private final Int2ObjectMap<TextureFontGlyph> glyphs;
+    private final Int2ObjectMap<BitmapFontGlyph> glyphs;
 
-    private TextureFont(NativeImage image, Int2ObjectMap<TextureFontGlyph> int2ObjectMap) {
+    private BitmapFont(NativeImage image, Int2ObjectMap<BitmapFontGlyph> glyphs) {
         this.image = image;
-        this.glyphs = int2ObjectMap;
+        this.glyphs = glyphs;
     }
 
     @Override
@@ -47,17 +47,17 @@ implements Font {
 
     @Override
     @Nullable
-    public RenderableGlyph getGlyph(int i) {
-        return (RenderableGlyph)this.glyphs.get(i);
+    public RenderableGlyph getGlyph(int codePoint) {
+        return (RenderableGlyph)this.glyphs.get(codePoint);
     }
 
     @Override
-    public IntSet method_27442() {
+    public IntSet getProvidedGlyphs() {
         return IntSets.unmodifiable(this.glyphs.keySet());
     }
 
     @Environment(value=EnvType.CLIENT)
-    static final class TextureFontGlyph
+    static final class BitmapFontGlyph
     implements RenderableGlyph {
         private final float scaleFactor;
         private final NativeImage image;
@@ -68,7 +68,7 @@ implements Font {
         private final int advance;
         private final int ascent;
 
-        private TextureFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
+        private BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
             this.scaleFactor = scaleFactor;
             this.image = image;
             this.x = x;
@@ -168,7 +168,7 @@ implements Font {
                 int k = i / this.chars.get(0).length;
                 int l = j / this.chars.size();
                 float f = (float)this.height / (float)l;
-                Int2ObjectOpenHashMap<TextureFontGlyph> int2ObjectMap = new Int2ObjectOpenHashMap<TextureFontGlyph>();
+                Int2ObjectOpenHashMap<BitmapFontGlyph> int2ObjectMap = new Int2ObjectOpenHashMap<BitmapFontGlyph>();
                 int m = 0;
                 while (true) {
                     int n;
@@ -179,15 +179,15 @@ implements Font {
                         nArray = this.chars.get(m);
                         n = nArray.length;
                     } else {
-                        TextureFont textureFont = new TextureFont(nativeImage, int2ObjectMap);
-                        return textureFont;
+                        BitmapFont bitmapFont = new BitmapFont(nativeImage, int2ObjectMap);
+                        return bitmapFont;
                     }
                     for (int i2 = 0; i2 < n; ++i2) {
                         int q;
-                        TextureFontGlyph textureFontGlyph;
+                        BitmapFontGlyph bitmapFontGlyph;
                         int o = nArray[i2];
                         int p = n2++;
-                        if (o == 0 || o == 32 || (textureFontGlyph = int2ObjectMap.put(o, new TextureFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)(q = this.findCharacterStartX(nativeImage, k, l, p, m)) * f)) + 1, this.ascent))) == null) continue;
+                        if (o == 0 || o == 32 || (bitmapFontGlyph = int2ObjectMap.put(o, new BitmapFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)(q = this.findCharacterStartX(nativeImage, k, l, p, m)) * f)) + 1, this.ascent))) == null) continue;
                         LOGGER.warn("Codepoint '{}' declared multiple times in {}", (Object)Integer.toHexString(o), (Object)this.filename);
                     }
                     ++m;

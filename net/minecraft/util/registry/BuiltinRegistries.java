@@ -42,7 +42,7 @@ public class BuiltinRegistries {
     public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
     public static final Registry<ConfiguredSurfaceBuilder<?>> CONFIGURED_SURFACE_BUILDER = BuiltinRegistries.addRegistry(Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, () -> ConfiguredSurfaceBuilders.NOPE);
     public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = BuiltinRegistries.addRegistry(Registry.CONFIGURED_CARVER_WORLDGEN, () -> ConfiguredCarvers.CAVE);
-    public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = BuiltinRegistries.addRegistry(Registry.CONFIGURED_FEATURE_WORLDGEN, () -> ConfiguredFeatures.NOPE);
+    public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = BuiltinRegistries.addRegistry(Registry.CONFIGURED_FEATURE_WORLDGEN, () -> ConfiguredFeatures.OAK);
     public static final Registry<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE = BuiltinRegistries.addRegistry(Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, () -> ConfiguredStructureFeatures.MINESHAFT);
     public static final Registry<ImmutableList<StructureProcessor>> PROCESSOR_LIST = BuiltinRegistries.addRegistry(Registry.PROCESSOR_LIST_WORLDGEN, () -> ProcessorLists.ZOMBIE_PLAINS);
     public static final Registry<StructurePool> TEMPLATE_POOL = BuiltinRegistries.addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, () -> TemplatePools.EMPTY);

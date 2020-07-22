@@ -26,12 +26,14 @@ public class TeleportToSpecificPlayerSpectatorCommand
 implements SpectatorMenuCommand {
     private final GameProfile gameProfile;
     private final Identifier skinId;
+    private final LiteralText name;
 
     public TeleportToSpecificPlayerSpectatorCommand(GameProfile gameProfile) {
         this.gameProfile = gameProfile;
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
         this.skinId = map.containsKey((Object)MinecraftProfileTexture.Type.SKIN) ? minecraftClient.getSkinProvider().loadSkin(map.get((Object)MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN) : DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
+        this.name = new LiteralText(gameProfile.getName());
     }
 
     @Override
@@ -41,7 +43,7 @@ implements SpectatorMenuCommand {
 
     @Override
     public Text getName() {
-        return new LiteralText(this.gameProfile.getName());
+        return this.name;
     }
 
     @Override

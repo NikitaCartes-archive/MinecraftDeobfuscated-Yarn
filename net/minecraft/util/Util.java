@@ -70,9 +70,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class Util {
-    private static final AtomicInteger NEXT_SERVER_WORKER_ID = new AtomicInteger(1);
+    private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
     private static final ExecutorService BOOTSTRAP_EXECUTOR = Util.createWorker("Bootstrap");
-    private static final ExecutorService SERVER_WORKER_EXECUTOR = Util.createWorker("Main");
+    private static final ExecutorService MAIN_WORKER_EXECUTOR = Util.createWorker("Main");
     private static final ExecutorService IO_WORKER_EXECUTOR = Util.createIoWorker();
     public static LongSupplier nanoTimeSupplier = System::nanoTime;
     public static final UUID NIL_UUID = new UUID(0L, 0L);
@@ -120,7 +120,7 @@ public class Util {
                     super.onTermination(throwable);
                 }
             };
-            forkJoinWorkerThread.setName("Worker-" + string + "-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
+            forkJoinWorkerThread.setName("Worker-" + string + "-" + NEXT_WORKER_ID.getAndIncrement());
             return forkJoinWorkerThread;
         }, Util::method_18347, true);
         return executorService;
@@ -130,16 +130,16 @@ public class Util {
         return BOOTSTRAP_EXECUTOR;
     }
 
-    public static Executor getServerWorkerExecutor() {
-        return SERVER_WORKER_EXECUTOR;
+    public static Executor getMainWorkerExecutor() {
+        return MAIN_WORKER_EXECUTOR;
     }
 
     public static Executor getIoWorkerExecutor() {
         return IO_WORKER_EXECUTOR;
     }
 
-    public static void shutdownServerWorkerExecutor() {
-        Util.attemptShutdown(SERVER_WORKER_EXECUTOR);
+    public static void shutdownExecutors() {
+        Util.attemptShutdown(MAIN_WORKER_EXECUTOR);
         Util.attemptShutdown(IO_WORKER_EXECUTOR);
     }
 
@@ -159,7 +159,7 @@ public class Util {
     private static ExecutorService createIoWorker() {
         return Executors.newCachedThreadPool(runnable -> {
             Thread thread = new Thread(runnable);
-            thread.setName("IO-Worker-" + NEXT_SERVER_WORKER_ID.getAndIncrement());
+            thread.setName("IO-Worker-" + NEXT_WORKER_ID.getAndIncrement());
             thread.setUncaughtExceptionHandler(Util::method_18347);
             return thread;
         });
@@ -190,22 +190,22 @@ public class Util {
     }
 
     @Nullable
-    public static Type<?> method_29187(DSL.TypeReference typeReference, String string) {
-        if (!SharedConstants.field_25135) {
+    public static Type<?> getChoiceType(DSL.TypeReference typeReference, String id) {
+        if (!SharedConstants.useChoiceTypeRegistrations) {
             return null;
         }
-        return Util.method_29191(typeReference, string);
+        return Util.getChoiceTypeInternal(typeReference, id);
     }
 
     @Nullable
-    private static Type<?> method_29191(DSL.TypeReference typeReference, String string) {
+    private static Type<?> getChoiceTypeInternal(DSL.TypeReference typeReference, String id) {
         Type<?> type;
         block2: {
             type = null;
             try {
-                type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(typeReference, string);
+                type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(typeReference, id);
             } catch (IllegalArgumentException illegalArgumentException) {
-                LOGGER.error("No data fixer registered for {}", (Object)string);
+                LOGGER.error("No data fixer registered for {}", (Object)id);
                 if (!SharedConstants.isDevelopment) break block2;
                 throw illegalArgumentException;
             }

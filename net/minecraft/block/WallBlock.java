@@ -46,11 +46,11 @@ implements Waterloggable {
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     private final Map<BlockState, VoxelShape> shapeMap;
     private final Map<BlockState, VoxelShape> collisionShapeMap;
-    private static final VoxelShape field_22163 = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0);
-    private static final VoxelShape field_22164 = Block.createCuboidShape(7.0, 0.0, 0.0, 9.0, 16.0, 9.0);
-    private static final VoxelShape field_22165 = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 16.0);
-    private static final VoxelShape field_22166 = Block.createCuboidShape(0.0, 0.0, 7.0, 9.0, 16.0, 9.0);
-    private static final VoxelShape field_22167 = Block.createCuboidShape(7.0, 0.0, 7.0, 16.0, 16.0, 9.0);
+    private static final VoxelShape TALL_POST_SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0);
+    private static final VoxelShape TALL_NORTH_SHAPE = Block.createCuboidShape(7.0, 0.0, 0.0, 9.0, 16.0, 9.0);
+    private static final VoxelShape TALL_SOUTH_SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 16.0);
+    private static final VoxelShape TALL_WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 7.0, 9.0, 16.0, 9.0);
+    private static final VoxelShape TALL_EAST_SHAPE = Block.createCuboidShape(7.0, 0.0, 7.0, 16.0, 16.0, 9.0);
 
     public WallBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -223,11 +223,11 @@ implements Waterloggable {
         if (bl7) {
             return false;
         }
-        return blockState2.getBlock().isIn(BlockTags.WALL_POST_OVERRIDE) || WallBlock.method_24427(voxelShape, field_22163);
+        return blockState2.getBlock().isIn(BlockTags.WALL_POST_OVERRIDE) || WallBlock.method_24427(voxelShape, TALL_POST_SHAPE);
     }
 
     private BlockState method_24425(BlockState blockState, boolean bl, boolean bl2, boolean bl3, boolean bl4, VoxelShape voxelShape) {
-        return (BlockState)((BlockState)((BlockState)((BlockState)blockState.with(NORTH_SHAPE, this.method_24428(bl, voxelShape, field_22164))).with(EAST_SHAPE, this.method_24428(bl2, voxelShape, field_22167))).with(SOUTH_SHAPE, this.method_24428(bl3, voxelShape, field_22165))).with(WEST_SHAPE, this.method_24428(bl4, voxelShape, field_22166));
+        return (BlockState)((BlockState)((BlockState)((BlockState)blockState.with(NORTH_SHAPE, this.method_24428(bl, voxelShape, TALL_NORTH_SHAPE))).with(EAST_SHAPE, this.method_24428(bl2, voxelShape, TALL_EAST_SHAPE))).with(SOUTH_SHAPE, this.method_24428(bl3, voxelShape, TALL_SOUTH_SHAPE))).with(WEST_SHAPE, this.method_24428(bl4, voxelShape, TALL_WEST_SHAPE));
     }
 
     private WallShape method_24428(boolean bl, VoxelShape voxelShape, VoxelShape voxelShape2) {

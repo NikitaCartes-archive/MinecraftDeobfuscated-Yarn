@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -26,16 +26,16 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        if (!serverWorldAccess.isAir(blockPos)) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+        if (!structureWorldAccess.isAir(blockPos)) {
             return false;
         }
-        BlockState blockState = serverWorldAccess.getBlockState(blockPos.up());
+        BlockState blockState = structureWorldAccess.getBlockState(blockPos.up());
         if (!blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
             return false;
         }
-        this.generateNetherWartBlocksInArea(serverWorldAccess, random, blockPos);
-        this.generateVinesInArea(serverWorldAccess, random, blockPos);
+        this.generateNetherWartBlocksInArea(structureWorldAccess, random, blockPos);
+        this.generateVinesInArea(structureWorldAccess, random, blockPos);
         return true;
     }
 
@@ -64,7 +64,7 @@ extends Feature<DefaultFeatureConfig> {
         for (int i = 0; i < 100; ++i) {
             BlockState blockState;
             mutable.set(pos, random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
-            if (!world.isAir(mutable) || !(blockState = world.getBlockState(mutable.up())).isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) continue;
+            if (!world.isAir(mutable) || !(blockState = world.getBlockState((BlockPos)mutable.up())).isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) continue;
             int j = MathHelper.nextInt(random, 1, 8);
             if (random.nextInt(6) == 0) {
                 j *= 2;

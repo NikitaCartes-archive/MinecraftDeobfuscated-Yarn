@@ -19,7 +19,7 @@ extends Decorator<DecoratedDecoratorConfig> {
 
     @Override
     public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, DecoratedDecoratorConfig decoratedDecoratorConfig, BlockPos blockPos2) {
-        return decoratedDecoratorConfig.method_30455().method_30444(decoratorContext, random, blockPos2).flatMap(blockPos -> decoratedDecoratorConfig.method_30457().method_30444(decoratorContext, random, (BlockPos)blockPos));
+        return decoratedDecoratorConfig.getOuter().getPositions(decoratorContext, random, blockPos2).flatMap(blockPos -> decoratedDecoratorConfig.getInner().getPositions(decoratorContext, random, (BlockPos)blockPos));
     }
 }
 

@@ -17,7 +17,7 @@ public class WitherEntityModel<T extends WitherEntity>
 extends CompositeEntityModel<T> {
     private final ModelPart[] field_3613;
     private final ModelPart[] field_3612;
-    private final ImmutableList<ModelPart> field_20943;
+    private final ImmutableList<ModelPart> parts;
 
     public WitherEntityModel(float scale) {
         this.textureWidth = 64;
@@ -47,11 +47,11 @@ extends CompositeEntityModel<T> {
         ImmutableList.Builder builder = ImmutableList.builder();
         builder.addAll(Arrays.asList(this.field_3612));
         builder.addAll(Arrays.asList(this.field_3613));
-        this.field_20943 = builder.build();
+        this.parts = builder.build();
     }
 
     public ImmutableList<ModelPart> getParts() {
-        return this.field_20943;
+        return this.parts;
     }
 
     @Override

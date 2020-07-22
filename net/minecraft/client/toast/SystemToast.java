@@ -8,14 +8,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
@@ -24,8 +23,8 @@ import org.jetbrains.annotations.Nullable;
 public class SystemToast
 implements Toast {
     private final Type type;
-    private StringRenderable title;
-    private List<StringRenderable> lines;
+    private Text title;
+    private List<class_5481> lines;
     private long startTime;
     private boolean justUpdated;
     private final int width;
@@ -36,20 +35,20 @@ implements Toast {
 
     public static SystemToast create(MinecraftClient client, Type type, Text title, Text description) {
         TextRenderer textRenderer = client.textRenderer;
-        List<StringRenderable> list = textRenderer.getTextHandler().wrapLines(description, 200, Style.EMPTY);
-        int i = Math.max(200, list.stream().mapToInt(textRenderer::getWidth).max().orElse(200));
+        List<class_5481> list = textRenderer.wrapLines(description, 200);
+        int i = Math.max(200, list.stream().mapToInt(textRenderer::method_30880).max().orElse(200));
         return new SystemToast(type, title, list, i + 30);
     }
 
-    private SystemToast(Type type, Text title, List<StringRenderable> lines, int width) {
+    private SystemToast(Type type, Text title, List<class_5481> lines, int width) {
         this.type = type;
         this.title = title;
         this.lines = lines;
         this.width = width;
     }
 
-    private static ImmutableList<StringRenderable> getTextAsList(@Nullable Text text) {
-        return text == null ? ImmutableList.of() : ImmutableList.of(text);
+    private static ImmutableList<class_5481> getTextAsList(@Nullable Text text) {
+        return text == null ? ImmutableList.of() : ImmutableList.of(text.method_30937());
     }
 
     @Override
@@ -81,9 +80,9 @@ implements Toast {
             this.drawPart(matrices, manager, i, 32 - m, k - m, m);
         }
         if (this.lines == null) {
-            manager.getGame().textRenderer.draw(matrices, this.title, 18.0f, 12.0f, -256);
+            manager.getGame().textRenderer.method_30883(matrices, this.title, 18.0f, 12.0f, -256);
         } else {
-            manager.getGame().textRenderer.draw(matrices, this.title, 18.0f, 7.0f, -256);
+            manager.getGame().textRenderer.method_30883(matrices, this.title, 18.0f, 7.0f, -256);
             for (k = 0; k < this.lines.size(); ++k) {
                 manager.getGame().textRenderer.draw(matrices, this.lines.get(k), 18.0f, (float)(18 + k * 12), -1);
             }

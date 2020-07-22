@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -40,9 +40,9 @@ extends StructurePoolElement {
     private final Supplier<ConfiguredFeature<?, ?>> feature;
     private final CompoundTag tag;
 
-    protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> supplier, StructurePool.Projection projection) {
+    protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> feature, StructurePool.Projection projection) {
         super(projection);
-        this.feature = supplier;
+        this.feature = feature;
         this.tag = this.createDefaultJigsawTag();
     }
 
@@ -74,8 +74,8 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
-        return this.feature.get().generate(serverWorldAccess, chunkGenerator, random, blockPos);
+    public boolean generate(StructureManager structureManager, StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
+        return this.feature.get().generate(structureWorldAccess, chunkGenerator, random, blockPos);
     }
 
     @Override

@@ -12,8 +12,6 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.ResettingWorldTask;
-import net.minecraft.client.realms.SwitchSlotTask;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.dto.WorldTemplatePaginatedList;
@@ -23,6 +21,8 @@ import net.minecraft.client.realms.gui.screen.RealmsResetNormalWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreenWithCallback;
 import net.minecraft.client.realms.gui.screen.RealmsSelectFileToUploadScreen;
 import net.minecraft.client.realms.gui.screen.RealmsSelectWorldTemplateScreen;
+import net.minecraft.client.realms.task.ResettingWorldTask;
+import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -58,7 +58,8 @@ extends RealmsScreenWithCallback {
     private ResetType typeToReset = ResetType.NONE;
     private ResetWorldInfo field_20499;
     private WorldTemplate field_20500;
-    private String field_20501;
+    @Nullable
+    private Text field_20501;
     private final Runnable field_22711;
     private final Runnable field_22712;
 
@@ -81,8 +82,8 @@ extends RealmsScreenWithCallback {
         this.slot = slot;
     }
 
-    public void setResetTitle(String title) {
-        this.field_20501 = title;
+    public void setResetTitle(Text text) {
+        this.field_20501 = text;
     }
 
     @Override
@@ -165,23 +166,23 @@ extends RealmsScreenWithCallback {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private void drawFrame(MatrixStack matrices, int x, int y, Text text, Identifier identifier, boolean bl, boolean bl2) {
+    private void drawFrame(MatrixStack matrixStack, int x, int y, Text text, Identifier identifier, boolean bl, boolean bl2) {
         this.client.getTextureManager().bindTexture(identifier);
         if (bl) {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         } else {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
-        DrawableHelper.drawTexture(matrices, x + 2, y + 14, 0.0f, 0.0f, 56, 56, 56, 56);
+        DrawableHelper.drawTexture(matrixStack, x + 2, y + 14, 0.0f, 0.0f, 56, 56, 56, 56);
         this.client.getTextureManager().bindTexture(SLOT_FRAME_TEXTURE);
         if (bl) {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         } else {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
-        DrawableHelper.drawTexture(matrices, x, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
+        DrawableHelper.drawTexture(matrixStack, x, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
         int i = bl ? 0xA0A0A0 : 0xFFFFFF;
-        this.drawCenteredText(matrices, this.textRenderer, text, x + 30, y, i);
+        RealmsResetWorldScreen.drawCenteredText(matrixStack, this.textRenderer, text, x + 30, y, i);
     }
 
     @Override

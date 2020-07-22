@@ -12,7 +12,7 @@ import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
@@ -25,7 +25,7 @@ extends Feature<SingleStateFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
         boolean bl3;
         int s;
         int r;
@@ -52,24 +52,24 @@ extends Feature<SingleStateFeatureConfig> {
                 for (r = 0; r < l; ++r) {
                     int n3 = s = bl2 ? this.method_13417(r, l, n2) : this.method_13419(random, r, l, n2);
                     if (!bl2 && p >= s) continue;
-                    this.method_13426(serverWorldAccess, random, blockPos, l, p, r, q, s, o, bl2, j, d, bl, blockState);
+                    this.method_13426(structureWorldAccess, random, blockPos, l, p, r, q, s, o, bl2, j, d, bl, blockState);
                 }
             }
         }
-        this.method_13418(serverWorldAccess, blockPos, n2, l, bl2, i);
+        this.method_13418(structureWorldAccess, blockPos, n2, l, bl2, i);
         for (p = -o; p < o; ++p) {
             for (q = -o; q < o; ++q) {
                 for (r = -1; r > -m; --r) {
                     s = bl2 ? MathHelper.ceil((float)o * (1.0f - (float)Math.pow(r, 2.0) / ((float)m * 8.0f))) : o;
                     int t = this.method_13427(random, -r, m, n2);
                     if (p >= t) continue;
-                    this.method_13426(serverWorldAccess, random, blockPos, m, p, r, q, t, s, bl2, j, d, bl, blockState);
+                    this.method_13426(structureWorldAccess, random, blockPos, m, p, r, q, t, s, bl2, j, d, bl, blockState);
                 }
             }
         }
         boolean bl4 = bl2 ? random.nextDouble() > 0.1 : (bl3 = random.nextDouble() > 0.7);
         if (bl3) {
-            this.method_13428(random, serverWorldAccess, n2, l, blockPos, bl2, i, d, j);
+            this.method_13428(random, structureWorldAccess, n2, l, blockPos, bl2, i, d, j);
         }
         return true;
     }

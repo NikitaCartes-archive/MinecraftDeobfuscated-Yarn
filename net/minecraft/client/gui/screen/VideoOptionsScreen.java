@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DialogScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -43,7 +44,7 @@ extends GameOptionsScreen {
     private static final Text NEWLINE_TEXT = new LiteralText("\n");
     private static final Option[] OPTIONS = new Option[]{Option.GRAPHICS, Option.RENDER_DISTANCE, Option.AO, Option.FRAMERATE_LIMIT, Option.VSYNC, Option.VIEW_BOBBING, Option.GUI_SCALE, Option.ATTACK_INDICATOR, Option.GAMMA, Option.CLOUDS, Option.FULLSCREEN, Option.PARTICLES, Option.MIPMAP_LEVELS, Option.ENTITY_SHADOWS, Option.ENTITY_DISTANCE_SCALING};
     @Nullable
-    private List<StringRenderable> tooltip;
+    private List<class_5481> tooltip;
     private ButtonListWidget list;
     private final VideoWarningManager warningManager;
     private final int mipmapLevels;
@@ -141,14 +142,14 @@ extends GameOptionsScreen {
         this.tooltip = null;
         Optional<AbstractButtonWidget> optional = this.list.getHoveredButton(mouseX, mouseY);
         if (optional.isPresent() && optional.get() instanceof OptionButtonWidget) {
-            Optional<List<StringRenderable>> optional2 = ((OptionButtonWidget)optional.get()).getOption().getTooltip();
+            Optional<List<class_5481>> optional2 = ((OptionButtonWidget)optional.get()).getOption().getTooltip();
             optional2.ifPresent(tooltip -> {
                 this.tooltip = tooltip;
             });
         }
         this.renderBackground(matrices);
         this.list.render(matrices, mouseX, mouseY, delta);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 0xFFFFFF);
+        VideoOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
         if (this.tooltip != null) {
             this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);

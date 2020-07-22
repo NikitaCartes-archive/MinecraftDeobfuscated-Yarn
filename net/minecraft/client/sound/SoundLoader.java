@@ -95,7 +95,7 @@ public class SoundLoader {
              *     at java.base/java.lang.Thread.run(Thread.java:833)
              */
             throw new IllegalStateException("Decompilation failed");
-        }, Util.getServerWorkerExecutor()));
+        }, Util.getMainWorkerExecutor()));
     }
 
     public CompletableFuture<AudioStream> loadStreamed(Identifier id, boolean repeatInstantly) {
@@ -107,7 +107,7 @@ public class SoundLoader {
             } catch (IOException iOException) {
                 throw new CompletionException(iOException);
             }
-        }, Util.getServerWorkerExecutor());
+        }, Util.getMainWorkerExecutor());
     }
 
     public void close() {

@@ -65,7 +65,7 @@ public class PointOfInterestSet {
     private boolean add(PointOfInterest poi) {
         BlockPos blockPos = poi.getPos();
         PointOfInterestType pointOfInterestType2 = poi.getType();
-        short s = ChunkSectionPos.getPackedLocalPos(blockPos);
+        short s = ChunkSectionPos.packLocal(blockPos);
         PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(s);
         if (pointOfInterest != null) {
             if (pointOfInterestType2.equals(pointOfInterest.getType())) {
@@ -79,7 +79,7 @@ public class PointOfInterestSet {
     }
 
     public void remove(BlockPos pos) {
-        PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.remove(ChunkSectionPos.getPackedLocalPos(pos));
+        PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.remove(ChunkSectionPos.packLocal(pos));
         if (pointOfInterest == null) {
             LOGGER.error("POI data mismatch: never registered at " + pos);
             return;
@@ -93,7 +93,7 @@ public class PointOfInterestSet {
     }
 
     public boolean releaseTicket(BlockPos pos) {
-        PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(ChunkSectionPos.getPackedLocalPos(pos));
+        PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(ChunkSectionPos.packLocal(pos));
         if (pointOfInterest == null) {
             throw Util.throwOrPause(new IllegalStateException("POI never registered at " + pos));
         }
@@ -103,13 +103,13 @@ public class PointOfInterestSet {
     }
 
     public boolean test(BlockPos pos, Predicate<PointOfInterestType> predicate) {
-        short s = ChunkSectionPos.getPackedLocalPos(pos);
+        short s = ChunkSectionPos.packLocal(pos);
         PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(s);
         return pointOfInterest != null && predicate.test(pointOfInterest.getType());
     }
 
     public Optional<PointOfInterestType> getType(BlockPos pos) {
-        short s = ChunkSectionPos.getPackedLocalPos(pos);
+        short s = ChunkSectionPos.packLocal(pos);
         PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(s);
         return pointOfInterest != null ? Optional.of(pointOfInterest.getType()) : Optional.empty();
     }
@@ -119,7 +119,7 @@ public class PointOfInterestSet {
             Short2ObjectOpenHashMap<PointOfInterest> short2ObjectMap = new Short2ObjectOpenHashMap<PointOfInterest>(this.pointsOfInterestByPos);
             this.clear();
             consumer.accept((blockPos, pointOfInterestType) -> {
-                short s = ChunkSectionPos.getPackedLocalPos(blockPos);
+                short s = ChunkSectionPos.packLocal(blockPos);
                 PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(s, i -> new PointOfInterest((BlockPos)blockPos, (PointOfInterestType)pointOfInterestType, this.updateListener));
                 this.add(pointOfInterest);
             });

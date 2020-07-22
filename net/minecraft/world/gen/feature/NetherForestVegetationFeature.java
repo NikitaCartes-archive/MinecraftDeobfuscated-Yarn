@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
@@ -22,8 +22,8 @@ extends Feature<BlockPileFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
-        return NetherForestVegetationFeature.method_26264(serverWorldAccess, random, blockPos, blockPileFeatureConfig, 8, 4);
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
+        return NetherForestVegetationFeature.method_26264(structureWorldAccess, random, blockPos, blockPileFeatureConfig, 8, 4);
     }
 
     public static boolean method_26264(WorldAccess worldAccess, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig, int i, int j) {

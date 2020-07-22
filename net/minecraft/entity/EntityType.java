@@ -313,7 +313,9 @@ public class EntityType<T extends Entity> {
     @Nullable
     public T spawn(ServerWorld serverWorld, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
         T entity = this.create(serverWorld, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
-        serverWorld.spawnEntity((Entity)entity);
+        if (entity != null) {
+            serverWorld.spawnEntityAndPassengers((Entity)entity);
+        }
         return entity;
     }
 
@@ -595,7 +597,7 @@ public class EntityType<T extends Entity> {
 
         public EntityType<T> build(String id) {
             if (this.saveable) {
-                Util.method_29187(TypeReferences.ENTITY_TREE, id);
+                Util.getChoiceType(TypeReferences.ENTITY_TREE, id);
             }
             return new EntityType<T>(this.factory, this.spawnGroup, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.canSpawnInside, this.dimensions, this.maxTrackingRange, this.trackingTickInterval);
         }

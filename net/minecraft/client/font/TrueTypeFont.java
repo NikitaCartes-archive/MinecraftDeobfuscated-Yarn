@@ -88,14 +88,14 @@ implements Font {
     }
 
     @Override
-    public IntSet method_27442() {
+    public IntSet getProvidedGlyphs() {
         return IntStream.range(0, 65535).filter(i -> !this.excludedCharacters.contains(i)).collect(IntOpenHashSet::new, IntCollection::add, IntCollection::addAll);
     }
 
     @Override
     @Nullable
-    public /* synthetic */ RenderableGlyph getGlyph(int i) {
-        return this.getGlyph(i);
+    public /* synthetic */ RenderableGlyph getGlyph(int codePoint) {
+        return this.getGlyph(codePoint);
     }
 
     @Environment(value=EnvType.CLIENT)

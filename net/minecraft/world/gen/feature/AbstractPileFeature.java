@@ -9,7 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
@@ -22,7 +22,7 @@ extends Feature<BlockPileFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig) {
         if (blockPos.getY() < 5) {
             return false;
         }
@@ -32,11 +32,11 @@ extends Feature<BlockPileFeatureConfig> {
             int l;
             int k = blockPos.getX() - blockPos2.getX();
             if ((float)(k * k + (l = blockPos.getZ() - blockPos2.getZ()) * l) <= random.nextFloat() * 10.0f - random.nextFloat() * 6.0f) {
-                this.addPileBlock(serverWorldAccess, blockPos2, random, blockPileFeatureConfig);
+                this.addPileBlock(structureWorldAccess, blockPos2, random, blockPileFeatureConfig);
                 continue;
             }
             if (!((double)random.nextFloat() < 0.031)) continue;
-            this.addPileBlock(serverWorldAccess, blockPos2, random, blockPileFeatureConfig);
+            this.addPileBlock(structureWorldAccess, blockPos2, random, blockPileFeatureConfig);
         }
         return true;
     }

@@ -16,7 +16,7 @@ import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.realms.RealmsBridge;
+import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -76,8 +76,8 @@ extends Screen {
             if (bl) {
                 this.client.openScreen(new TitleScreen());
             } else if (bl2) {
-                RealmsBridge realmsBridge = new RealmsBridge();
-                realmsBridge.switchToRealms(new TitleScreen());
+                RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
+                realmsBridgeScreen.switchToRealms(new TitleScreen());
             } else {
                 this.client.openScreen(new MultiplayerScreen(new TitleScreen()));
             }
@@ -96,9 +96,9 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (this.showMenu) {
             this.renderBackground(matrices);
-            this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 40, 0xFFFFFF);
+            GameMenuScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 40, 0xFFFFFF);
         } else {
-            this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
+            GameMenuScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

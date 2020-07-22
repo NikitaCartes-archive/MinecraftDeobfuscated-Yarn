@@ -9,14 +9,16 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsGetServerDetailsTask;
-import net.minecraft.client.realms.RealmsMainScreen;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.client.realms.gui.screen.RealmsScreen;
+import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +28,9 @@ import org.apache.logging.log4j.Logger;
 public class RealmsTermsScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final Text field_26523 = new TranslatableText("mco.terms.title");
+    private static final Text field_26524 = new TranslatableText("mco.terms.sentence.1");
+    private static final Text field_26525 = new LiteralText(" ").append(new TranslatableText("mco.terms.sentence.2").fillStyle(Style.EMPTY.method_30938(true)));
     private final Screen parent;
     private final RealmsMainScreen mainScreen;
     private final RealmsServer realmsServer;
@@ -83,20 +88,15 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawCenteredString(matrices, this.textRenderer, I18n.translate("mco.terms.title", new Object[0]), this.width / 2, 17, 0xFFFFFF);
-        this.textRenderer.draw(matrices, I18n.translate("mco.terms.sentence.1", new Object[0]), (float)(this.width / 2 - 120), (float)RealmsTermsScreen.row(5), 0xFFFFFF);
-        int i = this.textRenderer.getWidth(I18n.translate("mco.terms.sentence.1", new Object[0]));
+        RealmsTermsScreen.drawCenteredText(matrices, this.textRenderer, field_26523, this.width / 2, 17, 0xFFFFFF);
+        this.textRenderer.method_30883(matrices, field_26524, this.width / 2 - 120, RealmsTermsScreen.row(5), 0xFFFFFF);
+        int i = this.textRenderer.getWidth(field_26524);
         int j = this.width / 2 - 121 + i;
         int k = RealmsTermsScreen.row(5);
-        int l = j + this.textRenderer.getWidth("mco.terms.sentence.2") + 1;
+        int l = j + this.textRenderer.getWidth(field_26525) + 1;
         int m = k + 1 + this.textRenderer.fontHeight;
-        if (j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m) {
-            this.onLink = true;
-            this.textRenderer.draw(matrices, " " + I18n.translate("mco.terms.sentence.2", new Object[0]), (float)(this.width / 2 - 120 + i), (float)RealmsTermsScreen.row(5), 7107012);
-        } else {
-            this.onLink = false;
-            this.textRenderer.draw(matrices, " " + I18n.translate("mco.terms.sentence.2", new Object[0]), (float)(this.width / 2 - 120 + i), (float)RealmsTermsScreen.row(5), 0x3366BB);
-        }
+        this.onLink = j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m;
+        this.textRenderer.method_30883(matrices, field_26525, this.width / 2 - 120 + i, RealmsTermsScreen.row(5), this.onLink ? 7107012 : 0x3366BB);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

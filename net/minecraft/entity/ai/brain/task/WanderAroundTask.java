@@ -23,19 +23,27 @@ import org.jetbrains.annotations.Nullable;
 
 public class WanderAroundTask
 extends Task<MobEntity> {
+    private int pathUpdateCountdownTicks;
     @Nullable
     private Path path;
     @Nullable
     private BlockPos lookTargetPos;
     private float speed;
-    private int pathUpdateCountdownTicks;
 
-    public WanderAroundTask(int runTime) {
-        super(ImmutableMap.of(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED, MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), runTime);
+    public WanderAroundTask() {
+        this(150, 250);
+    }
+
+    public WanderAroundTask(int i, int j) {
+        super(ImmutableMap.of(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED, MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), i, j);
     }
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
+        if (this.pathUpdateCountdownTicks > 0) {
+            --this.pathUpdateCountdownTicks;
+            return false;
+        }
         Brain<?> brain = mobEntity.getBrain();
         WalkTarget walkTarget = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
         boolean bl = this.hasReached(mobEntity, walkTarget);
@@ -62,6 +70,9 @@ extends Task<MobEntity> {
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
+        if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET) && !this.hasReached(mobEntity, mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get())) {
+            this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(40);
+        }
         mobEntity.getNavigation().stop();
         mobEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
         mobEntity.getBrain().forget(MemoryModuleType.PATH);
@@ -72,15 +83,10 @@ extends Task<MobEntity> {
     protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         mobEntity.getBrain().remember(MemoryModuleType.PATH, this.path);
         mobEntity.getNavigation().startMovingAlong(this.path, this.speed);
-        this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(10);
     }
 
     @Override
     protected void keepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-        --this.pathUpdateCountdownTicks;
-        if (this.pathUpdateCountdownTicks > 0) {
-            return;
-        }
         Path path = mobEntity.getNavigation().getCurrentPath();
         Brain<?> brain = mobEntity.getBrain();
         if (this.path != path) {

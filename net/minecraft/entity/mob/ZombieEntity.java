@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5425;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -67,6 +66,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -292,9 +292,9 @@ extends HostileEntity {
                 if (!SpawnHelper.canSpawn(location, this.world, blockPos, entityType) || !SpawnRestriction.canSpawn(entityType, serverWorld, SpawnReason.REINFORCEMENT, blockPos, this.world.random)) continue;
                 zombieEntity.updatePosition(m, n, o);
                 if (this.world.isPlayerInRange(m, n, o, 7.0) || !this.world.intersectsEntities(zombieEntity) || !this.world.doesNotCollide(zombieEntity) || this.world.containsFluid(zombieEntity.getBoundingBox())) continue;
-                this.world.spawnEntity(zombieEntity);
                 zombieEntity.setTarget(livingEntity);
                 zombieEntity.initialize(serverWorld, this.world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null, null);
+                serverWorld.spawnEntityAndPassengers(zombieEntity);
                 this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement caller charge", -0.05f, EntityAttributeModifier.Operation.ADDITION));
                 zombieEntity.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement callee charge", -0.05f, EntityAttributeModifier.Operation.ADDITION));
                 break;
@@ -405,7 +405,7 @@ extends HostileEntity {
                 zombieVillagerEntity.setPersistent();
             }
             zombieVillagerEntity.setInvulnerable(this.isInvulnerable());
-            serverWorld.spawnEntity(zombieVillagerEntity);
+            serverWorld.spawnEntityAndPassengers(zombieVillagerEntity);
             if (!this.isSilent()) {
                 serverWorld.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
             }
@@ -427,32 +427,32 @@ extends HostileEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        entityData = super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
         float f = difficulty.getClampedLocalDifficulty();
         this.setCanPickUpLoot(this.random.nextFloat() < 0.55f * f);
         if (entityData == null) {
-            entityData = new ZombieData(ZombieEntity.method_29936(arg.getRandom()), true);
+            entityData = new ZombieData(ZombieEntity.method_29936(serverWorldAccess.getRandom()), true);
         }
         if (entityData instanceof ZombieData) {
             ZombieData zombieData = (ZombieData)entityData;
             if (zombieData.baby) {
                 this.setBaby(true);
                 if (zombieData.field_25607) {
-                    if ((double)arg.getRandom().nextFloat() < 0.05) {
-                        List<Entity> list = arg.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
+                    if ((double)serverWorldAccess.getRandom().nextFloat() < 0.05) {
+                        List<Entity> list = serverWorldAccess.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
                         if (!list.isEmpty()) {
                             ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
                             chickenEntity.setHasJockey(true);
                             this.startRiding(chickenEntity);
                         }
-                    } else if ((double)arg.getRandom().nextFloat() < 0.05) {
+                    } else if ((double)serverWorldAccess.getRandom().nextFloat() < 0.05) {
                         ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
                         chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
-                        chickenEntity2.initialize(arg, difficulty, SpawnReason.JOCKEY, null, null);
+                        chickenEntity2.initialize(serverWorldAccess, difficulty, SpawnReason.JOCKEY, null, null);
                         chickenEntity2.setHasJockey(true);
                         this.startRiding(chickenEntity2);
-                        arg.spawnEntity(chickenEntity2);
+                        serverWorldAccess.spawnEntity(chickenEntity2);
                     }
                 }
             }

@@ -1,14 +1,14 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.realms.gui;
+package net.minecraft.client.realms.task;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.realms.Errable;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
+import net.minecraft.client.realms.util.Errable;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,8 +48,8 @@ Runnable {
         this.longRunningMcoTaskScreen.error(text);
     }
 
-    public void setTitle(String title) {
-        this.longRunningMcoTaskScreen.setTitle(title);
+    public void setTitle(Text text) {
+        this.longRunningMcoTaskScreen.setTitle(text);
     }
 
     public boolean aborted() {

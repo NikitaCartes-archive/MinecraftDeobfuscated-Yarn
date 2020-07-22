@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
@@ -11,19 +11,18 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsConnectTask;
-import net.minecraft.client.realms.RealmsMainScreen;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerAddress;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
-import net.minecraft.client.realms.gui.LongRunningTask;
 import net.minecraft.client.realms.gui.screen.RealmsBrokenWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsTermsScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.task.LongRunningTask;
+import net.minecraft.client.realms.task.RealmsConnectTask;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 
@@ -44,7 +43,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        this.setTitle(I18n.translate("mco.connect.connecting", new Object[0]));
+        this.setTitle(new TranslatableText("mco.connect.connecting"));
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         boolean bl2 = false;
         boolean bl22 = false;

@@ -16,7 +16,7 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 
 public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
-    public static final MapCodec<ConfiguredSurfaceBuilder<?>> field_25878 = Registry.SURFACE_BUILDER.dispatchMap("name", configuredSurfaceBuilder -> configuredSurfaceBuilder.surfaceBuilder, SurfaceBuilder::method_29003);
+    public static final MapCodec<ConfiguredSurfaceBuilder<?>> field_25878 = Registry.SURFACE_BUILDER.dispatchMap(configuredSurfaceBuilder -> configuredSurfaceBuilder.surfaceBuilder, SurfaceBuilder::method_29003);
     public static final Codec<Supplier<ConfiguredSurfaceBuilder<?>>> field_25015 = RegistryElementCodec.of(Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, field_25878);
     public final SurfaceBuilder<SC> surfaceBuilder;
     public final SC config;

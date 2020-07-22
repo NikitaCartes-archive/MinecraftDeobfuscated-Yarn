@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -36,7 +37,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -122,29 +122,33 @@ Drawable {
     }
 
     protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-        this.renderTooltip(matrices, this.getTooltipFromItem(stack), x, y);
+        this.method_30901(matrices, this.getTooltipFromItem(stack), x, y);
     }
 
     public List<Text> getTooltipFromItem(ItemStack stack) {
         return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
     }
 
-    public void renderTooltip(MatrixStack matrices, StringRenderable text, int x, int y) {
-        this.renderTooltip(matrices, Arrays.asList(text), x, y);
+    public void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
+        this.renderTooltip(matrices, Arrays.asList(text.method_30937()), x, y);
+    }
+
+    public void method_30901(MatrixStack matrixStack, List<Text> list, int i, int j) {
+        this.renderTooltip(matrixStack, Lists.transform(list, Text::method_30937), i, j);
     }
 
     /*
      * WARNING - void declaration
      */
-    public void renderTooltip(MatrixStack matrices, List<? extends StringRenderable> lines, int x, int y) {
+    public void renderTooltip(MatrixStack matrices, List<? extends class_5481> lines, int x, int y) {
         int n;
         int j;
         if (lines.isEmpty()) {
             return;
         }
         int i = 0;
-        for (StringRenderable stringRenderable : lines) {
-            j = this.textRenderer.getWidth(stringRenderable);
+        for (class_5481 class_54812 : lines) {
+            j = this.textRenderer.method_30880(class_54812);
             if (j <= i) continue;
             i = j;
         }
@@ -192,10 +196,10 @@ Drawable {
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         matrices.translate(0.0, 0.0, 400.0);
         for (int r = 0; r < lines.size(); ++r) {
-            StringRenderable stringRenderable2 = lines.get(r);
-            if (stringRenderable2 != null) {
+            class_5481 lv2 = lines.get(r);
+            if (lv2 != null) {
                 void var7_11;
-                this.textRenderer.draw(stringRenderable2, (float)k, (float)var7_11, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+                this.textRenderer.draw(lv2, (float)k, (float)var7_11, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
             }
             if (r == 0) {
                 var7_11 += 2;
@@ -218,7 +222,7 @@ Drawable {
             HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
             if (entityContent != null) {
                 if (this.client.options.advancedItemTooltips) {
-                    this.renderTooltip(matrices, entityContent.asTooltip(), i, j);
+                    this.method_30901(matrices, entityContent.asTooltip(), i, j);
                 }
             } else {
                 Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);

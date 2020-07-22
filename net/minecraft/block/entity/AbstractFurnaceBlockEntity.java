@@ -180,20 +180,20 @@ Tickable {
         return map;
     }
 
-    private static boolean isFlammableWood(Item item) {
+    private static boolean isNonFlammableWood(Item item) {
         return ItemTags.NON_FLAMMABLE_WOOD.contains(item);
     }
 
     private static void addFuel(Map<Item, Integer> fuelTimes, Tag<Item> tag, int fuelTime) {
         for (Item item : tag.values()) {
-            if (AbstractFurnaceBlockEntity.isFlammableWood(item)) continue;
+            if (AbstractFurnaceBlockEntity.isNonFlammableWood(item)) continue;
             fuelTimes.put(item, fuelTime);
         }
     }
 
     private static void addFuel(Map<Item, Integer> map, ItemConvertible item, int fuelTime) {
         Item item2 = item.asItem();
-        if (AbstractFurnaceBlockEntity.isFlammableWood(item2)) {
+        if (AbstractFurnaceBlockEntity.isNonFlammableWood(item2)) {
             if (SharedConstants.isDevelopment) {
                 throw Util.throwOrPause(new IllegalStateException("A developer tried to explicitly make fire resistant item " + item2.getName(null).getString() + " a furnace fuel. That will not work!"));
             }

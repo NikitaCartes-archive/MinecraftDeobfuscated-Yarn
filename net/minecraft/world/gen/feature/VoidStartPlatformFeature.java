@@ -8,7 +8,7 @@ import java.util.Random;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -27,7 +27,7 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
         if (VoidStartPlatformFeature.getDistance(chunkPos.x, chunkPos.z, VoidStartPlatformFeature.START_CHUNK.x, VoidStartPlatformFeature.START_CHUNK.z) > 1) {
             return true;
@@ -38,10 +38,10 @@ extends Feature<DefaultFeatureConfig> {
                 if (VoidStartPlatformFeature.getDistance(START_BLOCK.getX(), START_BLOCK.getZ(), j, i) > 16) continue;
                 mutable.set(j, START_BLOCK.getY(), i);
                 if (mutable.equals(START_BLOCK)) {
-                    serverWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), 2);
+                    structureWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), 2);
                     continue;
                 }
-                serverWorldAccess.setBlockState(mutable, Blocks.STONE.getDefaultState(), 2);
+                structureWorldAccess.setBlockState(mutable, Blocks.STONE.getDefaultState(), 2);
             }
         }
         return true;

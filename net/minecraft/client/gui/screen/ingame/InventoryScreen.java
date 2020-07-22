@@ -77,7 +77,7 @@ implements RecipeBookProvider {
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 0x404040);
+        this.textRenderer.method_30883(matrices, this.title, this.titleX, this.titleY, 0x404040);
     }
 
     @Override
@@ -131,7 +131,7 @@ implements RecipeBookProvider {
         entity.pitch = -g * 20.0f;
         entity.headYaw = entity.yaw;
         entity.prevHeadYaw = entity.yaw;
-        EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
+        EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         quaternion2.conjugate();
         entityRenderDispatcher.setRotation(quaternion2);
         entityRenderDispatcher.setRenderShadows(false);

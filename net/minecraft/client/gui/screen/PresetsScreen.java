@@ -199,9 +199,9 @@ extends Screen {
         this.listWidget.render(matrices, mouseX, mouseY, delta);
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 400.0f);
-        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
-        this.drawTextWithShadow(matrices, this.textRenderer, this.shareText, 50, 30, 0xA0A0A0);
-        this.drawTextWithShadow(matrices, this.textRenderer, this.listText, 50, 70, 0xA0A0A0);
+        PresetsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        PresetsScreen.drawTextWithShadow(matrices, this.textRenderer, this.shareText, 50, 30, 0xA0A0A0);
+        PresetsScreen.drawTextWithShadow(matrices, this.textRenderer, this.listText, 50, 70, 0xA0A0A0);
         RenderSystem.popMatrix();
         this.customPresetField.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
@@ -309,7 +309,7 @@ extends Screen {
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
                 SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(index);
                 this.method_2200(matrices, x, y, superflatPreset.icon);
-                PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 0xFFFFFF);
+                PresetsScreen.this.textRenderer.method_30883(matrices, superflatPreset.name, x + 18 + 5, y + 6, 0xFFFFFF);
             }
 
             @Override

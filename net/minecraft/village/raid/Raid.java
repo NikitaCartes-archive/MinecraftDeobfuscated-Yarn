@@ -61,9 +61,9 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class Raid {
-    private static final TranslatableText EVENT_TEXT = new TranslatableText("event.minecraft.raid");
-    private static final TranslatableText VICTORY_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.victory");
-    private static final TranslatableText DEFEAT_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.defeat");
+    private static final Text EVENT_TEXT = new TranslatableText("event.minecraft.raid");
+    private static final Text VICTORY_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.victory");
+    private static final Text DEFEAT_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.defeat");
     private static final Text VICTORY_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(VICTORY_SUFFIX_TEXT);
     private static final Text DEFEAT_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
     private final Map<Integer, RaiderEntity> waveToCaptain = Maps.newHashMap();
@@ -458,7 +458,7 @@ public class Raid {
                 raider.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnReason.EVENT, null, null);
                 raider.addBonusForWave(wave, false);
                 raider.setOnGround(true);
-                this.world.spawnEntity(raider);
+                this.world.spawnEntityAndPassengers(raider);
             }
         }
     }
