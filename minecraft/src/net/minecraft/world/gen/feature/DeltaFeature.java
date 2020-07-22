@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -23,7 +23,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig
 	) {
 		boolean bl = false;
 		boolean bl2 = random.nextDouble() < 0.9;
@@ -39,16 +39,16 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 				break;
 			}
 
-			if (method_27103(serverWorldAccess, blockPos2, deltaFeatureConfig)) {
+			if (method_27103(structureWorldAccess, blockPos2, deltaFeatureConfig)) {
 				if (bl3) {
 					bl = true;
-					this.setBlockState(serverWorldAccess, blockPos2, deltaFeatureConfig.method_30400());
+					this.setBlockState(structureWorldAccess, blockPos2, deltaFeatureConfig.method_30400());
 				}
 
 				BlockPos blockPos3 = blockPos2.add(i, 0, j);
-				if (method_27103(serverWorldAccess, blockPos3, deltaFeatureConfig)) {
+				if (method_27103(structureWorldAccess, blockPos3, deltaFeatureConfig)) {
 					bl = true;
-					this.setBlockState(serverWorldAccess, blockPos3, deltaFeatureConfig.method_30397());
+					this.setBlockState(structureWorldAccess, blockPos3, deltaFeatureConfig.method_30397());
 				}
 			}
 		}

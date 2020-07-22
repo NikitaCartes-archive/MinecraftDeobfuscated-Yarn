@@ -3,7 +3,6 @@ package net.minecraft.client.realms.gui.screen;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.WorldTemplate;
 
 @Environment(EnvType.CLIENT)

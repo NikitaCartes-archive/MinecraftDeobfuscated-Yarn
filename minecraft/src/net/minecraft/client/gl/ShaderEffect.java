@@ -91,8 +91,15 @@ public class ShaderEffect implements AutoCloseable {
 				}
 			}
 		} catch (Exception var18) {
+			String string;
+			if (resource != null) {
+				string = " (" + resource.getResourcePackName() + ")";
+			} else {
+				string = "";
+			}
+
 			ShaderParseException shaderParseException2 = ShaderParseException.wrap(var18);
-			shaderParseException2.addFaultyFile(location.getPath());
+			shaderParseException2.addFaultyFile(location.getPath() + string);
 			throw shaderParseException2;
 		} finally {
 			IOUtils.closeQuietly(resource);

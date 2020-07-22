@@ -164,7 +164,7 @@ public class DebugRenderer {
 	public static void drawString(String string, double x, double y, double z, int color, float size, boolean center, float offset, boolean visibleThroughObjects) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		Camera camera = minecraftClient.gameRenderer.getCamera();
-		if (camera.isReady() && minecraftClient.getEntityRenderManager().gameOptions != null) {
+		if (camera.isReady() && minecraftClient.getEntityRenderDispatcher().gameOptions != null) {
 			TextRenderer textRenderer = minecraftClient.textRenderer;
 			double d = camera.getPos().x;
 			double e = camera.getPos().y;

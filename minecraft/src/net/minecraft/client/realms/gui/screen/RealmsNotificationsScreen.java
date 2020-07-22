@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.RealmsDataFetcher;
 import net.minecraft.client.util.math.MatrixStack;

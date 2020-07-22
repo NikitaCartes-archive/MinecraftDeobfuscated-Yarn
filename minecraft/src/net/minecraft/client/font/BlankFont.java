@@ -10,12 +10,12 @@ import net.fabricmc.api.Environment;
 public class BlankFont implements Font {
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(int i) {
+	public RenderableGlyph getGlyph(int codePoint) {
 		return BlankGlyph.INSTANCE;
 	}
 
 	@Override
-	public IntSet method_27442() {
+	public IntSet getProvidedGlyphs() {
 		return IntSets.EMPTY_SET;
 	}
 }

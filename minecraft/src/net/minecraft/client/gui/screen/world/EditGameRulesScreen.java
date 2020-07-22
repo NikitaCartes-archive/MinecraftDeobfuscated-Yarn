@@ -14,6 +14,8 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -25,7 +27,6 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -38,7 +39,7 @@ public class EditGameRulesScreen extends Screen {
 	private final Set<EditGameRulesScreen.AbstractRuleWidget> invalidRuleWidgets = Sets.<EditGameRulesScreen.AbstractRuleWidget>newHashSet();
 	private ButtonWidget doneButton;
 	@Nullable
-	private List<StringRenderable> tooltip;
+	private List<class_5481> tooltip;
 	private final GameRules gameRules;
 
 	public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
@@ -75,14 +76,14 @@ public class EditGameRulesScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.tooltip = null;
 		this.ruleListWidget.render(matrices, mouseX, mouseY, delta);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.tooltip != null) {
 			this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
 		}
 	}
 
-	private void setTooltipDescription(@Nullable List<StringRenderable> description) {
+	private void setTooltipDescription(@Nullable List<class_5481> description) {
 		this.tooltip = description;
 	}
 
@@ -103,9 +104,9 @@ public class EditGameRulesScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	public abstract class AbstractRuleWidget extends ElementListWidget.Entry<EditGameRulesScreen.AbstractRuleWidget> {
 		@Nullable
-		private final List<StringRenderable> description;
+		private final List<class_5481> description;
 
-		public AbstractRuleWidget(@Nullable List<StringRenderable> description) {
+		public AbstractRuleWidget(@Nullable List<class_5481> description) {
 			this.description = description;
 		}
 	}
@@ -114,7 +115,7 @@ public class EditGameRulesScreen extends Screen {
 	public class BooleanRuleWidget extends EditGameRulesScreen.NamedRuleWidget {
 		private final ButtonWidget toggleButton;
 
-		public BooleanRuleWidget(Text name, List<StringRenderable> description, String ruleName, GameRules.BooleanRule booleanRule) {
+		public BooleanRuleWidget(Text name, List<class_5481> description, String ruleName, GameRules.BooleanRule booleanRule) {
 			super(description, name);
 			this.toggleButton = new ButtonWidget(10, 5, 44, 20, ScreenTexts.getToggleText(booleanRule.get()), buttonWidget -> {
 				boolean bl = !booleanRule.get();
@@ -142,7 +143,7 @@ public class EditGameRulesScreen extends Screen {
 	public class IntRuleWidget extends EditGameRulesScreen.NamedRuleWidget {
 		private final TextFieldWidget valueWidget;
 
-		public IntRuleWidget(Text name, List<StringRenderable> description, String ruleName, GameRules.IntRule rule) {
+		public IntRuleWidget(Text name, List<class_5481> description, String ruleName, GameRules.IntRule rule) {
 			super(description, name);
 			this.valueWidget = new TextFieldWidget(
 				EditGameRulesScreen.this.client.textRenderer, 10, 5, 42, 20, name.shallowCopy().append("\n").append(ruleName).append("\n")
@@ -171,10 +172,10 @@ public class EditGameRulesScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	public abstract class NamedRuleWidget extends EditGameRulesScreen.AbstractRuleWidget {
-		private final List<StringRenderable> name;
+		private final List<class_5481> name;
 		protected final List<Element> children = Lists.<Element>newArrayList();
 
-		public NamedRuleWidget(@Nullable List<StringRenderable> description, Text name) {
+		public NamedRuleWidget(@Nullable List<class_5481> description, Text name) {
 			super(description);
 			this.name = EditGameRulesScreen.this.client.textRenderer.wrapLines(name, 175);
 		}
@@ -186,10 +187,10 @@ public class EditGameRulesScreen extends Screen {
 
 		protected void drawName(MatrixStack matrices, int x, int y) {
 			if (this.name.size() == 1) {
-				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (StringRenderable)this.name.get(0), (float)y, (float)(x + 5), 16777215);
+				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (class_5481)this.name.get(0), (float)y, (float)(x + 5), 16777215);
 			} else if (this.name.size() >= 2) {
-				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (StringRenderable)this.name.get(0), (float)y, (float)x, 16777215);
-				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (StringRenderable)this.name.get(1), (float)y, (float)(x + 10), 16777215);
+				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (class_5481)this.name.get(0), (float)y, (float)x, 16777215);
+				EditGameRulesScreen.this.client.textRenderer.draw(matrices, (class_5481)this.name.get(1), (float)y, (float)(x + 10), 16777215);
 			}
 		}
 	}
@@ -205,7 +206,7 @@ public class EditGameRulesScreen extends Screen {
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			EditGameRulesScreen.this.drawCenteredText(matrices, EditGameRulesScreen.this.client.textRenderer, this.name, x + entryWidth / 2, y + 5, 16777215);
+			DrawableHelper.drawCenteredText(matrices, EditGameRulesScreen.this.client.textRenderer, this.name, x + entryWidth / 2, y + 5, 16777215);
 		}
 
 		@Override
@@ -237,16 +238,16 @@ public class EditGameRulesScreen extends Screen {
 					String string = rule.serialize();
 					Text text3 = new TranslatableText("editGamerule.default", new LiteralText(string)).formatted(Formatting.GRAY);
 					String string2 = key.getTranslationKey() + ".description";
-					List<StringRenderable> list;
+					List<class_5481> list;
 					String string3;
 					if (I18n.hasTranslation(string2)) {
-						Builder<StringRenderable> builder = ImmutableList.<StringRenderable>builder().add(text2);
+						Builder<class_5481> builder = ImmutableList.<class_5481>builder().add(text2.method_30937());
 						Text text4 = new TranslatableText(string2);
 						EditGameRulesScreen.this.textRenderer.wrapLines(text4, 150).forEach(builder::add);
-						list = builder.add(text3).build();
+						list = builder.add(text3.method_30937()).build();
 						string3 = text4.getString() + "\n" + text3.getString();
 					} else {
-						list = ImmutableList.of(text2, text3);
+						list = ImmutableList.of(text2.method_30937(), text3.method_30937());
 						string3 = text3.getString();
 					}
 
@@ -287,6 +288,6 @@ public class EditGameRulesScreen extends Screen {
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
 	interface RuleWidgetFactory<T extends GameRules.Rule<T>> {
-		EditGameRulesScreen.AbstractRuleWidget create(Text name, List<StringRenderable> description, String ruleName, T rule);
+		EditGameRulesScreen.AbstractRuleWidget create(Text name, List<class_5481> description, String ruleName, T rule);
 	}
 }

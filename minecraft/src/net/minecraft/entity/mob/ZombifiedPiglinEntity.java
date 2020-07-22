@@ -61,7 +61,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	public double getHeightOffset() {
-		return this.isBaby() ? -0.16 : -0.45;
+		return this.isBaby() ? -0.05 : -0.45;
 	}
 
 	@Override

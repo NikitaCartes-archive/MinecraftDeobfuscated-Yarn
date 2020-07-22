@@ -109,7 +109,7 @@ public class PiglinBrain {
 			0,
 			ImmutableList.of(
 				new LookAroundTask(45, 90),
-				new WanderAroundTask(200),
+				new WanderAroundTask(),
 				new OpenDoorsTask(),
 				method_30090(),
 				makeGoToZombifiedPiglinTask(),

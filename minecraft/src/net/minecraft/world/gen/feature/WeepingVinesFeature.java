@@ -8,7 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -20,17 +20,17 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (!serverWorldAccess.isAir(blockPos)) {
+		if (!structureWorldAccess.isAir(blockPos)) {
 			return false;
 		} else {
-			BlockState blockState = serverWorldAccess.getBlockState(blockPos.up());
+			BlockState blockState = structureWorldAccess.getBlockState(blockPos.up());
 			if (!blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
 				return false;
 			} else {
-				this.generateNetherWartBlocksInArea(serverWorldAccess, random, blockPos);
-				this.generateVinesInArea(serverWorldAccess, random, blockPos);
+				this.generateNetherWartBlocksInArea(structureWorldAccess, random, blockPos);
+				this.generateVinesInArea(structureWorldAccess, random, blockPos);
 				return true;
 			}
 		}

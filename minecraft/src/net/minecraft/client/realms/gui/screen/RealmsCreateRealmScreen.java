@@ -6,16 +6,16 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.RealmsMainScreen;
-import net.minecraft.client.realms.RealmsScreen;
-import net.minecraft.client.realms.WorldCreationTask;
 import net.minecraft.client.realms.dto.RealmsServer;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsCreateRealmScreen extends RealmsScreen {
+	private static final Text field_26487 = new TranslatableText("mco.configure.world.name");
+	private static final Text field_26488 = new TranslatableText("mco.configure.world.description");
 	private final RealmsServer server;
 	private final RealmsMainScreen parent;
 	private TextFieldWidget nameBox;
@@ -97,7 +97,7 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 				() -> this.client.openScreen(this.parent.newScreen()),
 				() -> this.client.openScreen(this.parent.newScreen())
 			);
-			realmsResetWorldScreen.setResetTitle(I18n.translate("mco.create.world.reset.title"));
+			realmsResetWorldScreen.setResetTitle(new TranslatableText("mco.create.world.reset.title"));
 			this.client
 				.openScreen(
 					new RealmsLongRunningMcoTaskScreen(
@@ -115,8 +115,8 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.createRealmLabel.render(this, matrices);
-		this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.name"), (float)(this.width / 2 - 100), 52.0F, 10526880);
-		this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.description"), (float)(this.width / 2 - 100), 102.0F, 10526880);
+		this.textRenderer.method_30883(matrices, field_26487, (float)(this.width / 2 - 100), 52.0F, 10526880);
+		this.textRenderer.method_30883(matrices, field_26488, (float)(this.width / 2 - 100), 102.0F, 10526880);
 		if (this.nameBox != null) {
 			this.nameBox.render(matrices, mouseX, mouseY, delta);
 		}

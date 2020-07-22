@@ -15,8 +15,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.BuiltinRegistries;
 
 public class ProcessorLists {
-	private static final StructureProcessorRule field_26258 = new StructureProcessorRule(
+	private static final StructureProcessorRule field_26621 = new StructureProcessorRule(
 		new RandomBlockMatchRuleTest(Blocks.BLACKSTONE, 0.01F), AlwaysTrueRuleTest.INSTANCE, Blocks.GILDED_BLACKSTONE.getDefaultState()
+	);
+	private static final StructureProcessorRule field_26622 = new StructureProcessorRule(
+		new RandomBlockMatchRuleTest(Blocks.GILDED_BLACKSTONE, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.BLACKSTONE.getDefaultState()
 	);
 	public static final ImmutableList<StructureProcessor> ZOMBIE_PLAINS = register(
 		"zombie_plains",
@@ -322,7 +325,8 @@ public class ProcessorLists {
 						AlwaysTrueRuleTest.INSTANCE,
 						Blocks.POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26258
+					field_26622,
+					field_26621
 				)
 			)
 		)
@@ -342,7 +346,8 @@ public class ProcessorLists {
 						AlwaysTrueRuleTest.INSTANCE,
 						Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26258
+					field_26622,
+					field_26621
 				)
 			)
 		)
@@ -358,7 +363,8 @@ public class ProcessorLists {
 						Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.BLACKSTONE, 1.0E-4F), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					field_26258
+					field_26622,
+					field_26621
 				)
 			)
 		)
@@ -374,7 +380,8 @@ public class ProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.GOLD_BLOCK, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26258
+					field_26622,
+					field_26621
 				)
 			)
 		)
@@ -390,7 +397,8 @@ public class ProcessorLists {
 						Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.BLACKSTONE, 1.0E-4F), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					field_26258
+					field_26622,
+					field_26621
 				)
 			)
 		)
@@ -409,7 +417,8 @@ public class ProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.GOLD_BLOCK, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26258
+					field_26622,
+					field_26621
 				)
 			)
 		)
@@ -434,7 +443,8 @@ public class ProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.GOLD_BLOCK, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26258
+					field_26622,
+					field_26621
 				)
 			)
 		)
@@ -450,7 +460,8 @@ public class ProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.GOLD_BLOCK, 0.6F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26258
+					field_26622,
+					field_26621
 				)
 			)
 		)
@@ -505,7 +516,8 @@ public class ProcessorLists {
 					),
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.POLISHED_BLACKSTONE_BRICKS, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.BLACKSTONE.getDefaultState()
-					)
+					),
+					field_26622
 				)
 			)
 		)
@@ -523,7 +535,8 @@ public class ProcessorLists {
 						AlwaysTrueRuleTest.INSTANCE,
 						new AxisAlignedLinearPosRuleTest(0.0F, 0.05F, 0, 100, Direction.Axis.Y),
 						Blocks.AIR.getDefaultState()
-					)
+					),
+					field_26622
 				)
 			)
 		)

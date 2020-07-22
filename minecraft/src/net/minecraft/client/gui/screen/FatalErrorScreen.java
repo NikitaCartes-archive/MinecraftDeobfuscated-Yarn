@@ -24,8 +24,8 @@ public class FatalErrorScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.fillGradient(matrices, 0, 0, this.width, this.height, -12574688, -11530224);
-		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 90, 16777215);
-		this.drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 110, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 90, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 110, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

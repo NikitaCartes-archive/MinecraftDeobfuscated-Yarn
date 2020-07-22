@@ -3,13 +3,13 @@ package net.minecraft.entity.passive;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_5425;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowGroupLeaderGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public abstract class SchoolingFishEntity extends FishEntity {
@@ -101,9 +101,9 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 		if (entityData == null) {
 			entityData = new SchoolingFishEntity.FishData(this);
 		} else {

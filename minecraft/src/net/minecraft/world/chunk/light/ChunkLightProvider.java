@@ -220,12 +220,12 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	}
 
 	public void setColumnEnabled(ChunkPos pos, boolean enabled) {
-		long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
+		long l = ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(pos.x, 0, pos.z));
 		this.lightStorage.setColumnEnabled(l, enabled);
 	}
 
 	public void setRetainColumn(ChunkPos pos, boolean retainData) {
-		long l = ChunkSectionPos.withZeroZ(ChunkSectionPos.asLong(pos.x, 0, pos.z));
+		long l = ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(pos.x, 0, pos.z));
 		this.lightStorage.setRetainColumn(l, retainData);
 	}
 }

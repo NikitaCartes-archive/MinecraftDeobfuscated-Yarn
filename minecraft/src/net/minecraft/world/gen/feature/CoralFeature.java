@@ -9,7 +9,7 @@ import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -19,10 +19,10 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		ServerWorldAccess serverWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockState blockState = BlockTags.CORAL_BLOCKS.getRandom(random).getDefaultState();
-		return this.spawnCoral(serverWorldAccess, random, blockPos, blockState);
+		return this.spawnCoral(structureWorldAccess, random, blockPos, blockState);
 	}
 
 	protected abstract boolean spawnCoral(WorldAccess world, Random random, BlockPos pos, BlockState state);

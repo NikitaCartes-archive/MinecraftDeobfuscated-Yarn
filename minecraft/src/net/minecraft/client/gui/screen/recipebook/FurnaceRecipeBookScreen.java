@@ -10,9 +10,11 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class FurnaceRecipeBookScreen extends AbstractFurnaceRecipeBookScreen {
+	private static final Text field_26596 = new TranslatableText("gui.recipebook.toggleRecipes.smeltable");
+
 	@Override
 	protected Text getToggleCraftableButtonText() {
-		return new TranslatableText("gui.recipebook.toggleRecipes.smeltable");
+		return field_26596;
 	}
 
 	@Override

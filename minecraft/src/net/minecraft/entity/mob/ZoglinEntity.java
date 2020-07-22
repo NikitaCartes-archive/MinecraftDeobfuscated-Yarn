@@ -91,7 +91,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	private static void method_26928(Brain<ZoglinEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(200)));
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
 	}
 
 	private static void method_26929(Brain<ZoglinEntity> brain) {
@@ -181,6 +181,11 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		if (!this.isBaby()) {
 			Hoglin.knockback(this, target);
 		}
+	}
+
+	@Override
+	public double getMountedHeightOffset() {
+		return (double)this.getHeight() - (this.isBaby() ? 0.2 : 0.15);
 	}
 
 	@Override

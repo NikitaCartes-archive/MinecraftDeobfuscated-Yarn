@@ -43,23 +43,22 @@ public class AttributeContainer {
 		return (Collection<EntityAttributeInstance>)this.custom
 			.values()
 			.stream()
-			.filter(entityAttributeInstance -> entityAttributeInstance.getAttribute().isTracked())
+			.filter(attribute -> attribute.getAttribute().isTracked())
 			.collect(Collectors.toList());
 	}
 
 	@Nullable
 	public EntityAttributeInstance getCustomInstance(EntityAttribute attribute) {
-		return (EntityAttributeInstance)this.custom
-			.computeIfAbsent(attribute, entityAttribute -> this.fallback.createOverride(this::updateTrackedStatus, entityAttribute));
+		return (EntityAttributeInstance)this.custom.computeIfAbsent(attribute, attributex -> this.fallback.createOverride(this::updateTrackedStatus, attributex));
 	}
 
 	public boolean hasAttribute(EntityAttribute attribute) {
-		return this.custom.get(attribute) != null || this.fallback.method_27310(attribute);
+		return this.custom.get(attribute) != null || this.fallback.has(attribute);
 	}
 
 	public boolean hasModifierForAttribute(EntityAttribute attribute, UUID uuid) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
-		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid) != null : this.fallback.method_27309(attribute, uuid);
+		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid) != null : this.fallback.hasModifier(attribute, uuid);
 	}
 
 	public double getValue(EntityAttribute attribute) {

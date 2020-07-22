@@ -5,7 +5,6 @@ import com.mojang.serialization.Dynamic;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -27,21 +26,16 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class PiglinBruteEntity extends AbstractPiglinEntity {
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinBruteEntity>>> SENSOR_TYPES = ImmutableList.of(
-		SensorType.NEAREST_LIVING_ENTITIES,
-		SensorType.NEAREST_PLAYERS,
-		SensorType.NEAREST_ITEMS,
-		SensorType.HURT_BY,
-		SensorType.INTERACTABLE_DOORS,
-		SensorType.PIGLIN_BRUTE_SPECIFIC_SENSOR
+		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_BRUTE_SPECIFIC_SENSOR
 	);
 	protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(
 		MemoryModuleType.LOOK_TARGET,
-		MemoryModuleType.INTERACTABLE_DOORS,
-		MemoryModuleType.OPENED_DOORS,
+		MemoryModuleType.DOORS_TO_CLOSE,
 		MemoryModuleType.MOBS,
 		MemoryModuleType.VISIBLE_MOBS,
 		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
@@ -76,11 +70,11 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		PiglinBruteBrain.method_30250(this);
 		this.initEquipment(difficulty);
-		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override

@@ -14,7 +14,6 @@ import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
-import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -226,7 +225,7 @@ public class ResourcePackOrganizer {
 
 		ResourcePackSource getSource();
 
-		default StringRenderable getDecoratedDescription() {
+		default Text getDecoratedDescription() {
 			return this.getSource().decorate(this.getDescription());
 		}
 

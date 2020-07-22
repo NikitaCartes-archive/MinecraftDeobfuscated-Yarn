@@ -36,8 +36,8 @@ public class LightningEntity extends Entity {
 		this.remainingActions = this.random.nextInt(3) + 1;
 	}
 
-	public void method_29498(boolean bl) {
-		this.cosmetic = bl;
+	public void setCosmetic(boolean cosmetic) {
+		this.cosmetic = cosmetic;
 	}
 
 	@Override

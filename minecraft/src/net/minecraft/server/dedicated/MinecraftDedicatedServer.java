@@ -196,14 +196,12 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 			if (serverPropertiesHandler.enableQuery) {
 				LOGGER.info("Starting GS4 status listener");
-				this.queryResponseHandler = new QueryResponseHandler(this);
-				this.queryResponseHandler.start();
+				this.queryResponseHandler = QueryResponseHandler.method_30737(this);
 			}
 
 			if (serverPropertiesHandler.enableRcon) {
 				LOGGER.info("Starting remote control listener");
-				this.rconServer = new RconListener(this);
-				this.rconServer.start();
+				this.rconServer = RconListener.method_30738(this);
 			}
 
 			if (this.getMaxTickTime() > 0L) {
@@ -551,7 +549,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		Util.shutdownServerWorkerExecutor();
+		Util.shutdownExecutors();
 	}
 
 	@Override

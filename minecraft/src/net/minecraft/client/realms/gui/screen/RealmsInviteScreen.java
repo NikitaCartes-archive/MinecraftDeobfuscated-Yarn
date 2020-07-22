@@ -1,5 +1,6 @@
 package net.minecraft.client.realms.gui.screen;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -8,10 +9,9 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.RealmsScreen;
 import net.minecraft.client.realms.dto.RealmsServer;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,12 +19,14 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsInviteScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Text field_26489 = new TranslatableText("mco.configure.world.invite.profile.name");
+	private static final Text field_26490 = new TranslatableText("mco.configure.world.players.error");
 	private TextFieldWidget field_22696;
 	private final RealmsServer serverData;
 	private final RealmsConfigureWorldScreen configureScreen;
 	private final Screen parent;
-	private String errorMsg;
-	private boolean showError;
+	@Nullable
+	private Text errorMsg;
 
 	public RealmsInviteScreen(RealmsConfigureWorldScreen configureScreen, Screen parent, RealmsServer serverData) {
 		this.configureScreen = configureScreen;
@@ -65,21 +67,20 @@ public class RealmsInviteScreen extends RealmsScreen {
 					this.serverData.players = realmsServer.players;
 					this.client.openScreen(new RealmsPlayerScreen(this.configureScreen, this.serverData));
 				} else {
-					this.showError(I18n.translate("mco.configure.world.players.error"));
+					this.showError(field_26490);
 				}
 			} catch (Exception var3) {
 				LOGGER.error("Couldn't invite user");
-				this.showError(I18n.translate("mco.configure.world.players.error"));
+				this.showError(field_26490);
 			}
 		} else {
-			this.showError(I18n.translate("mco.configure.world.players.error"));
+			this.showError(field_26490);
 		}
 	}
 
-	private void showError(String errorMsg) {
-		this.showError = true;
-		this.errorMsg = errorMsg;
-		Realms.narrateNow(errorMsg);
+	private void showError(Text text) {
+		this.errorMsg = text;
+		Realms.narrateNow(text.getString());
 	}
 
 	@Override
@@ -95,9 +96,9 @@ public class RealmsInviteScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.invite.profile.name"), (float)(this.width / 2 - 100), (float)row(1), 10526880);
-		if (this.showError) {
-			this.drawCenteredString(matrices, this.textRenderer, this.errorMsg, this.width / 2, row(5), 16711680);
+		this.textRenderer.method_30883(matrices, field_26489, (float)(this.width / 2 - 100), (float)row(1), 10526880);
+		if (this.errorMsg != null) {
+			drawCenteredText(matrices, this.textRenderer, this.errorMsg, this.width / 2, row(5), 16711680);
 		}
 
 		this.field_22696.render(matrices, mouseX, mouseY, delta);

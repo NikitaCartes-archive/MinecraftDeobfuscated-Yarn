@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_5425;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -37,6 +36,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
@@ -285,12 +285,12 @@ public class SlimeEntity extends MobEntity implements Monster {
 				return canMobSpawn(type, world, spawnReason, pos, random);
 			}
 
-			if (!(world instanceof ServerWorldAccess)) {
+			if (!(world instanceof StructureWorldAccess)) {
 				return false;
 			}
 
 			ChunkPos chunkPos = new ChunkPos(pos);
-			boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((ServerWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
+			boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((StructureWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
 			if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
 				return canMobSpawn(type, world, spawnReason, pos, random);
 			}
@@ -323,7 +323,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		int i = this.random.nextInt(3);
 		if (i < 2 && this.random.nextFloat() < 0.5F * difficulty.getClampedLocalDifficulty()) {
@@ -332,7 +332,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		int j = 1 << i;
 		this.setSize(j, true);
-		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private float getJumpSoundPitch() {

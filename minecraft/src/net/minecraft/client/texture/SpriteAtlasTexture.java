@@ -187,7 +187,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 					}
 
 					concurrentLinkedQueue.add(info);
-				}, Util.getServerWorkerExecutor()));
+				}, Util.getMainWorkerExecutor()));
 			}
 		}
 
@@ -208,7 +208,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 					if (sprite != null) {
 						concurrentLinkedQueue.add(sprite);
 					}
-				}, Util.getServerWorkerExecutor()));
+				}, Util.getMainWorkerExecutor()));
 			}
 		});
 		CompletableFuture.allOf((CompletableFuture[])list.toArray(new CompletableFuture[0])).join();

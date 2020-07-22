@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
 public class FixedBiomeSource extends BiomeSource {
-	public static final Codec<FixedBiomeSource> field_24717 = Biome.field_24677
+	public static final Codec<FixedBiomeSource> field_24717 = Biome.REGISTRY_CODEC
 		.fieldOf("biome")
 		.<FixedBiomeSource>xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome)
 		.stable()

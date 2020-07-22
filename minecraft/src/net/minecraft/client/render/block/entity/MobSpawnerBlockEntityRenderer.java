@@ -36,7 +36,7 @@ public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawne
 			matrixStack.translate(0.0, -0.2F, 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-30.0F));
 			matrixStack.scale(g, g, g);
-			MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0F, f, matrixStack, vertexConsumerProvider, i);
+			MinecraftClient.getInstance().getEntityRenderDispatcher().render(entity, 0.0, 0.0, 0.0, 0.0F, f, matrixStack, vertexConsumerProvider, i);
 		}
 
 		matrixStack.pop();

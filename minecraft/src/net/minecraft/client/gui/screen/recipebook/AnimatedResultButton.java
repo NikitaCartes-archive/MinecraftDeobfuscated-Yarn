@@ -14,7 +14,7 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -22,6 +22,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class AnimatedResultButton extends AbstractButtonWidget {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
+	private static final Text field_26595 = new TranslatableText("gui.recipebook.moreRecipes");
 	private AbstractRecipeScreenHandler<?> craftingScreenHandler;
 	private RecipeBook recipeBook;
 	private RecipeResultCollection results;
@@ -119,11 +120,11 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		return (Recipe<?>)list.get(this.currentResultIndex);
 	}
 
-	public List<StringRenderable> getTooltip(Screen screen) {
+	public List<Text> getTooltip(Screen screen) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
-		List<StringRenderable> list = Lists.<StringRenderable>newArrayList(screen.getTooltipFromItem(itemStack));
+		List<Text> list = Lists.<Text>newArrayList(screen.getTooltipFromItem(itemStack));
 		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
-			list.add(new TranslatableText("gui.recipebook.moreRecipes"));
+			list.add(field_26595);
 		}
 
 		return list;

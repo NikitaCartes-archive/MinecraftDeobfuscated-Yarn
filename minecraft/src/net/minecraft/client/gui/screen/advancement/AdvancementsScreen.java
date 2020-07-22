@@ -11,16 +11,20 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementsScreen extends Screen implements ClientAdvancementManager.Listener {
 	private static final Identifier WINDOW_TEXTURE = new Identifier("textures/gui/advancements/window.png");
 	private static final Identifier TABS_TEXTURE = new Identifier("textures/gui/advancements/tabs.png");
+	private static final Text field_26553 = new TranslatableText("advancements.sad_label");
+	private static final Text field_26554 = new TranslatableText("advancements.empty");
+	private static final Text field_26555 = new TranslatableText("gui.advancements");
 	private final ClientAdvancementManager advancementHandler;
 	private final Map<Advancement, AdvancementTab> tabs = Maps.<Advancement, AdvancementTab>newLinkedHashMap();
 	private AdvancementTab selectedTab;
@@ -110,10 +114,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		AdvancementTab advancementTab = this.selectedTab;
 		if (advancementTab == null) {
 			fill(matrixStack, j + 9, k + 18, j + 9 + 234, k + 18 + 113, -16777216);
-			String string = I18n.translate("advancements.empty");
-			int l = this.textRenderer.getWidth(string);
-			this.textRenderer.draw(matrixStack, string, (float)(j + 9 + 117 - l / 2), (float)(k + 18 + 56 - 9 / 2), -1);
-			this.textRenderer.draw(matrixStack, ":(", (float)(j + 9 + 117 - this.textRenderer.getWidth(":(") / 2), (float)(k + 18 + 113 - 9), -1);
+			int l = j + 9 + 117;
+			drawCenteredText(matrixStack, this.textRenderer, field_26554, l, k + 18 + 56 - 9 / 2, -1);
+			drawCenteredText(matrixStack, this.textRenderer, field_26553, l, k + 18 + 113 - 9, -1);
 		} else {
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef((float)(j + 9), (float)(k + 18), 0.0F);
@@ -146,7 +149,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			RenderSystem.disableBlend();
 		}
 
-		this.textRenderer.draw(matrixStack, I18n.translate("gui.advancements"), (float)(i + 8), (float)(j + 6), 4210752);
+		this.textRenderer.method_30883(matrixStack, field_26555, (float)(i + 8), (float)(j + 6), 4210752);
 	}
 
 	private void drawWidgetTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {

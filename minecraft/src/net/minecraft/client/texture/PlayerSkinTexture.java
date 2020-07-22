@@ -120,7 +120,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 							httpURLConnection.disconnect();
 						}
 					}
-				}, Util.getServerWorkerExecutor());
+				}, Util.getMainWorkerExecutor());
 			}
 		}
 	}

@@ -12,7 +12,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
 	public static final MapCodec<ConfiguredSurfaceBuilder<?>> field_25878 = Registry.SURFACE_BUILDER
-		.dispatchMap("name", configuredSurfaceBuilder -> configuredSurfaceBuilder.surfaceBuilder, SurfaceBuilder::method_29003);
+		.dispatchMap(configuredSurfaceBuilder -> configuredSurfaceBuilder.surfaceBuilder, SurfaceBuilder::method_29003);
 	public static final Codec<Supplier<ConfiguredSurfaceBuilder<?>>> field_25015 = RegistryElementCodec.of(
 		Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, field_25878
 	);

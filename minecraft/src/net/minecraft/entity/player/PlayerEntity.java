@@ -1313,7 +1313,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.wakeUp(true, true);
 	}
 
-	public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, boolean bl, boolean bl2) {
+	public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, float f, boolean bl, boolean bl2) {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
 		if (block instanceof RespawnAnchorBlock && blockState.get(RespawnAnchorBlock.CHARGES) > 0 && RespawnAnchorBlock.isNether(world)) {
@@ -1324,7 +1324,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 			return optional;
 		} else if (block instanceof BedBlock && BedBlock.isOverworld(world)) {
-			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, 0);
+			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, f);
 		} else if (!bl) {
 			return Optional.empty();
 		} else {

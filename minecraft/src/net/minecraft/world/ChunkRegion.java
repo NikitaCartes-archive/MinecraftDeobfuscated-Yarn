@@ -43,7 +43,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ChunkRegion implements ServerWorldAccess {
+public class ChunkRegion implements StructureWorldAccess {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<Chunk> chunks;
 	private final int centerChunkX;
@@ -281,7 +281,8 @@ public class ChunkRegion implements ServerWorldAccess {
 	}
 
 	@Deprecated
-	public ServerWorld getWorld() {
+	@Override
+	public ServerWorld toServerWorld() {
 		return this.world;
 	}
 
@@ -372,7 +373,7 @@ public class ChunkRegion implements ServerWorldAccess {
 	}
 
 	@Override
-	public Stream<? extends StructureStart<?>> method_30275(ChunkSectionPos chunkSectionPos, StructureFeature<?> structureFeature) {
-		return this.world.method_30275(chunkSectionPos, structureFeature);
+	public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
+		return this.world.getStructures(pos, feature);
 	}
 }

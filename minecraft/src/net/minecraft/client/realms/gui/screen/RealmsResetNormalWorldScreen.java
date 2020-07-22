@@ -6,25 +6,24 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
-import net.minecraft.client.realms.RealmsScreen;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsResetNormalWorldScreen extends RealmsScreen {
-	private final RealmsResetWorldScreen parent;
-	private RealmsLabel titleLabel;
-	private TextFieldWidget seedEdit;
-	private Boolean generateStructures = true;
-	private Integer levelTypeIndex = 0;
-	private Text[] field_24205 = new Text[]{
+	private static final Text field_26506 = new TranslatableText("mco.reset.world.seed");
+	private static final Text[] field_24205 = new Text[]{
 		new TranslatableText("generator.default"),
 		new TranslatableText("generator.flat"),
 		new TranslatableText("generator.large_biomes"),
 		new TranslatableText("generator.amplified")
 	};
+	private final RealmsResetWorldScreen parent;
+	private RealmsLabel titleLabel;
+	private TextFieldWidget seedEdit;
+	private Boolean generateStructures = true;
+	private Integer levelTypeIndex = 0;
 	private Text field_24206;
 
 	public RealmsResetNormalWorldScreen(RealmsResetWorldScreen parent, Text text) {
@@ -48,7 +47,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 		this.addChild(this.seedEdit);
 		this.setInitialFocus(this.seedEdit);
 		this.addButton(new ButtonWidget(this.width / 2 - 102, row(4), 205, 20, this.method_27458(), buttonWidget -> {
-			this.levelTypeIndex = (this.levelTypeIndex + 1) % this.field_24205.length;
+			this.levelTypeIndex = (this.levelTypeIndex + 1) % field_24205.length;
 			buttonWidget.setMessage(this.method_27458());
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 102, row(6) - 2, 205, 20, this.method_27459(), buttonWidget -> {
@@ -88,13 +87,13 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.titleLabel.render(this, matrices);
-		this.textRenderer.draw(matrices, I18n.translate("mco.reset.world.seed"), (float)(this.width / 2 - 100), (float)row(1), 10526880);
+		this.textRenderer.method_30883(matrices, field_26506, (float)(this.width / 2 - 100), (float)row(1), 10526880);
 		this.seedEdit.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	private Text method_27458() {
-		return new TranslatableText("selectWorld.mapType").append(" ").append(this.field_24205[this.levelTypeIndex]);
+		return new TranslatableText("selectWorld.mapType").append(" ").append(field_24205[this.levelTypeIndex]);
 	}
 
 	private Text method_27459() {

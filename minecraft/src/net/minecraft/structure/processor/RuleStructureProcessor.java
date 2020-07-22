@@ -20,8 +20,8 @@ public class RuleStructureProcessor extends StructureProcessor {
 		.codec();
 	private final ImmutableList<StructureProcessorRule> rules;
 
-	public RuleStructureProcessor(List<? extends StructureProcessorRule> list) {
-		this.rules = ImmutableList.copyOf(list);
+	public RuleStructureProcessor(List<? extends StructureProcessorRule> rules) {
+		this.rules = ImmutableList.copyOf(rules);
 	}
 
 	@Nullable

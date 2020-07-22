@@ -16,17 +16,17 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructureConfig;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
-	public static final MapCodec<ConfiguredStructureFeature<?, ?>> field_25834 = Registry.STRUCTURE_FEATURE
-		.dispatchMap("name", configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
-	public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> TYPE_CODEC = RegistryElementCodec.of(
-		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, field_25834
+	public static final MapCodec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE
+		.dispatchMap(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
+	public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(
+		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC
 	);
 	public final F feature;
 	public final FC config;
 
-	public ConfiguredStructureFeature(F structureFeature, FC featureConfig) {
-		this.feature = structureFeature;
-		this.config = featureConfig;
+	public ConfiguredStructureFeature(F feature, FC config) {
+		this.feature = feature;
+		this.config = config;
 	}
 
 	/**

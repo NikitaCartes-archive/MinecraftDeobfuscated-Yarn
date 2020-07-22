@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -14,7 +14,7 @@ public abstract class FlowerFeature<U extends FeatureConfig> extends Feature<U> 
 	}
 
 	@Override
-	public boolean generate(ServerWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, U featureConfig) {
+	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, U featureConfig) {
 		BlockState blockState = this.getFlowerState(random, blockPos, featureConfig);
 		int i = 0;
 

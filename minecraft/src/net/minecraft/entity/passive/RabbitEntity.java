@@ -4,7 +4,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -53,6 +52,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -345,9 +345,9 @@ public class RabbitEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		int i = this.chooseType(arg);
+		int i = this.chooseType(serverWorldAccess);
 		if (entityData instanceof RabbitEntity.RabbitData) {
 			i = ((RabbitEntity.RabbitData)entityData).type;
 		} else {
@@ -355,7 +355,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		this.setRabbitType(i);
-		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private int chooseType(WorldAccess world) {

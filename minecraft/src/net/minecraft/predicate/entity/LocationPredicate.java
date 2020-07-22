@@ -139,7 +139,7 @@ public class LocationPredicate {
 			BlockPos blockPos = new BlockPos((double)x, (double)y, (double)z);
 			boolean bl = world.canSetBlock(blockPos);
 			if (this.biome == null || bl && this.biome == world.getBiome(blockPos)) {
-				if (this.feature == null || bl && world.getStructureAccessor().method_28388(blockPos, true, this.feature).hasChildren()) {
+				if (this.feature == null || bl && world.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren()) {
 					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
 						if (!this.light.test(world, blockPos)) {
 							return false;

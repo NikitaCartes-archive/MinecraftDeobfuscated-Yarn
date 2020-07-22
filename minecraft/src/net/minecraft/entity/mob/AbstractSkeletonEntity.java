@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -43,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public abstract class AbstractSkeletonEntity extends HostileEntity implements RangedAttackMob {
@@ -139,9 +139,9 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		entityData = super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
 		this.updateAttackType();

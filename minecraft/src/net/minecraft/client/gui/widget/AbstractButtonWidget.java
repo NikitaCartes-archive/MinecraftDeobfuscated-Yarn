@@ -112,7 +112,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderBg(matrices, minecraftClient, mouseX, mouseY);
 		int j = this.active ? 16777215 : 10526880;
-		this.drawCenteredText(
+		drawCenteredText(
 			matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24
 		);
 	}

@@ -107,7 +107,7 @@ public class RecipeBookResults {
 
 	public void drawTooltip(MatrixStack matrixStack, int i, int j) {
 		if (this.client.currentScreen != null && this.hoveredResultButton != null && !this.alternatesWidget.isVisible()) {
-			this.client.currentScreen.renderTooltip(matrixStack, this.hoveredResultButton.getTooltip(this.client.currentScreen), i, j);
+			this.client.currentScreen.method_30901(matrixStack, this.hoveredResultButton.getTooltip(this.client.currentScreen), i, j);
 		}
 	}
 

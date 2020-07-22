@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5425;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -44,6 +43,7 @@ import net.minecraft.text.Text;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class VindicatorEntity extends IllagerEntity {
@@ -128,9 +128,9 @@ public class VindicatorEntity extends IllagerEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		EntityData entityData2 = super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		EntityData entityData2 = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);

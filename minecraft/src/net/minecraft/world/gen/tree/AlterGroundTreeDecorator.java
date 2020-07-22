@@ -7,7 +7,7 @@ import java.util.Set;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
@@ -28,7 +28,7 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(ServerWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+	public void generate(StructureWorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
 		int i = ((BlockPos)logPositions.get(0)).getY();
 		logPositions.stream().filter(blockPos -> blockPos.getY() == i).forEach(blockPos -> {
 			this.method_23462(world, random, blockPos.west().north());

@@ -1,4 +1,4 @@
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
@@ -6,16 +6,17 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
+import net.minecraft.client.realms.dto.RealmsServerAddress;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
-import net.minecraft.client.realms.gui.LongRunningTask;
 import net.minecraft.client.realms.gui.screen.RealmsBrokenWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
+import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsTermsScreen;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -35,12 +36,12 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(I18n.translate("mco.connect.connecting"));
+		this.setTitle(new TranslatableText("mco.connect.connecting"));
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 		boolean bl = false;
 		boolean bl2 = false;
 		int i = 5;
-		net.minecraft.client.realms.dto.RealmsServerAddress realmsServerAddress = null;
+		RealmsServerAddress realmsServerAddress = null;
 		boolean bl3 = false;
 		boolean bl4 = false;
 
@@ -89,7 +90,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 			}
 		} else if (!this.aborted() && !bl2) {
 			if (bl) {
-				net.minecraft.client.realms.dto.RealmsServerAddress realmsServerAddress2 = realmsServerAddress;
+				RealmsServerAddress realmsServerAddress2 = realmsServerAddress;
 				if (realmsServerAddress2.resourcePackUrl != null && realmsServerAddress2.resourcePackHash != null) {
 					Text text = new TranslatableText("mco.configure.world.resourcepack.question.line1");
 					Text text2 = new TranslatableText("mco.configure.world.resourcepack.question.line2");

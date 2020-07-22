@@ -125,7 +125,7 @@ public class Main {
 				resourcePackManager.createResourcePacks(),
 				CommandManager.RegistrationEnvironment.DEDICATED,
 				serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel,
-				Util.getServerWorkerExecutor(),
+				Util.getMainWorkerExecutor(),
 				Runnable::run
 			);
 

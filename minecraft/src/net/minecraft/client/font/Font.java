@@ -12,9 +12,14 @@ public interface Font extends Closeable {
 	}
 
 	@Nullable
-	default RenderableGlyph getGlyph(int i) {
+	default RenderableGlyph getGlyph(int codePoint) {
 		return null;
 	}
 
-	IntSet method_27442();
+	/**
+	 * Returns the set of code points for which this font can provide glyphs.
+	 * 
+	 * @return a set of integer code points.
+	 */
+	IntSet getProvidedGlyphs();
 }

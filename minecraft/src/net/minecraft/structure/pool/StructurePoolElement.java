@@ -17,14 +17,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public abstract class StructurePoolElement {
-	public static final Codec<StructurePoolElement> field_24953 = Registry.STRUCTURE_POOL_ELEMENT
+	public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT
 		.dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
 	@Nullable
 	private volatile StructurePool.Projection projection;
@@ -45,7 +45,7 @@ public abstract class StructurePoolElement {
 
 	public abstract boolean generate(
 		StructureManager structureManager,
-		ServerWorldAccess serverWorldAccess,
+		StructureWorldAccess structureWorldAccess,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		BlockPos blockPos,

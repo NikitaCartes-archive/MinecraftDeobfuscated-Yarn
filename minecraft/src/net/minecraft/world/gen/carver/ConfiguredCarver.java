@@ -13,8 +13,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class ConfiguredCarver<WC extends CarverConfig> {
-	public static final MapCodec<ConfiguredCarver<?>> field_25832 = Registry.CARVER
-		.dispatchMap("name", configuredCarver -> configuredCarver.carver, Carver::getCodec);
+	public static final MapCodec<ConfiguredCarver<?>> field_25832 = Registry.CARVER.dispatchMap(configuredCarver -> configuredCarver.carver, Carver::getCodec);
 	public static final Codec<Supplier<ConfiguredCarver<?>>> field_24828 = RegistryElementCodec.of(Registry.CONFIGURED_CARVER_WORLDGEN, field_25832);
 	private final Carver<WC> carver;
 	private final WC config;

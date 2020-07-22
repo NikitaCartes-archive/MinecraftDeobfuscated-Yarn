@@ -95,7 +95,7 @@ public class TrueTypeFont implements Font {
 	}
 
 	@Override
-	public IntSet method_27442() {
+	public IntSet getProvidedGlyphs() {
 		return (IntSet)IntStream.range(0, 65535)
 			.filter(i -> !this.excludedCharacters.contains(i))
 			.collect(IntOpenHashSet::new, IntCollection::add, IntCollection::addAll);

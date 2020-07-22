@@ -58,7 +58,7 @@ public class SnbtProvider implements DataProvider {
 			Files.walk(path2)
 				.filter(pathx -> pathx.toString().endsWith(".snbt"))
 				.forEach(
-					path2x -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt(path2x, this.getFileName(path2, path2x)), Util.getServerWorkerExecutor()))
+					path2x -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt(path2x, this.getFileName(path2, path2x)), Util.getMainWorkerExecutor()))
 				);
 		}
 

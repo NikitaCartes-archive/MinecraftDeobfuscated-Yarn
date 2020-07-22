@@ -93,7 +93,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 				Text text = this.client.options.keysHotbar[i].getBoundKeyLocalizedText();
 				this.client
 					.textRenderer
-					.drawWithShadow(matrixStack, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0F + 3.0F, 16777215 + (k << 24));
+					.method_30881(matrixStack, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0F + 3.0F, 16777215 + (k << 24));
 			}
 		}
 	}
@@ -109,7 +109,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 				RenderSystem.pushMatrix();
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
-				this.client.textRenderer.drawWithShadow(matrixStack, text, (float)j, (float)k, 16777215 + (i << 24));
+				this.client.textRenderer.method_30881(matrixStack, text, (float)j, (float)k, 16777215 + (i << 24));
 				RenderSystem.disableBlend();
 				RenderSystem.popMatrix();
 			}

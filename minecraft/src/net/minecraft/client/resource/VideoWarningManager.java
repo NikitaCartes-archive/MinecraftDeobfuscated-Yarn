@@ -86,6 +86,13 @@ public class VideoWarningManager extends SinglePreparationResourceReloadListener
 		return (String)this.warnings.get("vendor");
 	}
 
+	@Nullable
+	public String method_30920() {
+		StringBuilder stringBuilder = new StringBuilder();
+		this.warnings.forEach((string, string2) -> stringBuilder.append(string).append(": ").append(string2));
+		return stringBuilder.length() == 0 ? null : stringBuilder.toString();
+	}
+
 	protected VideoWarningManager.WarningPatternLoader prepare(ResourceManager resourceManager, Profiler profiler) {
 		List<Pattern> list = Lists.newArrayList();
 		List<Pattern> list2 = Lists.newArrayList();

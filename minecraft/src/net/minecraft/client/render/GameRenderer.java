@@ -390,7 +390,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 						matrices,
 						this.buffers.getEntityVertexConsumers(),
 						this.client.player,
-						this.client.getEntityRenderManager().getLight(this.client.player, tickDelta)
+						this.client.getEntityRenderDispatcher().getLight(this.client.player, tickDelta)
 					);
 				this.lightmapTextureManager.disable();
 			}

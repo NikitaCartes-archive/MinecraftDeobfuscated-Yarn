@@ -41,7 +41,7 @@ public abstract class DoorInteractGoal extends Goal {
 		if (this.doorValid) {
 			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
 			if (blockState.getBlock() instanceof DoorBlock) {
-				((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, this.doorPos, open);
+				((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, blockState, this.doorPos, open);
 			}
 		}
 	}

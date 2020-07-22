@@ -22,7 +22,7 @@ import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.realms.RealmsBridge;
+import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
@@ -160,8 +160,8 @@ public class TitleScreen extends Screen {
 		);
 		this.client.setConnectedToRealms(false);
 		if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
-			RealmsBridge realmsBridge = new RealmsBridge();
-			this.realmsNotificationGui = realmsBridge.getNotificationScreen(this);
+			RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
+			this.realmsNotificationGui = realmsBridgeScreen.getNotificationScreen(this);
 			this.realmsNotificationsInitialized = true;
 		}
 
@@ -253,8 +253,8 @@ public class TitleScreen extends Screen {
 	}
 
 	private void switchToRealms() {
-		RealmsBridge realmsBridge = new RealmsBridge();
-		realmsBridge.switchToRealms(this);
+		RealmsBridgeScreen realmsBridgeScreen = new RealmsBridgeScreen();
+		realmsBridgeScreen.switchToRealms(this);
 	}
 
 	@Override
@@ -303,7 +303,7 @@ public class TitleScreen extends Screen {
 				float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 				h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
 				RenderSystem.scalef(h, h, h);
-				this.drawCenteredString(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | l);
+				drawCenteredString(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | l);
 				RenderSystem.popMatrix();
 			}
 
@@ -318,8 +318,8 @@ public class TitleScreen extends Screen {
 				string = string + I18n.translate("menu.modded");
 			}
 
-			this.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | l);
-			this.drawStringWithShadow(matrices, this.textRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 16777215 | l);
+			drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | l);
+			drawStringWithShadow(matrices, this.textRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 16777215 | l);
 			if (mouseX > this.copyrightTextX && mouseX < this.copyrightTextX + this.copyrightTextWidth && mouseY > this.height - 10 && mouseY < this.height) {
 				fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 16777215 | l);
 			}

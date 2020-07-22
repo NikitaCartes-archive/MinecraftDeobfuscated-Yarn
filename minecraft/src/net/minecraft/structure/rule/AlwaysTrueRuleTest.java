@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 
 public class AlwaysTrueRuleTest extends RuleTest {
-	public static final Codec<AlwaysTrueRuleTest> field_24994 = Codec.unit((Supplier<AlwaysTrueRuleTest>)(() -> AlwaysTrueRuleTest.INSTANCE));
+	public static final Codec<AlwaysTrueRuleTest> CODEC = Codec.unit((Supplier<AlwaysTrueRuleTest>)(() -> AlwaysTrueRuleTest.INSTANCE));
 	public static final AlwaysTrueRuleTest INSTANCE = new AlwaysTrueRuleTest();
 
 	private AlwaysTrueRuleTest() {

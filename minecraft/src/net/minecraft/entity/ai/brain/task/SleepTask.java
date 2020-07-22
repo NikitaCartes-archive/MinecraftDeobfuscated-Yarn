@@ -1,9 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.Set;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -61,9 +59,7 @@ public class SleepTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		if (time > this.startTime) {
-			entity.getBrain()
-				.getOptionalMemory(MemoryModuleType.OPENED_DOORS)
-				.ifPresent(set -> OpenDoorsTask.closeOpenedDoors(world, ImmutableList.of(), 0, entity, entity.getBrain()));
+			OpenDoorsTask.method_30760(world, entity, null, null);
 			entity.sleep(((GlobalPos)entity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get()).getPos());
 		}
 	}

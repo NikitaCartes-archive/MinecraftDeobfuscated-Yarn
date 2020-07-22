@@ -18,7 +18,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.block.RespawnAnchorBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -62,6 +63,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -70,6 +72,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
@@ -444,7 +447,7 @@ public abstract class PlayerManager {
 		ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
 		Optional<Vec3d> optional;
 		if (serverWorld != null && blockPos != null) {
-			optional = PlayerEntity.findRespawnPosition(serverWorld, blockPos, bl, alive);
+			optional = PlayerEntity.findRespawnPosition(serverWorld, blockPos, f, bl, alive);
 		} else {
 			optional = Optional.empty();
 		}
@@ -470,10 +473,20 @@ public abstract class PlayerManager {
 		this.setGameMode(serverPlayerEntity, player, serverWorld2);
 		boolean bl2 = false;
 		if (optional.isPresent()) {
+			BlockState blockState = serverWorld2.getBlockState(blockPos);
+			boolean bl3 = blockState.isOf(Blocks.RESPAWN_ANCHOR);
 			Vec3d vec3d = (Vec3d)optional.get();
-			serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, 0.0F);
+			float g;
+			if (!blockState.isIn(BlockTags.BEDS) && !bl3) {
+				g = f;
+			} else {
+				Vec3d vec3d2 = Vec3d.ofBottomCenter(blockPos).subtract(vec3d).normalize();
+				g = (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d2.z, vec3d2.x) * 180.0F / (float)Math.PI - 90.0);
+			}
+
+			serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, g, 0.0F);
 			serverPlayerEntity.setSpawnPoint(serverWorld2.getRegistryKey(), blockPos, f, bl, false);
-			bl2 = !alive && serverWorld2.getBlockState(blockPos).getBlock() instanceof RespawnAnchorBlock;
+			bl2 = !alive && bl3;
 		} else if (blockPos != null) {
 			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.NO_RESPAWN_BLOCK, 0.0F));
 		}

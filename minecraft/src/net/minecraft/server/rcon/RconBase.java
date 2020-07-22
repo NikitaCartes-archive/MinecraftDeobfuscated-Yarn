@@ -1,6 +1,7 @@
 package net.minecraft.server.rcon;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 import net.minecraft.util.logging.UncaughtExceptionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,18 +11,24 @@ public abstract class RconBase implements Runnable {
 	private static final AtomicInteger THREAD_COUNTER = new AtomicInteger(0);
 	protected volatile boolean running;
 	protected final String description;
+	@Nullable
 	protected Thread thread;
 
 	protected RconBase(String description) {
 		this.description = description;
 	}
 
-	public synchronized void start() {
-		this.running = true;
-		this.thread = new Thread(this, this.description + " #" + THREAD_COUNTER.incrementAndGet());
-		this.thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOGGER));
-		this.thread.start();
-		LOGGER.info("Thread {} started", this.description);
+	public synchronized boolean start() {
+		if (this.running) {
+			return true;
+		} else {
+			this.running = true;
+			this.thread = new Thread(this, this.description + " #" + THREAD_COUNTER.incrementAndGet());
+			this.thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOGGER));
+			this.thread.start();
+			LOGGER.info("Thread {} started", this.description);
+			return true;
+		}
 	}
 
 	public synchronized void stop() {

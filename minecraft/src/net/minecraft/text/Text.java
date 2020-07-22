@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5481;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
@@ -92,6 +93,9 @@ public interface Text extends Message, StringRenderable {
 	 * <p>A shallow copy is made for the siblings.</p>
 	 */
 	MutableText shallowCopy();
+
+	@Environment(EnvType.CLIENT)
+	class_5481 method_30937();
 
 	@Environment(EnvType.CLIENT)
 	@Override

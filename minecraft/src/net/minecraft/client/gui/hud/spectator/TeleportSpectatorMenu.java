@@ -21,6 +21,8 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	private static final Ordering<PlayerListEntry> ORDERING = Ordering.from(
 		(playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result()
 	);
+	private static final Text field_26616 = new TranslatableText("spectatorMenu.teleport");
+	private static final Text field_26617 = new TranslatableText("spectatorMenu.teleport.prompt");
 	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeleportSpectatorMenu() {
@@ -42,7 +44,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 
 	@Override
 	public Text getPrompt() {
-		return new TranslatableText("spectatorMenu.teleport.prompt");
+		return field_26617;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 
 	@Override
 	public Text getName() {
-		return new TranslatableText("spectatorMenu.teleport");
+		return field_26616;
 	}
 
 	@Override

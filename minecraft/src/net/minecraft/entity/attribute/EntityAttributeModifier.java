@@ -97,9 +97,25 @@ public class EntityAttributeModifier {
 		}
 	}
 
+	/**
+	 * Represents an operation which can be applied to an attribute modifier.
+	 */
 	public static enum Operation {
+		/**
+		 * Adds to the base value of an attribute.
+		 */
 		ADDITION(0),
+		/**
+		 * Multiplies the base value of the attribute.
+		 * 
+		 * <p>Is applied after addition.
+		 */
 		MULTIPLY_BASE(1),
+		/**
+		 * Multiplies the total value of the attribute.
+		 * 
+		 * <p>The total value is equal to the sum of all additions and base multiplications applied by an attribute modifier.
+		 */
 		MULTIPLY_TOTAL(2);
 
 		private static final EntityAttributeModifier.Operation[] VALUES = new EntityAttributeModifier.Operation[]{ADDITION, MULTIPLY_BASE, MULTIPLY_TOTAL};

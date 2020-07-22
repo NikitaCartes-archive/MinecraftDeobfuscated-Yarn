@@ -15,8 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
@@ -31,13 +29,6 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	protected void setBookButtonTexture() {
 		this.toggleCraftableButton.setTextureUV(152, 182, 28, 18, TEXTURE);
 	}
-
-	@Override
-	protected Text getCraftableButtonText() {
-		return (Text)(this.toggleCraftableButton.isToggled() ? this.getToggleCraftableButtonText() : new TranslatableText("gui.recipebook.toggleRecipes.all"));
-	}
-
-	protected abstract Text getToggleCraftableButtonText();
 
 	@Override
 	public void slotClicked(@Nullable Slot slot) {

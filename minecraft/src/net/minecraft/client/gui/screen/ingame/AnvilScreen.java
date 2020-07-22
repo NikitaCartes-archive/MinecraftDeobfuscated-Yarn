@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -20,6 +19,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/anvil.png");
+	private static final Text field_26559 = new TranslatableText("container.repair.expensive");
 	private TextFieldWidget nameField;
 
 	public AnvilScreen(AnvilScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -85,22 +85,24 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 		int i = this.handler.getLevelCost();
 		if (i > 0) {
 			int j = 8453920;
-			boolean bl = true;
-			String string = I18n.translate("container.repair.cost", i);
+			Text text;
 			if (i >= 40 && !this.client.player.abilities.creativeMode) {
-				string = I18n.translate("container.repair.expensive");
+				text = field_26559;
 				j = 16736352;
 			} else if (!this.handler.getSlot(2).hasStack()) {
-				bl = false;
-			} else if (!this.handler.getSlot(2).canTakeItems(this.playerInventory.player)) {
-				j = 16736352;
+				text = null;
+			} else {
+				text = new TranslatableText("container.repair.cost", i);
+				if (!this.handler.getSlot(2).canTakeItems(this.playerInventory.player)) {
+					j = 16736352;
+				}
 			}
 
-			if (bl) {
-				int k = this.backgroundWidth - 8 - this.textRenderer.getWidth(string) - 2;
+			if (text != null) {
+				int k = this.backgroundWidth - 8 - this.textRenderer.getWidth(text) - 2;
 				int l = 69;
 				fill(matrices, k - 2, 67, this.backgroundWidth - 8, 79, 1325400064);
-				this.textRenderer.drawWithShadow(matrices, string, (float)k, 69.0F, j);
+				this.textRenderer.method_30881(matrices, text, (float)k, 69.0F, j);
 			}
 		}
 	}

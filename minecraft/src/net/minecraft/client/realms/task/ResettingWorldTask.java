@@ -1,12 +1,13 @@
-package net.minecraft.client.realms;
+package net.minecraft.client.realms.task;
 
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.exception.RetryCallException;
-import net.minecraft.client.realms.gui.LongRunningTask;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class ResettingWorldTask extends LongRunningTask {
@@ -15,7 +16,7 @@ public class ResettingWorldTask extends LongRunningTask {
 	private final int levelType;
 	private final boolean generateStructures;
 	private final long serverId;
-	private String title = I18n.translate("mco.reset.world.resetting.screen.title");
+	private Text title = new TranslatableText("mco.reset.world.resetting.screen.title");
 	private final Runnable callback;
 
 	public ResettingWorldTask(
@@ -24,7 +25,7 @@ public class ResettingWorldTask extends LongRunningTask {
 		int levelType,
 		boolean generateStructures,
 		long serverId,
-		@Nullable String title,
+		@Nullable Text text,
 		Runnable callback
 	) {
 		this.seed = seed;
@@ -32,8 +33,8 @@ public class ResettingWorldTask extends LongRunningTask {
 		this.levelType = levelType;
 		this.generateStructures = generateStructures;
 		this.serverId = serverId;
-		if (title != null) {
-			this.title = title;
+		if (text != null) {
+			this.title = text;
 		}
 
 		this.callback = callback;

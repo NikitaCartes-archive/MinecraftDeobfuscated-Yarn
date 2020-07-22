@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_5425;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -47,6 +46,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -61,17 +61,11 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	private final SimpleInventory inventory = new SimpleInventory(8);
 	private boolean cannotHunt = false;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(
-		SensorType.NEAREST_LIVING_ENTITIES,
-		SensorType.NEAREST_PLAYERS,
-		SensorType.NEAREST_ITEMS,
-		SensorType.HURT_BY,
-		SensorType.INTERACTABLE_DOORS,
-		SensorType.PIGLIN_SPECIFIC_SENSOR
+		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.PIGLIN_SPECIFIC_SENSOR
 	);
 	protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(
 		MemoryModuleType.LOOK_TARGET,
-		MemoryModuleType.INTERACTABLE_DOORS,
-		MemoryModuleType.OPENED_DOORS,
+		MemoryModuleType.DOORS_TO_CLOSE,
 		MemoryModuleType.MOBS,
 		MemoryModuleType.VISIBLE_MOBS,
 		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
@@ -181,10 +175,10 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		class_5425 arg, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason != SpawnReason.STRUCTURE) {
-			if (arg.getRandom().nextFloat() < 0.2F) {
+			if (serverWorldAccess.getRandom().nextFloat() < 0.2F) {
 				this.setBaby(true);
 			} else if (this.isAdult()) {
 				this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
@@ -194,7 +188,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		PiglinBrain.setHuntedRecently(this);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(arg, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -254,11 +248,6 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return this.isBaby() ? 0.93F : 1.74F;
-	}
-
-	@Override
-	public double getHeightOffset() {
-		return this.isBaby() ? -0.1 : -0.45;
 	}
 
 	@Override
