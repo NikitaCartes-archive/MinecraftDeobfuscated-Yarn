@@ -16,7 +16,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class LlamaSpitEntity extends ProjectileEntity {
@@ -51,7 +50,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	public void tick() {
 		super.tick();
 		Vec3d vec3d = this.getVelocity();
-		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.OUTLINE);
+		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
 		if (hitResult != null) {
 			this.onCollision(hitResult);
 		}

@@ -115,16 +115,18 @@ public class BoatEntity extends Entity {
 		this.dataTracker.startTracking(BUBBLE_WOBBLE_TICKS, 0);
 	}
 
-	@Nullable
 	@Override
-	public Box getHardCollisionBox(Entity collidingEntity) {
-		return collidingEntity.isPushable() ? collidingEntity.getBoundingBox() : null;
+	public boolean method_30949(Entity entity) {
+		return method_30959(this, entity);
 	}
 
-	@Nullable
+	public static boolean method_30959(Entity entity, Entity entity2) {
+		return (entity2.method_30948() || entity2.isPushable()) && !entity.isConnectedThroughVehicle(entity2);
+	}
+
 	@Override
-	public Box getCollisionBox() {
-		return this.getBoundingBox();
+	public boolean method_30948() {
+		return true;
 	}
 
 	@Override

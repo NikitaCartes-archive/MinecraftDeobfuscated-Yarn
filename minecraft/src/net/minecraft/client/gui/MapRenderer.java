@@ -145,7 +145,7 @@ public class MapRenderer implements AutoCloseable {
 						);
 						matrixStack.scale(q, q, 1.0F);
 						matrixStack.translate(0.0, 0.0, -0.1F);
-						textRenderer.method_30882(text, 0.0F, 0.0F, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
+						textRenderer.draw(text, 0.0F, 0.0F, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
 						matrixStack.pop();
 					}
 

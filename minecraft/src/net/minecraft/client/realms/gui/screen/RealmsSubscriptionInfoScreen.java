@@ -143,15 +143,15 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		this.renderBackground(matrices);
 		int i = this.width / 2 - 100;
 		drawCenteredText(matrices, this.textRenderer, subscriptionTitle, this.width / 2, 17, 16777215);
-		this.textRenderer.method_30883(matrices, subscriptionStartLabelText, (float)i, (float)row(0), 10526880);
+		this.textRenderer.draw(matrices, subscriptionStartLabelText, (float)i, (float)row(0), 10526880);
 		this.textRenderer.draw(matrices, this.startDate, (float)i, (float)row(1), 16777215);
 		if (this.type == Subscription.SubscriptionType.NORMAL) {
-			this.textRenderer.method_30883(matrices, timeLeftLabelText, (float)i, (float)row(3), 10526880);
+			this.textRenderer.draw(matrices, timeLeftLabelText, (float)i, (float)row(3), 10526880);
 		} else if (this.type == Subscription.SubscriptionType.RECURRING) {
-			this.textRenderer.method_30883(matrices, daysLeftLabelText, (float)i, (float)row(3), 10526880);
+			this.textRenderer.draw(matrices, daysLeftLabelText, (float)i, (float)row(3), 10526880);
 		}
 
-		this.textRenderer.method_30883(matrices, this.daysLeft, (float)i, (float)row(4), 16777215);
+		this.textRenderer.draw(matrices, this.daysLeft, (float)i, (float)row(4), 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

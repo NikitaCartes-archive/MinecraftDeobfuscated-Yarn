@@ -15,7 +15,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
@@ -74,11 +73,12 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				this.setOnFireFor(1);
 			}
 
-			HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER);
+			HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.onCollision(hitResult);
 			}
 
+			this.checkBlockCollision();
 			Vec3d vec3d = this.getVelocity();
 			double d = this.getX() + vec3d.x;
 			double e = this.getY() + vec3d.y;

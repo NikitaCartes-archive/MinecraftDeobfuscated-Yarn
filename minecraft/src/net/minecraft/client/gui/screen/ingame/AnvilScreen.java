@@ -102,7 +102,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 				int k = this.backgroundWidth - 8 - this.textRenderer.getWidth(text) - 2;
 				int l = 69;
 				fill(matrices, k - 2, 67, this.backgroundWidth - 8, 79, 1325400064);
-				this.textRenderer.method_30881(matrices, text, (float)k, 69.0F, j);
+				this.textRenderer.drawWithShadow(matrices, text, (float)k, 69.0F, j);
 			}
 		}
 	}

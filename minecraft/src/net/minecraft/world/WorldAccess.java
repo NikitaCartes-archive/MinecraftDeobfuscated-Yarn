@@ -3,7 +3,6 @@ package net.minecraft.world;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.class_5423;
-import net.minecraft.class_5424;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -13,9 +12,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.ChunkManager;
 
-public interface WorldAccess extends class_5423, class_5424 {
+public interface WorldAccess extends class_5423, LunarWorldView {
 	@Override
-	default long method_30271() {
+	default long getLunarTime() {
 		return this.getLevelProperties().getTimeOfDay();
 	}
 

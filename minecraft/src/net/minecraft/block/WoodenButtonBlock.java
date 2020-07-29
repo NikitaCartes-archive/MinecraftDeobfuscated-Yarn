@@ -3,8 +3,8 @@ package net.minecraft.block;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
-public class WoodButtonBlock extends AbstractButtonBlock {
-	protected WoodButtonBlock(AbstractBlock.Settings settings) {
+public class WoodenButtonBlock extends AbstractButtonBlock {
+	protected WoodenButtonBlock(AbstractBlock.Settings settings) {
 		super(true, settings);
 	}
 

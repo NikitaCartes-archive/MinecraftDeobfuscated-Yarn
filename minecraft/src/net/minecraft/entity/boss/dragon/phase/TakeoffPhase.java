@@ -61,7 +61,7 @@ public class TakeoffPhase extends AbstractPhase {
 		if (this.field_7054 != null) {
 			this.field_7054.next();
 			if (!this.field_7054.isFinished()) {
-				Vec3i vec3i = this.field_7054.getCurrentPosition();
+				Vec3i vec3i = this.field_7054.method_31032();
 				this.field_7054.next();
 
 				double d;

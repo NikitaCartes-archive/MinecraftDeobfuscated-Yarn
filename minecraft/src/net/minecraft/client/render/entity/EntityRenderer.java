@@ -95,9 +95,9 @@ public abstract class EntityRenderer<T extends Entity> {
 			int j = (int)(g * 255.0F) << 24;
 			TextRenderer textRenderer = this.getFontRenderer();
 			float h = (float)(-textRenderer.getWidth(text) / 2);
-			textRenderer.method_30882(text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl, j, light);
+			textRenderer.draw(text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl, j, light);
 			if (bl) {
-				textRenderer.method_30882(text, h, (float)i, -1, false, matrix4f, vertexConsumers, false, 0, light);
+				textRenderer.draw(text, h, (float)i, -1, false, matrix4f, vertexConsumers, false, 0, light);
 			}
 
 			matrices.pop();

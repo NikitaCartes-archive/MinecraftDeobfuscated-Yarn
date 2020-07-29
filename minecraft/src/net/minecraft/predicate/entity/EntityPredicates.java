@@ -100,10 +100,10 @@ public final class EntityPredicates {
 		};
 	}
 
-	public static class CanPickup implements Predicate<Entity> {
+	public static class Equipable implements Predicate<Entity> {
 		private final ItemStack stack;
 
-		public CanPickup(ItemStack stack) {
+		public Equipable(ItemStack stack) {
 			this.stack = stack;
 		}
 
@@ -114,7 +114,7 @@ public final class EntityPredicates {
 				return false;
 			} else {
 				LivingEntity livingEntity = (LivingEntity)entity;
-				return livingEntity.canPickUp(this.stack);
+				return livingEntity.canEquip(this.stack);
 			}
 		}
 	}

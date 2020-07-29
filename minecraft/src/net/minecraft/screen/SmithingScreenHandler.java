@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmithingRecipe;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -43,6 +44,8 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	protected ItemStack onTakeOutput(PlayerEntity player, ItemStack stack) {
 		this.method_29539(0);
 		this.method_29539(1);
+		stack.onCraft(player.world, player, stack.getCount());
+		this.output.unlockLastRecipe(player);
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> world.syncWorldEvent(1044, blockPos, 0)));
 		return stack;
 	}
@@ -61,6 +64,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 		} else {
 			this.field_25386 = (SmithingRecipe)list.get(0);
 			ItemStack itemStack = this.field_25386.craft(this.input);
+			this.output.setLastRecipe(this.field_25386);
 			this.output.setStack(0, itemStack);
 		}
 	}
@@ -68,5 +72,10 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	@Override
 	protected boolean method_30025(ItemStack itemStack) {
 		return this.field_25668.stream().anyMatch(smithingRecipe -> smithingRecipe.method_30029(itemStack));
+	}
+
+	@Override
+	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
+		return slot.inventory != this.output && super.canInsertIntoSlot(stack, slot);
 	}
 }

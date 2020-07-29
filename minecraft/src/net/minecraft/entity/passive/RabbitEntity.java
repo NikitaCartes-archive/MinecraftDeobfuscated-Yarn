@@ -92,7 +92,7 @@ public class RabbitEntity extends AnimalEntity {
 	protected float getJumpVelocity() {
 		if (!this.horizontalCollision && (!this.moveControl.isMoving() || !(this.moveControl.getTargetY() > this.getY() + 0.5))) {
 			Path path = this.navigation.getCurrentPath();
-			if (path != null && path.getCurrentNodeIndex() < path.getLength()) {
+			if (path != null && !path.isFinished()) {
 				Vec3d vec3d = path.getNodePosition(this);
 				if (vec3d.y > this.getY() + 0.5) {
 					return 0.5F;
@@ -185,7 +185,7 @@ public class RabbitEntity extends AnimalEntity {
 				if (this.moveControl.isMoving() && this.ticksUntilJump == 0) {
 					Path path = this.navigation.getCurrentPath();
 					Vec3d vec3d = new Vec3d(this.moveControl.getTargetX(), this.moveControl.getTargetY(), this.moveControl.getTargetZ());
-					if (path != null && path.getCurrentNodeIndex() < path.getLength()) {
+					if (path != null && !path.isFinished()) {
 						vec3d = path.getNodePosition(this);
 					}
 

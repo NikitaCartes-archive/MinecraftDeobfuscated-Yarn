@@ -188,7 +188,7 @@ public abstract class Carver<C extends CarverConfig> {
 					if (mutableBoolean.isTrue()) {
 						mutable3.set(mutable, Direction.DOWN);
 						if (chunk.getBlockState(mutable3).isOf(Blocks.DIRT)) {
-							chunk.setBlockState(mutable3, ((Biome)posToBiome.apply(mutable)).getSurfaceConfig().getTopMaterial(), false);
+							chunk.setBlockState(mutable3, ((Biome)posToBiome.apply(mutable)).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
 						}
 					}
 				}

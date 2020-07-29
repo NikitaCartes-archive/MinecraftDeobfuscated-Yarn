@@ -7,7 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -39,23 +40,23 @@ public interface class_5489 {
 		}
 	};
 
-	static class_5489 method_30890(TextRenderer textRenderer, StringRenderable stringRenderable, int i) {
+	static class_5489 method_30890(TextRenderer textRenderer, StringVisitable stringVisitable, int i) {
 		return method_30895(
 			textRenderer,
-			(List<class_5489.class_5490>)textRenderer.wrapLines(stringRenderable, i)
+			(List<class_5489.class_5490>)textRenderer.wrapLines(stringVisitable, i)
 				.stream()
-				.map(arg -> new class_5489.class_5490(arg, textRenderer.method_30880(arg)))
+				.map(orderedText -> new class_5489.class_5490(orderedText, textRenderer.getWidth(orderedText)))
 				.collect(ImmutableList.toImmutableList())
 		);
 	}
 
-	static class_5489 method_30891(TextRenderer textRenderer, StringRenderable stringRenderable, int i, int j) {
+	static class_5489 method_30891(TextRenderer textRenderer, StringVisitable stringVisitable, int i, int j) {
 		return method_30895(
 			textRenderer,
-			(List<class_5489.class_5490>)textRenderer.wrapLines(stringRenderable, i)
+			(List<class_5489.class_5490>)textRenderer.wrapLines(stringVisitable, i)
 				.stream()
 				.limit((long)j)
-				.map(arg -> new class_5489.class_5490(arg, textRenderer.method_30880(arg)))
+				.map(orderedText -> new class_5489.class_5490(orderedText, textRenderer.getWidth(orderedText)))
 				.collect(ImmutableList.toImmutableList())
 		);
 	}
@@ -64,8 +65,8 @@ public interface class_5489 {
 		return method_30895(
 			textRenderer,
 			(List<class_5489.class_5490>)Arrays.stream(texts)
-				.map(Text::method_30937)
-				.map(arg -> new class_5489.class_5490(arg, textRenderer.method_30880(arg)))
+				.map(Text::asOrderedText)
+				.map(orderedText -> new class_5489.class_5490(orderedText, textRenderer.getWidth(orderedText)))
 				.collect(ImmutableList.toImmutableList())
 		);
 	}
@@ -132,11 +133,11 @@ public interface class_5489 {
 
 	@Environment(EnvType.CLIENT)
 	public static class class_5490 {
-		private final class_5481 field_26531;
+		private final OrderedText field_26531;
 		private final int field_26532;
 
-		private class_5490(class_5481 arg, int i) {
-			this.field_26531 = arg;
+		private class_5490(OrderedText orderedText, int i) {
+			this.field_26531 = orderedText;
 			this.field_26532 = i;
 		}
 	}

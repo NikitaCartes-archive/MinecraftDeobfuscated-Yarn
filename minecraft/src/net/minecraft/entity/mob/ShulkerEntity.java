@@ -376,10 +376,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return this.getPeekAmount() == 0;
 	}
 
-	@Nullable
 	@Override
-	public Box getCollisionBox() {
-		return this.isAlive() ? this.getBoundingBox() : null;
+	public boolean method_30948() {
+		return this.isAlive();
 	}
 
 	public Direction getAttachedFace() {

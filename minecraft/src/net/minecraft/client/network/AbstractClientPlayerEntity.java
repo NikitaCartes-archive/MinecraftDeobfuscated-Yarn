@@ -16,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -131,6 +132,6 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 			f *= 1.0F - g * 0.15F;
 		}
 
-		return f;
+		return MathHelper.lerp(MinecraftClient.getInstance().options.fovEffectScale, 1.0F, f);
 	}
 }

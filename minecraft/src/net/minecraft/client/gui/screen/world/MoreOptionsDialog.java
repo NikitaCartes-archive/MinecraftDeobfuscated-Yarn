@@ -296,7 +296,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.mapFeaturesButton.visible) {
-			this.textRenderer.method_30881(matrices, field_26604, (float)(this.parentWidth / 2 - 150), 122.0F, -6250336);
+			this.textRenderer.drawWithShadow(matrices, field_26604, (float)(this.parentWidth / 2 - 150), 122.0F, -6250336);
 		}
 
 		this.seedTextField.render(matrices, mouseX, mouseY, delta);

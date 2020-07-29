@@ -91,8 +91,8 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.titleLabel.render(this, matrices);
-		this.textRenderer.method_30883(matrices, field_26514, (float)(this.width / 2 - 106), (float)row(3), 10526880);
-		this.textRenderer.method_30883(matrices, field_26515, (float)(this.width / 2 - 106), (float)row(7), 10526880);
+		this.textRenderer.draw(matrices, field_26514, (float)(this.width / 2 - 106), (float)row(3), 10526880);
+		this.textRenderer.draw(matrices, field_26515, (float)(this.width / 2 - 106), (float)row(7), 10526880);
 		this.nameEdit.render(matrices, mouseX, mouseY, delta);
 		this.descEdit.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);

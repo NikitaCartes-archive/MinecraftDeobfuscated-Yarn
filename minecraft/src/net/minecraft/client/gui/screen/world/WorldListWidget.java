@@ -212,7 +212,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			Text text = this.level.method_27429();
 			this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 16777215);
 			this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + 9 + 3), 8421504);
-			this.client.textRenderer.method_30883(matrices, text, (float)(x + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
+			this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION);
 			RenderSystem.enableBlend();
@@ -235,12 +235,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					if (this.level.isFutureLevel()) {
 						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 						if (bl) {
-							this.screen.setTooltip(ImmutableList.of(WorldListWidget.field_26606.method_30937(), WorldListWidget.field_26607.method_30937()));
+							this.screen.setTooltip(ImmutableList.of(WorldListWidget.field_26606.asOrderedText(), WorldListWidget.field_26607.asOrderedText()));
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
 						DrawableHelper.drawTexture(matrices, x, y, 64.0F, (float)j, 32, 32, 256, 256);
 						if (bl) {
-							this.screen.setTooltip(ImmutableList.of(WorldListWidget.field_26608.method_30937(), WorldListWidget.field_26609.method_30937()));
+							this.screen.setTooltip(ImmutableList.of(WorldListWidget.field_26608.asOrderedText(), WorldListWidget.field_26609.asOrderedText()));
 						}
 					}
 				} else {

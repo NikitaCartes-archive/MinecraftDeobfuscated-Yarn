@@ -87,7 +87,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.titleLabel.render(this, matrices);
-		this.textRenderer.method_30883(matrices, field_26506, (float)(this.width / 2 - 100), (float)row(1), 10526880);
+		this.textRenderer.draw(matrices, field_26506, (float)(this.width / 2 - 100), (float)row(1), 10526880);
 		this.seedEdit.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

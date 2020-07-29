@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 
 public class Path {
 	private final List<PathNode> nodes;
@@ -82,13 +81,16 @@ public class Path {
 		return new Vec3d(d, e, f);
 	}
 
+	public BlockPos method_31031(int i) {
+		return ((PathNode)this.nodes.get(i)).getPos();
+	}
+
 	public Vec3d getNodePosition(Entity entity) {
 		return this.getNodePosition(entity, this.currentNodeIndex);
 	}
 
-	public Vec3i getCurrentPosition() {
-		PathNode pathNode = this.method_29301();
-		return new Vec3i(pathNode.x, pathNode.y, pathNode.z);
+	public BlockPos method_31032() {
+		return ((PathNode)this.nodes.get(this.currentNodeIndex)).getPos();
 	}
 
 	public PathNode method_29301() {

@@ -241,7 +241,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 			this.drawServerStatus(matrices, l, 7, mouseX, mouseY);
 			if (this.isMinigame()) {
 				this.textRenderer
-					.method_30883(matrices, field_26481.shallowCopy().append(this.server.getMinigameName()), (float)(this.left_x + 80 + 20 + 10), (float)row(13), 16777215);
+					.draw(matrices, field_26481.shallowCopy().append(this.server.getMinigameName()), (float)(this.left_x + 80 + 20 + 10), (float)row(13), 16777215);
 			}
 
 			if (this.toolTip != null) {
@@ -293,7 +293,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 				}
 			} catch (RealmsServiceException var5) {
 				LOGGER.error("Couldn't get own world");
-				this.client.execute(() -> this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(var5.getMessage()), this.parent)));
+				this.client.execute(() -> this.client.openScreen(new RealmsGenericErrorScreen(Text.of(var5.getMessage()), this.parent)));
 			}
 		}).start();
 	}
@@ -388,7 +388,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 		}
 
 		this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-		this.textRenderer.method_30881(matrixStack, text, (float)k, (float)l, 16777215);
+		this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 16777215);
 	}
 
 	private void drawServerStatus(MatrixStack matrixStack, int i, int j, int k, int l) {

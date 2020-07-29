@@ -23,7 +23,7 @@ import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
@@ -34,7 +34,7 @@ public abstract class GeneratorType {
 	public static final GeneratorType DEFAULT = new GeneratorType("default") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26355);
+			return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorSettings.OVERWORLD);
 		}
 	};
 	private static final GeneratorType FLAT = new GeneratorType("flat") {
@@ -46,19 +46,19 @@ public abstract class GeneratorType {
 	private static final GeneratorType LARGE_BIOMES = new GeneratorType("large_biomes") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, true), seed, () -> ChunkGeneratorType.field_26355);
+			return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, true), seed, () -> ChunkGeneratorSettings.OVERWORLD);
 		}
 	};
 	public static final GeneratorType AMPLIFIED = new GeneratorType("amplified") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26356);
+			return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorSettings.AMPLIFIED);
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_SURFACE = new GeneratorType("single_biome_surface") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26355);
+			return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorSettings.OVERWORLD);
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_CAVES = new GeneratorType("single_biome_caves") {
@@ -71,13 +71,13 @@ public abstract class GeneratorType {
 
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26359);
+			return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorSettings.CAVES);
 		}
 	};
 	private static final GeneratorType SINGLE_BIOME_FLOATING_ISLANDS = new GeneratorType("single_biome_floating_islands") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(long seed) {
-			return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorType.field_26360);
+			return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorSettings.FLOATING_ISLANDS);
 		}
 	};
 	private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states") {
@@ -137,13 +137,13 @@ public abstract class GeneratorType {
 
 	private static GeneratorOptions method_29079(GeneratorOptions generatorOptions, GeneratorType generatorType, Biome biome) {
 		BiomeSource biomeSource = new FixedBiomeSource(biome);
-		Supplier<ChunkGeneratorType> supplier;
+		Supplier<ChunkGeneratorSettings> supplier;
 		if (generatorType == SINGLE_BIOME_CAVES) {
-			supplier = () -> ChunkGeneratorType.field_26359;
+			supplier = () -> ChunkGeneratorSettings.CAVES;
 		} else if (generatorType == SINGLE_BIOME_FLOATING_ISLANDS) {
-			supplier = () -> ChunkGeneratorType.field_26360;
+			supplier = () -> ChunkGeneratorSettings.FLOATING_ISLANDS;
 		} else {
-			supplier = () -> ChunkGeneratorType.field_26355;
+			supplier = () -> ChunkGeneratorSettings.OVERWORLD;
 		}
 
 		return new GeneratorOptions(

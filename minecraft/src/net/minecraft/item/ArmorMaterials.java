@@ -36,7 +36,7 @@ public enum ArmorMaterials implements ArmorMaterial {
 		SoundEvent equipSound,
 		float toughness,
 		float knockbackResistance,
-		Supplier<Ingredient> supplier
+		Supplier<Ingredient> repairIngredientSupplier
 	) {
 		this.name = name;
 		this.durabilityMultiplier = durabilityMultiplier;
@@ -45,7 +45,7 @@ public enum ArmorMaterials implements ArmorMaterial {
 		this.equipSound = equipSound;
 		this.toughness = toughness;
 		this.knockbackResistance = knockbackResistance;
-		this.repairIngredientSupplier = new Lazy<>(supplier);
+		this.repairIngredientSupplier = new Lazy<>(repairIngredientSupplier);
 	}
 
 	@Override

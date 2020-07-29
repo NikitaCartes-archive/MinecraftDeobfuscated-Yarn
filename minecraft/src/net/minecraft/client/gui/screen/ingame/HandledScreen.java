@@ -174,9 +174,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.method_30883(matrices, this.title, (float)this.titleX, (float)this.titleY, 4210752);
-		this.textRenderer
-			.method_30883(matrices, this.playerInventory.getDisplayName(), (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 4210752);
+		this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 4210752);
+		this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 4210752);
 	}
 
 	protected abstract void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY);

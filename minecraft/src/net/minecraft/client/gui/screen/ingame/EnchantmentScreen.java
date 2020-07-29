@@ -20,7 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -148,12 +148,12 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			} else {
 				String string = "" + r;
 				int s = 86 - this.textRenderer.getWidth(string);
-				StringRenderable stringRenderable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
+				StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
 				int t = 6839882;
 				if ((n < o + 1 || this.client.player.experienceLevel < r) && !this.client.player.abilities.creativeMode) {
 					this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
 					this.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 239, 16, 16);
-					this.textRenderer.drawTrimmed(stringRenderable, q, j + 16 + 19 * o, s, (t & 16711422) >> 1);
+					this.textRenderer.drawTrimmed(stringVisitable, q, j + 16 + 19 * o, s, (t & 16711422) >> 1);
 					t = 4226832;
 				} else {
 					int u = mouseX - (i + 60);
@@ -166,7 +166,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 					}
 
 					this.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 223, 16, 16);
-					this.textRenderer.drawTrimmed(stringRenderable, q, j + 16 + 19 * o, s, t);
+					this.textRenderer.drawTrimmed(stringVisitable, q, j + 16 + 19 * o, s, t);
 					t = 8453920;
 				}
 

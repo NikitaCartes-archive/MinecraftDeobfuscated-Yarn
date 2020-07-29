@@ -23,15 +23,12 @@ public class StriderEntityRenderer extends MobEntityRenderer<StriderEntity, Stri
 	}
 
 	protected void scale(StriderEntity striderEntity, MatrixStack matrixStack, float f) {
-		float g = 0.9375F;
 		if (striderEntity.isBaby()) {
-			g *= 0.5F;
+			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			this.shadowRadius = 0.25F;
 		} else {
 			this.shadowRadius = 0.5F;
 		}
-
-		matrixStack.scale(g, g, g);
 	}
 
 	protected boolean isShaking(StriderEntity striderEntity) {

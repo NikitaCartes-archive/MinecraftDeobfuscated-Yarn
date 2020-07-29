@@ -236,7 +236,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		this.titleLabel.render(this, matrices);
 		if (this.serverData != null && this.serverData.players != null) {
 			this.textRenderer
-				.method_30883(
+				.draw(
 					matrices,
 					new LiteralText("").append(field_26501).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"),
 					(float)this.column1_x,
@@ -244,7 +244,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 					10526880
 				);
 		} else {
-			this.textRenderer.method_30883(matrices, field_26501, (float)this.column1_x, (float)row(0), 10526880);
+			this.textRenderer.draw(matrices, field_26501, (float)this.column1_x, (float)row(0), 10526880);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);
@@ -259,7 +259,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			int j = mouseY - 12;
 			int k = this.textRenderer.getWidth(text);
 			this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.method_30881(matrices, text, (float)i, (float)j, 16777215);
+			this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, 16777215);
 		}
 	}
 
@@ -423,7 +423,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 			RealmsPlayerScreen.this.drawRemoveIcon(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, y + 2, mouseX, mouseY);
 			RealmsPlayerScreen.this.textRenderer
-				.method_30883(matrices, RealmsPlayerScreen.field_26497, (float)RealmsPlayerScreen.this.column2_x, (float)RealmsPlayerScreen.row(5), 10526880);
+				.draw(matrices, RealmsPlayerScreen.field_26497, (float)RealmsPlayerScreen.this.column2_x, (float)RealmsPlayerScreen.row(5), 10526880);
 			RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0F, 8.0F, 8, 8, 64, 64);

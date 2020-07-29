@@ -6,15 +6,14 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.util.Language;
 
 public abstract class BaseText implements MutableText {
 	protected final List<Text> siblings = Lists.<Text>newArrayList();
-	private class_5481 field_26623 = class_5481.field_26385;
+	private OrderedText orderedText = OrderedText.EMPTY;
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private Language field_26624;
+	private Language previousLanguage;
 	private Style style = Style.EMPTY;
 
 	@Override
@@ -56,14 +55,14 @@ public abstract class BaseText implements MutableText {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public class_5481 method_30937() {
+	public OrderedText asOrderedText() {
 		Language language = Language.getInstance();
-		if (this.field_26624 != language) {
-			this.field_26623 = language.method_30934(this);
-			this.field_26624 = language;
+		if (this.previousLanguage != language) {
+			this.orderedText = language.reorder(this);
+			this.previousLanguage = language;
 		}
 
-		return this.field_26623;
+		return this.orderedText;
 	}
 
 	public boolean equals(Object obj) {

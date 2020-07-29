@@ -1,4 +1,4 @@
-package net.minecraft.datafixer;
+package net.minecraft.nbt;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -22,27 +22,30 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.AbstractListTag;
-import net.minecraft.nbt.AbstractNumberTag;
-import net.minecraft.nbt.ByteArrayTag;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.LongArrayTag;
-import net.minecraft.nbt.LongTag;
-import net.minecraft.nbt.ShortTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 
 /**
- * Used to represent a Minecraft NBT as a {@link com.mojang.datafixers.Dynamic} for DataFixerUpper.
+ * Used to handle Minecraft NBTs within {@link com.mojang.serialization.Dynamic
+ * dynamics} for DataFixerUpper, allowing generalized serialization logic
+ * shared across different type of data structures. Use {@link NbtOps#INSTANCE}
+ * for the ops singleton.
+ * 
+ * <p>For instance, dimension data may be stored as JSON in data packs, but
+ * they will be transported in packets as NBT. DataFixerUpper allows
+ * generalizing the dimension serialization logic to prevent duplicate code,
+ * where the NBT ops allow the DataFixerUpper dimension serialization logic
+ * to interact with Minecraft NBTs.</p>
+ * 
+ * @see NbtOps#INSTANCE
  */
 public class NbtOps implements DynamicOps<Tag> {
+	/**
+	 * An singleton of the NBT dynamic ops.
+	 * 
+	 * <p>This ops does not compress maps (replace field name to value pairs
+	 * with an ordered list of values in serialization). In fact, since
+	 * Minecraft NBT lists can only contain elements of the same type, this op
+	 * cannot compress maps.</p>
+	 */
 	public static final NbtOps INSTANCE = new NbtOps();
 
 	protected NbtOps() {

@@ -127,7 +127,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		}
 
 		if (tag.getBoolean("ignited")) {
-			this.setIgnited();
+			this.ignite();
 		}
 	}
 
@@ -219,7 +219,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 					player, this.getX(), this.getY(), this.getZ(), SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F
 				);
 			if (!this.world.isClient) {
-				this.setIgnited();
+				this.ignite();
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
@@ -264,7 +264,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		return this.dataTracker.get(IGNITED);
 	}
 
-	public void setIgnited() {
+	public void ignite() {
 		this.dataTracker.set(IGNITED, true);
 	}
 

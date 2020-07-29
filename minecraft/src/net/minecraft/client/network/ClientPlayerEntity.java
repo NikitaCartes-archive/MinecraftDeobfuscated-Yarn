@@ -67,6 +67,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -1039,6 +1040,19 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			return this.isSubmergedInWater;
+		}
+	}
+
+	@Override
+	public Vec3d method_30951(float f) {
+		if (this.client.options.getPerspective().isFirstPerson()) {
+			float g = MathHelper.lerp(f * 0.5F, this.yaw, this.prevYaw) * (float) (Math.PI / 180.0);
+			float h = MathHelper.lerp(f * 0.5F, this.pitch, this.prevPitch) * (float) (Math.PI / 180.0);
+			double d = this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0;
+			Vec3d vec3d = new Vec3d(0.39 * d, -0.6, 0.3);
+			return vec3d.rotateX(-h).rotateY(-g).add(this.getCameraPosVec(f));
+		} else {
+			return super.method_30951(f);
 		}
 	}
 }

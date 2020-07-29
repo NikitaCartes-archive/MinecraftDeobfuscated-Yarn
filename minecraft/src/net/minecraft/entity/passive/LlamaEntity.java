@@ -47,6 +47,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -309,17 +310,17 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	public boolean canEquip() {
+	public boolean hasArmorSlot() {
 		return true;
 	}
 
 	@Override
-	public boolean setSaddled() {
+	public boolean hasArmorInSlot() {
 		return !this.items.getStack(1).isEmpty();
 	}
 
 	@Override
-	public boolean canEquip(ItemStack item) {
+	public boolean isHorseArmor(ItemStack item) {
 		Item item2 = item.getItem();
 		return ItemTags.CARPETS.contains(item2);
 	}
@@ -486,6 +487,12 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Override
 	public void attack(LivingEntity target, float pullProgress) {
 		this.spitAt(target);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_29919() {
+		return new Vec3d(0.0, 0.75 * (double)this.getStandingEyeHeight(), (double)this.getWidth() * 0.5);
 	}
 
 	static class ChaseWolvesGoal extends FollowTargetGoal<WolfEntity> {

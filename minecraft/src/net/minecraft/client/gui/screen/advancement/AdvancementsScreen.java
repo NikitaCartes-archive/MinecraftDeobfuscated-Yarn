@@ -149,7 +149,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			RenderSystem.disableBlend();
 		}
 
-		this.textRenderer.method_30883(matrixStack, field_26555, (float)(i + 8), (float)(j + 6), 4210752);
+		this.textRenderer.draw(matrixStack, field_26555, (float)(i + 8), (float)(j + 6), 4210752);
 	}
 
 	private void drawWidgetTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {

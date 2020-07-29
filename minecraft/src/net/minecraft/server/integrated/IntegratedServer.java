@@ -43,9 +43,9 @@ public class IntegratedServer extends MinecraftServer {
 	private UUID localPlayerUuid;
 
 	public IntegratedServer(
-		Thread thread,
-		MinecraftClient minecraftClient,
-		DynamicRegistryManager.Impl impl,
+		Thread serverThread,
+		MinecraftClient client,
+		DynamicRegistryManager.Impl registryManager,
 		LevelStorage.Session session,
 		ResourcePackManager resourcePackManager,
 		ServerResourceManager serverResourceManager,
@@ -56,24 +56,24 @@ public class IntegratedServer extends MinecraftServer {
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
-			thread,
-			impl,
+			serverThread,
+			registryManager,
 			session,
 			saveProperties,
 			resourcePackManager,
-			minecraftClient.getNetworkProxy(),
-			minecraftClient.getDataFixer(),
+			client.getNetworkProxy(),
+			client.getDataFixer(),
 			serverResourceManager,
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
 			worldGenerationProgressListenerFactory
 		);
-		this.setServerName(minecraftClient.getSession().getUsername());
-		this.setDemo(minecraftClient.isDemo());
+		this.setServerName(client.getSession().getUsername());
+		this.setDemo(client.isDemo());
 		this.setWorldHeight(256);
-		this.setPlayerManager(new IntegratedPlayerManager(this, this.registryManager, this.field_24371));
-		this.client = minecraftClient;
+		this.setPlayerManager(new IntegratedPlayerManager(this, this.registryManager, this.saveHandler));
+		this.client = client;
 	}
 
 	@Override
@@ -276,6 +276,6 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public boolean syncChunkWrites() {
-		return this.client.options.field_25623;
+		return this.client.options.syncChunkWrites;
 	}
 }

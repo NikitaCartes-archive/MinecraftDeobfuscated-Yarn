@@ -11,7 +11,6 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -117,13 +116,6 @@ public class NamespaceResourceManager implements ResourceManager {
 		} else {
 			return list;
 		}
-	}
-
-	@Override
-	public Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate) {
-		return (Collection<Identifier>)(Objects.equals(resourceType.getNamespace(), this.namespace)
-			? this.findResources(resourceType.getPath(), predicate)
-			: ImmutableSet.<Identifier>of());
 	}
 
 	@Override

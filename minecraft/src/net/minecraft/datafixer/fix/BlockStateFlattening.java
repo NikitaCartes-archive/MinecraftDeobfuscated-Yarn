@@ -4,7 +4,7 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.datafixer.NbtOps;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringNbtReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

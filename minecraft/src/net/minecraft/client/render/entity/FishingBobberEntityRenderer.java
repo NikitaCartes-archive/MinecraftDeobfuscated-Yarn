@@ -63,7 +63,8 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			double p;
 			double q;
 			float r;
-			if ((this.dispatcher.gameOptions == null || this.dispatcher.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
+			if ((this.dispatcher.gameOptions == null || this.dispatcher.gameOptions.getPerspective().isFirstPerson())
+				&& playerEntity == MinecraftClient.getInstance().player) {
 				double s = this.dispatcher.gameOptions.fov;
 				s /= 100.0;
 				Vec3d vec3d = new Vec3d((double)j * -0.36 * s, -0.045 * s, 0.4);
