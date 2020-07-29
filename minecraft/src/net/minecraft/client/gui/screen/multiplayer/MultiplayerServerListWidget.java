@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,6 +27,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -147,10 +147,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.client.textRenderer.method_30883(matrices, field_26588, (float)(x + 32 + 3), (float)(y + 1), 16777215);
+			this.client.textRenderer.draw(matrices, field_26588, (float)(x + 32 + 3), (float)(y + 1), 16777215);
 			this.client.textRenderer.draw(matrices, this.server.getMotd(), (float)(x + 32 + 3), (float)(y + 12), 8421504);
 			if (this.client.options.hideServerAddress) {
-				this.client.textRenderer.method_30883(matrices, field_26589, (float)(x + 32 + 3), (float)(y + 12 + 11), 3158064);
+				this.client.textRenderer.draw(matrices, field_26589, (float)(x + 32 + 3), (float)(y + 12 + 11), 3158064);
 			} else {
 				this.client.textRenderer.draw(matrices, this.server.getAddressPort(), (float)(x + 32 + 3), (float)(y + 12 + 11), 3158064);
 			}
@@ -181,7 +181,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			int i = y + entryHeight / 2 - 9 / 2;
 			this.client
 				.textRenderer
-				.method_30883(
+				.draw(
 					matrices,
 					MultiplayerServerListWidget.field_26581,
 					(float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(MultiplayerServerListWidget.field_26581) / 2),
@@ -250,15 +250,15 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			boolean bl2 = this.server.protocolVersion < SharedConstants.getGameVersion().getProtocolVersion();
 			boolean bl3 = bl || bl2;
 			this.client.textRenderer.draw(matrices, this.server.name, (float)(x + 32 + 3), (float)(y + 1), 16777215);
-			List<class_5481> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
+			List<OrderedText> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
 
 			for (int i = 0; i < Math.min(list.size(), 2); i++) {
-				this.client.textRenderer.draw(matrices, (class_5481)list.get(i), (float)(x + 32 + 3), (float)(y + 12 + 9 * i), 8421504);
+				this.client.textRenderer.draw(matrices, (OrderedText)list.get(i), (float)(x + 32 + 3), (float)(y + 12 + 9 * i), 8421504);
 			}
 
 			Text text = (Text)(bl3 ? this.server.version.shallowCopy().formatted(Formatting.DARK_RED) : this.server.playerCountLabel);
 			int j = this.client.textRenderer.getWidth(text);
-			this.client.textRenderer.method_30883(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 8421504);
+			this.client.textRenderer.draw(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 8421504);
 			int k = 0;
 			int l;
 			List<Text> list2;

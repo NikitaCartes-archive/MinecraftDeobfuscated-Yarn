@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -71,7 +70,7 @@ public class CompoundTag implements Tag {
 	};
 	private final Map<String, Tag> tags;
 
-	public CompoundTag(Map<String, Tag> tags) {
+	protected CompoundTag(Map<String, Tag> tags) {
 		this.tags = tags;
 	}
 
@@ -510,7 +509,7 @@ public class CompoundTag implements Tag {
 		}
 	}
 
-	public Map<String, Tag> method_29143() {
+	protected Map<String, Tag> method_29143() {
 		return Collections.unmodifiableMap(this.tags);
 	}
 }

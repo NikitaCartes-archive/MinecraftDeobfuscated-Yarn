@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -13,6 +12,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
@@ -109,36 +109,38 @@ public abstract class DrawableHelper {
 		RenderSystem.enableTexture();
 	}
 
-	protected static void fillGradient(Matrix4f matrix4f, BufferBuilder bufferBuilder, int xStart, int yStart, int xEnd, int yEnd, int i, int j, int k) {
-		float f = (float)(j >> 24 & 0xFF) / 255.0F;
-		float g = (float)(j >> 16 & 0xFF) / 255.0F;
-		float h = (float)(j >> 8 & 0xFF) / 255.0F;
-		float l = (float)(j & 0xFF) / 255.0F;
-		float m = (float)(k >> 24 & 0xFF) / 255.0F;
-		float n = (float)(k >> 16 & 0xFF) / 255.0F;
-		float o = (float)(k >> 8 & 0xFF) / 255.0F;
-		float p = (float)(k & 0xFF) / 255.0F;
-		bufferBuilder.vertex(matrix4f, (float)xEnd, (float)yStart, (float)i).color(g, h, l, f).next();
-		bufferBuilder.vertex(matrix4f, (float)xStart, (float)yStart, (float)i).color(g, h, l, f).next();
-		bufferBuilder.vertex(matrix4f, (float)xStart, (float)yEnd, (float)i).color(n, o, p, m).next();
-		bufferBuilder.vertex(matrix4f, (float)xEnd, (float)yEnd, (float)i).color(n, o, p, m).next();
+	protected static void fillGradient(
+		Matrix4f matrix, BufferBuilder bufferBuilder, int xStart, int yStart, int xEnd, int yEnd, int z, int colorStart, int colorEnd
+	) {
+		float f = (float)(colorStart >> 24 & 0xFF) / 255.0F;
+		float g = (float)(colorStart >> 16 & 0xFF) / 255.0F;
+		float h = (float)(colorStart >> 8 & 0xFF) / 255.0F;
+		float i = (float)(colorStart & 0xFF) / 255.0F;
+		float j = (float)(colorEnd >> 24 & 0xFF) / 255.0F;
+		float k = (float)(colorEnd >> 16 & 0xFF) / 255.0F;
+		float l = (float)(colorEnd >> 8 & 0xFF) / 255.0F;
+		float m = (float)(colorEnd & 0xFF) / 255.0F;
+		bufferBuilder.vertex(matrix, (float)xEnd, (float)yStart, (float)z).color(g, h, i, f).next();
+		bufferBuilder.vertex(matrix, (float)xStart, (float)yStart, (float)z).color(g, h, i, f).next();
+		bufferBuilder.vertex(matrix, (float)xStart, (float)yEnd, (float)z).color(k, l, m, j).next();
+		bufferBuilder.vertex(matrix, (float)xEnd, (float)yEnd, (float)z).color(k, l, m, j).next();
 	}
 
-	public static void drawCenteredString(MatrixStack matrixStack, TextRenderer textRenderer, String string, int i, int j, int k) {
-		textRenderer.drawWithShadow(matrixStack, string, (float)(i - textRenderer.getWidth(string) / 2), (float)j, k);
+	public static void drawCenteredString(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
+		textRenderer.drawWithShadow(matrices, text, (float)(centerX - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
-	public static void drawCenteredText(MatrixStack matrixStack, TextRenderer textRenderer, Text text, int i, int j, int k) {
-		class_5481 lv = text.method_30937();
-		textRenderer.drawWithShadow(matrixStack, lv, (float)(i - textRenderer.method_30880(lv) / 2), (float)j, k);
+	public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, Text text, int centerX, int y, int color) {
+		OrderedText orderedText = text.asOrderedText();
+		textRenderer.drawWithShadow(matrices, orderedText, (float)(centerX - textRenderer.getWidth(orderedText) / 2), (float)y, color);
 	}
 
-	public static void drawStringWithShadow(MatrixStack matrixStack, TextRenderer textRenderer, String string, int i, int j, int k) {
-		textRenderer.drawWithShadow(matrixStack, string, (float)i, (float)j, k);
+	public static void drawStringWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
-	public static void drawTextWithShadow(MatrixStack matrixStack, TextRenderer textRenderer, Text text, int i, int j, int k) {
-		textRenderer.method_30881(matrixStack, text, (float)i, (float)j, k);
+	public static void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
 	public void method_29343(int i, int j, BiConsumer<Integer, Integer> biConsumer) {

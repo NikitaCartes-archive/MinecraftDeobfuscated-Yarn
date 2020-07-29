@@ -379,7 +379,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
 		if (itemGroup.hasTooltip()) {
 			RenderSystem.disableBlend();
-			this.textRenderer.method_30883(matrices, itemGroup.getTranslationKey(), 8.0F, 6.0F, 4210752);
+			this.textRenderer.draw(matrices, itemGroup.getTranslationKey(), 8.0F, 6.0F, 4210752);
 		}
 	}
 

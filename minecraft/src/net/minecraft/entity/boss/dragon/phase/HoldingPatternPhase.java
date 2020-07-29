@@ -115,7 +115,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	private void method_6842() {
 		if (this.field_7043 != null && !this.field_7043.isFinished()) {
-			Vec3i vec3i = this.field_7043.getCurrentPosition();
+			Vec3i vec3i = this.field_7043.method_31032();
 			this.field_7043.next();
 			double d = (double)vec3i.getX();
 			double e = (double)vec3i.getZ();

@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.entity.EntityType;
@@ -10,11 +10,12 @@ import net.minecraft.structure.SwampHutGenerator;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SwampHutFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.WITCH, 1, 1, 1));
-	private static final List<Biome.SpawnEntry> CREATURE_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.CAT, 1, 1, 1));
+	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.WITCH, 1, 1, 1));
+	private static final List<SpawnSettings.SpawnEntry> CREATURE_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.CAT, 1, 1, 1));
 
 	public SwampHutFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
@@ -26,12 +27,12 @@ public class SwampHutFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getMonsterSpawns() {
+	public List<SpawnSettings.SpawnEntry> getMonsterSpawns() {
 		return MONSTER_SPAWNS;
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getCreatureSpawns() {
+	public List<SpawnSettings.SpawnEntry> getCreatureSpawns() {
 		return CREATURE_SPAWNS;
 	}
 

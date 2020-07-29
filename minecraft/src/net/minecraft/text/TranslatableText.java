@@ -16,13 +16,13 @@ import net.minecraft.util.Language;
 
 public class TranslatableText extends BaseText implements ParsableText {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
-	private static final StringRenderable LITERAL_PERCENT_SIGN = StringRenderable.plain("%");
-	private static final StringRenderable NULL_ARGUMENT = StringRenderable.plain("null");
+	private static final StringVisitable LITERAL_PERCENT_SIGN = StringVisitable.plain("%");
+	private static final StringVisitable NULL_ARGUMENT = StringVisitable.plain("null");
 	private final String key;
 	private final Object[] args;
 	@Nullable
 	private Language languageCache;
-	private final List<StringRenderable> translations = Lists.<StringRenderable>newArrayList();
+	private final List<StringVisitable> translations = Lists.<StringVisitable>newArrayList();
 	private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
 	public TranslatableText(String key) {
@@ -46,7 +46,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 				this.setTranslation(string);
 			} catch (TranslationException var4) {
 				this.translations.clear();
-				this.translations.add(StringRenderable.plain(string));
+				this.translations.add(StringVisitable.plain(string));
 			}
 		}
 	}
@@ -67,7 +67,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 						throw new IllegalArgumentException();
 					}
 
-					this.translations.add(StringRenderable.plain(string));
+					this.translations.add(StringVisitable.plain(string));
 				}
 
 				String string = matcher.group(2);
@@ -82,7 +82,7 @@ public class TranslatableText extends BaseText implements ParsableText {
 					String string3 = matcher.group(1);
 					int m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
 					if (m < this.args.length) {
-						this.translations.add(this.method_29434(m));
+						this.translations.add(this.getArg(m));
 					}
 				}
 
@@ -95,22 +95,22 @@ public class TranslatableText extends BaseText implements ParsableText {
 					throw new IllegalArgumentException();
 				}
 
-				this.translations.add(StringRenderable.plain(string4));
+				this.translations.add(StringVisitable.plain(string4));
 			}
 		} catch (IllegalArgumentException var11) {
 			throw new TranslationException(this, var11);
 		}
 	}
 
-	private StringRenderable method_29434(int i) {
-		if (i >= this.args.length) {
-			throw new TranslationException(this, i);
+	private StringVisitable getArg(int index) {
+		if (index >= this.args.length) {
+			throw new TranslationException(this, index);
 		} else {
-			Object object = this.args[i];
+			Object object = this.args[index];
 			if (object instanceof Text) {
 				return (Text)object;
 			} else {
-				return object == null ? NULL_ARGUMENT : StringRenderable.plain(object.toString());
+				return object == null ? NULL_ARGUMENT : StringVisitable.plain(object.toString());
 			}
 		}
 	}
@@ -121,11 +121,11 @@ public class TranslatableText extends BaseText implements ParsableText {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public <T> Optional<T> visitSelf(StringRenderable.StyledVisitor<T> visitor, Style style) {
+	public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
 		this.updateTranslations();
 
-		for (StringRenderable stringRenderable : this.translations) {
-			Optional<T> optional = stringRenderable.visit(visitor, style);
+		for (StringVisitable stringVisitable : this.translations) {
+			Optional<T> optional = stringVisitable.visit(visitor, style);
 			if (optional.isPresent()) {
 				return optional;
 			}
@@ -135,11 +135,11 @@ public class TranslatableText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public <T> Optional<T> visitSelf(StringRenderable.Visitor<T> visitor) {
+	public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
 		this.updateTranslations();
 
-		for (StringRenderable stringRenderable : this.translations) {
-			Optional<T> optional = stringRenderable.visit(visitor);
+		for (StringVisitable stringVisitable : this.translations) {
+			Optional<T> optional = stringVisitable.visit(visitor);
 			if (optional.isPresent()) {
 				return optional;
 			}

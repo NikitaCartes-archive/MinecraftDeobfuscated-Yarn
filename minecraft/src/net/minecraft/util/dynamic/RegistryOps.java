@@ -7,11 +7,11 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
-import com.mojang.serialization.MapCodec;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -34,17 +34,19 @@ import org.apache.logging.log4j.Logger;
 public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final ResourceManager resourceManager;
-	private final DynamicRegistryManager registryManager;
+	private final DynamicRegistryManager.Impl registryManager;
 	private final Map<RegistryKey<? extends Registry<?>>, RegistryOps.ValueHolder<?>> valueHolders = Maps.<RegistryKey<? extends Registry<?>>, RegistryOps.ValueHolder<?>>newIdentityHashMap();
 
-	public static <T> RegistryOps<T> of(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager registryTracker) {
-		return new RegistryOps<>(delegate, resourceManager, registryTracker);
+	public static <T> RegistryOps<T> of(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager.Impl impl) {
+		RegistryOps<T> registryOps = new RegistryOps<>(delegate, resourceManager, impl);
+		DynamicRegistryManager.load(impl, registryOps);
+		return registryOps;
 	}
 
-	private RegistryOps(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager registryTracker) {
+	private RegistryOps(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager.Impl impl) {
 		super(delegate);
 		this.resourceManager = resourceManager;
-		this.registryManager = registryTracker;
+		this.registryManager = impl;
 	}
 
 	/**
@@ -55,7 +57,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	 * 
 	 * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, MapCodec)
 	 */
-	protected <E> DataResult<Pair<Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, MapCodec<E> mapCodec) {
+	protected <E> DataResult<Pair<Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec) {
 		Optional<MutableRegistry<E>> optional = this.registryManager.getOptional(registryKey);
 		if (!optional.isPresent()) {
 			return DataResult.error("Unknown registry: " + registryKey);
@@ -63,15 +65,11 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 			MutableRegistry<E> mutableRegistry = (MutableRegistry<E>)optional.get();
 			DataResult<Pair<Identifier, T>> dataResult = Identifier.CODEC.decode(this.delegate, object);
 			if (!dataResult.result().isPresent()) {
-				return SimpleRegistry.method_30516(registryKey, mapCodec).codec().decode(this.delegate, object).map(pairx -> pairx.mapFirst(pairxx -> {
-						mutableRegistry.add((RegistryKey<E>)pairxx.getFirst(), pairxx.getSecond());
-						mutableRegistry.markLoaded((RegistryKey<E>)pairxx.getFirst());
-						return pairxx::getSecond;
-					}));
+				return codec.decode(this.delegate, object).map(pairx -> pairx.mapFirst(objectx -> () -> objectx));
 			} else {
 				Pair<Identifier, T> pair = (Pair<Identifier, T>)dataResult.result().get();
 				Identifier identifier = pair.getFirst();
-				return this.readSupplier(registryKey, mutableRegistry, mapCodec, identifier).map(supplier -> Pair.of(supplier, pair.getSecond()));
+				return this.readSupplier(registryKey, mutableRegistry, codec, identifier).map(supplier -> Pair.of(supplier, pair.getSecond()));
 			}
 		}
 	}
@@ -79,28 +77,22 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	/**
 	 * Loads elements into a registry just loaded from a decoder.
 	 */
-	public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<? extends Registry<E>> registryRef, MapCodec<E> mapCodec) {
+	public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec) {
 		Identifier identifier = registryRef.getValue();
-		Collection<Identifier> collection = this.resourceManager.findResources(identifier, stringx -> stringx.endsWith(".json"));
+		Collection<Identifier> collection = this.resourceManager.findResources(identifier.getPath(), stringx -> stringx.endsWith(".json"));
 		DataResult<SimpleRegistry<E>> dataResult = DataResult.success(registry, Lifecycle.stable());
+		String string = identifier.getPath() + "/";
 
 		for (Identifier identifier2 : collection) {
-			String string = identifier2.getPath();
-			if (!string.endsWith(".json")) {
+			String string2 = identifier2.getPath();
+			if (!string2.endsWith(".json")) {
 				LOGGER.warn("Skipping resource {} since it is not a json file", identifier2);
-			} else if (!string.startsWith(identifier.getPath() + "/")) {
+			} else if (!string2.startsWith(string)) {
 				LOGGER.warn("Skipping resource {} since it does not have a registry name prefix", identifier2);
 			} else {
-				String string2 = string.substring(0, string.length() - ".json".length()).substring(identifier.getPath().length() + 1);
-				int i = string2.indexOf(47);
-				if (i < 0) {
-					LOGGER.warn("Skipping resource {} since it does not have a namespace", identifier2);
-				} else {
-					String string3 = string2.substring(0, i);
-					String string4 = string2.substring(i + 1);
-					Identifier identifier3 = new Identifier(string3, string4);
-					dataResult = dataResult.flatMap(simpleRegistry -> this.readSupplier(registryRef, simpleRegistry, mapCodec, identifier3).map(supplier -> simpleRegistry));
-				}
+				String string3 = string2.substring(string.length(), string2.length() - ".json".length());
+				Identifier identifier3 = new Identifier(identifier2.getNamespace(), string3);
+				dataResult = dataResult.flatMap(simpleRegistry -> this.readSupplier(registryRef, simpleRegistry, codec, identifier3).map(supplier -> simpleRegistry));
 			}
 		}
 
@@ -113,84 +105,89 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	 * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.</p>
 	 */
 	private <E> DataResult<Supplier<E>> readSupplier(
-		RegistryKey<? extends Registry<E>> registryRef, MutableRegistry<E> registry, MapCodec<E> mapCodec, Identifier elementId
+		RegistryKey<? extends Registry<E>> registryRef, MutableRegistry<E> mutableRegistry, Codec<E> codec, Identifier elementId
 	) {
 		RegistryKey<E> registryKey = RegistryKey.of(registryRef, elementId);
-		E object = registry.get(registryKey);
-		if (object != null) {
-			return DataResult.success(() -> object, Lifecycle.stable());
+		RegistryOps.ValueHolder<E> valueHolder = this.getValueHolder(registryRef);
+		DataResult<Supplier<E>> dataResult = (DataResult<Supplier<E>>)valueHolder.values.get(registryKey);
+		if (dataResult != null) {
+			return dataResult;
 		} else {
-			RegistryOps.ValueHolder<E> valueHolder = this.getValueHolder(registryRef);
-			DataResult<Supplier<E>> dataResult = (DataResult<Supplier<E>>)valueHolder.values.get(registryKey);
-			if (dataResult != null) {
-				return dataResult;
+			Supplier<E> supplier = Suppliers.memoize(() -> {
+				E object = mutableRegistry.get(registryKey);
+				if (object == null) {
+					throw new RuntimeException("Error during recursive registry parsing, element resolved too early: " + registryKey);
+				} else {
+					return (T)object;
+				}
+			});
+			valueHolder.values.put(registryKey, DataResult.success(supplier));
+			DataResult<E> dataResult2 = this.readElement(registryRef, registryKey, codec);
+			DataResult<E> dataResult3;
+			if (dataResult2.result().isPresent()) {
+				mutableRegistry.method_31062(registryKey, dataResult2.result().get());
+				dataResult3 = dataResult2;
 			} else {
-				Supplier<E> supplier = Suppliers.memoize(() -> {
-					E objectx = registry.get(registryKey);
-					if (objectx == null) {
-						throw new RuntimeException("Error during recursive registry parsing, element resolved too early: " + registryKey);
-					} else {
-						return (T)objectx;
-					}
-				});
-				valueHolder.values.put(registryKey, DataResult.success(supplier));
-				DataResult<E> dataResult2 = this.readElement(registryRef, registryKey, mapCodec);
-				dataResult2.result().ifPresent(objectx -> registry.add(registryKey, objectx));
-				DataResult<Supplier<E>> dataResult3 = dataResult2.map(objectx -> () -> objectx);
-				valueHolder.values.put(registryKey, dataResult3);
-				return dataResult3;
+				E object = mutableRegistry.get(registryKey);
+				if (object != null) {
+					dataResult3 = DataResult.success(object, Lifecycle.stable());
+				} else {
+					dataResult3 = dataResult2;
+				}
 			}
+
+			DataResult<Supplier<E>> dataResult4 = dataResult3.map(objectx -> () -> object);
+			valueHolder.values.put(registryKey, dataResult4);
+			return dataResult4;
 		}
 	}
 
 	/**
 	 * Reads the actual element.
 	 */
-	private <E> DataResult<E> readElement(RegistryKey<? extends Registry<E>> registryRef, RegistryKey<E> elementRef, MapCodec<E> mapCodec) {
-		Identifier identifier = new Identifier(
-			registryRef.getValue().getNamespace(),
-			registryRef.getValue().getPath() + "/" + elementRef.getValue().getNamespace() + "/" + elementRef.getValue().getPath() + ".json"
-		);
+	private <E> DataResult<E> readElement(RegistryKey<? extends Registry<E>> registryRef, RegistryKey<E> elementRef, Codec<E> codec) {
+		Identifier identifier = elementRef.getValue();
+		Identifier identifier2 = new Identifier(identifier.getNamespace(), registryRef.getValue().getPath() + "/" + identifier.getPath() + ".json");
 
 		try {
-			Resource resource = this.resourceManager.getResource(identifier);
-			Throwable var6 = null;
+			Resource resource = this.resourceManager.getResource(identifier2);
+			Throwable var7 = null;
 
-			DataResult var11;
+			DataResult var12;
 			try {
 				Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
-				Throwable var8 = null;
+				Throwable var9 = null;
 
 				try {
 					JsonParser jsonParser = new JsonParser();
 					JsonElement jsonElement = jsonParser.parse(reader);
-					var11 = mapCodec.codec().parse(new RegistryOps<>(JsonOps.INSTANCE, this.resourceManager, this.registryManager), jsonElement);
-				} catch (Throwable var36) {
-					var8 = var36;
-					throw var36;
+					var12 = codec.parse(new RegistryOps<>(JsonOps.INSTANCE, this.resourceManager, this.registryManager), jsonElement);
+				} catch (Throwable var37) {
+					var9 = var37;
+					throw var37;
 				} finally {
 					if (reader != null) {
-						if (var8 != null) {
+						if (var9 != null) {
 							try {
 								reader.close();
-							} catch (Throwable var35) {
-								var8.addSuppressed(var35);
+							} catch (Throwable var36) {
+								var9.addSuppressed(var36);
 							}
 						} else {
 							reader.close();
 						}
 					}
 				}
-			} catch (Throwable var38) {
-				var6 = var38;
-				throw var38;
+			} catch (Throwable var39) {
+				var7 = var39;
+				throw var39;
 			} finally {
 				if (resource != null) {
-					if (var6 != null) {
+					if (var7 != null) {
 						try {
 							resource.close();
-						} catch (Throwable var34) {
-							var6.addSuppressed(var34);
+						} catch (Throwable var35) {
+							var7.addSuppressed(var35);
 						}
 					} else {
 						resource.close();
@@ -198,9 +195,9 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 				}
 			}
 
-			return var11;
-		} catch (JsonIOException | JsonSyntaxException | IOException var40) {
-			return DataResult.error("Failed to parse file: " + var40.getMessage());
+			return var12;
+		} catch (JsonIOException | JsonSyntaxException | IOException var41) {
+			return DataResult.error("Failed to parse " + identifier2 + " file: " + var41.getMessage());
 		}
 	}
 

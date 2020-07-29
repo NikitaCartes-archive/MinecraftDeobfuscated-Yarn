@@ -950,15 +950,36 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return dimensions.height * 0.95F;
 	}
 
-	public boolean canEquip() {
+	/**
+	 * Whether this horse has a slot for custom equipment besides a saddle.
+	 * 
+	 * <p>In the item slot argument type, the slot is referred to as <code>
+	 * horse.armor</code>. In this horse's screen, it appears in the middle of
+	 * the left side, and right below the saddle slot if this horse has a saddle
+	 * slot.</p>
+	 * 
+	 * <p>This is used by horse armors and llama carpets, but can be
+	 * refitted to any purpose.</p>
+	 */
+	public boolean hasArmorSlot() {
 		return false;
 	}
 
-	public boolean setSaddled() {
+	/**
+	 * Whether this horse already has an item stack in its horse armor slot.
+	 * 
+	 * @see #hasArmorSlot()
+	 */
+	public boolean hasArmorInSlot() {
 		return !this.getEquippedStack(EquipmentSlot.CHEST).isEmpty();
 	}
 
-	public boolean canEquip(ItemStack item) {
+	/**
+	 * Whether the given item stack is valid for this horse's armor slot.
+	 * 
+	 * @see #hasArmorSlot()
+	 */
+	public boolean isHorseArmor(ItemStack item) {
 		return false;
 	}
 
@@ -968,7 +989,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		if (i >= 0 && i < 2 && i < this.items.size()) {
 			if (i == 0 && item.getItem() != Items.SADDLE) {
 				return false;
-			} else if (i != 1 || this.canEquip() && this.canEquip(item)) {
+			} else if (i != 1 || this.hasArmorSlot() && this.isHorseArmor(item)) {
 				this.items.setStack(i, item);
 				this.updateSaddle();
 				return true;

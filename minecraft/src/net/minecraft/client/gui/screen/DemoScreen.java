@@ -64,7 +64,7 @@ public class DemoScreen extends Screen {
 		this.renderBackground(matrices);
 		int i = (this.width - 248) / 2 + 10;
 		int j = (this.height - 166) / 2 + 8;
-		this.textRenderer.method_30883(matrices, this.title, (float)i, (float)j, 2039583);
+		this.textRenderer.draw(matrices, this.title, (float)i, (float)j, 2039583);
 		j = this.field_26538.method_30896(matrices, i, j + 12, 12, 5197647);
 		this.field_26539.method_30896(matrices, i, j + 20, 9, 2039583);
 		super.render(matrices, mouseX, mouseY, delta);

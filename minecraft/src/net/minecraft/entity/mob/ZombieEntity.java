@@ -7,9 +7,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_5493;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -47,6 +47,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -133,7 +134,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	public void setCanBreakDoors(boolean canBreakDoors) {
-		if (this.shouldBreakDoors()) {
+		if (this.shouldBreakDoors() && class_5493.method_30955(this)) {
 			if (this.canBreakDoors != canBreakDoors) {
 				this.canBreakDoors = canBreakDoors;
 				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(canBreakDoors);
@@ -255,7 +256,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	protected void convertTo(EntityType<? extends ZombieEntity> entityType) {
-		ZombieEntity zombieEntity = this.method_29243(entityType);
+		ZombieEntity zombieEntity = this.method_29243(entityType, true);
 		if (zombieEntity != null) {
 			zombieEntity.applyAttributeModifiers(zombieEntity.world.getLocalDifficulty(zombieEntity.getBlockPos()).getClampedLocalDifficulty());
 			zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
@@ -403,9 +404,7 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
-			ZombieVillagerEntity zombieVillagerEntity = EntityType.ZOMBIE_VILLAGER.create(serverWorld);
-			zombieVillagerEntity.copyPositionAndRotation(villagerEntity);
-			villagerEntity.remove();
+			ZombieVillagerEntity zombieVillagerEntity = villagerEntity.method_29243(EntityType.ZOMBIE_VILLAGER, false);
 			zombieVillagerEntity.initialize(
 				serverWorld, serverWorld.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
 			);
@@ -413,19 +412,6 @@ public class ZombieEntity extends HostileEntity {
 			zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
 			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
 			zombieVillagerEntity.setXp(villagerEntity.getExperience());
-			zombieVillagerEntity.setBaby(villagerEntity.isBaby());
-			zombieVillagerEntity.setAiDisabled(villagerEntity.isAiDisabled());
-			if (villagerEntity.hasCustomName()) {
-				zombieVillagerEntity.setCustomName(villagerEntity.getCustomName());
-				zombieVillagerEntity.setCustomNameVisible(villagerEntity.isCustomNameVisible());
-			}
-
-			if (villagerEntity.isPersistent()) {
-				zombieVillagerEntity.setPersistent();
-			}
-
-			zombieVillagerEntity.setInvulnerable(this.isInvulnerable());
-			serverWorld.spawnEntityAndPassengers(zombieVillagerEntity);
 			if (!this.isSilent()) {
 				serverWorld.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
 			}

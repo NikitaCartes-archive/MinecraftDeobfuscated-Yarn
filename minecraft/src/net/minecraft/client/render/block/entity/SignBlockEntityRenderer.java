@@ -3,7 +3,6 @@ package net.minecraft.client.render.block.entity;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +20,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.text.OrderedText;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Direction;
 
@@ -69,13 +69,13 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		int q = 20;
 
 		for (int r = 0; r < 4; r++) {
-			class_5481 lv = signBlockEntity.getTextBeingEditedOnRow(r, text -> {
-				List<class_5481> list = textRenderer.wrapLines(text, 90);
-				return list.isEmpty() ? class_5481.field_26385 : (class_5481)list.get(0);
+			OrderedText orderedText = signBlockEntity.getTextBeingEditedOnRow(r, text -> {
+				List<OrderedText> list = textRenderer.wrapLines(text, 90);
+				return list.isEmpty() ? OrderedText.EMPTY : (OrderedText)list.get(0);
 			});
-			if (lv != null) {
-				float s = (float)(-textRenderer.method_30880(lv) / 2);
-				textRenderer.draw(lv, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
+			if (orderedText != null) {
+				float s = (float)(-textRenderer.getWidth(orderedText) / 2);
+				textRenderer.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
 			}
 		}
 

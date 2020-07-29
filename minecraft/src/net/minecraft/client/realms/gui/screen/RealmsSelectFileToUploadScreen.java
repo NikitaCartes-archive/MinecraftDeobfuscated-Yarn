@@ -76,7 +76,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			this.loadLevelList();
 		} catch (Exception var2) {
 			LOGGER.error("Couldn't load level list", (Throwable)var2);
-			this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.method_30163(var2.getMessage()), this.parent));
+			this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.of(var2.getMessage()), this.parent));
 			return;
 		}
 
@@ -190,7 +190,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 
 			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, string, (float)(j + 2), (float)(k + 1), 16777215);
 			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, this.field_26510, (float)(j + 2), (float)(k + 12), 8421504);
-			RealmsSelectFileToUploadScreen.this.textRenderer.method_30883(matrixStack, this.field_26511, (float)(j + 2), (float)(k + 12 + 10), 8421504);
+			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, this.field_26511, (float)(j + 2), (float)(k + 12 + 10), 8421504);
 		}
 	}
 

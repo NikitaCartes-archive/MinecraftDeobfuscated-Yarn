@@ -179,7 +179,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (!ServerConfigHandler.checkSuccess(this)) {
 			return false;
 		} else {
-			this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.field_24371));
+			this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.saveHandler));
 			long l = Util.getMeasuringTimeNano();
 			this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
 			SkullBlockEntity.setUserCache(this.getUserCache());

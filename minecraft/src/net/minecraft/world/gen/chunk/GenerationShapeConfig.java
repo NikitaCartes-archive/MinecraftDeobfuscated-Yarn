@@ -4,23 +4,27 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public class NoiseConfig {
-	public static final Codec<NoiseConfig> CODEC = RecordCodecBuilder.create(
+public class GenerationShapeConfig {
+	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.intRange(0, 256).fieldOf("height").forGetter(NoiseConfig::getHeight),
-					NoiseSamplingConfig.CODEC.fieldOf("sampling").forGetter(NoiseConfig::getSampling),
-					SlideConfig.CODEC.fieldOf("top_slide").forGetter(NoiseConfig::getTopSlide),
-					SlideConfig.CODEC.fieldOf("bottom_slide").forGetter(NoiseConfig::getBottomSlide),
-					Codec.intRange(1, 4).fieldOf("size_horizontal").forGetter(NoiseConfig::getSizeHorizontal),
-					Codec.intRange(1, 4).fieldOf("size_vertical").forGetter(NoiseConfig::getSizeVertical),
-					Codec.DOUBLE.fieldOf("density_factor").forGetter(NoiseConfig::getDensityFactor),
-					Codec.DOUBLE.fieldOf("density_offset").forGetter(NoiseConfig::getDensityOffset),
-					Codec.BOOL.fieldOf("simplex_surface_noise").forGetter(NoiseConfig::hasSimplexSurfaceNoise),
-					Codec.BOOL.optionalFieldOf("random_density_offset", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(NoiseConfig::hasRandomDensityOffset),
-					Codec.BOOL.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(NoiseConfig::hasIslandNoiseOverride),
-					Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(NoiseConfig::isAmplified)
+					Codec.intRange(0, 256).fieldOf("height").forGetter(GenerationShapeConfig::getHeight),
+					NoiseSamplingConfig.CODEC.fieldOf("sampling").forGetter(GenerationShapeConfig::getSampling),
+					SlideConfig.CODEC.fieldOf("top_slide").forGetter(GenerationShapeConfig::getTopSlide),
+					SlideConfig.CODEC.fieldOf("bottom_slide").forGetter(GenerationShapeConfig::getBottomSlide),
+					Codec.intRange(1, 4).fieldOf("size_horizontal").forGetter(GenerationShapeConfig::getSizeHorizontal),
+					Codec.intRange(1, 4).fieldOf("size_vertical").forGetter(GenerationShapeConfig::getSizeVertical),
+					Codec.DOUBLE.fieldOf("density_factor").forGetter(GenerationShapeConfig::getDensityFactor),
+					Codec.DOUBLE.fieldOf("density_offset").forGetter(GenerationShapeConfig::getDensityOffset),
+					Codec.BOOL.fieldOf("simplex_surface_noise").forGetter(GenerationShapeConfig::hasSimplexSurfaceNoise),
+					Codec.BOOL
+						.optionalFieldOf("random_density_offset", Boolean.valueOf(false), Lifecycle.experimental())
+						.forGetter(GenerationShapeConfig::hasRandomDensityOffset),
+					Codec.BOOL
+						.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
+						.forGetter(GenerationShapeConfig::hasIslandNoiseOverride),
+					Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::isAmplified)
 				)
-				.apply(instance, NoiseConfig::new)
+				.apply(instance, GenerationShapeConfig::new)
 	);
 	private final int height;
 	private final NoiseSamplingConfig sampling;
@@ -35,7 +39,7 @@ public class NoiseConfig {
 	private final boolean islandNoiseOverride;
 	private final boolean amplified;
 
-	public NoiseConfig(
+	public GenerationShapeConfig(
 		int height,
 		NoiseSamplingConfig sampling,
 		SlideConfig topSlide,

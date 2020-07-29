@@ -69,7 +69,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		this.textRenderer.method_30883(matrices, this.title, (float)this.titleX, (float)this.titleY, 4210752);
+		this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 4210752);
 	}
 
 	@Override

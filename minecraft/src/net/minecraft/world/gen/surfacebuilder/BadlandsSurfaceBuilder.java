@@ -49,7 +49,10 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		int n = i & 15;
 		int o = j & 15;
 		BlockState blockState3 = WHITE_TERRACOTTA;
-		BlockState blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+		SurfaceConfig surfaceConfig = biome.getGenerationSettings().getSurfaceConfig();
+		BlockState blockState4 = surfaceConfig.getUnderMaterial();
+		BlockState blockState5 = surfaceConfig.getTopMaterial();
+		BlockState blockState6 = blockState4;
 		int p = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		boolean bl = Math.cos(d / 3.0 * Math.PI) > 0.0;
 		int q = -1;
@@ -60,18 +63,18 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		for (int s = k; s >= 0; s--) {
 			if (r < 15) {
 				mutable.set(n, s, o);
-				BlockState blockState5 = chunk.getBlockState(mutable);
-				if (blockState5.isAir()) {
+				BlockState blockState7 = chunk.getBlockState(mutable);
+				if (blockState7.isAir()) {
 					q = -1;
-				} else if (blockState5.isOf(blockState.getBlock())) {
+				} else if (blockState7.isOf(blockState.getBlock())) {
 					if (q == -1) {
 						bl2 = false;
 						if (p <= 0) {
 							blockState3 = Blocks.AIR.getDefaultState();
-							blockState4 = blockState;
+							blockState6 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
 							blockState3 = WHITE_TERRACOTTA;
-							blockState4 = biome.getSurfaceConfig().getUnderMaterial();
+							blockState6 = blockState4;
 						}
 
 						if (s < l && (blockState3 == null || blockState3.isAir())) {
@@ -81,23 +84,23 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 						q = p + Math.max(0, s - l);
 						if (s >= l - 1) {
 							if (s <= l + 3 + p) {
-								chunk.setBlockState(mutable, biome.getSurfaceConfig().getTopMaterial(), false);
+								chunk.setBlockState(mutable, blockState5, false);
 								bl2 = true;
 							} else {
-								BlockState blockState6;
+								BlockState blockState8;
 								if (s < 64 || s > 127) {
-									blockState6 = ORANGE_TERRACOTTA;
+									blockState8 = ORANGE_TERRACOTTA;
 								} else if (bl) {
-									blockState6 = TERRACOTTA;
+									blockState8 = TERRACOTTA;
 								} else {
-									blockState6 = this.calculateLayerBlockState(i, s, j);
+									blockState8 = this.calculateLayerBlockState(i, s, j);
 								}
 
-								chunk.setBlockState(mutable, blockState6, false);
+								chunk.setBlockState(mutable, blockState8, false);
 							}
 						} else {
-							chunk.setBlockState(mutable, blockState4, false);
-							Block block = blockState4.getBlock();
+							chunk.setBlockState(mutable, blockState6, false);
+							Block block = blockState6.getBlock();
 							if (block == Blocks.WHITE_TERRACOTTA
 								|| block == Blocks.ORANGE_TERRACOTTA
 								|| block == Blocks.MAGENTA_TERRACOTTA

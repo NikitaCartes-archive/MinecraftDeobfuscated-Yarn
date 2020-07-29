@@ -76,7 +76,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 	private void method_6845() {
 		if (this.field_7047 != null && !this.field_7047.isFinished()) {
-			Vec3i vec3i = this.field_7047.getCurrentPosition();
+			Vec3i vec3i = this.field_7047.method_31032();
 			this.field_7047.next();
 			double d = (double)vec3i.getX();
 			double e = (double)vec3i.getZ();

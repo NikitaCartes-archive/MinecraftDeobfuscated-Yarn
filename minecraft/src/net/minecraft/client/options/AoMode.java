@@ -7,29 +7,29 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public enum AoOption {
+public enum AoMode {
 	OFF(0, "options.ao.off"),
 	MIN(1, "options.ao.min"),
 	MAX(2, "options.ao.max");
 
-	private static final AoOption[] OPTIONS = (AoOption[])Arrays.stream(values()).sorted(Comparator.comparingInt(AoOption::getValue)).toArray(AoOption[]::new);
-	private final int value;
+	private static final AoMode[] VALUES = (AoMode[])Arrays.stream(values()).sorted(Comparator.comparingInt(AoMode::getId)).toArray(AoMode[]::new);
+	private final int id;
 	private final String translationKey;
 
-	private AoOption(int value, String translationKey) {
-		this.value = value;
+	private AoMode(int id, String translationKey) {
+		this.id = id;
 		this.translationKey = translationKey;
 	}
 
-	public int getValue() {
-		return this.value;
+	public int getId() {
+		return this.id;
 	}
 
 	public String getTranslationKey() {
 		return this.translationKey;
 	}
 
-	public static AoOption getOption(int i) {
-		return OPTIONS[MathHelper.floorMod(i, OPTIONS.length)];
+	public static AoMode byId(int id) {
+		return VALUES[MathHelper.floorMod(id, VALUES.length)];
 	}
 }

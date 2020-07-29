@@ -85,7 +85,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.options.AoOption;
+import net.minecraft.client.options.AoMode;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.options.CloudRenderMode;
 import net.minecraft.client.options.GameOptions;
@@ -93,6 +93,7 @@ import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.HotbarStorage;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
+import net.minecraft.client.options.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -141,7 +142,6 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -161,6 +161,7 @@ import net.minecraft.item.SkullItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.ClientConnection;
@@ -1476,15 +1477,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private void handleInputEvents() {
 		while (this.options.keyTogglePerspective.wasPressed()) {
-			this.options.perspective++;
-			if (this.options.perspective > 2) {
-				this.options.perspective = 0;
-			}
-
-			if (this.options.perspective == 0) {
-				this.gameRenderer.onCameraEntitySet(this.getCameraEntity());
-			} else if (this.options.perspective == 1) {
-				this.gameRenderer.onCameraEntitySet(null);
+			Perspective perspective = this.options.getPerspective();
+			this.options.method_31043(this.options.getPerspective().next());
+			if (perspective.isFirstPerson() != this.options.getPerspective().isFirstPerson()) {
+				this.gameRenderer.onCameraEntitySet(this.options.getPerspective().isFirstPerson() ? this.getCameraEntity() : null);
 			}
 
 			this.worldRenderer.scheduleTerrainUpdate();
@@ -1951,7 +1947,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static boolean isAmbientOcclusionEnabled() {
-		return instance.options.ao != AoOption.OFF;
+		return instance.options.ao != AoMode.OFF;
 	}
 
 	private void doItemPick() {

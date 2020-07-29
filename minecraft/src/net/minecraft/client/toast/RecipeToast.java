@@ -36,8 +36,8 @@ public class RecipeToast implements Toast {
 			manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 			manager.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
-			manager.getGame().textRenderer.method_30883(matrices, field_26533, 30.0F, 7.0F, -11534256);
-			manager.getGame().textRenderer.method_30883(matrices, field_26534, 30.0F, 18.0F, -16777216);
+			manager.getGame().textRenderer.draw(matrices, field_26533, 30.0F, 7.0F, -11534256);
+			manager.getGame().textRenderer.draw(matrices, field_26534, 30.0F, 18.0F, -16777216);
 			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(startTime / Math.max(1L, 5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
 			ItemStack itemStack = recipe.getRecipeKindIcon();
 			RenderSystem.pushMatrix();

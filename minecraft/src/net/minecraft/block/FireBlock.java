@@ -1,9 +1,12 @@
 package net.minecraft.block;
 
+import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -33,6 +36,12 @@ public class FireBlock extends AbstractFireBlock {
 		.stream()
 		.filter(entry -> entry.getKey() != Direction.DOWN)
 		.collect(Util.toMap());
+	private static final VoxelShape field_26653 = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
+	private static final VoxelShape field_26654 = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
+	private static final VoxelShape field_26655 = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	private static final VoxelShape field_26656 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+	private static final VoxelShape field_26657 = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
+	private final Map<BlockState, VoxelShape> field_26658;
 	private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<>();
 	private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<>();
 
@@ -48,6 +57,38 @@ public class FireBlock extends AbstractFireBlock {
 				.with(WEST, Boolean.valueOf(false))
 				.with(UP, Boolean.valueOf(false))
 		);
+		this.field_26658 = ImmutableMap.copyOf(
+			(Map<? extends BlockState, ? extends VoxelShape>)this.stateManager
+				.getStates()
+				.stream()
+				.filter(blockState -> (Integer)blockState.get(AGE) == 0)
+				.collect(Collectors.toMap(Function.identity(), FireBlock::method_31016))
+		);
+	}
+
+	private static VoxelShape method_31016(BlockState blockState) {
+		VoxelShape voxelShape = VoxelShapes.empty();
+		if ((Boolean)blockState.get(UP)) {
+			voxelShape = field_26653;
+		}
+
+		if ((Boolean)blockState.get(NORTH)) {
+			voxelShape = VoxelShapes.union(voxelShape, field_26656);
+		}
+
+		if ((Boolean)blockState.get(SOUTH)) {
+			voxelShape = VoxelShapes.union(voxelShape, field_26657);
+		}
+
+		if ((Boolean)blockState.get(EAST)) {
+			voxelShape = VoxelShapes.union(voxelShape, field_26655);
+		}
+
+		if ((Boolean)blockState.get(WEST)) {
+			voxelShape = VoxelShapes.union(voxelShape, field_26654);
+		}
+
+		return voxelShape.isEmpty() ? BASE_SHAPE : voxelShape;
 	}
 
 	@Override
@@ -57,28 +98,7 @@ public class FireBlock extends AbstractFireBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		VoxelShape voxelShape = VoxelShapes.empty();
-		if ((Boolean)state.get(UP)) {
-			voxelShape = UP_SHAPE;
-		}
-
-		if ((Boolean)state.get(WEST)) {
-			voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
-		}
-
-		if ((Boolean)state.get(EAST)) {
-			voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
-		}
-
-		if ((Boolean)state.get(NORTH)) {
-			voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
-		}
-
-		if ((Boolean)state.get(SOUTH)) {
-			voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
-		}
-
-		return voxelShape == VoxelShapes.empty() ? BASE_SHAPE : voxelShape;
+		return (VoxelShape)this.field_26658.get(state.with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override

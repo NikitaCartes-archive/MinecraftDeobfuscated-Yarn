@@ -154,7 +154,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackSettings.SAFE_MODE
 	);
 	protected final LevelStorage.Session session;
-	protected final WorldSaveHandler field_24371;
+	protected final WorldSaveHandler saveHandler;
 	private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
 	private final List<Runnable> serverGuiTickables = Lists.<Runnable>newArrayList();
 	private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, this::getTicks);
@@ -255,7 +255,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.networkIo = new ServerNetworkIo(this);
 		this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
 		this.session = session;
-		this.field_24371 = session.method_27427();
+		this.saveHandler = session.method_27427();
 		this.dataFixer = dataFixer;
 		this.commandFunctionManager = new CommandFunctionManager(this, serverResourceManager.getFunctionLoader());
 		this.structureManager = new StructureManager(serverResourceManager.getResourceManager(), session, dataFixer);
@@ -1092,7 +1092,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		if (this.playerManager != null) {
 			snooper.addInfo("players_current", this.getCurrentPlayerCount());
 			snooper.addInfo("players_max", this.getMaxPlayerCount());
-			snooper.addInfo("players_seen", this.field_24371.getSavedPlayerIds().length);
+			snooper.addInfo("players_seen", this.saveHandler.getSavedPlayerIds().length);
 		}
 
 		snooper.addInfo("uses_auth", this.onlineMode);

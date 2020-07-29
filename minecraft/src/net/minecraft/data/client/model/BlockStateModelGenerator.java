@@ -934,6 +934,10 @@ public class BlockStateModelGenerator {
 		return VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, modelId)).coordinate(createAxisRotatedVariantMap());
 	}
 
+	private void method_31063(Block block, Identifier identifier) {
+		this.blockStateCollector.accept(createAxisRotatedBlockState(block, identifier));
+	}
+
 	private void registerAxisRotated(Block block, TexturedModel.Factory modelFactory) {
 		Identifier identifier = modelFactory.upload(block, this.modelCollector);
 		this.blockStateCollector.accept(createAxisRotatedBlockState(block, identifier));
@@ -2099,10 +2103,10 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void registerEndRod() {
+	private void method_31064(Block block) {
 		this.blockStateCollector
 			.accept(
-				VariantsBlockStateSupplier.create(Blocks.END_ROD, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(Blocks.END_ROD)))
+				VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(block)))
 					.coordinate(this.createUpDefaultFacingVariantMap())
 			);
 	}
@@ -3340,7 +3344,6 @@ public class BlockStateModelGenerator {
 		this.registerSimpleState(Blocks.WATER);
 		this.registerSimpleState(Blocks.LAVA);
 		this.registerSimpleState(Blocks.SLIME_BLOCK);
-		this.registerSimpleState(Blocks.CHAIN);
 		this.registerItemModel(Items.CHAIN);
 		this.registerSimpleState(Blocks.POTTED_BAMBOO);
 		this.registerSimpleState(Blocks.POTTED_CACTUS);
@@ -3421,7 +3424,7 @@ public class BlockStateModelGenerator {
 		this.registerComposter();
 		this.registerDaylightDetector();
 		this.registerEndPortalFrame();
-		this.registerEndRod();
+		this.method_31064(Blocks.END_ROD);
 		this.registerFarmland();
 		this.registerFire();
 		this.registerSoulFire();
@@ -3468,6 +3471,7 @@ public class BlockStateModelGenerator {
 		this.registerFurnaceLikeOrientable(Blocks.DROPPER);
 		this.registerLantern(Blocks.LANTERN);
 		this.registerLantern(Blocks.SOUL_LANTERN);
+		this.method_31063(Blocks.CHAIN, ModelIds.getBlockModelId(Blocks.CHAIN));
 		this.registerAxisRotated(Blocks.BASALT, TexturedModel.CUBE_COLUMN);
 		this.registerAxisRotated(Blocks.POLISHED_BASALT, TexturedModel.CUBE_COLUMN);
 		this.registerAxisRotated(Blocks.BONE_BLOCK, TexturedModel.CUBE_COLUMN);

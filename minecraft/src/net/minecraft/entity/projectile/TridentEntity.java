@@ -147,7 +147,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 			BlockPos blockPos = entity.getBlockPos();
 			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);
-				lightningEntity.method_29495(Vec3d.ofBottomCenter(blockPos));
+				lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
 				lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
 				this.world.spawnEntity(lightningEntity);
 				soundEvent = SoundEvents.ITEM_TRIDENT_THUNDER;

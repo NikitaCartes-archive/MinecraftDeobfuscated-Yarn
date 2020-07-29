@@ -11,5 +11,5 @@ public abstract class MutableRegistry<T> extends Registry<T> {
 
 	public abstract <V extends T> V add(RegistryKey<T> key, V entry);
 
-	public abstract void markLoaded(RegistryKey<T> registryKey);
+	public abstract <V extends T> V method_31062(RegistryKey<T> registryKey, V object);
 }

@@ -216,7 +216,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				this.addButtons();
 			} catch (RealmsServiceException var5) {
 				LOGGER.error("Couldn't get own world");
-				this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(var5.getMessage()), this.parent));
+				this.client.openScreen(new RealmsGenericErrorScreen(Text.of(var5.getMessage()), this.parent));
 			}
 		}).start();
 	}

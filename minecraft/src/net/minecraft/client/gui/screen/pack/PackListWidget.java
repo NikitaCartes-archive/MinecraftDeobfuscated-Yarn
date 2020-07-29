@@ -3,7 +3,6 @@ package net.minecraft.client.gui.screen.pack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -14,7 +13,8 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -40,7 +40,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		Text text = new LiteralText("").append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
 		this.client
 			.textRenderer
-			.method_30883(matrices, text, (float)(x + this.width / 2 - this.client.textRenderer.getWidth(text) / 2), (float)Math.min(this.top + 3, y), 16777215);
+			.draw(matrices, text, (float)(x + this.width / 2 - this.client.textRenderer.getWidth(text) / 2), (float)Math.min(this.top + 3, y), 16777215);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		protected final MinecraftClient client;
 		protected final Screen screen;
 		private final ResourcePackOrganizer.Pack pack;
-		private final class_5481 field_26590;
+		private final OrderedText field_26590;
 		private final class_5489 field_26591;
 
 		public ResourcePackEntry(MinecraftClient client, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
@@ -79,12 +79,12 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 			int i = client.textRenderer.getWidth(text);
 			if (i > 157) {
-				StringRenderable stringRenderable = StringRenderable.concat(
-					client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth("...")), StringRenderable.plain("...")
+				StringVisitable stringVisitable = StringVisitable.concat(
+					client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth("...")), StringVisitable.plain("...")
 				);
-				this.field_26590 = Language.getInstance().method_30934(stringRenderable);
+				this.field_26590 = Language.getInstance().reorder(stringVisitable);
 			} else {
-				this.field_26590 = text.method_30937();
+				this.field_26590 = text.asOrderedText();
 			}
 
 			this.field_26591 = class_5489.method_30891(client.textRenderer, text2, 157, 2);

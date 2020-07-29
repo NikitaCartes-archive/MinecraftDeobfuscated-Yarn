@@ -38,7 +38,7 @@ public class BossBarHud extends DrawableHelper {
 				int m = this.client.textRenderer.getWidth(text);
 				int n = i / 2 - m / 2;
 				int o = j - 9;
-				this.client.textRenderer.method_30881(matrices, text, (float)n, (float)o, 16777215);
+				this.client.textRenderer.drawWithShadow(matrices, text, (float)n, (float)o, 16777215);
 				j += 10 + 9;
 				if (j >= this.client.getWindow().getScaledHeight() / 3) {
 					break;

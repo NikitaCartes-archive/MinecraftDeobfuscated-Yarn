@@ -175,6 +175,16 @@ public class Vec3d implements Position {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public Vec3d method_31033(float f) {
+		float g = MathHelper.cos(f);
+		float h = MathHelper.sin(f);
+		double d = this.x * (double)g + this.y * (double)h;
+		double e = this.y * (double)g - this.x * (double)h;
+		double i = this.z;
+		return new Vec3d(d, e, i);
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static Vec3d fromPolar(Vec2f polar) {
 		return fromPolar(polar.x, polar.y);
 	}

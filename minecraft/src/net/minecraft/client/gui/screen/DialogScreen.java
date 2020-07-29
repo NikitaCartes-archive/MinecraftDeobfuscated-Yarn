@@ -8,20 +8,20 @@ import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class DialogScreen extends Screen {
-	private final StringRenderable message;
+	private final StringVisitable message;
 	private final ImmutableList<DialogScreen.ChoiceButton> choiceButtons;
 	private class_5489 lines = class_5489.field_26528;
 	private int linesY;
 	private int buttonWidth;
 
-	protected DialogScreen(Text title, List<StringRenderable> list, ImmutableList<DialogScreen.ChoiceButton> choiceButtons) {
+	protected DialogScreen(Text title, List<StringVisitable> list, ImmutableList<DialogScreen.ChoiceButton> choiceButtons) {
 		super(title);
-		this.message = StringRenderable.concat(list);
+		this.message = StringVisitable.concat(list);
 		this.choiceButtons = choiceButtons;
 	}
 

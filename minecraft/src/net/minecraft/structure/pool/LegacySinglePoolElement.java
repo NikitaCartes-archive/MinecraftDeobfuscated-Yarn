@@ -1,6 +1,5 @@
 package net.minecraft.structure.pool;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -8,7 +7,7 @@ import java.util.function.Supplier;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
-import net.minecraft.structure.processor.StructureProcessor;
+import net.minecraft.structure.processor.ProcessorList;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -18,9 +17,7 @@ public class LegacySinglePoolElement extends SinglePoolElement {
 		instance -> instance.group(method_28882(), method_28880(), method_28883()).apply(instance, LegacySinglePoolElement::new)
 	);
 
-	protected LegacySinglePoolElement(
-		Either<Identifier, Structure> either, Supplier<ImmutableList<StructureProcessor>> supplier, StructurePool.Projection projection
-	) {
+	protected LegacySinglePoolElement(Either<Identifier, Structure> either, Supplier<ProcessorList> supplier, StructurePool.Projection projection) {
 		super(either, supplier, projection);
 	}
 

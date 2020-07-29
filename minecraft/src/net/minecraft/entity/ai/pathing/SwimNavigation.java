@@ -46,12 +46,12 @@ public class SwimNavigation extends EntityNavigation {
 		if (!this.isIdle()) {
 			if (this.isAtValidPosition()) {
 				this.continueFollowingPath();
-			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
-				Vec3d vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
+			} else if (this.currentPath != null && !this.currentPath.isFinished()) {
+				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x)
 					&& MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y)
 					&& MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {
-					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
+					this.currentPath.next();
 				}
 			}
 
@@ -75,7 +75,7 @@ public class SwimNavigation extends EntityNavigation {
 			}
 
 			int i = 6;
-			Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.getCurrentPosition());
+			Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.method_31032());
 			if (Math.abs(this.entity.getX() - vec3d3.x) < (double)g
 				&& Math.abs(this.entity.getZ() - vec3d3.z) < (double)g
 				&& Math.abs(this.entity.getY() - vec3d3.y) < (double)(g * 2.0F)) {
@@ -106,7 +106,7 @@ public class SwimNavigation extends EntityNavigation {
 		}
 
 		if (this.currentPath != null && !this.currentPath.isFinished()) {
-			Vec3i vec3i = this.currentPath.getCurrentPosition();
+			Vec3i vec3i = this.currentPath.method_31032();
 			if (vec3i.equals(this.lastNodePosition)) {
 				this.currentNodeMs = this.currentNodeMs + (Util.getMeasuringTimeMs() - this.lastActiveTickMs);
 			} else {

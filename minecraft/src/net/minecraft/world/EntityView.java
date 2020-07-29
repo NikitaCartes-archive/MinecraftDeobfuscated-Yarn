@@ -2,7 +2,6 @@ package net.minecraft.world;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -91,16 +90,14 @@ public interface EntityView {
 			return Stream.empty();
 		} else {
 			Box box2 = box.expand(1.0E-7);
-			return this.getOtherEntities(entity, box2, predicate.and(e -> entity == null || !entity.isConnectedThroughVehicle(e))).stream().flatMap(entity2 -> {
-				if (entity != null) {
-					Box box2x = entity.getHardCollisionBox(entity2);
-					if (box2x != null && box2x.intersects(box2)) {
-						return Stream.of(entity2.getCollisionBox(), box2x);
-					}
-				}
-
-				return Stream.of(entity2.getCollisionBox());
-			}).filter(Objects::nonNull).map(VoxelShapes::cuboid);
+			return this.getOtherEntities(
+					entity,
+					box2,
+					predicate.and(entityx -> entityx.getBoundingBox().intersects(box2) && (entity == null ? entityx.method_30948() : entity.method_30949(entityx)))
+				)
+				.stream()
+				.map(Entity::getBoundingBox)
+				.map(VoxelShapes::cuboid);
 		}
 	}
 

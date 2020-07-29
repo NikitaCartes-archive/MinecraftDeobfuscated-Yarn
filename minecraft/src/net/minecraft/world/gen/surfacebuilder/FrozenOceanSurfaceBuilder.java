@@ -69,8 +69,11 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 
 		int q = i & 15;
 		int r = j & 15;
-		BlockState blockState3 = biome.getSurfaceConfig().getUnderMaterial();
-		BlockState blockState4 = biome.getSurfaceConfig().getTopMaterial();
+		SurfaceConfig surfaceConfig = biome.getGenerationSettings().getSurfaceConfig();
+		BlockState blockState3 = surfaceConfig.getUnderMaterial();
+		BlockState blockState4 = surfaceConfig.getTopMaterial();
+		BlockState blockState5 = blockState3;
+		BlockState blockState6 = blockState4;
 		int s = (int)(d / 3.0 + 3.0 + random.nextDouble() * 0.25);
 		int t = -1;
 		int u = 0;
@@ -85,46 +88,46 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 				chunk.setBlockState(mutable, PACKED_ICE, false);
 			}
 
-			BlockState blockState5 = chunk.getBlockState(mutable);
-			if (blockState5.isAir()) {
+			BlockState blockState7 = chunk.getBlockState(mutable);
+			if (blockState7.isAir()) {
 				t = -1;
-			} else if (blockState5.isOf(blockState.getBlock())) {
+			} else if (blockState7.isOf(blockState.getBlock())) {
 				if (t == -1) {
 					if (s <= 0) {
-						blockState4 = AIR;
-						blockState3 = blockState;
+						blockState6 = AIR;
+						blockState5 = blockState;
 					} else if (x >= l - 4 && x <= l + 1) {
-						blockState4 = biome.getSurfaceConfig().getTopMaterial();
-						blockState3 = biome.getSurfaceConfig().getUnderMaterial();
+						blockState6 = blockState4;
+						blockState5 = blockState3;
 					}
 
-					if (x < l && (blockState4 == null || blockState4.isAir())) {
+					if (x < l && (blockState6 == null || blockState6.isAir())) {
 						if (biome.getTemperature(mutable.set(i, x, j)) < 0.15F) {
-							blockState4 = ICE;
+							blockState6 = ICE;
 						} else {
-							blockState4 = blockState2;
+							blockState6 = blockState2;
 						}
 					}
 
 					t = s;
 					if (x >= l - 1) {
-						chunk.setBlockState(mutable, blockState4, false);
+						chunk.setBlockState(mutable, blockState6, false);
 					} else if (x < l - 7 - s) {
-						blockState4 = AIR;
-						blockState3 = blockState;
+						blockState6 = AIR;
+						blockState5 = blockState;
 						chunk.setBlockState(mutable, GRAVEL, false);
 					} else {
-						chunk.setBlockState(mutable, blockState3, false);
+						chunk.setBlockState(mutable, blockState5, false);
 					}
 				} else if (t > 0) {
 					t--;
-					chunk.setBlockState(mutable, blockState3, false);
-					if (t == 0 && blockState3.isOf(Blocks.SAND) && s > 1) {
+					chunk.setBlockState(mutable, blockState5, false);
+					if (t == 0 && blockState5.isOf(Blocks.SAND) && s > 1) {
 						t = random.nextInt(4) + Math.max(0, x - 63);
-						blockState3 = blockState3.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
+						blockState5 = blockState5.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
 					}
 				}
-			} else if (blockState5.isOf(Blocks.PACKED_ICE) && u <= v && x > w) {
+			} else if (blockState7.isOf(Blocks.PACKED_ICE) && u <= v && x > w) {
 				chunk.setBlockState(mutable, SNOW_BLOCK, false);
 				u++;
 			}

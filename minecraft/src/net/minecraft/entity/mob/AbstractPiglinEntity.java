@@ -3,10 +3,10 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5493;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.data.DataTracker;
@@ -33,9 +33,8 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	private void setCanPathThroughDoors() {
-		EntityNavigation entityNavigation = this.getNavigation();
-		if (entityNavigation instanceof MobNavigation) {
-			((MobNavigation)entityNavigation).setCanPathThroughDoors(true);
+		if (class_5493.method_30955(this)) {
+			((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		}
 	}
 
@@ -97,7 +96,7 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 	}
 
 	protected void zombify(ServerWorld world) {
-		ZombifiedPiglinEntity zombifiedPiglinEntity = this.method_29243(EntityType.ZOMBIFIED_PIGLIN);
+		ZombifiedPiglinEntity zombifiedPiglinEntity = this.method_29243(EntityType.ZOMBIFIED_PIGLIN, true);
 		if (zombifiedPiglinEntity != null) {
 			zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
 		}

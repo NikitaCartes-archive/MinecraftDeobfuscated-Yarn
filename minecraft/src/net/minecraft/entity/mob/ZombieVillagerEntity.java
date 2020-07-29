@@ -10,7 +10,6 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
@@ -28,6 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -193,7 +193,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	private void finishConversion(ServerWorld world) {
-		VillagerEntity villagerEntity = EntityType.VILLAGER.create(world);
+		VillagerEntity villagerEntity = this.method_29243(EntityType.VILLAGER, false);
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
@@ -209,7 +209,6 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			}
 		}
 
-		villagerEntity.copyPositionAndRotation(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.gossipData != null) {
 			villagerEntity.setGossipDataFromTag(this.gossipData);
@@ -221,23 +220,6 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		villagerEntity.setExperience(this.xp);
 		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
-		if (this.isBaby()) {
-			villagerEntity.setBreedingAge(-24000);
-		}
-
-		this.remove();
-		villagerEntity.setAiDisabled(this.isAiDisabled());
-		if (this.hasCustomName()) {
-			villagerEntity.setCustomName(this.getCustomName());
-			villagerEntity.setCustomNameVisible(this.isCustomNameVisible());
-		}
-
-		if (this.isPersistent()) {
-			villagerEntity.setPersistent();
-		}
-
-		villagerEntity.setInvulnerable(this.isInvulnerable());
-		world.spawnEntityAndPassengers(villagerEntity);
 		if (this.converter != null) {
 			PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
 			if (playerEntity instanceof ServerPlayerEntity) {

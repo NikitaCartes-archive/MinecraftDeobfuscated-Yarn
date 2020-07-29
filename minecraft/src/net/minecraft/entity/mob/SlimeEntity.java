@@ -280,7 +280,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 				&& pos.getY() > 50
 				&& pos.getY() < 70
 				&& random.nextFloat() < 0.5F
-				&& random.nextFloat() < world.method_30272()
+				&& random.nextFloat() < world.getMoonSize()
 				&& world.getLightLevel(pos) <= random.nextInt(8)) {
 				return canMobSpawn(type, world, spawnReason, pos, random);
 			}

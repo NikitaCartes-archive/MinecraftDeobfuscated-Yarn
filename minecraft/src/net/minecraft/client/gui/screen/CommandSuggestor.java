@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -39,6 +38,7 @@ import net.minecraft.client.util.Rect2i;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -67,7 +67,7 @@ public class CommandSuggestor {
 	private final int maxSuggestionSize;
 	private final boolean chatScreenSized;
 	private final int color;
-	private final List<class_5481> messages = Lists.<class_5481>newArrayList();
+	private final List<OrderedText> messages = Lists.<OrderedText>newArrayList();
 	private int x;
 	private int width;
 	private ParseResults<CommandSource> parse;
@@ -223,12 +223,12 @@ public class CommandSuggestor {
 		}
 	}
 
-	private static class_5481 method_30505(CommandSyntaxException commandSyntaxException) {
+	private static OrderedText method_30505(CommandSyntaxException commandSyntaxException) {
 		Text text = Texts.toText(commandSyntaxException.getRawMessage());
 		String string = commandSyntaxException.getContext();
 		return string == null
-			? text.method_30937()
-			: new TranslatableText("command.context.parse_error", text, commandSyntaxException.getCursor(), string).method_30937();
+			? text.asOrderedText()
+			: new TranslatableText("command.context.parse_error", text, commandSyntaxException.getCursor(), string).asOrderedText();
 	}
 
 	private void show() {
@@ -273,13 +273,13 @@ public class CommandSuggestor {
 			.networkHandler
 			.getCommandDispatcher()
 			.getSmartUsage(suggestionContext.parent, this.client.player.networkHandler.getCommandSource());
-		List<class_5481> list = Lists.<class_5481>newArrayList();
+		List<OrderedText> list = Lists.<OrderedText>newArrayList();
 		int i = 0;
 		Style style = Style.EMPTY.withColor(formatting);
 
 		for (Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
 			if (!(entry.getKey() instanceof LiteralCommandNode)) {
-				list.add(class_5481.method_30747((String)entry.getValue(), style));
+				list.add(OrderedText.styledString((String)entry.getValue(), style));
 				i = Math.max(i, this.textRenderer.getWidth((String)entry.getValue()));
 			}
 		}
@@ -291,8 +291,8 @@ public class CommandSuggestor {
 		}
 	}
 
-	private class_5481 provideRenderText(String original, int firstCharacterIndex) {
-		return this.parse != null ? highlight(this.parse, original, firstCharacterIndex) : class_5481.method_30747(original, Style.EMPTY);
+	private OrderedText provideRenderText(String original, int firstCharacterIndex) {
+		return this.parse != null ? highlight(this.parse, original, firstCharacterIndex) : OrderedText.styledString(original, Style.EMPTY);
 	}
 
 	@Nullable
@@ -300,8 +300,8 @@ public class CommandSuggestor {
 		return suggestion.startsWith(original) ? suggestion.substring(original.length()) : null;
 	}
 
-	private static class_5481 highlight(ParseResults<CommandSource> parse, String original, int firstCharacterIndex) {
-		List<class_5481> list = Lists.<class_5481>newArrayList();
+	private static OrderedText highlight(ParseResults<CommandSource> parse, String original, int firstCharacterIndex) {
+		List<OrderedText> list = Lists.<OrderedText>newArrayList();
 		int i = 0;
 		int j = -1;
 		CommandContextBuilder<CommandSource> commandContextBuilder = parse.getContext().getLastChild();
@@ -318,8 +318,8 @@ public class CommandSuggestor {
 
 			int l = Math.min(parsedArgument.getRange().getEnd() - firstCharacterIndex, original.length());
 			if (l > 0) {
-				list.add(class_5481.method_30747(original.substring(i, k), field_25886));
-				list.add(class_5481.method_30747(original.substring(k, l), (Style)field_25887.get(j)));
+				list.add(OrderedText.styledString(original.substring(i, k), field_25886));
+				list.add(OrderedText.styledString(original.substring(k, l), (Style)field_25887.get(j)));
 				i = l;
 			}
 		}
@@ -328,14 +328,14 @@ public class CommandSuggestor {
 			int m = Math.max(parse.getReader().getCursor() - firstCharacterIndex, 0);
 			if (m < original.length()) {
 				int n = Math.min(m + parse.getReader().getRemainingLength(), original.length());
-				list.add(class_5481.method_30747(original.substring(i, m), field_25886));
-				list.add(class_5481.method_30747(original.substring(m, n), field_25885));
+				list.add(OrderedText.styledString(original.substring(i, m), field_25886));
+				list.add(OrderedText.styledString(original.substring(m, n), field_25885));
 				i = n;
 			}
 		}
 
-		list.add(class_5481.method_30747(original.substring(i), field_25886));
-		return class_5481.method_30749(list);
+		list.add(OrderedText.styledString(original.substring(i), field_25886));
+		return OrderedText.concat(list);
 	}
 
 	public void render(MatrixStack matrixStack, int i, int j) {
@@ -344,10 +344,10 @@ public class CommandSuggestor {
 		} else {
 			int k = 0;
 
-			for (class_5481 lv : this.messages) {
+			for (OrderedText orderedText : this.messages) {
 				int l = this.chatScreenSized ? this.owner.height - 14 - 13 - 12 * k : 72 + 12 * k;
 				DrawableHelper.fill(matrixStack, this.x - 1, l, this.x + this.width + 1, l + 12, this.color);
-				this.textRenderer.drawWithShadow(matrixStack, lv, (float)this.x, (float)(l + 2), -1);
+				this.textRenderer.drawWithShadow(matrixStack, orderedText, (float)this.x, (float)(l + 2), -1);
 				k++;
 			}
 		}

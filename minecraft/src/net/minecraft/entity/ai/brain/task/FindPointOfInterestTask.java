@@ -80,7 +80,7 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 				return true;
 			}
 		};
-		Set<BlockPos> set = (Set<BlockPos>)pointOfInterestStorage.getPositions(
+		Set<BlockPos> set = (Set<BlockPos>)pointOfInterestStorage.method_30957(
 				this.poiType.getCompletionCondition(), predicate, pathAwareEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE
 			)
 			.limit(5L)

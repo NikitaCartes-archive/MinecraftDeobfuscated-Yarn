@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import java.util.Arrays;
@@ -30,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 public class StructurePool {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final MapCodec<StructurePool> CODEC = RecordCodecBuilder.mapCodec(
+	public static final Codec<StructurePool> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("name").forGetter(StructurePool::getId),
 					Identifier.CODEC.fieldOf("fallback").forGetter(StructurePool::getTerminatorsId),

@@ -422,7 +422,7 @@ public class StatsScreen extends Screen implements StatsListener {
 				this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
 				RenderSystem.pushMatrix();
 				RenderSystem.translatef(0.0F, 0.0F, 400.0F);
-				StatsScreen.this.textRenderer.method_30881(matrixStack, text, (float)k, (float)l, -1);
+				StatsScreen.this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, -1);
 				RenderSystem.popMatrix();
 			}
 		}

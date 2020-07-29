@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5481;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -34,6 +33,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -48,8 +48,8 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public class BookEditScreen extends Screen {
 	private static final Text field_25893 = new TranslatableText("book.editTitle");
 	private static final Text field_25894 = new TranslatableText("book.finalizeWarning");
-	private static final class_5481 field_25895 = class_5481.method_30747("_", Style.EMPTY.withColor(Formatting.BLACK));
-	private static final class_5481 field_25896 = class_5481.method_30747("_", Style.EMPTY.withColor(Formatting.GRAY));
+	private static final OrderedText field_25895 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.BLACK));
+	private static final OrderedText field_25896 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.GRAY));
 	private final PlayerEntity player;
 	private final ItemStack itemStack;
 	private boolean dirty;
@@ -390,21 +390,21 @@ public class BookEditScreen extends Screen {
 		this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			boolean bl = this.tickCounter / 6 % 2 == 0;
-			class_5481 lv = class_5481.method_30742(class_5481.method_30747(this.title, Style.EMPTY), bl ? field_25895 : field_25896);
+			OrderedText orderedText = OrderedText.concat(OrderedText.styledString(this.title, Style.EMPTY), bl ? field_25895 : field_25896);
 			int k = this.textRenderer.getWidth(field_25893);
-			this.textRenderer.method_30883(matrices, field_25893, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
-			int l = this.textRenderer.method_30880(lv);
-			this.textRenderer.draw(matrices, lv, (float)(i + 36 + (114 - l) / 2), 50.0F, 0);
+			this.textRenderer.draw(matrices, field_25893, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
+			int l = this.textRenderer.getWidth(orderedText);
+			this.textRenderer.draw(matrices, orderedText, (float)(i + 36 + (114 - l) / 2), 50.0F, 0);
 			int m = this.textRenderer.getWidth(this.field_25892);
-			this.textRenderer.method_30883(matrices, this.field_25892, (float)(i + 36 + (114 - m) / 2), 60.0F, 0);
+			this.textRenderer.draw(matrices, this.field_25892, (float)(i + 36 + (114 - m) / 2), 60.0F, 0);
 			this.textRenderer.drawTrimmed(field_25894, i + 36, 82, 114, 0);
 		} else {
 			int n = this.textRenderer.getWidth(this.field_25891);
-			this.textRenderer.method_30883(matrices, this.field_25891, (float)(i - n + 192 - 44), 18.0F, 0);
+			this.textRenderer.draw(matrices, this.field_25891, (float)(i - n + 192 - 44), 18.0F, 0);
 			BookEditScreen.PageContent pageContent = this.getPageContent();
 
 			for (BookEditScreen.Line line : pageContent.lines) {
-				this.textRenderer.method_30883(matrices, line.text, (float)line.x, (float)line.y, -16777216);
+				this.textRenderer.draw(matrices, line.text, (float)line.x, (float)line.y, -16777216);
 			}
 
 			this.method_27588(pageContent.field_24277);

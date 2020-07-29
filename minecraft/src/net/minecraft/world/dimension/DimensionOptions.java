@@ -3,8 +3,8 @@ package net.minecraft.world.dimension;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -17,11 +17,11 @@ import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 public final class DimensionOptions {
-	public static final MapCodec<DimensionOptions> CODEC = RecordCodecBuilder.mapCodec(
+	public static final Codec<DimensionOptions> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					DimensionType.field_24756.fieldOf("type").forGetter(DimensionOptions::getDimensionTypeSupplier),
 					ChunkGenerator.field_24746.fieldOf("generator").forGetter(DimensionOptions::getChunkGenerator)
@@ -59,9 +59,6 @@ public final class DimensionOptions {
 			DimensionOptions dimensionOptions = simpleRegistry.get(registryKey);
 			if (dimensionOptions != null) {
 				simpleRegistry2.add(registryKey, dimensionOptions);
-				if (simpleRegistry.isLoaded(registryKey)) {
-					simpleRegistry2.markLoaded(registryKey);
-				}
 			}
 		}
 
@@ -69,9 +66,6 @@ public final class DimensionOptions {
 			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (!BASE_DIMENSIONS.contains(registryKey2)) {
 				simpleRegistry2.add(registryKey2, entry.getValue());
-				if (simpleRegistry.isLoaded(registryKey2)) {
-					simpleRegistry2.markLoaded(registryKey2);
-				}
 			}
 		}
 
@@ -101,9 +95,9 @@ public final class DimensionOptions {
 				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator) {
 				NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)((DimensionOptions)entry2.getValue()).getChunkGenerator();
 				NoiseChunkGenerator noiseChunkGenerator2 = (NoiseChunkGenerator)((DimensionOptions)entry3.getValue()).getChunkGenerator();
-				if (!noiseChunkGenerator.method_28548(seed, ChunkGeneratorType.field_26357)) {
+				if (!noiseChunkGenerator.method_28548(seed, ChunkGeneratorSettings.NETHER)) {
 					return false;
-				} else if (!noiseChunkGenerator2.method_28548(seed, ChunkGeneratorType.field_26358)) {
+				} else if (!noiseChunkGenerator2.method_28548(seed, ChunkGeneratorSettings.END)) {
 					return false;
 				} else if (!(noiseChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
 					return false;

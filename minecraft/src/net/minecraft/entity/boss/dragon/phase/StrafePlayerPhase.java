@@ -128,7 +128,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 
 	private void method_6861() {
 		if (this.field_7059 != null && !this.field_7059.isFinished()) {
-			Vec3i vec3i = this.field_7059.getCurrentPosition();
+			Vec3i vec3i = this.field_7059.method_31032();
 			this.field_7059.next();
 			double d = (double)vec3i.getX();
 			double e = (double)vec3i.getZ();

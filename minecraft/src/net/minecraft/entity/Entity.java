@@ -907,11 +907,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	@Nullable
-	public Box getCollisionBox() {
-		return null;
-	}
-
 	public boolean isFireImmune() {
 		return this.getType().isFireImmune();
 	}
@@ -1143,7 +1138,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.updatePosition(g, e, h);
 	}
 
-	public void method_29495(Vec3d vec3d) {
+	public void refreshPositionAfterTeleport(Vec3d vec3d) {
 		this.refreshPositionAfterTeleport(vec3d.x, vec3d.y, vec3d.z);
 	}
 
@@ -1290,6 +1285,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 			double f = MathHelper.lerp((double)tickDelta, this.prevZ, this.getZ());
 			return new Vec3d(d, e, f);
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public final Vec3d method_30950(float f) {
+		double d = MathHelper.lerp((double)f, this.prevX, this.getX());
+		double e = MathHelper.lerp((double)f, this.prevY, this.getY());
+		double g = MathHelper.lerp((double)f, this.prevZ, this.getZ());
+		return new Vec3d(d, e, g);
 	}
 
 	public HitResult rayTrace(double maxDistance, float tickDelta, boolean includeFluids) {
@@ -1587,9 +1590,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return ActionResult.PASS;
 	}
 
-	@Nullable
-	public Box getHardCollisionBox(Entity collidingEntity) {
-		return null;
+	public boolean method_30949(Entity entity) {
+		return entity.method_30948() && !this.isConnectedThroughVehicle(entity);
+	}
+
+	public boolean method_30948() {
+		return false;
 	}
 
 	public void tickRiding() {
@@ -2875,6 +2881,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void checkDespawn() {
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Vec3d method_30951(float f) {
+		return this.method_30950(f).add(0.0, (double)this.standingEyeHeight * 0.7, 0.0);
 	}
 
 	@FunctionalInterface

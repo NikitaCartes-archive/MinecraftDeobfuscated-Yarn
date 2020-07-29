@@ -232,8 +232,8 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 
 				for (HorseBaseEntity horseBaseEntity : pointer.getWorld()
-					.getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntityx -> horseBaseEntityx.isAlive() && horseBaseEntityx.canEquip())) {
-					if (horseBaseEntity.canEquip(stack) && !horseBaseEntity.setSaddled() && horseBaseEntity.isTame()) {
+					.getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntityx -> horseBaseEntityx.isAlive() && horseBaseEntityx.hasArmorSlot())) {
+					if (horseBaseEntity.isHorseArmor(stack) && !horseBaseEntity.hasArmorInSlot() && horseBaseEntity.isTame()) {
 						horseBaseEntity.equip(401, stack.split(1));
 						this.setSuccess(true);
 						return stack;

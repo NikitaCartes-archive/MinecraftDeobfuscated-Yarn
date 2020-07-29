@@ -237,9 +237,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.textRenderer
-			.method_30883(
-				matrices, field_26516, (float)(this.column1_x + this.column_width / 2 - this.textRenderer.getWidth(field_26516) / 2), (float)(row(0) - 5), 16777215
-			);
+			.draw(matrices, field_26516, (float)(this.column1_x + this.column_width / 2 - this.textRenderer.getWidth(field_26516) / 2), (float)(row(0) - 5), 16777215);
 		this.titleLabel.render(this, matrices);
 		if (this.toastMessage != null) {
 			this.toastMessage.render(this, matrices);

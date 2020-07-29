@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.surfacebuilder;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import java.util.Random;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
@@ -11,8 +10,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
-	public static final MapCodec<ConfiguredSurfaceBuilder<?>> field_25878 = Registry.SURFACE_BUILDER
-		.dispatchMap(configuredSurfaceBuilder -> configuredSurfaceBuilder.surfaceBuilder, SurfaceBuilder::method_29003);
+	public static final Codec<ConfiguredSurfaceBuilder<?>> field_25878 = Registry.SURFACE_BUILDER
+		.dispatch(configuredSurfaceBuilder -> configuredSurfaceBuilder.surfaceBuilder, SurfaceBuilder::method_29003);
 	public static final Codec<Supplier<ConfiguredSurfaceBuilder<?>>> field_25015 = RegistryElementCodec.of(
 		Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, field_25878
 	);

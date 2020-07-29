@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
@@ -55,6 +54,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
@@ -587,10 +587,15 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			this.notifyDeath(entity);
 		}
 
+		this.method_30958();
+		super.onDeath(source);
+	}
+
+	private void method_30958() {
 		this.releaseTicketFor(MemoryModuleType.HOME);
 		this.releaseTicketFor(MemoryModuleType.JOB_SITE);
+		this.releaseTicketFor(MemoryModuleType.POTENTIAL_JOB_SITE);
 		this.releaseTicketFor(MemoryModuleType.MEETING_POINT);
-		super.onDeath(source);
 	}
 
 	private void notifyDeath(Entity killer) {
@@ -754,6 +759,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 			witchEntity.setPersistent();
 			serverWorld.spawnEntityAndPassengers(witchEntity);
+			this.method_30958();
 			this.remove();
 		} else {
 			super.onStruckByLightning(serverWorld, lightningEntity);

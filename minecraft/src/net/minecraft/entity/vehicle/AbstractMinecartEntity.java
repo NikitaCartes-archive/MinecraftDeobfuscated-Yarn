@@ -137,10 +137,9 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.dataTracker.startTracking(CUSTOM_BLOCK_PRESENT, false);
 	}
 
-	@Nullable
 	@Override
-	public Box getHardCollisionBox(Entity collidingEntity) {
-		return collidingEntity.isPushable() ? collidingEntity.getBoundingBox() : null;
+	public boolean method_30949(Entity entity) {
+		return BoatEntity.method_30959(this, entity);
 	}
 
 	@Override

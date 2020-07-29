@@ -12,26 +12,26 @@ public enum CloudRenderMode {
 	FAST(1, "options.clouds.fast"),
 	FANCY(2, "options.clouds.fancy");
 
-	private static final CloudRenderMode[] RENDER_MODES = (CloudRenderMode[])Arrays.stream(values())
-		.sorted(Comparator.comparingInt(CloudRenderMode::getValue))
+	private static final CloudRenderMode[] VALUES = (CloudRenderMode[])Arrays.stream(values())
+		.sorted(Comparator.comparingInt(CloudRenderMode::getId))
 		.toArray(CloudRenderMode[]::new);
-	private final int value;
+	private final int id;
 	private final String translationKey;
 
-	private CloudRenderMode(int value, String translationKey) {
-		this.value = value;
+	private CloudRenderMode(int id, String translationKey) {
+		this.id = id;
 		this.translationKey = translationKey;
 	}
 
-	public int getValue() {
-		return this.value;
+	public int getId() {
+		return this.id;
 	}
 
 	public String getTranslationKey() {
 		return this.translationKey;
 	}
 
-	public static CloudRenderMode getOption(int id) {
-		return RENDER_MODES[MathHelper.floorMod(id, RENDER_MODES.length)];
+	public static CloudRenderMode byId(int id) {
+		return VALUES[MathHelper.floorMod(id, VALUES.length)];
 	}
 }

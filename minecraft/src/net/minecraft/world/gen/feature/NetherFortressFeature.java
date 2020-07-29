@@ -1,6 +1,6 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.entity.EntityType;
@@ -12,17 +12,18 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig> {
-	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(
-		new Biome.SpawnEntry(EntityType.BLAZE, 10, 2, 3),
-		new Biome.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 5, 4, 4),
-		new Biome.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5),
-		new Biome.SpawnEntry(EntityType.SKELETON, 2, 5, 5),
-		new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
+	private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(
+		new SpawnSettings.SpawnEntry(EntityType.BLAZE, 10, 2, 3),
+		new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 5, 4, 4),
+		new SpawnSettings.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5),
+		new SpawnSettings.SpawnEntry(EntityType.SKELETON, 2, 5, 5),
+		new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
 	);
 
 	public NetherFortressFeature(Codec<DefaultFeatureConfig> codec) {
@@ -49,7 +50,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getMonsterSpawns() {
+	public List<SpawnSettings.SpawnEntry> getMonsterSpawns() {
 		return MONSTER_SPAWNS;
 	}
 

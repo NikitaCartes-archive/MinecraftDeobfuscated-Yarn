@@ -16,7 +16,7 @@ public class SpawnLocating {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, 0, z);
 		Biome biome = world.getBiome(mutable);
 		boolean bl = world.getDimension().hasCeiling();
-		BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
+		BlockState blockState = biome.getGenerationSettings().getSurfaceConfig().getTopMaterial();
 		if (validSpawnNeeded && !blockState.getBlock().isIn(BlockTags.VALID_SPAWN)) {
 			return null;
 		} else {

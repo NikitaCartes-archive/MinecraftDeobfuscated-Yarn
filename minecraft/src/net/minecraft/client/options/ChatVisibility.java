@@ -11,15 +11,15 @@ public enum ChatVisibility {
 	SYSTEM(1, "options.chat.visibility.system"),
 	HIDDEN(2, "options.chat.visibility.hidden");
 
-	private static final ChatVisibility[] field_7534 = (ChatVisibility[])Arrays.stream(values())
+	private static final ChatVisibility[] VALUES = (ChatVisibility[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(ChatVisibility::getId))
 		.toArray(ChatVisibility[]::new);
 	private final int id;
-	private final String key;
+	private final String translationKey;
 
-	private ChatVisibility(int id, String key) {
+	private ChatVisibility(int id, String translationKey) {
 		this.id = id;
-		this.key = key;
+		this.translationKey = translationKey;
 	}
 
 	public int getId() {
@@ -28,11 +28,11 @@ public enum ChatVisibility {
 
 	@Environment(EnvType.CLIENT)
 	public String getTranslationKey() {
-		return this.key;
+		return this.translationKey;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static ChatVisibility byId(int i) {
-		return field_7534[MathHelper.floorMod(i, field_7534.length)];
+	public static ChatVisibility byId(int id) {
+		return VALUES[MathHelper.floorMod(id, VALUES.length)];
 	}
 }

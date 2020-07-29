@@ -5,6 +5,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -47,6 +48,12 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		super.dropItems(damageSource);
 		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			ItemScatterer.spawn(this.world, this, this);
+			if (!this.world.isClient) {
+				Entity entity = damageSource.getSource();
+				if (entity != null && entity.getType() == EntityType.PLAYER) {
+					PiglinBrain.onGuardedBlockBroken((PlayerEntity)entity, true);
+				}
+			}
 		}
 	}
 
@@ -157,7 +164,12 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		player.openHandledScreen(this);
-		return ActionResult.success(this.world.isClient);
+		if (!player.world.isClient) {
+			PiglinBrain.onGuardedBlockBroken(player, true);
+			return ActionResult.CONSUME;
+		} else {
+			return ActionResult.SUCCESS;
+		}
 	}
 
 	@Override

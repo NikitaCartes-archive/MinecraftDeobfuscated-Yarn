@@ -6,25 +6,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Box;
 
 public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
-	private static final TargetPredicate CLOSE_ENTITY_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules();
-
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
-		List<LivingEntity> list = world.getEntitiesByClass(
-			LivingEntity.class, entity.getBoundingBox().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != entity && livingEntity2.isAlive()
-		);
+		Box box = entity.getBoundingBox().expand(16.0, 16.0, 16.0);
+		List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, box, livingEntity2 -> livingEntity2 != entity && livingEntity2.isAlive());
 		list.sort(Comparator.comparingDouble(entity::squaredDistanceTo));
 		Brain<?> brain = entity.getBrain();
 		brain.remember(MemoryModuleType.MOBS, list);
 		brain.remember(
-			MemoryModuleType.VISIBLE_MOBS,
-			(List<LivingEntity>)list.stream().filter(livingEntity2 -> CLOSE_ENTITY_PREDICATE.test(entity, livingEntity2)).collect(Collectors.toList())
+			MemoryModuleType.VISIBLE_MOBS, (List<LivingEntity>)list.stream().filter(livingEntity2 -> method_30954(entity, livingEntity2)).collect(Collectors.toList())
 		);
 	}
 

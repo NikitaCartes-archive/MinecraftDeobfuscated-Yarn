@@ -30,7 +30,6 @@ import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.FrostWalkerEnchantment;
@@ -72,6 +71,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
@@ -428,7 +428,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected boolean isOnSoulSpeedBlock() {
-		return this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS);
+		return this.world.getBlockState(this.getVelocityAffectingPos()).isIn(BlockTags.SOUL_SPEED_BLOCKS);
 	}
 
 	@Override
@@ -2981,7 +2981,7 @@ public abstract class LivingEntity extends Entity {
 	public void setNearbySongPlaying(BlockPos songPosition, boolean playing) {
 	}
 
-	public boolean canPickUp(ItemStack stack) {
+	public boolean canEquip(ItemStack stack) {
 		return false;
 	}
 

@@ -19,11 +19,11 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.TransformingVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexConsumers;
@@ -133,9 +133,9 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 					}
 
 					if (bl2) {
-						vertexConsumer = getTransformingDirectGlintVertexConsumer(vertexConsumers, renderLayer, entry);
+						vertexConsumer = getDirectGlintVertexConsumer(vertexConsumers, renderLayer, entry);
 					} else {
-						vertexConsumer = getTransformingGlintVertexConsumer(vertexConsumers, renderLayer, entry);
+						vertexConsumer = getGlintVertexConsumer(vertexConsumers, renderLayer, entry);
 					}
 
 					matrices.pop();
@@ -162,20 +162,16 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			: vertexConsumerProvider.getBuffer(renderLayer);
 	}
 
-	public static VertexConsumer getTransformingGlintVertexConsumer(
-		VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry
-	) {
+	public static VertexConsumer getGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
 		return VertexConsumers.dual(
-			new TransformingVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()),
+			new OverlayVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlint()), entry.getModel(), entry.getNormal()),
 			vertexConsumerProvider.getBuffer(renderLayer)
 		);
 	}
 
-	public static VertexConsumer getTransformingDirectGlintVertexConsumer(
-		VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry
-	) {
+	public static VertexConsumer getDirectGlintVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, MatrixStack.Entry entry) {
 		return VertexConsumers.dual(
-			new TransformingVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlintDirect()), entry.getModel(), entry.getNormal()),
+			new OverlayVertexConsumer(vertexConsumerProvider.getBuffer(RenderLayer.getGlintDirect()), entry.getModel(), entry.getNormal()),
 			vertexConsumerProvider.getBuffer(renderLayer)
 		);
 	}

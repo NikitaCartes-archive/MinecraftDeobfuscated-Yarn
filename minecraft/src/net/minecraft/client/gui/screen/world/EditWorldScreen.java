@@ -44,9 +44,9 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class EditWorldScreen extends Screen {
-	private static final Logger field_23776 = LogManager.getLogger();
-	private static final Gson field_25481 = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
-	private static final Text field_26603 = new TranslatableText("selectWorld.enterName");
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
+	private static final Text ENTER_NAME_TEXT = new TranslatableText("selectWorld.enterName");
 	private ButtonWidget saveButton;
 	private final BooleanConsumer callback;
 	private TextFieldWidget levelNameTextField;
@@ -135,11 +135,11 @@ public class EditWorldScreen extends Screen {
 							Path path = this.field_23777.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
 
 							try {
-								JsonWriter jsonWriter = field_25481.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
+								JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
 								Throwable var4x = null;
 
 								try {
-									field_25481.toJson(jsonElement, jsonWriter);
+									GSON.toJson(jsonElement, jsonWriter);
 								} catch (Throwable var14) {
 									var4x = var14;
 									throw var14;
@@ -170,7 +170,7 @@ public class EditWorldScreen extends Screen {
 					Text text2 = new TranslatableText(
 						dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure"
 					);
-					dataResult2.error().ifPresent(partialResult -> field_23776.error("Error exporting world settings: {}", partialResult));
+					dataResult2.error().ifPresent(partialResult -> LOGGER.error("Error exporting world settings: {}", partialResult));
 					this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
 				}
 			)
@@ -211,7 +211,7 @@ public class EditWorldScreen extends Screen {
 			this.field_23777.save(this.levelNameTextField.getText().trim());
 			this.callback.accept(true);
 		} catch (IOException var2) {
-			field_23776.error("Failed to access world '{}'", this.field_23777.getDirectoryName(), var2);
+			LOGGER.error("Failed to access world '{}'", this.field_23777.getDirectoryName(), var2);
 			SystemToast.addWorldAccessFailureToast(this.client, this.field_23777.getDirectoryName());
 			this.callback.accept(true);
 		}
@@ -228,7 +228,7 @@ public class EditWorldScreen extends Screen {
 				SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), string);
 			}
 
-			field_23776.warn("Failed to create backup of level {}", string, var16);
+			LOGGER.warn("Failed to create backup of level {}", string, var16);
 		}
 	}
 
@@ -259,7 +259,7 @@ public class EditWorldScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 15, 16777215);
-		drawTextWithShadow(matrices, this.textRenderer, field_26603, this.width / 2 - 100, 24, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 24, 10526880);
 		this.levelNameTextField.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

@@ -1,16 +1,13 @@
 package net.minecraft.world.biome;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.DataFixUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,8 +23,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.sound.BiomeAdditionsSound;
@@ -37,7 +32,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.WeightedPicker;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -57,48 +51,61 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.carver.CarverConfig;
-import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
-import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class Biome {
 	public static final Logger LOGGER = LogManager.getLogger();
-	public static final MapCodec<Biome> CODEC = RecordCodecBuilder.mapCodec(
+	public static final Codec<Biome> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Biome.Weather.CODEC.forGetter(biome -> biome.weather),
 					Biome.Category.CODEC.fieldOf("category").forGetter(biome -> biome.category),
 					Codec.FLOAT.fieldOf("depth").forGetter(biome -> biome.depth),
 					Codec.FLOAT.fieldOf("scale").forGetter(biome -> biome.scale),
 					BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects),
-					Biome.GenerationSettings.CODEC.forGetter(biome -> biome.generationSettings),
-					Biome.SpawnSettings.CODEC.forGetter(biome -> biome.spawnSettings),
+					GenerationSettings.CODEC.forGetter(biome -> biome.generationSettings),
+					SpawnSettings.CODEC.forGetter(biome -> biome.spawnSettings),
 					Codec.STRING.optionalFieldOf("parent").forGetter(biome -> Optional.ofNullable(biome.parent))
 				)
 				.apply(instance, Biome::new)
 	);
+	public static final Codec<Biome> field_26633 = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Biome.Weather.CODEC.forGetter(biome -> biome.weather),
+					Biome.Category.CODEC.fieldOf("category").forGetter(biome -> biome.category),
+					Codec.FLOAT.fieldOf("depth").forGetter(biome -> biome.depth),
+					Codec.FLOAT.fieldOf("scale").forGetter(biome -> biome.scale),
+					BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects),
+					Codec.STRING.optionalFieldOf("parent").forGetter(biome -> Optional.ofNullable(biome.parent))
+				)
+				.apply(
+					instance,
+					(weather, category, float_, float2, biomeEffects, optional) -> new Biome(
+							weather, category, float_, float2, biomeEffects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE, optional
+						)
+				)
+	);
 	public static final Codec<Supplier<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
 	public static final Set<Biome> BIOMES = Sets.<Biome>newHashSet();
+	private final Map<Integer, List<StructureFeature<?>>> field_26634 = (Map<Integer, List<StructureFeature<?>>>)Registry.STRUCTURE_FEATURE
+		.stream()
+		.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(1234L), ImmutableList.of(0));
 	private static final OctaveSimplexNoiseSampler field_26392 = new OctaveSimplexNoiseSampler(new ChunkRandom(3456L), ImmutableList.of(-2, -1, 0));
 	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(2345L), ImmutableList.of(0));
 	private final Biome.Weather weather;
-	private final Biome.GenerationSettings generationSettings;
-	private final Biome.SpawnSettings spawnSettings;
+	private final GenerationSettings generationSettings;
+	private final SpawnSettings spawnSettings;
 	private final float depth;
 	private final float scale;
 	@Nullable
 	protected final String parent;
 	private final Biome.Category category;
 	private final BiomeEffects effects;
-	private final List<ConfiguredFeature<?, ?>> flowerFeatures;
 	private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
 			Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
 				@Override
@@ -109,37 +116,14 @@ public final class Biome {
 			return long2FloatLinkedOpenHashMap;
 		}));
 
-	public Biome(Biome.Settings settings) {
-		if (settings.surfaceBuilder != null
-			&& settings.precipitation != null
-			&& settings.category != null
-			&& settings.depth != null
-			&& settings.scale != null
-			&& settings.temperature != null
-			&& settings.downfall != null
-			&& settings.specialEffects != null) {
-			this.weather = new Biome.Weather(settings.precipitation, settings.temperature, settings.temperatureModifier, settings.downfall);
-			this.category = settings.category;
-			this.depth = settings.depth;
-			this.scale = settings.scale;
-			this.parent = settings.parent;
-			this.effects = settings.specialEffects;
-			this.spawnSettings = new Biome.SpawnSettings(settings.creatureGenerationProbability);
-			this.generationSettings = new Biome.GenerationSettings(settings.surfaceBuilder);
-			this.flowerFeatures = Lists.<ConfiguredFeature<?, ?>>newArrayList();
-		} else {
-			throw new IllegalStateException("You are missing parameters to build a proper biome for " + this.getClass().getSimpleName() + "\n" + settings);
-		}
-	}
-
 	private Biome(
 		Biome.Weather weather,
 		Biome.Category category,
 		float depth,
 		float scale,
 		BiomeEffects effects,
-		Biome.GenerationSettings generationSettings,
-		Biome.SpawnSettings spawnSettings,
+		GenerationSettings generationSettings,
+		SpawnSettings spawnSettings,
 		Optional<String> parent
 	) {
 		this.weather = weather;
@@ -150,13 +134,6 @@ public final class Biome {
 		this.scale = scale;
 		this.effects = effects;
 		this.parent = (String)parent.orElse(null);
-		this.flowerFeatures = (List<ConfiguredFeature<?, ?>>)generationSettings.features
-			.stream()
-			.flatMap(Collection::stream)
-			.map(Supplier::get)
-			.flatMap(ConfiguredFeature::method_30648)
-			.filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER)
-			.collect(Collectors.toList());
 	}
 
 	public boolean hasParent() {
@@ -168,21 +145,8 @@ public final class Biome {
 		return this.effects.getSkyColor();
 	}
 
-	public void addSpawn(SpawnGroup group, Biome.SpawnEntry spawnEntry) {
-		((List)this.spawnSettings.spawners.get(group)).add(spawnEntry);
-	}
-
-	public void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
-		this.spawnSettings.spawnCosts.put(type, new Biome.SpawnDensity(mass, maxMass));
-	}
-
-	public List<Biome.SpawnEntry> getEntitySpawnList(SpawnGroup group) {
-		return (List<Biome.SpawnEntry>)this.spawnSettings.spawners.get(group);
-	}
-
-	@Nullable
-	public Biome.SpawnDensity getSpawnDensity(EntityType<?> type) {
-		return (Biome.SpawnDensity)this.spawnSettings.spawnCosts.get(type);
+	public SpawnSettings getSpawnSettings() {
+		return this.spawnSettings;
 	}
 
 	public Biome.Precipitation getPrecipitation() {
@@ -191,10 +155,6 @@ public final class Biome {
 
 	public boolean hasHighHumidity() {
 		return this.getDownfall() > 0.85F;
-	}
-
-	public float getMaxSpawnChance() {
-		return this.spawnSettings.creatureSpawnProbability;
 	}
 
 	private float computeTemperature(BlockPos pos) {
@@ -266,117 +226,63 @@ public final class Biome {
 		}
 	}
 
-	public void addFeature(GenerationStep.Feature step, ConfiguredFeature<?, ?> configuredFeature) {
-		this.addFeature(step.ordinal(), () -> configuredFeature);
-	}
-
-	public void addFeature(int stepIndex, Supplier<ConfiguredFeature<?, ?>> supplier) {
-		((ConfiguredFeature)supplier.get()).method_30648().filter(configuredFeature -> configuredFeature.feature == Feature.FLOWER).forEach(this.flowerFeatures::add);
-		this.method_30775(stepIndex);
-		((List)this.generationSettings.features.get(stepIndex)).add(supplier);
-	}
-
-	public <C extends CarverConfig> void addCarver(GenerationStep.Carver step, ConfiguredCarver<C> configuredCarver) {
-		((List)this.generationSettings.carvers.computeIfAbsent(step, carver -> Lists.newArrayList())).add((Supplier)() -> configuredCarver);
-	}
-
-	public List<Supplier<ConfiguredCarver<?>>> getCarversForStep(GenerationStep.Carver carver) {
-		return (List<Supplier<ConfiguredCarver<?>>>)this.generationSettings.carvers.getOrDefault(carver, ImmutableList.of());
-	}
-
-	public void addStructureFeature(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		this.generationSettings.starts.add((Supplier)() -> configuredStructureFeature);
-		this.method_30775(configuredStructureFeature.feature.getGenerationStep().ordinal());
-	}
-
-	public boolean hasStructureFeature(StructureFeature<?> structureFeature) {
-		return this.generationSettings.starts.stream().anyMatch(supplier -> ((ConfiguredStructureFeature)supplier.get()).feature == structureFeature);
-	}
-
-	public Iterable<Supplier<ConfiguredStructureFeature<?, ?>>> getStructureFeatures() {
-		return this.generationSettings.starts;
-	}
-
-	private void method_30775(int i) {
-		while (this.generationSettings.features.size() <= i) {
-			this.generationSettings.features.add(Lists.newArrayList());
-		}
-	}
-
-	public ConfiguredStructureFeature<?, ?> method_28405(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		return DataFixUtils.orElse(
-			this.generationSettings
-				.starts
-				.stream()
-				.map(Supplier::get)
-				.filter(configuredStructureFeature2 -> configuredStructureFeature2.feature == configuredStructureFeature.feature)
-				.findAny(),
-			configuredStructureFeature
-		);
-	}
-
-	public List<ConfiguredFeature<?, ?>> getFlowerFeatures() {
-		return this.flowerFeatures;
-	}
-
-	/**
-	 * Returns the lists of features configured for each {@link net.minecraft.world.gen.GenerationStep.Feature feature generation step}, up to the highest step that has a configured feature.
-	 * Entries are guaranteed to not be null, but may be empty lists if an earlier step has no features, but a later step does.
-	 */
-	public List<List<Supplier<ConfiguredFeature<?, ?>>>> getFeatures() {
-		return this.generationSettings.features;
+	public GenerationSettings getGenerationSettings() {
+		return this.generationSettings;
 	}
 
 	public void generateFeatureStep(
 		StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos pos
 	) {
-		for (int i = 0; i < this.generationSettings.features.size(); i++) {
-			int j = 0;
+		List<List<Supplier<ConfiguredFeature<?, ?>>>> list = this.generationSettings.getFeatures();
+		int i = GenerationStep.Feature.values().length;
+
+		for (int j = 0; j < i; j++) {
+			int k = 0;
 			if (structureAccessor.shouldGenerateStructures()) {
-				for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE) {
-					if (structureFeature.getGenerationStep().ordinal() == i) {
-						random.setDecoratorSeed(populationSeed, j, i);
-						int k = pos.getX() >> 4;
-						int l = pos.getZ() >> 4;
-						int m = k << 4;
-						int n = l << 4;
+				for (StructureFeature<?> structureFeature : (List)this.field_26634.getOrDefault(j, Collections.emptyList())) {
+					random.setDecoratorSeed(populationSeed, k, j);
+					int l = pos.getX() >> 4;
+					int m = pos.getZ() >> 4;
+					int n = l << 4;
+					int o = m << 4;
 
-						try {
-							structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature)
-								.forEach(
-									structureStart -> structureStart.generateStructure(
-											region, structureAccessor, chunkGenerator, random, new BlockBox(m, n, m + 15, n + 15), new ChunkPos(k, l)
-										)
-								);
-						} catch (Exception var18) {
-							CrashReport crashReport = CrashReport.create(var18, "Feature placement");
-							crashReport.addElement("Feature")
-								.add("Id", Registry.STRUCTURE_FEATURE.getId(structureFeature))
-								.add("Description", (CrashCallable<String>)(() -> structureFeature.toString()));
-							throw new CrashException(crashReport);
-						}
-
-						j++;
+					try {
+						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature)
+							.forEach(
+								structureStart -> structureStart.generateStructure(
+										region, structureAccessor, chunkGenerator, random, new BlockBox(n, o, n + 15, o + 15), new ChunkPos(l, m)
+									)
+							);
+					} catch (Exception var21) {
+						CrashReport crashReport = CrashReport.create(var21, "Feature placement");
+						crashReport.addElement("Feature")
+							.add("Id", Registry.STRUCTURE_FEATURE.getId(structureFeature))
+							.add("Description", (CrashCallable<String>)(() -> structureFeature.toString()));
+						throw new CrashException(crashReport);
 					}
+
+					k++;
 				}
 			}
 
-			for (Supplier<ConfiguredFeature<?, ?>> supplier : (List)this.generationSettings.features.get(i)) {
-				ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)supplier.get();
-				random.setDecoratorSeed(populationSeed, j, i);
+			if (list.size() > j) {
+				for (Supplier<ConfiguredFeature<?, ?>> supplier : (List)list.get(j)) {
+					ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)supplier.get();
+					random.setDecoratorSeed(populationSeed, k, j);
 
-				try {
-					configuredFeature.generate(region, chunkGenerator, random, pos);
-				} catch (Exception var19) {
-					CrashReport crashReport2 = CrashReport.create(var19, "Feature placement");
-					crashReport2.addElement("Feature")
-						.add("Id", Registry.FEATURE.getId(configuredFeature.feature))
-						.add("Config", configuredFeature.config)
-						.add("Description", (CrashCallable<String>)(() -> configuredFeature.feature.toString()));
-					throw new CrashException(crashReport2);
+					try {
+						configuredFeature.generate(region, chunkGenerator, random, pos);
+					} catch (Exception var22) {
+						CrashReport crashReport2 = CrashReport.create(var22, "Feature placement");
+						crashReport2.addElement("Feature")
+							.add("Id", Registry.FEATURE.getId(configuredFeature.feature))
+							.add("Config", configuredFeature.config)
+							.add("Description", (CrashCallable<String>)(() -> configuredFeature.feature.toString()));
+						throw new CrashException(crashReport2);
+					}
+
+					k++;
 				}
-
-				j++;
 			}
 		}
 	}
@@ -414,7 +320,7 @@ public final class Biome {
 	public void buildSurface(
 		Random random, Chunk chunk, int x, int z, int worldHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed
 	) {
-		ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder = (ConfiguredSurfaceBuilder<?>)this.generationSettings.surfaceBuilder.get();
+		ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder = (ConfiguredSurfaceBuilder<?>)this.generationSettings.getSurfaceBuilder().get();
 		configuredSurfaceBuilder.initSeed(seed);
 		configuredSurfaceBuilder.generate(random, chunk, this, x, z, worldHeight, noise, defaultBlock, defaultFluid, seaLevel, seed);
 	}
@@ -488,14 +394,6 @@ public final class Biome {
 		return this.category;
 	}
 
-	public Supplier<ConfiguredSurfaceBuilder<?>> getSurfaceBuilder() {
-		return this.generationSettings.surfaceBuilder;
-	}
-
-	public SurfaceConfig getSurfaceConfig() {
-		return ((ConfiguredSurfaceBuilder)this.generationSettings.surfaceBuilder.get()).getConfig();
-	}
-
 	@Nullable
 	public String getParent() {
 		return this.parent;
@@ -545,58 +443,6 @@ public final class Biome {
 		@Override
 		public String asString() {
 			return this.name;
-		}
-	}
-
-	static class GenerationSettings {
-		public static final MapCodec<Biome.GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(
-			instance -> instance.group(
-						ConfiguredSurfaceBuilder.field_25015.fieldOf("surface_builder").forGetter(generationSettings -> generationSettings.surfaceBuilder),
-						Codec.simpleMap(
-								GenerationStep.Carver.field_24770,
-								ConfiguredCarver.field_24828.listOf().promotePartial(Util.method_29188("Carver: ", Biome.LOGGER::error)),
-								StringIdentifiable.method_28142(GenerationStep.Carver.values())
-							)
-							.fieldOf("carvers")
-							.forGetter(generationSettings -> generationSettings.carvers),
-						ConfiguredFeature.CODEC
-							.listOf()
-							.promotePartial(Util.method_29188("Feature: ", Biome.LOGGER::error))
-							.listOf()
-							.fieldOf("features")
-							.forGetter(generationSettings -> generationSettings.features),
-						ConfiguredStructureFeature.REGISTRY_CODEC
-							.listOf()
-							.promotePartial(Util.method_29188("Structure start: ", Biome.LOGGER::error))
-							.fieldOf("starts")
-							.forGetter(generationSettings -> generationSettings.starts)
-					)
-					.apply(instance, Biome.GenerationSettings::new)
-		);
-		private final Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder;
-		private final Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers;
-		private final List<List<Supplier<ConfiguredFeature<?, ?>>>> features;
-		private final List<Supplier<ConfiguredStructureFeature<?, ?>>> starts;
-
-		private GenerationSettings(
-			Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder,
-			Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers,
-			List<List<Supplier<ConfiguredFeature<?, ?>>>> features,
-			List<Supplier<ConfiguredStructureFeature<?, ?>>> starts
-		) {
-			this.surfaceBuilder = surfaceBuilder;
-			this.carvers = carvers;
-			this.features = features;
-			this.starts = starts;
-		}
-
-		private GenerationSettings(Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder) {
-			this(
-				surfaceBuilder,
-				Maps.<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>>newLinkedHashMap(),
-				Lists.<List<Supplier<ConfiguredFeature<?, ?>>>>newArrayList(),
-				Lists.<Supplier<ConfiguredStructureFeature<?, ?>>>newArrayList()
-			);
 		}
 	}
 
@@ -718,8 +564,6 @@ public final class Biome {
 
 	public static class Settings {
 		@Nullable
-		private Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder;
-		@Nullable
 		private Biome.Precipitation precipitation;
 		@Nullable
 		private Biome.Category category;
@@ -736,16 +580,10 @@ public final class Biome {
 		private String parent;
 		@Nullable
 		private BiomeEffects specialEffects;
-		private float creatureGenerationProbability = 0.1F;
-
-		public Biome.Settings surfaceBuilder(ConfiguredSurfaceBuilder<?> surfaceBuilder) {
-			return this.surfaceBuilder(() -> surfaceBuilder);
-		}
-
-		public Biome.Settings surfaceBuilder(Supplier<ConfiguredSurfaceBuilder<?>> supplier) {
-			this.surfaceBuilder = supplier;
-			return this;
-		}
+		@Nullable
+		private SpawnSettings spawnSettings;
+		@Nullable
+		private GenerationSettings generationSettings;
 
 		public Biome.Settings precipitation(Biome.Precipitation precipitation) {
 			this.precipitation = precipitation;
@@ -792,8 +630,13 @@ public final class Biome {
 			return this;
 		}
 
-		public Biome.Settings creatureGenerationProbability(float probability) {
-			this.creatureGenerationProbability = probability;
+		public Biome.Settings spawnSettings(SpawnSettings spawnSettings) {
+			this.spawnSettings = spawnSettings;
+			return this;
+		}
+
+		public Biome.Settings generationSettings(GenerationSettings generationSettings) {
+			this.generationSettings = generationSettings;
 			return this;
 		}
 
@@ -802,10 +645,33 @@ public final class Biome {
 			return this;
 		}
 
+		public Biome build() {
+			if (this.precipitation != null
+				&& this.category != null
+				&& this.depth != null
+				&& this.scale != null
+				&& this.temperature != null
+				&& this.downfall != null
+				&& this.specialEffects != null
+				&& this.spawnSettings != null
+				&& this.generationSettings != null) {
+				return new Biome(
+					new Biome.Weather(this.precipitation, this.temperature, this.temperatureModifier, this.downfall),
+					this.category,
+					this.depth,
+					this.scale,
+					this.specialEffects,
+					this.generationSettings,
+					this.spawnSettings,
+					Optional.ofNullable(this.parent)
+				);
+			} else {
+				throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
+			}
+		}
+
 		public String toString() {
-			return "BiomeBuilder{\nsurfaceBuilder="
-				+ this.surfaceBuilder
-				+ ",\nprecipitation="
+			return "BiomeBuilder{\nprecipitation="
 				+ this.precipitation
 				+ ",\nbiomeCategory="
 				+ this.category
@@ -821,115 +687,15 @@ public final class Biome {
 				+ this.downfall
 				+ ",\nspecialEffects="
 				+ this.specialEffects
-				+ ",\ncreatureGenerationProbability="
-				+ this.creatureGenerationProbability
+				+ ",\nmobSpawnSettings="
+				+ this.spawnSettings
+				+ ",\ngenerationSettings="
+				+ this.generationSettings
 				+ ",\nparent='"
 				+ this.parent
 				+ '\''
 				+ "\n"
 				+ '}';
-		}
-	}
-
-	/**
-	 * Embodies the density limit information of a type of entity in entity
-	 * spawning logic. The density field is generated for all entities spawned
-	 * than a specific type of entity.
-	 */
-	public static class SpawnDensity {
-		public static final Codec<Biome.SpawnDensity> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codec.DOUBLE.fieldOf("energy_budget").forGetter(Biome.SpawnDensity::getGravityLimit),
-						Codec.DOUBLE.fieldOf("charge").forGetter(Biome.SpawnDensity::getMass)
-					)
-					.apply(instance, Biome.SpawnDensity::new)
-		);
-		private final double gravityLimit;
-		private final double mass;
-
-		public SpawnDensity(double gravityLimit, double mass) {
-			this.gravityLimit = gravityLimit;
-			this.mass = mass;
-		}
-
-		/**
-		 * Represents the cap of gravity as in {@link
-		 * net.minecraft.util.math.GravityField#calculate(BlockPos, double)} for
-		 * entity spawning. If the cap is exceeded, the entity spawning attempt
-		 * will skip.
-		 */
-		public double getGravityLimit() {
-			return this.gravityLimit;
-		}
-
-		/**
-		 * Represents the mass of each entity spawned. Will affect gravity
-		 * calculation.
-		 */
-		public double getMass() {
-			return this.mass;
-		}
-	}
-
-	public static class SpawnEntry extends WeightedPicker.Entry {
-		public static final Codec<Biome.SpawnEntry> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Registry.ENTITY_TYPE.fieldOf("type").forGetter(spawnEntry -> spawnEntry.type),
-						Codec.INT.fieldOf("weight").forGetter(spawnEntry -> spawnEntry.weight),
-						Codec.INT.fieldOf("minCount").forGetter(spawnEntry -> spawnEntry.minGroupSize),
-						Codec.INT.fieldOf("maxCount").forGetter(spawnEntry -> spawnEntry.maxGroupSize)
-					)
-					.apply(instance, Biome.SpawnEntry::new)
-		);
-		public final EntityType<?> type;
-		public final int minGroupSize;
-		public final int maxGroupSize;
-
-		public SpawnEntry(EntityType<?> type, int weight, int minGroupSize, int maxGroupSize) {
-			super(weight);
-			this.type = type.getSpawnGroup() == SpawnGroup.MISC ? EntityType.PIG : type;
-			this.minGroupSize = minGroupSize;
-			this.maxGroupSize = maxGroupSize;
-		}
-
-		public String toString() {
-			return EntityType.getId(this.type) + "*(" + this.minGroupSize + "-" + this.maxGroupSize + "):" + this.weight;
-		}
-	}
-
-	static class SpawnSettings {
-		public static final MapCodec<Biome.SpawnSettings> CODEC = RecordCodecBuilder.mapCodec(
-			instance -> instance.group(
-						Codec.FLOAT.optionalFieldOf("creature_spawn_probability", Float.valueOf(0.1F)).forGetter(spawnSettings -> spawnSettings.creatureSpawnProbability),
-						Codec.simpleMap(
-								SpawnGroup.field_24655,
-								Biome.SpawnEntry.CODEC.listOf().promotePartial(Util.method_29188("Spawn data: ", Biome.LOGGER::error)),
-								StringIdentifiable.method_28142(SpawnGroup.values())
-							)
-							.fieldOf("spawners")
-							.forGetter(spawnSettings -> spawnSettings.spawners),
-						Codec.simpleMap(Registry.ENTITY_TYPE, Biome.SpawnDensity.CODEC, Registry.ENTITY_TYPE)
-							.fieldOf("spawn_costs")
-							.forGetter(spawnSettings -> spawnSettings.spawnCosts)
-					)
-					.apply(instance, Biome.SpawnSettings::new)
-		);
-		private final float creatureSpawnProbability;
-		private final Map<SpawnGroup, List<Biome.SpawnEntry>> spawners;
-		private final Map<EntityType<?>, Biome.SpawnDensity> spawnCosts;
-
-		private SpawnSettings(float creatureSpawnProbability, Map<SpawnGroup, List<Biome.SpawnEntry>> spawners, Map<EntityType<?>, Biome.SpawnDensity> spawnCosts) {
-			this.creatureSpawnProbability = creatureSpawnProbability;
-			this.spawners = spawners;
-			this.spawnCosts = spawnCosts;
-		}
-
-		private SpawnSettings(float creatureSpawnProbability) {
-			this(creatureSpawnProbability, Maps.<SpawnGroup, List<Biome.SpawnEntry>>newLinkedHashMap(), Maps.<EntityType<?>, Biome.SpawnDensity>newLinkedHashMap());
-
-			for (SpawnGroup spawnGroup : SpawnGroup.values()) {
-				this.spawners.put(spawnGroup, Lists.newArrayList());
-			}
 		}
 	}
 

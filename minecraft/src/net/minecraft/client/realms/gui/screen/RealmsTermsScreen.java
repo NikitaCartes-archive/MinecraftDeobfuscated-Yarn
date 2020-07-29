@@ -90,14 +90,14 @@ public class RealmsTermsScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, field_26523, this.width / 2, 17, 16777215);
-		this.textRenderer.method_30883(matrices, field_26524, (float)(this.width / 2 - 120), (float)row(5), 16777215);
+		this.textRenderer.draw(matrices, field_26524, (float)(this.width / 2 - 120), (float)row(5), 16777215);
 		int i = this.textRenderer.getWidth(field_26524);
 		int j = this.width / 2 - 121 + i;
 		int k = row(5);
 		int l = j + this.textRenderer.getWidth(field_26525) + 1;
 		int m = k + 1 + 9;
 		this.onLink = j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m;
-		this.textRenderer.method_30883(matrices, field_26525, (float)(this.width / 2 - 120 + i), (float)row(5), this.onLink ? 7107012 : 3368635);
+		this.textRenderer.draw(matrices, field_26525, (float)(this.width / 2 - 120 + i), (float)row(5), this.onLink ? 7107012 : 3368635);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

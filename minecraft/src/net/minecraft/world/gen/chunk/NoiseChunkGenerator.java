@@ -37,6 +37,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.chunk.Chunk;
@@ -51,7 +52,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		instance -> instance.group(
 					BiomeSource.field_24713.fieldOf("biome_source").forGetter(noiseChunkGenerator -> noiseChunkGenerator.biomeSource),
 					Codec.LONG.fieldOf("seed").stable().forGetter(noiseChunkGenerator -> noiseChunkGenerator.worldSeed),
-					ChunkGeneratorType.field_24781.fieldOf("settings").forGetter(noiseChunkGenerator -> noiseChunkGenerator.settings)
+					ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(noiseChunkGenerator -> noiseChunkGenerator.settings)
 				)
 				.apply(instance, instance.stable(NoiseChunkGenerator::new))
 	);
@@ -89,37 +90,37 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	protected final BlockState defaultBlock;
 	protected final BlockState defaultFluid;
 	private final long worldSeed;
-	protected final Supplier<ChunkGeneratorType> settings;
+	protected final Supplier<ChunkGeneratorSettings> settings;
 	private final int worldHeight;
 
-	public NoiseChunkGenerator(BiomeSource biomeSource, long l, Supplier<ChunkGeneratorType> supplier) {
+	public NoiseChunkGenerator(BiomeSource biomeSource, long l, Supplier<ChunkGeneratorSettings> supplier) {
 		this(biomeSource, biomeSource, l, supplier);
 	}
 
-	private NoiseChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long worldSeed, Supplier<ChunkGeneratorType> supplier) {
-		super(biomeSource, biomeSource2, ((ChunkGeneratorType)supplier.get()).getConfig(), worldSeed);
+	private NoiseChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, long worldSeed, Supplier<ChunkGeneratorSettings> supplier) {
+		super(biomeSource, biomeSource2, ((ChunkGeneratorSettings)supplier.get()).getStructuresConfig(), worldSeed);
 		this.worldSeed = worldSeed;
-		ChunkGeneratorType chunkGeneratorType = (ChunkGeneratorType)supplier.get();
+		ChunkGeneratorSettings chunkGeneratorSettings = (ChunkGeneratorSettings)supplier.get();
 		this.settings = supplier;
-		NoiseConfig noiseConfig = chunkGeneratorType.getNoiseConfig();
-		this.worldHeight = noiseConfig.getHeight();
-		this.verticalNoiseResolution = noiseConfig.getSizeVertical() * 4;
-		this.horizontalNoiseResolution = noiseConfig.getSizeHorizontal() * 4;
-		this.defaultBlock = chunkGeneratorType.getDefaultBlock();
-		this.defaultFluid = chunkGeneratorType.getDefaultFluid();
+		GenerationShapeConfig generationShapeConfig = chunkGeneratorSettings.getGenerationShapeConfig();
+		this.worldHeight = generationShapeConfig.getHeight();
+		this.verticalNoiseResolution = generationShapeConfig.getSizeVertical() * 4;
+		this.horizontalNoiseResolution = generationShapeConfig.getSizeHorizontal() * 4;
+		this.defaultBlock = chunkGeneratorSettings.getDefaultBlock();
+		this.defaultFluid = chunkGeneratorSettings.getDefaultFluid();
 		this.noiseSizeX = 16 / this.horizontalNoiseResolution;
-		this.noiseSizeY = noiseConfig.getHeight() / this.verticalNoiseResolution;
+		this.noiseSizeY = generationShapeConfig.getHeight() / this.verticalNoiseResolution;
 		this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
 		this.random = new ChunkRandom(worldSeed);
 		this.lowerInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.upperInterpolatedNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.interpolationNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-7, 0));
-		this.surfaceDepthNoise = (NoiseSampler)(noiseConfig.hasSimplexSurfaceNoise()
+		this.surfaceDepthNoise = (NoiseSampler)(generationShapeConfig.hasSimplexSurfaceNoise()
 			? new OctaveSimplexNoiseSampler(this.random, IntStream.rangeClosed(-3, 0))
 			: new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-3, 0)));
 		this.random.consume(2620);
 		this.densityNoise = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
-		if (noiseConfig.hasIslandNoiseOverride()) {
+		if (generationShapeConfig.hasIslandNoiseOverride()) {
 			ChunkRandom chunkRandom = new ChunkRandom(worldSeed);
 			chunkRandom.consume(17292);
 			this.islandNoise = new SimplexNoiseSampler(chunkRandom);
@@ -139,8 +140,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		return new NoiseChunkGenerator(this.biomeSource.withSeed(seed), seed, this.settings);
 	}
 
-	public boolean method_28548(long l, ChunkGeneratorType chunkGeneratorType) {
-		return this.worldSeed == l && ((ChunkGeneratorType)this.settings.get()).method_28555(chunkGeneratorType);
+	public boolean method_28548(long l, ChunkGeneratorSettings chunkGeneratorSettings) {
+		return this.worldSeed == l && ((ChunkGeneratorSettings)this.settings.get()).isIdEqual(chunkGeneratorSettings);
 	}
 
 	private double sampleNoise(int x, int y, int z, double horizontalScale, double verticalScale, double horizontalStretch, double verticalStretch) {
@@ -192,7 +193,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	private void sampleNoiseColumn(double[] buffer, int x, int z) {
-		NoiseConfig noiseConfig = ((ChunkGeneratorType)this.settings.get()).getNoiseConfig();
+		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig();
 		double d;
 		double e;
 		if (this.islandNoise != null) {
@@ -217,7 +218,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 					float o = biome.getScale();
 					float p;
 					float q;
-					if (noiseConfig.isAmplified() && n > 0.0F) {
+					if (generationShapeConfig.isAmplified() && n > 0.0F) {
 						p = 1.0F + n * 2.0F;
 						q = 1.0F + o * 4.0F;
 					} else {
@@ -241,19 +242,19 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			e = 96.0 / w;
 		}
 
-		double y = 684.412 * noiseConfig.getSampling().getXZScale();
-		double aa = 684.412 * noiseConfig.getSampling().getYScale();
-		double ab = y / noiseConfig.getSampling().getXZFactor();
-		double ac = aa / noiseConfig.getSampling().getYFactor();
-		double v = (double)noiseConfig.getTopSlide().getTarget();
-		double w = (double)noiseConfig.getTopSlide().getSize();
-		double ad = (double)noiseConfig.getTopSlide().getOffset();
-		double ae = (double)noiseConfig.getBottomSlide().getTarget();
-		double af = (double)noiseConfig.getBottomSlide().getSize();
-		double ag = (double)noiseConfig.getBottomSlide().getOffset();
-		double ah = noiseConfig.hasRandomDensityOffset() ? this.getRandomDensityAt(x, z) : 0.0;
-		double ai = noiseConfig.getDensityFactor();
-		double aj = noiseConfig.getDensityOffset();
+		double y = 684.412 * generationShapeConfig.getSampling().getXZScale();
+		double aa = 684.412 * generationShapeConfig.getSampling().getYScale();
+		double ab = y / generationShapeConfig.getSampling().getXZFactor();
+		double ac = aa / generationShapeConfig.getSampling().getYFactor();
+		double v = (double)generationShapeConfig.getTopSlide().getTarget();
+		double w = (double)generationShapeConfig.getTopSlide().getSize();
+		double ad = (double)generationShapeConfig.getTopSlide().getOffset();
+		double ae = (double)generationShapeConfig.getBottomSlide().getTarget();
+		double af = (double)generationShapeConfig.getBottomSlide().getSize();
+		double ag = (double)generationShapeConfig.getBottomSlide().getOffset();
+		double ah = generationShapeConfig.hasRandomDensityOffset() ? this.getRandomDensityAt(x, z) : 0.0;
+		double ai = generationShapeConfig.getDensityFactor();
+		double aj = generationShapeConfig.getDensityOffset();
 
 		for (int ak = 0; ak <= this.noiseSizeY; ak++) {
 			double al = this.sampleNoise(x, ak, z, y, aa, ab, ac);
@@ -388,9 +389,9 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = chunk.getPos().getStartX();
 		int j = chunk.getPos().getStartZ();
-		ChunkGeneratorType chunkGeneratorType = (ChunkGeneratorType)this.settings.get();
-		int k = chunkGeneratorType.getBedrockFloorY();
-		int l = this.worldHeight - 1 - chunkGeneratorType.getBedrockCeilingY();
+		ChunkGeneratorSettings chunkGeneratorSettings = (ChunkGeneratorSettings)this.settings.get();
+		int k = chunkGeneratorSettings.getBedrockFloorY();
+		int l = this.worldHeight - 1 - chunkGeneratorSettings.getBedrockCeilingY();
 		int m = 5;
 		boolean bl = l + 4 >= 0 && l < this.worldHeight;
 		boolean bl2 = k + 4 >= 0 && k < this.worldHeight;
@@ -590,11 +591,11 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public int getSeaLevel() {
-		return ((ChunkGeneratorType)this.settings.get()).getSeaLevel();
+		return ((ChunkGeneratorSettings)this.settings.get()).getSeaLevel();
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+	public List<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
 		if (accessor.getStructureAt(pos, true, StructureFeature.SWAMP_HUT).hasChildren()) {
 			if (group == SpawnGroup.MONSTER) {
 				return StructureFeature.SWAMP_HUT.getMonsterSpawns();
@@ -624,7 +625,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public void populateEntities(ChunkRegion region) {
-		if (!((ChunkGeneratorType)this.settings.get()).method_28562()) {
+		if (!((ChunkGeneratorSettings)this.settings.get()).isMobGenerationDisabled()) {
 			int i = region.getCenterChunkX();
 			int j = region.getCenterChunkZ();
 			Biome biome = region.getBiome(new ChunkPos(i, j).getCenterBlockPos());

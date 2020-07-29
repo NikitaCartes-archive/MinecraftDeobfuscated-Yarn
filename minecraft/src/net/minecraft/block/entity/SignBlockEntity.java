@@ -5,7 +5,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -27,7 +27,7 @@ public class SignBlockEntity extends BlockEntity {
 	private final Text[] text = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
 	private boolean editable = true;
 	private PlayerEntity editor;
-	private final class_5481[] textBeingEdited = new class_5481[4];
+	private final OrderedText[] textBeingEdited = new OrderedText[4];
 	private DyeColor textColor = DyeColor.BLACK;
 
 	public SignBlockEntity() {
@@ -82,9 +82,9 @@ public class SignBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public class_5481 getTextBeingEditedOnRow(int row, Function<Text, class_5481> function) {
+	public OrderedText getTextBeingEditedOnRow(int row, Function<Text, OrderedText> function) {
 		if (this.textBeingEdited[row] == null && this.text[row] != null) {
-			this.textBeingEdited[row] = (class_5481)function.apply(this.text[row]);
+			this.textBeingEdited[row] = (OrderedText)function.apply(this.text[row]);
 		}
 
 		return this.textBeingEdited[row];

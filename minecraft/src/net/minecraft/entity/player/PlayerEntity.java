@@ -159,13 +159,13 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Nullable
 	public FishingBobberEntity fishHook;
 
-	public PlayerEntity(World world, BlockPos blockPos, float f, GameProfile gameProfile) {
+	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile profile) {
 		super(EntityType.PLAYER, world);
-		this.setUuid(getUuidFromProfile(gameProfile));
-		this.gameProfile = gameProfile;
+		this.setUuid(getUuidFromProfile(profile));
+		this.gameProfile = profile;
 		this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
 		this.currentScreenHandler = this.playerScreenHandler;
-		this.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5, f, 0.0F);
+		this.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5, yaw, 0.0F);
 		this.field_6215 = 180.0F;
 	}
 
@@ -1978,7 +1978,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean canPickUp(ItemStack stack) {
+	public boolean canEquip(ItemStack stack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
 		return this.getEquippedStack(equipmentSlot).isEmpty();
 	}
@@ -2034,6 +2034,36 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	protected boolean method_29500(BlockState blockState) {
 		return this.abilities.flying || super.method_29500(blockState);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_30951(float f) {
+		double d = 0.22 * (this.getMainArm() == Arm.RIGHT ? -1.0 : 1.0);
+		float g = MathHelper.lerp(f * 0.5F, this.pitch, this.prevPitch) * (float) (Math.PI / 180.0);
+		float h = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);
+		if (this.isFallFlying() || this.isUsingRiptide()) {
+			Vec3d vec3d = this.getRotationVec(f);
+			Vec3d vec3d2 = this.getVelocity();
+			double e = Entity.squaredHorizontalLength(vec3d2);
+			double i = Entity.squaredHorizontalLength(vec3d);
+			float l;
+			if (e > 0.0 && i > 0.0) {
+				double j = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(e * i);
+				double k = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
+				l = (float)(Math.signum(k) * Math.acos(j));
+			} else {
+				l = 0.0F;
+			}
+
+			return this.method_30950(f).add(new Vec3d(d, -0.11, 0.85).method_31033(-l).rotateX(-g).rotateY(-h));
+		} else if (this.isInSwimmingPose()) {
+			return this.method_30950(f).add(new Vec3d(d, 0.2, -0.15).rotateX(-g).rotateY(-h));
+		} else {
+			double m = this.getBoundingBox().getYLength() - 1.0;
+			double e = this.isInSneakingPose() ? -0.2 : 0.07;
+			return this.method_30950(f).add(new Vec3d(d, m, e).rotateY(-h));
+		}
 	}
 
 	public static enum SleepFailureReason {

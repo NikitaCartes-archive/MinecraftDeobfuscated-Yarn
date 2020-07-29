@@ -4,15 +4,20 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.datafixers.util.Pair;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -20,7 +25,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.util.dynamic.RegistryCodec;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -28,56 +32,79 @@ import org.apache.logging.log4j.Logger;
 
 public class SimpleRegistry<T> extends MutableRegistry<T> {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	protected final Int2ObjectBiMap<T> indexedEntries = new Int2ObjectBiMap<>(256);
-	protected final BiMap<Identifier, T> entriesById = HashBiMap.create();
-	private final BiMap<RegistryKey<T>, T> entriesByKey = HashBiMap.create();
-	private final Set<RegistryKey<T>> loadedKeys = Sets.newIdentityHashSet();
+	private final ObjectList<T> field_26682 = new ObjectArrayList<>(256);
+	private final Object2IntMap<T> field_26683 = new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy());
+	private final BiMap<Identifier, T> entriesById;
+	private final BiMap<RegistryKey<T>, T> entriesByKey;
 	protected Object[] randomEntries;
 	private int nextId;
 
 	public SimpleRegistry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
 		super(registryKey, lifecycle);
+		this.field_26683.defaultReturnValue(-1);
+		this.entriesById = HashBiMap.create();
+		this.entriesByKey = HashBiMap.create();
 	}
 
-	public static <T> MapCodec<Pair<RegistryKey<T>, T>> method_30516(RegistryKey<? extends Registry<T>> registryKey, MapCodec<T> mapCodec) {
-		return Codec.mapPair(Identifier.CODEC.<RegistryKey<T>>xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("name"), mapCodec);
-	}
-
-	public static <T> MapCodec<Pair<Pair<RegistryKey<T>, Integer>, T>> method_30929(RegistryKey<? extends Registry<T>> registryKey, MapCodec<T> mapCodec) {
-		return Codec.mapPair(
-			Codec.mapPair(
-				Identifier.CODEC.<RegistryKey<T>>xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("name"), Codec.INT.fieldOf("id")
-			),
-			mapCodec
+	public static <T> MapCodec<SimpleRegistry.class_5501<T>> method_30929(RegistryKey<? extends Registry<T>> registryKey, MapCodec<T> mapCodec) {
+		return RecordCodecBuilder.mapCodec(
+			instance -> instance.group(
+						Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue).fieldOf("name").forGetter(arg -> arg.field_26684),
+						Codec.INT.fieldOf("id").forGetter(arg -> arg.field_26685),
+						mapCodec.forGetter(arg -> arg.field_26686)
+					)
+					.apply(instance, SimpleRegistry.class_5501::new)
 		);
 	}
 
 	@Override
 	public <V extends T> V set(int rawId, RegistryKey<T> key, V entry) {
-		this.indexedEntries.put((T)entry, rawId);
-		Validate.notNull(key);
-		Validate.notNull(entry);
+		return this.method_31051(rawId, key, entry, true);
+	}
+
+	private <V extends T> V method_31051(int i, RegistryKey<T> registryKey, V object, boolean bl) {
+		Validate.notNull(registryKey);
+		Validate.notNull(object);
+		this.field_26682.size(Math.max(this.field_26682.size(), i + 1));
+		this.field_26682.set(i, object);
+		this.field_26683.put((T)object, i);
 		this.randomEntries = null;
-		if (this.entriesByKey.containsKey(key)) {
-			LOGGER.debug("Adding duplicate key '{}' to registry", key);
+		if (bl && this.entriesByKey.containsKey(registryKey)) {
+			LOGGER.debug("Adding duplicate key '{}' to registry", registryKey);
 		}
 
-		if (this.entriesById.containsValue(entry)) {
-			LOGGER.error("Adding duplicate value '{}' to registry", entry);
+		if (this.entriesById.containsValue(object)) {
+			LOGGER.error("Adding duplicate value '{}' to registry", object);
 		}
 
-		this.entriesById.put(key.getValue(), (T)entry);
-		this.entriesByKey.put(key, (T)entry);
-		if (this.nextId <= rawId) {
-			this.nextId = rawId + 1;
+		this.entriesById.put(registryKey.getValue(), (T)object);
+		this.entriesByKey.put(registryKey, (T)object);
+		if (this.nextId <= i) {
+			this.nextId = i + 1;
 		}
 
-		return entry;
+		return object;
 	}
 
 	@Override
 	public <V extends T> V add(RegistryKey<T> key, V entry) {
 		return this.set(this.nextId, key, entry);
+	}
+
+	@Override
+	public <V extends T> V method_31062(RegistryKey<T> registryKey, V object) {
+		Validate.notNull(registryKey);
+		Validate.notNull(object);
+		T object2 = (T)this.entriesByKey.get(registryKey);
+		int i;
+		if (object2 == null) {
+			i = this.nextId;
+		} else {
+			i = this.field_26683.getInt(object2);
+			this.field_26683.removeInt(object2);
+		}
+
+		return this.method_31051(i, registryKey, object, false);
 	}
 
 	@Nullable
@@ -93,7 +120,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 	@Override
 	public int getRawId(@Nullable T object) {
-		return this.indexedEntries.getRawId(object);
+		return this.field_26683.getInt(object);
 	}
 
 	@Nullable
@@ -105,11 +132,11 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	@Nullable
 	@Override
 	public T get(int index) {
-		return this.indexedEntries.get(index);
+		return (T)(index >= 0 && index < this.field_26682.size() ? this.field_26682.get(index) : null);
 	}
 
 	public Iterator<T> iterator() {
-		return this.indexedEntries.iterator();
+		return Iterators.filter(this.field_26682.iterator(), Objects::nonNull);
 	}
 
 	@Nullable
@@ -147,57 +174,47 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return this.entriesById.containsKey(id);
 	}
 
-	@Override
-	public boolean containsId(int id) {
-		return this.indexedEntries.containsId(id);
-	}
-
-	@Override
-	public boolean isLoaded(RegistryKey<T> registryKey) {
-		return this.loadedKeys.contains(registryKey);
-	}
-
-	@Override
-	public void markLoaded(RegistryKey<T> registryKey) {
-		this.loadedKeys.add(registryKey);
-	}
-
-	public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, MapCodec<T> mapCodec) {
-		return method_30929(registryKey, mapCodec).codec().listOf().xmap(list -> {
+	public static <T> Codec<SimpleRegistry<T>> method_29098(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
+		return method_30929(registryKey, codec.fieldOf("element")).codec().listOf().xmap(list -> {
 			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
 
-			for (Pair<Pair<RegistryKey<T>, Integer>, T> pair : list) {
-				simpleRegistry.set(pair.getFirst().getSecond(), pair.getFirst().getFirst(), pair.getSecond());
+			for (SimpleRegistry.class_5501<T> lv : list) {
+				simpleRegistry.set(lv.field_26685, lv.field_26684, lv.field_26686);
 			}
 
 			return simpleRegistry;
 		}, simpleRegistry -> {
-			com.google.common.collect.ImmutableList.Builder<Pair<Pair<RegistryKey<T>, Integer>, T>> builder = ImmutableList.builder();
+			Builder<SimpleRegistry.class_5501<T>> builder = ImmutableList.builder();
 
-			for (T object : simpleRegistry.indexedEntries) {
-				builder.add(Pair.of(Pair.of((RegistryKey<T>)simpleRegistry.getKey(object).get(), simpleRegistry.getRawId(object)), object));
+			for (T object : simpleRegistry) {
+				builder.add(new SimpleRegistry.class_5501<>((RegistryKey<T>)simpleRegistry.getKey(object).get(), simpleRegistry.getRawId(object), object));
 			}
 
 			return builder.build();
 		});
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
-		return RegistryCodec.of(registryRef, lifecycle, mapCodec);
+	public static <T> Codec<SimpleRegistry<T>> createCodec(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> codec) {
+		return RegistryCodec.of(registryRef, lifecycle, codec);
 	}
 
-	public static <T> Codec<SimpleRegistry<T>> createEmptyCodec(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, MapCodec<T> mapCodec) {
-		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue), mapCodec.codec()).xmap(map -> {
-			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryRef, lifecycle);
-			map.forEach((registryKeyx, object) -> {
-				simpleRegistry.set(simpleRegistry.nextId, registryKeyx, object);
-				simpleRegistry.markLoaded(registryKeyx);
-			});
+	public static <T> Codec<SimpleRegistry<T>> method_31059(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
+		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue), codec).xmap(map -> {
+			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
+			map.forEach(simpleRegistry::add);
 			return simpleRegistry;
-		}, simpleRegistry -> {
-			Builder<RegistryKey<T>, T> builder = ImmutableMap.builder();
-			simpleRegistry.entriesByKey.entrySet().stream().filter(entry -> simpleRegistry.isLoaded((RegistryKey<T>)entry.getKey())).forEach(builder::put);
-			return builder.build();
-		});
+		}, simpleRegistry -> ImmutableMap.copyOf(simpleRegistry.entriesByKey));
+	}
+
+	public static class class_5501<T> {
+		public final RegistryKey<T> field_26684;
+		public final int field_26685;
+		public final T field_26686;
+
+		public class_5501(RegistryKey<T> registryKey, int i, T object) {
+			this.field_26684 = registryKey;
+			this.field_26685 = i;
+			this.field_26686 = object;
+		}
 	}
 }

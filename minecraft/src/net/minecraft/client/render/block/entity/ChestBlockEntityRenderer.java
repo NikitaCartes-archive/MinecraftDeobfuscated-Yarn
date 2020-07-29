@@ -27,15 +27,15 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProgress> extends BlockEntityRenderer<T> {
-	private final ModelPart field_20817;
-	private final ModelPart field_20818;
-	private final ModelPart field_20819;
-	private final ModelPart field_20820;
-	private final ModelPart field_20821;
-	private final ModelPart field_20822;
-	private final ModelPart field_21479;
-	private final ModelPart field_21480;
-	private final ModelPart field_21481;
+	private final ModelPart singleChestLid;
+	private final ModelPart singleChestBase;
+	private final ModelPart singleChestLatch;
+	private final ModelPart doubleChestRightLid;
+	private final ModelPart doubleChestRightBase;
+	private final ModelPart doubleChestRightLatch;
+	private final ModelPart doubleChestLeftLid;
+	private final ModelPart doubleChestLeftBase;
+	private final ModelPart doubleChestLeftLatch;
 	private boolean christmas;
 
 	public ChestBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
@@ -45,33 +45,33 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 			this.christmas = true;
 		}
 
-		this.field_20818 = new ModelPart(64, 64, 0, 19);
-		this.field_20818.addCuboid(1.0F, 0.0F, 1.0F, 14.0F, 10.0F, 14.0F, 0.0F);
-		this.field_20817 = new ModelPart(64, 64, 0, 0);
-		this.field_20817.addCuboid(1.0F, 0.0F, 0.0F, 14.0F, 5.0F, 14.0F, 0.0F);
-		this.field_20817.pivotY = 9.0F;
-		this.field_20817.pivotZ = 1.0F;
-		this.field_20819 = new ModelPart(64, 64, 0, 0);
-		this.field_20819.addCuboid(7.0F, -1.0F, 15.0F, 2.0F, 4.0F, 1.0F, 0.0F);
-		this.field_20819.pivotY = 8.0F;
-		this.field_20821 = new ModelPart(64, 64, 0, 19);
-		this.field_20821.addCuboid(1.0F, 0.0F, 1.0F, 15.0F, 10.0F, 14.0F, 0.0F);
-		this.field_20820 = new ModelPart(64, 64, 0, 0);
-		this.field_20820.addCuboid(1.0F, 0.0F, 0.0F, 15.0F, 5.0F, 14.0F, 0.0F);
-		this.field_20820.pivotY = 9.0F;
-		this.field_20820.pivotZ = 1.0F;
-		this.field_20822 = new ModelPart(64, 64, 0, 0);
-		this.field_20822.addCuboid(15.0F, -1.0F, 15.0F, 1.0F, 4.0F, 1.0F, 0.0F);
-		this.field_20822.pivotY = 8.0F;
-		this.field_21480 = new ModelPart(64, 64, 0, 19);
-		this.field_21480.addCuboid(0.0F, 0.0F, 1.0F, 15.0F, 10.0F, 14.0F, 0.0F);
-		this.field_21479 = new ModelPart(64, 64, 0, 0);
-		this.field_21479.addCuboid(0.0F, 0.0F, 0.0F, 15.0F, 5.0F, 14.0F, 0.0F);
-		this.field_21479.pivotY = 9.0F;
-		this.field_21479.pivotZ = 1.0F;
-		this.field_21481 = new ModelPart(64, 64, 0, 0);
-		this.field_21481.addCuboid(0.0F, -1.0F, 15.0F, 1.0F, 4.0F, 1.0F, 0.0F);
-		this.field_21481.pivotY = 8.0F;
+		this.singleChestBase = new ModelPart(64, 64, 0, 19);
+		this.singleChestBase.addCuboid(1.0F, 0.0F, 1.0F, 14.0F, 10.0F, 14.0F, 0.0F);
+		this.singleChestLid = new ModelPart(64, 64, 0, 0);
+		this.singleChestLid.addCuboid(1.0F, 0.0F, 0.0F, 14.0F, 5.0F, 14.0F, 0.0F);
+		this.singleChestLid.pivotY = 9.0F;
+		this.singleChestLid.pivotZ = 1.0F;
+		this.singleChestLatch = new ModelPart(64, 64, 0, 0);
+		this.singleChestLatch.addCuboid(7.0F, -1.0F, 15.0F, 2.0F, 4.0F, 1.0F, 0.0F);
+		this.singleChestLatch.pivotY = 8.0F;
+		this.doubleChestRightBase = new ModelPart(64, 64, 0, 19);
+		this.doubleChestRightBase.addCuboid(1.0F, 0.0F, 1.0F, 15.0F, 10.0F, 14.0F, 0.0F);
+		this.doubleChestRightLid = new ModelPart(64, 64, 0, 0);
+		this.doubleChestRightLid.addCuboid(1.0F, 0.0F, 0.0F, 15.0F, 5.0F, 14.0F, 0.0F);
+		this.doubleChestRightLid.pivotY = 9.0F;
+		this.doubleChestRightLid.pivotZ = 1.0F;
+		this.doubleChestRightLatch = new ModelPart(64, 64, 0, 0);
+		this.doubleChestRightLatch.addCuboid(15.0F, -1.0F, 15.0F, 1.0F, 4.0F, 1.0F, 0.0F);
+		this.doubleChestRightLatch.pivotY = 8.0F;
+		this.doubleChestLeftBase = new ModelPart(64, 64, 0, 19);
+		this.doubleChestLeftBase.addCuboid(0.0F, 0.0F, 1.0F, 15.0F, 10.0F, 14.0F, 0.0F);
+		this.doubleChestLeftLid = new ModelPart(64, 64, 0, 0);
+		this.doubleChestLeftLid.addCuboid(0.0F, 0.0F, 0.0F, 15.0F, 5.0F, 14.0F, 0.0F);
+		this.doubleChestLeftLid.pivotY = 9.0F;
+		this.doubleChestLeftLid.pivotZ = 1.0F;
+		this.doubleChestLeftLatch = new ModelPart(64, 64, 0, 0);
+		this.doubleChestLeftLatch.addCuboid(0.0F, -1.0F, 15.0F, 1.0F, 4.0F, 1.0F, 0.0F);
+		this.doubleChestLeftLatch.pivotY = 8.0F;
 	}
 
 	@Override
@@ -104,25 +104,23 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
 			if (bl2) {
 				if (chestType == ChestType.LEFT) {
-					this.method_22749(matrices, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, g, i, overlay);
+					this.render(matrices, vertexConsumer, this.doubleChestLeftLid, this.doubleChestLeftLatch, this.doubleChestLeftBase, g, i, overlay);
 				} else {
-					this.method_22749(matrices, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, g, i, overlay);
+					this.render(matrices, vertexConsumer, this.doubleChestRightLid, this.doubleChestRightLatch, this.doubleChestRightBase, g, i, overlay);
 				}
 			} else {
-				this.method_22749(matrices, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, g, i, overlay);
+				this.render(matrices, vertexConsumer, this.singleChestLid, this.singleChestLatch, this.singleChestBase, g, i, overlay);
 			}
 
 			matrices.pop();
 		}
 	}
 
-	private void method_22749(
-		MatrixStack matrices, VertexConsumer vertices, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int light, int overlay
-	) {
-		modelPart.pitch = -(f * (float) (Math.PI / 2));
-		modelPart2.pitch = modelPart.pitch;
-		modelPart.render(matrices, vertices, light, overlay);
-		modelPart2.render(matrices, vertices, light, overlay);
-		modelPart3.render(matrices, vertices, light, overlay);
+	private void render(MatrixStack matrices, VertexConsumer vertices, ModelPart lid, ModelPart latch, ModelPart base, float openFactor, int light, int overlay) {
+		lid.pitch = -(openFactor * (float) (Math.PI / 2));
+		latch.pitch = lid.pitch;
+		lid.render(matrices, vertices, light, overlay);
+		latch.render(matrices, vertices, light, overlay);
+		base.render(matrices, vertices, light, overlay);
 	}
 }

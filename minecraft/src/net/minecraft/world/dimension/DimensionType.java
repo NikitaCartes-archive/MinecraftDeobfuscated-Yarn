@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.io.File;
 import java.util.Optional;
@@ -30,11 +29,11 @@ import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.biome.source.VoronoiBiomeAccessType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 public class DimensionType {
-	public static final MapCodec<DimensionType> CODEC = RecordCodecBuilder.mapCodec(
+	public static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.LONG
 						.optionalFieldOf("fixed_time")
@@ -58,7 +57,7 @@ public class DimensionType {
 				)
 				.apply(instance, DimensionType::new)
 	);
-	public static final float[] field_24752 = new float[]{1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
+	public static final float[] MOON_SIZES = new float[]{1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
 	public static final RegistryKey<DimensionType> OVERWORLD_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld"));
 	public static final RegistryKey<DimensionType> THE_NETHER_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_nether"));
 	public static final RegistryKey<DimensionType> THE_END_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_end"));
@@ -270,19 +269,17 @@ public class DimensionType {
 	}
 
 	private static ChunkGenerator createEndGenerator(long seed) {
-		return new NoiseChunkGenerator(new TheEndBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26358);
+		return new NoiseChunkGenerator(new TheEndBiomeSource(seed), seed, () -> ChunkGeneratorSettings.END);
 	}
 
 	private static ChunkGenerator createNetherGenerator(long seed) {
-		return new NoiseChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, () -> ChunkGeneratorType.field_26357);
+		return new NoiseChunkGenerator(MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(seed), seed, () -> ChunkGeneratorSettings.NETHER);
 	}
 
 	public static SimpleRegistry<DimensionOptions> method_28517(long seed) {
 		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
 		simpleRegistry.add(DimensionOptions.NETHER, new DimensionOptions(() -> THE_NETHER, createNetherGenerator(seed)));
 		simpleRegistry.add(DimensionOptions.END, new DimensionOptions(() -> THE_END, createEndGenerator(seed)));
-		simpleRegistry.markLoaded(DimensionOptions.NETHER);
-		simpleRegistry.markLoaded(DimensionOptions.END);
 		return simpleRegistry;
 	}
 
@@ -355,14 +352,21 @@ public class DimensionType {
 		return this.fixedTime.isPresent();
 	}
 
-	public float method_28528(long l) {
-		double d = MathHelper.fractionalPart((double)this.fixedTime.orElse(l) / 24000.0 - 0.25);
+	public float method_28528(long time) {
+		double d = MathHelper.fractionalPart((double)this.fixedTime.orElse(time) / 24000.0 - 0.25);
 		double e = 0.5 - Math.cos(d * Math.PI) / 2.0;
 		return (float)(d * 2.0 + e) / 3.0F;
 	}
 
-	public int method_28531(long l) {
-		return (int)(l / 24000L % 8L + 8L) % 8;
+	/**
+	 * Gets the moon phase index of Minecraft's moon.
+	 * 
+	 * <p>This is typically used to determine the size of the moon that should be rendered.
+	 * 
+	 * @param time the time to calculate the index from
+	 */
+	public int getMoonPhase(long time) {
+		return (int)(time / 24000L % 8L + 8L) % 8;
 	}
 
 	public float method_28516(int i) {

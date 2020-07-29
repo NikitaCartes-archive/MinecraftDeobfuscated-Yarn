@@ -28,7 +28,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class ShulkerBulletEntity extends ProjectileEntity {
@@ -217,12 +216,13 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 				this.setVelocity(vec3d.add((this.targetX - vec3d.x) * 0.2, (this.targetY - vec3d.y) * 0.2, (this.targetZ - vec3d.z) * 0.2));
 			}
 
-			HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER);
+			HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.onCollision(hitResult);
 			}
 		}
 
+		this.checkBlockCollision();
 		Vec3d vec3d = this.getVelocity();
 		this.updatePosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 		ProjectileUtil.method_7484(this, 0.5F);

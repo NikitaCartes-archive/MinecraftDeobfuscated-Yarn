@@ -43,6 +43,19 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		return super.getScrollbarPositionX() + 32;
 	}
 
+	@Nullable
+	public AbstractButtonWidget method_31046(Option option) {
+		for (ButtonListWidget.ButtonEntry buttonEntry : this.children()) {
+			for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
+				if (abstractButtonWidget instanceof OptionButtonWidget && ((OptionButtonWidget)abstractButtonWidget).getOption() == option) {
+					return abstractButtonWidget;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	public Optional<AbstractButtonWidget> getHoveredButton(double mouseX, double mouseY) {
 		for (ButtonListWidget.ButtonEntry buttonEntry : this.children()) {
 			for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {

@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.PistonType;
@@ -42,28 +43,34 @@ public class PistonHeadBlock extends FacingBlock {
 	protected static final VoxelShape SHORT_NORTH_ARM_SHAPE = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 16.0);
 	protected static final VoxelShape SHORT_EAST_ARM_SHAPE = Block.createCuboidShape(0.0, 6.0, 6.0, 12.0, 10.0, 10.0);
 	protected static final VoxelShape SHORT_WEST_ARM_SHAPE = Block.createCuboidShape(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
+	private static final VoxelShape[] field_26660 = method_31019(true);
+	private static final VoxelShape[] field_26661 = method_31019(false);
+
+	private static VoxelShape[] method_31019(boolean bl) {
+		return (VoxelShape[])Arrays.stream(Direction.values()).map(direction -> getHeadShape(direction, bl)).toArray(VoxelShape[]::new);
+	}
+
+	private static VoxelShape getHeadShape(Direction direction, boolean bl) {
+		switch (direction) {
+			case DOWN:
+			default:
+				return VoxelShapes.union(DOWN_HEAD_SHAPE, bl ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE);
+			case UP:
+				return VoxelShapes.union(UP_HEAD_SHAPE, bl ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE);
+			case NORTH:
+				return VoxelShapes.union(NORTH_HEAD_SHAPE, bl ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE);
+			case SOUTH:
+				return VoxelShapes.union(SOUTH_HEAD_SHAPE, bl ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE);
+			case WEST:
+				return VoxelShapes.union(WEST_HEAD_SHAPE, bl ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE);
+			case EAST:
+				return VoxelShapes.union(EAST_HEAD_SHAPE, bl ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE);
+		}
+	}
 
 	public PistonHeadBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.DEFAULT).with(SHORT, Boolean.valueOf(false)));
-	}
-
-	private VoxelShape getHeadShape(BlockState state) {
-		switch ((Direction)state.get(FACING)) {
-			case DOWN:
-			default:
-				return DOWN_HEAD_SHAPE;
-			case UP:
-				return UP_HEAD_SHAPE;
-			case NORTH:
-				return NORTH_HEAD_SHAPE;
-			case SOUTH:
-				return SOUTH_HEAD_SHAPE;
-			case WEST:
-				return WEST_HEAD_SHAPE;
-			case EAST:
-				return EAST_HEAD_SHAPE;
-		}
 	}
 
 	@Override
@@ -73,26 +80,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return VoxelShapes.union(this.getHeadShape(state), this.getArmShape(state));
-	}
-
-	private VoxelShape getArmShape(BlockState state) {
-		boolean bl = (Boolean)state.get(SHORT);
-		switch ((Direction)state.get(FACING)) {
-			case DOWN:
-			default:
-				return bl ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE;
-			case UP:
-				return bl ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE;
-			case NORTH:
-				return bl ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE;
-			case SOUTH:
-				return bl ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE;
-			case WEST:
-				return bl ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE;
-			case EAST:
-				return bl ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE;
-		}
+		return (state.get(SHORT) ? field_26660 : field_26661)[((Direction)state.get(FACING)).ordinal()];
 	}
 
 	private boolean method_26980(BlockState blockState, BlockState blockState2) {

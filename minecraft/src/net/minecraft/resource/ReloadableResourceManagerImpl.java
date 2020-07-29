@@ -1,6 +1,5 @@
 package net.minecraft.resource;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -82,12 +81,6 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 		} else {
 			throw new FileNotFoundException(id.toString());
 		}
-	}
-
-	@Override
-	public Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate) {
-		ResourceManager resourceManager = (ResourceManager)this.namespaceManagers.get(resourceType.getNamespace());
-		return (Collection<Identifier>)(resourceManager != null ? resourceManager.findResources(resourceType.getPath(), predicate) : ImmutableSet.<Identifier>of());
 	}
 
 	@Override

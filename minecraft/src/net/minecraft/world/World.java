@@ -1012,7 +1012,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		long l = 0L;
 		float f = 0.0F;
 		if (this.isChunkLoaded(pos)) {
-			f = this.method_30272();
+			f = this.getMoonSize();
 			l = this.getWorldChunk(pos).getInhabitedTime();
 		}
 

@@ -144,7 +144,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			this.setVelocity(vec3d);
 		}
 
-		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER);
+		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
 		if (!this.noClip) {
 			this.onCollision(hitResult);
 			this.velocityDirty = true;

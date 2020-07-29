@@ -97,7 +97,7 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 					}
 				}
 
-				this.client.textRenderer.method_30883(matrices, text, (float)(-o / 2), (float)(-n), q + -16777216);
+				this.client.textRenderer.draw(matrices, text, (float)(-o / 2), (float)(-n), q + -16777216);
 				RenderSystem.popMatrix();
 				i++;
 			}

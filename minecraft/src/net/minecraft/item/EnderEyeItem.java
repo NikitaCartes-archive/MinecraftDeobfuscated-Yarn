@@ -77,7 +77,7 @@ public class EnderEyeItem extends Item {
 				if (blockPos != null) {
 					EyeOfEnderEntity eyeOfEnderEntity = new EyeOfEnderEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
 					eyeOfEnderEntity.setItem(itemStack);
-					eyeOfEnderEntity.moveTowards(blockPos);
+					eyeOfEnderEntity.initTargetPos(blockPos);
 					world.spawnEntity(eyeOfEnderEntity);
 					if (user instanceof ServerPlayerEntity) {
 						Criteria.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);

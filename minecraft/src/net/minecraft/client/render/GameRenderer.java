@@ -379,7 +379,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			}
 
 			boolean bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
-			if (this.client.options.perspective == 0
+			if (this.client.options.getPerspective().isFirstPerson()
 				&& !bl
 				&& !this.client.options.hudHidden
 				&& this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
@@ -396,7 +396,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			}
 
 			matrices.pop();
-			if (this.client.options.perspective == 0 && !bl) {
+			if (this.client.options.getPerspective().isFirstPerson() && !bl) {
 				InGameOverlayRenderer.renderOverlays(this.client, matrices);
 				this.bobViewWhenHurt(matrices, tickDelta);
 			}
@@ -621,7 +621,9 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			this.bobView(matrixStack, tickDelta);
 		}
 
-		float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
+		float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)
+			* this.client.options.distortionEffectScale
+			* this.client.options.distortionEffectScale;
 		if (f > 0.0F) {
 			int i = 20;
 			if (this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
@@ -642,8 +644,8 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		camera.update(
 			this.client.world,
 			(Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity()),
-			this.client.options.perspective > 0,
-			this.client.options.perspective == 2,
+			!this.client.options.getPerspective().isFirstPerson(),
+			this.client.options.getPerspective().isFrontView(),
 			tickDelta
 		);
 		matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));

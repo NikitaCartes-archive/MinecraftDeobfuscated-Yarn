@@ -19,6 +19,7 @@ import net.minecraft.util.Util;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
@@ -129,35 +130,25 @@ public class FlatChunkGeneratorConfig {
 
 	public Biome method_28917() {
 		Biome biome = this.getBiome();
-		Biome biome2 = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(biome.getSurfaceBuilder())
-				.precipitation(biome.getPrecipitation())
-				.category(biome.getCategory())
-				.depth(biome.getDepth())
-				.scale(biome.getScale())
-				.temperature(biome.getTemperature())
-				.downfall(biome.getDownfall())
-				.effects(biome.getEffects())
-				.parent(biome.getParent())
-		);
+		GenerationSettings generationSettings = biome.getGenerationSettings();
+		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(generationSettings.getSurfaceBuilder());
 		if (this.field_24977) {
-			biome2.addFeature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_WATER);
-			biome2.addFeature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);
+			builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_WATER);
+			builder.feature(GenerationStep.Feature.LAKES, ConfiguredFeatures.LAKE_LAVA);
 		}
 
 		for (Entry<StructureFeature<?>, StructureConfig> entry : this.config.getStructures().entrySet()) {
-			biome2.addStructureFeature(biome.method_28405((ConfiguredStructureFeature<?, ?>)STRUCTURE_TO_FEATURES.get(entry.getKey())));
+			builder.structureFeature(generationSettings.method_30978((ConfiguredStructureFeature<?, ?>)STRUCTURE_TO_FEATURES.get(entry.getKey())));
 		}
 
 		boolean bl = (!this.hasNoTerrain || biome == Biomes.THE_VOID) && this.field_24976;
 		if (bl) {
-			List<List<Supplier<ConfiguredFeature<?, ?>>>> list = biome.getFeatures();
+			List<List<Supplier<ConfiguredFeature<?, ?>>>> list = generationSettings.getFeatures();
 
 			for (int i = 0; i < list.size(); i++) {
 				if (i != GenerationStep.Feature.UNDERGROUND_STRUCTURES.ordinal() && i != GenerationStep.Feature.SURFACE_STRUCTURES.ordinal()) {
 					for (Supplier<ConfiguredFeature<?, ?>> supplier : (List)list.get(i)) {
-						biome2.addFeature(i, supplier);
+						builder.feature(i, supplier);
 					}
 				}
 			}
@@ -169,11 +160,22 @@ public class FlatChunkGeneratorConfig {
 			BlockState blockState = blockStates[ix];
 			if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
 				this.layerBlocks[ix] = null;
-				biome2.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(ix, blockState)));
+				builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(ix, blockState)));
 			}
 		}
 
-		return biome2;
+		return new Biome.Settings()
+			.precipitation(biome.getPrecipitation())
+			.category(biome.getCategory())
+			.depth(biome.getDepth())
+			.scale(biome.getScale())
+			.temperature(biome.getTemperature())
+			.downfall(biome.getDownfall())
+			.effects(biome.getEffects())
+			.generationSettings(builder.build())
+			.spawnSettings(biome.getSpawnSettings())
+			.parent(biome.getParent())
+			.build();
 	}
 
 	public StructuresConfig getConfig() {

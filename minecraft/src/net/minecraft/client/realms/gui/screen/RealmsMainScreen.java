@@ -866,7 +866,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			Text text = m == 0 ? field_26447 : field_26448;
 			int q = this.textRenderer.getWidth(text);
 			this.fillGradient(matrixStack, o - 3, j - 3, o + q + 3, j + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.method_30881(matrixStack, text, (float)o, (float)j, -1);
+			this.textRenderer.drawWithShadow(matrixStack, text, (float)o, (float)j, -1);
 		}
 	}
 
@@ -1012,7 +1012,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			for (Text text2 : list) {
 				int p = o - (k == 0 ? 3 : 0) + k;
 				this.fillGradient(matrixStack, n - 3, p, n + l + 3, o + 8 + 3 + k, -1073741824, -1073741824);
-				this.textRenderer.method_30881(matrixStack, text2, (float)n, (float)(o + k), 16777215);
+				this.textRenderer.drawWithShadow(matrixStack, text2, (float)n, (float)(o + k), 16777215);
 				k += 10;
 			}
 		}
@@ -1437,13 +1437,13 @@ public class RealmsMainScreen extends RealmsScreen {
 					RenderSystem.disableBlend();
 					int t = j + 11 + 5;
 					int u = bl ? 16777120 : 16777215;
-					RealmsMainScreen.this.textRenderer.method_30883(matrixStack, text, (float)(i + 2), (float)(t + 1), 15553363);
+					RealmsMainScreen.this.textRenderer.draw(matrixStack, text, (float)(i + 2), (float)(t + 1), 15553363);
 					DrawableHelper.drawCenteredText(matrixStack, RealmsMainScreen.this.textRenderer, text2, q + o / 2, t + 1, u);
 				} else {
 					if (serverData.worldType == RealmsServer.WorldType.MINIGAME) {
 						int v = 13413468;
 						int w = RealmsMainScreen.this.textRenderer.getWidth(RealmsMainScreen.field_26455);
-						RealmsMainScreen.this.textRenderer.method_30883(matrixStack, RealmsMainScreen.field_26455, (float)(i + 2), (float)(j + 12), 13413468);
+						RealmsMainScreen.this.textRenderer.draw(matrixStack, RealmsMainScreen.field_26455, (float)(i + 2), (float)(j + 12), 13413468);
 						RealmsMainScreen.this.textRenderer.draw(matrixStack, serverData.getMinigameName(), (float)(i + 2 + w), (float)(j + 12), 7105644);
 					} else {
 						RealmsMainScreen.this.textRenderer.draw(matrixStack, serverData.getDescription(), (float)(i + 2), (float)(j + 12), 7105644);

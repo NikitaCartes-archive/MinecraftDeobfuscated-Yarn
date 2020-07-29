@@ -24,8 +24,6 @@ public interface ResourceManager {
 
 	List<Resource> getAllResources(Identifier id) throws IOException;
 
-	Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate);
-
 	Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate);
 
 	@Environment(EnvType.CLIENT)
@@ -54,11 +52,6 @@ public interface ResourceManager {
 		@Override
 		public List<Resource> getAllResources(Identifier id) {
 			return ImmutableList.of();
-		}
-
-		@Override
-		public Collection<Identifier> findResources(Identifier resourceType, Predicate<String> predicate) {
-			return ImmutableSet.<Identifier>of();
 		}
 
 		@Override

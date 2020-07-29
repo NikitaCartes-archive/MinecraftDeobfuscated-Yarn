@@ -222,9 +222,9 @@ public class RealmsBackupScreen extends RealmsScreen {
 		this.renderBackground(matrices);
 		this.backupObjectSelectionList.render(matrices, mouseX, mouseY, delta);
 		this.titleLabel.render(this, matrices);
-		this.textRenderer.method_30883(matrices, field_26473, (float)((this.width - 150) / 2 - 90), 20.0F, 10526880);
+		this.textRenderer.draw(matrices, field_26473, (float)((this.width - 150) / 2 - 90), 20.0F, 10526880);
 		if (this.noBackups) {
-			this.textRenderer.method_30883(matrices, field_26474, 20.0F, (float)(this.height / 2 - 10), 16777215);
+			this.textRenderer.draw(matrices, field_26474, 20.0F, (float)(this.height / 2 - 10), 16777215);
 		}
 
 		this.downloadButton.active = !this.noBackups;
@@ -240,7 +240,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 			int l = j - 12;
 			int m = this.textRenderer.getWidth(text);
 			this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.method_30881(matrixStack, text, (float)k, (float)l, 16777215);
+			this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 16777215);
 		}
 	}
 

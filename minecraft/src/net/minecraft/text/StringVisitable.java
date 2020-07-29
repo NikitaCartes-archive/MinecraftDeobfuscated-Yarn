@@ -8,42 +8,42 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Unit;
 
 /**
- * An object that can supply strings to a visitor, with or without a style
- * context, for rendering the strings.
+ * An object that can supply strings to a visitor,
+ * with or without a style context.
  */
-public interface StringRenderable {
+public interface StringVisitable {
 	/**
 	 * Convenience object indicating the termination of a string visit.
 	 */
 	Optional<Unit> TERMINATE_VISIT = Optional.of(Unit.INSTANCE);
 	/**
-	 * An empty renderable that does not call the visitors.
+	 * An empty visitable that does not call the visitors.
 	 */
-	StringRenderable EMPTY = new StringRenderable() {
+	StringVisitable EMPTY = new StringVisitable() {
 		@Override
-		public <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
+		public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
 			return Optional.empty();
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public <T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style) {
+		public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 			return Optional.empty();
 		}
 	};
 
 	/**
-	 * Supplies this renderable's literal content to the visitor.
+	 * Supplies this visitable's literal content to the visitor.
 	 * 
 	 * @return {@code Optional.empty()} if the visit finished, or a terminating
 	 * result from the {@code visitor}
 	 * 
 	 * @param visitor the visitor
 	 */
-	<T> Optional<T> visit(StringRenderable.Visitor<T> visitor);
+	<T> Optional<T> visit(StringVisitable.Visitor<T> visitor);
 
 	/**
-	 * Supplies this renderable's literal content and contextual style to
+	 * Supplies this visitable's literal content and contextual style to
 	 * the visitor.
 	 * 
 	 * @return {@code Optional.empty()} if the visit finished, or a terminating
@@ -53,23 +53,23 @@ public interface StringRenderable {
 	 * @param style the contextual style
 	 */
 	@Environment(EnvType.CLIENT)
-	<T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style);
+	<T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style);
 
 	/**
-	 * Creates a renderable from a plain string.
+	 * Creates a visitable from a plain string.
 	 * 
 	 * @param string the plain string
 	 */
-	static StringRenderable plain(String string) {
-		return new StringRenderable() {
+	static StringVisitable plain(String string) {
+		return new StringVisitable() {
 			@Override
-			public <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
+			public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
 				return visitor.accept(string);
 			}
 
 			@Environment(EnvType.CLIENT)
 			@Override
-			public <T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style) {
+			public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 				return styledVisitor.accept(style, string);
 			}
 		};
@@ -82,42 +82,42 @@ public interface StringRenderable {
 	 * @param style the root style
 	 */
 	@Environment(EnvType.CLIENT)
-	static StringRenderable styled(String string, Style style) {
-		return new StringRenderable() {
+	static StringVisitable styled(String string, Style style) {
+		return new StringVisitable() {
 			@Override
-			public <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
+			public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
 				return visitor.accept(string);
 			}
 
 			@Override
-			public <T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style) {
+			public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 				return styledVisitor.accept(style.withParent(style), string);
 			}
 		};
 	}
 
 	/**
-	 * Concats multiple string renderables by the order they appear in the array.
+	 * Concats multiple string visitables by the order they appear in the array.
 	 * 
 	 * @param visitables an array or varargs of visitables
 	 */
 	@Environment(EnvType.CLIENT)
-	static StringRenderable concat(StringRenderable... visitables) {
+	static StringVisitable concat(StringVisitable... visitables) {
 		return concat(ImmutableList.copyOf(visitables));
 	}
 
 	/**
-	 * Concats multiple string renderables by the order they appear in the list.
+	 * Concats multiple string visitables by the order they appear in the list.
 	 * 
 	 * @param visitables a list of visitables
 	 */
 	@Environment(EnvType.CLIENT)
-	static StringRenderable concat(List<StringRenderable> visitables) {
-		return new StringRenderable() {
+	static StringVisitable concat(List<StringVisitable> visitables) {
+		return new StringVisitable() {
 			@Override
-			public <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
-				for (StringRenderable stringRenderable : visitables) {
-					Optional<T> optional = stringRenderable.visit(visitor);
+			public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
+				for (StringVisitable stringVisitable : visitables) {
+					Optional<T> optional = stringVisitable.visit(visitor);
 					if (optional.isPresent()) {
 						return optional;
 					}
@@ -127,9 +127,9 @@ public interface StringRenderable {
 			}
 
 			@Override
-			public <T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style) {
-				for (StringRenderable stringRenderable : visitables) {
-					Optional<T> optional = stringRenderable.visit(styledVisitor, style);
+			public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
+				for (StringVisitable stringVisitable : visitables) {
+					Optional<T> optional = stringVisitable.visit(styledVisitor, style);
 					if (optional.isPresent()) {
 						return optional;
 					}
@@ -150,7 +150,7 @@ public interface StringRenderable {
 	}
 
 	/**
-	 * A visitor for rendered string content and a contextual {@link Style}.
+	 * A visitor for string content and a contextual {@link Style}.
 	 */
 	@Environment(EnvType.CLIENT)
 	public interface StyledVisitor<T> {
@@ -174,7 +174,7 @@ public interface StringRenderable {
 	}
 
 	/**
-	 * A visitor for rendered string content.
+	 * A visitor for string content.
 	 */
 	public interface Visitor<T> {
 		/**

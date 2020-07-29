@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class LeashKnotEntity extends AbstractDecorationEntity {
@@ -154,5 +155,11 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this, this.getType(), 0, this.getDecorationBlockPos());
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_30951(float f) {
+		return this.method_30950(f).add(0.0, 0.2, 0.0);
 	}
 }

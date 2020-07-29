@@ -10,7 +10,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -47,48 +46,32 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 
 	private <E extends Entity> void method_4073(T mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, E entity) {
 		matrixStack.push();
-		double d = (double)(MathHelper.lerp(f * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
-		double e = (double)(MathHelper.lerp(f * 0.5F, entity.pitch, entity.prevPitch) * (float) (Math.PI / 180.0));
-		double g = Math.cos(d);
-		double h = Math.sin(d);
-		double i = Math.sin(e);
-		if (entity instanceof AbstractDecorationEntity) {
-			g = 0.0;
-			h = 0.0;
-			i = -1.0;
-		}
-
-		double j = Math.cos(e);
-		double k = MathHelper.lerp((double)f, entity.prevX, entity.getX()) - g * 0.7 - h * 0.5 * j;
-		double l = MathHelper.lerp((double)f, entity.prevY + (double)entity.getStandingEyeHeight() * 0.7, entity.getY() + (double)entity.getStandingEyeHeight() * 0.7)
-			- i * 0.5
-			- 0.25;
-		double m = MathHelper.lerp((double)f, entity.prevZ, entity.getZ()) - h * 0.7 + g * 0.5 * j;
-		double n = (double)(MathHelper.lerp(f, mobEntity.bodyYaw, mobEntity.prevBodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
-		Vec3d vec3d = mobEntity.method_29919();
-		g = Math.cos(n) * vec3d.z + Math.sin(n) * vec3d.x;
-		h = Math.sin(n) * vec3d.z - Math.cos(n) * vec3d.x;
-		double o = MathHelper.lerp((double)f, mobEntity.prevX, mobEntity.getX()) + g;
-		double p = MathHelper.lerp((double)f, mobEntity.prevY, mobEntity.getY()) + vec3d.y;
-		double q = MathHelper.lerp((double)f, mobEntity.prevZ, mobEntity.getZ()) + h;
-		matrixStack.translate(g, vec3d.y, h);
-		float r = (float)(k - o);
-		float s = (float)(l - p);
-		float t = (float)(m - q);
-		float u = 0.025F;
+		Vec3d vec3d = entity.method_30951(f);
+		double d = (double)(MathHelper.lerp(f, mobEntity.bodyYaw, mobEntity.prevBodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
+		Vec3d vec3d2 = mobEntity.method_29919();
+		double e = Math.cos(d) * vec3d2.z + Math.sin(d) * vec3d2.x;
+		double g = Math.sin(d) * vec3d2.z - Math.cos(d) * vec3d2.x;
+		double h = MathHelper.lerp((double)f, mobEntity.prevX, mobEntity.getX()) + e;
+		double i = MathHelper.lerp((double)f, mobEntity.prevY, mobEntity.getY()) + vec3d2.y;
+		double j = MathHelper.lerp((double)f, mobEntity.prevZ, mobEntity.getZ()) + g;
+		matrixStack.translate(e, vec3d2.y, g);
+		float k = (float)(vec3d.x - h);
+		float l = (float)(vec3d.y - i);
+		float m = (float)(vec3d.z - j);
+		float n = 0.025F;
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLeash());
 		Matrix4f matrix4f = matrixStack.peek().getModel();
-		float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025F / 2.0F;
-		float w = t * v;
-		float x = r * v;
+		float o = MathHelper.fastInverseSqrt(k * k + m * m) * 0.025F / 2.0F;
+		float p = m * o;
+		float q = k * o;
 		BlockPos blockPos = new BlockPos(mobEntity.getCameraPosVec(f));
 		BlockPos blockPos2 = new BlockPos(entity.getCameraPosVec(f));
-		int y = this.getBlockLight(mobEntity, blockPos);
-		int z = this.dispatcher.getRenderer(entity).getBlockLight(entity, blockPos2);
-		int aa = mobEntity.world.getLightLevel(LightType.SKY, blockPos);
-		int ab = mobEntity.world.getLightLevel(LightType.SKY, blockPos2);
-		method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025F, 0.025F, w, x);
-		method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025F, 0.0F, w, x);
+		int r = this.getBlockLight(mobEntity, blockPos);
+		int s = this.dispatcher.getRenderer(entity).getBlockLight(entity, blockPos2);
+		int t = mobEntity.world.getLightLevel(LightType.SKY, blockPos);
+		int u = mobEntity.world.getLightLevel(LightType.SKY, blockPos2);
+		method_23186(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025F, 0.025F, p, q);
+		method_23186(vertexConsumer, matrix4f, k, l, m, r, s, t, u, 0.025F, 0.0F, p, q);
 		matrixStack.pop();
 	}
 

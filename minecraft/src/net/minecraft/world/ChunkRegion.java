@@ -296,7 +296,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		if (!this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4)) {
 			throw new RuntimeException("We are asking a region for a chunk out of bound");
 		} else {
-			return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.method_30272());
+			return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.getMoonSize());
 		}
 	}
 

@@ -7,18 +7,18 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public enum ParticlesOption {
+public enum ParticlesMode {
 	ALL(0, "options.particles.all"),
 	DECREASED(1, "options.particles.decreased"),
 	MINIMAL(2, "options.particles.minimal");
 
-	private static final ParticlesOption[] VALUES = (ParticlesOption[])Arrays.stream(values())
-		.sorted(Comparator.comparingInt(ParticlesOption::getId))
-		.toArray(ParticlesOption[]::new);
+	private static final ParticlesMode[] VALUES = (ParticlesMode[])Arrays.stream(values())
+		.sorted(Comparator.comparingInt(ParticlesMode::getId))
+		.toArray(ParticlesMode[]::new);
 	private final int id;
 	private final String translationKey;
 
-	private ParticlesOption(int id, String translationKey) {
+	private ParticlesMode(int id, String translationKey) {
 		this.id = id;
 		this.translationKey = translationKey;
 	}
@@ -31,7 +31,7 @@ public enum ParticlesOption {
 		return this.id;
 	}
 
-	public static ParticlesOption byId(int id) {
+	public static ParticlesMode byId(int id) {
 		return VALUES[MathHelper.floorMod(id, VALUES.length)];
 	}
 }

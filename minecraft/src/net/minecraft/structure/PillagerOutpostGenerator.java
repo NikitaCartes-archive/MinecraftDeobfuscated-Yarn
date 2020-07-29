@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.TemplatePools;
-import net.minecraft.structure.processor.BlockRotStructureProcessor;
+import net.minecraft.structure.processor.ProcessorLists;
 import net.minecraft.util.Identifier;
 
 public class PillagerOutpostGenerator {
@@ -31,7 +31,7 @@ public class PillagerOutpostGenerator {
 						StructurePoolElement.method_30429(
 							ImmutableList.of(
 								StructurePoolElement.method_30425("pillager_outpost/watchtower"),
-								StructurePoolElement.method_30426("pillager_outpost/watchtower_overgrown", ImmutableList.of(new BlockRotStructureProcessor(0.05F)))
+								StructurePoolElement.method_30426("pillager_outpost/watchtower_overgrown", ProcessorLists.OUTPOST_ROT)
 							)
 						),
 						1

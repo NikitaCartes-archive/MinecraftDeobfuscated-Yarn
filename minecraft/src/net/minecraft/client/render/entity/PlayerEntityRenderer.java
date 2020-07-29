@@ -201,7 +201,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			double d = Entity.squaredHorizontalLength(vec3d2);
 			double e = Entity.squaredHorizontalLength(vec3d);
 			if (d > 0.0 && e > 0.0) {
-				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / (Math.sqrt(d) * Math.sqrt(e));
+				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
 				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
 				matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion((float)(Math.signum(m) * Math.acos(l))));
 			}

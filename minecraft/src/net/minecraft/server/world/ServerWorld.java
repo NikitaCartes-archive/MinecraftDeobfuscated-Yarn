@@ -469,7 +469,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				}
 
 				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this);
-				lightningEntity.method_29495(Vec3d.ofBottomCenter(blockPos));
+				lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
 				lightningEntity.setCosmetic(bl2);
 				this.spawnEntity(lightningEntity);
 			}
@@ -1235,7 +1235,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return blockPos;
 	}
 
-	public float method_30630() {
+	public float getSpawnAngle() {
 		return this.properties.getSpawnAngle();
 	}
 

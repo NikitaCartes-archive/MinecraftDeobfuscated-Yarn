@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
@@ -41,7 +40,7 @@ import net.minecraft.util.Util;
  * 
  * @see MutableText
  */
-public interface Text extends Message, StringRenderable {
+public interface Text extends Message, StringVisitable {
 	/**
 	 * Returns the style of this text.
 	 */
@@ -54,7 +53,7 @@ public interface Text extends Message, StringRenderable {
 
 	@Override
 	default String getString() {
-		return StringRenderable.super.getString();
+		return StringVisitable.super.getString();
 	}
 
 	/**
@@ -95,11 +94,11 @@ public interface Text extends Message, StringRenderable {
 	MutableText shallowCopy();
 
 	@Environment(EnvType.CLIENT)
-	class_5481 method_30937();
+	OrderedText asOrderedText();
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	default <T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style) {
+	default <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 		Style style2 = this.getStyle().withParent(style);
 		Optional<T> optional = this.visitSelf(styledVisitor, style2);
 		if (optional.isPresent()) {
@@ -117,7 +116,7 @@ public interface Text extends Message, StringRenderable {
 	}
 
 	@Override
-	default <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
+	default <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
 		Optional<T> optional = this.visitSelf(visitor);
 		if (optional.isPresent()) {
 			return optional;
@@ -143,7 +142,7 @@ public interface Text extends Message, StringRenderable {
 	 * @param style the current style
 	 */
 	@Environment(EnvType.CLIENT)
-	default <T> Optional<T> visitSelf(StringRenderable.StyledVisitor<T> visitor, Style style) {
+	default <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
 		return visitor.accept(style, this.asString());
 	}
 
@@ -155,12 +154,15 @@ public interface Text extends Message, StringRenderable {
 	 * 
 	 * @param visitor the visitor
 	 */
-	default <T> Optional<T> visitSelf(StringRenderable.Visitor<T> visitor) {
+	default <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
 		return visitor.accept(this.asString());
 	}
 
+	/**
+	 * Creates a literal text with the given string as content.
+	 */
 	@Environment(EnvType.CLIENT)
-	static Text method_30163(@Nullable String string) {
+	static Text of(@Nullable String string) {
 		return (Text)(string != null ? new LiteralText(string) : LiteralText.EMPTY);
 	}
 

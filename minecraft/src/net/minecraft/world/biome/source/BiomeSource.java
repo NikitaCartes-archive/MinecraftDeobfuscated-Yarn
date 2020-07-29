@@ -122,13 +122,13 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 
 	public boolean hasStructureFeature(StructureFeature<?> feature) {
 		return (Boolean)this.structureFeatures
-			.computeIfAbsent(feature, structureFeature -> this.biomes.stream().anyMatch(biome -> biome.hasStructureFeature(structureFeature)));
+			.computeIfAbsent(feature, structureFeature -> this.biomes.stream().anyMatch(biome -> biome.getGenerationSettings().hasStructureFeature(structureFeature)));
 	}
 
 	public Set<BlockState> getTopMaterials() {
 		if (this.topMaterials.isEmpty()) {
 			for (Biome biome : this.biomes) {
-				this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
+				this.topMaterials.add(biome.getGenerationSettings().getSurfaceConfig().getTopMaterial());
 			}
 		}
 

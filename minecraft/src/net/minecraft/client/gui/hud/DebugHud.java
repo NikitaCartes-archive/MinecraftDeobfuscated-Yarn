@@ -309,7 +309,7 @@ public class DebugHud extends DrawableHelper {
 							long l = 0L;
 							float h = 0.0F;
 							if (worldChunk2 != null) {
-								h = world.method_30272();
+								h = world.getMoonSize();
 								l = worldChunk2.getInhabitedTime();
 							}
 

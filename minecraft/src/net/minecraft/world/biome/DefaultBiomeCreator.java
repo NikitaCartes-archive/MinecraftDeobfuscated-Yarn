@@ -27,97 +27,99 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createGiantTreeTaiga(float depth, float scale, float temperature, boolean spruce, @Nullable String parent) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.GIANT_TREE_TAIGA)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.TAIGA)
-				.depth(depth)
-				.scale(scale)
-				.temperature(temperature)
-				.downfall(0.8F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(temperature))
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(parent)
-		);
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMossyRocks(biome);
-		DefaultBiomeFeatures.addLargeFerns(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, spruce ? ConfiguredFeatures.TREES_GIANT_SPRUCE : ConfiguredFeatures.TREES_GIANT);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addGiantTaigaGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addSweetBerryBushes(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addFarmAnimals(biome);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.WOLF, 8, 4, 4));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.FOX, 8, 2, 4));
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4));
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
 		if (spruce) {
-			DefaultBiomeFeatures.addBatsAndMonsters(biome);
+			DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		} else {
-			DefaultBiomeFeatures.addBats(biome);
-			DefaultBiomeFeatures.addMonsters(biome, 100, 25, 100);
+			DefaultBiomeFeatures.addBats(builder);
+			DefaultBiomeFeatures.addMonsters(builder, 100, 25, 100);
 		}
 
-		return biome;
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GIANT_TREE_TAIGA);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMossyRocks(builder2);
+		DefaultBiomeFeatures.addLargeFerns(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, spruce ? ConfiguredFeatures.TREES_GIANT_SPRUCE : ConfiguredFeatures.TREES_GIANT);
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addGiantTaigaGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addSweetBerryBushes(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.TAIGA)
+			.depth(depth)
+			.scale(scale)
+			.temperature(temperature)
+			.downfall(0.8F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(4159204)
+					.waterFogColor(329011)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(temperature))
+					.moodSound(BiomeMoodSound.CAVE)
+					.build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createBirchForest(float depth, float scale, @Nullable String parent, boolean tallTrees) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.FOREST)
-				.depth(depth)
-				.scale(scale)
-				.temperature(0.6F)
-				.downfall(0.6F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.6F)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(parent)
-		);
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addForestFlowers(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addForestFlowers(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (tallTrees) {
-			DefaultBiomeFeatures.addTallBirchTrees(biome);
+			DefaultBiomeFeatures.addTallBirchTrees(builder2);
 		} else {
-			DefaultBiomeFeatures.addBirchTrees(biome);
+			DefaultBiomeFeatures.addBirchTrees(builder2);
 		}
 
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addForestGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addFarmAnimals(biome);
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		return biome;
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addForestGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.FOREST)
+			.depth(depth)
+			.scale(scale)
+			.temperature(0.6F)
+			.downfall(0.6F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.6F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createJungle() {
@@ -125,18 +127,23 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createJungleEdge() {
-		return createJungleFeatures(null, 0.1F, 0.2F, 0.8F, false, true, false);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addJungleMobs(builder);
+		return createJungleFeatures(null, 0.1F, 0.2F, 0.8F, false, true, false, builder);
 	}
 
 	public static Biome createModifiedJungleEdge() {
-		return createJungleFeatures("jungle_edge", 0.2F, 0.4F, 0.8F, false, true, true);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addJungleMobs(builder);
+		return createJungleFeatures("jungle_edge", 0.2F, 0.4F, 0.8F, false, true, true, builder);
 	}
 
 	public static Biome createModifiedJungle() {
-		Biome biome = createJungleFeatures("jungle", 0.2F, 0.4F, 0.9F, false, false, true);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.PARROT, 10, 1, 1));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.OCELOT, 2, 1, 1));
-		return biome;
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addJungleMobs(builder);
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, 10, 1, 1))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, 1));
+		return createJungleFeatures("jungle", 0.2F, 0.4F, 0.9F, false, false, true, builder);
 	}
 
 	public static Biome createJungleHills() {
@@ -152,409 +159,422 @@ public class DefaultBiomeCreator {
 	}
 
 	private static Biome createJungle(float depth, float scale, int parrotWeight, int parrotMaxGroupSize, int ocelotMaxGroupSize) {
-		Biome biome = createJungleFeatures(null, depth, scale, 0.9F, false, false, false);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.PARROT, parrotWeight, 1, parrotMaxGroupSize));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.OCELOT, 2, 1, ocelotMaxGroupSize));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.PANDA, 1, 1, 2));
-		return biome;
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addJungleMobs(builder);
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, parrotWeight, 1, parrotMaxGroupSize))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, ocelotMaxGroupSize))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 1, 1, 2));
+		return createJungleFeatures(null, depth, scale, 0.9F, false, false, false, builder);
 	}
 
 	private static Biome createBambooJungle(float depth, float scale, int parrotWeight, int parrotMaxGroupSize) {
-		Biome biome = createJungleFeatures(null, depth, scale, 0.9F, true, false, false);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.PARROT, parrotWeight, 1, parrotMaxGroupSize));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.PANDA, 80, 1, 2));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.OCELOT, 2, 1, 1));
-		return biome;
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addJungleMobs(builder);
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, parrotWeight, 1, parrotMaxGroupSize))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 80, 1, 2))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, 1));
+		return createJungleFeatures(null, depth, scale, 0.9F, true, false, false, builder);
 	}
 
 	private static Biome createJungleFeatures(
-		@Nullable String parent, float depth, float scale, float downfall, boolean bambooTrees, boolean edge, boolean modified
+		@Nullable String parent, float depth, float scale, float downfall, boolean bambooTrees, boolean edge, boolean modified, SpawnSettings.Builder builder
 	) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.JUNGLE)
-				.depth(depth)
-				.scale(scale)
-				.temperature(0.95F)
-				.downfall(downfall)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(0.95F))
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(parent)
-		);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		if (!edge && !modified) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.JUNGLE_PYRAMID);
+			builder2.structureFeature(ConfiguredStructureFeatures.JUNGLE_PYRAMID);
 		}
 
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_JUNGLE);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_JUNGLE);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (bambooTrees) {
-			DefaultBiomeFeatures.addBambooJungleTrees(biome);
+			DefaultBiomeFeatures.addBambooJungleTrees(builder2);
 		} else {
 			if (!edge && !modified) {
-				DefaultBiomeFeatures.addBamboo(biome);
+				DefaultBiomeFeatures.addBamboo(builder2);
 			}
 
 			if (edge) {
-				DefaultBiomeFeatures.addJungleEdgeTrees(biome);
+				DefaultBiomeFeatures.addJungleEdgeTrees(builder2);
 			} else {
-				DefaultBiomeFeatures.addJungleTrees(biome);
+				DefaultBiomeFeatures.addJungleTrees(builder2);
 			}
 		}
 
-		DefaultBiomeFeatures.addExtraDefaultFlowers(biome);
-		DefaultBiomeFeatures.addJungleGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addJungleVegetation(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addJungleMobs(biome);
-		return biome;
+		DefaultBiomeFeatures.addExtraDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addJungleGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addJungleVegetation(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.JUNGLE)
+			.depth(depth)
+			.scale(scale)
+			.temperature(0.95F)
+			.downfall(downfall)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.95F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createMountains(
 		float depth, float scale, ConfiguredSurfaceBuilder<TernarySurfaceConfig> surfaceBuilder, boolean extraTrees, @Nullable String parent
 	) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(surfaceBuilder)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.EXTREME_HILLS)
-				.depth(depth)
-				.scale(scale)
-				.temperature(0.2F)
-				.downfall(0.3F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.2F)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(parent)
-		);
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.LLAMA, 5, 4, 6));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(surfaceBuilder);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (extraTrees) {
-			DefaultBiomeFeatures.addExtraMountainTrees(biome);
+			DefaultBiomeFeatures.addExtraMountainTrees(builder2);
 		} else {
-			DefaultBiomeFeatures.addMountainTrees(biome);
+			DefaultBiomeFeatures.addMountainTrees(builder2);
 		}
 
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addDefaultGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addEmeraldOre(biome);
-		DefaultBiomeFeatures.addInfestedStone(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addFarmAnimals(biome);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.LLAMA, 5, 4, 6));
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		return biome;
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addDefaultGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addEmeraldOre(builder2);
+		DefaultBiomeFeatures.addInfestedStone(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.EXTREME_HILLS)
+			.depth(depth)
+			.scale(scale)
+			.temperature(0.2F)
+			.downfall(0.3F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.2F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createDesert(@Nullable String parent, float depth, float scale, boolean illagerStructures, boolean pyramids, boolean fossils) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.DESERT)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.DESERT)
-				.depth(depth)
-				.scale(scale)
-				.temperature(2.0F)
-				.downfall(0.0F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(2.0F)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(parent)
-		);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addDesertMobs(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.DESERT);
 		if (illagerStructures) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.VILLAGE_DESERT);
-			biome.addStructureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_DESERT);
+			builder2.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
 		if (pyramids) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.DESERT_PYRAMID);
+			builder2.structureFeature(ConfiguredStructureFeatures.DESERT_PYRAMID);
 		}
 
 		if (fossils) {
-			DefaultBiomeFeatures.addFossils(biome);
+			DefaultBiomeFeatures.addFossils(builder2);
 		}
 
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_DESERT);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDesertLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addDefaultGrass(biome);
-		DefaultBiomeFeatures.addDesertDeadBushes(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDesertVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addDesertFeatures(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addDesertMobs(biome);
-		return biome;
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_DESERT);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDesertLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addDefaultGrass(builder2);
+		DefaultBiomeFeatures.addDesertDeadBushes(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDesertVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addDesertFeatures(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.DESERT)
+			.depth(depth)
+			.scale(scale)
+			.temperature(2.0F)
+			.downfall(0.0F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(2.0F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createPlains(@Nullable String parent, boolean sunflower) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.PLAINS)
-				.depth(0.125F)
-				.scale(0.05F)
-				.temperature(0.8F)
-				.downfall(0.4F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.8F)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(parent)
-		);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addPlainsMobs(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		if (!sunflower) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.VILLAGE_PLAINS);
-			biome.addStructureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_PLAINS).structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addPlainsTallGrass(biome);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addPlainsTallGrass(builder2);
 		if (sunflower) {
-			biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUNFLOWER);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUNFLOWER);
 		}
 
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addPlainsFeatures(biome);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addPlainsFeatures(builder2);
 		if (sunflower) {
-			biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUGAR_CANE);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_SUGAR_CANE);
 		}
 
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
 		if (sunflower) {
-			biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_PUMPKIN);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_PUMPKIN);
 		} else {
-			DefaultBiomeFeatures.addDefaultVegetation(biome);
+			DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		}
 
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addPlainsMobs(biome);
-		return biome;
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.PLAINS)
+			.depth(0.125F)
+			.scale(0.05F)
+			.temperature(0.8F)
+			.downfall(0.4F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.8F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
+	}
+
+	private static Biome method_31065(GenerationSettings.Builder builder) {
+		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addEndMobs(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.THEEND)
+			.depth(0.1F)
+			.scale(0.2F)
+			.temperature(0.5F)
+			.downfall(0.5F)
+			.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).skyColor(0).moodSound(BiomeMoodSound.CAVE).build())
+			.spawnSettings(builder2.build())
+			.generationSettings(builder.build())
+			.parent(null)
+			.build();
 	}
 
 	public static Biome createEndBarrens() {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.END)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.THEEND)
-				.depth(0.1F)
-				.scale(0.2F)
-				.temperature(0.5F)
-				.downfall(0.5F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).skyColor(0).moodSound(BiomeMoodSound.CAVE).build())
-				.parent(null)
-		);
-		DefaultBiomeFeatures.addEndMobs(biome);
-		return biome;
+		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.END);
+		return method_31065(builder);
 	}
 
 	public static Biome createTheEnd() {
-		Biome biome = createEndBarrens();
-		biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.END_SPIKE);
-		return biome;
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.END)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.END_SPIKE);
+		return method_31065(builder);
 	}
 
 	public static Biome createEndMidlands() {
-		Biome biome = createEndBarrens();
-		biome.addStructureFeature(ConfiguredStructureFeatures.END_CITY);
-		return biome;
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.END)
+			.structureFeature(ConfiguredStructureFeatures.END_CITY);
+		return method_31065(builder);
 	}
 
 	public static Biome createEndHighlands() {
-		Biome biome = createEndMidlands();
-		biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.END_GATEWAY);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CHORUS_PLANT);
-		return biome;
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.END)
+			.structureFeature(ConfiguredStructureFeatures.END_CITY)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.END_GATEWAY)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CHORUS_PLANT);
+		return method_31065(builder);
 	}
 
 	public static Biome createSmallEndIslands() {
-		Biome biome = createEndBarrens();
-		biome.addFeature(GenerationStep.Feature.RAW_GENERATION, ConfiguredFeatures.END_ISLAND_DECORATED);
-		return biome;
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.END)
+			.feature(GenerationStep.Feature.RAW_GENERATION, ConfiguredFeatures.END_ISLAND_DECORATED);
+		return method_31065(builder);
 	}
 
 	public static Biome createMushroomFields(float depth, float scale) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.MYCELIUM)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.MUSHROOM)
-				.depth(depth)
-				.scale(scale)
-				.temperature(0.9F)
-				.downfall(1.0F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.9F)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(null)
-		);
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addMushroomFieldsFeatures(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addMushroomMobs(biome);
-		return biome;
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addMushroomMobs(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.MYCELIUM);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addMushroomFieldsFeatures(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.MUSHROOM)
+			.depth(depth)
+			.scale(scale)
+			.temperature(0.9F)
+			.downfall(1.0F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.9F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(null)
+			.build();
+	}
+
+	private static Biome method_31067(@Nullable String string, float f, float g, float h, boolean bl, boolean bl2, SpawnSettings.Builder builder) {
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder()
+			.surfaceBuilder(bl2 ? ConfiguredSurfaceBuilders.SHATTERED_SAVANNA : ConfiguredSurfaceBuilders.GRASS);
+		if (!bl && !bl2) {
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_SAVANNA).structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
+		}
+
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(bl ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		if (!bl2) {
+			DefaultBiomeFeatures.addSavannaTallGrass(builder2);
+		}
+
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		if (bl2) {
+			DefaultBiomeFeatures.addExtraSavannaTrees(builder2);
+			DefaultBiomeFeatures.addDefaultFlowers(builder2);
+			DefaultBiomeFeatures.addShatteredSavannaGrass(builder2);
+		} else {
+			DefaultBiomeFeatures.addSavannaTrees(builder2);
+			DefaultBiomeFeatures.addExtraDefaultFlowers(builder2);
+			DefaultBiomeFeatures.addSavannaGrass(builder2);
+		}
+
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.SAVANNA)
+			.depth(f)
+			.scale(g)
+			.temperature(h)
+			.downfall(0.0F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(h)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(string)
+			.build();
 	}
 
 	public static Biome createSavanna(@Nullable String parent, float depth, float scale, float temperature, boolean tall, boolean shattered) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(shattered ? ConfiguredSurfaceBuilders.SHATTERED_SAVANNA : ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.SAVANNA)
-				.depth(depth)
-				.scale(scale)
-				.temperature(temperature)
-				.downfall(0.0F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(temperature))
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(parent)
-		);
-		if (!tall && !shattered) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.VILLAGE_SAVANNA);
-			biome.addStructureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
-		}
+		SpawnSettings.Builder builder = method_31068();
+		return method_31067(parent, depth, scale, temperature, tall, shattered, builder);
+	}
 
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(tall ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		if (!shattered) {
-			DefaultBiomeFeatures.addSavannaTallGrass(biome);
-		}
-
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		if (shattered) {
-			DefaultBiomeFeatures.addExtraSavannaTrees(biome);
-			DefaultBiomeFeatures.addDefaultFlowers(biome);
-			DefaultBiomeFeatures.addShatteredSavannaGrass(biome);
-		} else {
-			DefaultBiomeFeatures.addSavannaTrees(biome);
-			DefaultBiomeFeatures.addExtraDefaultFlowers(biome);
-			DefaultBiomeFeatures.addSavannaGrass(biome);
-		}
-
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addFarmAnimals(biome);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.HORSE, 1, 2, 6));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.DONKEY, 1, 1, 1));
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		return biome;
+	private static SpawnSettings.Builder method_31068() {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.HORSE, 1, 2, 6))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.DONKEY, 1, 1, 1));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		return builder;
 	}
 
 	public static Biome createSavannaPlateau() {
-		Biome biome = createSavanna(null, 1.5F, 0.025F, 1.0F, true, false);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.LLAMA, 8, 4, 4));
-		return biome;
+		SpawnSettings.Builder builder = method_31068();
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.LLAMA, 8, 4, 4));
+		return method_31067(null, 1.5F, 0.025F, 1.0F, true, false, builder);
 	}
 
 	private static Biome createBadlands(
 		@Nullable String parent, ConfiguredSurfaceBuilder<TernarySurfaceConfig> surfaceBuilder, float depth, float scale, boolean plateau, boolean trees
 	) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(surfaceBuilder)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.MESA)
-				.depth(depth)
-				.scale(scale)
-				.temperature(2.0F)
-				.downfall(0.0F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(2.0F))
-						.foliageColor(10387789)
-						.grassColor(9470285)
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(parent)
-		);
-		DefaultBiomeFeatures.addBadlandsUndergroundStructures(biome);
-		biome.addStructureFeature(plateau ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addExtraGoldOre(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(surfaceBuilder);
+		DefaultBiomeFeatures.addBadlandsUndergroundStructures(builder2);
+		builder2.structureFeature(plateau ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addExtraGoldOre(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (trees) {
-			DefaultBiomeFeatures.addBadlandsPlateauTrees(biome);
+			DefaultBiomeFeatures.addBadlandsPlateauTrees(builder2);
 		}
 
-		DefaultBiomeFeatures.addBadlandsGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addBadlandsVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		return biome;
+		DefaultBiomeFeatures.addBadlandsGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addBadlandsVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.MESA)
+			.depth(depth)
+			.scale(scale)
+			.temperature(2.0F)
+			.downfall(0.0F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(4159204)
+					.waterFogColor(329011)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(2.0F))
+					.foliageColor(10387789)
+					.grassColor(9470285)
+					.moodSound(BiomeMoodSound.CAVE)
+					.build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createNormalBadlands(@Nullable String parent, float depth, float scale, boolean plateau) {
@@ -569,818 +589,839 @@ public class DefaultBiomeCreator {
 		return createBadlands("badlands", ConfiguredSurfaceBuilders.ERODED_BADLANDS, 0.1F, 0.2F, true, false);
 	}
 
-	private static Biome createOcean(
-		ConfiguredSurfaceBuilder<TernarySurfaceConfig> surfaceBuilder,
-		int waterColor,
-		int waterFogColor,
-		boolean deep,
-		boolean warm,
-		boolean preserveOldStructureOrder
+	private static Biome createOcean(SpawnSettings.Builder builder, int waterColor, int waterFogColor, boolean deep, GenerationSettings.Builder builder2) {
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.OCEAN)
+			.depth(deep ? -1.8F : -1.0F)
+			.scale(0.1F)
+			.temperature(0.5F)
+			.downfall(0.5F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(waterColor)
+					.waterFogColor(waterFogColor)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(0.5F))
+					.moodSound(BiomeMoodSound.CAVE)
+					.build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(null)
+			.build();
+	}
+
+	private static GenerationSettings.Builder method_31066(
+		ConfiguredSurfaceBuilder<TernarySurfaceConfig> configuredSurfaceBuilder, boolean bl, boolean bl2, boolean bl3
 	) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(surfaceBuilder)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.OCEAN)
-				.depth(deep ? -1.8F : -1.0F)
-				.scale(0.1F)
-				.temperature(0.5F)
-				.downfall(0.5F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(waterColor)
-						.waterFogColor(waterFogColor)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(0.5F))
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(null)
-		);
-		ConfiguredStructureFeature<?, ?> configuredStructureFeature = warm
-			? ConfiguredStructureFeatures.OCEAN_RUIN_WARM
-			: ConfiguredStructureFeatures.OCEAN_RUIN_COLD;
-		if (preserveOldStructureOrder) {
-			if (deep) {
-				biome.addStructureFeature(ConfiguredStructureFeatures.MONUMENT);
+		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(configuredSurfaceBuilder);
+		ConfiguredStructureFeature<?, ?> configuredStructureFeature = bl2 ? ConfiguredStructureFeatures.OCEAN_RUIN_WARM : ConfiguredStructureFeatures.OCEAN_RUIN_COLD;
+		if (bl3) {
+			if (bl) {
+				builder.structureFeature(ConfiguredStructureFeatures.MONUMENT);
 			}
 
-			DefaultBiomeFeatures.addOceanStructures(biome);
-			biome.addStructureFeature(configuredStructureFeature);
+			DefaultBiomeFeatures.addOceanStructures(builder);
+			builder.structureFeature(configuredStructureFeature);
 		} else {
-			biome.addStructureFeature(configuredStructureFeature);
-			if (deep) {
-				biome.addStructureFeature(ConfiguredStructureFeatures.MONUMENT);
+			builder.structureFeature(configuredStructureFeature);
+			if (bl) {
+				builder.structureFeature(ConfiguredStructureFeatures.MONUMENT);
 			}
 
-			DefaultBiomeFeatures.addOceanStructures(biome);
+			DefaultBiomeFeatures.addOceanStructures(builder);
 		}
 
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN);
-		DefaultBiomeFeatures.addOceanCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addWaterBiomeOakTrees(biome);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addDefaultGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		return biome;
+		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN);
+		DefaultBiomeFeatures.addOceanCarvers(builder);
+		DefaultBiomeFeatures.addDefaultLakes(builder);
+		DefaultBiomeFeatures.addDungeons(builder);
+		DefaultBiomeFeatures.addMineables(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
+		DefaultBiomeFeatures.addDefaultDisks(builder);
+		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder);
+		DefaultBiomeFeatures.addDefaultFlowers(builder);
+		DefaultBiomeFeatures.addDefaultGrass(builder);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder);
+		DefaultBiomeFeatures.addDefaultVegetation(builder);
+		DefaultBiomeFeatures.addSprings(builder);
+		return builder;
 	}
 
 	public static Biome createColdOcean(boolean deep) {
-		Biome biome = createOcean(ConfiguredSurfaceBuilders.GRASS, 4020182, 329011, deep, false, !deep);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP_COLD : ConfiguredFeatures.SEAGRASS_COLD);
-		DefaultBiomeFeatures.addSeagrassOnStone(biome);
-		DefaultBiomeFeatures.addKelp(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addOceanMobs(biome, 3, 4, 15);
-		biome.addSpawn(SpawnGroup.WATER_AMBIENT, new Biome.SpawnEntry(EntityType.SALMON, 15, 1, 5));
-		return biome;
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addOceanMobs(builder, 3, 4, 15);
+		builder.spawners(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.SALMON, 15, 1, 5));
+		boolean bl = !deep;
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.GRASS, deep, false, bl);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP_COLD : ConfiguredFeatures.SEAGRASS_COLD);
+		DefaultBiomeFeatures.addSeagrassOnStone(builder2);
+		DefaultBiomeFeatures.addKelp(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return createOcean(builder, 4020182, 329011, deep, builder2);
 	}
 
 	public static Biome createNormalOcean(boolean deep) {
-		Biome biome = createOcean(ConfiguredSurfaceBuilders.GRASS, 4159204, 329011, deep, false, true);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP : ConfiguredFeatures.SEAGRASS_NORMAL);
-		DefaultBiomeFeatures.addSeagrassOnStone(biome);
-		DefaultBiomeFeatures.addKelp(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addOceanMobs(biome, 1, 4, 10);
-		biome.addSpawn(SpawnGroup.WATER_CREATURE, new Biome.SpawnEntry(EntityType.DOLPHIN, 1, 1, 2));
-		return biome;
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addOceanMobs(builder, 1, 4, 10);
+		builder.spawners(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.DOLPHIN, 1, 1, 2));
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.GRASS, deep, false, true);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP : ConfiguredFeatures.SEAGRASS_NORMAL);
+		DefaultBiomeFeatures.addSeagrassOnStone(builder2);
+		DefaultBiomeFeatures.addKelp(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return createOcean(builder, 4159204, 329011, deep, builder2);
 	}
 
 	public static Biome createLukewarmOcean(boolean deep) {
-		Biome biome = createOcean(ConfiguredSurfaceBuilders.OCEAN_SAND, 4566514, 267827, deep, true, false);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP_WARM : ConfiguredFeatures.SEAGRASS_WARM);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		if (deep) {
-			DefaultBiomeFeatures.addSeagrassOnStone(biome);
-		}
-
-		DefaultBiomeFeatures.addLessKelp(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		if (deep) {
-			DefaultBiomeFeatures.addOceanMobs(biome, 8, 4, 8);
+			DefaultBiomeFeatures.addOceanMobs(builder, 8, 4, 8);
 		} else {
-			DefaultBiomeFeatures.addOceanMobs(biome, 10, 2, 15);
+			DefaultBiomeFeatures.addOceanMobs(builder, 10, 2, 15);
 		}
 
-		biome.addSpawn(SpawnGroup.WATER_AMBIENT, new Biome.SpawnEntry(EntityType.PUFFERFISH, 5, 1, 3));
-		biome.addSpawn(SpawnGroup.WATER_AMBIENT, new Biome.SpawnEntry(EntityType.TROPICAL_FISH, 25, 8, 8));
-		biome.addSpawn(SpawnGroup.WATER_CREATURE, new Biome.SpawnEntry(EntityType.DOLPHIN, 2, 1, 2));
-		return biome;
+		builder.spawners(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.PUFFERFISH, 5, 1, 3))
+			.spawners(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.TROPICAL_FISH, 25, 8, 8))
+			.spawners(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.DOLPHIN, 2, 1, 2));
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.OCEAN_SAND, deep, true, false);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, deep ? ConfiguredFeatures.SEAGRASS_DEEP_WARM : ConfiguredFeatures.SEAGRASS_WARM);
+		if (deep) {
+			DefaultBiomeFeatures.addSeagrassOnStone(builder2);
+		}
+
+		DefaultBiomeFeatures.addLessKelp(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return createOcean(builder, 4566514, 267827, deep, builder2);
 	}
 
 	public static Biome createWarmOcean() {
-		Biome biome = createOcean(ConfiguredSurfaceBuilders.FULL_SAND, 4445678, 270131, false, true, false);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARM_OCEAN_VEGETATION);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_WARM);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEA_PICKLE);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		biome.addSpawn(SpawnGroup.WATER_AMBIENT, new Biome.SpawnEntry(EntityType.PUFFERFISH, 15, 1, 3));
-		DefaultBiomeFeatures.addWarmOceanMobs(biome, 10, 4);
-		return biome;
+		SpawnSettings.Builder builder = new SpawnSettings.Builder().spawners(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.PUFFERFISH, 15, 1, 3));
+		DefaultBiomeFeatures.addWarmOceanMobs(builder, 10, 4);
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.FULL_SAND, false, true, false)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARM_OCEAN_VEGETATION)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_WARM)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEA_PICKLE);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return createOcean(builder, 4445678, 270131, false, builder2);
 	}
 
 	public static Biome createDeepWarmOcean() {
-		Biome biome = createOcean(ConfiguredSurfaceBuilders.FULL_SAND, 4445678, 270131, true, true, false);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_DEEP_WARM);
-		DefaultBiomeFeatures.addSeagrassOnStone(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addWarmOceanMobs(biome, 5, 1);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.DROWNED, 5, 1, 1));
-		return biome;
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addWarmOceanMobs(builder, 5, 1);
+		builder.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.DROWNED, 5, 1, 1));
+		GenerationSettings.Builder builder2 = method_31066(ConfiguredSurfaceBuilders.FULL_SAND, true, true, false)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_DEEP_WARM);
+		DefaultBiomeFeatures.addSeagrassOnStone(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return createOcean(builder, 4445678, 270131, true, builder2);
 	}
 
 	public static Biome createFrozenOcean(boolean monument) {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder()
+			.spawners(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 1, 1, 4))
+			.spawners(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.SALMON, 15, 1, 5))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.POLAR_BEAR, 1, 1, 2));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		builder.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.DROWNED, 5, 1, 1));
 		float f = monument ? 0.5F : 0.0F;
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.FROZEN_OCEAN)
-				.precipitation(monument ? Biome.Precipitation.RAIN : Biome.Precipitation.SNOW)
-				.category(Biome.Category.OCEAN)
-				.depth(monument ? -1.8F : -1.0F)
-				.scale(0.1F)
-				.temperature(f)
-				.temperatureModifier(Biome.TemperatureModifier.FROZEN)
-				.downfall(0.5F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(f)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(null)
-		);
-		biome.addStructureFeature(ConfiguredStructureFeatures.OCEAN_RUIN_COLD);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.FROZEN_OCEAN);
+		builder2.structureFeature(ConfiguredStructureFeatures.OCEAN_RUIN_COLD);
 		if (monument) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.MONUMENT);
+			builder2.structureFeature(ConfiguredStructureFeatures.MONUMENT);
 		}
 
-		DefaultBiomeFeatures.addOceanStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN);
-		DefaultBiomeFeatures.addOceanCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addIcebergs(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addBlueIce(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addWaterBiomeOakTrees(biome);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addDefaultGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		biome.addSpawn(SpawnGroup.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, 1, 1, 4));
-		biome.addSpawn(SpawnGroup.WATER_AMBIENT, new Biome.SpawnEntry(EntityType.SALMON, 15, 1, 5));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.POLAR_BEAR, 1, 1, 2));
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.DROWNED, 5, 1, 1));
-		return biome;
+		DefaultBiomeFeatures.addOceanStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN);
+		DefaultBiomeFeatures.addOceanCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addIcebergs(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addBlueIce(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder2);
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addDefaultGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(monument ? Biome.Precipitation.RAIN : Biome.Precipitation.SNOW)
+			.category(Biome.Category.OCEAN)
+			.depth(monument ? -1.8F : -1.0F)
+			.scale(0.1F)
+			.temperature(f)
+			.temperatureModifier(Biome.TemperatureModifier.FROZEN)
+			.downfall(0.5F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(3750089).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(f)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(null)
+			.build();
 	}
 
-	private static Biome createForest(@Nullable String parent, float depth, float scale, boolean flower) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.FOREST)
-				.depth(depth)
-				.scale(scale)
-				.temperature(0.7F)
-				.downfall(0.8F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.7F)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(parent)
-		);
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
+	private static Biome createForest(@Nullable String parent, float depth, float scale, boolean flower, SpawnSettings.Builder builder) {
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
 		if (flower) {
-			biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_VEGETATION_COMMON);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_VEGETATION_COMMON);
 		} else {
-			DefaultBiomeFeatures.addForestFlowers(biome);
+			DefaultBiomeFeatures.addForestFlowers(builder2);
 		}
 
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
 		if (flower) {
-			biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_TREES);
-			biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FLOWER_FOREST);
-			DefaultBiomeFeatures.addDefaultGrass(biome);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FOREST_FLOWER_TREES);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FLOWER_FOREST);
+			DefaultBiomeFeatures.addDefaultGrass(builder2);
 		} else {
-			DefaultBiomeFeatures.addForestTrees(biome);
-			DefaultBiomeFeatures.addDefaultFlowers(biome);
-			DefaultBiomeFeatures.addForestGrass(biome);
+			DefaultBiomeFeatures.addForestTrees(builder2);
+			DefaultBiomeFeatures.addDefaultFlowers(builder2);
+			DefaultBiomeFeatures.addForestGrass(builder2);
 		}
 
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addFarmAnimals(biome);
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		return biome;
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.FOREST)
+			.depth(depth)
+			.scale(scale)
+			.temperature(0.7F)
+			.downfall(0.8F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.7F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
+	}
+
+	private static SpawnSettings.Builder method_31069() {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		return builder;
 	}
 
 	public static Biome createNormalForest(float depth, float scale) {
-		Biome biome = createForest(null, depth, scale, false);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.WOLF, 5, 4, 4));
-		return biome;
+		SpawnSettings.Builder builder = method_31069().spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4));
+		return createForest(null, depth, scale, false, builder);
 	}
 
 	public static Biome createFlowerForest() {
-		Biome biome = createForest("forest", 0.1F, 0.4F, true);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
-		return biome;
+		SpawnSettings.Builder builder = method_31069().spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
+		return createForest("forest", 0.1F, 0.4F, true, builder);
 	}
 
 	public static Biome createTaiga(@Nullable String parent, float depth, float scale, boolean snowy, boolean mountains, boolean villages, boolean igloos) {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		float f = snowy ? -0.5F : 0.25F;
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(snowy ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
-				.category(Biome.Category.TAIGA)
-				.depth(depth)
-				.scale(scale)
-				.temperature(f)
-				.downfall(snowy ? 0.4F : 0.8F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(snowy ? 4020182 : 4159204)
-						.waterFogColor(329011)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(f))
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(parent)
-		);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
 		if (villages) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.VILLAGE_TAIGA);
-			biome.addStructureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_TAIGA);
+			builder2.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
 		if (igloos) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.IGLOO);
+			builder2.structureFeature(ConfiguredStructureFeatures.IGLOO);
 		}
 
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(mountains ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addLargeFerns(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addTaigaTrees(biome);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addTaigaGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(mountains ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addLargeFerns(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addTaigaTrees(builder2);
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addTaigaGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
 		if (snowy) {
-			DefaultBiomeFeatures.addSweetBerryBushesSnowy(biome);
+			DefaultBiomeFeatures.addSweetBerryBushesSnowy(builder2);
 		} else {
-			DefaultBiomeFeatures.addSweetBerryBushes(biome);
+			DefaultBiomeFeatures.addSweetBerryBushes(builder2);
 		}
 
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addFarmAnimals(biome);
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.WOLF, 8, 4, 4));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.FOX, 8, 2, 4));
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		return biome;
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(snowy ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
+			.category(Biome.Category.TAIGA)
+			.depth(depth)
+			.scale(scale)
+			.temperature(f)
+			.downfall(snowy ? 0.4F : 0.8F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(snowy ? 4020182 : 4159204)
+					.waterFogColor(329011)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(f))
+					.moodSound(BiomeMoodSound.CAVE)
+					.build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createDarkForest(@Nullable String parent, float depth, float scale, boolean redMushrooms) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.FOREST)
-				.depth(depth)
-				.scale(scale)
-				.temperature(0.7F)
-				.downfall(0.8F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(0.7F))
-						.grassColorModifier(BiomeEffects.GrassColorModifier.DARK_FOREST)
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(parent)
-		);
-		biome.addStructureFeature(ConfiguredStructureFeatures.MANSION);
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		biome.addFeature(
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		builder2.structureFeature(ConfiguredStructureFeatures.MANSION);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		builder2.feature(
 			GenerationStep.Feature.VEGETAL_DECORATION, redMushrooms ? ConfiguredFeatures.DARK_FOREST_VEGETATION_RED : ConfiguredFeatures.DARK_FOREST_VEGETATION_BROWN
 		);
-		DefaultBiomeFeatures.addForestFlowers(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addForestGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addFarmAnimals(biome);
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		return biome;
+		DefaultBiomeFeatures.addForestFlowers(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addForestGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.FOREST)
+			.depth(depth)
+			.scale(scale)
+			.temperature(0.7F)
+			.downfall(0.8F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(4159204)
+					.waterFogColor(329011)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(0.7F))
+					.grassColorModifier(BiomeEffects.GrassColorModifier.DARK_FOREST)
+					.moodSound(BiomeMoodSound.CAVE)
+					.build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createSwamp(@Nullable String parent, float depth, float scale, boolean hills) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.SWAMP)
-				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.SWAMP)
-				.depth(depth)
-				.scale(scale)
-				.temperature(0.8F)
-				.downfall(0.9F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(6388580)
-						.waterFogColor(2302743)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(0.8F))
-						.foliageColor(6975545)
-						.grassColorModifier(BiomeEffects.GrassColorModifier.SWAMP)
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(parent)
-		);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addFarmAnimals(builder);
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		builder.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SLIME, 1, 1, 1));
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.SWAMP);
 		if (!hills) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.SWAMP_HUT);
+			builder2.structureFeature(ConfiguredStructureFeatures.SWAMP_HUT);
 		}
 
-		biome.addStructureFeature(ConfiguredStructureFeatures.MINESHAFT);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_SWAMP);
-		DefaultBiomeFeatures.addLandCarvers(biome);
+		builder2.structureFeature(ConfiguredStructureFeatures.MINESHAFT);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_SWAMP);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
 		if (!hills) {
-			DefaultBiomeFeatures.addFossils(biome);
+			DefaultBiomeFeatures.addFossils(builder2);
 		}
 
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addClay(biome);
-		DefaultBiomeFeatures.addSwampFeatures(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addSwampVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addClay(builder2);
+		DefaultBiomeFeatures.addSwampFeatures(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addSwampVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
 		if (hills) {
-			DefaultBiomeFeatures.addFossils(biome);
+			DefaultBiomeFeatures.addFossils(builder2);
 		} else {
-			biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_SWAMP);
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_SWAMP);
 		}
 
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addFarmAnimals(biome);
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SLIME, 1, 1, 1));
-		return biome;
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.SWAMP)
+			.depth(depth)
+			.scale(scale)
+			.temperature(0.8F)
+			.downfall(0.9F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(6388580)
+					.waterFogColor(2302743)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(0.8F))
+					.foliageColor(6975545)
+					.grassColorModifier(BiomeEffects.GrassColorModifier.SWAMP)
+					.moodSound(BiomeMoodSound.CAVE)
+					.build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
 	public static Biome createSnowyTundra(@Nullable String parent, float depth, float scale, boolean iceSpikes, boolean snowyMountains) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(iceSpikes ? ConfiguredSurfaceBuilders.ICE_SPIKES : ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(Biome.Precipitation.SNOW)
-				.category(Biome.Category.ICY)
-				.depth(depth)
-				.scale(scale)
-				.temperature(0.0F)
-				.downfall(0.5F)
-				.creatureGenerationProbability(0.07F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.0F)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(parent)
-		);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder().creatureSpawnProbability(0.07F);
+		DefaultBiomeFeatures.addSnowyMobs(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder()
+			.surfaceBuilder(iceSpikes ? ConfiguredSurfaceBuilders.ICE_SPIKES : ConfiguredSurfaceBuilders.GRASS);
 		if (!iceSpikes && !snowyMountains) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.VILLAGE_SNOWY);
-			biome.addStructureFeature(ConfiguredStructureFeatures.IGLOO);
+			builder2.structureFeature(ConfiguredStructureFeatures.VILLAGE_SNOWY).structureFeature(ConfiguredStructureFeatures.IGLOO);
 		}
 
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
 		if (!iceSpikes && !snowyMountains) {
-			biome.addStructureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
+			builder2.structureFeature(ConfiguredStructureFeatures.PILLAGER_OUTPOST);
 		}
 
-		biome.addStructureFeature(snowyMountains ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
+		builder2.structureFeature(snowyMountains ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
 		if (iceSpikes) {
-			biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_SPIKE);
-			biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_PATCH);
+			builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_SPIKE);
+			builder2.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.ICE_PATCH);
 		}
 
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addSnowySpruceTrees(biome);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addDefaultGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		DefaultBiomeFeatures.addSnowyMobs(biome);
-		return biome;
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addSnowySpruceTrees(builder2);
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addDefaultGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.SNOW)
+			.category(Biome.Category.ICY)
+			.depth(depth)
+			.scale(scale)
+			.temperature(0.0F)
+			.downfall(0.5F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.0F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(parent)
+			.build();
 	}
 
-	public static Biome createRiver(float depth, float scale, float temperature, int waterColor, boolean frozen) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.GRASS)
-				.precipitation(frozen ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
-				.category(Biome.Category.RIVER)
-				.depth(depth)
-				.scale(scale)
-				.temperature(temperature)
-				.downfall(0.5F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(waterColor)
-						.waterFogColor(329011)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(temperature))
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(null)
-		);
-		biome.addStructureFeature(ConfiguredStructureFeatures.MINESHAFT);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addWaterBiomeOakTrees(biome);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addDefaultGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		if (!frozen) {
-			biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_RIVER);
+	public static Biome createRiver(float depth, float scale, float temperature, int i, boolean bl) {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder()
+			.spawners(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 2, 1, 4))
+			.spawners(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.SALMON, 5, 1, 5));
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		builder.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.DROWNED, bl ? 1 : 100, 1, 1));
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		builder2.structureFeature(ConfiguredStructureFeatures.MINESHAFT);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addWaterBiomeOakTrees(builder2);
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addDefaultGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		if (!bl) {
+			builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SEAGRASS_RIVER);
 		}
 
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
-		biome.addSpawn(SpawnGroup.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, 2, 1, 4));
-		biome.addSpawn(SpawnGroup.WATER_AMBIENT, new Biome.SpawnEntry(EntityType.SALMON, 5, 1, 5));
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.DROWNED, frozen ? 1 : 100, 1, 1));
-		return biome;
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(bl ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
+			.category(Biome.Category.RIVER)
+			.depth(depth)
+			.scale(scale)
+			.temperature(temperature)
+			.downfall(0.5F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(i).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(temperature)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(null)
+			.build();
 	}
 
 	public static Biome createBeach(float depth, float scale, float temperature, float downfall, int waterColor, boolean snowy, boolean stony) {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(stony ? ConfiguredSurfaceBuilders.STONE : ConfiguredSurfaceBuilders.DESERT)
-				.precipitation(snowy ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
-				.category(stony ? Biome.Category.NONE : Biome.Category.BEACH)
-				.depth(depth)
-				.scale(scale)
-				.temperature(temperature)
-				.downfall(downfall)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(waterColor)
-						.waterFogColor(329011)
-						.fogColor(12638463)
-						.skyColor(getSkyColor(temperature))
-						.moodSound(BiomeMoodSound.CAVE)
-						.build()
-				)
-				.parent(null)
-		);
-		if (stony) {
-			DefaultBiomeFeatures.addDefaultUndergroundStructures(biome);
-		} else {
-			biome.addStructureFeature(ConfiguredStructureFeatures.MINESHAFT);
-			biome.addStructureFeature(ConfiguredStructureFeatures.BURIED_TREASURE);
-			biome.addStructureFeature(ConfiguredStructureFeatures.SHIPWRECK_BEACHED);
-		}
-
-		biome.addStructureFeature(stony ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(biome);
-		DefaultBiomeFeatures.addDefaultLakes(biome);
-		DefaultBiomeFeatures.addDungeons(biome);
-		DefaultBiomeFeatures.addMineables(biome);
-		DefaultBiomeFeatures.addDefaultOres(biome);
-		DefaultBiomeFeatures.addDefaultDisks(biome);
-		DefaultBiomeFeatures.addDefaultFlowers(biome);
-		DefaultBiomeFeatures.addDefaultGrass(biome);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		DefaultBiomeFeatures.addDefaultVegetation(biome);
-		DefaultBiomeFeatures.addSprings(biome);
-		DefaultBiomeFeatures.addFrozenTopLayer(biome);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		if (!stony && !snowy) {
-			biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.TURTLE, 5, 2, 5));
+			builder.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.TURTLE, 5, 2, 5));
 		}
 
-		DefaultBiomeFeatures.addBatsAndMonsters(biome);
-		return biome;
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder()
+			.surfaceBuilder(stony ? ConfiguredSurfaceBuilders.STONE : ConfiguredSurfaceBuilders.DESERT);
+		if (stony) {
+			DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		} else {
+			builder2.structureFeature(ConfiguredStructureFeatures.MINESHAFT);
+			builder2.structureFeature(ConfiguredStructureFeatures.BURIED_TREASURE);
+			builder2.structureFeature(ConfiguredStructureFeatures.SHIPWRECK_BEACHED);
+		}
+
+		builder2.structureFeature(stony ? ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN : ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addDefaultFlowers(builder2);
+		DefaultBiomeFeatures.addDefaultGrass(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		return new Biome.Settings()
+			.precipitation(snowy ? Biome.Precipitation.SNOW : Biome.Precipitation.RAIN)
+			.category(stony ? Biome.Category.NONE : Biome.Category.BEACH)
+			.depth(depth)
+			.scale(scale)
+			.temperature(temperature)
+			.downfall(downfall)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(waterColor)
+					.waterFogColor(329011)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(temperature))
+					.moodSound(BiomeMoodSound.CAVE)
+					.build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.parent(null)
+			.build();
 	}
 
 	public static Biome createTheVoid() {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.NOPE)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.NONE)
-				.depth(0.1F)
-				.scale(0.2F)
-				.temperature(0.5F)
-				.downfall(0.5F)
-				.effects(
-					new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.5F)).moodSound(BiomeMoodSound.CAVE).build()
-				)
-				.parent(null)
-		);
-		biome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, ConfiguredFeatures.VOID_START_PLATFORM);
-		return biome;
+		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.NOPE);
+		builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, ConfiguredFeatures.VOID_START_PLATFORM);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NONE)
+			.depth(0.1F)
+			.scale(0.2F)
+			.temperature(0.5F)
+			.downfall(0.5F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.5F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(SpawnSettings.INSTANCE)
+			.generationSettings(builder.build())
+			.parent(null)
+			.build();
 	}
 
 	public static Biome createNetherWastes() {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.NETHER)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.NETHER)
-				.depth(0.1F)
-				.scale(0.2F)
-				.temperature(2.0F)
-				.downfall(0.0F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(3344392)
-						.skyColor(getSkyColor(2.0F))
-						.loopSound(SoundEvents.AMBIENT_NETHER_WASTES_LOOP)
-						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD, 6000, 8, 2.0))
-						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS, 0.0111))
-						.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_NETHER_WASTES))
-						.build()
-				)
-				.parent(null)
-		);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER);
-		biome.addStructureFeature(ConfiguredStructureFeatures.FORTRESS);
-		biome.addStructureFeature(ConfiguredStructureFeatures.BASTION_REMNANT);
-		biome.addCarver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BROWN_MUSHROOM_NETHER);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.RED_MUSHROOM_NETHER);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED);
-		DefaultBiomeFeatures.addNetherMineables(biome);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 50, 4, 4));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 100, 4, 4));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 2, 4, 4));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.PIGLIN, 15, 4, 4));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 1, 2));
-		return biome;
+		SpawnSettings spawnSettings = new SpawnSettings.Builder()
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 50, 4, 4))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 100, 4, 4))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 2, 4, 4))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.PIGLIN, 15, 4, 4))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
+			.build();
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.NETHER)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.structureFeature(ConfiguredStructureFeatures.BASTION_REMNANT)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BROWN_MUSHROOM_NETHER)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.RED_MUSHROOM_NETHER)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED);
+		DefaultBiomeFeatures.addNetherMineables(builder);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
+			.depth(0.1F)
+			.scale(0.2F)
+			.temperature(2.0F)
+			.downfall(0.0F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(4159204)
+					.waterFogColor(329011)
+					.fogColor(3344392)
+					.skyColor(getSkyColor(2.0F))
+					.loopSound(SoundEvents.AMBIENT_NETHER_WASTES_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_NETHER_WASTES))
+					.build()
+			)
+			.spawnSettings(spawnSettings)
+			.generationSettings(builder.build())
+			.parent(null)
+			.build();
 	}
 
 	public static Biome createSoulSandValley() {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.SOUL_SAND_VALLEY)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.NETHER)
-				.depth(0.1F)
-				.scale(0.2F)
-				.temperature(2.0F)
-				.downfall(0.0F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(1787717)
-						.skyColor(getSkyColor(2.0F))
-						.particleConfig(new BiomeParticleConfig(ParticleTypes.ASH, 0.00625F))
-						.loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP)
-						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD, 6000, 8, 2.0))
-						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS, 0.0111))
-						.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_SOUL_SAND_VALLEY))
-						.build()
-				)
-				.parent(null)
-		);
-		biome.addStructureFeature(ConfiguredStructureFeatures.FORTRESS);
-		biome.addStructureFeature(ConfiguredStructureFeatures.NETHER_FOSSIL);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER);
-		biome.addStructureFeature(ConfiguredStructureFeatures.BASTION_REMNANT);
-		biome.addCarver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
-		biome.addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, ConfiguredFeatures.BASALT_PILLAR);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_CRIMSON_ROOTS);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_SOUL_SAND);
-		DefaultBiomeFeatures.addNetherMineables(biome);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.SKELETON, 20, 5, 5));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 50, 4, 4));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 1, 2));
 		double d = 0.7;
 		double e = 0.15;
-		biome.addSpawnDensity(EntityType.SKELETON, 0.7, 0.15);
-		biome.addSpawnDensity(EntityType.GHAST, 0.7, 0.15);
-		biome.addSpawnDensity(EntityType.ENDERMAN, 0.7, 0.15);
-		biome.addSpawnDensity(EntityType.STRIDER, 0.7, 0.15);
-		return biome;
+		SpawnSettings spawnSettings = new SpawnSettings.Builder()
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SKELETON, 20, 5, 5))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 50, 4, 4))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
+			.spawnCosts(EntityType.SKELETON, 0.7, 0.15)
+			.spawnCosts(EntityType.GHAST, 0.7, 0.15)
+			.spawnCosts(EntityType.ENDERMAN, 0.7, 0.15)
+			.spawnCosts(EntityType.STRIDER, 0.7, 0.15)
+			.build();
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.SOUL_SAND_VALLEY)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.structureFeature(ConfiguredStructureFeatures.NETHER_FOSSIL)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.structureFeature(ConfiguredStructureFeatures.BASTION_REMNANT)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA)
+			.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, ConfiguredFeatures.BASALT_PILLAR)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_CRIMSON_ROOTS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_SOUL_SAND);
+		DefaultBiomeFeatures.addNetherMineables(builder);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
+			.depth(0.1F)
+			.scale(0.2F)
+			.temperature(2.0F)
+			.downfall(0.0F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(4159204)
+					.waterFogColor(329011)
+					.fogColor(1787717)
+					.skyColor(getSkyColor(2.0F))
+					.particleConfig(new BiomeParticleConfig(ParticleTypes.ASH, 0.00625F))
+					.loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_SOUL_SAND_VALLEY))
+					.build()
+			)
+			.spawnSettings(spawnSettings)
+			.generationSettings(builder.build())
+			.parent(null)
+			.build();
 	}
 
 	public static Biome createBasaltDeltas() {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.BASALT_DELTAS)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.NETHER)
-				.depth(0.1F)
-				.scale(0.2F)
-				.temperature(2.0F)
-				.downfall(0.0F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(4341314)
-						.fogColor(6840176)
-						.skyColor(getSkyColor(2.0F))
-						.particleConfig(new BiomeParticleConfig(ParticleTypes.WHITE_ASH, 0.118093334F))
-						.loopSound(SoundEvents.AMBIENT_BASALT_DELTAS_LOOP)
-						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_BASALT_DELTAS_MOOD, 6000, 8, 2.0))
-						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_BASALT_DELTAS_ADDITIONS, 0.0111))
-						.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_BASALT_DELTAS))
-						.build()
-				)
-				.parent(null)
-		);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER);
-		biome.addCarver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE);
-		biome.addStructureFeature(ConfiguredStructureFeatures.FORTRESS);
-		biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.DELTA);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA_DOUBLE);
-		biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.SMALL_BASALT_COLUMNS);
-		biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.LARGE_BASALT_COLUMNS);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BASALT_BLOBS);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BLACKSTONE_BLOBS);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_DELTA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BROWN_MUSHROOM_NETHER);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.RED_MUSHROOM_NETHER);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED_DOUBLE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_GOLD_DELTAS);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_QUARTZ_DELTAS);
-		DefaultBiomeFeatures.addAncientDebris(biome);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.GHAST, 40, 1, 1));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 100, 2, 5));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 1, 2));
-		return biome;
+		SpawnSettings spawnSettings = new SpawnSettings.Builder()
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 40, 1, 1))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 100, 2, 5))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
+			.build();
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.BASALT_DELTAS)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.DELTA)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA_DOUBLE)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.SMALL_BASALT_COLUMNS)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, ConfiguredFeatures.LARGE_BASALT_COLUMNS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BASALT_BLOBS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BLACKSTONE_BLOBS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_DELTA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.BROWN_MUSHROOM_NETHER)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.RED_MUSHROOM_NETHER)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED_DOUBLE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_GOLD_DELTAS)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_QUARTZ_DELTAS);
+		DefaultBiomeFeatures.addAncientDebris(builder);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
+			.depth(0.1F)
+			.scale(0.2F)
+			.temperature(2.0F)
+			.downfall(0.0F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(4159204)
+					.waterFogColor(4341314)
+					.fogColor(6840176)
+					.skyColor(getSkyColor(2.0F))
+					.particleConfig(new BiomeParticleConfig(ParticleTypes.WHITE_ASH, 0.118093334F))
+					.loopSound(SoundEvents.AMBIENT_BASALT_DELTAS_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_BASALT_DELTAS_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_BASALT_DELTAS_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_BASALT_DELTAS))
+					.build()
+			)
+			.spawnSettings(spawnSettings)
+			.generationSettings(builder.build())
+			.parent(null)
+			.build();
 	}
 
 	public static Biome createCrimsonForest() {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.CRIMSON_FOREST)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.NETHER)
-				.depth(0.1F)
-				.scale(0.2F)
-				.temperature(2.0F)
-				.downfall(0.0F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(3343107)
-						.skyColor(getSkyColor(2.0F))
-						.particleConfig(new BiomeParticleConfig(ParticleTypes.CRIMSON_SPORE, 0.025F))
-						.loopSound(SoundEvents.AMBIENT_CRIMSON_FOREST_LOOP)
-						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD, 6000, 8, 2.0))
-						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_CRIMSON_FOREST_ADDITIONS, 0.0111))
-						.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_CRIMSON_FOREST))
-						.build()
-				)
-				.parent(null)
-		);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER);
-		biome.addCarver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE);
-		biome.addStructureFeature(ConfiguredStructureFeatures.FORTRESS);
-		biome.addStructureFeature(ConfiguredStructureFeatures.BASTION_REMNANT);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WEEPING_VINES);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CRIMSON_FUNGI);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CRIMSON_FOREST_VEGETATION);
-		DefaultBiomeFeatures.addNetherMineables(biome);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 4));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.HOGLIN, 9, 3, 4));
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.PIGLIN, 5, 3, 4));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 1, 2));
-		return biome;
+		SpawnSettings spawnSettings = new SpawnSettings.Builder()
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 4))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.HOGLIN, 9, 3, 4))
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.PIGLIN, 5, 3, 4))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
+			.build();
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.CRIMSON_FOREST)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.structureFeature(ConfiguredStructureFeatures.BASTION_REMNANT)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WEEPING_VINES)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CRIMSON_FUNGI)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CRIMSON_FOREST_VEGETATION);
+		DefaultBiomeFeatures.addNetherMineables(builder);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
+			.depth(0.1F)
+			.scale(0.2F)
+			.temperature(2.0F)
+			.downfall(0.0F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(4159204)
+					.waterFogColor(329011)
+					.fogColor(3343107)
+					.skyColor(getSkyColor(2.0F))
+					.particleConfig(new BiomeParticleConfig(ParticleTypes.CRIMSON_SPORE, 0.025F))
+					.loopSound(SoundEvents.AMBIENT_CRIMSON_FOREST_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_CRIMSON_FOREST_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_CRIMSON_FOREST))
+					.build()
+			)
+			.spawnSettings(spawnSettings)
+			.generationSettings(builder.build())
+			.parent(null)
+			.build();
 	}
 
 	public static Biome createWarpedForest() {
-		Biome biome = new Biome(
-			new Biome.Settings()
-				.surfaceBuilder(ConfiguredSurfaceBuilders.WARPED_FOREST)
-				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.NETHER)
-				.depth(0.1F)
-				.scale(0.2F)
-				.temperature(2.0F)
-				.downfall(0.0F)
-				.effects(
-					new BiomeEffects.Builder()
-						.waterColor(4159204)
-						.waterFogColor(329011)
-						.fogColor(1705242)
-						.skyColor(getSkyColor(2.0F))
-						.particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428F))
-						.loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP)
-						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD, 6000, 8, 2.0))
-						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS, 0.0111))
-						.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_WARPED_FOREST))
-						.build()
-				)
-				.parent(null)
-		);
-		biome.addStructureFeature(ConfiguredStructureFeatures.FORTRESS);
-		biome.addStructureFeature(ConfiguredStructureFeatures.BASTION_REMNANT);
-		biome.addStructureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER);
-		biome.addCarver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
-		DefaultBiomeFeatures.addDefaultMushrooms(biome);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA);
-		biome.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARPED_FUNGI);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARPED_FOREST_VEGETATION);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.NETHER_SPROUTS);
-		biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TWISTING_VINES);
-		DefaultBiomeFeatures.addNetherMineables(biome);
-		biome.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
-		biome.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 1, 2));
-		biome.addSpawnDensity(EntityType.ENDERMAN, 1.0, 0.12);
-		return biome;
+		SpawnSettings spawnSettings = new SpawnSettings.Builder()
+			.spawners(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4))
+			.spawners(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
+			.spawnCosts(EntityType.ENDERMAN, 1.0, 0.12)
+			.build();
+		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+			.surfaceBuilder(ConfiguredSurfaceBuilders.WARPED_FOREST)
+			.structureFeature(ConfiguredStructureFeatures.FORTRESS)
+			.structureFeature(ConfiguredStructureFeatures.BASTION_REMNANT)
+			.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRING_LAVA);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_OPEN)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.PATCH_SOUL_FIRE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE_EXTRA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.GLOWSTONE)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.ORE_MAGMA)
+			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, ConfiguredFeatures.SPRING_CLOSED)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARPED_FUNGI)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.WARPED_FOREST_VEGETATION)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.NETHER_SPROUTS)
+			.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TWISTING_VINES);
+		DefaultBiomeFeatures.addNetherMineables(builder);
+		return new Biome.Settings()
+			.precipitation(Biome.Precipitation.NONE)
+			.category(Biome.Category.NETHER)
+			.depth(0.1F)
+			.scale(0.2F)
+			.temperature(2.0F)
+			.downfall(0.0F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(4159204)
+					.waterFogColor(329011)
+					.fogColor(1705242)
+					.skyColor(getSkyColor(2.0F))
+					.particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428F))
+					.loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP)
+					.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD, 6000, 8, 2.0))
+					.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS, 0.0111))
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_WARPED_FOREST))
+					.build()
+			)
+			.spawnSettings(spawnSettings)
+			.generationSettings(builder.build())
+			.parent(null)
+			.build();
 	}
 }

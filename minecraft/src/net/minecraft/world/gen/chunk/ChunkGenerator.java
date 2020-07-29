@@ -31,6 +31,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.GenerationSettings;
+import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -75,7 +77,7 @@ public abstract class ChunkGenerator {
 				List<Biome> list = Lists.<Biome>newArrayList();
 
 				for (Biome biome : this.biomeSource.getBiomes()) {
-					if (biome.hasStructureFeature(StructureFeature.STRONGHOLD)) {
+					if (biome.getGenerationSettings().hasStructureFeature(StructureFeature.STRONGHOLD)) {
 						list.add(biome);
 					}
 				}
@@ -130,12 +132,12 @@ public abstract class ChunkGenerator {
 		ChunkPos chunkPos = chunk.getPos();
 		int j = chunkPos.x;
 		int k = chunkPos.z;
-		Biome biome = this.biomeSource.getBiomeForNoiseGen(chunkPos.x << 2, 0, chunkPos.z << 2);
+		GenerationSettings generationSettings = this.biomeSource.getBiomeForNoiseGen(chunkPos.x << 2, 0, chunkPos.z << 2).getGenerationSettings();
 		BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
 
 		for (int l = j - 8; l <= j + 8; l++) {
 			for (int m = k - 8; m <= k + 8; m++) {
-				List<Supplier<ConfiguredCarver<?>>> list = biome.getCarversForStep(carver);
+				List<Supplier<ConfiguredCarver<?>>> list = generationSettings.getCarversForStep(carver);
 				ListIterator<Supplier<ConfiguredCarver<?>>> listIterator = list.listIterator();
 
 				while (listIterator.hasNext()) {
@@ -232,8 +234,8 @@ public abstract class ChunkGenerator {
 		return 256;
 	}
 
-	public List<Biome.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
-		return biome.getEntitySpawnList(group);
+	public List<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+		return biome.getSpawnSettings().getSpawnEntry(group);
 	}
 
 	/**
@@ -246,7 +248,7 @@ public abstract class ChunkGenerator {
 		Biome biome = this.biomeSource.getBiomeForNoiseGen((chunkPos.x << 2) + 2, 0, (chunkPos.z << 2) + 2);
 		this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome);
 
-		for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getStructureFeatures()) {
+		for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getGenerationSettings().getStructureFeatures()) {
 			this.setStructureStart(
 				(ConfiguredStructureFeature<?, ?>)supplier.get(), dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome
 			);

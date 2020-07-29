@@ -450,7 +450,7 @@ public class PresetsScreen extends Screen {
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(index);
 				this.method_2200(matrices, x, y, superflatPreset.icon);
-				PresetsScreen.this.textRenderer.method_30883(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 16777215);
+				PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 16777215);
 			}
 
 			@Override

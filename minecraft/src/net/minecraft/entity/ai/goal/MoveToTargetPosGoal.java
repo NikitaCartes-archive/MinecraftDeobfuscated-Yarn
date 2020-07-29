@@ -67,15 +67,18 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		return 1.0;
 	}
 
+	protected BlockPos method_30953() {
+		return this.targetPos.up();
+	}
+
 	@Override
 	public void tick() {
-		if (!this.targetPos.up().isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
+		BlockPos blockPos = this.method_30953();
+		if (!blockPos.isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
 			this.reached = false;
 			this.tryingTime++;
 			if (this.shouldResetPath()) {
-				this.mob
-					.getNavigation()
-					.startMovingTo((double)((float)this.targetPos.getX()) + 0.5, (double)(this.targetPos.getY() + 1), (double)((float)this.targetPos.getZ()) + 0.5, this.speed);
+				this.mob.getNavigation().startMovingTo((double)((float)blockPos.getX()) + 0.5, (double)blockPos.getY(), (double)((float)blockPos.getZ()) + 0.5, this.speed);
 			}
 		} else {
 			this.reached = true;
