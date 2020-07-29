@@ -3,15 +3,20 @@
  */
 package net.minecraft.client.gui.widget;
 
+import java.util.List;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5499;
 import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.client.options.DoubleOption;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.text.OrderedText;
 
 @Environment(value=EnvType.CLIENT)
 public class DoubleOptionSliderWidget
-extends OptionSliderWidget {
+extends OptionSliderWidget
+implements class_5499 {
     private final DoubleOption option;
 
     public DoubleOptionSliderWidget(GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option) {
@@ -29,6 +34,11 @@ extends OptionSliderWidget {
     @Override
     protected void updateMessage() {
         this.setMessage(this.option.getDisplayString(this.options));
+    }
+
+    @Override
+    public Optional<List<OrderedText>> method_31047() {
+        return this.option.getTooltip();
     }
 }
 

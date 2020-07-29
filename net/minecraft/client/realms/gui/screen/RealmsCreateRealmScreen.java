@@ -101,8 +101,8 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.createRealmLabel.render(this, matrices);
-        this.textRenderer.method_30883(matrices, field_26487, this.width / 2 - 100, 52.0f, 0xA0A0A0);
-        this.textRenderer.method_30883(matrices, field_26488, this.width / 2 - 100, 102.0f, 0xA0A0A0);
+        this.textRenderer.draw(matrices, field_26487, (float)(this.width / 2 - 100), 52.0f, 0xA0A0A0);
+        this.textRenderer.draw(matrices, field_26488, (float)(this.width / 2 - 100), 102.0f, 0xA0A0A0);
         if (this.nameBox != null) {
             this.nameBox.render(matrices, mouseX, mouseY, delta);
         }

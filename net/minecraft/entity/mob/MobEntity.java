@@ -997,7 +997,7 @@ extends LivingEntity {
     }
 
     @Override
-    public boolean canPickUp(ItemStack stack) {
+    public boolean canEquip(ItemStack stack) {
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
         return this.getEquippedStack(equipmentSlot).isEmpty() && this.canPickUpLoot();
     }
@@ -1085,13 +1085,12 @@ extends LivingEntity {
     }
 
     @Nullable
-    protected <T extends MobEntity> T method_29243(EntityType<T> entityType) {
+    public <T extends MobEntity> T method_29243(EntityType<T> entityType, boolean bl) {
         if (this.removed) {
             return null;
         }
         MobEntity mobEntity = (MobEntity)entityType.create(this.world);
         mobEntity.copyPositionAndRotation(this);
-        mobEntity.setCanPickUpLoot(this.canPickUpLoot());
         mobEntity.setBaby(this.isBaby());
         mobEntity.setAiDisabled(this.isAiDisabled());
         if (this.hasCustomName()) {
@@ -1102,14 +1101,22 @@ extends LivingEntity {
             mobEntity.setPersistent();
         }
         mobEntity.setInvulnerable(this.isInvulnerable());
-        for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-            ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-            if (itemStack.isEmpty()) continue;
-            mobEntity.equipStack(equipmentSlot, itemStack.copy());
-            mobEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
-            itemStack.setCount(0);
+        if (bl) {
+            mobEntity.setCanPickUpLoot(this.canPickUpLoot());
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+                ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+                if (itemStack.isEmpty()) continue;
+                mobEntity.equipStack(equipmentSlot, itemStack.copy());
+                mobEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
+                itemStack.setCount(0);
+            }
         }
         this.world.spawnEntity(mobEntity);
+        if (this.hasVehicle()) {
+            Entity entity = this.getVehicle();
+            this.stopRiding();
+            mobEntity.startRiding(entity, true);
+        }
         this.remove();
         return (T)mobEntity;
     }

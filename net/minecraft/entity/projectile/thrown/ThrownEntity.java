@@ -20,7 +20,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public abstract class ThrownEntity
@@ -53,7 +52,7 @@ extends ProjectileEntity {
     public void tick() {
         float h;
         super.tick();
-        HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.OUTLINE);
+        HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
         boolean bl = false;
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
@@ -72,6 +71,7 @@ extends ProjectileEntity {
         if (hitResult.getType() != HitResult.Type.MISS && !bl) {
             this.onCollision(hitResult);
         }
+        this.checkBlockCollision();
         Vec3d vec3d = this.getVelocity();
         double d = this.getX() + vec3d.x;
         double e = this.getY() + vec3d.y;

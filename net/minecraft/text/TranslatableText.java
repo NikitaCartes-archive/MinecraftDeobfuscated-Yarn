@@ -17,7 +17,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.ParsableText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -29,13 +29,13 @@ public class TranslatableText
 extends BaseText
 implements ParsableText {
     private static final Object[] EMPTY_ARGUMENTS = new Object[0];
-    private static final StringRenderable LITERAL_PERCENT_SIGN = StringRenderable.plain("%");
-    private static final StringRenderable NULL_ARGUMENT = StringRenderable.plain("null");
+    private static final StringVisitable LITERAL_PERCENT_SIGN = StringVisitable.plain("%");
+    private static final StringVisitable NULL_ARGUMENT = StringVisitable.plain("null");
     private final String key;
     private final Object[] args;
     @Nullable
     private Language languageCache;
-    private final List<StringRenderable> translations = Lists.newArrayList();
+    private final List<StringVisitable> translations = Lists.newArrayList();
     private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
     public TranslatableText(String key) {
@@ -60,7 +60,7 @@ implements ParsableText {
             this.setTranslation(string);
         } catch (TranslationException translationException) {
             this.translations.clear();
-            this.translations.add(StringRenderable.plain(string));
+            this.translations.add(StringVisitable.plain(string));
         }
     }
 
@@ -78,7 +78,7 @@ implements ParsableText {
                     if (string.indexOf(37) != -1) {
                         throw new IllegalArgumentException();
                     }
-                    this.translations.add(StringRenderable.plain(string));
+                    this.translations.add(StringVisitable.plain(string));
                 }
                 string = matcher.group(2);
                 String string2 = translation.substring(k, l);
@@ -89,7 +89,7 @@ implements ParsableText {
                     String string3 = matcher.group(1);
                     int n = m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
                     if (m < this.args.length) {
-                        this.translations.add(this.method_29434(m));
+                        this.translations.add(this.getArg(m));
                     }
                 } else {
                     throw new TranslationException(this, "Unsupported format: '" + string2 + "'");
@@ -101,22 +101,22 @@ implements ParsableText {
                 if (string4.indexOf(37) != -1) {
                     throw new IllegalArgumentException();
                 }
-                this.translations.add(StringRenderable.plain(string4));
+                this.translations.add(StringVisitable.plain(string4));
             }
         } catch (IllegalArgumentException illegalArgumentException) {
             throw new TranslationException(this, (Throwable)illegalArgumentException);
         }
     }
 
-    private StringRenderable method_29434(int i) {
-        if (i >= this.args.length) {
-            throw new TranslationException(this, i);
+    private StringVisitable getArg(int index) {
+        if (index >= this.args.length) {
+            throw new TranslationException(this, index);
         }
-        Object object = this.args[i];
+        Object object = this.args[index];
         if (object instanceof Text) {
             return (Text)object;
         }
-        return object == null ? NULL_ARGUMENT : StringRenderable.plain(object.toString());
+        return object == null ? NULL_ARGUMENT : StringVisitable.plain(object.toString());
     }
 
     @Override
@@ -126,10 +126,10 @@ implements ParsableText {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public <T> Optional<T> visitSelf(StringRenderable.StyledVisitor<T> visitor, Style style) {
+    public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
         this.updateTranslations();
-        for (StringRenderable stringRenderable : this.translations) {
-            Optional<T> optional = stringRenderable.visit(visitor, style);
+        for (StringVisitable stringVisitable : this.translations) {
+            Optional<T> optional = stringVisitable.visit(visitor, style);
             if (!optional.isPresent()) continue;
             return optional;
         }
@@ -137,10 +137,10 @@ implements ParsableText {
     }
 
     @Override
-    public <T> Optional<T> visitSelf(StringRenderable.Visitor<T> visitor) {
+    public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
         this.updateTranslations();
-        for (StringRenderable stringRenderable : this.translations) {
-            Optional<T> optional = stringRenderable.visit(visitor);
+        for (StringVisitable stringVisitable : this.translations) {
+            Optional<T> optional = stringVisitable.visit(visitor);
             if (!optional.isPresent()) continue;
             return optional;
         }

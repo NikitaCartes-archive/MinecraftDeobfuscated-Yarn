@@ -194,7 +194,7 @@ extends RealmsScreenWithCallback {
         int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
         this.drawServerStatus(matrices, l, 7, mouseX, mouseY);
         if (this.isMinigame()) {
-            this.textRenderer.method_30883(matrices, field_26481.shallowCopy().append(this.server.getMinigameName()), this.left_x + 80 + 20 + 10, RealmsConfigureWorldScreen.row(13), 0xFFFFFF);
+            this.textRenderer.draw(matrices, field_26481.shallowCopy().append(this.server.getMinigameName()), (float)(this.left_x + 80 + 20 + 10), (float)RealmsConfigureWorldScreen.row(13), 0xFFFFFF);
         }
         if (this.toolTip != null) {
             this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
@@ -241,7 +241,7 @@ extends RealmsScreenWithCallback {
                 }
             } catch (RealmsServiceException realmsServiceException) {
                 LOGGER.error("Couldn't get own world");
-                this.client.execute(() -> this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(realmsServiceException.getMessage()), (Screen)this.parent)));
+                this.client.execute(() -> this.client.openScreen(new RealmsGenericErrorScreen(Text.of(realmsServiceException.getMessage()), (Screen)this.parent)));
             }
         }).start();
     }
@@ -305,7 +305,7 @@ extends RealmsScreenWithCallback {
             k = k - m - 20;
         }
         this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.method_30881(matrixStack, text, k, l, 0xFFFFFF);
+        this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 0xFFFFFF);
     }
 
     private void drawServerStatus(MatrixStack matrixStack, int i, int j, int k, int l) {

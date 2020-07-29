@@ -44,7 +44,7 @@ extends HandledScreen<HorseScreenHandler> {
         if (this.entity.canBeSaddled()) {
             this.drawTexture(matrices, i + 7, j + 35 - 18, 18, this.backgroundHeight + 54, 18, 18);
         }
-        if (this.entity.canEquip()) {
+        if (this.entity.hasArmorSlot()) {
             if (this.entity instanceof LlamaEntity) {
                 this.drawTexture(matrices, i + 7, j + 35, 36, this.backgroundHeight + 54, 18, 18);
             } else {

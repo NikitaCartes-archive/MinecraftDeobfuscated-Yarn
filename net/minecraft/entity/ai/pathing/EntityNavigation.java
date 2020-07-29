@@ -196,11 +196,11 @@ public abstract class EntityNavigation {
         }
         if (this.isAtValidPosition()) {
             this.continueFollowingPath();
-        } else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
+        } else if (this.currentPath != null && !this.currentPath.isFinished()) {
             vec3d = this.getPos();
-            Vec3d vec3d2 = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
+            Vec3d vec3d2 = this.currentPath.getNodePosition(this.entity);
             if (vec3d.y > vec3d2.y && !this.entity.isOnGround() && MathHelper.floor(vec3d.x) == MathHelper.floor(vec3d2.x) && MathHelper.floor(vec3d.z) == MathHelper.floor(vec3d2.z)) {
-                this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
+                this.currentPath.next();
             }
         }
         DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.nodeReachProximity);
@@ -216,27 +216,27 @@ public abstract class EntityNavigation {
         boolean bl;
         Vec3d vec3d = this.getPos();
         this.nodeReachProximity = this.entity.getWidth() > 0.75f ? this.entity.getWidth() / 2.0f : 0.75f - this.entity.getWidth() / 2.0f;
-        Vec3i vec3i = this.currentPath.getCurrentPosition();
+        BlockPos vec3i = this.currentPath.method_31032();
         double d = Math.abs(this.entity.getX() - ((double)vec3i.getX() + 0.5));
         double e = Math.abs(this.entity.getY() - (double)vec3i.getY());
         double f = Math.abs(this.entity.getZ() - ((double)vec3i.getZ() + 0.5));
         boolean bl2 = bl = d < (double)this.nodeReachProximity && f < (double)this.nodeReachProximity && e < 1.0;
         if (bl || this.entity.method_29244(this.currentPath.method_29301().type) && this.method_27799(vec3d)) {
-            this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
+            this.currentPath.next();
         }
         this.checkTimeouts(vec3d);
     }
 
     private boolean method_27799(Vec3d vec3d) {
         Vec3d vec3d5;
-        if (this.currentPath.getLength() <= this.currentPath.getCurrentNodeIndex() + 1) {
+        if (this.currentPath.getCurrentNodeIndex() + 1 >= this.currentPath.getLength()) {
             return false;
         }
-        Vec3d vec3d2 = Vec3d.ofBottomCenter(this.currentPath.getNode(this.currentPath.getCurrentNodeIndex()).getPos());
+        Vec3d vec3d2 = Vec3d.ofBottomCenter(this.currentPath.method_31032());
         if (!vec3d.isInRange(vec3d2, 2.0)) {
             return false;
         }
-        Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.getNode(this.currentPath.getCurrentNodeIndex() + 1).getPos());
+        Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.method_31031(this.currentPath.getCurrentNodeIndex() + 1));
         Vec3d vec3d4 = vec3d3.subtract(vec3d2);
         return vec3d4.dotProduct(vec3d5 = vec3d.subtract(vec3d2)) > 0.0;
     }
@@ -250,7 +250,7 @@ public abstract class EntityNavigation {
             this.pathStartPos = currentPos;
         }
         if (this.currentPath != null && !this.currentPath.isFinished()) {
-            Vec3i vec3i = this.currentPath.getCurrentPosition();
+            BlockPos vec3i = this.currentPath.method_31032();
             if (vec3i.equals(this.lastNodePosition)) {
                 this.currentNodeMs += Util.getMeasuringTimeMs() - this.lastActiveTickMs;
             } else {
@@ -309,7 +309,7 @@ public abstract class EntityNavigation {
             if (!blockState.isOf(Blocks.CAULDRON)) continue;
             this.currentPath.setNode(i, pathNode.copyWithNewPosition(pathNode.x, pathNode.y + 1, pathNode.z));
             if (pathNode2 == null || pathNode.y < pathNode2.y) continue;
-            this.currentPath.setNode(i + 1, pathNode2.copyWithNewPosition(pathNode2.x, pathNode.y + 1, pathNode2.z));
+            this.currentPath.setNode(i + 1, pathNode.copyWithNewPosition(pathNode2.x, pathNode.y + 1, pathNode2.z));
         }
     }
 

@@ -12,7 +12,6 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
@@ -31,6 +30,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -178,7 +178,7 @@ implements VillagerDataContainer {
 
     private void finishConversion(ServerWorld world) {
         PlayerEntity playerEntity;
-        VillagerEntity villagerEntity = EntityType.VILLAGER.create(world);
+        VillagerEntity villagerEntity = this.method_29243(EntityType.VILLAGER, false);
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             ItemStack itemStack = this.getEquippedStack(equipmentSlot);
             if (itemStack.isEmpty()) continue;
@@ -190,7 +190,6 @@ implements VillagerDataContainer {
             if (!(d > 1.0)) continue;
             this.dropStack(itemStack);
         }
-        villagerEntity.copyPositionAndRotation(this);
         villagerEntity.setVillagerData(this.getVillagerData());
         if (this.gossipData != null) {
             villagerEntity.setGossipDataFromTag(this.gossipData);
@@ -200,20 +199,6 @@ implements VillagerDataContainer {
         }
         villagerEntity.setExperience(this.xp);
         villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
-        if (this.isBaby()) {
-            villagerEntity.setBreedingAge(-24000);
-        }
-        this.remove();
-        villagerEntity.setAiDisabled(this.isAiDisabled());
-        if (this.hasCustomName()) {
-            villagerEntity.setCustomName(this.getCustomName());
-            villagerEntity.setCustomNameVisible(this.isCustomNameVisible());
-        }
-        if (this.isPersistent()) {
-            villagerEntity.setPersistent();
-        }
-        villagerEntity.setInvulnerable(this.isInvulnerable());
-        world.spawnEntityAndPassengers(villagerEntity);
         if (this.converter != null && (playerEntity = world.getPlayerByUuid(this.converter)) instanceof ServerPlayerEntity) {
             Criteria.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villagerEntity);
             world.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);

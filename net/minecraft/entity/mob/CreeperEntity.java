@@ -130,7 +130,7 @@ implements SkinOverlayOwner {
             this.explosionRadius = tag.getByte("ExplosionRadius");
         }
         if (tag.getBoolean("ignited")) {
-            this.setIgnited();
+            this.ignite();
         }
     }
 
@@ -213,7 +213,7 @@ implements SkinOverlayOwner {
         if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
             this.world.playSound(player, this.getX(), this.getY(), this.getZ(), SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.4f + 0.8f);
             if (!this.world.isClient) {
-                this.setIgnited();
+                this.ignite();
                 itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
             return ActionResult.success(this.world.isClient);
@@ -252,7 +252,7 @@ implements SkinOverlayOwner {
         return this.dataTracker.get(IGNITED);
     }
 
-    public void setIgnited() {
+    public void ignite() {
         this.dataTracker.set(IGNITED, true);
     }
 

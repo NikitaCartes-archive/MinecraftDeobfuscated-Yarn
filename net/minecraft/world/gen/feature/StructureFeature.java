@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,6 +28,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -287,12 +287,12 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         return (String)STRUCTURES.inverse().get(this);
     }
 
-    public List<Biome.SpawnEntry> getMonsterSpawns() {
-        return Collections.emptyList();
+    public List<SpawnSettings.SpawnEntry> getMonsterSpawns() {
+        return ImmutableList.of();
     }
 
-    public List<Biome.SpawnEntry> getCreatureSpawns() {
-        return Collections.emptyList();
+    public List<SpawnSettings.SpawnEntry> getCreatureSpawns() {
+        return ImmutableList.of();
     }
 
     public static interface StructureStartFactory<C extends FeatureConfig> {

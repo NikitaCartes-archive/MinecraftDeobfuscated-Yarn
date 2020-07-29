@@ -12,6 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.util.math.MatrixStack;
@@ -47,6 +48,17 @@ extends ElementListWidget<ButtonEntry> {
     @Override
     protected int getScrollbarPositionX() {
         return super.getScrollbarPositionX() + 32;
+    }
+
+    @Nullable
+    public AbstractButtonWidget method_31046(Option option) {
+        for (ButtonEntry buttonEntry : this.children()) {
+            for (AbstractButtonWidget abstractButtonWidget : buttonEntry.buttons) {
+                if (!(abstractButtonWidget instanceof OptionButtonWidget) || ((OptionButtonWidget)abstractButtonWidget).getOption() != option) continue;
+                return abstractButtonWidget;
+            }
+        }
+        return null;
     }
 
     public Optional<AbstractButtonWidget> getHoveredButton(double mouseX, double mouseY) {

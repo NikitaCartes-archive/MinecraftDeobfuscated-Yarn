@@ -241,9 +241,9 @@ public interface DispenserBehavior {
             @Override
             protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                List<HorseBaseEntity> list = pointer.getWorld().getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntity -> horseBaseEntity.isAlive() && horseBaseEntity.canEquip());
+                List<HorseBaseEntity> list = pointer.getWorld().getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntity -> horseBaseEntity.isAlive() && horseBaseEntity.hasArmorSlot());
                 for (HorseBaseEntity horseBaseEntity2 : list) {
-                    if (!horseBaseEntity2.canEquip(stack) || horseBaseEntity2.setSaddled() || !horseBaseEntity2.isTame()) continue;
+                    if (!horseBaseEntity2.isHorseArmor(stack) || horseBaseEntity2.hasArmorInSlot() || !horseBaseEntity2.isTame()) continue;
                     horseBaseEntity2.equip(401, stack.split(1));
                     this.setSuccess(true);
                     return stack;

@@ -19,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
@@ -120,7 +121,7 @@ extends PlayerEntity {
             g = g > 1.0f ? 1.0f : (g *= g);
             f *= 1.0f - g * 0.15f;
         }
-        return f;
+        return MathHelper.lerp(MinecraftClient.getInstance().options.fovEffectScale, 1.0f, f);
     }
 }
 

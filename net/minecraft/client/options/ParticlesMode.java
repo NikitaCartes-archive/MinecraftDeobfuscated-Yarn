@@ -10,16 +10,16 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public enum ParticlesOption {
+public enum ParticlesMode {
     ALL(0, "options.particles.all"),
     DECREASED(1, "options.particles.decreased"),
     MINIMAL(2, "options.particles.minimal");
 
-    private static final ParticlesOption[] VALUES;
+    private static final ParticlesMode[] VALUES;
     private final int id;
     private final String translationKey;
 
-    private ParticlesOption(int id, String translationKey) {
+    private ParticlesMode(int id, String translationKey) {
         this.id = id;
         this.translationKey = translationKey;
     }
@@ -32,12 +32,12 @@ public enum ParticlesOption {
         return this.id;
     }
 
-    public static ParticlesOption byId(int id) {
+    public static ParticlesMode byId(int id) {
         return VALUES[MathHelper.floorMod(id, VALUES.length)];
     }
 
     static {
-        VALUES = (ParticlesOption[])Arrays.stream(ParticlesOption.values()).sorted(Comparator.comparingInt(ParticlesOption::getId)).toArray(ParticlesOption[]::new);
+        VALUES = (ParticlesMode[])Arrays.stream(ParticlesMode.values()).sorted(Comparator.comparingInt(ParticlesMode::getId)).toArray(ParticlesMode[]::new);
     }
 }
 

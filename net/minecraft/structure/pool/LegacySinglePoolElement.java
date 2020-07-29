@@ -3,7 +3,6 @@
  */
 package net.minecraft.structure.pool;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,7 +13,7 @@ import net.minecraft.structure.pool.SinglePoolElement;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
-import net.minecraft.structure.processor.StructureProcessor;
+import net.minecraft.structure.processor.ProcessorList;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -23,7 +22,7 @@ public class LegacySinglePoolElement
 extends SinglePoolElement {
     public static final Codec<LegacySinglePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(LegacySinglePoolElement.method_28882(), LegacySinglePoolElement.method_28880(), LegacySinglePoolElement.method_28883()).apply(instance, LegacySinglePoolElement::new));
 
-    protected LegacySinglePoolElement(Either<Identifier, Structure> either, Supplier<ImmutableList<StructureProcessor>> supplier, StructurePool.Projection projection) {
+    protected LegacySinglePoolElement(Either<Identifier, Structure> either, Supplier<ProcessorList> supplier, StructurePool.Projection projection) {
         super(either, supplier, projection);
     }
 

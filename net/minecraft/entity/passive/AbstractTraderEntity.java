@@ -30,6 +30,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.Trader;
@@ -254,6 +256,14 @@ Trader {
             if (tradeOffer == null) continue;
             recipeList.add(tradeOffer);
         }
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public Vec3d method_30951(float f) {
+        float g = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * ((float)Math.PI / 180);
+        Vec3d vec3d = new Vec3d(0.0, this.getBoundingBox().getYLength() - 1.0, 0.2);
+        return this.method_30950(f).add(vec3d.rotateY(-g));
     }
 }
 

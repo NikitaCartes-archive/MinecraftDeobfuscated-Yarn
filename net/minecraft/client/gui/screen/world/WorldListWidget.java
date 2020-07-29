@@ -186,7 +186,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             Text text = this.level.method_27429();
             this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
             this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + 3), 0x808080);
-            this.client.textRenderer.method_30883(matrices, text, x + 32 + 3, y + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3, 0x808080);
+            this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3), 0x808080);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : UNKNOWN_SERVER_LOCATION);
             RenderSystem.enableBlend();
@@ -210,12 +210,12 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     if (this.level.isFutureLevel()) {
                         DrawableHelper.drawTexture(matrices, x, y, 96.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            this.screen.setTooltip(ImmutableList.of(field_26606.method_30937(), field_26607.method_30937()));
+                            this.screen.setTooltip(ImmutableList.of(field_26606.asOrderedText(), field_26607.asOrderedText()));
                         }
                     } else if (!SharedConstants.getGameVersion().isStable()) {
                         DrawableHelper.drawTexture(matrices, x, y, 64.0f, j, 32, 32, 256, 256);
                         if (bl) {
-                            this.screen.setTooltip(ImmutableList.of(field_26608.method_30937(), field_26609.method_30937()));
+                            this.screen.setTooltip(ImmutableList.of(field_26608.asOrderedText(), field_26609.asOrderedText()));
                         }
                     }
                 } else {

@@ -928,7 +928,7 @@ AutoCloseable {
         long l = 0L;
         float f = 0.0f;
         if (this.isChunkLoaded(pos)) {
-            f = this.method_30272();
+            f = this.getMoonSize();
             l = this.getWorldChunk(pos).getInhabitedTime();
         }
         return new LocalDifficulty(this.getDifficulty(), this.getTimeOfDay(), l, f);

@@ -72,7 +72,8 @@ extends ScreenHandler {
                 if (!itemStack.isEmpty()) {
                     StonecutterScreenHandler.this.populateResult();
                 }
-                stack.getItem().onCraft(stack, player.world, player);
+                stack.onCraft(player.world, player, stack.getCount());
+                StonecutterScreenHandler.this.output.unlockLastRecipe(player);
                 context.run((world, blockPos) -> {
                     long l = world.getTime();
                     if (StonecutterScreenHandler.this.lastTakeTime != l) {
@@ -153,6 +154,7 @@ extends ScreenHandler {
     private void populateResult() {
         if (!this.availableRecipes.isEmpty() && this.method_30160(this.selectedRecipe.get())) {
             StonecuttingRecipe stonecuttingRecipe = this.availableRecipes.get(this.selectedRecipe.get());
+            this.output.setLastRecipe(stonecuttingRecipe);
             this.outputSlot.setStack(stonecuttingRecipe.craft(this.input));
         } else {
             this.outputSlot.setStack(ItemStack.EMPTY);

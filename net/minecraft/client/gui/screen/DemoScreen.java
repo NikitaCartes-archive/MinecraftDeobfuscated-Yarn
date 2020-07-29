@@ -57,7 +57,7 @@ extends Screen {
         this.renderBackground(matrices);
         int i = (this.width - 248) / 2 + 10;
         int j = (this.height - 166) / 2 + 8;
-        this.textRenderer.method_30883(matrices, this.title, i, j, 0x1F1F1F);
+        this.textRenderer.draw(matrices, this.title, (float)i, (float)j, 0x1F1F1F);
         j = this.field_26538.method_30896(matrices, i, j + 12, 12, 0x4F4F4F);
         this.field_26539.method_30896(matrices, i, j + 20, this.textRenderer.fontHeight, 0x1F1F1F);
         super.render(matrices, mouseX, mouseY, delta);

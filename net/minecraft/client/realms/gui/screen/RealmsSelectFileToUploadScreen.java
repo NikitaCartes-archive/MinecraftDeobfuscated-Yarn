@@ -84,7 +84,7 @@ extends RealmsScreen {
             this.loadLevelList();
         } catch (Exception exception) {
             LOGGER.error("Couldn't load level list", (Throwable)exception);
-            this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.method_30163(exception.getMessage()), this.parent));
+            this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.of(exception.getMessage()), this.parent));
             return;
         }
         this.addChild(this.worldSelectionList);
@@ -176,7 +176,7 @@ extends RealmsScreen {
             String string = this.field_26509.isEmpty() ? worldLang + " " + (i + 1) : this.field_26509;
             RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, string, (float)(j + 2), (float)(k + 1), 0xFFFFFF);
             RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, this.field_26510, (float)(j + 2), (float)(k + 12), 0x808080);
-            RealmsSelectFileToUploadScreen.this.textRenderer.method_30883(matrixStack, this.field_26511, j + 2, k + 12 + 10, 0x808080);
+            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, this.field_26511, (float)(j + 2), (float)(k + 12 + 10), 0x808080);
         }
     }
 

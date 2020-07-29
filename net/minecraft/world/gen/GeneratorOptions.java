@@ -34,7 +34,7 @@ import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
@@ -82,7 +82,7 @@ public class GeneratorOptions {
     }
 
     public static NoiseChunkGenerator createOverworldGenerator(long seed) {
-        return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorType.field_26355);
+        return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorSettings.OVERWORLD);
     }
 
     public long getSeed() {
@@ -106,13 +106,10 @@ public class GeneratorOptions {
     public static SimpleRegistry<DimensionOptions> method_29962(SimpleRegistry<DimensionOptions> simpleRegistry, Supplier<DimensionType> supplier, ChunkGenerator chunkGenerator) {
         SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
         simpleRegistry2.add(DimensionOptions.OVERWORLD, new DimensionOptions(supplier, chunkGenerator));
-        simpleRegistry2.markLoaded(DimensionOptions.OVERWORLD);
         for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
             RegistryKey<DimensionOptions> registryKey = entry.getKey();
             if (registryKey == DimensionOptions.OVERWORLD) continue;
             simpleRegistry2.add(registryKey, entry.getValue());
-            if (!simpleRegistry.isLoaded(registryKey)) continue;
-            simpleRegistry2.markLoaded(registryKey);
         }
         return simpleRegistry2;
     }
@@ -198,10 +195,10 @@ public class GeneratorOptions {
                 return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, DebugChunkGenerator.INSTANCE));
             }
             case "amplified": {
-                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false), l, () -> ChunkGeneratorType.field_26356)));
+                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false), l, () -> ChunkGeneratorSettings.AMPLIFIED)));
             }
             case "largebiomes": {
-                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true), l, () -> ChunkGeneratorType.field_26355)));
+                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true), l, () -> ChunkGeneratorSettings.OVERWORLD)));
             }
         }
         return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(simpleRegistry, GeneratorOptions.createOverworldGenerator(l)));
@@ -217,8 +214,6 @@ public class GeneratorOptions {
             for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : this.options.getEntries()) {
                 RegistryKey<DimensionOptions> registryKey = entry.getKey();
                 simpleRegistry.add(registryKey, new DimensionOptions(entry.getValue().getDimensionTypeSupplier(), entry.getValue().getChunkGenerator().withSeed(m)));
-                if (!this.options.isLoaded(registryKey)) continue;
-                simpleRegistry.markLoaded(registryKey);
             }
         } else {
             simpleRegistry = this.options;

@@ -4,20 +4,14 @@
 package net.minecraft.util.registry;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.UnboundedMapCodec;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
@@ -31,12 +25,13 @@ import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A manager of dynamic registries. It allows users to access non-hardcoded
@@ -54,15 +49,15 @@ public interface DynamicRegistryManager {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final Map<RegistryKey<? extends Registry<?>>, Info<?>> INFOS = Util.make(() -> {
         ImmutableMap.Builder<RegistryKey<Registry<?>>, Info<?>> builder = ImmutableMap.builder();
-        DynamicRegistryManager.register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, true);
-        DynamicRegistryManager.register(builder, Registry.BIOME_KEY, Biome.CODEC, true);
-        DynamicRegistryManager.register(builder, Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, ConfiguredSurfaceBuilder.field_25878, false);
-        DynamicRegistryManager.register(builder, Registry.CONFIGURED_CARVER_WORLDGEN, ConfiguredCarver.field_25832, false);
-        DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeature.field_25833, false);
-        DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, ConfiguredStructureFeature.CODEC, false);
-        DynamicRegistryManager.register(builder, Registry.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.PROCESSORS, false);
-        DynamicRegistryManager.register(builder, Registry.TEMPLATE_POOL_WORLDGEN, StructurePool.CODEC, false);
-        DynamicRegistryManager.register(builder, Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorType.field_24780, false);
+        DynamicRegistryManager.method_31060(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
+        DynamicRegistryManager.method_31060(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
+        DynamicRegistryManager.register(builder, Registry.CONFIGURED_SURFACE_BUILDER_WORLDGEN, ConfiguredSurfaceBuilder.field_25878);
+        DynamicRegistryManager.register(builder, Registry.CONFIGURED_CARVER_WORLDGEN, ConfiguredCarver.field_25832);
+        DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeature.field_25833);
+        DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, ConfiguredStructureFeature.CODEC);
+        DynamicRegistryManager.register(builder, Registry.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.field_25876);
+        DynamicRegistryManager.register(builder, Registry.TEMPLATE_POOL_WORLDGEN, StructurePool.CODEC);
+        DynamicRegistryManager.register(builder, Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings.field_24780);
         return builder.build();
     });
 
@@ -85,8 +80,12 @@ public interface DynamicRegistryManager {
         return this.get(Registry.DIMENSION_TYPE_KEY);
     }
 
-    public static <E> ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, Info<?>> register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, Info<?>> infosBuilder, RegistryKey<? extends Registry<E>> registryRef, MapCodec<E> elementCodec, boolean synced) {
-        return infosBuilder.put(registryRef, new Info<E>(registryRef, elementCodec, synced));
+    public static <E> void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, Info<?>> infosBuilder, RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec) {
+        infosBuilder.put(registryRef, new Info<E>(registryRef, codec, null));
+    }
+
+    public static <E> void method_31060(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, Info<?>> builder, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, Codec<E> codec2) {
+        builder.put(registryKey, new Info<E>(registryKey, codec, codec2));
     }
 
     /**
@@ -126,14 +125,10 @@ public interface DynamicRegistryManager {
     /**
      * Loads a dynamic registry manager from the resource manager's data files.
      */
-    @Environment(value=EnvType.CLIENT)
-    public static Impl load(ResourceManager resourceManager) {
-        Impl impl = DynamicRegistryManager.create();
-        RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, resourceManager, impl);
+    public static void load(Impl impl, RegistryOps<?> registryOps) {
         for (Info<?> info : INFOS.values()) {
             DynamicRegistryManager.load(registryOps, impl, info);
         }
-        return impl;
     }
 
     /**
@@ -141,8 +136,7 @@ public interface DynamicRegistryManager {
      * info} within the {@code manager}. Note that the resource manager instance
      * is kept within the {@code ops}.
      */
-    @Environment(value=EnvType.CLIENT)
-    public static <E> void load(RegistryOps<JsonElement> ops, Impl manager, Info<E> info) {
+    public static <E> void load(RegistryOps<?> ops, Impl manager, Info<E> info) {
         RegistryKey registryKey = info.getRegistry();
         SimpleRegistry simpleRegistry2 = Optional.ofNullable(manager.registries.get(registryKey)).map(simpleRegistry -> simpleRegistry).orElseThrow(() -> new IllegalStateException("Missing registry: " + registryKey));
         DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry2, info.getRegistry(), info.getElementCodec());
@@ -156,7 +150,7 @@ public interface DynamicRegistryManager {
 
         private static <E> Codec<Impl> setupCodec() {
             Codec<RegistryKey> codec = Identifier.CODEC.xmap(RegistryKey::ofRegistry, RegistryKey::getValue);
-            Codec<SimpleRegistry> codec2 = codec.partialDispatch("type", simpleRegistry -> DataResult.success(simpleRegistry.getKey()), registryKey -> Impl.getDataResultForCodec(registryKey).map(mapCodec -> SimpleRegistry.method_29098(registryKey, Lifecycle.experimental(), mapCodec)));
+            Codec<SimpleRegistry> codec2 = codec.partialDispatch("type", simpleRegistry -> DataResult.success(simpleRegistry.getKey()), registryKey -> Impl.getDataResultForCodec(registryKey).map(codec -> SimpleRegistry.method_29098(registryKey, Lifecycle.experimental(), codec)));
             UnboundedMapCodec<RegistryKey, SimpleRegistry> unboundedMapCodec = Codec.unboundedMap(codec, codec2);
             return Impl.fromRegistryCodecs(unboundedMapCodec);
         }
@@ -165,8 +159,8 @@ public interface DynamicRegistryManager {
             return unboundedMapCodec.xmap(Impl::new, impl -> impl.registries.entrySet().stream().filter(entry -> ((Info)INFOS.get(entry.getKey())).isSynced()).collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue)));
         }
 
-        private static <E> DataResult<? extends MapCodec<E>> getDataResultForCodec(RegistryKey<? extends Registry<E>> registryRef) {
-            return Optional.ofNullable(INFOS.get(registryRef)).map(info -> DataResult.success(info.getElementCodec())).orElseGet(() -> DataResult.error("Unknown registry: " + registryRef));
+        private static <E> DataResult<? extends Codec<E>> getDataResultForCodec(RegistryKey<? extends Registry<E>> registryRef) {
+            return Optional.ofNullable(INFOS.get(registryRef)).map(info -> info.method_31061()).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown or not serializable registry: " + registryRef));
         }
 
         public Impl() {
@@ -189,26 +183,31 @@ public interface DynamicRegistryManager {
 
     public static final class Info<E> {
         private final RegistryKey<? extends Registry<E>> registry;
-        private final MapCodec<E> elementCodec;
-        private final boolean synced;
+        private final Codec<E> elementCodec;
+        @Nullable
+        private final Codec<E> field_26687;
 
-        public Info(RegistryKey<? extends Registry<E>> registry, MapCodec<E> elementCodec, boolean synced) {
+        public Info(RegistryKey<? extends Registry<E>> registry, Codec<E> codec, @Nullable Codec<E> codec2) {
             this.registry = registry;
-            this.elementCodec = elementCodec;
-            this.synced = synced;
+            this.elementCodec = codec;
+            this.field_26687 = codec2;
         }
 
-        @Environment(value=EnvType.CLIENT)
         public RegistryKey<? extends Registry<E>> getRegistry() {
             return this.registry;
         }
 
-        public MapCodec<E> getElementCodec() {
+        public Codec<E> getElementCodec() {
             return this.elementCodec;
         }
 
+        @Nullable
+        public Codec<E> method_31061() {
+            return this.field_26687;
+        }
+
         public boolean isSynced() {
-            return this.synced;
+            return this.field_26687 != null;
         }
     }
 }

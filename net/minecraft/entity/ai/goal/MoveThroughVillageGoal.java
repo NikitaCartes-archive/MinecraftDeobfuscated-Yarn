@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.class_5493;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
@@ -40,14 +41,14 @@ extends Goal {
         this.distance = distance;
         this.doorPassingThroughGetter = doorPassingThroughGetter;
         this.setControls(EnumSet.of(Goal.Control.MOVE));
-        if (!this.method_30147()) {
+        if (!class_5493.method_30955(pathAwareEntity)) {
             throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
         }
     }
 
     @Override
     public boolean canStart() {
-        if (!this.method_30147()) {
+        if (!class_5493.method_30955(this.mob)) {
             return false;
         }
         this.forgetOldTarget();
@@ -136,10 +137,6 @@ extends Goal {
         if (this.visitedTargets.size() > 15) {
             this.visitedTargets.remove(0);
         }
-    }
-
-    private boolean method_30147() {
-        return this.mob.getNavigation() instanceof MobNavigation;
     }
 }
 

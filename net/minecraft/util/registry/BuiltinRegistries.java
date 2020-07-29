@@ -3,15 +3,14 @@
  */
 package net.minecraft.util.registry;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.TemplatePools;
+import net.minecraft.structure.processor.ProcessorList;
 import net.minecraft.structure.processor.ProcessorLists;
-import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -21,7 +20,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
@@ -44,10 +43,10 @@ public class BuiltinRegistries {
     public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = BuiltinRegistries.addRegistry(Registry.CONFIGURED_CARVER_WORLDGEN, () -> ConfiguredCarvers.CAVE);
     public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = BuiltinRegistries.addRegistry(Registry.CONFIGURED_FEATURE_WORLDGEN, () -> ConfiguredFeatures.OAK);
     public static final Registry<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE = BuiltinRegistries.addRegistry(Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, () -> ConfiguredStructureFeatures.MINESHAFT);
-    public static final Registry<ImmutableList<StructureProcessor>> PROCESSOR_LIST = BuiltinRegistries.addRegistry(Registry.PROCESSOR_LIST_WORLDGEN, () -> ProcessorLists.ZOMBIE_PLAINS);
+    public static final Registry<ProcessorList> PROCESSOR_LIST = BuiltinRegistries.addRegistry(Registry.PROCESSOR_LIST_WORLDGEN, () -> ProcessorLists.ZOMBIE_PLAINS);
     public static final Registry<StructurePool> TEMPLATE_POOL = BuiltinRegistries.addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, () -> TemplatePools.EMPTY);
     public static final Registry<Biome> BIOME = BuiltinRegistries.addRegistry(Registry.BIOME_KEY, () -> Biomes.DEFAULT);
-    public static final Registry<ChunkGeneratorType> field_26375 = BuiltinRegistries.addRegistry(Registry.NOISE_SETTINGS_WORLDGEN, () -> ChunkGeneratorType.field_26355);
+    public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = BuiltinRegistries.addRegistry(Registry.NOISE_SETTINGS_WORLDGEN, () -> ChunkGeneratorSettings.OVERWORLD);
 
     private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<T> defaultValueSupplier) {
         return BuiltinRegistries.addRegistry(registryRef, Lifecycle.experimental(), defaultValueSupplier);

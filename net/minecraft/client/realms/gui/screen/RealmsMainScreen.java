@@ -785,7 +785,7 @@ extends RealmsScreen {
             Text text = m == 0 ? field_26447 : field_26448;
             int q = this.textRenderer.getWidth(text);
             this.fillGradient(matrixStack, o - 3, p - 3, o + q + 3, p + 8 + 3, -1073741824, -1073741824);
-            this.textRenderer.method_30881(matrixStack, text, o, p, -1);
+            this.textRenderer.drawWithShadow(matrixStack, text, (float)o, (float)p, -1);
         }
     }
 
@@ -923,7 +923,7 @@ extends RealmsScreen {
         for (Text text2 : list) {
             int p = o - (k == 0 ? 3 : 0) + k;
             this.fillGradient(matrixStack, n - 3, p, n + l + 3, o + 8 + 3 + k, -1073741824, -1073741824);
-            this.textRenderer.method_30881(matrixStack, text2, n, o + k, 0xFFFFFF);
+            this.textRenderer.drawWithShadow(matrixStack, text2, (float)n, (float)(o + k), 0xFFFFFF);
             k += 10;
         }
     }
@@ -1182,13 +1182,13 @@ extends RealmsScreen {
                 RenderSystem.disableBlend();
                 int t = j + 11 + 5;
                 int u = bl ? 0xFFFFA0 : 0xFFFFFF;
-                RealmsMainScreen.this.textRenderer.method_30883(matrixStack, text, i + 2, t + 1, 15553363);
+                RealmsMainScreen.this.textRenderer.draw(matrixStack, text, (float)(i + 2), (float)(t + 1), 15553363);
                 DrawableHelper.drawCenteredText(matrixStack, RealmsMainScreen.this.textRenderer, text2, q + o / 2, t + 1, u);
             } else {
                 if (serverData.worldType == RealmsServer.WorldType.MINIGAME) {
                     int v = 0xCCAC5C;
                     int w = RealmsMainScreen.this.textRenderer.getWidth(field_26455);
-                    RealmsMainScreen.this.textRenderer.method_30883(matrixStack, field_26455, i + 2, j + 12, 0xCCAC5C);
+                    RealmsMainScreen.this.textRenderer.draw(matrixStack, field_26455, (float)(i + 2), (float)(j + 12), 0xCCAC5C);
                     RealmsMainScreen.this.textRenderer.draw(matrixStack, serverData.getMinigameName(), (float)(i + 2 + w), (float)(j + 12), 0x6C6C6C);
                 } else {
                     RealmsMainScreen.this.textRenderer.draw(matrixStack, serverData.getDescription(), (float)(i + 2), (float)(j + 12), 0x6C6C6C);

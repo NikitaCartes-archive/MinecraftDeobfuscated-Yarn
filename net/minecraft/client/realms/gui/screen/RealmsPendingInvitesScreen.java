@@ -170,7 +170,7 @@ extends RealmsScreen {
         int l = j - 12;
         int m = this.textRenderer.getWidth(text);
         this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.method_30881(matrixStack, text, k, l, 0xFFFFFF);
+        this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 0xFFFFFF);
     }
 
     private void updateButtonStates() {

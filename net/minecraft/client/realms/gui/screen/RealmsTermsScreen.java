@@ -89,14 +89,14 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         RealmsTermsScreen.drawCenteredText(matrices, this.textRenderer, field_26523, this.width / 2, 17, 0xFFFFFF);
-        this.textRenderer.method_30883(matrices, field_26524, this.width / 2 - 120, RealmsTermsScreen.row(5), 0xFFFFFF);
+        this.textRenderer.draw(matrices, field_26524, (float)(this.width / 2 - 120), (float)RealmsTermsScreen.row(5), 0xFFFFFF);
         int i = this.textRenderer.getWidth(field_26524);
         int j = this.width / 2 - 121 + i;
         int k = RealmsTermsScreen.row(5);
         int l = j + this.textRenderer.getWidth(field_26525) + 1;
         int m = k + 1 + this.textRenderer.fontHeight;
         this.onLink = j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m;
-        this.textRenderer.method_30883(matrices, field_26525, this.width / 2 - 120 + i, RealmsTermsScreen.row(5), this.onLink ? 7107012 : 0x3366BB);
+        this.textRenderer.draw(matrices, field_26525, (float)(this.width / 2 - 120 + i), (float)RealmsTermsScreen.row(5), this.onLink ? 7107012 : 0x3366BB);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

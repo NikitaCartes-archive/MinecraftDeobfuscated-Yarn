@@ -12,35 +12,35 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public enum NarratorOption {
+public enum NarratorMode {
     OFF(0, "options.narrator.off"),
     ALL(1, "options.narrator.all"),
     CHAT(2, "options.narrator.chat"),
     SYSTEM(3, "options.narrator.system");
 
-    private static final NarratorOption[] VALUES;
+    private static final NarratorMode[] VALUES;
     private final int id;
-    private final Text translationKey;
+    private final Text name;
 
-    private NarratorOption(int id, String translationKey) {
+    private NarratorMode(int id, String name) {
         this.id = id;
-        this.translationKey = new TranslatableText(translationKey);
+        this.name = new TranslatableText(name);
     }
 
     public int getId() {
         return this.id;
     }
 
-    public Text getTranslationKey() {
-        return this.translationKey;
+    public Text getName() {
+        return this.name;
     }
 
-    public static NarratorOption byId(int id) {
+    public static NarratorMode byId(int id) {
         return VALUES[MathHelper.floorMod(id, VALUES.length)];
     }
 
     static {
-        VALUES = (NarratorOption[])Arrays.stream(NarratorOption.values()).sorted(Comparator.comparingInt(NarratorOption::getId)).toArray(NarratorOption[]::new);
+        VALUES = (NarratorMode[])Arrays.stream(NarratorMode.values()).sorted(Comparator.comparingInt(NarratorMode::getId)).toArray(NarratorMode[]::new);
     }
 }
 

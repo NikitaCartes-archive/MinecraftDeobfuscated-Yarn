@@ -25,14 +25,14 @@ import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.NbtText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.ScoreText;
 import net.minecraft.text.SelectorText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -55,7 +55,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Text
 extends Message,
-StringRenderable {
+StringVisitable {
     /**
      * Returns the style of this text.
      */
@@ -68,7 +68,7 @@ StringRenderable {
 
     @Override
     default public String getString() {
-        return StringRenderable.super.getString();
+        return StringVisitable.super.getString();
     }
 
     /**
@@ -108,11 +108,11 @@ StringRenderable {
     public MutableText shallowCopy();
 
     @Environment(value=EnvType.CLIENT)
-    public class_5481 method_30937();
+    public OrderedText asOrderedText();
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    default public <T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style) {
+    default public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
         Style style2 = this.getStyle().withParent(style);
         Optional<T> optional = this.visitSelf(styledVisitor, style2);
         if (optional.isPresent()) {
@@ -127,7 +127,7 @@ StringRenderable {
     }
 
     @Override
-    default public <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
+    default public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
         Optional<T> optional = this.visitSelf(visitor);
         if (optional.isPresent()) {
             return optional;
@@ -150,7 +150,7 @@ StringRenderable {
      * @param style the current style
      */
     @Environment(value=EnvType.CLIENT)
-    default public <T> Optional<T> visitSelf(StringRenderable.StyledVisitor<T> visitor, Style style) {
+    default public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
         return visitor.accept(style, this.asString());
     }
 
@@ -162,12 +162,15 @@ StringRenderable {
      * 
      * @param visitor the visitor
      */
-    default public <T> Optional<T> visitSelf(StringRenderable.Visitor<T> visitor) {
+    default public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
         return visitor.accept(this.asString());
     }
 
+    /**
+     * Creates a literal text with the given string as content.
+     */
     @Environment(value=EnvType.CLIENT)
-    public static Text method_30163(@Nullable String string) {
+    public static Text of(@Nullable String string) {
         return string != null ? new LiteralText(string) : LiteralText.EMPTY;
     }
 

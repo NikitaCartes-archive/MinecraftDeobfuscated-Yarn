@@ -8,6 +8,7 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.util.math.Vec3d;
@@ -95,6 +96,9 @@ extends Goal {
     @Override
     public void tick() {
         if (!this.llama.isFollowing()) {
+            return;
+        }
+        if (this.llama.getHoldingEntity() instanceof LeashKnotEntity) {
             return;
         }
         LlamaEntity llamaEntity = this.llama.getFollowing();

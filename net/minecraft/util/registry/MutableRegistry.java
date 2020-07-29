@@ -17,6 +17,6 @@ extends Registry<T> {
 
     public abstract <V extends T> V add(RegistryKey<T> var1, V var2);
 
-    public abstract void markLoaded(RegistryKey<T> var1);
+    public abstract <V extends T> V method_31062(RegistryKey<T> var1, V var2);
 }
 

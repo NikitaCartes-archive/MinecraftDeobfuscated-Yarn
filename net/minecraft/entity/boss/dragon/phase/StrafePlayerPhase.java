@@ -10,9 +10,9 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.projectile.DragonFireballEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -120,7 +120,7 @@ extends AbstractPhase {
     private void method_6861() {
         if (this.field_7059 != null && !this.field_7059.isFinished()) {
             double f;
-            Vec3i vec3i = this.field_7059.getCurrentPosition();
+            BlockPos vec3i = this.field_7059.method_31032();
             this.field_7059.next();
             double d = vec3i.getX();
             double e = vec3i.getZ();

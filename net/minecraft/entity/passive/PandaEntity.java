@@ -101,12 +101,12 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean canPickUp(ItemStack stack) {
+    public boolean canEquip(ItemStack stack) {
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
         if (!this.getEquippedStack(equipmentSlot).isEmpty()) {
             return false;
         }
-        return equipmentSlot == EquipmentSlot.MAINHAND && super.canPickUp(stack);
+        return equipmentSlot == EquipmentSlot.MAINHAND && super.canEquip(stack);
     }
 
     public int getAskForBambooTicks() {

@@ -406,7 +406,7 @@ implements StructureWorldAccess {
                 this.spawnEntity(skeletonHorseEntity);
             }
             LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this);
-            lightningEntity.method_29495(Vec3d.ofBottomCenter(blockPos));
+            lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
             lightningEntity.setCosmetic(bl2);
             this.spawnEntity(lightningEntity);
         }
@@ -1068,7 +1068,7 @@ implements StructureWorldAccess {
         return blockPos;
     }
 
-    public float method_30630() {
+    public float getSpawnAngle() {
         return this.properties.getSpawnAngle();
     }
 

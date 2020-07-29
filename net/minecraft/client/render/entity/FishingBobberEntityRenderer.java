@@ -72,7 +72,7 @@ extends EntityRenderer<FishingBobberEntity> {
         double e = MathHelper.cos(l);
         double m = (double)j * 0.35;
         double n = 0.8;
-        if (this.dispatcher.gameOptions != null && this.dispatcher.gameOptions.perspective > 0 || playerEntity != MinecraftClient.getInstance().player) {
+        if (this.dispatcher.gameOptions != null && !this.dispatcher.gameOptions.getPerspective().isFirstPerson() || playerEntity != MinecraftClient.getInstance().player) {
             o = MathHelper.lerp((double)g, playerEntity.prevX, playerEntity.getX()) - e * m - d * 0.8;
             p = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.getY() - playerEntity.prevY) * (double)g - 0.45;
             q = MathHelper.lerp((double)g, playerEntity.prevZ, playerEntity.getZ()) - d * m + e * 0.8;

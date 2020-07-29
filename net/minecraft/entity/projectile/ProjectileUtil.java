@@ -26,13 +26,13 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public final class ProjectileUtil {
-    public static HitResult getCollision(Entity entity, Predicate<Entity> predicate, RayTraceContext.ShapeType shapeType) {
+    public static HitResult getCollision(Entity entity, Predicate<Entity> predicate) {
         EntityHitResult hitResult2;
         Vec3d vec3d3;
         Vec3d vec3d = entity.getVelocity();
         World world = entity.world;
         Vec3d vec3d2 = entity.getPos();
-        HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3 = vec3d2.add(vec3d), shapeType, RayTraceContext.FluidHandling.NONE, entity));
+        HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3 = vec3d2.add(vec3d), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, entity));
         if (((HitResult)hitResult).getType() != HitResult.Type.MISS) {
             vec3d3 = hitResult.getPos();
         }

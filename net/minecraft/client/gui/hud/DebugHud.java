@@ -242,7 +242,7 @@ extends DrawableHelper {
                         long l = 0L;
                         float h = 0.0f;
                         if (worldChunk2 != null) {
-                            h = world.method_30272();
+                            h = world.getMoonSize();
                             l = worldChunk2.getInhabitedTime();
                         }
                         LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);

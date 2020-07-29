@@ -12,18 +12,18 @@ import net.minecraft.text.Style;
 import net.minecraft.util.Unit;
 
 /**
- * An object that can supply strings to a visitor, with or without a style
- * context, for rendering the strings.
+ * An object that can supply strings to a visitor,
+ * with or without a style context.
  */
-public interface StringRenderable {
+public interface StringVisitable {
     /**
      * Convenience object indicating the termination of a string visit.
      */
     public static final Optional<Unit> TERMINATE_VISIT = Optional.of(Unit.INSTANCE);
     /**
-     * An empty renderable that does not call the visitors.
+     * An empty visitable that does not call the visitors.
      */
-    public static final StringRenderable EMPTY = new StringRenderable(){
+    public static final StringVisitable EMPTY = new StringVisitable(){
 
         @Override
         public <T> Optional<T> visit(Visitor<T> visitor) {
@@ -38,7 +38,7 @@ public interface StringRenderable {
     };
 
     /**
-     * Supplies this renderable's literal content to the visitor.
+     * Supplies this visitable's literal content to the visitor.
      * 
      * @return {@code Optional.empty()} if the visit finished, or a terminating
      * result from the {@code visitor}
@@ -48,7 +48,7 @@ public interface StringRenderable {
     public <T> Optional<T> visit(Visitor<T> var1);
 
     /**
-     * Supplies this renderable's literal content and contextual style to
+     * Supplies this visitable's literal content and contextual style to
      * the visitor.
      * 
      * @return {@code Optional.empty()} if the visit finished, or a terminating
@@ -61,12 +61,12 @@ public interface StringRenderable {
     public <T> Optional<T> visit(StyledVisitor<T> var1, Style var2);
 
     /**
-     * Creates a renderable from a plain string.
+     * Creates a visitable from a plain string.
      * 
      * @param string the plain string
      */
-    public static StringRenderable plain(final String string) {
-        return new StringRenderable(){
+    public static StringVisitable plain(final String string) {
+        return new StringVisitable(){
 
             @Override
             public <T> Optional<T> visit(Visitor<T> visitor) {
@@ -88,8 +88,8 @@ public interface StringRenderable {
      * @param style the root style
      */
     @Environment(value=EnvType.CLIENT)
-    public static StringRenderable styled(final String string, final Style style) {
-        return new StringRenderable(){
+    public static StringVisitable styled(final String string, final Style style) {
+        return new StringVisitable(){
 
             @Override
             public <T> Optional<T> visit(Visitor<T> visitor) {
@@ -104,28 +104,28 @@ public interface StringRenderable {
     }
 
     /**
-     * Concats multiple string renderables by the order they appear in the array.
+     * Concats multiple string visitables by the order they appear in the array.
      * 
      * @param visitables an array or varargs of visitables
      */
     @Environment(value=EnvType.CLIENT)
-    public static StringRenderable concat(StringRenderable ... visitables) {
-        return StringRenderable.concat(ImmutableList.copyOf(visitables));
+    public static StringVisitable concat(StringVisitable ... visitables) {
+        return StringVisitable.concat(ImmutableList.copyOf(visitables));
     }
 
     /**
-     * Concats multiple string renderables by the order they appear in the list.
+     * Concats multiple string visitables by the order they appear in the list.
      * 
      * @param visitables a list of visitables
      */
     @Environment(value=EnvType.CLIENT)
-    public static StringRenderable concat(final List<StringRenderable> visitables) {
-        return new StringRenderable(){
+    public static StringVisitable concat(final List<StringVisitable> visitables) {
+        return new StringVisitable(){
 
             @Override
             public <T> Optional<T> visit(Visitor<T> visitor) {
-                for (StringRenderable stringRenderable : visitables) {
-                    Optional<T> optional = stringRenderable.visit(visitor);
+                for (StringVisitable stringVisitable : visitables) {
+                    Optional<T> optional = stringVisitable.visit(visitor);
                     if (!optional.isPresent()) continue;
                     return optional;
                 }
@@ -134,8 +134,8 @@ public interface StringRenderable {
 
             @Override
             public <T> Optional<T> visit(StyledVisitor<T> styledVisitor, Style style) {
-                for (StringRenderable stringRenderable : visitables) {
-                    Optional<T> optional = stringRenderable.visit(styledVisitor, style);
+                for (StringVisitable stringVisitable : visitables) {
+                    Optional<T> optional = stringVisitable.visit(styledVisitor, style);
                     if (!optional.isPresent()) continue;
                     return optional;
                 }

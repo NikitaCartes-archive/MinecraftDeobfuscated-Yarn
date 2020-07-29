@@ -428,7 +428,7 @@ implements Angerable {
         }
 
         private boolean canPlaceOn(WorldView world, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos) {
-            return stateAbove.isAir() && !state.isAir() && state.isFullCube(world, pos) && carriedState.canPlaceAt(world, posAbove);
+            return stateAbove.isAir() && !state.isAir() && !state.isOf(Blocks.BEDROCK) && state.isFullCube(world, pos) && carriedState.canPlaceAt(world, posAbove);
         }
     }
 

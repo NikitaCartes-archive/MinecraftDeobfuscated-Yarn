@@ -367,7 +367,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
         if (itemGroup.hasTooltip()) {
             RenderSystem.disableBlend();
-            this.textRenderer.method_30883(matrices, itemGroup.getTranslationKey(), 8.0f, 6.0f, 0x404040);
+            this.textRenderer.draw(matrices, itemGroup.getTranslationKey(), 8.0f, 6.0f, 0x404040);
         }
     }
 

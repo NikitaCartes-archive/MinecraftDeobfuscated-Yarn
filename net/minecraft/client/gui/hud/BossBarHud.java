@@ -45,7 +45,7 @@ extends DrawableHelper {
             int m = this.client.textRenderer.getWidth(text);
             int n = i / 2 - m / 2;
             int o = l - 9;
-            this.client.textRenderer.method_30881(matrices, text, n, o, 0xFFFFFF);
+            this.client.textRenderer.drawWithShadow(matrices, text, (float)n, (float)o, 0xFFFFFF);
             if ((j += 10 + this.client.textRenderer.fontHeight) < this.client.getWindow().getScaledHeight() / 3) continue;
             break;
         }

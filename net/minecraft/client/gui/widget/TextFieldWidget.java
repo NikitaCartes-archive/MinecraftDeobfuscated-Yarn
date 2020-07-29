@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
@@ -25,6 +24,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -53,7 +53,7 @@ Element {
     private String suggestion;
     private Consumer<String> changedListener;
     private Predicate<String> textPredicate = Objects::nonNull;
-    private BiFunction<String, Integer, class_5481> renderTextProvider = (string, integer) -> class_5481.method_30747(string, Style.EMPTY);
+    private BiFunction<String, Integer, OrderedText> renderTextProvider = (string, integer) -> OrderedText.styledString(string, Style.EMPTY);
 
     public TextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
         this(textRenderer, x, y, width, height, null, text);
@@ -71,7 +71,7 @@ Element {
         this.changedListener = changedListener;
     }
 
-    public void setRenderTextProvider(BiFunction<String, Integer, class_5481> renderTextProvider) {
+    public void setRenderTextProvider(BiFunction<String, Integer, OrderedText> renderTextProvider) {
         this.renderTextProvider = renderTextProvider;
     }
 

@@ -207,9 +207,9 @@ extends RealmsScreen {
         tessellator.draw();
         this.titleLabel.render(this, matrices);
         if (this.serverData != null && this.serverData.players != null) {
-            this.textRenderer.method_30883(matrices, new LiteralText("").append(field_26501).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"), this.column1_x, RealmsPlayerScreen.row(0), 0xA0A0A0);
+            this.textRenderer.draw(matrices, new LiteralText("").append(field_26501).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"), (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
         } else {
-            this.textRenderer.method_30883(matrices, field_26501, this.column1_x, RealmsPlayerScreen.row(0), 0xA0A0A0);
+            this.textRenderer.draw(matrices, field_26501, (float)this.column1_x, (float)RealmsPlayerScreen.row(0), 0xA0A0A0);
         }
         super.render(matrices, mouseX, mouseY, delta);
         if (this.serverData == null) {
@@ -226,7 +226,7 @@ extends RealmsScreen {
         int j = mouseY - 12;
         int k = this.textRenderer.getWidth(text);
         this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.method_30881(matrices, text, i, j, 0xFFFFFF);
+        this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, 0xFFFFFF);
     }
 
     private void drawRemoveIcon(MatrixStack matrixStack, int i, int j, int k, int l) {
@@ -288,7 +288,7 @@ extends RealmsScreen {
                 RealmsPlayerScreen.this.drawNormal(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 10, y + 1, mouseX, mouseY);
             }
             RealmsPlayerScreen.this.drawRemoveIcon(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, y + 2, mouseX, mouseY);
-            RealmsPlayerScreen.this.textRenderer.method_30883(matrices, field_26497, RealmsPlayerScreen.this.column2_x, RealmsPlayerScreen.row(5), 0xA0A0A0);
+            RealmsPlayerScreen.this.textRenderer.draw(matrices, field_26497, (float)RealmsPlayerScreen.this.column2_x, (float)RealmsPlayerScreen.row(5), 0xA0A0A0);
             RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0f, 8.0f, 8, 8, 64, 64);

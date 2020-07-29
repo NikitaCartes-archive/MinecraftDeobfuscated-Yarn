@@ -3,10 +3,13 @@
  */
 package net.minecraft.block;
 
+import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
@@ -41,12 +44,39 @@ extends AbstractFireBlock {
     public static final BooleanProperty WEST = ConnectingBlock.WEST;
     public static final BooleanProperty UP = ConnectingBlock.UP;
     private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = ConnectingBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(Util.toMap());
+    private static final VoxelShape field_26653 = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape field_26654 = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
+    private static final VoxelShape field_26655 = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape field_26656 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+    private static final VoxelShape field_26657 = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
+    private final Map<BlockState, VoxelShape> field_26658;
     private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<Block>();
     private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<Block>();
 
     public FireBlock(AbstractBlock.Settings settings) {
         super(settings, 1.0f);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(UP, false));
+        this.field_26658 = ImmutableMap.copyOf(this.stateManager.getStates().stream().filter(blockState -> blockState.get(AGE) == 0).collect(Collectors.toMap(Function.identity(), FireBlock::method_31016)));
+    }
+
+    private static VoxelShape method_31016(BlockState blockState) {
+        VoxelShape voxelShape = VoxelShapes.empty();
+        if (blockState.get(UP).booleanValue()) {
+            voxelShape = field_26653;
+        }
+        if (blockState.get(NORTH).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, field_26656);
+        }
+        if (blockState.get(SOUTH).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, field_26657);
+        }
+        if (blockState.get(EAST).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, field_26655);
+        }
+        if (blockState.get(WEST).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, field_26654);
+        }
+        return voxelShape.isEmpty() ? BASE_SHAPE : voxelShape;
     }
 
     @Override
@@ -59,26 +89,7 @@ extends AbstractFireBlock {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        VoxelShape voxelShape = VoxelShapes.empty();
-        if (state.get(UP).booleanValue()) {
-            voxelShape = UP_SHAPE;
-        }
-        if (state.get(WEST).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
-        }
-        if (state.get(EAST).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
-        }
-        if (state.get(NORTH).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
-        }
-        if (state.get(SOUTH).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
-        }
-        if (voxelShape == VoxelShapes.empty()) {
-            return BASE_SHAPE;
-        }
-        return voxelShape;
+        return this.field_26658.get(state.with(AGE, 0));
     }
 
     @Override

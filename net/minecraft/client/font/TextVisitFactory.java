@@ -7,7 +7,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.CharacterVisitor;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Unit;
@@ -186,7 +186,7 @@ public class TextVisitFactory {
      * the {@code visitor} terminated half-way
      * @see StringRenderable#visit(StringRenderable.StyledVisitor, Style)
      */
-    public static boolean visitFormatted(StringRenderable text, Style style2, CharacterVisitor visitor) {
+    public static boolean visitFormatted(StringVisitable text, Style style2, CharacterVisitor visitor) {
         return !text.visit((style, string) -> TextVisitFactory.visitFormatted(string, 0, style, visitor) ? Optional.empty() : VISIT_TERMINATED, style2).isPresent();
     }
 

@@ -26,7 +26,6 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.class_5459;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -48,6 +47,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
@@ -184,7 +184,7 @@ implements ScreenHandlerListener {
     public boolean notInAnyWorld;
 
     public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, ServerPlayerInteractionManager interactionManager) {
-        super(world, world.getSpawnPos(), world.method_30630(), profile);
+        super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
         interactionManager.player = this;
         this.interactionManager = interactionManager;
         this.server = server;
@@ -616,10 +616,10 @@ implements ScreenHandlerListener {
             serverWorld.getProfiler().push("placing");
             this.setWorld(destination);
             destination.onPlayerChangeDimension(this);
-            this.worldChanged(serverWorld);
             this.setRotation(teleportTarget.yaw, teleportTarget.pitch);
             this.refreshPositionAfterTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z);
             serverWorld.getProfiler().pop();
+            this.worldChanged(serverWorld);
             this.interactionManager.setWorld(destination);
             this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
             playerManager.sendWorldInfo(this, destination);

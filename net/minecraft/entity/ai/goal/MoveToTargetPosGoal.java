@@ -69,13 +69,18 @@ extends Goal {
         return 1.0;
     }
 
+    protected BlockPos method_30953() {
+        return this.targetPos.up();
+    }
+
     @Override
     public void tick() {
-        if (!this.targetPos.up().isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
+        BlockPos blockPos = this.method_30953();
+        if (!blockPos.isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
             this.reached = false;
             ++this.tryingTime;
             if (this.shouldResetPath()) {
-                this.mob.getNavigation().startMovingTo((double)this.targetPos.getX() + 0.5, this.targetPos.getY() + 1, (double)this.targetPos.getZ() + 0.5, this.speed);
+                this.mob.getNavigation().startMovingTo((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, this.speed);
             }
         } else {
             this.reached = true;

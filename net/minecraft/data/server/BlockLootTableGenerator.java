@@ -592,12 +592,10 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.WARPED_HYPHAE);
         this.addDrop(Blocks.WARPED_FUNGUS);
         this.addDrop(Blocks.WARPED_WART_BLOCK);
-        this.addDrop(Blocks.WARPED_ROOTS);
         this.addDrop(Blocks.CRIMSON_STEM);
         this.addDrop(Blocks.CRIMSON_HYPHAE);
         this.addDrop(Blocks.CRIMSON_FUNGUS);
         this.addDrop(Blocks.SHROOMLIGHT);
-        this.addDrop(Blocks.CRIMSON_ROOTS);
         this.addDrop(Blocks.CRIMSON_PLANKS);
         this.addDrop(Blocks.WARPED_PLANKS);
         this.addDrop(Blocks.WARPED_PRESSURE_PLATE);
@@ -844,6 +842,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.TALL_SEAGRASS, BlockLootTableGenerator.method_30159(Blocks.SEAGRASS));
         this.addDrop(Blocks.LARGE_FERN, (Block block) -> BlockLootTableGenerator.method_30158(block, Blocks.FERN));
         this.addDrop(Blocks.TALL_GRASS, (Block block) -> BlockLootTableGenerator.method_30158(block, Blocks.GRASS));
+        this.addDrop(Blocks.WARPED_ROOTS, BlockLootTableGenerator::dropsWithShears);
+        this.addDrop(Blocks.CRIMSON_ROOTS, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.MELON_STEM, (Block block) -> BlockLootTableGenerator.cropStemDrops(block, Items.MELON_SEEDS));
         this.addDrop(Blocks.ATTACHED_MELON_STEM, (Block block) -> BlockLootTableGenerator.attachedCropStemDrops(block, Items.MELON_SEEDS));
         this.addDrop(Blocks.PUMPKIN_STEM, (Block block) -> BlockLootTableGenerator.cropStemDrops(block, Items.PUMPKIN_SEEDS));

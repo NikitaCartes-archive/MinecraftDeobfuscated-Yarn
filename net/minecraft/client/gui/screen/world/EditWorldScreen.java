@@ -49,9 +49,9 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class EditWorldScreen
 extends Screen {
-    private static final Logger field_23776 = LogManager.getLogger();
-    private static final Gson field_25481 = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
-    private static final Text field_26603 = new TranslatableText("selectWorld.enterName");
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
+    private static final Text ENTER_NAME_TEXT = new TranslatableText("selectWorld.enterName");
     private ButtonWidget saveButton;
     private final BooleanConsumer callback;
     private TextFieldWidget levelNameTextField;
@@ -104,8 +104,8 @@ extends Screen {
                 DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, integratedResourceManager.getSaveProperties().getGeneratorOptions());
                 dataResult2 = dataResult.flatMap(jsonElement -> {
                     Path path = this.field_23777.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
-                    try (JsonWriter jsonWriter = field_25481.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8, new OpenOption[0]));){
-                        field_25481.toJson((JsonElement)jsonElement, jsonWriter);
+                    try (JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8, new OpenOption[0]));){
+                        GSON.toJson((JsonElement)jsonElement, jsonWriter);
                     } catch (JsonIOException | IOException exception) {
                         return DataResult.error("Error writing file: " + exception.getMessage());
                     }
@@ -116,7 +116,7 @@ extends Screen {
             }
             LiteralText text = new LiteralText(dataResult2.get().map(Function.identity(), DataResult.PartialResult::message));
             TranslatableText text2 = new TranslatableText(dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure");
-            dataResult2.error().ifPresent(partialResult -> field_23776.error("Error exporting world settings: {}", partialResult));
+            dataResult2.error().ifPresent(partialResult -> LOGGER.error("Error exporting world settings: {}", partialResult));
             this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
         }));
         this.saveButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), buttonWidget -> this.commit()));
@@ -155,7 +155,7 @@ extends Screen {
             this.field_23777.save(this.levelNameTextField.getText().trim());
             this.callback.accept(true);
         } catch (IOException iOException) {
-            field_23776.error("Failed to access world '{}'", (Object)this.field_23777.getDirectoryName(), (Object)iOException);
+            LOGGER.error("Failed to access world '{}'", (Object)this.field_23777.getDirectoryName(), (Object)iOException);
             SystemToast.addWorldAccessFailureToast(this.client, this.field_23777.getDirectoryName());
             this.callback.accept(true);
         }
@@ -170,7 +170,7 @@ extends Screen {
             if (!bl) {
                 SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), string);
             }
-            field_23776.warn("Failed to create backup of level {}", (Object)string, (Object)iOException);
+            LOGGER.warn("Failed to create backup of level {}", (Object)string, (Object)iOException);
         }
     }
 
@@ -198,7 +198,7 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         EditWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 15, 0xFFFFFF);
-        EditWorldScreen.drawTextWithShadow(matrices, this.textRenderer, field_26603, this.width / 2 - 100, 24, 0xA0A0A0);
+        EditWorldScreen.drawTextWithShadow(matrices, this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 24, 0xA0A0A0);
         this.levelNameTextField.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }

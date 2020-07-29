@@ -55,10 +55,10 @@ extends EntityNavigation {
         }
         if (this.isAtValidPosition()) {
             this.continueFollowingPath();
-        } else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
-            vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
+        } else if (this.currentPath != null && !this.currentPath.isFinished()) {
+            vec3d = this.currentPath.getNodePosition(this.entity);
             if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x) && MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y) && MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {
-                this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
+                this.currentPath.next();
             }
         }
         DebugInfoSender.sendPathfindingData(this.world, this.entity, this.currentPath, this.nodeReachProximity);

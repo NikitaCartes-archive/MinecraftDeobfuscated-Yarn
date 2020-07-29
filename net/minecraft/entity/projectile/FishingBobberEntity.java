@@ -46,7 +46,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -242,7 +241,7 @@ extends ProjectileEntity {
     }
 
     private void checkForCollision() {
-        HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER);
+        HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
         this.onCollision(hitResult);
     }
 

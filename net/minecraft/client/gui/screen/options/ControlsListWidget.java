@@ -98,7 +98,7 @@ extends ElementListWidget<Entry> {
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             boolean bl = ((ControlsListWidget)ControlsListWidget.this).parent.focusedBinding == this.binding;
-            ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.method_30883(matrices, this.bindingName, x + 90 - ControlsListWidget.this.maxKeyNameLength, y + entryHeight / 2 - ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.fontHeight / 2, 0xFFFFFF);
+            ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.draw(matrices, this.bindingName, (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength), (float)(y + entryHeight / 2 - ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.fontHeight / 2), 0xFFFFFF);
             this.resetButton.x = x + 190;
             this.resetButton.y = y;
             this.resetButton.active = !this.binding.isDefault();
@@ -154,7 +154,7 @@ extends ElementListWidget<Entry> {
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.method_30883(matrices, this.text, ((ControlsListWidget)ControlsListWidget.this).client.currentScreen.width / 2 - this.textWidth / 2, y + entryHeight - ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.fontHeight - 1, 0xFFFFFF);
+            ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.draw(matrices, this.text, (float)(((ControlsListWidget)ControlsListWidget.this).client.currentScreen.width / 2 - this.textWidth / 2), (float)(y + entryHeight - ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.fontHeight - 1), 0xFFFFFF);
         }
 
         @Override

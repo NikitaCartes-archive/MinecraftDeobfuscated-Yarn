@@ -175,7 +175,7 @@ extends RealmsScreen {
                 this.addButtons();
             } catch (RealmsServiceException realmsServiceException) {
                 LOGGER.error("Couldn't get own world");
-                this.client.openScreen(new RealmsGenericErrorScreen(Text.method_30163(realmsServiceException.getMessage()), this.parent));
+                this.client.openScreen(new RealmsGenericErrorScreen(Text.of(realmsServiceException.getMessage()), this.parent));
             }
         }).start();
     }

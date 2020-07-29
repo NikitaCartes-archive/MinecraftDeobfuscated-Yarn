@@ -5,6 +5,7 @@ package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -48,6 +49,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -89,10 +91,10 @@ extends Screen {
     private boolean moreOptionsOpen;
     private ButtonWidget createLevelButton;
     private ButtonWidget gameModeSwitchButton;
-    private ButtonWidget field_24286;
+    private ButtonWidget difficultyButton;
     private ButtonWidget moreOptionsButton;
     private ButtonWidget gameRulesButton;
-    private ButtonWidget field_25478;
+    private ButtonWidget dataPacksButton;
     private ButtonWidget enableCheatsButton;
     private Text firstGameModeDescriptionLine;
     private Text secondGameModeDescriptionLine;
@@ -181,9 +183,9 @@ extends Screen {
                 return super.getNarrationMessage().append(". ").append(CreateWorldScreen.this.firstGameModeDescriptionLine).append(" ").append(CreateWorldScreen.this.secondGameModeDescriptionLine);
             }
         });
-        this.field_24286 = this.addButton(new ButtonWidget(j, 100, 150, 20, new TranslatableText("options.difficulty"), buttonWidget -> {
+        this.difficultyButton = this.addButton(new ButtonWidget(j, 100, 150, 20, new TranslatableText("options.difficulty"), button -> {
             this.field_24290 = this.field_24289 = this.field_24289.cycle();
-            buttonWidget.queueNarration(250);
+            button.queueNarration(250);
         }){
 
             @Override
@@ -191,10 +193,10 @@ extends Screen {
                 return new TranslatableText("options.difficulty").append(": ").append(CreateWorldScreen.this.field_24290.getTranslatableName());
             }
         });
-        this.enableCheatsButton = this.addButton(new ButtonWidget(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), buttonWidget -> {
+        this.enableCheatsButton = this.addButton(new ButtonWidget(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), button -> {
             this.tweakedCheats = true;
             this.cheatsEnabled = !this.cheatsEnabled;
-            buttonWidget.queueNarration(250);
+            button.queueNarration(250);
         }){
 
             @Override
@@ -207,8 +209,8 @@ extends Screen {
                 return super.getNarrationMessage().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"));
             }
         });
-        this.field_25478 = this.addButton(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), buttonWidget -> this.method_29694()));
-        this.gameRulesButton = this.addButton(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), buttonWidget -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
+        this.dataPacksButton = this.addButton(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.method_29694()));
+        this.gameRulesButton = this.addButton(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
             this.client.openScreen(this);
             optional.ifPresent(gameRules -> {
                 this.gameRules = gameRules;
@@ -283,13 +285,13 @@ extends Screen {
             this.enableCheatsButton.active = false;
             this.moreOptionsDialog.bonusItemsButton.active = false;
             this.field_24290 = Difficulty.HARD;
-            this.field_24286.active = false;
+            this.difficultyButton.active = false;
         } else {
             this.hardcore = false;
             this.enableCheatsButton.active = true;
             this.moreOptionsDialog.bonusItemsButton.active = true;
             this.field_24290 = this.field_24289;
-            this.field_24286.active = true;
+            this.difficultyButton.active = true;
         }
         this.currentMode = mode;
         this.updateSettingsLabels();
@@ -302,9 +304,9 @@ extends Screen {
     private void setMoreOptionsOpen(boolean moreOptionsOpen) {
         this.moreOptionsOpen = moreOptionsOpen;
         this.gameModeSwitchButton.visible = !this.moreOptionsOpen;
-        boolean bl = this.field_24286.visible = !this.moreOptionsOpen;
+        boolean bl = this.difficultyButton.visible = !this.moreOptionsOpen;
         if (this.moreOptionsDialog.isDebugWorld()) {
-            this.field_25478.visible = false;
+            this.dataPacksButton.visible = false;
             this.gameModeSwitchButton.active = false;
             if (this.lastMode == null) {
                 this.lastMode = this.currentMode;
@@ -317,7 +319,7 @@ extends Screen {
                 this.tweakDefaultsTo(this.lastMode);
             }
             this.enableCheatsButton.visible = !this.moreOptionsOpen;
-            this.field_25478.visible = !this.moreOptionsOpen;
+            this.dataPacksButton.visible = !this.moreOptionsOpen;
         }
         this.moreOptionsDialog.setVisible(this.moreOptionsOpen);
         this.levelNameField.setVisible(!this.moreOptionsOpen);
@@ -437,7 +439,9 @@ extends Screen {
             } else {
                 this.client.send(() -> {
                     this.field_25479 = dataPackSettings;
-                    this.moreOptionsDialog.method_30509(DynamicRegistryManager.load(serverResourceManager.getResourceManager()));
+                    DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+                    RegistryOps.of(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+                    this.moreOptionsDialog.method_30509(impl);
                     serverResourceManager.close();
                     this.client.openScreen(this);
                 });

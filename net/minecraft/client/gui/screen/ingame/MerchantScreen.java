@@ -71,13 +71,13 @@ extends HandledScreen<MerchantScreenHandler> {
             MutableText text = this.title.shallowCopy().append(field_26570).append(new TranslatableText("merchant.level." + i));
             int j = this.textRenderer.getWidth(text);
             int k = 49 + this.backgroundWidth / 2 - j / 2;
-            this.textRenderer.method_30883(matrices, text, k, 6.0f, 0x404040);
+            this.textRenderer.draw(matrices, text, (float)k, 6.0f, 0x404040);
         } else {
-            this.textRenderer.method_30883(matrices, this.title, 49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2, 6.0f, 0x404040);
+            this.textRenderer.draw(matrices, this.title, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0f, 0x404040);
         }
-        this.textRenderer.method_30883(matrices, this.playerInventory.getDisplayName(), this.playerInventoryTitleX, this.playerInventoryTitleY, 0x404040);
+        this.textRenderer.draw(matrices, this.playerInventory.getDisplayName(), (float)this.playerInventoryTitleX, (float)this.playerInventoryTitleY, 0x404040);
         int l = this.textRenderer.getWidth(field_26569);
-        this.textRenderer.method_30883(matrices, field_26569, 5 - l / 2 + 48, 6.0f, 0x404040);
+        this.textRenderer.draw(matrices, field_26569, (float)(5 - l / 2 + 48), 6.0f, 0x404040);
     }
 
     @Override

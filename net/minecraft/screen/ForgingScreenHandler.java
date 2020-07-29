@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class ForgingScreenHandler
 extends ScreenHandler {
-    protected final Inventory output = new CraftingResultInventory();
+    protected final CraftingResultInventory output = new CraftingResultInventory();
     protected final Inventory input = new SimpleInventory(2){
 
         @Override

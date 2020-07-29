@@ -238,9 +238,9 @@ public class StructureTestUtil {
                 blockState = blockStates[pos.getY() - 1];
             }
         } else if (pos.getY() == altitude - 1) {
-            blockState = world.getBiome(pos).getSurfaceConfig().getTopMaterial();
+            blockState = world.getBiome(pos).getGenerationSettings().getSurfaceConfig().getTopMaterial();
         } else if (pos.getY() < altitude - 1) {
-            blockState = world.getBiome(pos).getSurfaceConfig().getUnderMaterial();
+            blockState = world.getBiome(pos).getGenerationSettings().getSurfaceConfig().getUnderMaterial();
         }
         if (blockState == null) {
             blockState = Blocks.AIR.getDefaultState();

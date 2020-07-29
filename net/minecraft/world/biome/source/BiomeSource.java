@@ -118,13 +118,13 @@ implements BiomeAccess.Storage {
     }
 
     public boolean hasStructureFeature(StructureFeature<?> feature) {
-        return this.structureFeatures.computeIfAbsent(feature, structureFeature -> this.biomes.stream().anyMatch(biome -> biome.hasStructureFeature((StructureFeature<?>)structureFeature)));
+        return this.structureFeatures.computeIfAbsent(feature, structureFeature -> this.biomes.stream().anyMatch(biome -> biome.getGenerationSettings().hasStructureFeature((StructureFeature<?>)structureFeature)));
     }
 
     public Set<BlockState> getTopMaterials() {
         if (this.topMaterials.isEmpty()) {
             for (Biome biome : this.biomes) {
-                this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
+                this.topMaterials.add(biome.getGenerationSettings().getSurfaceConfig().getTopMaterial());
             }
         }
         return this.topMaterials;

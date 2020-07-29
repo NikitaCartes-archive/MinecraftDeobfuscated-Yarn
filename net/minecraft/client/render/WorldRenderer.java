@@ -44,7 +44,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.CloudRenderMode;
 import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.options.ParticlesOption;
+import net.minecraft.client.options.ParticlesMode;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BlockBreakingInfo;
@@ -59,13 +59,13 @@ import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OutlineVertexConsumerProvider;
+import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.SkyProperties;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.TransformingVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexConsumers;
@@ -364,7 +364,7 @@ AutoCloseable {
         ClientWorld worldView = this.client.world;
         BlockPos blockPos = new BlockPos(camera.getPos());
         Vec3i blockPos2 = null;
-        int i = (int)(100.0f * f * f) / (this.client.options.particles == ParticlesOption.DECREASED ? 2 : 1);
+        int i = (int)(100.0f * f * f) / (this.client.options.particles == ParticlesMode.DECREASED ? 2 : 1);
         for (int j = 0; j < i; ++j) {
             int k = random.nextInt(21) - 10;
             int l = random.nextInt(21) - 10;
@@ -372,7 +372,7 @@ AutoCloseable {
             Biome biome = worldView.getBiome(blockPos3);
             if (blockPos3.getY() <= 0 || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos3) >= 0.15f)) continue;
             blockPos2 = blockPos3;
-            if (this.client.options.particles == ParticlesOption.MINIMAL) break;
+            if (this.client.options.particles == ParticlesMode.MINIMAL) break;
             double d = random.nextDouble();
             double e = random.nextDouble();
             BlockState blockState = worldView.getBlockState((BlockPos)blockPos2);
@@ -953,7 +953,7 @@ AutoCloseable {
                 SortedSet sortedSet = (SortedSet)this.blockBreakingProgressions.get(blockPos.asLong());
                 if (sortedSet != null && !sortedSet.isEmpty() && (u = ((BlockBreakingInfo)sortedSet.last()).getStage()) >= 0) {
                     MatrixStack.Entry entry = matrices.peek();
-                    TransformingVertexConsumer vertexConsumer = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(u)), entry.getModel(), entry.getNormal());
+                    OverlayVertexConsumer vertexConsumer = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(u)), entry.getModel(), entry.getNormal());
                     vertexConsumerProvider2 = renderLayer -> {
                         VertexConsumer vertexConsumer2 = immediate.getBuffer(renderLayer);
                         if (renderLayer.hasCrumbling()) {
@@ -1001,7 +1001,7 @@ AutoCloseable {
             matrices.push();
             matrices.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - f);
             MatrixStack.Entry entry3 = matrices.peek();
-            TransformingVertexConsumer vertexConsumer2 = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(x)), entry3.getModel(), entry3.getNormal());
+            OverlayVertexConsumer vertexConsumer2 = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(x)), entry3.getModel(), entry3.getNormal());
             this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrices, vertexConsumer2);
             matrices.pop();
         }
@@ -1447,7 +1447,7 @@ AutoCloseable {
         BufferRenderer.draw(bufferBuilder);
         k = 20.0f;
         this.textureManager.bindTexture(MOON_PHASES);
-        int r = this.world.method_30273();
+        int r = this.world.getMoonPhase();
         int s = r % 4;
         m = r / 4 % 2;
         float t = (float)(s + 0) / 4.0f;
@@ -2021,28 +2021,28 @@ AutoCloseable {
         if (this.client == null || !camera.isReady() || this.client.particleManager == null) {
             return null;
         }
-        ParticlesOption particlesOption = this.getRandomParticleSpawnChance(canSpawnOnMinimal);
+        ParticlesMode particlesMode = this.getRandomParticleSpawnChance(canSpawnOnMinimal);
         if (alwaysSpawn) {
             return this.client.particleManager.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
         }
         if (camera.getPos().squaredDistanceTo(x, y, z) > 1024.0) {
             return null;
         }
-        if (particlesOption == ParticlesOption.MINIMAL) {
+        if (particlesMode == ParticlesMode.MINIMAL) {
             return null;
         }
         return this.client.particleManager.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
     }
 
-    private ParticlesOption getRandomParticleSpawnChance(boolean canSpawnOnMinimal) {
-        ParticlesOption particlesOption = this.client.options.particles;
-        if (canSpawnOnMinimal && particlesOption == ParticlesOption.MINIMAL && this.world.random.nextInt(10) == 0) {
-            particlesOption = ParticlesOption.DECREASED;
+    private ParticlesMode getRandomParticleSpawnChance(boolean canSpawnOnMinimal) {
+        ParticlesMode particlesMode = this.client.options.particles;
+        if (canSpawnOnMinimal && particlesMode == ParticlesMode.MINIMAL && this.world.random.nextInt(10) == 0) {
+            particlesMode = ParticlesMode.DECREASED;
         }
-        if (particlesOption == ParticlesOption.DECREASED && this.world.random.nextInt(3) == 0) {
-            particlesOption = ParticlesOption.MINIMAL;
+        if (particlesMode == ParticlesMode.DECREASED && this.world.random.nextInt(3) == 0) {
+            particlesMode = ParticlesMode.MINIMAL;
         }
-        return particlesOption;
+        return particlesMode;
     }
 
     public void method_3267() {

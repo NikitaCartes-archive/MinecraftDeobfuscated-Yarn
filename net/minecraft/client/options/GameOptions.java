@@ -28,15 +28,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.AoOption;
+import net.minecraft.client.options.AoMode;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.options.CloudRenderMode;
 import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.options.NarratorOption;
+import net.minecraft.client.options.NarratorMode;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.options.ParticlesOption;
+import net.minecraft.client.options.ParticlesMode;
+import net.minecraft.client.options.Perspective;
 import net.minecraft.client.options.StickyKeyBinding;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.tutorial.TutorialStep;
@@ -69,7 +70,7 @@ public class GameOptions {
     public int maxFps = 120;
     public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
     public GraphicsMode graphicsMode = GraphicsMode.FANCY;
-    public AoOption ao = AoOption.MAX;
+    public AoMode ao = AoMode.MAX;
     public List<String> resourcePacks = Lists.newArrayList();
     public List<String> incompatibleResourcePacks = Lists.newArrayList();
     public ChatVisibility chatVisibility = ChatVisibility.FULL;
@@ -151,19 +152,21 @@ public class GameOptions {
     private final File optionsFile;
     public Difficulty difficulty = Difficulty.NORMAL;
     public boolean hudHidden;
-    public int perspective;
+    private Perspective field_26677 = Perspective.FIRST_PERSON;
     public boolean debugEnabled;
     public boolean debugProfilerEnabled;
     public boolean debugTpsEnabled;
     public String lastServer = "";
     public boolean smoothCameraEnabled;
     public double fov = 70.0;
+    public float distortionEffectScale = 1.0f;
+    public float fovEffectScale = 1.0f;
     public double gamma;
     public int guiScale;
-    public ParticlesOption particles = ParticlesOption.ALL;
-    public NarratorOption narrator = NarratorOption.OFF;
+    public ParticlesMode particles = ParticlesMode.ALL;
+    public NarratorMode narrator = NarratorMode.OFF;
     public String language = "en_us";
-    public boolean field_25623;
+    public boolean syncChunkWrites;
 
     public GameOptions(MinecraftClient client, File optionsFile) {
         this.client = client;
@@ -174,7 +177,7 @@ public class GameOptions {
             Option.RENDER_DISTANCE.setMax(16.0f);
         }
         this.viewDistance = client.is64Bit() ? 12 : 8;
-        this.field_25623 = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
+        this.syncChunkWrites = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
         this.load();
     }
 
@@ -299,6 +302,12 @@ public class GameOptions {
                     if ("fov".equals(string2)) {
                         this.fov = GameOptions.parseFloat(string22) * 40.0f + 70.0f;
                     }
+                    if ("screenEffectScale".equals(string2)) {
+                        this.distortionEffectScale = GameOptions.parseFloat(string22);
+                    }
+                    if ("fovEffectScale".equals(string2)) {
+                        this.fovEffectScale = GameOptions.parseFloat(string22);
+                    }
                     if ("gamma".equals(string2)) {
                         this.gamma = GameOptions.parseFloat(string22);
                     }
@@ -312,7 +321,7 @@ public class GameOptions {
                         this.guiScale = Integer.parseInt(string22);
                     }
                     if ("particles".equals(string2)) {
-                        this.particles = ParticlesOption.byId(Integer.parseInt(string22));
+                        this.particles = ParticlesMode.byId(Integer.parseInt(string22));
                     }
                     if ("maxFps".equals(string2)) {
                         this.maxFps = Integer.parseInt(string22);
@@ -330,7 +339,7 @@ public class GameOptions {
                         this.tutorialStep = TutorialStep.byName(string22);
                     }
                     if ("ao".equals(string2)) {
-                        this.ao = "true".equals(string22) ? AoOption.MAX : ("false".equals(string22) ? AoOption.OFF : AoOption.getOption(Integer.parseInt(string22)));
+                        this.ao = "true".equals(string22) ? AoMode.MAX : ("false".equals(string22) ? AoMode.OFF : AoMode.byId(Integer.parseInt(string22)));
                     }
                     if ("renderClouds".equals(string2)) {
                         if ("true".equals(string22)) {
@@ -423,7 +432,7 @@ public class GameOptions {
                         Arm arm = this.mainArm = "left".equals(string22) ? Arm.LEFT : Arm.RIGHT;
                     }
                     if ("narrator".equals(string2)) {
-                        this.narrator = NarratorOption.byId(Integer.parseInt(string22));
+                        this.narrator = NarratorMode.byId(Integer.parseInt(string22));
                     }
                     if ("biomeBlendRadius".equals(string2)) {
                         this.biomeBlendRadius = Integer.parseInt(string22);
@@ -441,7 +450,7 @@ public class GameOptions {
                         this.skipMultiplayerWarning = "true".equals(string22);
                     }
                     if ("syncChunkWrites".equals(string2)) {
-                        this.field_25623 = "true".equals(string22);
+                        this.syncChunkWrites = "true".equals(string22);
                     }
                     for (KeyBinding keyBinding : this.keysAll) {
                         if (!string2.equals("key_" + keyBinding.getTranslationKey())) continue;
@@ -509,6 +518,8 @@ public class GameOptions {
             printWriter.println("toggleSprint:" + this.sprintToggled);
             printWriter.println("mouseSensitivity:" + this.mouseSensitivity);
             printWriter.println("fov:" + (this.fov - 70.0) / 40.0);
+            printWriter.println("screenEffectScale:" + this.distortionEffectScale);
+            printWriter.println("fovEffectScale:" + this.fovEffectScale);
             printWriter.println("gamma:" + this.gamma);
             printWriter.println("renderDistance:" + this.viewDistance);
             printWriter.println("entityDistanceScaling:" + this.entityDistanceScaling);
@@ -517,7 +528,7 @@ public class GameOptions {
             printWriter.println("maxFps:" + this.maxFps);
             printWriter.println("difficulty:" + this.difficulty.getId());
             printWriter.println("graphicsMode:" + this.graphicsMode.getId());
-            printWriter.println("ao:" + this.ao.getValue());
+            printWriter.println("ao:" + this.ao.getId());
             printWriter.println("biomeBlendRadius:" + this.biomeBlendRadius);
             switch (this.cloudRenderMode) {
                 case FANCY: {
@@ -565,7 +576,7 @@ public class GameOptions {
             printWriter.println("rawMouseInput:" + Option.RAW_MOUSE_INPUT.get(this));
             printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
             printWriter.println("skipMultiplayerWarning:" + this.skipMultiplayerWarning);
-            printWriter.println("syncChunkWrites:" + this.field_25623);
+            printWriter.println("syncChunkWrites:" + this.syncChunkWrites);
             for (KeyBinding keyBinding : this.keysAll) {
                 printWriter.println("key_" + keyBinding.getTranslationKey() + ":" + keyBinding.getBoundKeyTranslationKey());
             }
@@ -663,6 +674,14 @@ public class GameOptions {
             set.add(resourcePackProfile.getName());
         }
         manager.setEnabledProfiles(set);
+    }
+
+    public Perspective getPerspective() {
+        return this.field_26677;
+    }
+
+    public void method_31043(Perspective perspective) {
+        this.field_26677 = perspective;
     }
 }
 

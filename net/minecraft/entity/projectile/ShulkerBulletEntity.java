@@ -32,7 +32,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -210,11 +209,12 @@ extends ProjectileEntity {
             } else if (!this.hasNoGravity()) {
                 this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
             }
-            HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER);
+            HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
             if (hitResult.getType() != HitResult.Type.MISS) {
                 this.onCollision(hitResult);
             }
         }
+        this.checkBlockCollision();
         vec3d = this.getVelocity();
         this.updatePosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
         ProjectileUtil.method_7484(this, 0.5f);

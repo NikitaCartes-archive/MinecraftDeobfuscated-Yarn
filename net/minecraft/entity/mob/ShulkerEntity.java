@@ -351,9 +351,8 @@ implements Monster {
     }
 
     @Override
-    @Nullable
-    public Box getCollisionBox() {
-        return this.isAlive() ? this.getBoundingBox() : null;
+    public boolean method_30948() {
+        return this.isAlive();
     }
 
     public Direction getAttachedFace() {

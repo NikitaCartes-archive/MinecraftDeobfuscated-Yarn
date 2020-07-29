@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,6 +29,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -44,7 +44,7 @@ extends Screen {
     private final Set<AbstractRuleWidget> invalidRuleWidgets = Sets.newHashSet();
     private ButtonWidget doneButton;
     @Nullable
-    private List<class_5481> tooltip;
+    private List<OrderedText> tooltip;
     private final GameRules gameRules;
 
     public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
@@ -84,7 +84,7 @@ extends Screen {
         }
     }
 
-    private void setTooltipDescription(@Nullable List<class_5481> description) {
+    private void setTooltipDescription(@Nullable List<OrderedText> description) {
         this.tooltip = description;
     }
 
@@ -130,16 +130,16 @@ extends Screen {
                     MutableText text3 = new TranslatableText("editGamerule.default", new LiteralText(string)).formatted(Formatting.GRAY);
                     String string2 = key.getTranslationKey() + ".description";
                     if (I18n.hasTranslation(string2)) {
-                        ImmutableCollection.ArrayBasedBuilder builder = ImmutableList.builder().add(text2.method_30937());
+                        ImmutableCollection.ArrayBasedBuilder builder = ImmutableList.builder().add(text2.asOrderedText());
                         TranslatableText text4 = new TranslatableText(string2);
                         EditGameRulesScreen.this.textRenderer.wrapLines(text4, 150).forEach(((ImmutableList.Builder)builder)::add);
-                        list = ((ImmutableList.Builder)((ImmutableList.Builder)builder).add(text3.method_30937())).build();
+                        list = ((ImmutableList.Builder)((ImmutableList.Builder)builder).add(text3.asOrderedText())).build();
                         string3 = text4.getString() + "\n" + text3.getString();
                     } else {
-                        list = ImmutableList.of(text2.method_30937(), text3.method_30937());
+                        list = ImmutableList.of(text2.asOrderedText(), text3.asOrderedText());
                         string3 = text3.getString();
                     }
-                    map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<class_5481>)((Object)list), string3, rule));
+                    map.computeIfAbsent(key.getCategory(), category -> Maps.newHashMap()).put(key, widgetFactory.create(text, (List<OrderedText>)((Object)list), string3, rule));
                 }
             });
             map.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry2 -> {
@@ -163,7 +163,7 @@ extends Screen {
     extends NamedRuleWidget {
         private final TextFieldWidget valueWidget;
 
-        public IntRuleWidget(Text name, List<class_5481> description, String ruleName, GameRules.IntRule rule) {
+        public IntRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.IntRule rule) {
             super(description, name);
             this.valueWidget = new TextFieldWidget(((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer, 10, 5, 42, 20, name.shallowCopy().append("\n").append(ruleName).append("\n"));
             this.valueWidget.setText(Integer.toString(rule.get()));
@@ -193,7 +193,7 @@ extends Screen {
     extends NamedRuleWidget {
         private final ButtonWidget toggleButton;
 
-        public BooleanRuleWidget(final Text name, List<class_5481> description, final String ruleName, final GameRules.BooleanRule booleanRule) {
+        public BooleanRuleWidget(final Text name, List<OrderedText> description, final String ruleName, final GameRules.BooleanRule booleanRule) {
             super(description, name);
             this.toggleButton = new ButtonWidget(10, 5, 44, 20, ScreenTexts.getToggleText(booleanRule.get()), buttonWidget -> {
                 boolean bl = !booleanRule.get();
@@ -221,10 +221,10 @@ extends Screen {
     @Environment(value=EnvType.CLIENT)
     public abstract class NamedRuleWidget
     extends AbstractRuleWidget {
-        private final List<class_5481> name;
+        private final List<OrderedText> name;
         protected final List<Element> children;
 
-        public NamedRuleWidget(List<class_5481> description, Text name) {
+        public NamedRuleWidget(List<OrderedText> description, Text name) {
             super(description);
             this.children = Lists.newArrayList();
             this.name = ((EditGameRulesScreen)EditGameRulesScreen.this).client.textRenderer.wrapLines(name, 175);
@@ -248,7 +248,7 @@ extends Screen {
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
     static interface RuleWidgetFactory<T extends GameRules.Rule<T>> {
-        public AbstractRuleWidget create(Text var1, List<class_5481> var2, String var3, T var4);
+        public AbstractRuleWidget create(Text var1, List<OrderedText> var2, String var3, T var4);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -276,9 +276,9 @@ extends Screen {
     public abstract class AbstractRuleWidget
     extends ElementListWidget.Entry<AbstractRuleWidget> {
         @Nullable
-        private final List<class_5481> description;
+        private final List<OrderedText> description;
 
-        public AbstractRuleWidget(List<class_5481> description) {
+        public AbstractRuleWidget(List<OrderedText> description) {
             this.description = description;
         }
     }

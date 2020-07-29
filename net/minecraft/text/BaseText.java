@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Language;
@@ -18,10 +18,10 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BaseText
 implements MutableText {
     protected final List<Text> siblings = Lists.newArrayList();
-    private class_5481 field_26623 = class_5481.field_26385;
+    private OrderedText orderedText = OrderedText.EMPTY;
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    private Language field_26624;
+    private Language previousLanguage;
     private Style style = Style.EMPTY;
 
     @Override
@@ -64,13 +64,13 @@ implements MutableText {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public class_5481 method_30937() {
+    public OrderedText asOrderedText() {
         Language language = Language.getInstance();
-        if (this.field_26624 != language) {
-            this.field_26623 = language.method_30934(this);
-            this.field_26624 = language;
+        if (this.previousLanguage != language) {
+            this.orderedText = language.reorder(this);
+            this.previousLanguage = language;
         }
-        return this.field_26623;
+        return this.orderedText;
     }
 
     public boolean equals(Object obj) {

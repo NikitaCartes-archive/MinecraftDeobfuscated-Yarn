@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.goal;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.class_5493;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -23,7 +24,7 @@ extends Goal {
 
     public DoorInteractGoal(MobEntity mob) {
         this.mob = mob;
-        if (!this.method_30146()) {
+        if (!class_5493.method_30955(mob)) {
             throw new IllegalArgumentException("Unsupported mob type for DoorInteractGoal");
         }
     }
@@ -49,7 +50,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        if (!this.method_30146()) {
+        if (!class_5493.method_30955(this.mob)) {
             return false;
         }
         if (!this.mob.horizontalCollision) {
@@ -93,10 +94,6 @@ extends Goal {
         if (h < 0.0f) {
             this.shouldStop = true;
         }
-    }
-
-    private boolean method_30146() {
-        return this.mob.getNavigation() instanceof MobNavigation;
     }
 }
 

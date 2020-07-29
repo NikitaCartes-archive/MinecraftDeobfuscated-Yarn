@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -37,6 +36,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -130,25 +130,25 @@ Drawable {
     }
 
     public void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
-        this.renderTooltip(matrices, Arrays.asList(text.method_30937()), x, y);
+        this.renderTooltip(matrices, Arrays.asList(text.asOrderedText()), x, y);
     }
 
     public void method_30901(MatrixStack matrixStack, List<Text> list, int i, int j) {
-        this.renderTooltip(matrixStack, Lists.transform(list, Text::method_30937), i, j);
+        this.renderTooltip(matrixStack, Lists.transform(list, Text::asOrderedText), i, j);
     }
 
     /*
      * WARNING - void declaration
      */
-    public void renderTooltip(MatrixStack matrices, List<? extends class_5481> lines, int x, int y) {
+    public void renderTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
         int n;
         int j;
         if (lines.isEmpty()) {
             return;
         }
         int i = 0;
-        for (class_5481 class_54812 : lines) {
-            j = this.textRenderer.method_30880(class_54812);
+        for (OrderedText orderedText : lines) {
+            j = this.textRenderer.getWidth(orderedText);
             if (j <= i) continue;
             i = j;
         }
@@ -196,10 +196,10 @@ Drawable {
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         matrices.translate(0.0, 0.0, 400.0);
         for (int r = 0; r < lines.size(); ++r) {
-            class_5481 lv2 = lines.get(r);
-            if (lv2 != null) {
+            OrderedText orderedText2 = lines.get(r);
+            if (orderedText2 != null) {
                 void var7_11;
-                this.textRenderer.draw(lv2, (float)k, (float)var7_11, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+                this.textRenderer.draw(orderedText2, (float)k, (float)var7_11, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
             }
             if (r == 0) {
                 var7_11 += 2;

@@ -6,7 +6,6 @@ package net.minecraft.world;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -84,18 +83,12 @@ public interface EntityView {
         return this.getEntitiesIncludingUngeneratedChunks(entityClass, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
-    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity2, Box box, Predicate<Entity> predicate) {
         if (box.getAverageSideLength() < 1.0E-7) {
             return Stream.empty();
         }
         Box box2 = box.expand(1.0E-7);
-        return this.getOtherEntities(entity, box2, predicate.and(e -> entity == null || !entity.isConnectedThroughVehicle((Entity)e))).stream().flatMap(entity2 -> {
-            Box box2;
-            if (entity != null && (box2 = entity.getHardCollisionBox((Entity)entity2)) != null && box2.intersects(box2)) {
-                return Stream.of(entity2.getCollisionBox(), box2);
-            }
-            return Stream.of(entity2.getCollisionBox());
-        }).filter(Objects::nonNull).map(VoxelShapes::cuboid);
+        return this.getOtherEntities(entity2, box2, predicate.and(entity -> entity.getBoundingBox().intersects(box2) && (entity2 == null ? entity.method_30948() : entity2.method_30949((Entity)entity)))).stream().map(Entity::getBoundingBox).map(VoxelShapes::cuboid);
     }
 
     @Nullable

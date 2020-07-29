@@ -132,14 +132,14 @@ extends RealmsScreen {
         this.renderBackground(matrices);
         int i = this.width / 2 - 100;
         RealmsSubscriptionInfoScreen.drawCenteredText(matrices, this.textRenderer, subscriptionTitle, this.width / 2, 17, 0xFFFFFF);
-        this.textRenderer.method_30883(matrices, subscriptionStartLabelText, i, RealmsSubscriptionInfoScreen.row(0), 0xA0A0A0);
+        this.textRenderer.draw(matrices, subscriptionStartLabelText, (float)i, (float)RealmsSubscriptionInfoScreen.row(0), 0xA0A0A0);
         this.textRenderer.draw(matrices, this.startDate, (float)i, (float)RealmsSubscriptionInfoScreen.row(1), 0xFFFFFF);
         if (this.type == Subscription.SubscriptionType.NORMAL) {
-            this.textRenderer.method_30883(matrices, timeLeftLabelText, i, RealmsSubscriptionInfoScreen.row(3), 0xA0A0A0);
+            this.textRenderer.draw(matrices, timeLeftLabelText, (float)i, (float)RealmsSubscriptionInfoScreen.row(3), 0xA0A0A0);
         } else if (this.type == Subscription.SubscriptionType.RECURRING) {
-            this.textRenderer.method_30883(matrices, daysLeftLabelText, i, RealmsSubscriptionInfoScreen.row(3), 0xA0A0A0);
+            this.textRenderer.draw(matrices, daysLeftLabelText, (float)i, (float)RealmsSubscriptionInfoScreen.row(3), 0xA0A0A0);
         }
-        this.textRenderer.method_30883(matrices, this.daysLeft, i, RealmsSubscriptionInfoScreen.row(4), 0xFFFFFF);
+        this.textRenderer.draw(matrices, this.daysLeft, (float)i, (float)RealmsSubscriptionInfoScreen.row(4), 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

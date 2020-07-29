@@ -77,7 +77,7 @@ implements RecipeBookProvider {
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        this.textRenderer.method_30883(matrices, this.title, this.titleX, this.titleY, 0x404040);
+        this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 0x404040);
     }
 
     @Override

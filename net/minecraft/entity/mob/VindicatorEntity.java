@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5493;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -26,7 +27,6 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -82,10 +82,9 @@ extends IllagerEntity {
 
     @Override
     protected void mobTick() {
-        EntityNavigation entityNavigation;
-        if (!this.isAiDisabled() && (entityNavigation = this.getNavigation()) instanceof MobNavigation) {
+        if (!this.isAiDisabled() && class_5493.method_30955(this)) {
             boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getBlockPos());
-            ((MobNavigation)entityNavigation).setCanPathThroughDoors(bl);
+            ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(bl);
         }
         super.mobTick();
     }

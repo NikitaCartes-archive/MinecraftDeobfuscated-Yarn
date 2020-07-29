@@ -46,13 +46,13 @@ extends ScreenHandler {
 
             @Override
             public boolean canInsert(ItemStack stack) {
-                return entity.canEquip(stack);
+                return entity.isHorseArmor(stack);
             }
 
             @Override
             @Environment(value=EnvType.CLIENT)
             public boolean doDrawHoveringEffect() {
-                return entity.canEquip();
+                return entity.hasArmorSlot();
             }
 
             @Override

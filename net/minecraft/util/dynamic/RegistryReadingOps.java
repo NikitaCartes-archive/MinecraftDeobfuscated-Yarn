@@ -3,10 +3,9 @@
  */
 package net.minecraft.util.dynamic;
 
-import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.MapCodec;
 import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.ForwardingDynamicOps;
@@ -14,7 +13,6 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
 
 /**
  * A dynamic ops that encode an id for a registry element rather than a full object.
@@ -42,18 +40,15 @@ extends ForwardingDynamicOps<T> {
      * 
      * @see RegistryOps#decodeOrId(Object, RegistryKey, MapCodec)
      */
-    protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<? extends Registry<E>> registryReference, MapCodec<E> mapCodec) {
+    protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<? extends Registry<E>> registryReference, Codec<E> codec) {
         MutableRegistry mutableRegistry;
         Optional<RegistryKey<E>> optional2;
         Optional optional = this.manager.getOptional(registryReference);
         if (optional.isPresent() && (optional2 = (mutableRegistry = optional.get()).getKey(input)).isPresent()) {
             RegistryKey<E> registryKey = optional2.get();
-            if (mutableRegistry.isLoaded(registryKey)) {
-                return SimpleRegistry.method_30516(registryReference, mapCodec).codec().encode(Pair.of(registryKey, input), this.delegate, prefix);
-            }
             return Identifier.CODEC.encode(registryKey.getValue(), this.delegate, prefix);
         }
-        return mapCodec.codec().encode(input, this, prefix);
+        return codec.encode(input, this, prefix);
     }
 }
 

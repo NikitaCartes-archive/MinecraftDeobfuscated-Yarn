@@ -280,7 +280,7 @@ implements Monster {
         if (world.getDifficulty() != Difficulty.PEACEFUL) {
             boolean bl;
             Biome biome = world.getBiome(pos);
-            if (biome == Biomes.SWAMP && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < world.method_30272() && world.getLightLevel(pos) <= random.nextInt(8)) {
+            if (biome == Biomes.SWAMP && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < world.getMoonSize() && world.getLightLevel(pos) <= random.nextInt(8)) {
                 return SlimeEntity.canMobSpawn(type, world, spawnReason, pos, random);
             }
             if (!(world instanceof StructureWorldAccess)) {

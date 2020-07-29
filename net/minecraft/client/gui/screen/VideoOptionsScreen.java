@@ -7,19 +7,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DialogScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.FullScreenOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.GraphicsMode;
@@ -27,11 +23,11 @@ import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class VideoOptionsScreen
@@ -42,9 +38,7 @@ extends GameOptionsScreen {
     private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = new TranslatableText("options.graphics.warning.accept");
     private static final Text GRAPHICS_WARNING_CANCEL_TEXT = new TranslatableText("options.graphics.warning.cancel");
     private static final Text NEWLINE_TEXT = new LiteralText("\n");
-    private static final Option[] OPTIONS = new Option[]{Option.GRAPHICS, Option.RENDER_DISTANCE, Option.AO, Option.FRAMERATE_LIMIT, Option.VSYNC, Option.VIEW_BOBBING, Option.GUI_SCALE, Option.ATTACK_INDICATOR, Option.GAMMA, Option.CLOUDS, Option.FULLSCREEN, Option.PARTICLES, Option.MIPMAP_LEVELS, Option.ENTITY_SHADOWS, Option.ENTITY_DISTANCE_SCALING};
-    @Nullable
-    private List<class_5481> tooltip;
+    private static final Option[] OPTIONS = new Option[]{Option.GRAPHICS, Option.RENDER_DISTANCE, Option.AO, Option.FRAMERATE_LIMIT, Option.VSYNC, Option.VIEW_BOBBING, Option.GUI_SCALE, Option.ATTACK_INDICATOR, Option.GAMMA, Option.CLOUDS, Option.FULLSCREEN, Option.PARTICLES, Option.MIPMAP_LEVELS, Option.ENTITY_SHADOWS, Option.DISTORTION_EFFECT_SCALE, Option.ENTITY_DISTANCE_SCALING, Option.FOV_EFFECT_SCALE};
     private ButtonListWidget list;
     private final VideoWarningManager warningManager;
     private final int mipmapLevels;
@@ -85,7 +79,6 @@ extends GameOptionsScreen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button2) {
         int i = this.gameOptions.guiScale;
-        GraphicsMode graphicsMode = this.gameOptions.graphicsMode;
         if (super.mouseClicked(mouseX, mouseY, button2)) {
             if (this.gameOptions.guiScale != i) {
                 this.client.onResolutionChanged();
@@ -93,7 +86,7 @@ extends GameOptionsScreen {
             if (this.warningManager.shouldWarn()) {
                 String string3;
                 String string2;
-                ArrayList<StringRenderable> list = Lists.newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, NEWLINE_TEXT);
+                ArrayList<StringVisitable> list = Lists.newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, NEWLINE_TEXT);
                 String string = this.warningManager.getRendererWarning();
                 if (string != null) {
                     list.add(NEWLINE_TEXT);
@@ -139,20 +132,13 @@ extends GameOptionsScreen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.tooltip = null;
-        Optional<AbstractButtonWidget> optional = this.list.getHoveredButton(mouseX, mouseY);
-        if (optional.isPresent() && optional.get() instanceof OptionButtonWidget) {
-            Optional<List<class_5481>> optional2 = ((OptionButtonWidget)optional.get()).getOption().getTooltip();
-            optional2.ifPresent(tooltip -> {
-                this.tooltip = tooltip;
-            });
-        }
         this.renderBackground(matrices);
         this.list.render(matrices, mouseX, mouseY, delta);
         VideoOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.tooltip != null) {
-            this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
+        List<OrderedText> list = VideoOptionsScreen.method_31048(this.list, mouseX, mouseY);
+        if (list != null) {
+            this.renderTooltip(matrices, list, mouseX, mouseY);
         }
     }
 }

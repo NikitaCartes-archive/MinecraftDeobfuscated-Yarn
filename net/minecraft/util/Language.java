@@ -21,9 +21,9 @@ import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.font.TextVisitFactory;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.util.JsonHelper;
 import org.apache.logging.log4j.LogManager;
@@ -64,8 +64,8 @@ public abstract class Language {
 
             @Override
             @Environment(value=EnvType.CLIENT)
-            public class_5481 method_30934(StringRenderable stringRenderable) {
-                return characterVisitor -> stringRenderable.visit((style, string) -> TextVisitFactory.visitFormatted(string, style, characterVisitor) ? Optional.empty() : StringRenderable.TERMINATE_VISIT, Style.EMPTY).isPresent();
+            public OrderedText reorder(StringVisitable text) {
+                return visitor -> text.visit((style, string) -> TextVisitFactory.visitFormatted(string, style, visitor) ? Optional.empty() : StringVisitable.TERMINATE_VISIT, Style.EMPTY).isPresent();
             }
         };
     }
@@ -95,11 +95,11 @@ public abstract class Language {
     public abstract boolean isRightToLeft();
 
     @Environment(value=EnvType.CLIENT)
-    public abstract class_5481 method_30934(StringRenderable var1);
+    public abstract OrderedText reorder(StringVisitable var1);
 
     @Environment(value=EnvType.CLIENT)
-    public List<class_5481> method_30933(List<StringRenderable> list) {
-        return list.stream().map(Language.getInstance()::method_30934).collect(ImmutableList.toImmutableList());
+    public List<OrderedText> reorder(List<StringVisitable> texts) {
+        return texts.stream().map(Language.getInstance()::reorder).collect(ImmutableList.toImmutableList());
     }
 }
 

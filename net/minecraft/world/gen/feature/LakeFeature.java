@@ -90,7 +90,7 @@ extends Feature<SingleStateFeatureConfig> {
                     BlockPos blockPos2;
                     if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.isSoil(structureWorldAccess.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || structureWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
                     Biome biome = structureWorldAccess.getBiome(blockPos2);
-                    if (biome.getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
+                    if (biome.getGenerationSettings().getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
                         structureWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
                         continue;
                     }

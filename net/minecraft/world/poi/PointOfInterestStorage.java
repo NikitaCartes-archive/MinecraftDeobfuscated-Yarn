@@ -84,6 +84,10 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.getInCircle(typePredicate, pos, radius, occupationStatus).map(PointOfInterest::getPos).filter(posPredicate);
     }
 
+    public Stream<BlockPos> method_30957(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
+        return this.getPositions(predicate, predicate2, blockPos, i, occupationStatus).sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)));
+    }
+
     public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> posPredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
         return this.getPositions(typePredicate, posPredicate, pos, radius, occupationStatus).findFirst();
     }

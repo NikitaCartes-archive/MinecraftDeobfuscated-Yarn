@@ -14,7 +14,7 @@ import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
-public class TransformingVertexConsumer
+public class OverlayVertexConsumer
 extends FixedColorVertexConsumer {
     private final VertexConsumer vertexConsumer;
     private final Matrix4f textureMatrix;
@@ -29,7 +29,7 @@ extends FixedColorVertexConsumer {
     private float normalY;
     private float normalZ;
 
-    public TransformingVertexConsumer(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f) {
+    public OverlayVertexConsumer(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f) {
         this.vertexConsumer = vertexConsumer;
         this.textureMatrix = matrix4f.copy();
         this.textureMatrix.invert();

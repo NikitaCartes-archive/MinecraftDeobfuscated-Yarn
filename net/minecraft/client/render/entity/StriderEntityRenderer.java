@@ -32,14 +32,12 @@ extends MobEntityRenderer<StriderEntity, StriderEntityModel<StriderEntity>> {
 
     @Override
     protected void scale(StriderEntity striderEntity, MatrixStack matrixStack, float f) {
-        float g = 0.9375f;
         if (striderEntity.isBaby()) {
-            g *= 0.5f;
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             this.shadowRadius = 0.25f;
         } else {
             this.shadowRadius = 0.5f;
         }
-        matrixStack.scale(g, g, g);
     }
 
     @Override

@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.CharacterVisitor;
-import net.minecraft.class_5481;
 import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.util.TextCollector;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -49,7 +49,7 @@ public class TextHandler {
     /**
      * Returns the width of a text.
      */
-    public float getWidth(StringRenderable text) {
+    public float getWidth(StringVisitable text) {
         MutableFloat mutableFloat = new MutableFloat();
         TextVisitFactory.visitFormatted(text, Style.EMPTY, (unused, style, codePoint) -> {
             mutableFloat.add(this.widthRetriever.getWidth(codePoint, style));
@@ -58,9 +58,9 @@ public class TextHandler {
         return mutableFloat.floatValue();
     }
 
-    public float method_30875(class_5481 arg) {
+    public float getWidth(OrderedText text) {
         MutableFloat mutableFloat = new MutableFloat();
-        arg.accept((i, style, j) -> {
+        text.accept((i, style, j) -> {
             mutableFloat.add(this.widthRetriever.getWidth(j, style));
             return true;
         });
@@ -125,16 +125,16 @@ public class TextHandler {
      * @param maxWidth the max width of the trimmed text
      */
     @Nullable
-    public Style trimToWidth(StringRenderable text, int maxWidth) {
+    public Style trimToWidth(StringVisitable text, int maxWidth) {
         WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(maxWidth);
         return text.visit((style, string) -> TextVisitFactory.visitFormatted(string, style, (CharacterVisitor)widthLimitingVisitor) ? Optional.empty() : Optional.of(style), Style.EMPTY).orElse(null);
     }
 
     @Nullable
-    public Style method_30876(class_5481 arg, int i2) {
+    public Style method_30876(OrderedText orderedText, int i2) {
         WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(i2);
         MutableObject mutableObject = new MutableObject();
-        arg.accept((i, style, j) -> {
+        orderedText.accept((i, style, j) -> {
             if (!widthLimitingVisitor.accept(i, style, j)) {
                 mutableObject.setValue(style);
                 return false;
@@ -144,23 +144,23 @@ public class TextHandler {
         return (Style)mutableObject.getValue();
     }
 
-    public StringRenderable trimToWidth(StringRenderable text, int width, Style style) {
+    public StringVisitable trimToWidth(StringVisitable text, int width, Style style) {
         final WidthLimitingVisitor widthLimitingVisitor = new WidthLimitingVisitor(width);
-        return text.visit(new StringRenderable.StyledVisitor<StringRenderable>(){
+        return text.visit(new StringVisitable.StyledVisitor<StringVisitable>(){
             private final TextCollector collector = new TextCollector();
 
             @Override
-            public Optional<StringRenderable> accept(Style style, String string) {
+            public Optional<StringVisitable> accept(Style style, String string) {
                 widthLimitingVisitor.resetLength();
                 if (!TextVisitFactory.visitFormatted(string, style, (CharacterVisitor)widthLimitingVisitor)) {
                     String string2 = string.substring(0, widthLimitingVisitor.getLength());
                     if (!string2.isEmpty()) {
-                        this.collector.add(StringRenderable.styled(string2, style));
+                        this.collector.add(StringVisitable.styled(string2, style));
                     }
                     return Optional.of(this.collector.getCombined());
                 }
                 if (!string.isEmpty()) {
-                    this.collector.add(StringRenderable.styled(string, style));
+                    this.collector.add(StringVisitable.styled(string, style));
                 }
                 return Optional.empty();
             }
@@ -216,21 +216,21 @@ public class TextHandler {
         }
     }
 
-    public List<StringRenderable> wrapLines(String text, int maxWidth, Style style2) {
-        ArrayList<StringRenderable> list = Lists.newArrayList();
-        this.wrapLines(text, maxWidth, style2, false, (style, i, j) -> list.add(StringRenderable.styled(text.substring(i, j), style)));
+    public List<StringVisitable> wrapLines(String text, int maxWidth, Style style2) {
+        ArrayList<StringVisitable> list = Lists.newArrayList();
+        this.wrapLines(text, maxWidth, style2, false, (style, i, j) -> list.add(StringVisitable.styled(text.substring(i, j), style)));
         return list;
     }
 
-    public List<StringRenderable> wrapLines(StringRenderable stringRenderable2, int maxWidth, Style style) {
-        ArrayList<StringRenderable> list = Lists.newArrayList();
-        this.method_29971(stringRenderable2, maxWidth, style, (stringRenderable, boolean_) -> list.add((StringRenderable)stringRenderable));
+    public List<StringVisitable> wrapLines(StringVisitable stringVisitable2, int maxWidth, Style style) {
+        ArrayList<StringVisitable> list = Lists.newArrayList();
+        this.method_29971(stringVisitable2, maxWidth, style, (stringVisitable, boolean_) -> list.add((StringVisitable)stringVisitable));
         return list;
     }
 
-    public void method_29971(StringRenderable stringRenderable, int i, Style style2, BiConsumer<StringRenderable, Boolean> biConsumer) {
+    public void method_29971(StringVisitable stringVisitable, int i, Style style2, BiConsumer<StringVisitable, Boolean> biConsumer) {
         ArrayList<StyledString> list = Lists.newArrayList();
-        stringRenderable.visit((style, string) -> {
+        stringVisitable.visit((style, string) -> {
             if (!string.isEmpty()) {
                 list.add(new StyledString(string, style));
             }
@@ -252,8 +252,8 @@ public class TextHandler {
                     boolean bl5 = c == '\n';
                     boolean bl6 = bl5 || c == ' ';
                     bl2 = bl5;
-                    StringRenderable stringRenderable2 = lineWrappingCollector.collectLine(j, bl6 ? 1 : 0, style22);
-                    biConsumer.accept(stringRenderable2, bl3);
+                    StringVisitable stringVisitable2 = lineWrappingCollector.collectLine(j, bl6 ? 1 : 0, style22);
+                    biConsumer.accept(stringVisitable2, bl3);
                     bl3 = !bl5;
                     bl = true;
                     continue block0;
@@ -261,11 +261,11 @@ public class TextHandler {
                 lineBreakingVisitor.offset(styledString.literal.length());
             }
         }
-        StringRenderable stringRenderable3 = lineWrappingCollector.collectRemainers();
-        if (stringRenderable3 != null) {
-            biConsumer.accept(stringRenderable3, bl3);
+        StringVisitable stringVisitable3 = lineWrappingCollector.collectRemainers();
+        if (stringVisitable3 != null) {
+            biConsumer.accept(stringVisitable3, bl3);
         } else if (bl2) {
-            biConsumer.accept(StringRenderable.EMPTY, false);
+            biConsumer.accept(StringVisitable.EMPTY, false);
         }
     }
 
@@ -283,7 +283,7 @@ public class TextHandler {
             return this.joined.charAt(index);
         }
 
-        public StringRenderable collectLine(int lineLength, int skippedLength, Style style) {
+        public StringVisitable collectLine(int lineLength, int skippedLength, Style style) {
             TextCollector textCollector = new TextCollector();
             ListIterator<StyledString> listIterator = this.parts.listIterator();
             int i = lineLength;
@@ -301,7 +301,7 @@ public class TextHandler {
                     } else {
                         string2 = string.substring(0, i);
                         if (!string2.isEmpty()) {
-                            textCollector.add(StringRenderable.styled(string2, styledString.style));
+                            textCollector.add(StringVisitable.styled(string2, styledString.style));
                         }
                         i += skippedLength;
                         bl = true;
@@ -326,7 +326,7 @@ public class TextHandler {
         }
 
         @Nullable
-        public StringRenderable collectRemainers() {
+        public StringVisitable collectRemainers() {
             TextCollector textCollector = new TextCollector();
             this.parts.forEach(textCollector::add);
             this.parts.clear();
@@ -336,7 +336,7 @@ public class TextHandler {
 
     @Environment(value=EnvType.CLIENT)
     static class StyledString
-    implements StringRenderable {
+    implements StringVisitable {
         private final String literal;
         private final Style style;
 
@@ -346,12 +346,12 @@ public class TextHandler {
         }
 
         @Override
-        public <T> Optional<T> visit(StringRenderable.Visitor<T> visitor) {
+        public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
             return visitor.accept(this.literal);
         }
 
         @Override
-        public <T> Optional<T> visit(StringRenderable.StyledVisitor<T> styledVisitor, Style style) {
+        public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
             return styledVisitor.accept(this.style.withParent(style), this.literal);
         }
     }

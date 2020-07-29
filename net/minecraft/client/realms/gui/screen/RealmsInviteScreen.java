@@ -98,7 +98,7 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.textRenderer.method_30883(matrices, field_26489, this.width / 2 - 100, RealmsInviteScreen.row(1), 0xA0A0A0);
+        this.textRenderer.draw(matrices, field_26489, (float)(this.width / 2 - 100), (float)RealmsInviteScreen.row(1), 0xA0A0A0);
         if (this.errorMsg != null) {
             RealmsInviteScreen.drawCenteredText(matrices, this.textRenderer, this.errorMsg, this.width / 2, RealmsInviteScreen.row(5), 0xFF0000);
         }

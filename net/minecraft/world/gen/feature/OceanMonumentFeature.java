@@ -3,7 +3,7 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Random;
@@ -18,6 +18,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
@@ -27,7 +28,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class OceanMonumentFeature
 extends StructureFeature<DefaultFeatureConfig> {
-    private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
+    private static final List<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = ImmutableList.of(new SpawnSettings.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
     public OceanMonumentFeature(Codec<DefaultFeatureConfig> codec) {
         super(codec);
@@ -42,7 +43,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig) {
         Set<Biome> set = biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16);
         for (Biome biome2 : set) {
-            if (biome2.hasStructureFeature(this)) continue;
+            if (biome2.getGenerationSettings().hasStructureFeature(this)) continue;
             return false;
         }
         Set<Biome> set2 = biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29);
@@ -59,7 +60,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public List<Biome.SpawnEntry> getMonsterSpawns() {
+    public List<SpawnSettings.SpawnEntry> getMonsterSpawns() {
         return MONSTER_SPAWNS;
     }
 

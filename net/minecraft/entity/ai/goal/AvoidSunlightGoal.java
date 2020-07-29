@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.class_5493;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
@@ -18,7 +19,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return this.mob.world.isDay() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && this.mob.getNavigation() instanceof MobNavigation;
+        return this.mob.world.isDay() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && class_5493.method_30955(this.mob);
     }
 
     @Override
@@ -28,7 +29,9 @@ extends Goal {
 
     @Override
     public void stop() {
-        ((MobNavigation)this.mob.getNavigation()).setAvoidSunlight(false);
+        if (class_5493.method_30955(this.mob)) {
+            ((MobNavigation)this.mob.getNavigation()).setAvoidSunlight(false);
+        }
     }
 }
 

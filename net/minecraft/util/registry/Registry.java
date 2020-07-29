@@ -3,7 +3,6 @@
  */
 package net.minecraft.util.registry;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -57,7 +56,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
-import net.minecraft.structure.processor.StructureProcessor;
+import net.minecraft.structure.processor.ProcessorList;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.structure.rule.RuleTestType;
@@ -79,7 +78,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
@@ -171,12 +170,12 @@ IndexedIterable<T> {
     public static final Registry<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = Registry.create(LOOT_POOL_ENTRY_TYPE_KEY, () -> LootPoolEntryTypes.EMPTY);
     public static final Registry<LootFunctionType> LOOT_FUNCTION_TYPE = Registry.create(LOOT_FUNCTION_TYPE_KEY, () -> LootFunctionTypes.SET_COUNT);
     public static final Registry<LootConditionType> LOOT_CONDITION_TYPE = Registry.create(LOOT_CONDITION_TYPE_KEY, () -> LootConditionTypes.INVERTED);
-    public static final RegistryKey<Registry<ChunkGeneratorType>> NOISE_SETTINGS_WORLDGEN = Registry.createRegistryKey("worldgen/noise_settings");
+    public static final RegistryKey<Registry<ChunkGeneratorSettings>> NOISE_SETTINGS_WORLDGEN = Registry.createRegistryKey("worldgen/noise_settings");
     public static final RegistryKey<Registry<ConfiguredSurfaceBuilder<?>>> CONFIGURED_SURFACE_BUILDER_WORLDGEN = Registry.createRegistryKey("worldgen/configured_surface_builder");
     public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_WORLDGEN = Registry.createRegistryKey("worldgen/configured_carver");
     public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_WORLDGEN = Registry.createRegistryKey("worldgen/configured_feature");
     public static final RegistryKey<Registry<ConfiguredStructureFeature<?, ?>>> CONFIGURED_STRUCTURE_FEATURE_WORLDGEN = Registry.createRegistryKey("worldgen/configured_structure_feature");
-    public static final RegistryKey<Registry<ImmutableList<StructureProcessor>>> PROCESSOR_LIST_WORLDGEN = Registry.createRegistryKey("worldgen/processor_list");
+    public static final RegistryKey<Registry<ProcessorList>> PROCESSOR_LIST_WORLDGEN = Registry.createRegistryKey("worldgen/processor_list");
     public static final RegistryKey<Registry<StructurePool>> TEMPLATE_POOL_WORLDGEN = Registry.createRegistryKey("worldgen/template_pool");
     public static final RegistryKey<Registry<Biome>> BIOME_KEY = Registry.createRegistryKey("worldgen/biome");
     public static final RegistryKey<Registry<SurfaceBuilder<?>>> SURFACE_BUILD_KEY = Registry.createRegistryKey("worldgen/surface_builder");
@@ -336,9 +335,9 @@ IndexedIterable<T> {
 
     public abstract boolean containsId(Identifier var1);
 
-    public abstract boolean isLoaded(RegistryKey<T> var1);
-
-    public abstract boolean containsId(int var1);
+    public boolean containsId(int id) {
+        return this.get(id) != null;
+    }
 
     public static <T> T register(Registry<? super T> registry, String id, T entry) {
         return Registry.register(registry, new Identifier(id), entry);

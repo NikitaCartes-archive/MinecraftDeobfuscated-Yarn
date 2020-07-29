@@ -138,7 +138,7 @@ implements FlyingItemEntity {
             this.move(MovementType.SELF, vec3d);
             this.setVelocity(vec3d);
         }
-        HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER);
+        HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
         if (!this.noClip) {
             this.onCollision(hitResult);
             this.velocityDirty = true;

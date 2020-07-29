@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
-import net.minecraft.class_5491;
 import net.minecraft.client.resource.language.LanguageDefinition;
+import net.minecraft.client.resource.language.ReorderingUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import org.apache.logging.log4j.LogManager;
@@ -99,8 +99,8 @@ extends Language {
     }
 
     @Override
-    public class_5481 method_30934(StringRenderable stringRenderable) {
-        return class_5491.method_30922(stringRenderable, this.rightToLeft);
+    public OrderedText reorder(StringVisitable text) {
+        return ReorderingUtil.reorder(text, this.rightToLeft);
     }
 }
 

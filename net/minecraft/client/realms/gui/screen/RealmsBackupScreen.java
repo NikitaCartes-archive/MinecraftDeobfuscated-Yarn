@@ -215,9 +215,9 @@ extends RealmsScreen {
         this.renderBackground(matrices);
         this.backupObjectSelectionList.render(matrices, mouseX, mouseY, delta);
         this.titleLabel.render(this, matrices);
-        this.textRenderer.method_30883(matrices, field_26473, (this.width - 150) / 2 - 90, 20.0f, 0xA0A0A0);
+        this.textRenderer.draw(matrices, field_26473, (float)((this.width - 150) / 2 - 90), 20.0f, 0xA0A0A0);
         if (this.noBackups.booleanValue()) {
-            this.textRenderer.method_30883(matrices, field_26474, 20.0f, this.height / 2 - 10, 0xFFFFFF);
+            this.textRenderer.draw(matrices, field_26474, 20.0f, (float)(this.height / 2 - 10), 0xFFFFFF);
         }
         this.downloadButton.active = this.noBackups == false;
         super.render(matrices, mouseX, mouseY, delta);
@@ -234,7 +234,7 @@ extends RealmsScreen {
         int l = j - 12;
         int m = this.textRenderer.getWidth(text);
         this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.method_30881(matrixStack, text, k, l, 0xFFFFFF);
+        this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 0xFFFFFF);
     }
 
     @Environment(value=EnvType.CLIENT)

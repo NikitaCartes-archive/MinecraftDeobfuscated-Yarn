@@ -40,10 +40,10 @@ implements Toast {
         manager.drawTexture(matrices, 0, 0, 0, 96, this.getWidth(), this.getHeight());
         this.type.drawIcon(matrices, manager, 6, 6);
         if (this.description == null) {
-            manager.getGame().textRenderer.method_30883(matrices, this.title, 30.0f, 12.0f, -11534256);
+            manager.getGame().textRenderer.draw(matrices, this.title, 30.0f, 12.0f, -11534256);
         } else {
-            manager.getGame().textRenderer.method_30883(matrices, this.title, 30.0f, 7.0f, -11534256);
-            manager.getGame().textRenderer.method_30883(matrices, this.description, 30.0f, 18.0f, -16777216);
+            manager.getGame().textRenderer.draw(matrices, this.title, 30.0f, 7.0f, -11534256);
+            manager.getGame().textRenderer.draw(matrices, this.description, 30.0f, 18.0f, -16777216);
         }
         if (this.hasProgressBar) {
             DrawableHelper.fill(matrices, 3, 28, 157, 29, -1);

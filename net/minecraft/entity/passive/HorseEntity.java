@@ -83,7 +83,7 @@ extends HorseBaseEntity {
         ItemStack itemStack;
         super.readCustomDataFromTag(tag);
         this.setVariant(tag.getInt("Variant"));
-        if (tag.contains("ArmorItem", 10) && !(itemStack = ItemStack.fromTag(tag.getCompound("ArmorItem"))).isEmpty() && this.canEquip(itemStack)) {
+        if (tag.contains("ArmorItem", 10) && !(itemStack = ItemStack.fromTag(tag.getCompound("ArmorItem"))).isEmpty() && this.isHorseArmor(itemStack)) {
             this.items.setStack(1, itemStack);
         }
         this.updateSaddle();
@@ -124,7 +124,7 @@ extends HorseBaseEntity {
         if (!this.world.isClient) {
             int i;
             this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(HORSE_ARMOR_BONUS_ID);
-            if (this.canEquip(stack) && (i = ((HorseArmorItem)stack.getItem()).getBonus()) != 0) {
+            if (this.isHorseArmor(stack) && (i = ((HorseArmorItem)stack.getItem()).getBonus()) != 0) {
                 this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(HORSE_ARMOR_BONUS_ID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION));
             }
         }
@@ -135,7 +135,7 @@ extends HorseBaseEntity {
         ItemStack itemStack = this.getArmorType();
         super.onInventoryChanged(sender);
         ItemStack itemStack2 = this.getArmorType();
-        if (this.age > 20 && this.canEquip(itemStack2) && itemStack != itemStack2) {
+        if (this.age > 20 && this.isHorseArmor(itemStack2) && itemStack != itemStack2) {
             this.playSound(SoundEvents.ENTITY_HORSE_ARMOR, 0.5f, 1.0f);
         }
     }
@@ -204,7 +204,7 @@ extends HorseBaseEntity {
                 return ActionResult.success(this.world.isClient);
             }
             boolean bl2 = bl = !this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE;
-            if (this.canEquip(itemStack) || bl) {
+            if (this.isHorseArmor(itemStack) || bl) {
                 this.openInventory(player);
                 return ActionResult.success(this.world.isClient);
             }
@@ -246,12 +246,12 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public boolean canEquip() {
+    public boolean hasArmorSlot() {
         return true;
     }
 
     @Override
-    public boolean canEquip(ItemStack item) {
+    public boolean isHorseArmor(ItemStack item) {
         return item.getItem() instanceof HorseArmorItem;
     }
 

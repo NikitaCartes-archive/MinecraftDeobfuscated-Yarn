@@ -120,18 +120,17 @@ extends Entity {
     }
 
     @Override
-    @Nullable
-    public Box getHardCollisionBox(Entity collidingEntity) {
-        if (collidingEntity.isPushable()) {
-            return collidingEntity.getBoundingBox();
-        }
-        return null;
+    public boolean method_30949(Entity entity) {
+        return BoatEntity.method_30959(this, entity);
+    }
+
+    public static boolean method_30959(Entity entity, Entity entity2) {
+        return (entity2.method_30948() || entity2.isPushable()) && !entity.isConnectedThroughVehicle(entity2);
     }
 
     @Override
-    @Nullable
-    public Box getCollisionBox() {
-        return this.getBoundingBox();
+    public boolean method_30948() {
+        return true;
     }
 
     @Override

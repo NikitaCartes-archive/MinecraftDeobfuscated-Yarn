@@ -351,13 +351,13 @@ AutoCloseable {
             this.bobView(matrices, tickDelta);
         }
         boolean bl2 = bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
-        if (this.client.options.perspective == 0 && !bl && !this.client.options.hudHidden && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
+        if (this.client.options.getPerspective().isFirstPerson() && !bl && !this.client.options.hudHidden && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
             this.lightmapTextureManager.enable();
             this.firstPersonRenderer.renderItem(tickDelta, matrices, this.buffers.getEntityVertexConsumers(), this.client.player, this.client.getEntityRenderDispatcher().getLight(this.client.player, tickDelta));
             this.lightmapTextureManager.disable();
         }
         matrices.pop();
-        if (this.client.options.perspective == 0 && !bl) {
+        if (this.client.options.getPerspective().isFirstPerson() && !bl) {
             InGameOverlayRenderer.renderOverlays(this.client, matrices);
             this.bobViewWhenHurt(matrices, tickDelta);
         }
@@ -540,7 +540,7 @@ AutoCloseable {
         if (this.client.options.bobView) {
             this.bobView(matrixStack, tickDelta);
         }
-        if ((f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f) {
+        if ((f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength) * (this.client.options.distortionEffectScale * this.client.options.distortionEffectScale)) > 0.0f) {
             int i = 20;
             if (this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
                 i = 7;
@@ -555,7 +555,7 @@ AutoCloseable {
         }
         Matrix4f matrix4f = matrixStack.peek().getModel();
         this.loadProjectionMatrix(matrix4f);
-        camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), this.client.options.perspective > 0, this.client.options.perspective == 2, tickDelta);
+        camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), !this.client.options.getPerspective().isFirstPerson(), this.client.options.getPerspective().isFrontView(), tickDelta);
         matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
         matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0f));
         this.client.worldRenderer.render(matrix, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);

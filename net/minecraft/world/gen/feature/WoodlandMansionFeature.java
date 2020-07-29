@@ -43,7 +43,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig) {
         Set<Biome> set = biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32);
         for (Biome biome2 : set) {
-            if (biome2.hasStructureFeature(this)) continue;
+            if (biome2.getGenerationSettings().hasStructureFeature(this)) continue;
             return false;
         }
         return true;

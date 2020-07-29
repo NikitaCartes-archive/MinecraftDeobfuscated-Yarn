@@ -45,7 +45,7 @@ extends RealmsScreen {
         } else {
             this.line1 = new LiteralText("Realms (" + realmsServiceException.errorCode + "):");
             String string = "mco.errorMessage." + realmsServiceException.errorCode;
-            this.line2 = I18n.hasTranslation(string) ? new TranslatableText(string) : Text.method_30163(realmsServiceException.errorMsg);
+            this.line2 = I18n.hasTranslation(string) ? new TranslatableText(string) : Text.of(realmsServiceException.errorMsg);
         }
     }
 

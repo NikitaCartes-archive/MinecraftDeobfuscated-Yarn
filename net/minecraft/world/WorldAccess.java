@@ -6,7 +6,6 @@ package net.minecraft.world;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.class_5423;
-import net.minecraft.class_5424;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.particle.ParticleEffect;
@@ -15,6 +14,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.LunarWorldView;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.chunk.ChunkManager;
@@ -22,9 +22,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface WorldAccess
 extends class_5423,
-class_5424 {
+LunarWorldView {
     @Override
-    default public long method_30271() {
+    default public long getLunarTime() {
         return this.getLevelProperties().getTimeOfDay();
     }
 

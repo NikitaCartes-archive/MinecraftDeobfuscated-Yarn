@@ -7,6 +7,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -53,7 +54,11 @@ NamedScreenHandlerFactory {
     public void dropItems(DamageSource damageSource) {
         super.dropItems(damageSource);
         if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+            Entity entity;
             ItemScatterer.spawn(this.world, this, (Inventory)this);
+            if (!this.world.isClient && (entity = damageSource.getSource()) != null && entity.getType() == EntityType.PLAYER) {
+                PiglinBrain.onGuardedBlockBroken((PlayerEntity)entity, true);
+            }
         }
     }
 
@@ -162,7 +167,11 @@ NamedScreenHandlerFactory {
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
         player.openHandledScreen(this);
-        return ActionResult.success(this.world.isClient);
+        if (!player.world.isClient) {
+            PiglinBrain.onGuardedBlockBroken(player, true);
+            return ActionResult.CONSUME;
+        }
+        return ActionResult.SUCCESS;
     }
 
     @Override

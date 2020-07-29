@@ -81,7 +81,7 @@ extends Task<PathAwareEntity> {
             retryMarker.method_29926(l);
             return true;
         };
-        Set<BlockPos> set = pointOfInterestStorage.getPositions(this.poiType.getCompletionCondition(), predicate, pathAwareEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE).limit(5L).collect(Collectors.toSet());
+        Set<BlockPos> set = pointOfInterestStorage.method_30957(this.poiType.getCompletionCondition(), predicate, pathAwareEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE).limit(5L).collect(Collectors.toSet());
         Path path = pathAwareEntity.getNavigation().method_29934(set, this.poiType.getSearchDistance());
         if (path != null && path.reachesTarget()) {
             BlockPos blockPos2 = path.getTarget();

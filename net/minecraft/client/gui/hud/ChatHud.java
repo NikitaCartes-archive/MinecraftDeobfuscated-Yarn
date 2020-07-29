@@ -10,7 +10,6 @@ import java.util.Deque;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.ChatHudLine;
@@ -18,6 +17,7 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -33,7 +33,7 @@ extends DrawableHelper {
     private final MinecraftClient client;
     private final List<String> messageHistory = Lists.newArrayList();
     private final List<ChatHudLine<Text>> messages = Lists.newArrayList();
-    private final List<ChatHudLine<class_5481>> visibleMessages = Lists.newArrayList();
+    private final List<ChatHudLine<OrderedText>> visibleMessages = Lists.newArrayList();
     private final Deque<Text> field_23934 = Queues.newArrayDeque();
     private int scrolledLines;
     private boolean hasUnreadNewMessages;
@@ -72,7 +72,7 @@ extends DrawableHelper {
         double h = -8.0 * (this.client.options.chatLineSpacing + 1.0) + 4.0 * this.client.options.chatLineSpacing;
         int l = 0;
         for (m = 0; m + this.scrolledLines < this.visibleMessages.size() && m < i; ++m) {
-            ChatHudLine<class_5481> chatHudLine = this.visibleMessages.get(m + this.scrolledLines);
+            ChatHudLine<OrderedText> chatHudLine = this.visibleMessages.get(m + this.scrolledLines);
             if (chatHudLine == null || (n = tickDelta - chatHudLine.getCreationTick()) >= 200 && !bl) continue;
             double o = bl ? 1.0 : ChatHud.getMessageOpacityMultiplier(n);
             p = (int)(255.0 * o * e);
@@ -99,7 +99,7 @@ extends DrawableHelper {
             ChatHud.fill(matrices, -2, 0, k + 4, 9, t << 24);
             RenderSystem.enableBlend();
             matrices.translate(0.0, 0.0, 50.0);
-            this.client.textRenderer.method_30881(matrices, new TranslatableText("chat.queue", this.field_23934.size()), 0.0f, 1.0f, 0xFFFFFF + (m << 24));
+            this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("chat.queue", this.field_23934.size()), 0.0f, 1.0f, 0xFFFFFF + (m << 24));
             matrices.pop();
             RenderSystem.disableAlphaTest();
             RenderSystem.disableBlend();
@@ -156,14 +156,14 @@ extends DrawableHelper {
             this.removeMessage(messageId);
         }
         int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
-        List<class_5481> list = ChatMessages.breakRenderedChatMessageLines(text, i, this.client.textRenderer);
+        List<OrderedText> list = ChatMessages.breakRenderedChatMessageLines(text, i, this.client.textRenderer);
         boolean bl2 = this.isChatFocused();
-        for (class_5481 lv : list) {
+        for (OrderedText orderedText : list) {
             if (bl2 && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
                 this.scroll(1.0);
             }
-            this.visibleMessages.add(0, new ChatHudLine<class_5481>(timestamp, lv, messageId));
+            this.visibleMessages.add(0, new ChatHudLine<OrderedText>(timestamp, orderedText, messageId));
         }
         while (this.visibleMessages.size() > 100) {
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
@@ -241,7 +241,7 @@ extends DrawableHelper {
         }
         int i = Math.min(this.getVisibleLineCount(), this.visibleMessages.size());
         if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < (double)(this.client.textRenderer.fontHeight * i + i) && (j = (int)(e / (double)this.client.textRenderer.fontHeight + (double)this.scrolledLines)) >= 0 && j < this.visibleMessages.size()) {
-            ChatHudLine<class_5481> chatHudLine = this.visibleMessages.get(j);
+            ChatHudLine<OrderedText> chatHudLine = this.visibleMessages.get(j);
             return this.client.textRenderer.getTextHandler().method_30876(chatHudLine.getText(), (int)d);
         }
         return null;

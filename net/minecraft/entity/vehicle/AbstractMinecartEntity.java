@@ -31,6 +31,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
@@ -152,12 +153,8 @@ extends Entity {
     }
 
     @Override
-    @Nullable
-    public Box getHardCollisionBox(Entity collidingEntity) {
-        if (collidingEntity.isPushable()) {
-            return collidingEntity.getBoundingBox();
-        }
-        return null;
+    public boolean method_30949(Entity entity) {
+        return BoatEntity.method_30959(this, entity);
     }
 
     @Override

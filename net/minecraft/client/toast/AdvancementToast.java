@@ -10,12 +10,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.class_5481;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.OrderedText;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -36,22 +36,22 @@ implements Toast {
         manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
         if (advancementDisplay != null) {
             int i;
-            List<class_5481> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
+            List<OrderedText> list = manager.getGame().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
             int n = i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 0xFF88FF : 0xFFFF00;
             if (list.size() == 1) {
-                manager.getGame().textRenderer.method_30883(matrices, advancementDisplay.getFrame().getToastText(), 30.0f, 7.0f, i | 0xFF000000);
+                manager.getGame().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0f, 7.0f, i | 0xFF000000);
                 manager.getGame().textRenderer.draw(matrices, list.get(0), 30.0f, 18.0f, -1);
             } else {
                 int j = 1500;
                 float f = 300.0f;
                 if (startTime < 1500L) {
                     int k = MathHelper.floor(MathHelper.clamp((float)(1500L - startTime) / 300.0f, 0.0f, 1.0f) * 255.0f) << 24 | 0x4000000;
-                    manager.getGame().textRenderer.method_30883(matrices, advancementDisplay.getFrame().getToastText(), 30.0f, 11.0f, i | k);
+                    manager.getGame().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0f, 11.0f, i | k);
                 } else {
                     int k = MathHelper.floor(MathHelper.clamp((float)(startTime - 1500L) / 300.0f, 0.0f, 1.0f) * 252.0f) << 24 | 0x4000000;
                     int l = this.getHeight() / 2 - list.size() * manager.getGame().textRenderer.fontHeight / 2;
-                    for (class_5481 lv : list) {
-                        manager.getGame().textRenderer.draw(matrices, lv, 30.0f, (float)l, 0xFFFFFF | k);
+                    for (OrderedText orderedText : list) {
+                        manager.getGame().textRenderer.draw(matrices, orderedText, 30.0f, (float)l, 0xFFFFFF | k);
                         l += manager.getGame().textRenderer.fontHeight;
                     }
                 }

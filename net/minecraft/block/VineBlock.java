@@ -3,8 +3,11 @@
  */
 package net.minecraft.block;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -35,36 +38,42 @@ extends Block {
     public static final BooleanProperty SOUTH = ConnectingBlock.SOUTH;
     public static final BooleanProperty WEST = ConnectingBlock.WEST;
     public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(Util.toMap());
-    protected static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
-    protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
-    protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-    protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
-    protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
+    private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+    private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
+    private final Map<BlockState, VoxelShape> field_26659;
 
     public VineBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(UP, false)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false));
+        this.field_26659 = ImmutableMap.copyOf(this.stateManager.getStates().stream().collect(Collectors.toMap(Function.identity(), VineBlock::method_31018)));
+    }
+
+    private static VoxelShape method_31018(BlockState blockState) {
+        VoxelShape voxelShape = VoxelShapes.empty();
+        if (blockState.get(UP).booleanValue()) {
+            voxelShape = UP_SHAPE;
+        }
+        if (blockState.get(NORTH).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
+        }
+        if (blockState.get(SOUTH).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
+        }
+        if (blockState.get(EAST).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
+        }
+        if (blockState.get(WEST).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
+        }
+        return voxelShape;
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        VoxelShape voxelShape = VoxelShapes.empty();
-        if (state.get(UP).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, UP_SHAPE);
-        }
-        if (state.get(NORTH).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
-        }
-        if (state.get(EAST).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
-        }
-        if (state.get(SOUTH).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
-        }
-        if (state.get(WEST).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
-        }
-        return voxelShape;
+        return this.field_26659.get(state);
     }
 
     @Override

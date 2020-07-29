@@ -17,6 +17,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
@@ -27,11 +28,13 @@ import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -152,9 +155,10 @@ Saddleable {
     protected void initGoals() {
         this.escapeDangerGoal = new EscapeDangerGoal(this, 1.65);
         this.goalSelector.add(1, this.escapeDangerGoal);
-        this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
+        this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
         this.temptGoal = new TemptGoal((PathAwareEntity)this, 1.4, false, ATTRACTING_INGREDIENT);
-        this.goalSelector.add(4, this.temptGoal);
+        this.goalSelector.add(3, this.temptGoal);
+        this.goalSelector.add(4, new class_5494(this, 1.5));
         this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
         this.goalSelector.add(7, new WanderAroundGoal(this, 1.0, 60));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
@@ -179,24 +183,10 @@ Saddleable {
     }
 
     @Override
-    @Nullable
-    public Box getHardCollisionBox(Entity collidingEntity) {
-        if (collidingEntity.isPushable()) {
-            return collidingEntity.getBoundingBox();
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isPushable() {
-        return true;
-    }
-
-    @Override
     public double getMountedHeightOffset() {
         float f = Math.min(0.25f, this.limbDistance);
         float g = this.limbAngle;
-        return (double)this.getHeight() - 0.3 + (double)(0.12f * MathHelper.cos(g * 1.5f) * 2.0f * f);
+        return (double)this.getHeight() - 0.19 + (double)(0.12f * MathHelper.cos(g * 1.5f) * 2.0f * f);
     }
 
     @Override
@@ -383,7 +373,7 @@ Saddleable {
         if (world.getBlockState(pos).getFluidState().isIn(FluidTags.LAVA)) {
             return 10.0f;
         }
-        return 0.0f;
+        return this.isInLava() ? Float.NEGATIVE_INFINITY : 0.0f;
     }
 
     @Override
@@ -442,6 +432,7 @@ Saddleable {
         if (this.random.nextInt(30) == 0) {
             MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorldAccess.toServerWorld());
             entityData = this.method_30336(serverWorldAccess, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false));
+            mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
             this.saddle(null);
         } else if (this.random.nextInt(10) == 0) {
             PassiveEntity passiveEntity = EntityType.STRIDER.create(serverWorldAccess.toServerWorld());
@@ -463,6 +454,41 @@ Saddleable {
     @Override
     public /* synthetic */ PassiveEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         return this.createChild(serverWorld, passiveEntity);
+    }
+
+    static class class_5494
+    extends MoveToTargetPosGoal {
+        private final StriderEntity field_26632;
+
+        private class_5494(StriderEntity striderEntity, double d) {
+            super(striderEntity, d, 8, 2);
+            this.field_26632 = striderEntity;
+        }
+
+        @Override
+        public BlockPos method_30953() {
+            return this.targetPos;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return !this.field_26632.isInLava() && this.isTargetPos(this.field_26632.world, this.targetPos);
+        }
+
+        @Override
+        public boolean canStart() {
+            return !this.field_26632.isInLava() && super.canStart();
+        }
+
+        @Override
+        public boolean shouldResetPath() {
+            return this.tryingTime % 20 == 0;
+        }
+
+        @Override
+        protected boolean isTargetPos(WorldView world, BlockPos pos) {
+            return world.getBlockState(pos).isOf(Blocks.LAVA) && world.getBlockState(pos.up()).canPathfindThrough(world, pos, NavigationType.LAND);
+        }
     }
 
     static class Navigation

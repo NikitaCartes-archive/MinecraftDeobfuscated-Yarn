@@ -145,7 +145,7 @@ implements ClientAdvancementManager.Listener {
             }
             RenderSystem.disableBlend();
         }
-        this.textRenderer.method_30883(matrixStack, field_26555, i + 8, j + 6, 0x404040);
+        this.textRenderer.draw(matrixStack, field_26555, (float)(i + 8), (float)(j + 6), 0x404040);
     }
 
     private void drawWidgetTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {

@@ -4,7 +4,6 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import java.util.function.Supplier;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -21,7 +20,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
-    public static final MapCodec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE.dispatchMap(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
+    public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE.dispatch(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
     public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC);
     public final F feature;
     public final FC config;

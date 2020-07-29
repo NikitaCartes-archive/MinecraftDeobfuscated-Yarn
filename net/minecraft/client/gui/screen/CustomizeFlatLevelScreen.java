@@ -179,7 +179,7 @@ extends Screen {
                 }
                 ItemStack itemStack = new ItemStack(item);
                 this.method_19375(matrices, x, y, itemStack);
-                CustomizeFlatLevelScreen.this.textRenderer.method_30883(matrices, item.getName(itemStack), x + 18 + 5, y + 3, 0xFFFFFF);
+                CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, item.getName(itemStack), (float)(x + 18 + 5), (float)(y + 3), 0xFFFFFF);
                 String string = index == 0 ? I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness()) : (index == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1 ? I18n.translate("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness()) : I18n.translate("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness()));
                 CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, string, (float)(x + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getWidth(string)), (float)(y + 3), 0xFFFFFF);
             }

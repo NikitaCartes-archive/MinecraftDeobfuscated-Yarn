@@ -33,10 +33,10 @@ public class EyeOfEnderEntity
 extends Entity
 implements FlyingItemEntity {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(EyeOfEnderEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private double velocityX;
-    private double velocityY;
-    private double velocityZ;
-    private int useCount;
+    private double targetX;
+    private double targetY;
+    private double targetZ;
+    private int lifespan;
     private boolean dropsItem;
 
     public EyeOfEnderEntity(EntityType<? extends EyeOfEnderEntity> entityType, World world) {
@@ -45,7 +45,7 @@ implements FlyingItemEntity {
 
     public EyeOfEnderEntity(World world, double x, double y, double z) {
         this((EntityType<? extends EyeOfEnderEntity>)EntityType.EYE_OF_ENDER, world);
-        this.useCount = 0;
+        this.lifespan = 0;
         this.updatePosition(x, y, z);
     }
 
@@ -80,7 +80,13 @@ implements FlyingItemEntity {
         return distance < (d *= 64.0) * d;
     }
 
-    public void moveTowards(BlockPos pos) {
+    /**
+     * Sets where the eye will fly towards.
+     * If close enough, it will fly directly towards it, otherwise, it will fly upwards, in the direction of the BlockPos.
+     * 
+     * @param pos the block the eye of ender is drawn towards
+     */
+    public void initTargetPos(BlockPos pos) {
         double g;
         double d = pos.getX();
         int i = pos.getY();
@@ -88,15 +94,15 @@ implements FlyingItemEntity {
         double f = d - this.getX();
         float h = MathHelper.sqrt(f * f + (g = e - this.getZ()) * g);
         if (h > 12.0f) {
-            this.velocityX = this.getX() + f / (double)h * 12.0;
-            this.velocityZ = this.getZ() + g / (double)h * 12.0;
-            this.velocityY = this.getY() + 8.0;
+            this.targetX = this.getX() + f / (double)h * 12.0;
+            this.targetZ = this.getZ() + g / (double)h * 12.0;
+            this.targetY = this.getY() + 8.0;
         } else {
-            this.velocityX = d;
-            this.velocityY = i;
-            this.velocityZ = e;
+            this.targetX = d;
+            this.targetY = i;
+            this.targetZ = e;
         }
-        this.useCount = 0;
+        this.lifespan = 0;
         this.dropsItem = this.random.nextInt(5) > 0;
     }
 
@@ -124,8 +130,8 @@ implements FlyingItemEntity {
         this.pitch = ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875));
         this.yaw = ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
         if (!this.world.isClient) {
-            double h = this.velocityX - d;
-            double i = this.velocityZ - f;
+            double h = this.targetX - d;
+            double i = this.targetZ - f;
             float j = (float)Math.sqrt(h * h + i * i);
             float k = (float)MathHelper.atan2(i, h);
             double l = MathHelper.lerp(0.0025, (double)g, (double)j);
@@ -134,7 +140,7 @@ implements FlyingItemEntity {
                 l *= 0.8;
                 m *= 0.8;
             }
-            int n = this.getY() < this.velocityY ? 1 : -1;
+            int n = this.getY() < this.targetY ? 1 : -1;
             vec3d = new Vec3d(Math.cos(k) * l, m + ((double)n - m) * (double)0.015f, Math.sin(k) * l);
             this.setVelocity(vec3d);
         }
@@ -148,8 +154,8 @@ implements FlyingItemEntity {
         }
         if (!this.world.isClient) {
             this.updatePosition(d, e, f);
-            ++this.useCount;
-            if (this.useCount > 80 && !this.world.isClient) {
+            ++this.lifespan;
+            if (this.lifespan > 80 && !this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0f, 1.0f);
                 this.remove();
                 if (this.dropsItem) {

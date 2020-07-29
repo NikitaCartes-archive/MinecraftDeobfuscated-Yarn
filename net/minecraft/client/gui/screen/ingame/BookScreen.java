@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -25,7 +24,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -45,14 +45,14 @@ extends Screen {
         }
 
         @Override
-        public StringRenderable getPageUnchecked(int index) {
-            return StringRenderable.EMPTY;
+        public StringVisitable getPageUnchecked(int index) {
+            return StringVisitable.EMPTY;
         }
     };
     public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
     private Contents contents;
     private int pageIndex;
-    private List<class_5481> cachedPage = Collections.emptyList();
+    private List<OrderedText> cachedPage = Collections.emptyList();
     private int cachedPageIndex = -1;
     private Text field_25897 = LiteralText.EMPTY;
     private PageTurnWidget nextPageButton;
@@ -163,17 +163,17 @@ extends Screen {
         int j = 2;
         this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
         if (this.cachedPageIndex != this.pageIndex) {
-            StringRenderable stringRenderable = this.contents.getPage(this.pageIndex);
-            this.cachedPage = this.textRenderer.wrapLines(stringRenderable, 114);
+            StringVisitable stringVisitable = this.contents.getPage(this.pageIndex);
+            this.cachedPage = this.textRenderer.wrapLines(stringVisitable, 114);
             this.field_25897 = new TranslatableText("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
         }
         this.cachedPageIndex = this.pageIndex;
         int k = this.textRenderer.getWidth(this.field_25897);
-        this.textRenderer.method_30883(matrices, this.field_25897, i - k + 192 - 44, 18.0f, 0);
+        this.textRenderer.draw(matrices, this.field_25897, (float)(i - k + 192 - 44), 18.0f, 0);
         int l = Math.min(128 / this.textRenderer.fontHeight, this.cachedPage.size());
         for (int m = 0; m < l; ++m) {
-            class_5481 lv = this.cachedPage.get(m);
-            this.textRenderer.draw(matrices, lv, (float)(i + 36), (float)(32 + m * this.textRenderer.fontHeight), 0);
+            OrderedText orderedText = this.cachedPage.get(m);
+            this.textRenderer.draw(matrices, orderedText, (float)(i + 36), (float)(32 + m * this.textRenderer.fontHeight), 0);
         }
         Style style = this.getTextAt(mouseX, mouseY);
         if (style != null) {
@@ -227,8 +227,8 @@ extends Screen {
         if (i <= 114 && j < this.client.textRenderer.fontHeight * k + k) {
             int l = j / this.client.textRenderer.fontHeight;
             if (l >= 0 && l < this.cachedPage.size()) {
-                class_5481 lv = this.cachedPage.get(l);
-                return this.client.textRenderer.getTextHandler().method_30876(lv, i);
+                OrderedText orderedText = this.cachedPage.get(l);
+                return this.client.textRenderer.getTextHandler().method_30876(orderedText, i);
             }
             return null;
         }
@@ -264,8 +264,8 @@ extends Screen {
         }
 
         @Override
-        public StringRenderable getPageUnchecked(int index) {
-            return StringRenderable.plain(this.pages.get(index));
+        public StringVisitable getPageUnchecked(int index) {
+            return StringVisitable.plain(this.pages.get(index));
         }
     }
 
@@ -292,17 +292,17 @@ extends Screen {
         }
 
         @Override
-        public StringRenderable getPageUnchecked(int index) {
+        public StringVisitable getPageUnchecked(int index) {
             String string = this.pages.get(index);
             try {
-                MutableText stringRenderable = Text.Serializer.fromJson(string);
-                if (stringRenderable != null) {
-                    return stringRenderable;
+                MutableText stringVisitable = Text.Serializer.fromJson(string);
+                if (stringVisitable != null) {
+                    return stringVisitable;
                 }
             } catch (Exception exception) {
                 // empty catch block
             }
-            return StringRenderable.plain(string);
+            return StringVisitable.plain(string);
         }
     }
 
@@ -310,13 +310,13 @@ extends Screen {
     public static interface Contents {
         public int getPageCount();
 
-        public StringRenderable getPageUnchecked(int var1);
+        public StringVisitable getPageUnchecked(int var1);
 
-        default public StringRenderable getPage(int index) {
+        default public StringVisitable getPage(int index) {
             if (index >= 0 && index < this.getPageCount()) {
                 return this.getPageUnchecked(index);
             }
-            return StringRenderable.EMPTY;
+            return StringVisitable.EMPTY;
         }
 
         public static Contents create(ItemStack stack) {

@@ -9,7 +9,6 @@ import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +63,7 @@ extends AbstractPhase {
             this.field_7054.next();
             if (!this.field_7054.isFinished()) {
                 double d;
-                Vec3i vec3i = this.field_7054.getCurrentPosition();
+                BlockPos vec3i = this.field_7054.method_31032();
                 this.field_7054.next();
                 while ((d = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0f)) < (double)vec3i.getY()) {
                 }

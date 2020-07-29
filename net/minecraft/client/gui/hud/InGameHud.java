@@ -85,6 +85,7 @@ import org.jetbrains.annotations.Nullable;
 public class InGameHud
 extends DrawableHelper {
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
+    private static final Identifier NAUSEA_TEXTURE = new Identifier("textures/misc/nausea.png");
     private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
     private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
     private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
@@ -149,7 +150,7 @@ extends DrawableHelper {
     }
 
     public void render(MatrixStack matrixStack, float f) {
-        int j;
+        int k;
         float g;
         this.scaledWidth = this.client.getWindow().getScaledWidth();
         this.scaledHeight = this.client.getWindow().getScaledHeight();
@@ -162,11 +163,17 @@ extends DrawableHelper {
             RenderSystem.defaultBlendFunc();
         }
         ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
-        if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
+        if (this.client.options.getPerspective().isFirstPerson() && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
             this.renderPumpkinOverlay();
         }
-        if (!this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && (g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f) {
-            this.renderPortalOverlay(g);
+        if ((g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f) {
+            if (this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
+                if (this.client.options.distortionEffectScale < 1.0f) {
+                    this.renderNauseaOverlay(g * (1.0f - this.client.options.distortionEffectScale));
+                }
+            } else {
+                this.renderPortalOverlay(g);
+            }
         }
         if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
             this.spectatorHud.render(matrixStack, f);
@@ -206,13 +213,13 @@ extends DrawableHelper {
             this.client.getProfiler().push("sleep");
             RenderSystem.disableDepthTest();
             RenderSystem.disableAlphaTest();
-            g = this.client.player.getSleepTimer();
-            float h = g / 100.0f;
-            if (h > 1.0f) {
-                h = 1.0f - (g - 100.0f) / 10.0f;
+            float h = this.client.player.getSleepTimer();
+            float j = h / 100.0f;
+            if (j > 1.0f) {
+                j = 1.0f - (h - 100.0f) / 10.0f;
             }
-            j = (int)(220.0f * h) << 24 | 0x101020;
-            InGameHud.fill(matrixStack, 0, 0, this.scaledWidth, this.scaledHeight, j);
+            k = (int)(220.0f * j) << 24 | 0x101020;
+            InGameHud.fill(matrixStack, 0, 0, this.scaledWidth, this.scaledHeight, k);
             RenderSystem.enableAlphaTest();
             RenderSystem.enableDepthTest();
             this.client.getProfiler().pop();
@@ -227,28 +234,28 @@ extends DrawableHelper {
         }
         if (!this.client.options.hudHidden) {
             ScoreboardObjective scoreboardObjective2;
+            int n;
             int m;
-            int l;
             if (this.overlayMessage != null && this.overlayRemaining > 0) {
                 this.client.getProfiler().push("overlayMessage");
-                g = (float)this.overlayRemaining - f;
-                int k = (int)(g * 255.0f / 20.0f);
-                if (k > 255) {
-                    k = 255;
+                float h = (float)this.overlayRemaining - f;
+                int l = (int)(h * 255.0f / 20.0f);
+                if (l > 255) {
+                    l = 255;
                 }
-                if (k > 8) {
+                if (l > 8) {
                     RenderSystem.pushMatrix();
                     RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight - 68, 0.0f);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
-                    j = 0xFFFFFF;
+                    k = 0xFFFFFF;
                     if (this.overlayTinted) {
-                        j = MathHelper.hsvToRgb(g / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
+                        k = MathHelper.hsvToRgb(h / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
                     }
-                    l = k << 24 & 0xFF000000;
-                    m = textRenderer.getWidth(this.overlayMessage);
-                    this.drawTextBackground(matrixStack, textRenderer, -4, m, 0xFFFFFF | l);
-                    textRenderer.method_30883(matrixStack, this.overlayMessage, -m / 2, -4.0f, j | l);
+                    m = l << 24 & 0xFF000000;
+                    n = textRenderer.getWidth(this.overlayMessage);
+                    this.drawTextBackground(matrixStack, textRenderer, -4, n, 0xFFFFFF | m);
+                    textRenderer.draw(matrixStack, this.overlayMessage, (float)(-n / 2), -4.0f, k | m);
                     RenderSystem.disableBlend();
                     RenderSystem.popMatrix();
                 }
@@ -256,33 +263,33 @@ extends DrawableHelper {
             }
             if (this.title != null && this.titleTotalTicks > 0) {
                 this.client.getProfiler().push("titleAndSubtitle");
-                g = (float)this.titleTotalTicks - f;
-                int k = 255;
+                float h = (float)this.titleTotalTicks - f;
+                int l = 255;
                 if (this.titleTotalTicks > this.titleFadeOutTicks + this.titleRemainTicks) {
-                    float n = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - g;
-                    k = (int)(n * 255.0f / (float)this.titleFadeInTicks);
+                    float o = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - h;
+                    l = (int)(o * 255.0f / (float)this.titleFadeInTicks);
                 }
                 if (this.titleTotalTicks <= this.titleFadeOutTicks) {
-                    k = (int)(g * 255.0f / (float)this.titleFadeOutTicks);
+                    l = (int)(h * 255.0f / (float)this.titleFadeOutTicks);
                 }
-                if ((k = MathHelper.clamp(k, 0, 255)) > 8) {
+                if ((l = MathHelper.clamp(l, 0, 255)) > 8) {
                     RenderSystem.pushMatrix();
                     RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, 0.0f);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     RenderSystem.pushMatrix();
                     RenderSystem.scalef(4.0f, 4.0f, 4.0f);
-                    int j2 = k << 24 & 0xFF000000;
-                    l = textRenderer.getWidth(this.title);
-                    this.drawTextBackground(matrixStack, textRenderer, -10, l, 0xFFFFFF | j2);
-                    textRenderer.method_30881(matrixStack, this.title, -l / 2, -10.0f, 0xFFFFFF | j2);
+                    int k2 = l << 24 & 0xFF000000;
+                    m = textRenderer.getWidth(this.title);
+                    this.drawTextBackground(matrixStack, textRenderer, -10, m, 0xFFFFFF | k2);
+                    textRenderer.drawWithShadow(matrixStack, this.title, (float)(-m / 2), -10.0f, 0xFFFFFF | k2);
                     RenderSystem.popMatrix();
                     if (this.subtitle != null) {
                         RenderSystem.pushMatrix();
                         RenderSystem.scalef(2.0f, 2.0f, 2.0f);
-                        m = textRenderer.getWidth(this.subtitle);
-                        this.drawTextBackground(matrixStack, textRenderer, 5, m, 0xFFFFFF | j2);
-                        textRenderer.method_30881(matrixStack, this.subtitle, -m / 2, 5.0f, 0xFFFFFF | j2);
+                        n = textRenderer.getWidth(this.subtitle);
+                        this.drawTextBackground(matrixStack, textRenderer, 5, n, 0xFFFFFF | k2);
+                        textRenderer.drawWithShadow(matrixStack, this.subtitle, (float)(-n / 2), 5.0f, 0xFFFFFF | k2);
                         RenderSystem.popMatrix();
                     }
                     RenderSystem.disableBlend();
@@ -294,8 +301,8 @@ extends DrawableHelper {
             Scoreboard scoreboard = this.client.world.getScoreboard();
             ScoreboardObjective scoreboardObjective = null;
             Team team = scoreboard.getPlayerTeam(this.client.player.getEntityName());
-            if (team != null && (l = team.getColor().getColorIndex()) >= 0) {
-                scoreboardObjective = scoreboard.getObjectiveForSlot(3 + l);
+            if (team != null && (m = team.getColor().getColorIndex()) >= 0) {
+                scoreboardObjective = scoreboard.getObjectiveForSlot(3 + m);
             }
             ScoreboardObjective scoreboardObjective3 = scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective : scoreboard.getObjectiveForSlot(1);
             if (scoreboardObjective2 != null) {
@@ -332,7 +339,7 @@ extends DrawableHelper {
 
     private void renderCrosshair(MatrixStack matrices) {
         GameOptions gameOptions = this.client.options;
-        if (gameOptions.perspective != 0) {
+        if (!gameOptions.getPerspective().isFirstPerson()) {
             return;
         }
         if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
@@ -561,7 +568,7 @@ extends DrawableHelper {
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
                 InGameHud.fill(matrixStack, j - 2, k - 2, j + i + 2, k + this.getFontRenderer().fontHeight + 2, this.client.options.getTextBackgroundColor(0));
-                this.getFontRenderer().method_30881(matrixStack, mutableText, j, k, 0xFFFFFF + (l << 24));
+                this.getFontRenderer().drawWithShadow(matrixStack, mutableText, (float)j, (float)k, 0xFFFFFF + (l << 24));
                 RenderSystem.disableBlend();
                 RenderSystem.popMatrix();
             }
@@ -573,7 +580,7 @@ extends DrawableHelper {
         this.client.getProfiler().push("demo");
         Text text = this.client.world.getTime() >= 120500L ? DEMO_EXPIRED_MESSAGE : new TranslatableText("demo.remainingTime", ChatUtil.ticksToString((int)(120500L - this.client.world.getTime())));
         int i = this.getFontRenderer().getWidth(text);
-        this.getFontRenderer().method_30881(matrices, text, this.scaledWidth - i - 10, 5.0f, 0xFFFFFF);
+        this.getFontRenderer().drawWithShadow(matrices, text, (float)(this.scaledWidth - i - 10), 5.0f, 0xFFFFFF);
         this.client.getProfiler().pop();
     }
 
@@ -608,12 +615,12 @@ extends DrawableHelper {
             int t = m - ++p * this.getFontRenderer().fontHeight;
             int u = this.scaledWidth - 3 + 2;
             InGameHud.fill(matrices, s - 2, t, u, t + this.getFontRenderer().fontHeight, q);
-            this.getFontRenderer().method_30883(matrices, text3, s, t, -1);
+            this.getFontRenderer().draw(matrices, text3, (float)s, (float)t, -1);
             this.getFontRenderer().draw(matrices, string, (float)(u - this.getFontRenderer().getWidth(string)), (float)t, -1);
             if (p != collection.size()) continue;
             InGameHud.fill(matrices, s - 2, t - this.getFontRenderer().fontHeight - 1, u, t - 1, r);
             InGameHud.fill(matrices, s - 2, t - 1, u, t, q);
-            this.getFontRenderer().method_30883(matrices, text, s + j / 2 - i / 2, t - this.getFontRenderer().fontHeight, -1);
+            this.getFontRenderer().draw(matrices, text, (float)(s + j / 2 - i / 2), (float)(t - this.getFontRenderer().fontHeight), -1);
         }
     }
 
@@ -899,6 +906,34 @@ extends DrawableHelper {
         RenderSystem.enableDepthTest();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.defaultBlendFunc();
+    }
+
+    private void renderNauseaOverlay(float f) {
+        double d = MathHelper.lerp((double)f, 2.0, 1.0);
+        float g = 0.2f * f;
+        float h = 0.4f * f;
+        float i = 0.2f * f;
+        double e = (double)this.scaledWidth * d;
+        double j = (double)this.scaledHeight * d;
+        double k = ((double)this.scaledWidth - e) / 2.0;
+        double l = ((double)this.scaledHeight - j) / 2.0;
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+        RenderSystem.color4f(g, h, i, 1.0f);
+        this.client.getTextureManager().bindTexture(NAUSEA_TEXTURE);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(k, l + j, -90.0).texture(0.0f, 1.0f).next();
+        bufferBuilder.vertex(k + e, l + j, -90.0).texture(1.0f, 1.0f).next();
+        bufferBuilder.vertex(k + e, l, -90.0).texture(1.0f, 0.0f).next();
+        bufferBuilder.vertex(k, l, -90.0).texture(0.0f, 0.0f).next();
+        tessellator.draw();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
     }
 
     private void renderPortalOverlay(float f) {

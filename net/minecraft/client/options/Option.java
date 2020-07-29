@@ -8,13 +8,12 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5481;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.options.AoOption;
+import net.minecraft.client.options.AoMode;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.BooleanOption;
 import net.minecraft.client.options.ChatVisibility;
@@ -24,12 +23,13 @@ import net.minecraft.client.options.DoubleOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.GraphicsMode;
 import net.minecraft.client.options.LogarithmicOption;
-import net.minecraft.client.options.NarratorOption;
-import net.minecraft.client.options.ParticlesOption;
+import net.minecraft.client.options.NarratorMode;
+import net.minecraft.client.options.ParticlesMode;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -107,6 +107,28 @@ public abstract class Option {
         }
         return doubleOption.method_30504((int)d);
     });
+    private static final Text FOV_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.fovEffectScale.tooltip");
+    public static final DoubleOption FOV_EFFECT_SCALE = new DoubleOption("options.fovEffectScale", 0.0, 1.0, 0.0f, gameOptions -> Math.pow(gameOptions.fovEffectScale, 2.0), (gameOptions, double_) -> {
+        gameOptions.fovEffectScale = MathHelper.sqrt(double_);
+    }, (gameOptions, doubleOption) -> {
+        doubleOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(FOV_EFFECT_SCALE_TOOLTIP, 200));
+        double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
+        if (d == 0.0) {
+            return doubleOption.method_30501(new TranslatableText("options.fovEffectScale.off"));
+        }
+        return doubleOption.method_30503(d);
+    });
+    private static final Text DISTORTION_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.screenEffectScale.tooltip");
+    public static final DoubleOption DISTORTION_EFFECT_SCALE = new DoubleOption("options.screenEffectScale", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.distortionEffectScale, (gameOptions, double_) -> {
+        gameOptions.distortionEffectScale = double_.floatValue();
+    }, (gameOptions, doubleOption) -> {
+        doubleOption.setTooltip(MinecraftClient.getInstance().textRenderer.wrapLines(DISTORTION_EFFECT_SCALE_TOOLTIP, 200));
+        double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
+        if (d == 0.0) {
+            return doubleOption.method_30501(new TranslatableText("options.screenEffectScale.off"));
+        }
+        return doubleOption.method_30503(d);
+    });
     public static final DoubleOption FRAMERATE_LIMIT = new DoubleOption("options.framerateLimit", 10.0, 260.0, 10.0f, gameOptions -> gameOptions.maxFps, (gameOptions, double_) -> {
         gameOptions.maxFps = (int)double_.doubleValue();
         MinecraftClient.getInstance().getWindow().setFramerateLimit(gameOptions.maxFps);
@@ -181,7 +203,7 @@ public abstract class Option {
         MinecraftClient.getInstance().inGameHud.getChatHud().reset();
     }, (gameOptions, doubleOption) -> doubleOption.method_30503(doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions))));
     public static final CyclingOption AO = new CyclingOption("options.ao", (gameOptions, integer) -> {
-        gameOptions.ao = AoOption.getOption(gameOptions.ao.getValue() + integer);
+        gameOptions.ao = AoMode.byId(gameOptions.ao.getId() + integer);
         MinecraftClient.getInstance().worldRenderer.reload();
     }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.ao.getTranslationKey())));
     public static final CyclingOption ATTACK_INDICATOR = new CyclingOption("options.attackIndicator", (gameOptions, integer) -> {
@@ -237,20 +259,20 @@ public abstract class Option {
         gameOptions.mainArm = gameOptions.mainArm.getOpposite();
     }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(gameOptions.mainArm.method_27301()));
     public static final CyclingOption NARRATOR = new CyclingOption("options.narrator", (gameOptions, integer) -> {
-        gameOptions.narrator = NarratorManager.INSTANCE.isActive() ? NarratorOption.byId(gameOptions.narrator.getId() + integer) : NarratorOption.OFF;
+        gameOptions.narrator = NarratorManager.INSTANCE.isActive() ? NarratorMode.byId(gameOptions.narrator.getId() + integer) : NarratorMode.OFF;
         NarratorManager.INSTANCE.addToast(gameOptions.narrator);
     }, (gameOptions, cyclingOption) -> {
         if (NarratorManager.INSTANCE.isActive()) {
-            return cyclingOption.method_30501(gameOptions.narrator.getTranslationKey());
+            return cyclingOption.method_30501(gameOptions.narrator.getName());
         }
         return cyclingOption.method_30501(new TranslatableText("options.narrator.notavailable"));
     });
     public static final CyclingOption PARTICLES = new CyclingOption("options.particles", (gameOptions, integer) -> {
-        gameOptions.particles = ParticlesOption.byId(gameOptions.particles.getId() + integer);
+        gameOptions.particles = ParticlesMode.byId(gameOptions.particles.getId() + integer);
     }, (gameOptions, cyclingOption) -> cyclingOption.method_30501(new TranslatableText(gameOptions.particles.getTranslationKey())));
     public static final CyclingOption CLOUDS = new CyclingOption("options.renderClouds", (gameOptions, integer) -> {
         Framebuffer framebuffer;
-        gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer);
+        gameOptions.cloudRenderMode = CloudRenderMode.byId(gameOptions.cloudRenderMode.getId() + integer);
         if (MinecraftClient.isFabulousGraphicsOrBetter() && (framebuffer = MinecraftClient.getInstance().worldRenderer.getCloudsFramebuffer()) != null) {
             framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
         }
@@ -333,7 +355,7 @@ public abstract class Option {
         gameOptions.bobView = boolean_;
     });
     private final Text key;
-    private Optional<List<class_5481>> tooltip = Optional.empty();
+    private Optional<List<OrderedText>> tooltip = Optional.empty();
 
     public Option(String key) {
         this.key = new TranslatableText(key);
@@ -345,11 +367,11 @@ public abstract class Option {
         return this.key;
     }
 
-    public void setTooltip(List<class_5481> tooltip) {
+    public void setTooltip(List<OrderedText> tooltip) {
         this.tooltip = Optional.of(tooltip);
     }
 
-    public Optional<List<class_5481>> getTooltip() {
+    public Optional<List<OrderedText>> getTooltip() {
         return this.tooltip;
     }
 

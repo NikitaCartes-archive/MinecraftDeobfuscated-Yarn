@@ -362,7 +362,7 @@ extends TameableEntity {
     @Nullable
     public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         entityData = super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
-        if (serverWorldAccess.method_30272() > 0.9f) {
+        if (serverWorldAccess.getMoonSize() > 0.9f) {
             this.setCatType(this.random.nextInt(11));
         } else {
             this.setCatType(this.random.nextInt(10));
