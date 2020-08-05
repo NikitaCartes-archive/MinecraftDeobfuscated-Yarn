@@ -718,7 +718,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
-			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(serverWorldAccess.getBiome(this.getBlockPos()))));
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(serverWorldAccess.method_31081(this.getBlockPos()))));
 		}
 
 		if (spawnReason == SpawnReason.STRUCTURE) {
@@ -732,7 +732,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
 		if (d < 0.5) {
-			villagerType = VillagerType.forBiome(serverWorld.getBiome(this.getBlockPos()));
+			villagerType = VillagerType.forBiome(serverWorld.method_31081(this.getBlockPos()));
 		} else if (d < 0.75) {
 			villagerType = this.getVillagerData().getType();
 		} else {

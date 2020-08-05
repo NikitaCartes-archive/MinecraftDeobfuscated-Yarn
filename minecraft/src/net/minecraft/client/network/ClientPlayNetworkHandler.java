@@ -753,22 +753,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				blockEntity.fromTag(this.world.getBlockState(blockPos), compoundTag);
 			}
 		}
-
-		if (!packet.shouldRetainLighting()) {
-			this.world.getLightingProvider().setColumnEnabled(worldChunk.getPos(), false);
-			int k = packet.getVerticalStripBitmask();
-
-			for (int l = 0; l < 16; l++) {
-				if ((k & 1 << l) != 0) {
-					this.world.getLightingProvider().enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
-					this.world.getLightingProvider().enqueueSectionData(LightType.SKY, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
-				}
-			}
-
-			this.world.getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
-			this.world.getLightingProvider().setColumnEnabled(worldChunk.getPos(), true);
-			worldChunk.getLightSourcesStream().forEach(blockPosx -> this.world.getLightingProvider().addLightSource(blockPosx, worldChunk.getLuminance(blockPosx)));
-		}
 	}
 
 	@Override

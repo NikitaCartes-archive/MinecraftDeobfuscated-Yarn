@@ -28,7 +28,8 @@ public class SpawnSettings {
 		0.1F,
 		(Map<SpawnGroup, List<SpawnSettings.SpawnEntry>>)Stream.of(SpawnGroup.values())
 			.collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> ImmutableList.of())),
-		ImmutableMap.of()
+		ImmutableMap.of(),
+		false
 	);
 	public static final MapCodec<SpawnSettings> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
@@ -42,20 +43,26 @@ public class SpawnSettings {
 						.forGetter(spawnSettings -> spawnSettings.spawners),
 					Codec.simpleMap(Registry.ENTITY_TYPE, SpawnSettings.SpawnDensity.CODEC, Registry.ENTITY_TYPE)
 						.fieldOf("spawn_costs")
-						.forGetter(spawnSettings -> spawnSettings.spawnCosts)
+						.forGetter(spawnSettings -> spawnSettings.spawnCosts),
+					Codec.BOOL.fieldOf("player_spawn_friendly").orElse(false).forGetter(SpawnSettings::method_31082)
 				)
 				.apply(instance, SpawnSettings::new)
 	);
 	private final float creatureSpawnProbability;
 	private final Map<SpawnGroup, List<SpawnSettings.SpawnEntry>> spawners;
 	private final Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts;
+	private final boolean field_26692;
 
 	private SpawnSettings(
-		float creatureSpawnProbability, Map<SpawnGroup, List<SpawnSettings.SpawnEntry>> spawners, Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts
+		float creatureSpawnProbability,
+		Map<SpawnGroup, List<SpawnSettings.SpawnEntry>> spawners,
+		Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts,
+		boolean bl
 	) {
 		this.creatureSpawnProbability = creatureSpawnProbability;
 		this.spawners = spawners;
 		this.spawnCosts = spawnCosts;
+		this.field_26692 = bl;
 	}
 
 	public List<SpawnSettings.SpawnEntry> getSpawnEntry(SpawnGroup spawnGroup) {
@@ -71,11 +78,16 @@ public class SpawnSettings {
 		return this.creatureSpawnProbability;
 	}
 
+	public boolean method_31082() {
+		return this.field_26692;
+	}
+
 	public static class Builder {
 		private final Map<SpawnGroup, List<SpawnSettings.SpawnEntry>> spawners = (Map<SpawnGroup, List<SpawnSettings.SpawnEntry>>)Stream.of(SpawnGroup.values())
 			.collect(ImmutableMap.toImmutableMap(spawnGroup -> spawnGroup, spawnGroup -> Lists.newArrayList()));
 		private final Map<EntityType<?>, SpawnSettings.SpawnDensity> spawnCosts = Maps.<EntityType<?>, SpawnSettings.SpawnDensity>newLinkedHashMap();
 		private float creatureSpawnProbability = 0.1F;
+		private boolean field_26693;
 
 		public SpawnSettings.Builder spawners(SpawnGroup spawnGroup, SpawnSettings.SpawnEntry spawnEntry) {
 			((List)this.spawners.get(spawnGroup)).add(spawnEntry);
@@ -92,11 +104,17 @@ public class SpawnSettings {
 			return this;
 		}
 
+		public SpawnSettings.Builder method_31083() {
+			this.field_26693 = true;
+			return this;
+		}
+
 		public SpawnSettings build() {
 			return new SpawnSettings(
 				this.creatureSpawnProbability,
 				(Map)this.spawners.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ImmutableList.copyOf((Collection)entry.getValue()))),
-				ImmutableMap.copyOf(this.spawnCosts)
+				ImmutableMap.copyOf(this.spawnCosts),
+				this.field_26693
 			);
 		}
 	}

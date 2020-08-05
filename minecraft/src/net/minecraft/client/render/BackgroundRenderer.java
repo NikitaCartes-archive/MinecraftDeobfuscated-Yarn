@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.Util;
@@ -19,7 +18,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeAccess;
 
 @Environment(EnvType.CLIENT)
@@ -180,7 +178,6 @@ public class BackgroundRenderer {
 	public static void applyFog(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog) {
 		FluidState fluidState = camera.getSubmergedFluidState();
 		Entity entity = camera.getFocusedEntity();
-		boolean bl = fluidState.getFluid() != Fluids.EMPTY;
 		if (fluidState.isIn(FluidTags.WATER)) {
 			float f = 1.0F;
 			f = 0.05F;
@@ -188,7 +185,7 @@ public class BackgroundRenderer {
 				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
 				f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F;
 				Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
-				if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
+				if (biome.getCategory() == Biome.Category.SWAMP) {
 					f += 0.005F;
 				}
 			}

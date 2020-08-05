@@ -47,6 +47,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
@@ -54,8 +55,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldView;
 
 public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
@@ -442,8 +441,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			);
 			boolean bl = blockHitResult.getBlockPos().equals(blockPos);
 			if (block.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
-				this.enderman.setCarriedBlock(blockState);
 				world.removeBlock(blockPos, false);
+				this.enderman.setCarriedBlock(blockState.getBlock().getDefaultState());
 			}
 		}
 	}
@@ -467,23 +466,31 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		@Override
 		public void tick() {
 			Random random = this.enderman.getRandom();
-			WorldAccess worldAccess = this.enderman.world;
+			World world = this.enderman.world;
 			int i = MathHelper.floor(this.enderman.getX() - 1.0 + random.nextDouble() * 2.0);
 			int j = MathHelper.floor(this.enderman.getY() + random.nextDouble() * 2.0);
 			int k = MathHelper.floor(this.enderman.getZ() - 1.0 + random.nextDouble() * 2.0);
 			BlockPos blockPos = new BlockPos(i, j, k);
-			BlockState blockState = worldAccess.getBlockState(blockPos);
+			BlockState blockState = world.getBlockState(blockPos);
 			BlockPos blockPos2 = blockPos.down();
-			BlockState blockState2 = worldAccess.getBlockState(blockPos2);
+			BlockState blockState2 = world.getBlockState(blockPos2);
 			BlockState blockState3 = this.enderman.getCarriedBlock();
-			if (blockState3 != null && this.canPlaceOn(worldAccess, blockPos, blockState3, blockState, blockState2, blockPos2)) {
-				worldAccess.setBlockState(blockPos, blockState3, 3);
-				this.enderman.setCarriedBlock(null);
+			if (blockState3 != null) {
+				blockState3 = Block.postProcessState(blockState3, this.enderman.world, blockPos);
+				if (this.canPlaceOn(world, blockPos, blockState3, blockState, blockState2, blockPos2)) {
+					world.setBlockState(blockPos, blockState3, 3);
+					this.enderman.setCarriedBlock(null);
+				}
 			}
 		}
 
-		private boolean canPlaceOn(WorldView world, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos) {
-			return stateAbove.isAir() && !state.isAir() && !state.isOf(Blocks.BEDROCK) && state.isFullCube(world, pos) && carriedState.canPlaceAt(world, posAbove);
+		private boolean canPlaceOn(World world, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos) {
+			return stateAbove.isAir()
+				&& !state.isAir()
+				&& !state.isOf(Blocks.BEDROCK)
+				&& state.isFullCube(world, pos)
+				&& carriedState.canPlaceAt(world, posAbove)
+				&& world.getOtherEntities(this.enderman, Box.method_29968(Vec3d.of(posAbove))).isEmpty();
 		}
 	}
 

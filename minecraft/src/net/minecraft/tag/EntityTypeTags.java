@@ -1,5 +1,6 @@
 package net.minecraft.tag;
 
+import java.util.List;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 
@@ -19,5 +20,9 @@ public final class EntityTypeTags {
 
 	public static TagGroup<EntityType<?>> getTagGroup() {
 		return REQUIRED_TAGS.getGroup();
+	}
+
+	public static List<? extends Tag.Identified<EntityType<?>>> method_31073() {
+		return REQUIRED_TAGS.getTags();
 	}
 }

@@ -623,7 +623,7 @@ public class ExecuteCommand {
 	private static boolean testLootCondition(ServerCommandSource serverCommandSource, LootCondition lootCondition) {
 		ServerWorld serverWorld = serverCommandSource.getWorld();
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.parameter(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()))
+			.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition())
 			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
 		return lootCondition.test(builder.build(LootContextTypes.COMMAND));
 	}

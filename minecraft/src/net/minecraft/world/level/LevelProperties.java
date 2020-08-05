@@ -511,9 +511,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection reportSection) {
-		ServerWorldProperties.super.populateCrashReport(reportSection);
-		SaveProperties.super.populateCrashReport(reportSection);
+	public void populateCrashReport(CrashReportSection crashReportSection) {
+		ServerWorldProperties.super.populateCrashReport(crashReportSection);
+		SaveProperties.super.populateCrashReport(crashReportSection);
 	}
 
 	@Override

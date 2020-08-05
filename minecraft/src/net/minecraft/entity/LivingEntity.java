@@ -1311,7 +1311,7 @@ public abstract class LivingEntity extends Entity {
 		LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 			.random(this.random)
 			.parameter(LootContextParameters.THIS_ENTITY, this)
-			.parameter(LootContextParameters.POSITION, this.getBlockPos())
+			.parameter(LootContextParameters.ORIGIN, this.getPos())
 			.parameter(LootContextParameters.DAMAGE_SOURCE, source)
 			.optionalParameter(LootContextParameters.KILLER_ENTITY, source.getAttacker())
 			.optionalParameter(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
@@ -2694,7 +2694,10 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-		Vec3d vec3d = super.method_30633(axis, arg);
+		return method_31079(super.method_30633(axis, arg));
+	}
+
+	public static Vec3d method_31079(Vec3d vec3d) {
 		return new Vec3d(vec3d.x, vec3d.y, 0.0);
 	}
 

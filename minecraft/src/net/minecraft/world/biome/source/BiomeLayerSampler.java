@@ -1,10 +1,11 @@
 package net.minecraft.world.biome.source;
 
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5504;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.util.CachingLayerSampler;
 import net.minecraft.world.biome.layer.util.LayerFactory;
 import org.apache.logging.log4j.LogManager;
@@ -18,21 +19,23 @@ public class BiomeLayerSampler {
 		this.sampler = layerFactory.make();
 	}
 
-	private Biome getBiome(int id) {
-		Biome biome = BuiltinRegistries.BIOME.get(id);
-		if (biome == null) {
-			if (SharedConstants.isDevelopment) {
-				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Unknown biome id: " + id));
-			} else {
-				LOGGER.warn("Unknown biome id: ", id);
-				return Biomes.DEFAULT;
-			}
+	public Biome sample(Registry<Biome> registry, int i, int j) {
+		int k = this.sampler.sample(i, j);
+		RegistryKey<Biome> registryKey = class_5504.method_31144(k);
+		if (registryKey == null) {
+			throw new IllegalStateException("Unknown biome id emitted by layers: " + k);
 		} else {
-			return biome;
+			Biome biome = registry.get(registryKey);
+			if (biome == null) {
+				if (SharedConstants.isDevelopment) {
+					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Unknown biome id: " + k));
+				} else {
+					LOGGER.warn("Unknown biome id: ", k);
+					return registry.get(class_5504.method_31144(0));
+				}
+			} else {
+				return biome;
+			}
 		}
-	}
-
-	public Biome sample(int x, int y) {
-		return this.getBiome(this.sampler.sample(x, y));
 	}
 }

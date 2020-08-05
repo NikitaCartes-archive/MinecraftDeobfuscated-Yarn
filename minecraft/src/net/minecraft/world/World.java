@@ -48,7 +48,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
@@ -112,16 +111,16 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.registryKey = registryKey;
 		this.dimensionRegistryKey = dimensionRegistryKey;
 		this.isClient = isClient;
-		if (dimension.isShrunk()) {
+		if (dimension.method_31110() != 1.0) {
 			this.border = new WorldBorder() {
 				@Override
 				public double getCenterX() {
-					return super.getCenterX() / 8.0;
+					return super.getCenterX() / dimension.method_31110();
 				}
 
 				@Override
 				public double getCenterZ() {
-					return super.getCenterZ() / 8.0;
+					return super.getCenterZ() / dimension.method_31110();
 				}
 			};
 		} else {
@@ -1089,6 +1088,4 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public final boolean isDebugWorld() {
 		return this.debugWorld;
 	}
-
-	public abstract DynamicRegistryManager getRegistryManager();
 }

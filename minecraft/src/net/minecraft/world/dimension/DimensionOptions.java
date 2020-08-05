@@ -58,14 +58,14 @@ public final class DimensionOptions {
 		for (RegistryKey<DimensionOptions> registryKey : BASE_DIMENSIONS) {
 			DimensionOptions dimensionOptions = simpleRegistry.get(registryKey);
 			if (dimensionOptions != null) {
-				simpleRegistry2.add(registryKey, dimensionOptions);
+				simpleRegistry2.add(registryKey, dimensionOptions, simpleRegistry.method_31139(dimensionOptions));
 			}
 		}
 
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (!BASE_DIMENSIONS.contains(registryKey2)) {
-				simpleRegistry2.add(registryKey2, entry.getValue());
+				simpleRegistry2.add(registryKey2, entry.getValue(), simpleRegistry.method_31139((DimensionOptions)entry.getValue()));
 			}
 		}
 
@@ -84,12 +84,12 @@ public final class DimensionOptions {
 			Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry3 = (Entry<RegistryKey<DimensionOptions>, DimensionOptions>)list.get(2);
 			if (entry.getKey() != OVERWORLD || entry2.getKey() != NETHER || entry3.getKey() != END) {
 				return false;
-			} else if (((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD
+			} else if (!((DimensionOptions)entry.getValue()).getDimensionType().method_31108(DimensionType.OVERWORLD)
 				&& ((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD_CAVES) {
 				return false;
-			} else if (((DimensionOptions)entry2.getValue()).getDimensionType() != DimensionType.THE_NETHER) {
+			} else if (!((DimensionOptions)entry2.getValue()).getDimensionType().method_31108(DimensionType.THE_NETHER)) {
 				return false;
-			} else if (((DimensionOptions)entry3.getValue()).getDimensionType() != DimensionType.THE_END) {
+			} else if (!((DimensionOptions)entry3.getValue()).getDimensionType().method_31108(DimensionType.THE_END)) {
 				return false;
 			} else if (((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator
 				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator) {

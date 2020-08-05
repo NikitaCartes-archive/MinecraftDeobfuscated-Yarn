@@ -31,6 +31,7 @@ import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
@@ -140,8 +141,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		return new NoiseChunkGenerator(this.biomeSource.withSeed(seed), seed, this.settings);
 	}
 
-	public boolean method_28548(long l, ChunkGeneratorSettings chunkGeneratorSettings) {
-		return this.worldSeed == l && ((ChunkGeneratorSettings)this.settings.get()).isIdEqual(chunkGeneratorSettings);
+	public boolean method_28548(long l, RegistryKey<ChunkGeneratorSettings> registryKey) {
+		return this.worldSeed == l && ((ChunkGeneratorSettings)this.settings.get()).isIdEqual(registryKey);
 	}
 
 	private double sampleNoise(int x, int y, int z, double horizontalScale, double verticalScale, double horizontalStretch, double verticalStretch) {

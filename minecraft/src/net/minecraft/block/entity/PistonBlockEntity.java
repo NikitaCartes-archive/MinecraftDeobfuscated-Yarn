@@ -40,6 +40,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private float progress;
 	private float lastProgress;
 	private long savedWorldTime;
+	private int field_26705;
 
 	public PistonBlockEntity() {
 		super(BlockEntityType.PISTON);
@@ -263,7 +264,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	public void finish() {
-		if (this.lastProgress < 1.0F && this.world != null) {
+		if (!this.world.isClient && this.lastProgress < 1.0F && this.world != null) {
 			this.progress = 1.0F;
 			this.lastProgress = this.progress;
 			this.world.removeBlockEntity(this.pos);
@@ -287,20 +288,24 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		this.savedWorldTime = this.world.getTime();
 		this.lastProgress = this.progress;
 		if (this.lastProgress >= 1.0F) {
-			this.world.removeBlockEntity(this.pos);
-			this.markRemoved();
-			if (this.pushedBlock != null && this.world.getBlockState(this.pos).isOf(Blocks.MOVING_PISTON)) {
-				BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
-				if (blockState.isAir()) {
-					this.world.setBlockState(this.pos, this.pushedBlock, 84);
-					Block.replace(this.pushedBlock, blockState, this.world, this.pos, 3);
-				} else {
-					if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
-						blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));
-					}
+			if (this.world.isClient && this.field_26705 < 5) {
+				this.field_26705++;
+			} else {
+				this.world.removeBlockEntity(this.pos);
+				this.markRemoved();
+				if (this.pushedBlock != null && this.world.getBlockState(this.pos).isOf(Blocks.MOVING_PISTON)) {
+					BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
+					if (blockState.isAir()) {
+						this.world.setBlockState(this.pos, this.pushedBlock, 84);
+						Block.replace(this.pushedBlock, blockState, this.world, this.pos, 3);
+					} else {
+						if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
+							blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));
+						}
 
-					this.world.setBlockState(this.pos, blockState, 67);
-					this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
+						this.world.setBlockState(this.pos, blockState, 67);
+						this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
+					}
 				}
 			}
 		} else {
@@ -368,5 +373,11 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 	public long getSavedWorldTime() {
 		return this.savedWorldTime;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public double getSquaredRenderDistance() {
+		return 68.0;
 	}
 }

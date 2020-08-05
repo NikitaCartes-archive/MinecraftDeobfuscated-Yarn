@@ -11,7 +11,7 @@ public enum ContinentLayer implements InitLayer {
 		if (x == 0 && y == 0) {
 			return 1;
 		} else {
-			return context.nextInt(10) == 0 ? 1 : BiomeLayers.OCEAN_ID;
+			return context.nextInt(10) == 0 ? 1 : 0;
 		}
 	}
 }

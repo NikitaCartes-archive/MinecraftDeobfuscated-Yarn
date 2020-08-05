@@ -4,13 +4,13 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.class_5504;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.TemplatePools;
 import net.minecraft.structure.processor.ProcessorList;
 import net.minecraft.structure.processor.ProcessorLists;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
@@ -41,25 +41,27 @@ public class BuiltinRegistries {
 		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, () -> ConfiguredStructureFeatures.MINESHAFT
 	);
 	public static final Registry<ProcessorList> PROCESSOR_LIST = addRegistry(Registry.PROCESSOR_LIST_WORLDGEN, () -> ProcessorLists.ZOMBIE_PLAINS);
-	public static final Registry<StructurePool> TEMPLATE_POOL = addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, () -> TemplatePools.EMPTY);
-	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, () -> Biomes.DEFAULT);
+	public static final Registry<StructurePool> TEMPLATE_POOL = addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, TemplatePools::initDefaultPools);
+	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, () -> class_5504.field_26734);
 	public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = addRegistry(
-		Registry.NOISE_SETTINGS_WORLDGEN, () -> ChunkGeneratorSettings.OVERWORLD
+		Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings::method_31111
 	);
 
 	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<T> defaultValueSupplier) {
-		return addRegistry(registryRef, Lifecycle.experimental(), defaultValueSupplier);
+		return addRegistry(registryRef, Lifecycle.stable(), defaultValueSupplier);
 	}
 
 	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Supplier<T> defaultValueSupplier) {
-		return addRegistry(registryRef, new SimpleRegistry<>(registryRef, lifecycle), defaultValueSupplier);
+		return addRegistry(registryRef, new SimpleRegistry<>(registryRef, lifecycle), defaultValueSupplier, lifecycle);
 	}
 
-	private static <T, R extends MutableRegistry<T>> R addRegistry(RegistryKey<? extends Registry<T>> registryRef, R registry, Supplier<T> defaultValueSupplier) {
+	private static <T, R extends MutableRegistry<T>> R addRegistry(
+		RegistryKey<? extends Registry<T>> registryRef, R registry, Supplier<T> defaultValueSupplier, Lifecycle lifecycle
+	) {
 		Identifier identifier = registryRef.getValue();
 		DEFAULT_VALUE_SUPPLIERS.put(identifier, defaultValueSupplier);
 		MutableRegistry<R> mutableRegistry = ROOT;
-		return mutableRegistry.add((RegistryKey<R>)registryRef, registry);
+		return mutableRegistry.add((RegistryKey<R>)registryRef, registry, lifecycle);
 	}
 
 	public static <T> T add(Registry<? super T> registry, String id, T object) {
@@ -67,11 +69,11 @@ public class BuiltinRegistries {
 	}
 
 	public static <V, T extends V> T add(Registry<V> registry, Identifier id, T object) {
-		return ((MutableRegistry)registry).add(RegistryKey.of(registry.getKey(), id), object);
+		return ((MutableRegistry)registry).add(RegistryKey.of(registry.getKey(), id), object, Lifecycle.stable());
 	}
 
-	public static <V, T extends V> T set(Registry<V> registry, int rawId, String id, T object) {
-		return ((MutableRegistry)registry).set(rawId, RegistryKey.of(registry.getKey(), new Identifier(id)), object);
+	public static <V, T extends V> T set(Registry<V> registry, int rawId, RegistryKey<V> registryKey, T object) {
+		return ((MutableRegistry)registry).set(rawId, registryKey, object, Lifecycle.stable());
 	}
 
 	public static void init() {

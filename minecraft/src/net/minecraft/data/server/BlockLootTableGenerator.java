@@ -892,6 +892,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.CRACKED_NETHER_BRICKS);
 		this.addDrop(Blocks.QUARTZ_BRICKS);
 		this.addDrop(Blocks.CHAIN);
+		this.addDrop(Blocks.WARPED_ROOTS);
+		this.addDrop(Blocks.CRIMSON_ROOTS);
 		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
 		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
 		this.addDrop(Blocks.GRASS_PATH, Blocks.DIRT);
@@ -1265,8 +1267,6 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.TALL_SEAGRASS, method_30159(Blocks.SEAGRASS));
 		this.addDrop(Blocks.LARGE_FERN, blockx -> method_30158(blockx, Blocks.FERN));
 		this.addDrop(Blocks.TALL_GRASS, blockx -> method_30158(blockx, Blocks.GRASS));
-		this.addDrop(Blocks.WARPED_ROOTS, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.CRIMSON_ROOTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.MELON_STEM, blockx -> cropStemDrops(blockx, Items.MELON_SEEDS));
 		this.addDrop(Blocks.ATTACHED_MELON_STEM, blockx -> attachedCropStemDrops(blockx, Items.MELON_SEEDS));
 		this.addDrop(Blocks.PUMPKIN_STEM, blockx -> cropStemDrops(blockx, Items.PUMPKIN_SEEDS));

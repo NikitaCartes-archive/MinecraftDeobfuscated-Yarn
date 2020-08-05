@@ -2,21 +2,24 @@ package net.minecraft.village;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
-public interface VillagerType {
-	VillagerType DESERT = create("desert");
-	VillagerType JUNGLE = create("jungle");
-	VillagerType PLAINS = create("plains");
-	VillagerType SAVANNA = create("savanna");
-	VillagerType SNOW = create("snow");
-	VillagerType SWAMP = create("swamp");
-	VillagerType TAIGA = create("taiga");
-	Map<Biome, VillagerType> BIOME_TO_TYPE = Util.make(Maps.<Biome, VillagerType>newHashMap(), hashMap -> {
+public final class VillagerType {
+	public static final VillagerType DESERT = create("desert");
+	public static final VillagerType JUNGLE = create("jungle");
+	public static final VillagerType PLAINS = create("plains");
+	public static final VillagerType SAVANNA = create("savanna");
+	public static final VillagerType SNOW = create("snow");
+	public static final VillagerType SWAMP = create("swamp");
+	public static final VillagerType TAIGA = create("taiga");
+	private final String field_26690;
+	private static final Map<RegistryKey<Biome>, VillagerType> BIOME_TO_TYPE = Util.make(Maps.<RegistryKey<Biome>, VillagerType>newHashMap(), hashMap -> {
 		hashMap.put(Biomes.BADLANDS, DESERT);
 		hashMap.put(Biomes.BADLANDS_PLATEAU, DESERT);
 		hashMap.put(Biomes.DESERT, DESERT);
@@ -63,15 +66,19 @@ public interface VillagerType {
 		hashMap.put(Biomes.WOODED_MOUNTAINS, TAIGA);
 	});
 
-	static VillagerType create(String id) {
-		return Registry.register(Registry.VILLAGER_TYPE, new Identifier(id), new VillagerType() {
-			public String toString() {
-				return id;
-			}
-		});
+	private VillagerType(String string) {
+		this.field_26690 = string;
 	}
 
-	static VillagerType forBiome(Biome biome) {
-		return (VillagerType)BIOME_TO_TYPE.getOrDefault(biome, PLAINS);
+	public String toString() {
+		return this.field_26690;
+	}
+
+	private static VillagerType create(String id) {
+		return Registry.register(Registry.VILLAGER_TYPE, new Identifier(id), new VillagerType(id));
+	}
+
+	public static VillagerType forBiome(Optional<RegistryKey<Biome>> optional) {
+		return (VillagerType)optional.flatMap(registryKey -> Optional.ofNullable(BIOME_TO_TYPE.get(registryKey))).orElse(PLAINS);
 	}
 }

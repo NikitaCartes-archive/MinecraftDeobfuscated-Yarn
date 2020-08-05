@@ -527,9 +527,9 @@ public class ZombieEntity extends HostileEntity {
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.shouldDropHead()) {
-				creeperEntity.onHeadDropped();
 				ItemStack itemStack = this.getSkull();
 				if (!itemStack.isEmpty()) {
+					creeperEntity.onHeadDropped();
 					this.dropStack(itemStack);
 				}
 			}

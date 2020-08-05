@@ -217,38 +217,36 @@ public class PistonBlock extends FacingBlock {
 		return true;
 	}
 
-	public static boolean isMovable(BlockState state, World world, BlockPos pos, Direction motionDir, boolean canBreak, Direction pistonDir) {
-		if (!state.isOf(Blocks.OBSIDIAN) && !state.isOf(Blocks.CRYING_OBSIDIAN) && !state.isOf(Blocks.RESPAWN_ANCHOR)) {
-			if (!world.getWorldBorder().contains(pos)) {
-				return false;
-			} else if (pos.getY() >= 0 && (motionDir != Direction.DOWN || pos.getY() != 0)) {
-				if (pos.getY() <= world.getHeight() - 1 && (motionDir != Direction.UP || pos.getY() != world.getHeight() - 1)) {
-					if (!state.isOf(Blocks.PISTON) && !state.isOf(Blocks.STICKY_PISTON)) {
-						if (state.getHardness(world, pos) == -1.0F) {
-							return false;
-						}
-
-						switch (state.getPistonBehavior()) {
-							case BLOCK:
-								return false;
-							case DESTROY:
-								return canBreak;
-							case PUSH_ONLY:
-								return motionDir == pistonDir;
-						}
-					} else if ((Boolean)state.get(EXTENDED)) {
-						return false;
-					}
-
-					return !state.getBlock().hasBlockEntity();
-				} else {
+	public static boolean isMovable(BlockState blockState, World world, BlockPos blockPos, Direction direction, boolean canBreak, Direction pistonDir) {
+		if (blockPos.getY() < 0 || blockPos.getY() > world.getHeight() - 1 || !world.getWorldBorder().contains(blockPos)) {
+			return false;
+		} else if (blockState.isAir()) {
+			return true;
+		} else if (blockState.isOf(Blocks.OBSIDIAN) || blockState.isOf(Blocks.CRYING_OBSIDIAN) || blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
+			return false;
+		} else if (direction == Direction.DOWN && blockPos.getY() == 0) {
+			return false;
+		} else if (direction == Direction.UP && blockPos.getY() == world.getHeight() - 1) {
+			return false;
+		} else {
+			if (!blockState.isOf(Blocks.PISTON) && !blockState.isOf(Blocks.STICKY_PISTON)) {
+				if (blockState.getHardness(world, blockPos) == -1.0F) {
 					return false;
 				}
-			} else {
+
+				switch (blockState.getPistonBehavior()) {
+					case BLOCK:
+						return false;
+					case DESTROY:
+						return canBreak;
+					case PUSH_ONLY:
+						return direction == pistonDir;
+				}
+			} else if ((Boolean)blockState.get(EXTENDED)) {
 				return false;
 			}
-		} else {
-			return false;
+
+			return !blockState.getBlock().hasBlockEntity();
 		}
 	}
 

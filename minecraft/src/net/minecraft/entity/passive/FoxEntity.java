@@ -71,6 +71,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -291,8 +292,8 @@ public class FoxEntity extends AnimalEntity {
 	public EntityData initialize(
 		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		Biome biome = serverWorldAccess.getBiome(this.getBlockPos());
-		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
+		Optional<RegistryKey<Biome>> optional = serverWorldAccess.method_31081(this.getBlockPos());
+		FoxEntity.Type type = FoxEntity.Type.fromBiome(optional);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
 			type = ((FoxEntity.FoxData)entityData).type;
@@ -1445,20 +1446,16 @@ public class FoxEntity extends AnimalEntity {
 			.collect(Collectors.toMap(FoxEntity.Type::getKey, type -> type));
 		private final int id;
 		private final String key;
-		private final List<Biome> biomes;
+		private final List<RegistryKey<Biome>> biomes;
 
-		private Type(int id, String key, Biome... biomes) {
+		private Type(int id, String key, RegistryKey<Biome>... registryKeys) {
 			this.id = id;
 			this.key = key;
-			this.biomes = Arrays.asList(biomes);
+			this.biomes = Arrays.asList(registryKeys);
 		}
 
 		public String getKey() {
 			return this.key;
-		}
-
-		public List<Biome> getBiomes() {
-			return this.biomes;
 		}
 
 		public int getId() {
@@ -1477,8 +1474,8 @@ public class FoxEntity extends AnimalEntity {
 			return TYPES[id];
 		}
 
-		public static FoxEntity.Type fromBiome(Biome biome) {
-			return SNOW.getBiomes().contains(biome) ? SNOW : RED;
+		public static FoxEntity.Type fromBiome(Optional<RegistryKey<Biome>> optional) {
+			return optional.isPresent() && SNOW.biomes.contains(optional.get()) ? SNOW : RED;
 		}
 	}
 

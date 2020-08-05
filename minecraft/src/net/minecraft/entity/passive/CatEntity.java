@@ -580,7 +580,7 @@ public class CatEntity extends TameableEntity {
 			mutable.set(this.cat.getBlockPos());
 			LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
-				.parameter(LootContextParameters.POSITION, mutable)
+				.parameter(LootContextParameters.ORIGIN, this.cat.getPos())
 				.parameter(LootContextParameters.THIS_ENTITY, this.cat)
 				.random(random);
 

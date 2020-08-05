@@ -1,5 +1,7 @@
 package net.minecraft.data.server;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
@@ -29,14 +31,14 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
-	private static final Biome[] BIOMES = new Biome[]{
+	private static final List<RegistryKey<Biome>> BIOMES = ImmutableList.of(
 		Biomes.BIRCH_FOREST_HILLS,
 		Biomes.RIVER,
 		Biomes.SWAMP,
@@ -79,7 +81,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Biomes.DEEP_FROZEN_OCEAN,
 		Biomes.BAMBOO_JUNGLE,
 		Biomes.BAMBOO_JUNGLE_HILLS
-	};
+	);
 	private static final EntityType<?>[] MONSTERS = new EntityType[]{
 		EntityType.BLAZE,
 		EntityType.CAVE_SPIDER,
@@ -450,9 +452,9 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		return task;
 	}
 
-	protected static Advancement.Task requireListedBiomesVisited(Advancement.Task task, Biome[] biomes) {
-		for (Biome biome : biomes) {
-			task.criterion(BuiltinRegistries.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(biome)));
+	protected static Advancement.Task requireListedBiomesVisited(Advancement.Task task, List<RegistryKey<Biome>> list) {
+		for (RegistryKey<Biome> registryKey : list) {
+			task.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
 		}
 
 		return task;

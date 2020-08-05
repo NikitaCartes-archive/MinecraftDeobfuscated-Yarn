@@ -34,6 +34,13 @@ public final class Material {
 		.replaceable()
 		.burnable()
 		.build();
+	public static final Material field_26708 = new Material.Builder(MaterialColor.FOLIAGE)
+		.allowsMovement()
+		.lightPassesThrough()
+		.notSolid()
+		.destroyedByPiston()
+		.replaceable()
+		.build();
 	public static final Material REPLACEABLE_UNDERWATER_PLANT = new Material.Builder(MaterialColor.WATER)
 		.allowsMovement()
 		.lightPassesThrough()

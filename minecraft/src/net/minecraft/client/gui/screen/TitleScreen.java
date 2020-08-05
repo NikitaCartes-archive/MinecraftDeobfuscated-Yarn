@@ -199,16 +199,15 @@ public class TitleScreen extends Screen {
 	}
 
 	private void initWidgetsDemo(int y, int spacingY) {
-		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				y,
-				200,
-				20,
-				new TranslatableText("menu.playdemo"),
-				buttonWidget -> this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, DynamicRegistryManager.create(), GeneratorOptions.DEMO_CONFIG)
-			)
-		);
+		boolean bl = this.method_31129();
+		this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), buttonWidget -> {
+			if (bl) {
+				this.client.startIntegratedServer("Demo_World");
+			} else {
+				DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+				this.client.method_29607("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.method_31112(impl));
+			}
+		}));
 		this.buttonResetDemo = this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 100,
@@ -220,35 +219,36 @@ public class TitleScreen extends Screen {
 					LevelStorage levelStorage = this.client.getLevelStorage();
 
 					try (LevelStorage.Session session = levelStorage.createSession("Demo_World")) {
-						LevelSummary levelSummaryx = session.method_29584();
-						if (levelSummaryx != null) {
+						LevelSummary levelSummary = session.method_29584();
+						if (levelSummary != null) {
 							this.client
 								.openScreen(
 									new ConfirmScreen(
 										this::onDemoDeletionConfirmed,
 										new TranslatableText("selectWorld.deleteQuestion"),
-										new TranslatableText("selectWorld.deleteWarning", levelSummaryx.getDisplayName()),
+										new TranslatableText("selectWorld.deleteWarning", levelSummary.getDisplayName()),
 										new TranslatableText("selectWorld.deleteButton"),
 										ScreenTexts.CANCEL
 									)
 								);
 						}
-					} catch (IOException var16x) {
+					} catch (IOException var16) {
 						SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-						field_23775.warn("Failed to access demo world", (Throwable)var16x);
+						field_23775.warn("Failed to access demo world", (Throwable)var16);
 					}
 				}
 			)
 		);
+		this.buttonResetDemo.active = bl;
+	}
 
+	private boolean method_31129() {
 		try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
-			LevelSummary levelSummary = session.method_29584();
-			if (levelSummary == null) {
-				this.buttonResetDemo.active = false;
-			}
-		} catch (IOException var16) {
+			return session.method_29584() != null;
+		} catch (IOException var15) {
 			SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-			field_23775.warn("Failed to read demo world data", (Throwable)var16);
+			field_23775.warn("Failed to read demo world data", (Throwable)var15);
+			return false;
 		}
 	}
 

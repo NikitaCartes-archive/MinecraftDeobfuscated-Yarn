@@ -433,7 +433,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.hookCountdown > 0) {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-					.parameter(LootContextParameters.POSITION, this.getBlockPos())
+					.parameter(LootContextParameters.ORIGIN, this.getPos())
 					.parameter(LootContextParameters.TOOL, usedItem)
 					.parameter(LootContextParameters.THIS_ENTITY, this)
 					.random(this.random)

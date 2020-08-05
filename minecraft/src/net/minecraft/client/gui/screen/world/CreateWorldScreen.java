@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.JsonOps;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,8 +42,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -124,11 +123,17 @@ public class CreateWorldScreen extends Screen {
 		this.field_25477 = path;
 	}
 
-	public CreateWorldScreen(@Nullable Screen parent) {
-		this(
-			parent,
+	public static CreateWorldScreen method_31130(@Nullable Screen screen) {
+		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+		return new CreateWorldScreen(
+			screen,
 			DataPackSettings.SAFE_MODE,
-			new MoreOptionsDialog(DynamicRegistryManager.create(), GeneratorOptions.getDefaultOptions(), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty())
+			new MoreOptionsDialog(
+				impl,
+				GeneratorOptions.getDefaultOptions(impl.get(Registry.DIMENSION_TYPE_KEY), impl.get(Registry.BIOME_KEY), impl.get(Registry.NOISE_SETTINGS_WORLDGEN)),
+				Optional.of(GeneratorType.DEFAULT),
+				OptionalLong.empty()
+			)
 		);
 	}
 
@@ -504,9 +509,7 @@ public class CreateWorldScreen extends Screen {
 						} else {
 							this.client.send(() -> {
 								this.field_25479 = dataPackSettings;
-								DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-								RegistryOps.of(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
-								this.moreOptionsDialog.method_30509(impl);
+								this.moreOptionsDialog.method_31132(serverResourceManager);
 								serverResourceManager.close();
 								this.client.openScreen(this);
 							});

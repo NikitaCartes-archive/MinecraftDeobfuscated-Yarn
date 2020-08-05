@@ -70,36 +70,38 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	private void updatePoweredStatus(World world, BlockPos pos, BlockState state) {
-		boolean bl = (Boolean)state.get(POWERED);
-		boolean bl2 = false;
-		List<AbstractMinecartEntity> list = this.getCarts(world, pos, AbstractMinecartEntity.class, null);
-		if (!list.isEmpty()) {
-			bl2 = true;
-		}
+		if (this.canPlaceAt(state, world, pos)) {
+			boolean bl = (Boolean)state.get(POWERED);
+			boolean bl2 = false;
+			List<AbstractMinecartEntity> list = this.getCarts(world, pos, AbstractMinecartEntity.class, null);
+			if (!list.isEmpty()) {
+				bl2 = true;
+			}
 
-		if (bl2 && !bl) {
-			BlockState blockState = state.with(POWERED, Boolean.valueOf(true));
-			world.setBlockState(pos, blockState, 3);
-			this.updateNearbyRails(world, pos, blockState, true);
-			world.updateNeighborsAlways(pos, this);
-			world.updateNeighborsAlways(pos.down(), this);
-			world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
-		}
+			if (bl2 && !bl) {
+				BlockState blockState = state.with(POWERED, Boolean.valueOf(true));
+				world.setBlockState(pos, blockState, 3);
+				this.updateNearbyRails(world, pos, blockState, true);
+				world.updateNeighborsAlways(pos, this);
+				world.updateNeighborsAlways(pos.down(), this);
+				world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
+			}
 
-		if (!bl2 && bl) {
-			BlockState blockState = state.with(POWERED, Boolean.valueOf(false));
-			world.setBlockState(pos, blockState, 3);
-			this.updateNearbyRails(world, pos, blockState, false);
-			world.updateNeighborsAlways(pos, this);
-			world.updateNeighborsAlways(pos.down(), this);
-			world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
-		}
+			if (!bl2 && bl) {
+				BlockState blockState = state.with(POWERED, Boolean.valueOf(false));
+				world.setBlockState(pos, blockState, 3);
+				this.updateNearbyRails(world, pos, blockState, false);
+				world.updateNeighborsAlways(pos, this);
+				world.updateNeighborsAlways(pos.down(), this);
+				world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
+			}
 
-		if (bl2) {
-			world.getBlockTickScheduler().schedule(pos, this, 20);
-		}
+			if (bl2) {
+				world.getBlockTickScheduler().schedule(pos, this, 20);
+			}
 
-		world.updateComparators(pos, this);
+			world.updateComparators(pos, this);
+		}
 	}
 
 	protected void updateNearbyRails(World world, BlockPos pos, BlockState state, boolean unpowering) {

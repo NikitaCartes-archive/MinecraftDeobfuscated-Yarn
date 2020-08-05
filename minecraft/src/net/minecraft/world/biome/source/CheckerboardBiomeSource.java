@@ -1,6 +1,5 @@
 package net.minecraft.world.biome.source;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
@@ -22,7 +21,7 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	private final int field_24716;
 
 	public CheckerboardBiomeSource(List<Supplier<Biome>> list, int size) {
-		super((List<Biome>)list.stream().map(Supplier::get).collect(ImmutableList.toImmutableList()));
+		super(list.stream());
 		this.biomeArray = list;
 		this.gridSize = size + 2;
 		this.field_24716 = size;

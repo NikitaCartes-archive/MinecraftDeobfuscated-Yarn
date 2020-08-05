@@ -1,5 +1,7 @@
 package net.minecraft.item;
 
+import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,6 +15,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
@@ -77,18 +80,17 @@ public class BoneMealItem extends Item {
 				label80:
 				for (int i = 0; i < 128; i++) {
 					BlockPos blockPos2 = blockPos;
-					Biome biome = world.getBiome(blockPos);
 					BlockState blockState = Blocks.SEAGRASS.getDefaultState();
 
 					for (int j = 0; j < i / 16; j++) {
 						blockPos2 = blockPos2.add(RANDOM.nextInt(3) - 1, (RANDOM.nextInt(3) - 1) * RANDOM.nextInt(3) / 2, RANDOM.nextInt(3) - 1);
-						biome = world.getBiome(blockPos2);
 						if (world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
 							continue label80;
 						}
 					}
 
-					if (biome == Biomes.WARM_OCEAN || biome == Biomes.DEEP_WARM_OCEAN) {
+					Optional<RegistryKey<Biome>> optional = world.method_31081(blockPos2);
+					if (Objects.equals(optional, Optional.of(Biomes.WARM_OCEAN)) || Objects.equals(optional, Optional.of(Biomes.DEEP_WARM_OCEAN))) {
 						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
 							blockState = BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, facing);
 						} else if (RANDOM.nextInt(4) == 0) {
@@ -97,7 +99,7 @@ public class BoneMealItem extends Item {
 					}
 
 					if (blockState.getBlock().isIn(BlockTags.WALL_CORALS)) {
-						for (int jx = 0; !blockState.canPlaceAt(world, blockPos2) && jx < 4; jx++) {
+						for (int k = 0; !blockState.canPlaceAt(world, blockPos2) && k < 4; k++) {
 							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(RANDOM));
 						}
 					}

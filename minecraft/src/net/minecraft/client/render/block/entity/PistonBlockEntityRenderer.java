@@ -33,7 +33,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 		if (world != null) {
 			BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.getMovementDirection().getOpposite());
 			BlockState blockState = pistonBlockEntity.getPushedBlock();
-			if (!blockState.isAir() && !(pistonBlockEntity.getProgress(f) >= 1.0F)) {
+			if (!blockState.isAir()) {
 				BlockModelRenderer.enableBrightnessCache();
 				matrixStack.push();
 				matrixStack.translate(

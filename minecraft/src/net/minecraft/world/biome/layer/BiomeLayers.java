@@ -1,9 +1,9 @@
 package net.minecraft.world.biome.layer;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import java.util.function.LongFunction;
-import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.util.Util;
 import net.minecraft.world.biome.layer.type.ParentedLayer;
 import net.minecraft.world.biome.layer.util.CachingLayerContext;
 import net.minecraft.world.biome.layer.util.CachingLayerSampler;
@@ -13,16 +13,76 @@ import net.minecraft.world.biome.layer.util.LayerSampler;
 import net.minecraft.world.biome.source.BiomeLayerSampler;
 
 public class BiomeLayers {
-	protected static final int WARM_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.WARM_OCEAN);
-	protected static final int LUKEWARM_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.LUKEWARM_OCEAN);
-	protected static final int OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.OCEAN);
-	protected static final int COLD_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.COLD_OCEAN);
-	protected static final int FROZEN_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.FROZEN_OCEAN);
-	protected static final int DEEP_WARM_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DEEP_WARM_OCEAN);
-	protected static final int DEEP_LUKEWARM_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DEEP_LUKEWARM_OCEAN);
-	protected static final int DEEP_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DEEP_OCEAN);
-	protected static final int DEEP_COLD_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DEEP_COLD_OCEAN);
-	protected static final int DEEP_FROZEN_OCEAN_ID = BuiltinRegistries.BIOME.getRawId(Biomes.DEEP_FROZEN_OCEAN);
+	private static final Int2IntMap field_26709 = Util.make(new Int2IntOpenHashMap(), int2IntOpenHashMap -> {
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26719, 16);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26719, 26);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26722, 2);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26722, 17);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26722, 130);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26712, 131);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26712, 162);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26712, 20);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26712, 3);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26712, 34);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 27);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 28);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 29);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 157);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 132);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 4);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 155);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 156);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26720, 18);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26718, 140);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26718, 13);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26718, 12);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26713, 168);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26713, 169);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26713, 21);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26713, 23);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26713, 22);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26713, 149);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26713, 151);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26714, 37);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26714, 165);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26714, 167);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26714, 166);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26715, 39);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26715, 38);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26725, 14);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26725, 15);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26710, 25);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 46);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 49);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 50);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 48);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 24);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 47);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 10);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 45);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 0);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26721, 44);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26716, 1);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26716, 129);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26723, 11);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26723, 7);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26717, 35);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26717, 36);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26717, 163);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26717, 164);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26724, 6);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26724, 134);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 160);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 161);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 32);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 33);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 30);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 31);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 158);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 5);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 19);
+		method_31117(int2IntOpenHashMap, BiomeLayers.class_5503.field_26711, 133);
+	});
 
 	private static <T extends LayerSampler, C extends LayerSampleContext<T>> LayerFactory<T> stack(
 		long seed, ParentedLayer layer, LayerFactory<T> parent, int count, LongFunction<C> contextProvider
@@ -97,37 +157,37 @@ public class BiomeLayers {
 	}
 
 	public static boolean areSimilar(int id1, int id2) {
-		if (id1 == id2) {
-			return true;
-		} else {
-			Biome biome = BuiltinRegistries.BIOME.get(id1);
-			Biome biome2 = BuiltinRegistries.BIOME.get(id2);
-			if (biome == null || biome2 == null) {
-				return false;
-			} else if (biome != Biomes.WOODED_BADLANDS_PLATEAU && biome != Biomes.BADLANDS_PLATEAU) {
-				return biome.getCategory() != Biome.Category.NONE && biome2.getCategory() != Biome.Category.NONE && biome.getCategory() == biome2.getCategory()
-					? true
-					: biome == biome2;
-			} else {
-				return biome2 == Biomes.WOODED_BADLANDS_PLATEAU || biome2 == Biomes.BADLANDS_PLATEAU;
-			}
-		}
+		return id1 == id2 ? true : field_26709.get(id1) == field_26709.get(id2);
+	}
+
+	private static void method_31117(Int2IntOpenHashMap int2IntOpenHashMap, BiomeLayers.class_5503 arg, int i) {
+		int2IntOpenHashMap.put(i, arg.ordinal());
 	}
 
 	protected static boolean isOcean(int id) {
-		return id == WARM_OCEAN_ID
-			|| id == LUKEWARM_OCEAN_ID
-			|| id == OCEAN_ID
-			|| id == COLD_OCEAN_ID
-			|| id == FROZEN_OCEAN_ID
-			|| id == DEEP_WARM_OCEAN_ID
-			|| id == DEEP_LUKEWARM_OCEAN_ID
-			|| id == DEEP_OCEAN_ID
-			|| id == DEEP_COLD_OCEAN_ID
-			|| id == DEEP_FROZEN_OCEAN_ID;
+		return id == 44 || id == 45 || id == 0 || id == 46 || id == 10 || id == 47 || id == 48 || id == 24 || id == 49 || id == 50;
 	}
 
 	protected static boolean isShallowOcean(int id) {
-		return id == WARM_OCEAN_ID || id == LUKEWARM_OCEAN_ID || id == OCEAN_ID || id == COLD_OCEAN_ID || id == FROZEN_OCEAN_ID;
+		return id == 44 || id == 45 || id == 0 || id == 46 || id == 10;
+	}
+
+	static enum class_5503 {
+		field_26710,
+		field_26711,
+		field_26712,
+		field_26713,
+		field_26714,
+		field_26715,
+		field_26716,
+		field_26717,
+		field_26718,
+		field_26719,
+		field_26720,
+		field_26721,
+		field_26722,
+		field_26723,
+		field_26724,
+		field_26725;
 	}
 }

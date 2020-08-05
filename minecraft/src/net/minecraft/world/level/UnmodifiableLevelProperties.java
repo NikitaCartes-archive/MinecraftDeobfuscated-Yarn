@@ -208,8 +208,8 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection reportSection) {
-		reportSection.add("Derived", true);
-		this.properties.populateCrashReport(reportSection);
+	public void populateCrashReport(CrashReportSection crashReportSection) {
+		crashReportSection.add("Derived", true);
+		this.properties.populateCrashReport(crashReportSection);
 	}
 }

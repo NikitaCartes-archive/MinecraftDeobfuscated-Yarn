@@ -87,7 +87,7 @@ public class WanderingTraderManager implements Spawner {
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.getNearbySpawnPos(serverWorld, blockPos2, 48);
 			if (blockPos3 != null && this.doesNotSuffocateAt(serverWorld, blockPos3)) {
-				if (serverWorld.getBiome(blockPos3) == Biomes.THE_VOID) {
+				if (serverWorld.method_31081(blockPos3).equals(Optional.of(Biomes.THE_VOID))) {
 					return false;
 				}
 

@@ -32,10 +32,12 @@ public class PortalForcer {
 		Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(
 				pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, i, PointOfInterestStorage.OccupationStatus.ANY
 			)
-			.min(
+			.sorted(
 				Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos))
 					.thenComparingInt(pointOfInterest -> pointOfInterest.getPos().getY())
-			);
+			)
+			.filter(pointOfInterest -> this.world.getBlockState(pointOfInterest.getPos()).contains(Properties.HORIZONTAL_AXIS))
+			.findFirst();
 		return optional.map(
 			pointOfInterest -> {
 				BlockPos blockPosx = pointOfInterest.getPos();

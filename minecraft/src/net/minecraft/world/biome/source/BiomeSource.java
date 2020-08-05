@@ -1,6 +1,6 @@
 package net.minecraft.world.biome.source;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,17 +19,17 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class BiomeSource implements BiomeAccess.Storage {
 	public static final Codec<BiomeSource> field_24713 = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::method_28442, Function.identity());
-	private static final List<Biome> SPAWN_BIOMES = Lists.<Biome>newArrayList(
-		Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.WOODED_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS
-	);
 	protected final Map<StructureFeature<?>, Boolean> structureFeatures = Maps.<StructureFeature<?>, Boolean>newHashMap();
 	protected final Set<BlockState> topMaterials = Sets.<BlockState>newHashSet();
 	protected final List<Biome> biomes;
+
+	protected BiomeSource(Stream<Supplier<Biome>> stream) {
+		this((List<Biome>)stream.map(Supplier::get).collect(ImmutableList.toImmutableList()));
+	}
 
 	protected BiomeSource(List<Biome> biomes) {
 		this.biomes = biomes;
@@ -36,10 +39,6 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 
 	@Environment(EnvType.CLIENT)
 	public abstract BiomeSource withSeed(long seed);
-
-	public List<Biome> getSpawnBiomes() {
-		return SPAWN_BIOMES;
-	}
 
 	public List<Biome> getBiomes() {
 		return this.biomes;
@@ -72,12 +71,12 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 	}
 
 	@Nullable
-	public BlockPos locateBiome(int x, int y, int z, int radius, List<Biome> biomes, Random random) {
-		return this.locateBiome(x, y, z, radius, 1, biomes, random, false);
+	public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<Biome> predicate, Random random) {
+		return this.locateBiome(x, y, z, radius, 1, predicate, random, false);
 	}
 
 	@Nullable
-	public BlockPos locateBiome(int x, int y, int z, int radius, int i, List<Biome> biomes, Random random, boolean bl) {
+	public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl) {
 		int j = x >> 2;
 		int k = z >> 2;
 		int l = radius >> 2;
@@ -101,7 +100,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 
 					int s = j + r;
 					int t = k + q;
-					if (biomes.contains(this.getBiomeForNoiseGen(s, m, t))) {
+					if (predicate.test(this.getBiomeForNoiseGen(s, m, t))) {
 						if (blockPos == null || random.nextInt(n + 1) == 0) {
 							blockPos = new BlockPos(s << 2, y, t << 2);
 							if (bl) {

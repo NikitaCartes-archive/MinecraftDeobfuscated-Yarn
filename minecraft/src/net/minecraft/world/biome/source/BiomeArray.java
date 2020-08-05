@@ -7,7 +7,6 @@ import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,7 +38,7 @@ public class BiomeArray implements BiomeAccess.Storage {
 			Biome biome = indexedIterable.get(j);
 			if (biome == null) {
 				LOGGER.warn("Received invalid biome id: " + j);
-				this.data[i] = Biomes.PLAINS;
+				this.data[i] = indexedIterable.get(0);
 			} else {
 				this.data[i] = biome;
 			}

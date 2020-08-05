@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5505;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
@@ -48,12 +49,15 @@ import net.minecraft.util.ProgressListener;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
@@ -98,8 +102,8 @@ public class LevelStorage {
 		return new LevelStorage(path, path.resolve("../backups"), Schemas.getFixer());
 	}
 
-	private static Pair<GeneratorOptions, Lifecycle> method_29010(Dynamic<?> dynamic, DataFixer dataFixer, int i) {
-		Dynamic<?> dynamic2 = dynamic.get("WorldGenSettings").orElseEmptyMap();
+	private static <T> Pair<GeneratorOptions, Lifecycle> method_29010(Dynamic<T> dynamic, DataFixer dataFixer, int i) {
+		Dynamic<T> dynamic2 = dynamic.get("WorldGenSettings").orElseEmptyMap();
 
 		for (String string : field_25020) {
 			Optional<? extends Dynamic<?>> optional = dynamic.get(string).result();
@@ -108,10 +112,30 @@ public class LevelStorage {
 			}
 		}
 
-		Dynamic<?> dynamic3 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic2, i, SharedConstants.getGameVersion().getWorldVersion());
+		Dynamic<T> dynamic3 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic2, i, SharedConstants.getGameVersion().getWorldVersion());
 		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC.parse(dynamic3);
 		return Pair.of(
-			(GeneratorOptions)dataResult.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error)).orElseGet(GeneratorOptions::getDefaultOptions),
+			(GeneratorOptions)dataResult.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error))
+				.orElseGet(
+					() -> {
+						Registry<DimensionType> registry = (Registry<DimensionType>)class_5505.method_31148(Registry.DIMENSION_TYPE_KEY)
+							.codec()
+							.parse(dynamic3)
+							.resultOrPartial(Util.method_29188("Dimension type registry: ", LOGGER::error))
+							.orElseThrow(() -> new IllegalStateException("Failed to get dimension registry"));
+						Registry<Biome> registry2 = (Registry<Biome>)class_5505.method_31148(Registry.BIOME_KEY)
+							.codec()
+							.parse(dynamic3)
+							.resultOrPartial(Util.method_29188("Biome registry: ", LOGGER::error))
+							.orElseThrow(() -> new IllegalStateException("Failed to get biome registry"));
+						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)class_5505.method_31148(Registry.NOISE_SETTINGS_WORLDGEN)
+							.codec()
+							.parse(dynamic3)
+							.resultOrPartial(Util.method_29188("Noise settings registry: ", LOGGER::error))
+							.orElseThrow(() -> new IllegalStateException("Failed to get noise settings registry"));
+						return GeneratorOptions.getDefaultOptions(registry, registry2, registry3);
+					}
+				),
 			dataResult.lifecycle()
 		);
 	}

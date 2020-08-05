@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -29,8 +30,8 @@ import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
@@ -123,7 +124,7 @@ public class PresetsScreen extends Screen {
 				return FlatChunkGeneratorConfig.getDefaultConfig();
 			} else {
 				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getConfig());
-				Biome biome = Biomes.PLAINS;
+				Biome biome = registry.method_31140(Biomes.PLAINS);
 				if (iterator.hasNext()) {
 					try {
 						Identifier identifier = new Identifier((String)iterator.next());
@@ -139,7 +140,7 @@ public class PresetsScreen extends Screen {
 		}
 	}
 
-	private static String method_29062(DynamicRegistryManager dynamicRegistryManager, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+	private static String method_29062(Registry<Biome> registry, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (int i = 0; i < flatChunkGeneratorConfig.getLayers().size(); i++) {
@@ -151,7 +152,7 @@ public class PresetsScreen extends Screen {
 		}
 
 		stringBuilder.append(";");
-		stringBuilder.append(dynamicRegistryManager.get(Registry.BIOME_KEY).getId(flatChunkGeneratorConfig.getBiome()));
+		stringBuilder.append(registry.getId(flatChunkGeneratorConfig.getBiome()));
 		return stringBuilder.toString();
 	}
 
@@ -162,26 +163,18 @@ public class PresetsScreen extends Screen {
 		this.listText = new TranslatableText("createWorld.customize.presets.list");
 		this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
 		this.customPresetField.setMaxLength(1230);
-		this.customPresetField.setText(method_29062(this.parent.parent.moreOptionsDialog.method_29700(), this.parent.method_29055()));
+		Registry<Biome> registry = this.parent.parent.moreOptionsDialog.method_29700().get(Registry.BIOME_KEY);
+		this.customPresetField.setText(method_29062(registry, this.parent.method_29055()));
 		this.field_25044 = this.parent.method_29055();
 		this.children.add(this.customPresetField);
 		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget();
 		this.children.add(this.listWidget);
 		this.selectPresetButton = this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 155,
-				this.height - 28,
-				150,
-				20,
-				new TranslatableText("createWorld.customize.presets.select"),
-				buttonWidget -> {
-					FlatChunkGeneratorConfig flatChunkGeneratorConfig = method_29060(
-						this.parent.parent.moreOptionsDialog.method_29700().get(Registry.BIOME_KEY), this.customPresetField.getText(), this.field_25044
-					);
-					this.parent.method_29054(flatChunkGeneratorConfig);
-					this.client.openScreen(this.parent);
-				}
-			)
+			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
+				FlatChunkGeneratorConfig flatChunkGeneratorConfig = method_29060(registry, this.customPresetField.getText(), this.field_25044);
+				this.parent.method_29054(flatChunkGeneratorConfig);
+				this.client.openScreen(this.parent);
+			})
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
 		this.updateSelectButton(this.listWidget.getSelected() != null);
@@ -236,36 +229,38 @@ public class PresetsScreen extends Screen {
 	private static void addPreset(
 		Text text,
 		ItemConvertible icon,
-		Biome biome,
+		RegistryKey<Biome> registryKey,
 		List<StructureFeature<?>> structures,
 		boolean bl,
 		boolean bl2,
 		boolean bl3,
 		FlatChunkGeneratorLayer... flatChunkGeneratorLayers
 	) {
-		Map<StructureFeature<?>, StructureConfig> map = Maps.<StructureFeature<?>, StructureConfig>newHashMap();
+		presets.add(new PresetsScreen.SuperflatPreset(icon.asItem(), text, registry -> {
+			Map<StructureFeature<?>, StructureConfig> map = Maps.<StructureFeature<?>, StructureConfig>newHashMap();
 
-		for (StructureFeature<?> structureFeature : structures) {
-			map.put(structureFeature, StructuresConfig.DEFAULT_STRUCTURES.get(structureFeature));
-		}
+			for (StructureFeature<?> structureFeature : structures) {
+				map.put(structureFeature, StructuresConfig.DEFAULT_STRUCTURES.get(structureFeature));
+			}
 
-		StructuresConfig structuresConfig = new StructuresConfig(bl ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
-		if (bl2) {
-			flatChunkGeneratorConfig.method_28911();
-		}
+			StructuresConfig structuresConfig = new StructuresConfig(bl ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
+			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
+			if (bl2) {
+				flatChunkGeneratorConfig.method_28911();
+			}
 
-		if (bl3) {
-			flatChunkGeneratorConfig.method_28916();
-		}
+			if (bl3) {
+				flatChunkGeneratorConfig.method_28916();
+			}
 
-		for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; i--) {
-			flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
-		}
+			for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; i--) {
+				flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
+			}
 
-		flatChunkGeneratorConfig.setBiome(biome);
-		flatChunkGeneratorConfig.updateLayerBlocks();
-		presets.add(new PresetsScreen.SuperflatPreset(icon.asItem(), text, flatChunkGeneratorConfig.method_28912(structuresConfig)));
+			flatChunkGeneratorConfig.setBiome(registry.method_31140(registryKey));
+			flatChunkGeneratorConfig.updateLayerBlocks();
+			return flatChunkGeneratorConfig.method_28912(structuresConfig);
+		}));
 	}
 
 	static {
@@ -388,12 +383,12 @@ public class PresetsScreen extends Screen {
 	static class SuperflatPreset {
 		public final Item icon;
 		public final Text name;
-		public final FlatChunkGeneratorConfig field_25045;
+		public final Function<Registry<Biome>, FlatChunkGeneratorConfig> field_25045;
 
-		public SuperflatPreset(Item icon, Text text, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+		public SuperflatPreset(Item icon, Text text, Function<Registry<Biome>, FlatChunkGeneratorConfig> function) {
 			this.icon = icon;
 			this.name = text;
-			this.field_25045 = flatChunkGeneratorConfig;
+			this.field_25045 = function;
 		}
 
 		public Text method_27571() {
@@ -466,10 +461,10 @@ public class PresetsScreen extends Screen {
 				SuperflatPresetsListWidget.this.setSelected(this);
 				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.presets
 					.get(SuperflatPresetsListWidget.this.children().indexOf(this));
-				PresetsScreen.this.customPresetField
-					.setText(PresetsScreen.method_29062(PresetsScreen.this.parent.parent.moreOptionsDialog.method_29700(), superflatPreset.field_25045));
+				Registry<Biome> registry = PresetsScreen.this.parent.parent.moreOptionsDialog.method_29700().get(Registry.BIOME_KEY);
+				PresetsScreen.this.field_25044 = (FlatChunkGeneratorConfig)superflatPreset.field_25045.apply(registry);
+				PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(registry, PresetsScreen.this.field_25044));
 				PresetsScreen.this.customPresetField.setCursorToStart();
-				PresetsScreen.this.field_25044 = superflatPreset.field_25045;
 			}
 
 			private void method_2200(MatrixStack matrixStack, int i, int j, Item item) {

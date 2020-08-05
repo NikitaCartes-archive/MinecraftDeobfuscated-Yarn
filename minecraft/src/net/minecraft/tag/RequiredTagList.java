@@ -47,7 +47,7 @@ public class RequiredTagList<T> {
 		return this.group;
 	}
 
-	public List<? extends Tag<T>> getTags() {
+	public List<? extends Tag.Identified<T>> getTags() {
 		return this.tags;
 	}
 

@@ -208,6 +208,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -221,14 +222,12 @@ import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.TickTimeTracker;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -1613,13 +1612,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			registryTracker,
 			session -> levelInfo.getDataPackSettings(),
 			(session, impl2, resourceManager, dataPackSettings) -> {
+				RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, registryTracker);
 				RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, resourceManager, registryTracker);
-				DataResult<SimpleRegistry<DimensionOptions>> dataResult = registryOps.loadToRegistry(
-					generatorOptions.getDimensionMap(), Registry.DIMENSION_OPTIONS, DimensionOptions.CODEC
-				);
-				SimpleRegistry<DimensionOptions> simpleRegistry = (SimpleRegistry<DimensionOptions>)dataResult.resultOrPartial(LOGGER::error)
-					.orElse(generatorOptions.getDimensionMap());
-				return new LevelProperties(levelInfo, generatorOptions.method_29573(simpleRegistry), dataResult.lifecycle());
+				DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
+					.encodeStart(registryReadingOps, generatorOptions)
+					.setLifecycle(Lifecycle.stable())
+					.flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));
+				GeneratorOptions generatorOptions2 = (GeneratorOptions)dataResult.resultOrPartial(
+						Util.method_29188("Error reading worldgen settings after loading data packs: ", LOGGER::error)
+					)
+					.orElse(generatorOptions);
+				return new LevelProperties(levelInfo, generatorOptions2, dataResult.lifecycle());
 			},
 			false,
 			MinecraftClient.WorldLoadAction.CREATE

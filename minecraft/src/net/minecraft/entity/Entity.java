@@ -397,7 +397,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 					this.extinguish();
 				}
 			} else {
-				if (this.fireTicks % 20 == 0) {
+				if (this.fireTicks % 20 == 0 && !this.isInLava()) {
 					this.damage(DamageSource.ON_FIRE, 1.0F);
 				}
 
@@ -2178,7 +2178,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				double e = Math.max(-2.9999872E7, worldBorder.getBoundNorth() + 16.0);
 				double f = Math.min(2.9999872E7, worldBorder.getBoundEast() - 16.0);
 				double g = Math.min(2.9999872E7, worldBorder.getBoundSouth() - 16.0);
-				double h = getTeleportationScale(this.world.getDimension(), destination.getDimension());
+				double h = DimensionType.method_31109(this.world.getDimension(), destination.getDimension());
 				BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
 				return (TeleportTarget)this.method_30330(destination, blockPos2, bl3)
 					.map(
@@ -2222,19 +2222,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
 		return serverWorld.getPortalForcer().method_30483(blockPos, bl);
-	}
-
-	/**
-	 * Gets the teleportation scale between two dimensions.
-	 */
-	private static double getTeleportationScale(DimensionType origin, DimensionType destination) {
-		boolean bl = origin.isShrunk();
-		boolean bl2 = destination.isShrunk();
-		if (!bl && bl2) {
-			return 0.125;
-		} else {
-			return bl && !bl2 ? 8.0 : 1.0;
-		}
 	}
 
 	public boolean canUsePortals() {

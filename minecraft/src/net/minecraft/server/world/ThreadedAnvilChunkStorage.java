@@ -1026,7 +1026,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	private void sendChunkDataPackets(ServerPlayerEntity player, Packet<?>[] packets, WorldChunk chunk) {
 		if (packets[0] == null) {
-			packets[0] = new ChunkDataS2CPacket(chunk, 65535, true);
+			packets[0] = new ChunkDataS2CPacket(chunk, 65535);
 			packets[1] = new LightUpdateS2CPacket(chunk.getPos(), this.serverLightingProvider, true);
 		}
 

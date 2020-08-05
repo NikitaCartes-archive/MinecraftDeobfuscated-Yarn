@@ -7,6 +7,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5505;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayers;
@@ -18,12 +21,13 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 					Codec.BOOL
 						.optionalFieldOf("legacy_biome_init_layer", Boolean.valueOf(false), Lifecycle.stable())
 						.forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24498),
-					Codec.BOOL.fieldOf("large_biomes").orElse(false).stable().forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24729)
+					Codec.BOOL.fieldOf("large_biomes").orElse(false).stable().forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_24729),
+					class_5505.method_31148(Registry.BIOME_KEY).forGetter(vanillaLayeredBiomeSource -> vanillaLayeredBiomeSource.field_26698)
 				)
 				.apply(instance, instance.stable(VanillaLayeredBiomeSource::new))
 	);
 	private final BiomeLayerSampler biomeSampler;
-	private static final List<Biome> BIOMES = ImmutableList.of(
+	private static final List<RegistryKey<Biome>> BIOMES = ImmutableList.of(
 		Biomes.OCEAN,
 		Biomes.PLAINS,
 		Biomes.DESERT,
@@ -94,12 +98,14 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	private final long field_24728;
 	private final boolean field_24498;
 	private final boolean field_24729;
+	private final Registry<Biome> field_26698;
 
-	public VanillaLayeredBiomeSource(long l, boolean bl, boolean bl2) {
-		super(BIOMES);
+	public VanillaLayeredBiomeSource(long l, boolean bl, boolean bl2, Registry<Biome> registry) {
+		super(BIOMES.stream().map(registryKey -> () -> registry.method_31140(registryKey)));
 		this.field_24728 = l;
 		this.field_24498 = bl;
 		this.field_24729 = bl2;
+		this.field_26698 = registry;
 		this.biomeSampler = BiomeLayers.build(l, bl, bl2 ? 6 : 4, 4);
 	}
 
@@ -111,11 +117,11 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public BiomeSource withSeed(long seed) {
-		return new VanillaLayeredBiomeSource(seed, this.field_24498, this.field_24729);
+		return new VanillaLayeredBiomeSource(seed, this.field_24498, this.field_24729, this.field_26698);
 	}
 
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		return this.biomeSampler.sample(biomeX, biomeZ);
+		return this.biomeSampler.sample(this.field_26698, biomeX, biomeZ);
 	}
 }

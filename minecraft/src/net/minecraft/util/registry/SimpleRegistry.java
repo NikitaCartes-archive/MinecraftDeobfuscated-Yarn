@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
@@ -17,12 +18,16 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryCodec;
@@ -36,6 +41,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	private final Object2IntMap<T> field_26683 = new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy());
 	private final BiMap<Identifier, T> entriesById;
 	private final BiMap<RegistryKey<T>, T> entriesByKey;
+	private final Map<T, Lifecycle> field_26731;
+	private Lifecycle field_26732;
 	protected Object[] randomEntries;
 	private int nextId;
 
@@ -44,6 +51,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		this.field_26683.defaultReturnValue(-1);
 		this.entriesById = HashBiMap.create();
 		this.entriesByKey = HashBiMap.create();
+		this.field_26731 = Maps.<T, Lifecycle>newIdentityHashMap();
+		this.field_26732 = lifecycle;
 	}
 
 	public static <T> MapCodec<SimpleRegistry.class_5501<T>> method_30929(RegistryKey<? extends Registry<T>> registryKey, MapCodec<T> mapCodec) {
@@ -58,11 +67,11 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public <V extends T> V set(int rawId, RegistryKey<T> key, V entry) {
-		return this.method_31051(rawId, key, entry, true);
+	public <V extends T> V set(int rawId, RegistryKey<T> key, V entry, Lifecycle lifecycle) {
+		return this.method_31051(rawId, key, entry, lifecycle, true);
 	}
 
-	private <V extends T> V method_31051(int i, RegistryKey<T> registryKey, V object, boolean bl) {
+	private <V extends T> V method_31051(int i, RegistryKey<T> registryKey, V object, Lifecycle lifecycle, boolean bl) {
 		Validate.notNull(registryKey);
 		Validate.notNull(object);
 		this.field_26682.size(Math.max(this.field_26682.size(), i + 1));
@@ -79,6 +88,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 		this.entriesById.put(registryKey.getValue(), (T)object);
 		this.entriesByKey.put(registryKey, (T)object);
+		this.field_26731.put(object, lifecycle);
+		this.field_26732 = this.field_26732.add(lifecycle);
 		if (this.nextId <= i) {
 			this.nextId = i + 1;
 		}
@@ -87,24 +98,28 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public <V extends T> V add(RegistryKey<T> key, V entry) {
-		return this.set(this.nextId, key, entry);
+	public <V extends T> V add(RegistryKey<T> key, V entry, Lifecycle lifecycle) {
+		return this.set(this.nextId, key, entry, lifecycle);
 	}
 
 	@Override
-	public <V extends T> V method_31062(RegistryKey<T> registryKey, V object) {
+	public <V extends T> V method_31062(OptionalInt optionalInt, RegistryKey<T> registryKey, V object, Lifecycle lifecycle) {
 		Validate.notNull(registryKey);
 		Validate.notNull(object);
 		T object2 = (T)this.entriesByKey.get(registryKey);
 		int i;
 		if (object2 == null) {
-			i = this.nextId;
+			i = optionalInt.isPresent() ? optionalInt.getAsInt() : this.nextId;
 		} else {
 			i = this.field_26683.getInt(object2);
+			if (optionalInt.isPresent() && optionalInt.getAsInt() != i) {
+				throw new IllegalStateException("ID mismatch");
+			}
+
 			this.field_26683.removeInt(object2);
 		}
 
-		return this.method_31051(i, registryKey, object, false);
+		return this.method_31051(i, registryKey, object, lifecycle, false);
 	}
 
 	@Nullable
@@ -133,6 +148,16 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	@Override
 	public T get(int index) {
 		return (T)(index >= 0 && index < this.field_26682.size() ? this.field_26682.get(index) : null);
+	}
+
+	@Override
+	public Lifecycle method_31139(T object) {
+		return (Lifecycle)this.field_26731.get(object);
+	}
+
+	@Override
+	public Lifecycle method_31138() {
+		return this.field_26732;
 	}
 
 	public Iterator<T> iterator() {
@@ -169,6 +194,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return Util.getRandom((T[])this.randomEntries, random);
 	}
 
+	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean containsId(Identifier id) {
 		return this.entriesById.containsKey(id);
@@ -179,7 +205,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
 
 			for (SimpleRegistry.class_5501<T> lv : list) {
-				simpleRegistry.set(lv.field_26685, lv.field_26684, lv.field_26686);
+				simpleRegistry.set(lv.field_26685, lv.field_26684, lv.field_26686, lifecycle);
 			}
 
 			return simpleRegistry;
@@ -201,7 +227,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	public static <T> Codec<SimpleRegistry<T>> method_31059(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Codec<T> codec) {
 		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryKey), RegistryKey::getValue), codec).xmap(map -> {
 			SimpleRegistry<T> simpleRegistry = new SimpleRegistry<>(registryKey, lifecycle);
-			map.forEach(simpleRegistry::add);
+			map.forEach((registryKeyxx, object) -> simpleRegistry.add(registryKeyxx, object, lifecycle));
 			return simpleRegistry;
 		}, simpleRegistry -> ImmutableMap.copyOf(simpleRegistry.entriesByKey));
 	}

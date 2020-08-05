@@ -13,6 +13,7 @@ import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -203,7 +204,7 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 	 * Creates another property handler with the same type as this one from the
 	 * passed new map of properties.
 	 */
-	protected abstract T create(Properties properties);
+	protected abstract T create(DynamicRegistryManager dynamicRegistryManager, Properties properties);
 
 	public class PropertyAccessor<V> implements Supplier<V> {
 		private final String key;
@@ -227,10 +228,10 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 		 * <p>This method does not mutate the original property where this accessor
 		 * is from.
 		 */
-		public T set(V value) {
+		public T set(DynamicRegistryManager dynamicRegistryManager, V object) {
 			Properties properties = AbstractPropertiesHandler.this.copyProperties();
-			properties.put(this.key, this.stringifier.apply(value));
-			return AbstractPropertiesHandler.this.create(properties);
+			properties.put(this.key, this.stringifier.apply(object));
+			return AbstractPropertiesHandler.this.create(dynamicRegistryManager, properties);
 		}
 	}
 }

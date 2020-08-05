@@ -110,7 +110,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		if (this.levels.isEmpty()) {
-			this.client.openScreen(new CreateWorldScreen(null));
+			this.client.openScreen(CreateWorldScreen.method_31130(null));
 		} else {
 			String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
 

@@ -1,5 +1,7 @@
 package net.minecraft.entity.passive;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -42,6 +44,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -98,8 +101,8 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		Biome biome = world.getBiome(pos);
-		return biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN
+		Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+		return !Objects.equals(optional, Optional.of(Biomes.FROZEN_OCEAN)) && !Objects.equals(optional, Optional.of(Biomes.DEEP_FROZEN_OCEAN))
 			? isValidNaturalSpawn(type, world, spawnReason, pos, random)
 			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.down()).isOf(Blocks.ICE);
 	}
