@@ -627,7 +627,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return Biomes.PLAINS;
+		return this.getRegistryManager().get(Registry.BIOME_KEY).method_31140(Biomes.PLAINS);
 	}
 
 	public float method_23783(float f) {

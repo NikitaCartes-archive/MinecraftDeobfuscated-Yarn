@@ -19,8 +19,10 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
@@ -56,16 +58,19 @@ public class AnvilLevelStorage {
 		RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, impl);
 		SaveProperties saveProperties = session.readLevelProperties(registryOps, DataPackSettings.SAFE_MODE);
 		long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
+		Registry<Biome> registry = impl.get(Registry.BIOME_KEY);
 		BiomeSource biomeSource;
 		if (saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld()) {
-			biomeSource = new FixedBiomeSource(Biomes.PLAINS);
+			biomeSource = new FixedBiomeSource(registry.method_31140(Biomes.PLAINS));
 		} else {
-			biomeSource = new VanillaLayeredBiomeSource(l, false, false);
+			biomeSource = new VanillaLayeredBiomeSource(l, false, false, registry);
 		}
 
 		convertRegions(impl, new File(file, "region"), list, biomeSource, 0, i, progressListener);
-		convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
-		convertRegions(impl, new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);
+		convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(registry.method_31140(Biomes.NETHER_WASTES)), list.size(), i, progressListener);
+		convertRegions(
+			impl, new File(file3, "region"), list3, new FixedBiomeSource(registry.method_31140(Biomes.THE_END)), list.size() + list2.size(), i, progressListener
+		);
 		makeMcrLevelDatBackup(session);
 		session.method_27425(impl, saveProperties);
 		return true;

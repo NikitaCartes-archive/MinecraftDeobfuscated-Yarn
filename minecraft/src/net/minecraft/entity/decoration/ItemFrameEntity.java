@@ -198,13 +198,13 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	private void dropHeldStack(@Nullable Entity entity, boolean alwaysDrop) {
 		if (!this.fixed) {
+			ItemStack itemStack = this.getHeldItemStack();
+			this.setHeldItemStack(ItemStack.EMPTY);
 			if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 				if (entity == null) {
-					this.removeFromFrame(this.getHeldItemStack());
+					this.removeFromFrame(itemStack);
 				}
 			} else {
-				ItemStack itemStack = this.getHeldItemStack();
-				this.setHeldItemStack(ItemStack.EMPTY);
 				if (entity instanceof PlayerEntity) {
 					PlayerEntity playerEntity = (PlayerEntity)entity;
 					if (playerEntity.abilities.creativeMode) {

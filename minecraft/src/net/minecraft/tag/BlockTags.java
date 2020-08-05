@@ -1,5 +1,6 @@
 package net.minecraft.tag;
 
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 
@@ -98,5 +99,9 @@ public final class BlockTags {
 
 	public static TagGroup<Block> getTagGroup() {
 		return REQUIRED_TAGS.getGroup();
+	}
+
+	public static List<? extends Tag.Identified<Block>> method_31072() {
+		return REQUIRED_TAGS.getTags();
 	}
 }

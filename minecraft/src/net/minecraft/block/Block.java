@@ -41,6 +41,7 @@ import net.minecraft.util.collection.IdList;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -261,7 +262,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public static List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity) {
 		LootContext.Builder builder = new LootContext.Builder(world)
 			.random(world.random)
-			.parameter(LootContextParameters.POSITION, pos)
+			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 			.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
 			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return state.getDroppedStacks(builder);
@@ -272,7 +273,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	) {
 		LootContext.Builder builder = new LootContext.Builder(world)
 			.random(world.random)
-			.parameter(LootContextParameters.POSITION, pos)
+			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 			.parameter(LootContextParameters.TOOL, stack)
 			.optionalParameter(LootContextParameters.THIS_ENTITY, entity)
 			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);

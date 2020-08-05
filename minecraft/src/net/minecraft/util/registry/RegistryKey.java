@@ -73,6 +73,10 @@ public class RegistryKey<T> {
 		return "ResourceKey[" + this.registry + " / " + this.value + ']';
 	}
 
+	public boolean method_31163(RegistryKey<? extends Registry<?>> registryKey) {
+		return this.registry.equals(registryKey.getValue());
+	}
+
 	public Identifier getValue() {
 		return this.value;
 	}

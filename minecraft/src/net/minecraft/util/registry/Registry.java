@@ -15,6 +15,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -247,20 +249,22 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	}
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Supplier<T> defaultEntry) {
-		return create(registryKey, new SimpleRegistry<>(registryKey, lifecycle), defaultEntry);
+		return create(registryKey, new SimpleRegistry<>(registryKey, lifecycle), defaultEntry, lifecycle);
 	}
 
 	private static <T> DefaultedRegistry<T> create(
 		RegistryKey<? extends Registry<T>> registryKey, String defaultId, Lifecycle lifecycle, Supplier<T> defaultEntry
 	) {
-		return create(registryKey, new DefaultedRegistry<>(defaultId, registryKey, lifecycle), defaultEntry);
+		return create(registryKey, new DefaultedRegistry<>(defaultId, registryKey, lifecycle), defaultEntry, lifecycle);
 	}
 
-	private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> registryKey, R registry, Supplier<T> defaultEntry) {
+	private static <T, R extends MutableRegistry<T>> R create(
+		RegistryKey<? extends Registry<T>> registryKey, R registry, Supplier<T> defaultEntry, Lifecycle lifecycle
+	) {
 		Identifier identifier = registryKey.getValue();
 		DEFAULT_ENTRIES.put(identifier, defaultEntry);
 		MutableRegistry<R> mutableRegistry = ROOT;
-		return mutableRegistry.add(registryKey, registry);
+		return mutableRegistry.add(registryKey, registry, lifecycle);
 	}
 
 	protected Registry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
@@ -280,21 +284,18 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public <U> DataResult<Pair<T, U>> decode(DynamicOps<U> dynamicOps, U object) {
 		return dynamicOps.compressMaps()
 			? dynamicOps.getNumberValue(object).flatMap(number -> {
-				int i = number.intValue();
-				if (!this.containsId(i)) {
-					return DataResult.error("Unknown registry id: " + number);
-				} else {
-					T objectxx = this.get(i);
-					return DataResult.success(objectxx, this.lifecycle);
-				}
+				T objectxx = this.get(number.intValue());
+				return objectxx == null ? DataResult.error("Unknown registry id: " + number) : DataResult.success(objectxx, this.method_31139(objectxx));
 			}).map(objectx -> Pair.of(objectx, dynamicOps.empty()))
 			: Identifier.CODEC
 				.decode(dynamicOps, object)
-				.addLifecycle(this.lifecycle)
 				.flatMap(
-					pair -> !this.containsId((Identifier)pair.getFirst())
+					pair -> {
+						T objectxx = this.get((Identifier)pair.getFirst());
+						return objectxx == null
 							? DataResult.error("Unknown registry key: " + pair.getFirst())
-							: DataResult.success(pair.mapFirst(this::get), this.lifecycle)
+							: DataResult.success(Pair.of(objectxx, pair.getSecond()), this.method_31139(objectxx));
+					}
 				);
 	}
 
@@ -329,8 +330,21 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	@Nullable
 	public abstract T get(@Nullable Identifier id);
 
+	protected abstract Lifecycle method_31139(T object);
+
+	public abstract Lifecycle method_31138();
+
 	public Optional<T> getOrEmpty(@Nullable Identifier id) {
 		return Optional.ofNullable(this.get(id));
+	}
+
+	public T method_31140(RegistryKey<T> registryKey) {
+		T object = this.get(registryKey);
+		if (object == null) {
+			throw new IllegalStateException("Missing: " + registryKey);
+		} else {
+			return object;
+		}
 	}
 
 	public abstract Set<Identifier> getIds();
@@ -341,22 +355,19 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 		return StreamSupport.stream(this.spliterator(), false);
 	}
 
+	@Environment(EnvType.CLIENT)
 	public abstract boolean containsId(Identifier id);
-
-	public boolean containsId(int id) {
-		return this.get(id) != null;
-	}
 
 	public static <T> T register(Registry<? super T> registry, String id, T entry) {
 		return register(registry, new Identifier(id), entry);
 	}
 
 	public static <V, T extends V> T register(Registry<V> registry, Identifier id, T entry) {
-		return ((MutableRegistry)registry).add(RegistryKey.of(registry.registryKey, id), entry);
+		return ((MutableRegistry)registry).add(RegistryKey.of(registry.registryKey, id), entry, Lifecycle.stable());
 	}
 
 	public static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {
-		return ((MutableRegistry)registry).set(rawId, RegistryKey.of(registry.registryKey, new Identifier(id)), entry);
+		return ((MutableRegistry)registry).set(rawId, RegistryKey.of(registry.registryKey, new Identifier(id)), entry, Lifecycle.stable());
 	}
 
 	static {

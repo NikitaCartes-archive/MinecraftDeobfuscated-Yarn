@@ -62,7 +62,7 @@ public class SelectWorldScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("selectWorld.create"),
-				buttonWidget -> this.client.openScreen(new CreateWorldScreen(this))
+				buttonWidget -> this.client.openScreen(CreateWorldScreen.method_31130(this))
 			)
 		);
 		this.editButton = this.addButton(

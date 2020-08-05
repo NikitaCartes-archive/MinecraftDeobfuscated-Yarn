@@ -437,7 +437,7 @@ public class LootCommand {
 		BlockState blockState = serverWorld.getBlockState(pos);
 		BlockEntity blockEntity = serverWorld.getBlockEntity(pos);
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.parameter(LootContextParameters.POSITION, pos)
+			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 			.parameter(LootContextParameters.BLOCK_STATE, blockState)
 			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity)
 			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
@@ -462,7 +462,7 @@ public class LootCommand {
 			builder.optionalParameter(LootContextParameters.DIRECT_KILLER_ENTITY, entity2);
 			builder.optionalParameter(LootContextParameters.KILLER_ENTITY, entity2);
 			builder.parameter(LootContextParameters.THIS_ENTITY, entity);
-			builder.parameter(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()));
+			builder.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
 			LootTable lootTable = serverCommandSource.getMinecraftServer().getLootManager().getTable(identifier);
 			List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.ENTITY));
 			return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx, identifier));
@@ -473,7 +473,7 @@ public class LootCommand {
 		ServerCommandSource serverCommandSource = context.getSource();
 		LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld())
 			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
-			.parameter(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()));
+			.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
 		return getFeedbackMessageSingle(context, lootTable, builder.build(LootContextTypes.CHEST), constructor);
 	}
 
@@ -482,7 +482,7 @@ public class LootCommand {
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = context.getSource();
 		LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld())
-			.parameter(LootContextParameters.POSITION, pos)
+			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 			.parameter(LootContextParameters.TOOL, stack)
 			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
 			.build(LootContextTypes.FISHING);

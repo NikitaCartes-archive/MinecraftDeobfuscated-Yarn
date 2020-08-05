@@ -36,7 +36,6 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	private static final Identifier USER_ICON = new Identifier("realms", "textures/gui/realms/user_icon.png");
 	private static final Identifier CROSS_PLAYER_ICON = new Identifier("realms", "textures/gui/realms/cross_player_icon.png");
 	private static final Identifier OPTIONS_BACKGROUND = new Identifier("minecraft", "textures/gui/options_background.png");
-	private static final Text field_26497 = new TranslatableText("mco.configure.world.activityfeed.disabled");
 	private static final Text field_26498 = new TranslatableText("mco.configure.world.invites.normal.tooltip");
 	private static final Text field_26499 = new TranslatableText("mco.configure.world.invites.ops.tooltip");
 	private static final Text field_26500 = new TranslatableText("mco.configure.world.invites.remove.tooltip");
@@ -422,8 +421,6 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			}
 
 			RealmsPlayerScreen.this.drawRemoveIcon(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, y + 2, mouseX, mouseY);
-			RealmsPlayerScreen.this.textRenderer
-				.draw(matrices, RealmsPlayerScreen.field_26497, (float)RealmsPlayerScreen.this.column2_x, (float)RealmsPlayerScreen.row(5), 10526880);
 			RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0F, 8.0F, 8, 8, 64, 64);

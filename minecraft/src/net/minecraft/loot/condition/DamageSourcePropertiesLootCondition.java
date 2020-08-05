@@ -11,7 +11,6 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.util.JsonSerializer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class DamageSourcePropertiesLootCondition implements LootCondition {
@@ -28,13 +27,13 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(LootContextParameters.POSITION, LootContextParameters.DAMAGE_SOURCE);
+		return ImmutableSet.of(LootContextParameters.ORIGIN, LootContextParameters.DAMAGE_SOURCE);
 	}
 
 	public boolean test(LootContext lootContext) {
 		DamageSource damageSource = lootContext.get(LootContextParameters.DAMAGE_SOURCE);
-		BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
-		return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), Vec3d.of(blockPos), damageSource);
+		Vec3d vec3d = lootContext.get(LootContextParameters.ORIGIN);
+		return vec3d != null && damageSource != null && this.predicate.test(lootContext.getWorld(), vec3d, damageSource);
 	}
 
 	public static LootCondition.Builder builder(DamageSourcePredicate.Builder builder) {

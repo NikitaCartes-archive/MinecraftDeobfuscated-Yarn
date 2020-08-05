@@ -332,8 +332,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ChunkGenerator chunkGenerator;
 		DimensionType dimensionType;
 		if (dimensionOptions == null) {
-			dimensionType = DimensionType.getOverworldDimensionType();
-			chunkGenerator = GeneratorOptions.createOverworldGenerator(new Random().nextLong());
+			dimensionType = this.registryManager.getDimensionTypes().method_31140(DimensionType.OVERWORLD_REGISTRY_KEY);
+			chunkGenerator = GeneratorOptions.createOverworldGenerator(
+				this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN), new Random().nextLong()
+			);
 		} else {
 			dimensionType = dimensionOptions.getDimensionType();
 			chunkGenerator = dimensionOptions.getChunkGenerator();
@@ -430,9 +432,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(), 0.0F);
 		} else {
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
-			List<Biome> list = biomeSource.getSpawnBiomes();
 			Random random = new Random(serverWorld.getSeed());
-			BlockPos blockPos = biomeSource.locateBiome(0, serverWorld.getSeaLevel(), 0, 256, list, random);
+			BlockPos blockPos = biomeSource.locateBiome(0, serverWorld.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().method_31082(), random);
 			ChunkPos chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
 			if (blockPos == null) {
 				LOGGER.warn("Unable to find spawn biome");

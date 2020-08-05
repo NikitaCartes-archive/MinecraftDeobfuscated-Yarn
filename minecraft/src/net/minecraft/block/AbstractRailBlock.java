@@ -63,13 +63,10 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
-		if (!world.isClient) {
+		if (!world.isClient && world.getBlockState(pos).isOf(this)) {
 			RailShape railShape = state.get(this.getShapeProperty());
-			if (shouldDropRail(pos, world, railShape) && !world.isAir(pos)) {
-				if (!notify) {
-					dropStacks(state, world, pos);
-				}
-
+			if (shouldDropRail(pos, world, railShape)) {
+				dropStacks(state, world, pos);
 				world.removeBlock(pos, notify);
 			} else {
 				this.updateBlockState(state, world, pos, block);

@@ -302,7 +302,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	public EntityData initialize(
 		ServerWorldAccess serverWorldAccess, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(serverWorldAccess.getBiome(this.getBlockPos()))));
+		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(serverWorldAccess.method_31081(this.getBlockPos()))));
 		return super.initialize(serverWorldAccess, difficulty, spawnReason, entityData, entityTag);
 	}
 

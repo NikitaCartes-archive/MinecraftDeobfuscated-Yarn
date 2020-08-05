@@ -1,5 +1,7 @@
 package net.minecraft.data.server;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
@@ -41,15 +43,16 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
-	private static final Biome[] NETHER_BIOMES = new Biome[]{
+	private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(
 		Biomes.NETHER_WASTES, Biomes.SOUL_SAND_VALLEY, Biomes.WARPED_FOREST, Biomes.CRIMSON_FOREST, Biomes.BASALT_DELTAS
-	};
+	);
 	private static final EntityPredicate.Extended field_25712 = EntityPredicate.Extended.create(
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,

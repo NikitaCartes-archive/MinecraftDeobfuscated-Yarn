@@ -61,7 +61,7 @@ public class FoodComponents {
 		.saturationModifier(0.1F)
 		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 3), 1.0F)
 		.statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 300, 2), 1.0F)
-		.statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 1), 1.0F)
+		.statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0), 1.0F)
 		.build();
 	public static final FoodComponent PUMPKIN_PIE = new FoodComponent.Builder().hunger(8).saturationModifier(0.3F).build();
 	public static final FoodComponent RABBIT = new FoodComponent.Builder().hunger(3).saturationModifier(0.3F).meat().build();

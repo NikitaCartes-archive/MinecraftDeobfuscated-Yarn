@@ -17,12 +17,12 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	}
 
 	@Override
-	public <V extends T> V set(int rawId, RegistryKey<T> key, V entry) {
+	public <V extends T> V set(int rawId, RegistryKey<T> key, V entry, Lifecycle lifecycle) {
 		if (this.defaultId.equals(key.getValue())) {
 			this.defaultValue = (T)entry;
 		}
 
-		return super.set(rawId, key, entry);
+		return super.set(rawId, key, entry, lifecycle);
 	}
 
 	@Override

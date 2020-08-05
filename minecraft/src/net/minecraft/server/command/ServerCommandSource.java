@@ -32,6 +32,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 public class ServerCommandSource implements CommandSource {
 	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.player"));
@@ -243,11 +244,14 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public ServerCommandSource withWorld(ServerWorld world) {
-		return world == this.world
-			? this
-			: new ServerCommandSource(
+		if (world == this.world) {
+			return this;
+		} else {
+			double d = DimensionType.method_31109(this.world.getDimension(), world.getDimension());
+			Vec3d vec3d = new Vec3d(this.position.x * d, this.position.y, this.position.z * d);
+			return new ServerCommandSource(
 				this.output,
-				this.position,
+				vec3d,
 				this.rotation,
 				world,
 				this.level,
@@ -259,6 +263,7 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor
 			);
+		}
 	}
 
 	public ServerCommandSource withLookingAt(Entity entity, EntityAnchorArgumentType.EntityAnchor anchor) throws CommandSyntaxException {
