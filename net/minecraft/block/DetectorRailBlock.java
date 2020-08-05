@@ -82,6 +82,9 @@ extends AbstractRailBlock {
 
     private void updatePoweredStatus(World world, BlockPos pos, BlockState state) {
         BlockState blockState;
+        if (!this.canPlaceAt(state, world, pos)) {
+            return;
+        }
         boolean bl = state.get(POWERED);
         boolean bl2 = false;
         List<AbstractMinecartEntity> list = this.getCarts(world, pos, AbstractMinecartEntity.class, null);

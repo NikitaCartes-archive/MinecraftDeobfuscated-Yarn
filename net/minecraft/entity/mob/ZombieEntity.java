@@ -490,15 +490,13 @@ extends HostileEntity {
 
     @Override
     protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+        ItemStack itemStack;
         CreeperEntity creeperEntity;
         super.dropEquipment(source, lootingMultiplier, allowDrops);
         Entity entity = source.getAttacker();
-        if (entity instanceof CreeperEntity && (creeperEntity = (CreeperEntity)entity).shouldDropHead()) {
+        if (entity instanceof CreeperEntity && (creeperEntity = (CreeperEntity)entity).shouldDropHead() && !(itemStack = this.getSkull()).isEmpty()) {
             creeperEntity.onHeadDropped();
-            ItemStack itemStack = this.getSkull();
-            if (!itemStack.isEmpty()) {
-                this.dropStack(itemStack);
-            }
+            this.dropStack(itemStack);
         }
     }
 

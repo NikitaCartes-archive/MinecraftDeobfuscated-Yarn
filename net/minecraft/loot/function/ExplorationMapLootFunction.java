@@ -26,6 +26,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,21 +58,21 @@ extends ConditionalLootFunction {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return ImmutableSet.of(LootContextParameters.POSITION);
+        return ImmutableSet.of(LootContextParameters.ORIGIN);
     }
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
         ServerWorld serverWorld;
-        BlockPos blockPos2;
+        BlockPos blockPos;
         if (stack.getItem() != Items.MAP) {
             return stack;
         }
-        BlockPos blockPos = context.get(LootContextParameters.POSITION);
-        if (blockPos != null && (blockPos2 = (serverWorld = context.getWorld()).locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks)) != null) {
-            ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
+        Vec3d vec3d = context.get(LootContextParameters.ORIGIN);
+        if (vec3d != null && (blockPos = (serverWorld = context.getWorld()).locateStructure(this.destination, new BlockPos(vec3d), this.searchRadius, this.skipExistingChunks)) != null) {
+            ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), this.zoom, true, true);
             FilledMapItem.fillExplorationMap(serverWorld, itemStack);
-            MapState.addDecorationsTag(itemStack, blockPos2, "+", this.decoration);
+            MapState.addDecorationsTag(itemStack, blockPos, "+", this.decoration);
             itemStack.setCustomName(new TranslatableText("filled_map." + this.destination.getName().toLowerCase(Locale.ROOT)));
             return itemStack;
         }

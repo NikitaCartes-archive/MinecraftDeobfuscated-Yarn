@@ -5,6 +5,8 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
@@ -62,10 +64,12 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -313,7 +317,11 @@ extends WaterCreatureEntity {
     }
 
     public static boolean canSpawn(EntityType<DolphinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return pos.getY() > 45 && pos.getY() < world.getSeaLevel() && (world.getBiome(pos) != Biomes.OCEAN || world.getBiome(pos) != Biomes.DEEP_OCEAN) && world.getFluidState(pos).isIn(FluidTags.WATER);
+        if (pos.getY() <= 45 || pos.getY() >= world.getSeaLevel()) {
+            return false;
+        }
+        Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+        return (!Objects.equals(optional, Optional.of(Biomes.OCEAN)) || !Objects.equals(optional, Optional.of(Biomes.DEEP_OCEAN))) && world.getFluidState(pos).isIn(FluidTags.WATER);
     }
 
     @Override

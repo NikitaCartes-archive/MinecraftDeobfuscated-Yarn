@@ -4,6 +4,8 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -47,6 +49,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -100,9 +103,9 @@ implements RangedAttackMob {
 
     public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random) {
         boolean bl;
-        Biome biome = serverWorldAccess.getBiome(pos);
+        Optional<RegistryKey<Biome>> optional = serverWorldAccess.method_31081(pos);
         boolean bl2 = bl = serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(serverWorldAccess, pos, random) && (spawnReason == SpawnReason.SPAWNER || serverWorldAccess.getFluidState(pos).isIn(FluidTags.WATER));
-        if (biome == Biomes.RIVER || biome == Biomes.FROZEN_RIVER) {
+        if (Objects.equals(optional, Optional.of(Biomes.RIVER)) || Objects.equals(optional, Optional.of(Biomes.FROZEN_RIVER))) {
             return random.nextInt(15) == 0 && bl;
         }
         return random.nextInt(40) == 0 && DrownedEntity.isValidSpawnDepth(serverWorldAccess, pos) && bl;

@@ -8,6 +8,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.server.dedicated.AbstractPropertiesHandler;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.gen.GeneratorOptions;
@@ -63,7 +64,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList;
     public final GeneratorOptions generatorOptions;
 
-    public ServerPropertiesHandler(Properties properties) {
+    public ServerPropertiesHandler(Properties properties, DynamicRegistryManager dynamicRegistryManager) {
         super(properties);
         if (this.parseBoolean("snooper-enabled", true)) {
             // empty if block
@@ -88,21 +89,21 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         this.entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", integer -> MathHelper.clamp(integer, 10, 1000), 100);
         this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
         this.whiteList = this.booleanAccessor("white-list", false);
-        this.generatorOptions = GeneratorOptions.fromProperties(properties);
+        this.generatorOptions = GeneratorOptions.fromProperties(dynamicRegistryManager, properties);
     }
 
-    public static ServerPropertiesHandler load(Path path) {
-        return new ServerPropertiesHandler(ServerPropertiesHandler.loadProperties(path));
-    }
-
-    @Override
-    protected ServerPropertiesHandler create(Properties properties) {
-        return new ServerPropertiesHandler(properties);
+    public static ServerPropertiesHandler load(DynamicRegistryManager dynamicRegistryManager, Path path) {
+        return new ServerPropertiesHandler(ServerPropertiesHandler.loadProperties(path), dynamicRegistryManager);
     }
 
     @Override
-    protected /* synthetic */ AbstractPropertiesHandler create(Properties properties) {
-        return this.create(properties);
+    protected ServerPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
+        return new ServerPropertiesHandler(properties, dynamicRegistryManager);
+    }
+
+    @Override
+    protected /* synthetic */ AbstractPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
+        return this.create(dynamicRegistryManager, properties);
     }
 }
 

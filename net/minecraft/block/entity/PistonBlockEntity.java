@@ -47,6 +47,7 @@ implements Tickable {
     private float progress;
     private float lastProgress;
     private long savedWorldTime;
+    private int field_26705;
 
     public PistonBlockEntity() {
         super(BlockEntityType.PISTON);
@@ -241,7 +242,7 @@ implements Tickable {
     }
 
     public void finish() {
-        if (this.lastProgress < 1.0f && this.world != null) {
+        if (!this.world.isClient && this.lastProgress < 1.0f && this.world != null) {
             this.lastProgress = this.progress = 1.0f;
             this.world.removeBlockEntity(this.pos);
             this.markRemoved();
@@ -258,6 +259,10 @@ implements Tickable {
         this.savedWorldTime = this.world.getTime();
         this.lastProgress = this.progress;
         if (this.lastProgress >= 1.0f) {
+            if (this.world.isClient && this.field_26705 < 5) {
+                ++this.field_26705;
+                return;
+            }
             this.world.removeBlockEntity(this.pos);
             this.markRemoved();
             if (this.pushedBlock != null && this.world.getBlockState(this.pos).isOf(Blocks.MOVING_PISTON)) {
@@ -321,6 +326,12 @@ implements Tickable {
 
     public long getSavedWorldTime() {
         return this.savedWorldTime;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public double getSquaredRenderDistance() {
+        return 68.0;
     }
 }
 

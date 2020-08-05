@@ -894,10 +894,8 @@ AutoCloseable {
             DiffuseLighting.method_27869(matrices.peek().getModel());
         }
         profiler.swap("entities");
-        profiler.push("prepare");
         this.regularEntityCount = 0;
         this.blockEntityCount = 0;
-        profiler.swap("entities");
         if (this.entityFramebuffer != null) {
             this.entityFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             this.entityFramebuffer.copyDepthFrom(this.client.getFramebuffer());
@@ -1006,7 +1004,6 @@ AutoCloseable {
             matrices.pop();
         }
         this.checkEmpty(matrices);
-        profiler.pop();
         HitResult hitResult = this.client.crosshairTarget;
         if (renderBlockOutline && hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
             profiler.swap("outline");

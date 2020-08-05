@@ -679,22 +679,10 @@ implements ClientPlayPacketListener {
             this.world.scheduleBlockRenders(i, k, j);
         }
         for (CompoundTag compoundTag : packet.getBlockEntityTagList()) {
-            BlockPos blockPos2 = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
-            BlockEntity blockEntity = this.world.getBlockEntity(blockPos2);
+            BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+            BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
             if (blockEntity == null) continue;
-            blockEntity.fromTag(this.world.getBlockState(blockPos2), compoundTag);
-        }
-        if (!packet.shouldRetainLighting()) {
-            this.world.getLightingProvider().setColumnEnabled(worldChunk.getPos(), false);
-            int k = packet.getVerticalStripBitmask();
-            for (int l = 0; l < 16; ++l) {
-                if ((k & 1 << l) == 0) continue;
-                this.world.getLightingProvider().enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
-                this.world.getLightingProvider().enqueueSectionData(LightType.SKY, ChunkSectionPos.from(worldChunk.getPos(), l), new ChunkNibbleArray(), false);
-            }
-            this.world.getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
-            this.world.getLightingProvider().setColumnEnabled(worldChunk.getPos(), true);
-            worldChunk.getLightSourcesStream().forEach(blockPos -> this.world.getLightingProvider().addLightSource((BlockPos)blockPos, worldChunk.getLuminance((BlockPos)blockPos)));
+            blockEntity.fromTag(this.world.getBlockState(blockPos), compoundTag);
         }
     }
 

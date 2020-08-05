@@ -102,7 +102,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             Collections.sort(this.levels);
         }
         if (this.levels.isEmpty()) {
-            this.client.openScreen(new CreateWorldScreen(null));
+            this.client.openScreen(CreateWorldScreen.method_31130(null));
             return;
         }
         String string = supplier.get().toLowerCase(Locale.ROOT);

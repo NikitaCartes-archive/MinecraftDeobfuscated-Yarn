@@ -193,7 +193,7 @@ implements StatsListener {
                     this.field_26551 = new TranslatableText("stat_type.minecraft.killed_by.none", this.field_26548);
                     this.field_26552 = false;
                 } else {
-                    this.field_26551 = new TranslatableText("stat_type.minecraft.killed_by", j, this.field_26548);
+                    this.field_26551 = new TranslatableText("stat_type.minecraft.killed_by", this.field_26548, j);
                     this.field_26552 = true;
                 }
             }

@@ -37,7 +37,7 @@ public class FoodComponents {
     public static final FoodComponent POISONOUS_POTATO = new FoodComponent.Builder().hunger(2).saturationModifier(0.3f).statusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 0), 0.6f).build();
     public static final FoodComponent PORKCHOP = new FoodComponent.Builder().hunger(3).saturationModifier(0.3f).meat().build();
     public static final FoodComponent POTATO = new FoodComponent.Builder().hunger(1).saturationModifier(0.3f).build();
-    public static final FoodComponent PUFFERFISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1f).statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 3), 1.0f).statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 300, 2), 1.0f).statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 1), 1.0f).build();
+    public static final FoodComponent PUFFERFISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1f).statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 3), 1.0f).statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 300, 2), 1.0f).statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0), 1.0f).build();
     public static final FoodComponent PUMPKIN_PIE = new FoodComponent.Builder().hunger(8).saturationModifier(0.3f).build();
     public static final FoodComponent RABBIT = new FoodComponent.Builder().hunger(3).saturationModifier(0.3f).meat().build();
     public static final FoodComponent RABBIT_STEW = FoodComponents.create(10);

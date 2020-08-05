@@ -37,6 +37,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerCommandSource
@@ -141,7 +142,9 @@ implements CommandSource {
         if (world == this.world) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, this.rotation, world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+        double d = DimensionType.method_31109(this.world.getDimension(), world.getDimension());
+        Vec3d vec3d = new Vec3d(this.position.x * d, this.position.y, this.position.z * d);
+        return new ServerCommandSource(this.output, vec3d, this.rotation, world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
     }
 
     public ServerCommandSource withLookingAt(Entity entity, EntityAnchorArgumentType.EntityAnchor anchor) throws CommandSyntaxException {

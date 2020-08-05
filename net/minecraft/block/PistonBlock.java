@@ -207,28 +207,31 @@ extends FacingBlock {
         return true;
     }
 
-    public static boolean isMovable(BlockState state, World world, BlockPos pos, Direction motionDir, boolean canBreak, Direction pistonDir) {
-        if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR)) {
+    public static boolean isMovable(BlockState blockState, World world, BlockPos blockPos, Direction direction, boolean canBreak, Direction pistonDir) {
+        if (blockPos.getY() < 0 || blockPos.getY() > world.getHeight() - 1 || !world.getWorldBorder().contains(blockPos)) {
             return false;
         }
-        if (!world.getWorldBorder().contains(pos)) {
+        if (blockState.isAir()) {
+            return true;
+        }
+        if (blockState.isOf(Blocks.OBSIDIAN) || blockState.isOf(Blocks.CRYING_OBSIDIAN) || blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
             return false;
         }
-        if (pos.getY() < 0 || motionDir == Direction.DOWN && pos.getY() == 0) {
+        if (direction == Direction.DOWN && blockPos.getY() == 0) {
             return false;
         }
-        if (pos.getY() > world.getHeight() - 1 || motionDir == Direction.UP && pos.getY() == world.getHeight() - 1) {
+        if (direction == Direction.UP && blockPos.getY() == world.getHeight() - 1) {
             return false;
         }
-        if (state.isOf(Blocks.PISTON) || state.isOf(Blocks.STICKY_PISTON)) {
-            if (state.get(EXTENDED).booleanValue()) {
+        if (blockState.isOf(Blocks.PISTON) || blockState.isOf(Blocks.STICKY_PISTON)) {
+            if (blockState.get(EXTENDED).booleanValue()) {
                 return false;
             }
         } else {
-            if (state.getHardness(world, pos) == -1.0f) {
+            if (blockState.getHardness(world, blockPos) == -1.0f) {
                 return false;
             }
-            switch (state.getPistonBehavior()) {
+            switch (blockState.getPistonBehavior()) {
                 case BLOCK: {
                     return false;
                 }
@@ -236,11 +239,11 @@ extends FacingBlock {
                     return canBreak;
                 }
                 case PUSH_ONLY: {
-                    return motionDir == pistonDir;
+                    return direction == pistonDir;
                 }
             }
         }
-        return !state.getBlock().hasBlockEntity();
+        return !blockState.getBlock().hasBlockEntity();
     }
 
     private boolean move(World world, BlockPos pos, Direction dir, boolean retract) {

@@ -9,8 +9,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Consumer;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -27,10 +29,18 @@ public class MessageCommand {
     }
 
     private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text message) {
+        Consumer<Text> consumer;
         UUID uUID = source.getEntity() == null ? Util.NIL_UUID : source.getEntity().getUuid();
-        for (ServerPlayerEntity serverPlayerEntity : targets) {
-            serverPlayerEntity.sendSystemMessage(new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), uUID);
-            source.sendFeedback(new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), false);
+        Entity entity = source.getEntity();
+        if (entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+            consumer = text2 -> serverPlayerEntity.sendSystemMessage(new TranslatableText("commands.message.display.outgoing", text2, message).formatted(Formatting.GRAY, Formatting.ITALIC), serverPlayerEntity.getUuid());
+        } else {
+            consumer = text2 -> source.sendFeedback(new TranslatableText("commands.message.display.outgoing", text2, message).formatted(Formatting.GRAY, Formatting.ITALIC), false);
+        }
+        for (ServerPlayerEntity serverPlayerEntity2 : targets) {
+            consumer.accept(serverPlayerEntity2.getDisplayName());
+            serverPlayerEntity2.sendSystemMessage(new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), uUID);
         }
         return targets.size();
     }

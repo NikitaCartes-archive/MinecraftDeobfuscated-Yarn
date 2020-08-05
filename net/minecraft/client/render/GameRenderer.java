@@ -4,6 +4,7 @@
 package net.minecraft.client.render;
 
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Locale;
@@ -17,12 +18,15 @@ import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
@@ -66,6 +70,7 @@ import org.jetbrains.annotations.Nullable;
 public class GameRenderer
 implements SynchronousResourceReloadListener,
 AutoCloseable {
+    private static final Identifier field_26730 = new Identifier("textures/misc/nausea.png");
     private static final Logger LOGGER = LogManager.getLogger();
     private final MinecraftClient client;
     private final ResourceManager resourceContainer;
@@ -438,7 +443,11 @@ AutoCloseable {
         DiffuseLighting.enableGuiDepthLighting();
         MatrixStack matrixStack = new MatrixStack();
         if (tick && this.client.world != null) {
+            float f;
             this.client.getProfiler().swap("gui");
+            if (this.client.player != null && (f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && this.client.options.distortionEffectScale < 1.0f) {
+                this.method_31136(f * (1.0f - this.client.options.distortionEffectScale));
+            }
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {
                 RenderSystem.defaultAlphaFunc();
                 this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickDelta);
@@ -541,10 +550,7 @@ AutoCloseable {
             this.bobView(matrixStack, tickDelta);
         }
         if ((f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength) * (this.client.options.distortionEffectScale * this.client.options.distortionEffectScale)) > 0.0f) {
-            int i = 20;
-            if (this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
-                i = 7;
-            }
+            int i = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
             float g = 5.0f / (f * f + 5.0f) - f * 0.04f;
             g *= g;
             Vector3f vector3f = new Vector3f(0.0f, MathHelper.SQUARE_ROOT_OF_TWO / 2.0f, MathHelper.SQUARE_ROOT_OF_TWO / 2.0f);
@@ -617,6 +623,38 @@ AutoCloseable {
         RenderSystem.popMatrix();
         RenderSystem.enableCull();
         RenderSystem.disableDepthTest();
+    }
+
+    private void method_31136(float f) {
+        int i = this.client.getWindow().getScaledWidth();
+        int j = this.client.getWindow().getScaledHeight();
+        double d = MathHelper.lerp((double)f, 2.0, 1.0);
+        float g = 0.2f * f;
+        float h = 0.4f * f;
+        float k = 0.2f * f;
+        double e = (double)i * d;
+        double l = (double)j * d;
+        double m = ((double)i - e) / 2.0;
+        double n = ((double)j - l) / 2.0;
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
+        RenderSystem.color4f(g, h, k, 1.0f);
+        this.client.getTextureManager().bindTexture(field_26730);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(m, n + l, -90.0).texture(0.0f, 1.0f).next();
+        bufferBuilder.vertex(m + e, n + l, -90.0).texture(1.0f, 1.0f).next();
+        bufferBuilder.vertex(m + e, n, -90.0).texture(1.0f, 0.0f).next();
+        bufferBuilder.vertex(m, n, -90.0).texture(0.0f, 0.0f).next();
+        tessellator.draw();
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
     }
 
     public float getSkyDarkness(float tickDelta) {

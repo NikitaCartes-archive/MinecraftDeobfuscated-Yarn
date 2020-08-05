@@ -16,6 +16,7 @@ public class CraftingResultInventory
 implements Inventory,
 RecipeUnlocker {
     private final DefaultedList<ItemStack> stacks = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    @Nullable
     private Recipe<?> lastRecipe;
 
     @Override

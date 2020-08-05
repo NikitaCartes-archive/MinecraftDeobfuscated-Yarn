@@ -545,7 +545,7 @@ extends TameableEntity {
             this.cat.teleport(mutable.getX() + random.nextInt(11) - 5, mutable.getY() + random.nextInt(5) - 2, mutable.getZ() + random.nextInt(11) - 5, false);
             mutable.set(this.cat.getBlockPos());
             LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world).parameter(LootContextParameters.POSITION, mutable).parameter(LootContextParameters.THIS_ENTITY, this.cat).random(random);
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world).parameter(LootContextParameters.ORIGIN, this.cat.getPos()).parameter(LootContextParameters.THIS_ENTITY, this.cat).random(random);
             List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
             for (ItemStack itemStack : list) {
                 this.cat.world.spawnEntity(new ItemEntity(this.cat.world, (double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * ((float)Math.PI / 180)), mutable.getY(), (double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * ((float)Math.PI / 180)), itemStack));

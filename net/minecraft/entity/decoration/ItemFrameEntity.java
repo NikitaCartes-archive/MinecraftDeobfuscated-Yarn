@@ -207,14 +207,14 @@ extends AbstractDecorationEntity {
         if (this.fixed) {
             return;
         }
+        ItemStack itemStack = this.getHeldItemStack();
+        this.setHeldItemStack(ItemStack.EMPTY);
         if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             if (entity == null) {
-                this.removeFromFrame(this.getHeldItemStack());
+                this.removeFromFrame(itemStack);
             }
             return;
         }
-        ItemStack itemStack = this.getHeldItemStack();
-        this.setHeldItemStack(ItemStack.EMPTY);
         if (entity instanceof PlayerEntity) {
             PlayerEntity playerEntity = (PlayerEntity)entity;
             if (playerEntity.abilities.creativeMode) {

@@ -106,6 +106,7 @@ extends PlayerEntityModel<T> {
         this.leftSleeve.copyPositionAndRotation(this.leftArm);
         this.rightSleeve.copyPositionAndRotation(this.rightArm);
         this.jacket.copyPositionAndRotation(this.torso);
+        this.helmet.copyPositionAndRotation(this.head);
     }
 
     @Override

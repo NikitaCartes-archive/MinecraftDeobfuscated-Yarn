@@ -230,7 +230,7 @@ public class Explosion {
                 this.world.getProfiler().push("explosion_blocks");
                 if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
                     BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
-                    LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).random(this.world.random).parameter(LootContextParameters.POSITION, blockPos).parameter(LootContextParameters.TOOL, ItemStack.EMPTY).optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity).optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
+                    LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).random(this.world.random).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos)).parameter(LootContextParameters.TOOL, ItemStack.EMPTY).optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity).optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
                     if (this.destructionType == DestructionType.DESTROY) {
                         builder.parameter(LootContextParameters.EXPLOSION_RADIUS, Float.valueOf(this.power));
                     }

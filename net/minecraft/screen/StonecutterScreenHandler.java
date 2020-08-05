@@ -68,12 +68,12 @@ extends ScreenHandler {
 
             @Override
             public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+                stack.onCraft(player.world, player, stack.getCount());
+                StonecutterScreenHandler.this.output.unlockLastRecipe(player);
                 ItemStack itemStack = StonecutterScreenHandler.this.inputSlot.takeStack(1);
                 if (!itemStack.isEmpty()) {
                     StonecutterScreenHandler.this.populateResult();
                 }
-                stack.onCraft(player.world, player, stack.getCount());
-                StonecutterScreenHandler.this.output.unlockLastRecipe(player);
                 context.run((world, blockPos) -> {
                     long l = world.getTime();
                     if (StonecutterScreenHandler.this.lastTakeTime != l) {

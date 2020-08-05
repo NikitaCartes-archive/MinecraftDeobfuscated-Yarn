@@ -175,7 +175,6 @@ extends Entity {
 
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
-        tag.putByte("Facing", (byte)this.facing.getHorizontal());
         BlockPos blockPos = this.getDecorationBlockPos();
         tag.putInt("TileX", blockPos.getX());
         tag.putInt("TileY", blockPos.getY());
@@ -185,7 +184,6 @@ extends Entity {
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         this.attachmentPos = new BlockPos(tag.getInt("TileX"), tag.getInt("TileY"), tag.getInt("TileZ"));
-        this.facing = Direction.fromHorizontal(tag.getByte("Facing"));
     }
 
     public abstract int getWidthPixels();

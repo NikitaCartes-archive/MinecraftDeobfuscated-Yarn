@@ -4,13 +4,16 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.List;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5505;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -18,14 +21,29 @@ import net.minecraft.world.gen.ChunkRandom;
 
 public class TheEndBiomeSource
 extends BiomeSource {
-    public static final Codec<TheEndBiomeSource> field_24730 = ((MapCodec)Codec.LONG.fieldOf("seed")).xmap(TheEndBiomeSource::new, theEndBiomeSource -> theEndBiomeSource.field_24731).stable().codec();
+    public static final Codec<TheEndBiomeSource> field_24730 = RecordCodecBuilder.create(instance -> instance.group(class_5505.method_31148(Registry.BIOME_KEY).forGetter(theEndBiomeSource -> theEndBiomeSource.field_26699), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(theEndBiomeSource -> theEndBiomeSource.field_24731)).apply((Applicative<TheEndBiomeSource, ?>)instance, instance.stable(TheEndBiomeSource::new)));
     private final SimplexNoiseSampler noise;
-    private static final List<Biome> BIOMES = ImmutableList.of(Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS);
+    private final Registry<Biome> field_26699;
     private final long field_24731;
+    private final Biome field_26700;
+    private final Biome field_26701;
+    private final Biome field_26702;
+    private final Biome field_26703;
+    private final Biome field_26704;
 
-    public TheEndBiomeSource(long l) {
-        super(BIOMES);
+    public TheEndBiomeSource(Registry<Biome> registry, long l) {
+        this(registry, l, registry.method_31140(Biomes.THE_END), registry.method_31140(Biomes.END_HIGHLANDS), registry.method_31140(Biomes.END_MIDLANDS), registry.method_31140(Biomes.SMALL_END_ISLANDS), registry.method_31140(Biomes.END_BARRENS));
+    }
+
+    private TheEndBiomeSource(Registry<Biome> registry, long l, Biome biome, Biome biome2, Biome biome3, Biome biome4, Biome biome5) {
+        super(ImmutableList.of(biome, biome2, biome3, biome4, biome5));
+        this.field_26699 = registry;
         this.field_24731 = l;
+        this.field_26700 = biome;
+        this.field_26701 = biome2;
+        this.field_26702 = biome3;
+        this.field_26703 = biome4;
+        this.field_26704 = biome5;
         ChunkRandom chunkRandom = new ChunkRandom(l);
         chunkRandom.consume(17292);
         this.noise = new SimplexNoiseSampler(chunkRandom);
@@ -39,7 +57,7 @@ extends BiomeSource {
     @Override
     @Environment(value=EnvType.CLIENT)
     public BiomeSource withSeed(long seed) {
-        return new TheEndBiomeSource(seed);
+        return new TheEndBiomeSource(this.field_26699, seed, this.field_26700, this.field_26701, this.field_26702, this.field_26703, this.field_26704);
     }
 
     @Override
@@ -47,19 +65,19 @@ extends BiomeSource {
         int i = biomeX >> 2;
         int j = biomeZ >> 2;
         if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
-            return Biomes.THE_END;
+            return this.field_26700;
         }
         float f = TheEndBiomeSource.getNoiseAt(this.noise, i * 2 + 1, j * 2 + 1);
         if (f > 40.0f) {
-            return Biomes.END_HIGHLANDS;
+            return this.field_26701;
         }
         if (f >= 0.0f) {
-            return Biomes.END_MIDLANDS;
+            return this.field_26702;
         }
         if (f < -20.0f) {
-            return Biomes.SMALL_END_ISLANDS;
+            return this.field_26703;
         }
-        return Biomes.END_BARRENS;
+        return this.field_26704;
     }
 
     public boolean method_28479(long l) {

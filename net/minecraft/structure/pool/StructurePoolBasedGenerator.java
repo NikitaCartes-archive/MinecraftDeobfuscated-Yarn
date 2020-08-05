@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.JigsawBlock;
@@ -122,10 +123,16 @@ public class StructurePoolBasedGenerator {
                 BlockPos blockPos3 = blockPos2.offset(direction);
                 int j = blockPos2.getY() - i;
                 int k = -1;
-                StructurePool structurePool = StructurePoolGenerator.method_30420(this.field_25852, new Identifier(structureBlockInfo2.tag.getString("pool")));
-                StructurePool structurePool2 = StructurePoolGenerator.method_30420(this.field_25852, structurePool.getTerminatorsId());
-                if (structurePool == TemplatePools.INVALID || structurePool.getElementCount() == 0 && structurePool != TemplatePools.EMPTY) {
-                    LOGGER.warn("Empty or none existent pool: {}", (Object)structureBlockInfo2.tag.getString("pool"));
+                Identifier identifier = new Identifier(structureBlockInfo2.tag.getString("pool"));
+                Optional<StructurePool> optional = this.field_25852.getOrEmpty(identifier);
+                if (!optional.isPresent() || optional.get().getElementCount() == 0 && !Objects.equals(identifier, TemplatePools.EMPTY.getValue())) {
+                    LOGGER.warn("Empty or none existent pool: {}", (Object)identifier);
+                    continue;
+                }
+                Identifier identifier2 = optional.get().getTerminatorsId();
+                Optional<StructurePool> optional2 = this.field_25852.getOrEmpty(identifier2);
+                if (!optional2.isPresent() || optional2.get().getElementCount() == 0 && !Objects.equals(identifier2, TemplatePools.EMPTY.getValue())) {
+                    LOGGER.warn("Empty or none existent fallback pool: {}", (Object)identifier2);
                     continue;
                 }
                 boolean bl3 = blockBox.contains(blockPos3);
@@ -141,9 +148,9 @@ public class StructurePoolBasedGenerator {
                 }
                 ArrayList<StructurePoolElement> list = Lists.newArrayList();
                 if (currentSize != this.maxSize) {
-                    list.addAll(structurePool.getElementIndicesInRandomOrder(this.random));
+                    list.addAll(optional.get().getElementIndicesInRandomOrder(this.random));
                 }
-                list.addAll(structurePool2.getElementIndicesInRandomOrder(this.random));
+                list.addAll(optional2.get().getElementIndicesInRandomOrder(this.random));
                 Iterator iterator = list.iterator();
                 while (iterator.hasNext() && (structurePoolElement2 = (StructurePoolElement)iterator.next()) != EmptyPoolElement.INSTANCE) {
                     for (BlockRotation blockRotation2 : BlockRotation.randomRotationOrder(this.random)) {
@@ -154,9 +161,11 @@ public class StructurePoolBasedGenerator {
                                 return 0;
                             }
                             Identifier identifier = new Identifier(structureBlockInfo.tag.getString("pool"));
-                            StructurePool structurePool = StructurePoolGenerator.method_30420(this.field_25852, identifier);
-                            StructurePool structurePool2 = StructurePoolGenerator.method_30420(this.field_25852, structurePool.getTerminatorsId());
-                            return Math.max(structurePool.getHighestY(this.structureManager), structurePool2.getHighestY(this.structureManager));
+                            Optional<StructurePool> optional = this.field_25852.getOrEmpty(identifier);
+                            Optional<Integer> optional2 = optional.flatMap(structurePool -> this.field_25852.getOrEmpty(structurePool.getTerminatorsId()));
+                            int i = optional.map(structurePool -> structurePool.getHighestY(this.structureManager)).orElse(0);
+                            int j = optional2.map(structurePool -> structurePool.getHighestY(this.structureManager)).orElse(0);
+                            return Math.max(i, j);
                         }).max().orElse(0);
                         for (Structure.StructureBlockInfo structureBlockInfo22 : list2) {
                             int u;
@@ -211,10 +220,6 @@ public class StructurePoolBasedGenerator {
                     }
                 }
             }
-        }
-
-        private static StructurePool method_30420(Registry<StructurePool> registry, Identifier identifier) {
-            return Optional.ofNullable(registry.get(identifier)).orElse(TemplatePools.INVALID);
         }
     }
 

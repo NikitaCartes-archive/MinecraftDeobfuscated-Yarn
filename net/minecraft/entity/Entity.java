@@ -412,7 +412,7 @@ CommandOutput {
                     this.extinguish();
                 }
             } else {
-                if (this.fireTicks % 20 == 0) {
+                if (this.fireTicks % 20 == 0 && !this.isInLava()) {
                     this.damage(DamageSource.ON_FIRE, 1.0f);
                 }
                 this.setFireTicks(this.fireTicks - 1);
@@ -955,7 +955,7 @@ CommandOutput {
         }
         BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
         FluidState fluidState = this.world.getFluidState(blockPos);
-        for (Tag<Fluid> tag : FluidTags.all()) {
+        for (Tag tag : FluidTags.all()) {
             if (!fluidState.isIn(tag)) continue;
             double e = (float)blockPos.getY() + fluidState.getHeight(this.world, blockPos);
             if (e > d) {
@@ -2065,7 +2065,7 @@ CommandOutput {
         double e = Math.max(-2.9999872E7, worldBorder.getBoundNorth() + 16.0);
         double f = Math.min(2.9999872E7, worldBorder.getBoundEast() - 16.0);
         double g = Math.min(2.9999872E7, worldBorder.getBoundSouth() - 16.0);
-        double h = Entity.getTeleportationScale(this.world.getDimension(), destination.getDimension());
+        double h = DimensionType.method_31109(this.world.getDimension(), destination.getDimension());
         BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
         return this.method_30330(destination, blockPos2, bl3).map(arg -> {
             Vec3d vec3d;
@@ -2089,21 +2089,6 @@ CommandOutput {
 
     protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
         return serverWorld.getPortalForcer().method_30483(blockPos, bl);
-    }
-
-    /**
-     * Gets the teleportation scale between two dimensions.
-     */
-    private static double getTeleportationScale(DimensionType origin, DimensionType destination) {
-        boolean bl = origin.isShrunk();
-        boolean bl2 = destination.isShrunk();
-        if (!bl && bl2) {
-            return 0.125;
-        }
-        if (bl && !bl2) {
-            return 8.0;
-        }
-        return 1.0;
     }
 
     public boolean canUsePortals() {

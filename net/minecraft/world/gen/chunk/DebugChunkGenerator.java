@@ -14,6 +14,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5504;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -21,7 +22,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
@@ -42,7 +42,7 @@ extends ChunkGenerator {
     protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
 
     private DebugChunkGenerator() {
-        super(new FixedBiomeSource(Biomes.PLAINS), new StructuresConfig(false));
+        super(new FixedBiomeSource(class_5504.field_26734), new StructuresConfig(false));
     }
 
     @Override

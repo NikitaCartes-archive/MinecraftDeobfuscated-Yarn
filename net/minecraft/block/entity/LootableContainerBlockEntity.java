@@ -23,6 +23,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,7 +71,7 @@ extends LockableContainerBlockEntity {
                 Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test((ServerPlayerEntity)player, this.lootTableId);
             }
             this.lootTableId = null;
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.POSITION, new BlockPos(this.pos)).random(this.lootTableSeed);
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos)).random(this.lootTableSeed);
             if (player != null) {
                 builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
             }

@@ -4,6 +4,7 @@
 package net.minecraft.util.registry;
 
 import com.mojang.serialization.Lifecycle;
+import java.util.OptionalInt;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
@@ -13,10 +14,10 @@ extends Registry<T> {
         super(registryKey, lifecycle);
     }
 
-    public abstract <V extends T> V set(int var1, RegistryKey<T> var2, V var3);
+    public abstract <V extends T> V set(int var1, RegistryKey<T> var2, V var3, Lifecycle var4);
 
-    public abstract <V extends T> V add(RegistryKey<T> var1, V var2);
+    public abstract <V extends T> V add(RegistryKey<T> var1, V var2, Lifecycle var3);
 
-    public abstract <V extends T> V method_31062(RegistryKey<T> var1, V var2);
+    public abstract <V extends T> V method_31062(OptionalInt var1, RegistryKey<T> var2, V var3, Lifecycle var4);
 }
 

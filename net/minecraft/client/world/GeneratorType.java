@@ -18,6 +18,8 @@ import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.MutableRegistry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.FixedBiomeSource;
@@ -36,83 +38,88 @@ public abstract class GeneratorType {
     public static final GeneratorType DEFAULT = new GeneratorType("default"){
 
         @Override
-        protected ChunkGenerator getChunkGenerator(long seed) {
-            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorSettings.OVERWORLD);
+        protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
+            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry), l, () -> registry2.method_31140(ChunkGeneratorSettings.OVERWORLD));
         }
     };
     private static final GeneratorType FLAT = new GeneratorType("flat"){
 
         @Override
-        protected ChunkGenerator getChunkGenerator(long seed) {
+        protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
             return new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig());
         }
     };
     private static final GeneratorType LARGE_BIOMES = new GeneratorType("large_biomes"){
 
         @Override
-        protected ChunkGenerator getChunkGenerator(long seed) {
-            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, true), seed, () -> ChunkGeneratorSettings.OVERWORLD);
+        protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
+            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, true, registry), l, () -> registry2.method_31140(ChunkGeneratorSettings.OVERWORLD));
         }
     };
     public static final GeneratorType AMPLIFIED = new GeneratorType("amplified"){
 
         @Override
-        protected ChunkGenerator getChunkGenerator(long seed) {
-            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(seed, false, false), seed, () -> ChunkGeneratorSettings.AMPLIFIED);
+        protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
+            return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry), l, () -> registry2.method_31140(ChunkGeneratorSettings.AMPLIFIED));
         }
     };
     private static final GeneratorType SINGLE_BIOME_SURFACE = new GeneratorType("single_biome_surface"){
 
         @Override
-        protected ChunkGenerator getChunkGenerator(long seed) {
-            return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorSettings.OVERWORLD);
+        protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
+            return new NoiseChunkGenerator(new FixedBiomeSource(registry.method_31140(Biomes.PLAINS)), l, () -> registry2.method_31140(ChunkGeneratorSettings.OVERWORLD));
         }
     };
     private static final GeneratorType SINGLE_BIOME_CAVES = new GeneratorType("single_biome_caves"){
 
         @Override
         public GeneratorOptions method_29077(DynamicRegistryManager.Impl impl, long l, boolean bl, boolean bl2) {
-            return new GeneratorOptions(l, bl, bl2, GeneratorOptions.method_29962(DimensionType.method_28517(l), DimensionType::getOverworldCavesDimensionType, this.getChunkGenerator(l)));
+            MutableRegistry<Biome> registry = impl.get(Registry.BIOME_KEY);
+            MutableRegistry<DimensionType> registry2 = impl.get(Registry.DIMENSION_TYPE_KEY);
+            MutableRegistry<ChunkGeneratorSettings> registry3 = impl.get(Registry.NOISE_SETTINGS_WORLDGEN);
+            return new GeneratorOptions(l, bl, bl2, GeneratorOptions.method_29962(DimensionType.method_28517(registry2, registry, registry3, l), () -> registry2.method_31140(DimensionType.OVERWORLD_CAVES_REGISTRY_KEY), this.getChunkGenerator(registry, registry3, l)));
         }
 
         @Override
-        protected ChunkGenerator getChunkGenerator(long seed) {
-            return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorSettings.CAVES);
+        protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
+            return new NoiseChunkGenerator(new FixedBiomeSource(registry.method_31140(Biomes.PLAINS)), l, () -> registry2.method_31140(ChunkGeneratorSettings.CAVES));
         }
     };
     private static final GeneratorType SINGLE_BIOME_FLOATING_ISLANDS = new GeneratorType("single_biome_floating_islands"){
 
         @Override
-        protected ChunkGenerator getChunkGenerator(long seed) {
-            return new NoiseChunkGenerator(new FixedBiomeSource(Biomes.PLAINS), seed, () -> ChunkGeneratorSettings.FLOATING_ISLANDS);
+        protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
+            return new NoiseChunkGenerator(new FixedBiomeSource(registry.method_31140(Biomes.PLAINS)), l, () -> registry2.method_31140(ChunkGeneratorSettings.FLOATING_ISLANDS));
         }
     };
     private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states"){
 
         @Override
-        protected ChunkGenerator getChunkGenerator(long seed) {
+        protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
             return DebugChunkGenerator.INSTANCE;
         }
     };
     protected static final List<GeneratorType> VALUES = Lists.newArrayList(DEFAULT, FLAT, LARGE_BIOMES, AMPLIFIED, SINGLE_BIOME_SURFACE, SINGLE_BIOME_CAVES, SINGLE_BIOME_FLOATING_ISLANDS, DEBUG_ALL_BLOCK_STATES);
     protected static final Map<Optional<GeneratorType>, ScreenProvider> field_25053 = ImmutableMap.of(Optional.of(FLAT), (createWorldScreen, generatorOptions) -> {
         ChunkGenerator chunkGenerator = generatorOptions.getChunkGenerator();
-        return new CustomizeFlatLevelScreen(createWorldScreen, flatChunkGeneratorConfig -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new FlatChunkGenerator((FlatChunkGeneratorConfig)flatChunkGeneratorConfig)))), chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).method_28545() : FlatChunkGeneratorConfig.getDefaultConfig());
-    }, Optional.of(SINGLE_BIOME_SURFACE), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_SURFACE, biome)), GeneratorType.getFirstBiome(generatorOptions)), Optional.of(SINGLE_BIOME_CAVES), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_CAVES, biome)), GeneratorType.getFirstBiome(generatorOptions)), Optional.of(SINGLE_BIOME_FLOATING_ISLANDS), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)), GeneratorType.getFirstBiome(generatorOptions)));
+        return new CustomizeFlatLevelScreen(createWorldScreen, flatChunkGeneratorConfig -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(createWorldScreen.moreOptionsDialog.method_29700().get(Registry.DIMENSION_TYPE_KEY), generatorOptions.getDimensionMap(), new FlatChunkGenerator((FlatChunkGeneratorConfig)flatChunkGeneratorConfig)))), chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).method_28545() : FlatChunkGeneratorConfig.getDefaultConfig());
+    }, Optional.of(SINGLE_BIOME_SURFACE), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_SURFACE, biome)), GeneratorType.getFirstBiome(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions)), Optional.of(SINGLE_BIOME_CAVES), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_CAVES, biome)), GeneratorType.getFirstBiome(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions)), Optional.of(SINGLE_BIOME_FLOATING_ISLANDS), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)), GeneratorType.getFirstBiome(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions)));
     private final Text translationKey;
 
     private GeneratorType(String translationKey) {
         this.translationKey = new TranslatableText("generator." + translationKey);
     }
 
-    private static GeneratorOptions method_29079(GeneratorOptions generatorOptions, GeneratorType generatorType, Biome biome) {
+    private static GeneratorOptions method_29079(DynamicRegistryManager dynamicRegistryManager, GeneratorOptions generatorOptions, GeneratorType generatorType, Biome biome) {
         FixedBiomeSource biomeSource = new FixedBiomeSource(biome);
-        Supplier<ChunkGeneratorSettings> supplier = generatorType == SINGLE_BIOME_CAVES ? () -> ChunkGeneratorSettings.CAVES : (generatorType == SINGLE_BIOME_FLOATING_ISLANDS ? () -> ChunkGeneratorSettings.FLOATING_ISLANDS : () -> ChunkGeneratorSettings.OVERWORLD);
-        return new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(generatorOptions.getDimensionMap(), new NoiseChunkGenerator(biomeSource, generatorOptions.getSeed(), supplier)));
+        MutableRegistry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
+        MutableRegistry<ChunkGeneratorSettings> registry2 = dynamicRegistryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+        Supplier<ChunkGeneratorSettings> supplier = generatorType == SINGLE_BIOME_CAVES ? () -> registry2.method_31140(ChunkGeneratorSettings.CAVES) : (generatorType == SINGLE_BIOME_FLOATING_ISLANDS ? () -> registry2.method_31140(ChunkGeneratorSettings.FLOATING_ISLANDS) : () -> registry2.method_31140(ChunkGeneratorSettings.OVERWORLD));
+        return new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(registry, generatorOptions.getDimensionMap(), new NoiseChunkGenerator(biomeSource, generatorOptions.getSeed(), supplier)));
     }
 
-    private static Biome getFirstBiome(GeneratorOptions options) {
-        return options.getChunkGenerator().getBiomeSource().getBiomes().stream().findFirst().orElse(Biomes.PLAINS);
+    private static Biome getFirstBiome(DynamicRegistryManager dynamicRegistryManager, GeneratorOptions generatorOptions) {
+        return generatorOptions.getChunkGenerator().getBiomeSource().getBiomes().stream().findFirst().orElse(dynamicRegistryManager.get(Registry.BIOME_KEY).method_31140(Biomes.PLAINS));
     }
 
     public static Optional<GeneratorType> method_29078(GeneratorOptions generatorOptions) {
@@ -131,10 +138,13 @@ public abstract class GeneratorType {
     }
 
     public GeneratorOptions method_29077(DynamicRegistryManager.Impl impl, long l, boolean bl, boolean bl2) {
-        return new GeneratorOptions(l, bl, bl2, GeneratorOptions.method_28608(DimensionType.method_28517(l), this.getChunkGenerator(l)));
+        MutableRegistry<Biome> registry = impl.get(Registry.BIOME_KEY);
+        MutableRegistry<DimensionType> registry2 = impl.get(Registry.DIMENSION_TYPE_KEY);
+        MutableRegistry<ChunkGeneratorSettings> registry3 = impl.get(Registry.NOISE_SETTINGS_WORLDGEN);
+        return new GeneratorOptions(l, bl, bl2, GeneratorOptions.method_28608(registry2, DimensionType.method_28517(registry2, registry, registry3, l), this.getChunkGenerator(registry, registry3, l)));
     }
 
-    protected abstract ChunkGenerator getChunkGenerator(long var1);
+    protected abstract ChunkGenerator getChunkGenerator(Registry<Biome> var1, Registry<ChunkGeneratorSettings> var2, long var3);
 
     @Environment(value=EnvType.CLIENT)
     public static interface ScreenProvider {

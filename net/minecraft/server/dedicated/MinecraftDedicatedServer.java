@@ -409,7 +409,7 @@ implements DedicatedServer {
     @Override
     public void setPlayerIdleTimeout(int playerIdleTimeout) {
         super.setPlayerIdleTimeout(playerIdleTimeout);
-        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.playerIdleTimeout.set(playerIdleTimeout));
+        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.playerIdleTimeout.set(this.getRegistryManager(), playerIdleTimeout));
     }
 
     @Override
@@ -502,7 +502,7 @@ implements DedicatedServer {
     }
 
     public void setUseWhitelist(boolean bl) {
-        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.whiteList.set(bl));
+        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.whiteList.set(this.getRegistryManager(), bl));
     }
 
     @Override

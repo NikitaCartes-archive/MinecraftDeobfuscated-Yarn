@@ -73,6 +73,7 @@ public class ChunkHolder {
     private final LevelUpdateListener levelUpdateListener;
     private final PlayersWatchingChunkProvider playersWatchingChunkProvider;
     private boolean accessible;
+    private boolean field_26744;
 
     public ChunkHolder(ChunkPos pos, int level, LightingProvider lightingProvider, LevelUpdateListener levelUpdateListener, PlayersWatchingChunkProvider playersWatchingChunkProvider) {
         this.pos = pos;
@@ -176,19 +177,25 @@ public class ChunkHolder {
     }
 
     public void flushUpdates(WorldChunk chunk) {
+        int j;
         if (!this.pendingBlockUpdates && this.skyLightUpdateBits == 0 && this.blockLightUpdateBits == 0) {
             return;
         }
         World world = chunk.getWorld();
+        int i = 0;
+        for (j = 0; j < this.blockUpdatesBySection.length; ++j) {
+            i += this.blockUpdatesBySection[j] != null ? this.blockUpdatesBySection[j].size() : 0;
+        }
+        this.field_26744 |= i >= 64;
         if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
-            this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, false), true);
+            this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, false), !this.field_26744);
             this.skyLightUpdateBits = 0;
             this.blockLightUpdateBits = 0;
         }
-        for (int i = 0; i < this.blockUpdatesBySection.length; ++i) {
-            ShortSet shortSet = this.blockUpdatesBySection[i];
+        for (j = 0; j < this.blockUpdatesBySection.length; ++j) {
+            ShortSet shortSet = this.blockUpdatesBySection[j];
             if (shortSet == null) continue;
-            ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk.getPos(), i);
+            ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk.getPos(), j);
             if (shortSet.size() == 1) {
                 BlockPos blockPos2 = chunkSectionPos.unpackBlockPos(shortSet.iterator().nextShort());
                 BlockState blockState2 = world.getBlockState(blockPos2);
@@ -200,7 +207,7 @@ public class ChunkHolder {
                 this.sendPacketToPlayersWatching(chunkDeltaUpdateS2CPacket, false);
                 chunkDeltaUpdateS2CPacket.visitUpdates((blockPos, blockState) -> this.tryUpdateBlockEntityAt(world, (BlockPos)blockPos, (BlockState)blockState));
             }
-            this.blockUpdatesBySection[i] = null;
+            this.blockUpdatesBySection[j] = null;
         }
         this.pendingBlockUpdates = false;
     }

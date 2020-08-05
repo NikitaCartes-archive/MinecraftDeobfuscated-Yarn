@@ -52,7 +52,7 @@ extends Screen {
         this.children.add(this.searchBox);
         this.children.add(this.levelList);
         this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, new TranslatableText("selectWorld.select"), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::play)));
-        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.client.openScreen(new CreateWorldScreen(this))));
+        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.client.openScreen(CreateWorldScreen.method_31130(this))));
         this.editButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, new TranslatableText("selectWorld.edit"), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit)));
         this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, new TranslatableText("selectWorld.delete"), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::delete)));
         this.recreateButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, new TranslatableText("selectWorld.recreate"), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::recreate)));

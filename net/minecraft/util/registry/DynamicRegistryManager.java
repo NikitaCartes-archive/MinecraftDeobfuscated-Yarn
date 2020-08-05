@@ -6,6 +6,7 @@ package net.minecraft.util.registry;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.UnboundedMapCodec;
 import java.util.Map;
@@ -45,9 +46,9 @@ import org.jetbrains.annotations.Nullable;
  * class serves as an immutable implementation of any particular collection
  * or configuration of dynamic registries.</p>
  */
-public interface DynamicRegistryManager {
-    public static final Logger LOGGER = LogManager.getLogger();
-    public static final Map<RegistryKey<? extends Registry<?>>, Info<?>> INFOS = Util.make(() -> {
+public abstract class DynamicRegistryManager {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Map<RegistryKey<? extends Registry<?>>, Info<?>> INFOS = Util.make(() -> {
         ImmutableMap.Builder<RegistryKey<Registry<?>>, Info<?>> builder = ImmutableMap.builder();
         DynamicRegistryManager.method_31060(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
         DynamicRegistryManager.method_31060(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
@@ -60,11 +61,17 @@ public interface DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings.field_24780);
         return builder.build();
     });
+    private static final Impl field_26733 = Util.make(() -> {
+        Impl impl = new Impl();
+        DimensionType.addRegistryDefaults(impl);
+        INFOS.keySet().stream().filter(registryKey -> !registryKey.equals(Registry.DIMENSION_TYPE_KEY)).forEach(registryKey -> DynamicRegistryManager.setupBuiltin(impl, registryKey));
+        return impl;
+    });
 
     /**
      * Retrieves a registry optionally from this manager.
      */
-    public <E> Optional<MutableRegistry<E>> getOptional(RegistryKey<? extends Registry<E>> var1);
+    public abstract <E> Optional<MutableRegistry<E>> getOptional(RegistryKey<? extends Registry<E>> var1);
 
     /**
      * Retrieves a registry from this manager, or throws an exception when the
@@ -72,19 +79,19 @@ public interface DynamicRegistryManager {
      * 
      * @throws IllegalStateException if the registry does not exist
      */
-    default public <E> MutableRegistry<E> get(RegistryKey<? extends Registry<E>> key) {
+    public <E> MutableRegistry<E> get(RegistryKey<? extends Registry<E>> key) {
         return this.getOptional(key).orElseThrow(() -> new IllegalStateException("Missing registry: " + key));
     }
 
-    default public Registry<DimensionType> getDimensionTypes() {
+    public Registry<DimensionType> getDimensionTypes() {
         return this.get(Registry.DIMENSION_TYPE_KEY);
     }
 
-    public static <E> void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, Info<?>> infosBuilder, RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec) {
+    private static <E> void register(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, Info<?>> infosBuilder, RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec) {
         infosBuilder.put(registryRef, new Info<E>(registryRef, codec, null));
     }
 
-    public static <E> void method_31060(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, Info<?>> builder, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, Codec<E> codec2) {
+    private static <E> void method_31060(ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, Info<?>> builder, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, Codec<E> codec2) {
         builder.put(registryKey, new Info<E>(registryKey, codec, codec2));
     }
 
@@ -93,16 +100,34 @@ public interface DynamicRegistryManager {
      */
     public static Impl create() {
         Impl impl = new Impl();
-        DimensionType.addRegistryDefaults(impl);
-        INFOS.keySet().stream().filter(registryKey -> !registryKey.equals(Registry.DIMENSION_TYPE_KEY)).forEach(registryKey -> DynamicRegistryManager.setupBuiltin(impl, registryKey));
+        RegistryOps.class_5506.class_5507 lv = new RegistryOps.class_5506.class_5507();
+        for (Info<?> info : INFOS.values()) {
+            DynamicRegistryManager.method_31141(impl, lv, info);
+        }
+        RegistryOps.method_31150(JsonOps.INSTANCE, lv, impl);
         return impl;
+    }
+
+    private static <E> void method_31141(Impl impl, RegistryOps.class_5506.class_5507 arg, Info<E> info) {
+        RegistryKey<Registry<E>> registryKey = info.getRegistry();
+        boolean bl = !registryKey.equals(Registry.NOISE_SETTINGS_WORLDGEN) && !registryKey.equals(Registry.DIMENSION_TYPE_KEY);
+        MutableRegistry<E> registry = field_26733.get(registryKey);
+        MutableRegistry<E> mutableRegistry = impl.get(registryKey);
+        for (Map.Entry entry : registry.getEntries()) {
+            Object object = entry.getValue();
+            if (bl) {
+                arg.method_31159(field_26733, entry.getKey(), info.getElementCodec(), registry.getRawId(object), object, registry.method_31139(object));
+                continue;
+            }
+            mutableRegistry.set(registry.getRawId(object), entry.getKey(), object, registry.method_31139(object));
+        }
     }
 
     /**
      * Add all entries of the registry referred by {@code registryRef} to the
      * corresponding registry within this manager.
      */
-    public static <R extends Registry<?>> void setupBuiltin(Impl manager, RegistryKey<R> registryRef) {
+    private static <R extends Registry<?>> void setupBuiltin(Impl manager, RegistryKey<R> registryRef) {
         Registry<Registry<?>> registry = BuiltinRegistries.REGISTRIES;
         Registry<?> registry2 = registry.get(registryRef);
         if (registry2 == null) {
@@ -115,10 +140,11 @@ public interface DynamicRegistryManager {
      * Add all entries of the {@code registry} to the corresponding registry
      * within this manager.
      */
-    public static <E> void addBuiltinEntries(Impl manager, Registry<E> registry) {
+    private static <E> void addBuiltinEntries(Impl manager, Registry<E> registry) {
         MutableRegistry<E> mutableRegistry = manager.getOptional(registry.getKey()).orElseThrow(() -> new IllegalStateException("Missing registry: " + registry.getKey()));
         for (Map.Entry<RegistryKey<E>, E> entry : registry.getEntries()) {
-            mutableRegistry.set(registry.getRawId(entry.getValue()), entry.getKey(), entry.getValue());
+            E object = entry.getValue();
+            mutableRegistry.set(registry.getRawId(object), entry.getKey(), object, registry.method_31139(object));
         }
     }
 
@@ -136,7 +162,7 @@ public interface DynamicRegistryManager {
      * info} within the {@code manager}. Note that the resource manager instance
      * is kept within the {@code ops}.
      */
-    public static <E> void load(RegistryOps<?> ops, Impl manager, Info<E> info) {
+    private static <E> void load(RegistryOps<?> ops, Impl manager, Info<E> info) {
         RegistryKey registryKey = info.getRegistry();
         SimpleRegistry simpleRegistry2 = Optional.ofNullable(manager.registries.get(registryKey)).map(simpleRegistry -> simpleRegistry).orElseThrow(() -> new IllegalStateException("Missing registry: " + registryKey));
         DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry2, info.getRegistry(), info.getElementCodec());
@@ -144,7 +170,7 @@ public interface DynamicRegistryManager {
     }
 
     public static final class Impl
-    implements DynamicRegistryManager {
+    extends DynamicRegistryManager {
         public static final Codec<Impl> CODEC = Impl.setupCodec();
         private final Map<? extends RegistryKey<? extends Registry<?>>, ? extends SimpleRegistry<?>> registries;
 
@@ -172,7 +198,7 @@ public interface DynamicRegistryManager {
         }
 
         private static <E> SimpleRegistry<?> createRegistry(RegistryKey<? extends Registry<?>> registryRef) {
-            return new SimpleRegistry(registryRef, Lifecycle.experimental());
+            return new SimpleRegistry(registryRef, Lifecycle.stable());
         }
 
         @Override
@@ -181,7 +207,7 @@ public interface DynamicRegistryManager {
         }
     }
 
-    public static final class Info<E> {
+    static final class Info<E> {
         private final RegistryKey<? extends Registry<E>> registry;
         private final Codec<E> elementCodec;
         @Nullable

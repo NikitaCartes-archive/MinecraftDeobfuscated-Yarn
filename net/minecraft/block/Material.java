@@ -26,6 +26,7 @@ public final class Material {
      */
     public static final Material UNDERWATER_PLANT = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().build();
     public static final Material REPLACEABLE_PLANT = Builder.method_15808(new Builder(MaterialColor.FOLIAGE).allowsMovement()).notSolid().destroyedByPiston().replaceable().burnable().build();
+    public static final Material field_26708 = Builder.method_15808(new Builder(MaterialColor.FOLIAGE).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
     public static final Material REPLACEABLE_UNDERWATER_PLANT = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().build();
     public static final Material WATER = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();
     public static final Material BUBBLE_COLUMN = Builder.method_15808(new Builder(MaterialColor.WATER).allowsMovement()).notSolid().destroyedByPiston().replaceable().liquid().build();

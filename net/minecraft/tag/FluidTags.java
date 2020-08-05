@@ -8,7 +8,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.RequiredTagList;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagGroup;
 import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
 
@@ -21,11 +20,7 @@ public final class FluidTags {
         return REQUIRED_TAGS.add(id);
     }
 
-    public static TagGroup<Fluid> getTagGroup() {
-        return REQUIRED_TAGS.getGroup();
-    }
-
-    public static List<? extends Tag<Fluid>> all() {
+    public static List<? extends Tag.Identified<Fluid>> all() {
         return REQUIRED_TAGS.getTags();
     }
 }

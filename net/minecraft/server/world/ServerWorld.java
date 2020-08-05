@@ -4,7 +4,6 @@
 package net.minecraft.server.world;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -1009,7 +1008,7 @@ implements StructureWorldAccess {
 
     @Nullable
     public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int i) {
-        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, i, ImmutableList.of(biome), this.random, true);
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, i, biome2 -> biome2 == biome, this.random, true);
     }
 
     @Override

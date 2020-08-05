@@ -57,12 +57,12 @@ public final class DimensionOptions {
         for (RegistryKey registryKey : BASE_DIMENSIONS) {
             DimensionOptions dimensionOptions = simpleRegistry.get(registryKey);
             if (dimensionOptions == null) continue;
-            simpleRegistry2.add(registryKey, dimensionOptions);
+            simpleRegistry2.add(registryKey, dimensionOptions, simpleRegistry.method_31139(dimensionOptions));
         }
         for (Map.Entry entry : simpleRegistry.getEntries()) {
             RegistryKey registryKey2 = (RegistryKey)entry.getKey();
             if (BASE_DIMENSIONS.contains(registryKey2)) continue;
-            simpleRegistry2.add(registryKey2, entry.getValue());
+            simpleRegistry2.add(registryKey2, entry.getValue(), simpleRegistry.method_31139((DimensionOptions)entry.getValue()));
         }
         return simpleRegistry2;
     }
@@ -78,13 +78,13 @@ public final class DimensionOptions {
         if (entry.getKey() != OVERWORLD || entry2.getKey() != NETHER || entry3.getKey() != END) {
             return false;
         }
-        if (((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD && ((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD_CAVES) {
+        if (!((DimensionOptions)entry.getValue()).getDimensionType().method_31108(DimensionType.OVERWORLD) && ((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD_CAVES) {
             return false;
         }
-        if (((DimensionOptions)entry2.getValue()).getDimensionType() != DimensionType.THE_NETHER) {
+        if (!((DimensionOptions)entry2.getValue()).getDimensionType().method_31108(DimensionType.THE_NETHER)) {
             return false;
         }
-        if (((DimensionOptions)entry3.getValue()).getDimensionType() != DimensionType.THE_END) {
+        if (!((DimensionOptions)entry3.getValue()).getDimensionType().method_31108(DimensionType.THE_END)) {
             return false;
         }
         if (!(((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator) || !(((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator)) {

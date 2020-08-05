@@ -48,10 +48,10 @@ extends ForgingScreenHandler {
 
     @Override
     protected ItemStack onTakeOutput(PlayerEntity player, ItemStack stack) {
-        this.method_29539(0);
-        this.method_29539(1);
         stack.onCraft(player.world, player, stack.getCount());
         this.output.unlockLastRecipe(player);
+        this.method_29539(0);
+        this.method_29539(1);
         this.context.run((world, blockPos) -> world.syncWorldEvent(1044, (BlockPos)blockPos, 0));
         return stack;
     }

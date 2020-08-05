@@ -3,6 +3,7 @@
  */
 package net.minecraft.tag;
 
+import java.util.List;
 import net.minecraft.item.Item;
 import net.minecraft.tag.RequiredTagList;
 import net.minecraft.tag.RequiredTagListRegistry;
@@ -74,6 +75,10 @@ public final class ItemTags {
 
     public static TagGroup<Item> getTagGroup() {
         return REQUIRED_TAGS.getGroup();
+    }
+
+    public static List<? extends Tag.Identified<Item>> method_31074() {
+        return REQUIRED_TAGS.getTags();
     }
 }
 

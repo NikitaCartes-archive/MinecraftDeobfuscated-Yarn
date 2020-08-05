@@ -191,7 +191,7 @@ NamedScreenHandlerFactory {
                 Criteria.PLAYER_GENERATES_CONTAINER_LOOT.test((ServerPlayerEntity)player, this.lootTableId);
             }
             this.lootTableId = null;
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.POSITION, this.getBlockPos()).random(this.lootSeed);
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.ORIGIN, this.getPos()).random(this.lootSeed);
             if (player != null) {
                 builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
             }

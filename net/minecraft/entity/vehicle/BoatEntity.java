@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
+import net.minecraft.class_5459;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -136,6 +137,11 @@ extends Entity {
     @Override
     public boolean isPushable() {
         return true;
+    }
+
+    @Override
+    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
+        return LivingEntity.method_31079(super.method_30633(axis, arg));
     }
 
     @Override

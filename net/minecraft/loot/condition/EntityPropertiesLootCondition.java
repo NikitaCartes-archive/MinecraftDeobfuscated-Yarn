@@ -37,7 +37,7 @@ implements LootCondition {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return ImmutableSet.of(LootContextParameters.POSITION, this.entity.getParameter());
+        return ImmutableSet.of(LootContextParameters.ORIGIN, this.entity.getParameter());
     }
 
     @Override

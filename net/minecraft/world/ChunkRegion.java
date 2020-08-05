@@ -33,6 +33,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.MultiTickScheduler;
@@ -278,6 +279,11 @@ implements StructureWorldAccess {
     @Deprecated
     public ServerWorld toServerWorld() {
         return this.world;
+    }
+
+    @Override
+    public DynamicRegistryManager getRegistryManager() {
+        return this.world.getRegistryManager();
     }
 
     @Override

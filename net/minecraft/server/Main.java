@@ -92,8 +92,9 @@ public class Main {
             Bootstrap.initialize();
             Bootstrap.logMissing();
             Util.startTimerHack();
+            DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
             Path path = Paths.get("server.properties", new String[0]);
-            ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(path);
+            ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(impl, path);
             serverPropertiesLoader.store();
             Path path2 = Paths.get("eula.txt", new String[0]);
             EulaReader eulaReader = new EulaReader(path2);
@@ -130,7 +131,6 @@ public class Main {
                 return;
             }
             serverResourceManager.loadRegistryTags();
-            DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
             RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
             SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
             if (saveProperties == null) {
@@ -138,7 +138,7 @@ public class Main {
                 LevelInfo levelInfo;
                 if (optionSet.has(optionSpec3)) {
                     levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-                    generatorOptions = GeneratorOptions.DEMO_CONFIG;
+                    generatorOptions = GeneratorOptions.method_31112(impl);
                 } else {
                     ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
                     levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), dataPackSettings2);

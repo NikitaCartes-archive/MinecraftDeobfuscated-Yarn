@@ -6,7 +6,6 @@ package net.minecraft.predicate.entity;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.predicate.BlockPredicate;
@@ -17,7 +16,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
@@ -34,7 +32,7 @@ public class LocationPredicate {
     private final NumberRange.FloatRange y;
     private final NumberRange.FloatRange z;
     @Nullable
-    private final Biome biome;
+    private final RegistryKey<Biome> biome;
     @Nullable
     private final StructureFeature<?> feature;
     @Nullable
@@ -45,11 +43,11 @@ public class LocationPredicate {
     private final BlockPredicate block;
     private final FluidPredicate fluid;
 
-    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable Biome biome, @Nullable StructureFeature<?> feature, @Nullable RegistryKey<World> dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
+    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable RegistryKey<Biome> registryKey, @Nullable StructureFeature<?> feature, @Nullable RegistryKey<World> dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.biome = biome;
+        this.biome = registryKey;
         this.feature = feature;
         this.dimension = dimension;
         this.smokey = smokey;
@@ -58,8 +56,8 @@ public class LocationPredicate {
         this.fluid = fluid;
     }
 
-    public static LocationPredicate biome(Biome biome) {
-        return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, biome, null, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
+    public static LocationPredicate biome(RegistryKey<Biome> registryKey) {
+        return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, registryKey, null, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
     }
 
     public static LocationPredicate dimension(RegistryKey<World> dimension) {
@@ -89,7 +87,7 @@ public class LocationPredicate {
         }
         BlockPos blockPos = new BlockPos(x, y, z);
         boolean bl = world.canSetBlock(blockPos);
-        if (!(this.biome == null || bl && this.biome == world.getBiome(blockPos))) {
+        if (!(this.biome == null || bl && this.biome == world.getRegistryManager().get(Registry.BIOME_KEY).getKey(world.getBiome(blockPos)).orElseThrow(() -> new IllegalStateException("Unregistered biome")))) {
             return false;
         }
         if (!(this.feature == null || bl && world.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren())) {
@@ -126,7 +124,7 @@ public class LocationPredicate {
             jsonObject.addProperty("feature", this.feature.getName());
         }
         if (this.biome != null) {
-            jsonObject.addProperty("biome", BuiltinRegistries.BIOME.getId(this.biome).toString());
+            jsonObject.addProperty("biome", this.biome.getValue().toString());
         }
         if (this.smokey != null) {
             jsonObject.addProperty("smokey", this.smokey);
@@ -148,16 +146,16 @@ public class LocationPredicate {
         NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject2.get("z"));
         RegistryKey registryKey = jsonObject.has("dimension") ? (RegistryKey)Identifier.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("dimension")).resultOrPartial(field_24732::error).map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier)).orElse(null) : null;
         StructureFeature structureFeature = jsonObject.has("feature") ? (StructureFeature)StructureFeature.STRUCTURES.get(JsonHelper.getString(jsonObject, "feature")) : null;
-        Biome biome = null;
+        RegistryKey<Biome> registryKey2 = null;
         if (jsonObject.has("biome")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-            biome = BuiltinRegistries.BIOME.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier2 + "'"));
+            registryKey2 = RegistryKey.of(Registry.BIOME_KEY, identifier2);
         }
         Boolean boolean_ = jsonObject.has("smokey") ? Boolean.valueOf(jsonObject.get("smokey").getAsBoolean()) : null;
         LightPredicate lightPredicate = LightPredicate.fromJson(jsonObject.get("light"));
         BlockPredicate blockPredicate = BlockPredicate.fromJson(jsonObject.get("block"));
         FluidPredicate fluidPredicate = FluidPredicate.fromJson(jsonObject.get("fluid"));
-        return new LocationPredicate(floatRange, floatRange2, floatRange3, biome, structureFeature, registryKey, boolean_, lightPredicate, blockPredicate, fluidPredicate);
+        return new LocationPredicate(floatRange, floatRange2, floatRange3, registryKey2, structureFeature, registryKey, boolean_, lightPredicate, blockPredicate, fluidPredicate);
     }
 
     public static class Builder {
@@ -165,7 +163,7 @@ public class LocationPredicate {
         private NumberRange.FloatRange y = NumberRange.FloatRange.ANY;
         private NumberRange.FloatRange z = NumberRange.FloatRange.ANY;
         @Nullable
-        private Biome biome;
+        private RegistryKey<Biome> biome;
         @Nullable
         private StructureFeature<?> feature;
         @Nullable
@@ -180,8 +178,8 @@ public class LocationPredicate {
             return new Builder();
         }
 
-        public Builder biome(@Nullable Biome biome) {
-            this.biome = biome;
+        public Builder biome(@Nullable RegistryKey<Biome> registryKey) {
+            this.biome = registryKey;
             return this;
         }
 

@@ -50,7 +50,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
@@ -108,23 +107,23 @@ AutoCloseable {
     private final RegistryKey<World> registryKey;
     private final RegistryKey<DimensionType> dimensionRegistryKey;
 
-    protected World(MutableWorldProperties properties, RegistryKey<World> registryKey, RegistryKey<DimensionType> dimensionRegistryKey, DimensionType dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
+    protected World(MutableWorldProperties properties, RegistryKey<World> registryKey, RegistryKey<DimensionType> dimensionRegistryKey, final DimensionType dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
         this.profiler = profiler;
         this.properties = properties;
         this.dimension = dimension;
         this.registryKey = registryKey;
         this.dimensionRegistryKey = dimensionRegistryKey;
         this.isClient = isClient;
-        this.border = dimension.isShrunk() ? new WorldBorder(){
+        this.border = dimension.method_31110() != 1.0 ? new WorldBorder(){
 
             @Override
             public double getCenterX() {
-                return super.getCenterX() / 8.0;
+                return super.getCenterX() / dimension.method_31110();
             }
 
             @Override
             public double getCenterZ() {
-                return super.getCenterZ() / 8.0;
+                return super.getCenterZ() / dimension.method_31110();
             }
         } : new WorldBorder();
         this.thread = Thread.currentThread();
@@ -1004,8 +1003,6 @@ AutoCloseable {
     public final boolean isDebugWorld() {
         return this.debugWorld;
     }
-
-    public abstract DynamicRegistryManager getRegistryManager();
 
     @Override
     public /* synthetic */ Chunk getChunk(int chunkX, int chunkZ) {

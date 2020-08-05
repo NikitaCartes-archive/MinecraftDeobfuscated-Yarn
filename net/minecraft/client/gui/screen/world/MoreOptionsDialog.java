@@ -49,6 +49,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import org.apache.commons.lang3.StringUtils;
@@ -221,7 +222,7 @@ Drawable {
     }
 
     private void method_29073(DynamicRegistryManager.Impl impl, GeneratorOptions generatorOptions) {
-        this.method_30509(impl);
+        this.field_25483 = impl;
         this.generatorOptions = generatorOptions;
         this.field_25049 = GeneratorType.method_29078(generatorOptions);
         this.seedText = OptionalLong.of(generatorOptions.getSeed());
@@ -300,8 +301,15 @@ Drawable {
         return this.field_25483;
     }
 
-    protected void method_30509(DynamicRegistryManager.Impl impl) {
-        this.field_25483 = impl;
+    void method_31132(ServerResourceManager serverResourceManager) {
+        DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+        RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.field_25483);
+        RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
+        DataResult dataResult = GeneratorOptions.CODEC.encodeStart(registryReadingOps, this.generatorOptions).flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));
+        dataResult.resultOrPartial(Util.method_29188("Error parsing worldgen settings after loading data packs: ", field_25046::error)).ifPresent(generatorOptions -> {
+            this.generatorOptions = generatorOptions;
+            this.field_25483 = impl;
+        });
     }
 }
 

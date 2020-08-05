@@ -7,9 +7,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -50,8 +50,8 @@ extends BiomeSource {
 
     @Override
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int i, List<Biome> biomes, Random random, boolean bl) {
-        if (biomes.contains(this.biome.get())) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl) {
+        if (predicate.test(this.biome.get())) {
             if (bl) {
                 return new BlockPos(x, y, z);
             }

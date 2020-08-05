@@ -85,7 +85,6 @@ import org.jetbrains.annotations.Nullable;
 public class InGameHud
 extends DrawableHelper {
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-    private static final Identifier NAUSEA_TEXTURE = new Identifier("textures/misc/nausea.png");
     private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
     private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
     private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
@@ -166,14 +165,8 @@ extends DrawableHelper {
         if (this.client.options.getPerspective().isFirstPerson() && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
             this.renderPumpkinOverlay();
         }
-        if ((g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f) {
-            if (this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
-                if (this.client.options.distortionEffectScale < 1.0f) {
-                    this.renderNauseaOverlay(g * (1.0f - this.client.options.distortionEffectScale));
-                }
-            } else {
-                this.renderPortalOverlay(g);
-            }
+        if ((g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
+            this.renderPortalOverlay(g);
         }
         if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
             this.spectatorHud.render(matrixStack, f);
@@ -906,34 +899,6 @@ extends DrawableHelper {
         RenderSystem.enableDepthTest();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.defaultBlendFunc();
-    }
-
-    private void renderNauseaOverlay(float f) {
-        double d = MathHelper.lerp((double)f, 2.0, 1.0);
-        float g = 0.2f * f;
-        float h = 0.4f * f;
-        float i = 0.2f * f;
-        double e = (double)this.scaledWidth * d;
-        double j = (double)this.scaledHeight * d;
-        double k = ((double)this.scaledWidth - e) / 2.0;
-        double l = ((double)this.scaledHeight - j) / 2.0;
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-        RenderSystem.color4f(g, h, i, 1.0f);
-        this.client.getTextureManager().bindTexture(NAUSEA_TEXTURE);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(k, l + j, -90.0).texture(0.0f, 1.0f).next();
-        bufferBuilder.vertex(k + e, l + j, -90.0).texture(1.0f, 1.0f).next();
-        bufferBuilder.vertex(k + e, l, -90.0).texture(1.0f, 0.0f).next();
-        bufferBuilder.vertex(k, l, -90.0).texture(0.0f, 0.0f).next();
-        tessellator.draw();
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
     }
 
     private void renderPortalOverlay(float f) {

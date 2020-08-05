@@ -28,25 +28,25 @@ IdentityCoordinateTransformer
             for (int n = -8; n <= 8; n += 4) {
                 int o = sampler1.sample(this.transformX(x + m), this.transformZ(z + n));
                 if (BiomeLayers.isOcean(o)) continue;
-                if (j == BiomeLayers.WARM_OCEAN_ID) {
-                    return BiomeLayers.LUKEWARM_OCEAN_ID;
+                if (j == 44) {
+                    return 45;
                 }
-                if (j != BiomeLayers.FROZEN_OCEAN_ID) continue;
-                return BiomeLayers.COLD_OCEAN_ID;
+                if (j != 10) continue;
+                return 46;
             }
         }
-        if (i == BiomeLayers.DEEP_OCEAN_ID) {
-            if (j == BiomeLayers.LUKEWARM_OCEAN_ID) {
-                return BiomeLayers.DEEP_LUKEWARM_OCEAN_ID;
+        if (i == 24) {
+            if (j == 45) {
+                return 48;
             }
-            if (j == BiomeLayers.OCEAN_ID) {
-                return BiomeLayers.DEEP_OCEAN_ID;
+            if (j == 0) {
+                return 24;
             }
-            if (j == BiomeLayers.COLD_OCEAN_ID) {
-                return BiomeLayers.DEEP_COLD_OCEAN_ID;
+            if (j == 46) {
+                return 49;
             }
-            if (j == BiomeLayers.FROZEN_OCEAN_ID) {
-                return BiomeLayers.DEEP_FROZEN_OCEAN_ID;
+            if (j == 10) {
+                return 50;
             }
         }
         return j;

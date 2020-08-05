@@ -36,7 +36,6 @@ implements Packet<ClientPlayPacketListener> {
     private byte[] data;
     private List<CompoundTag> blockEntities;
     private boolean isFullChunk;
-    private boolean retainLighting;
 
     public ChunkDataS2CPacket() {
     }
@@ -44,15 +43,12 @@ implements Packet<ClientPlayPacketListener> {
     /**
      * @param includedSectionsMask a bitmask of the vertical chunk sections that should be included in this packet.
      * 65535 will send all sections.
-     * @param retainLighting indicates that the client should not recalculate lighting for the vertical sections
-     * included in this packet.
      */
-    public ChunkDataS2CPacket(WorldChunk chunk, int includedSectionsMask, boolean retainLighting) {
+    public ChunkDataS2CPacket(WorldChunk chunk, int includedSectionsMask) {
         ChunkPos chunkPos = chunk.getPos();
         this.chunkX = chunkPos.x;
         this.chunkZ = chunkPos.z;
         this.isFullChunk = includedSectionsMask == 65535;
-        this.retainLighting = retainLighting;
         this.heightmaps = new CompoundTag();
         for (Map.Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
             if (!entry.getKey().shouldSendToClient()) continue;
@@ -80,7 +76,6 @@ implements Packet<ClientPlayPacketListener> {
         this.chunkX = buf.readInt();
         this.chunkZ = buf.readInt();
         this.isFullChunk = buf.readBoolean();
-        this.retainLighting = buf.readBoolean();
         this.verticalStripBitmask = buf.readVarInt();
         this.heightmaps = buf.readCompoundTag();
         if (this.isFullChunk) {
@@ -103,7 +98,6 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeInt(this.chunkX);
         buf.writeInt(this.chunkZ);
         buf.writeBoolean(this.isFullChunk);
-        buf.writeBoolean(this.retainLighting);
         buf.writeVarInt(this.verticalStripBitmask);
         buf.writeCompoundTag(this.heightmaps);
         if (this.biomeArray != null) {
@@ -175,15 +169,6 @@ implements Packet<ClientPlayPacketListener> {
 
     public boolean isFullChunk() {
         return this.isFullChunk;
-    }
-
-    /**
-     * Indicates whether the client should skip updating the lighting information
-     * of the vertical sections included in this packet.
-     */
-    @Environment(value=EnvType.CLIENT)
-    public boolean shouldRetainLighting() {
-        return this.retainLighting;
     }
 
     @Environment(value=EnvType.CLIENT)
