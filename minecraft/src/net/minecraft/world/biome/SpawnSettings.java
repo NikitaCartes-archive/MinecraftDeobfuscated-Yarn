@@ -89,12 +89,12 @@ public class SpawnSettings {
 		private float creatureSpawnProbability = 0.1F;
 		private boolean field_26693;
 
-		public SpawnSettings.Builder spawners(SpawnGroup spawnGroup, SpawnSettings.SpawnEntry spawnEntry) {
+		public SpawnSettings.Builder spawn(SpawnGroup spawnGroup, SpawnSettings.SpawnEntry spawnEntry) {
 			((List)this.spawners.get(spawnGroup)).add(spawnEntry);
 			return this;
 		}
 
-		public SpawnSettings.Builder spawnCosts(EntityType<?> entityType, double mass, double gravityLimit) {
+		public SpawnSettings.Builder spawnCost(EntityType<?> entityType, double mass, double gravityLimit) {
 			this.spawnCosts.put(entityType, new SpawnSettings.SpawnDensity(gravityLimit, mass));
 			return this;
 		}

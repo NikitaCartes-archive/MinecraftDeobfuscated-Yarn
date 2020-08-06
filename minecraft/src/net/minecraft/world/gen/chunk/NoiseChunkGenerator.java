@@ -142,7 +142,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	public boolean method_28548(long l, RegistryKey<ChunkGeneratorSettings> registryKey) {
-		return this.worldSeed == l && ((ChunkGeneratorSettings)this.settings.get()).isIdEqual(registryKey);
+		return this.worldSeed == l && ((ChunkGeneratorSettings)this.settings.get()).equals(registryKey);
 	}
 
 	private double sampleNoise(int x, int y, int z, double horizontalScale, double verticalScale, double horizontalStretch, double verticalStretch) {

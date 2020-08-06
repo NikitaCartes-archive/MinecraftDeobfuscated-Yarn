@@ -41,7 +41,7 @@ public abstract class GeneratorType {
 	private static final GeneratorType FLAT = new GeneratorType("flat") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
-			return new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig());
+			return new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(registry));
 		}
 	};
 	private static final GeneratorType LARGE_BIOMES = new GeneratorType("large_biomes") {
@@ -96,7 +96,7 @@ public abstract class GeneratorType {
 	private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
-			return DebugChunkGenerator.INSTANCE;
+			return new DebugChunkGenerator(registry);
 		}
 	};
 	public static final List<GeneratorType> VALUES = Lists.<GeneratorType>newArrayList(
@@ -121,7 +121,9 @@ public abstract class GeneratorType {
 								)
 							)
 						),
-				chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).method_28545() : FlatChunkGeneratorConfig.getDefaultConfig()
+				chunkGenerator instanceof FlatChunkGenerator
+					? ((FlatChunkGenerator)chunkGenerator).method_28545()
+					: FlatChunkGeneratorConfig.getDefaultConfig(createWorldScreen.moreOptionsDialog.method_29700().get(Registry.BIOME_KEY))
 			);
 		},
 		Optional.of(SINGLE_BIOME_SURFACE),

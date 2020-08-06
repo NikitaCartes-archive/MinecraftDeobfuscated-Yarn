@@ -93,34 +93,25 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final WorldBorder border;
 	private final BiomeAccess biomeAccess;
 	private final RegistryKey<World> registryKey;
-	private final RegistryKey<DimensionType> dimensionRegistryKey;
 
 	protected World(
-		MutableWorldProperties properties,
-		RegistryKey<World> registryKey,
-		RegistryKey<DimensionType> dimensionRegistryKey,
-		DimensionType dimension,
-		Supplier<Profiler> profiler,
-		boolean isClient,
-		boolean debugWorld,
-		long seed
+		MutableWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l
 	) {
-		this.profiler = profiler;
+		this.profiler = supplier;
 		this.properties = properties;
-		this.dimension = dimension;
+		this.dimension = dimensionType;
 		this.registryKey = registryKey;
-		this.dimensionRegistryKey = dimensionRegistryKey;
-		this.isClient = isClient;
-		if (dimension.method_31110() != 1.0) {
+		this.isClient = bl;
+		if (dimensionType.method_31110() != 1.0) {
 			this.border = new WorldBorder() {
 				@Override
 				public double getCenterX() {
-					return super.getCenterX() / dimension.method_31110();
+					return super.getCenterX() / dimensionType.method_31110();
 				}
 
 				@Override
 				public double getCenterZ() {
-					return super.getCenterZ() / dimension.method_31110();
+					return super.getCenterZ() / dimensionType.method_31110();
 				}
 			};
 		} else {
@@ -128,8 +119,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 
 		this.thread = Thread.currentThread();
-		this.biomeAccess = new BiomeAccess(this, seed, dimension.getBiomeAccessType());
-		this.debugWorld = debugWorld;
+		this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
+		this.debugWorld = bl2;
 	}
 
 	@Override
@@ -203,7 +194,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				return false;
 			} else {
 				BlockState blockState2 = this.getBlockState(pos);
-				if (blockState2 != blockState
+				if ((flags & 128) == 0
+					&& blockState2 != blockState
 					&& (
 						blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos)
 							|| blockState2.getLuminance() != blockState.getLuminance()
@@ -1038,10 +1030,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public DimensionType getDimension() {
 		return this.dimension;
-	}
-
-	public RegistryKey<DimensionType> getDimensionRegistryKey() {
-		return this.dimensionRegistryKey;
 	}
 
 	public RegistryKey<World> getRegistryKey() {

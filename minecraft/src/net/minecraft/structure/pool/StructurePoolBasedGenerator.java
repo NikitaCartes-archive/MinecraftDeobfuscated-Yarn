@@ -194,10 +194,10 @@ public class StructurePoolBasedGenerator {
 				int k = -1;
 				Identifier identifier = new Identifier(structureBlockInfo.tag.getString("pool"));
 				Optional<StructurePool> optional = this.field_25852.getOrEmpty(identifier);
-				if (optional.isPresent() && (((StructurePool)optional.get()).getElementCount() != 0 || Objects.equals(identifier, TemplatePools.EMPTY.getValue()))) {
+				if (optional.isPresent() && (((StructurePool)optional.get()).getElementCount() != 0 || Objects.equals(identifier, StructurePools.EMPTY.getValue()))) {
 					Identifier identifier2 = ((StructurePool)optional.get()).getTerminatorsId();
 					Optional<StructurePool> optional2 = this.field_25852.getOrEmpty(identifier2);
-					if (optional2.isPresent() && (((StructurePool)optional2.get()).getElementCount() != 0 || Objects.equals(identifier2, TemplatePools.EMPTY.getValue()))) {
+					if (optional2.isPresent() && (((StructurePool)optional2.get()).getElementCount() != 0 || Objects.equals(identifier2, StructurePools.EMPTY.getValue()))) {
 						boolean bl3 = blockBox.contains(blockPos3);
 						MutableObject<VoxelShape> mutableObject3;
 						int l;

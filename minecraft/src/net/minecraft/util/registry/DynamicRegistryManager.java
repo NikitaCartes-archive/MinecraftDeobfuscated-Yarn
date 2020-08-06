@@ -52,7 +52,7 @@ public abstract class DynamicRegistryManager {
 		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, ConfiguredStructureFeature.CODEC);
 		register(builder, Registry.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.field_25876);
 		register(builder, Registry.TEMPLATE_POOL_WORLDGEN, StructurePool.CODEC);
-		register(builder, Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings.field_24780);
+		register(builder, Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings.CODEC);
 		return builder.build();
 	});
 	private static final DynamicRegistryManager.Impl field_26733 = Util.make(() -> {

@@ -57,7 +57,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
-import net.minecraft.structure.processor.ProcessorList;
+import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.structure.rule.RuleTestType;
@@ -173,7 +173,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<ConfiguredStructureFeature<?, ?>>> CONFIGURED_STRUCTURE_FEATURE_WORLDGEN = createRegistryKey(
 		"worldgen/configured_structure_feature"
 	);
-	public static final RegistryKey<Registry<ProcessorList>> PROCESSOR_LIST_WORLDGEN = createRegistryKey("worldgen/processor_list");
+	public static final RegistryKey<Registry<StructureProcessorList>> PROCESSOR_LIST_WORLDGEN = createRegistryKey("worldgen/processor_list");
 	public static final RegistryKey<Registry<StructurePool>> TEMPLATE_POOL_WORLDGEN = createRegistryKey("worldgen/template_pool");
 	public static final RegistryKey<Registry<Biome>> BIOME_KEY = createRegistryKey("worldgen/biome");
 	public static final RegistryKey<Registry<SurfaceBuilder<?>>> SURFACE_BUILD_KEY = createRegistryKey("worldgen/surface_builder");

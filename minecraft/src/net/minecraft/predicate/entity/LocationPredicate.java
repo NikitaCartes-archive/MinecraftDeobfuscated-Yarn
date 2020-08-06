@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.predicate.BlockPredicate;
@@ -136,12 +137,10 @@ public class LocationPredicate {
 		} else {
 			BlockPos blockPos = new BlockPos((double)x, (double)y, (double)z);
 			boolean bl = world.canSetBlock(blockPos);
-			if (this.biome == null
-				|| bl
-					&& this.biome
-						== world.getRegistryManager().get(Registry.BIOME_KEY).getKey(world.getBiome(blockPos)).orElseThrow(() -> new IllegalStateException("Unregistered biome"))
-				)
-			 {
+			Optional<RegistryKey<Biome>> optional = world.getRegistryManager().get(Registry.BIOME_KEY).getKey(world.getBiome(blockPos));
+			if (!optional.isPresent()) {
+				return false;
+			} else if (this.biome == null || bl && this.biome == optional.get()) {
 				if (this.feature == null || bl && world.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren()) {
 					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
 						if (!this.light.test(world, blockPos)) {

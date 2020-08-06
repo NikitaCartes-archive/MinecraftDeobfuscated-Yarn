@@ -376,6 +376,127 @@ public final class Biome {
 		return identifier == null ? super.toString() : identifier.toString();
 	}
 
+	public static class Builder {
+		@Nullable
+		private Biome.Precipitation precipitation;
+		@Nullable
+		private Biome.Category category;
+		@Nullable
+		private Float depth;
+		@Nullable
+		private Float scale;
+		@Nullable
+		private Float temperature;
+		private Biome.TemperatureModifier temperatureModifier = Biome.TemperatureModifier.NONE;
+		@Nullable
+		private Float downfall;
+		@Nullable
+		private BiomeEffects specialEffects;
+		@Nullable
+		private SpawnSettings spawnSettings;
+		@Nullable
+		private GenerationSettings generationSettings;
+
+		public Biome.Builder precipitation(Biome.Precipitation precipitation) {
+			this.precipitation = precipitation;
+			return this;
+		}
+
+		public Biome.Builder category(Biome.Category category) {
+			this.category = category;
+			return this;
+		}
+
+		public Biome.Builder depth(float depth) {
+			this.depth = depth;
+			return this;
+		}
+
+		public Biome.Builder scale(float scale) {
+			this.scale = scale;
+			return this;
+		}
+
+		public Biome.Builder temperature(float temperature) {
+			this.temperature = temperature;
+			return this;
+		}
+
+		public Biome.Builder downfall(float downfall) {
+			this.downfall = downfall;
+			return this;
+		}
+
+		public Biome.Builder effects(BiomeEffects effects) {
+			this.specialEffects = effects;
+			return this;
+		}
+
+		public Biome.Builder spawnSettings(SpawnSettings spawnSettings) {
+			this.spawnSettings = spawnSettings;
+			return this;
+		}
+
+		public Biome.Builder generationSettings(GenerationSettings generationSettings) {
+			this.generationSettings = generationSettings;
+			return this;
+		}
+
+		public Biome.Builder temperatureModifier(Biome.TemperatureModifier temperatureModifier) {
+			this.temperatureModifier = temperatureModifier;
+			return this;
+		}
+
+		public Biome build() {
+			if (this.precipitation != null
+				&& this.category != null
+				&& this.depth != null
+				&& this.scale != null
+				&& this.temperature != null
+				&& this.downfall != null
+				&& this.specialEffects != null
+				&& this.spawnSettings != null
+				&& this.generationSettings != null) {
+				return new Biome(
+					new Biome.Weather(this.precipitation, this.temperature, this.temperatureModifier, this.downfall),
+					this.category,
+					this.depth,
+					this.scale,
+					this.specialEffects,
+					this.generationSettings,
+					this.spawnSettings
+				);
+			} else {
+				throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
+			}
+		}
+
+		public String toString() {
+			return "BiomeBuilder{\nprecipitation="
+				+ this.precipitation
+				+ ",\nbiomeCategory="
+				+ this.category
+				+ ",\ndepth="
+				+ this.depth
+				+ ",\nscale="
+				+ this.scale
+				+ ",\ntemperature="
+				+ this.temperature
+				+ ",\ntemperatureModifier="
+				+ this.temperatureModifier
+				+ ",\ndownfall="
+				+ this.downfall
+				+ ",\nspecialEffects="
+				+ this.specialEffects
+				+ ",\nmobSpawnSettings="
+				+ this.spawnSettings
+				+ ",\ngenerationSettings="
+				+ this.generationSettings
+				+ ",\n"
+				+ '}';
+		}
+	}
+
 	public static enum Category implements StringIdentifiable {
 		NONE("none"),
 		TAIGA("taiga"),
@@ -531,127 +652,6 @@ public final class Biome {
 		@Override
 		public String asString() {
 			return this.name;
-		}
-	}
-
-	public static class Settings {
-		@Nullable
-		private Biome.Precipitation precipitation;
-		@Nullable
-		private Biome.Category category;
-		@Nullable
-		private Float depth;
-		@Nullable
-		private Float scale;
-		@Nullable
-		private Float temperature;
-		private Biome.TemperatureModifier temperatureModifier = Biome.TemperatureModifier.NONE;
-		@Nullable
-		private Float downfall;
-		@Nullable
-		private BiomeEffects specialEffects;
-		@Nullable
-		private SpawnSettings spawnSettings;
-		@Nullable
-		private GenerationSettings generationSettings;
-
-		public Biome.Settings precipitation(Biome.Precipitation precipitation) {
-			this.precipitation = precipitation;
-			return this;
-		}
-
-		public Biome.Settings category(Biome.Category category) {
-			this.category = category;
-			return this;
-		}
-
-		public Biome.Settings depth(float depth) {
-			this.depth = depth;
-			return this;
-		}
-
-		public Biome.Settings scale(float scale) {
-			this.scale = scale;
-			return this;
-		}
-
-		public Biome.Settings temperature(float temperature) {
-			this.temperature = temperature;
-			return this;
-		}
-
-		public Biome.Settings downfall(float downfall) {
-			this.downfall = downfall;
-			return this;
-		}
-
-		public Biome.Settings effects(BiomeEffects effects) {
-			this.specialEffects = effects;
-			return this;
-		}
-
-		public Biome.Settings spawnSettings(SpawnSettings spawnSettings) {
-			this.spawnSettings = spawnSettings;
-			return this;
-		}
-
-		public Biome.Settings generationSettings(GenerationSettings generationSettings) {
-			this.generationSettings = generationSettings;
-			return this;
-		}
-
-		public Biome.Settings temperatureModifier(Biome.TemperatureModifier temperatureModifier) {
-			this.temperatureModifier = temperatureModifier;
-			return this;
-		}
-
-		public Biome build() {
-			if (this.precipitation != null
-				&& this.category != null
-				&& this.depth != null
-				&& this.scale != null
-				&& this.temperature != null
-				&& this.downfall != null
-				&& this.specialEffects != null
-				&& this.spawnSettings != null
-				&& this.generationSettings != null) {
-				return new Biome(
-					new Biome.Weather(this.precipitation, this.temperature, this.temperatureModifier, this.downfall),
-					this.category,
-					this.depth,
-					this.scale,
-					this.specialEffects,
-					this.generationSettings,
-					this.spawnSettings
-				);
-			} else {
-				throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
-			}
-		}
-
-		public String toString() {
-			return "BiomeBuilder{\nprecipitation="
-				+ this.precipitation
-				+ ",\nbiomeCategory="
-				+ this.category
-				+ ",\ndepth="
-				+ this.depth
-				+ ",\nscale="
-				+ this.scale
-				+ ",\ntemperature="
-				+ this.temperature
-				+ ",\ntemperatureModifier="
-				+ this.temperatureModifier
-				+ ",\ndownfall="
-				+ this.downfall
-				+ ",\nspecialEffects="
-				+ this.specialEffects
-				+ ",\nmobSpawnSettings="
-				+ this.spawnSettings
-				+ ",\ngenerationSettings="
-				+ this.generationSettings
-				+ ",\n"
-				+ '}';
 		}
 	}
 

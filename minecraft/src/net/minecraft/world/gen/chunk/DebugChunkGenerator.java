@@ -1,16 +1,12 @@
 package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.Decoder;
-import com.mojang.serialization.Encoder;
-import com.mojang.serialization.MapCodec;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5504;
+import net.minecraft.class_5505;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +16,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
@@ -27,8 +25,8 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 
 public class DebugChunkGenerator extends ChunkGenerator {
-	public static final DebugChunkGenerator INSTANCE = new DebugChunkGenerator();
-	public static final Codec<DebugChunkGenerator> field_24768 = MapCodec.of(Encoder.empty(), Decoder.unit((Supplier<DebugChunkGenerator>)(() -> INSTANCE)))
+	public static final Codec<DebugChunkGenerator> field_24768 = class_5505.method_31148(Registry.BIOME_KEY)
+		.<DebugChunkGenerator>xmap(DebugChunkGenerator::new, DebugChunkGenerator::method_31169)
 		.stable()
 		.codec();
 	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
@@ -38,9 +36,15 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState BARRIER = Blocks.BARRIER.getDefaultState();
+	private final Registry<Biome> field_26747;
 
-	private DebugChunkGenerator() {
-		super(new FixedBiomeSource(class_5504.field_26734), new StructuresConfig(false));
+	public DebugChunkGenerator(Registry<Biome> registry) {
+		super(new FixedBiomeSource(registry.method_31140(Biomes.PLAINS)), new StructuresConfig(false));
+		this.field_26747 = registry;
+	}
+
+	public Registry<Biome> method_31169() {
+		return this.field_26747;
 	}
 
 	@Override

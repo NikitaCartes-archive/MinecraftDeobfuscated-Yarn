@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.class_5504;
 import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.structure.pool.TemplatePools;
-import net.minecraft.structure.processor.ProcessorList;
-import net.minecraft.structure.processor.ProcessorLists;
+import net.minecraft.structure.pool.StructurePools;
+import net.minecraft.structure.processor.StructureProcessorList;
+import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
@@ -40,11 +40,13 @@ public class BuiltinRegistries {
 	public static final Registry<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE = addRegistry(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, () -> ConfiguredStructureFeatures.MINESHAFT
 	);
-	public static final Registry<ProcessorList> PROCESSOR_LIST = addRegistry(Registry.PROCESSOR_LIST_WORLDGEN, () -> ProcessorLists.ZOMBIE_PLAINS);
-	public static final Registry<StructurePool> TEMPLATE_POOL = addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, TemplatePools::initDefaultPools);
+	public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = addRegistry(
+		Registry.PROCESSOR_LIST_WORLDGEN, () -> StructureProcessorLists.ZOMBIE_PLAINS
+	);
+	public static final Registry<StructurePool> STRUCTURE_POOL = addRegistry(Registry.TEMPLATE_POOL_WORLDGEN, StructurePools::initDefaultPools);
 	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, () -> class_5504.field_26734);
 	public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = addRegistry(
-		Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings::method_31111
+		Registry.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings::getInstance
 	);
 
 	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<T> defaultValueSupplier) {

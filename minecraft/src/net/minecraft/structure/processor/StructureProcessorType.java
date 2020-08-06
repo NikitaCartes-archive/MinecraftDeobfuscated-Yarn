@@ -21,10 +21,10 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 		"lava_submerged_block", LavaSubmergedBlockStructureProcessor.CODEC
 	);
 	Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
-	Codec<ProcessorList> field_26663 = CODEC.listOf().xmap(ProcessorList::new, ProcessorList::getList);
-	Codec<ProcessorList> field_25876 = Codec.either(field_26663.fieldOf("processors").codec(), field_26663)
-		.xmap(either -> either.map(processorList -> processorList, processorList -> processorList), Either::left);
-	Codec<Supplier<ProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.PROCESSOR_LIST_WORLDGEN, field_25876);
+	Codec<StructureProcessorList> field_26663 = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
+	Codec<StructureProcessorList> field_25876 = Codec.either(field_26663.fieldOf("processors").codec(), field_26663)
+		.xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
+	Codec<Supplier<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.PROCESSOR_LIST_WORLDGEN, field_25876);
 
 	Codec<P> codec();
 

@@ -196,9 +196,10 @@ public class WolfEntity extends TameableEntity implements Angerable {
 
 			if (this.isWet()) {
 				this.furWet = true;
-				this.canShakeWaterOff = false;
-				this.shakeProgress = 0.0F;
-				this.lastShakeProgress = 0.0F;
+				if (this.canShakeWaterOff && !this.world.isClient) {
+					this.world.sendEntityStatus(this, (byte)56);
+					this.method_31167();
+				}
 			} else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
 				if (this.shakeProgress == 0.0F) {
 					this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
@@ -226,6 +227,12 @@ public class WolfEntity extends TameableEntity implements Angerable {
 				}
 			}
 		}
+	}
+
+	private void method_31167() {
+		this.canShakeWaterOff = false;
+		this.shakeProgress = 0.0F;
+		this.lastShakeProgress = 0.0F;
 	}
 
 	@Override
@@ -258,7 +265,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	 */
 	@Environment(EnvType.CLIENT)
 	public float getFurWetBrightnessMultiplier(float tickDelta) {
-		return 0.75F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.25F;
+		return Math.min(0.5F + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0F * 0.5F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -395,6 +402,8 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			this.canShakeWaterOff = true;
 			this.shakeProgress = 0.0F;
 			this.lastShakeProgress = 0.0F;
+		} else if (status == 56) {
+			this.method_31167();
 		} else {
 			super.handleStatus(status);
 		}

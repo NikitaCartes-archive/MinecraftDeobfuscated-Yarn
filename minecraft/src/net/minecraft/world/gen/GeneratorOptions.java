@@ -245,12 +245,12 @@ public class GeneratorOptions {
 							(FlatChunkGeneratorConfig)FlatChunkGeneratorConfig.CODEC
 								.parse(dynamic)
 								.resultOrPartial(LOGGER::error)
-								.orElseGet(FlatChunkGeneratorConfig::getDefaultConfig)
+								.orElseGet(() -> FlatChunkGeneratorConfig.getDefaultConfig(registry2))
 						)
 					)
 				);
 			case "debug_all_block_states":
-				return new GeneratorOptions(l, bl, false, method_28608(registry, simpleRegistry, DebugChunkGenerator.INSTANCE));
+				return new GeneratorOptions(l, bl, false, method_28608(registry, simpleRegistry, new DebugChunkGenerator(registry2)));
 			case "amplified":
 				return new GeneratorOptions(
 					l,

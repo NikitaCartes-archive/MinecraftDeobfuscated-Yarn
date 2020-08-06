@@ -36,8 +36,11 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class ArmorStandEntity extends LivingEntity {
@@ -47,6 +50,8 @@ public class ArmorStandEntity extends LivingEntity {
 	private static final EulerAngle DEFAULT_RIGHT_ARM_ROTATION = new EulerAngle(-15.0F, 0.0F, 10.0F);
 	private static final EulerAngle DEFAULT_LEFT_LEG_ROTATION = new EulerAngle(-1.0F, 0.0F, -1.0F);
 	private static final EulerAngle DEFAULT_RIGHT_LEG_ROTATION = new EulerAngle(1.0F, 0.0F, 1.0F);
+	private static final EntityDimensions field_26745 = new EntityDimensions(0.0F, 0.0F, true);
+	private static final EntityDimensions field_26746 = EntityType.ARMOR_STAND.getDimensions().scaled(0.5F);
 	public static final TrackedData<Byte> ARMOR_STAND_FLAGS = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.BYTE);
 	public static final TrackedData<EulerAngle> TRACKER_HEAD_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
 	public static final TrackedData<EulerAngle> TRACKER_BODY_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
@@ -792,7 +797,40 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public EntityDimensions getDimensions(EntityPose pose) {
-		float f = this.isMarker() ? 0.0F : (this.isBaby() ? 0.5F : 1.0F);
-		return this.getType().getDimensions().scaled(f);
+		return this.method_31168(this.isMarker());
+	}
+
+	private EntityDimensions method_31168(boolean bl) {
+		if (bl) {
+			return field_26745;
+		} else {
+			return this.isBaby() ? field_26746 : this.getType().getDimensions();
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public Vec3d method_31166(float f) {
+		if (this.isMarker()) {
+			Box box = this.method_31168(false).method_30757(this.getPos());
+			BlockPos blockPos = this.getBlockPos();
+			int i = Integer.MIN_VALUE;
+
+			for (BlockPos blockPos2 : BlockPos.iterate(new BlockPos(box.minX, box.minY, box.minZ), new BlockPos(box.maxX, box.maxY, box.maxZ))) {
+				int j = Math.max(this.world.getLightLevel(LightType.BLOCK, blockPos2), this.world.getLightLevel(LightType.SKY, blockPos2));
+				if (j == 15) {
+					return Vec3d.ofCenter(blockPos2);
+				}
+
+				if (j > i) {
+					i = j;
+					blockPos = blockPos2.toImmutable();
+				}
+			}
+
+			return Vec3d.ofCenter(blockPos);
+		} else {
+			return super.method_31166(f);
+		}
 	}
 }

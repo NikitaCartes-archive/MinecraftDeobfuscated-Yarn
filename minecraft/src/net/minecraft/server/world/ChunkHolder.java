@@ -210,7 +210,7 @@ public class ChunkHolder {
 						this.tryUpdateBlockEntityAt(world, blockPos, blockState);
 					} else {
 						ChunkSection chunkSection = chunk.getSectionArray()[chunkSectionPos.getY()];
-						ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDeltaUpdateS2CPacket(chunkSectionPos, shortSet, chunkSection);
+						ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDeltaUpdateS2CPacket(chunkSectionPos, shortSet, chunkSection, this.field_26744);
 						this.sendPacketToPlayersWatching(chunkDeltaUpdateS2CPacket, false);
 						chunkDeltaUpdateS2CPacket.visitUpdates((blockPos, blockState) -> this.tryUpdateBlockEntityAt(world, blockPos, blockState));
 					}

@@ -17,7 +17,9 @@ public class StructureProcessorRule {
 		instance -> instance.group(
 					RuleTest.field_25012.fieldOf("input_predicate").forGetter(structureProcessorRule -> structureProcessorRule.inputPredicate),
 					RuleTest.field_25012.fieldOf("location_predicate").forGetter(structureProcessorRule -> structureProcessorRule.locationPredicate),
-					PosRuleTest.field_25007.fieldOf("position_predicate").forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate),
+					PosRuleTest.field_25007
+						.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE)
+						.forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate),
 					BlockState.CODEC.fieldOf("output_state").forGetter(structureProcessorRule -> structureProcessorRule.outputState),
 					CompoundTag.field_25128.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.tag))
 				)

@@ -17,7 +17,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorSettings {
-	public static final Codec<ChunkGeneratorSettings> field_24780 = RecordCodecBuilder.create(
+	public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					StructuresConfig.CODEC.fieldOf("structures").forGetter(ChunkGeneratorSettings::getStructuresConfig),
 					GenerationShapeConfig.CODEC.fieldOf("noise").forGetter(ChunkGeneratorSettings::getGenerationShapeConfig),
@@ -30,7 +30,7 @@ public final class ChunkGeneratorSettings {
 				)
 				.apply(instance, ChunkGeneratorSettings::new)
 	);
-	public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.NOISE_SETTINGS_WORLDGEN, field_24780);
+	public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.NOISE_SETTINGS_WORLDGEN, CODEC);
 	private final StructuresConfig structuresConfig;
 	private final GenerationShapeConfig generationShapeConfig;
 	private final BlockState defaultBlock;
@@ -45,7 +45,7 @@ public final class ChunkGeneratorSettings {
 	public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(Registry.NOISE_SETTINGS_WORLDGEN, new Identifier("end"));
 	public static final RegistryKey<ChunkGeneratorSettings> CAVES = RegistryKey.of(Registry.NOISE_SETTINGS_WORLDGEN, new Identifier("caves"));
 	public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(Registry.NOISE_SETTINGS_WORLDGEN, new Identifier("floating_islands"));
-	private static final ChunkGeneratorSettings field_26707 = register(OVERWORLD, method_30643(new StructuresConfig(true), false, OVERWORLD.getValue()));
+	private static final ChunkGeneratorSettings INSTANCE = register(OVERWORLD, createSurfaceSettings(new StructuresConfig(true), false, OVERWORLD.getValue()));
 
 	private ChunkGeneratorSettings(
 		StructuresConfig structuresConfig,
@@ -110,37 +110,55 @@ public final class ChunkGeneratorSettings {
 		return this.mobGenerationDisabled;
 	}
 
-	public boolean isIdEqual(RegistryKey<ChunkGeneratorSettings> registryKey) {
+	public boolean equals(RegistryKey<ChunkGeneratorSettings> registryKey) {
 		return Objects.equals(this, BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.get(registryKey));
 	}
 
-	private static ChunkGeneratorSettings register(RegistryKey<ChunkGeneratorSettings> registryKey, ChunkGeneratorSettings chunkGeneratorSettings) {
-		BuiltinRegistries.add(BuiltinRegistries.CHUNK_GENERATOR_SETTINGS, registryKey.getValue(), chunkGeneratorSettings);
-		return chunkGeneratorSettings;
+	private static ChunkGeneratorSettings register(RegistryKey<ChunkGeneratorSettings> registryKey, ChunkGeneratorSettings settings) {
+		BuiltinRegistries.add(BuiltinRegistries.CHUNK_GENERATOR_SETTINGS, registryKey.getValue(), settings);
+		return settings;
 	}
 
-	public static ChunkGeneratorSettings method_31111() {
-		return field_26707;
+	public static ChunkGeneratorSettings getInstance() {
+		return INSTANCE;
 	}
 
-	private static ChunkGeneratorSettings method_30642(
-		StructuresConfig structuresConfig, BlockState blockState, BlockState blockState2, Identifier identifier, boolean bl, boolean bl2
+	private static ChunkGeneratorSettings createIslandSettings(
+		StructuresConfig structuresConfig,
+		BlockState defaultBlock,
+		BlockState defaultFluid,
+		Identifier id,
+		boolean mobGenerationDisabled,
+		boolean islandNoiseOverride
 	) {
 		return new ChunkGeneratorSettings(
 			structuresConfig,
 			new GenerationShapeConfig(
-				128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-3000, 64, -46), new SlideConfig(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, bl2, false
+				128,
+				new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0),
+				new SlideConfig(-3000, 64, -46),
+				new SlideConfig(-30, 7, 1),
+				2,
+				1,
+				0.0,
+				0.0,
+				true,
+				false,
+				islandNoiseOverride,
+				false
 			),
-			blockState,
-			blockState2,
+			defaultBlock,
+			defaultFluid,
 			-10,
 			-10,
 			0,
-			bl
+			mobGenerationDisabled
 		);
 	}
 
-	private static ChunkGeneratorSettings method_30641(StructuresConfig structuresConfig, BlockState blockState, BlockState blockState2, Identifier identifier) {
+	private static ChunkGeneratorSettings createUndergroundSettings(
+		StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid, Identifier id
+	) {
 		Map<StructureFeature<?>, StructureConfig> map = Maps.<StructureFeature<?>, StructureConfig>newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
 		map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
 		return new ChunkGeneratorSettings(
@@ -159,8 +177,8 @@ public final class ChunkGeneratorSettings {
 				false,
 				false
 			),
-			blockState,
-			blockState2,
+			defaultBlock,
+			defaultFluid,
 			0,
 			0,
 			32,
@@ -168,7 +186,7 @@ public final class ChunkGeneratorSettings {
 		);
 	}
 
-	private static ChunkGeneratorSettings method_30643(StructuresConfig structuresConfig, boolean bl, Identifier identifier) {
+	private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, Identifier id) {
 		double d = 0.9999999814507745;
 		return new ChunkGeneratorSettings(
 			structuresConfig,
@@ -184,7 +202,7 @@ public final class ChunkGeneratorSettings {
 				true,
 				true,
 				false,
-				bl
+				amplified
 			),
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
@@ -196,13 +214,15 @@ public final class ChunkGeneratorSettings {
 	}
 
 	static {
-		register(AMPLIFIED, method_30643(new StructuresConfig(true), true, AMPLIFIED.getValue()));
-		register(NETHER, method_30641(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), NETHER.getValue()));
-		register(END, method_30642(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), END.getValue(), true, true));
-		register(CAVES, method_30641(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), CAVES.getValue()));
+		register(AMPLIFIED, createSurfaceSettings(new StructuresConfig(true), true, AMPLIFIED.getValue()));
+		register(
+			NETHER, createUndergroundSettings(new StructuresConfig(false), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), NETHER.getValue())
+		);
+		register(END, createIslandSettings(new StructuresConfig(false), Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), END.getValue(), true, true));
+		register(CAVES, createUndergroundSettings(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), CAVES.getValue()));
 		register(
 			FLOATING_ISLANDS,
-			method_30642(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), FLOATING_ISLANDS.getValue(), false, false)
+			createIslandSettings(new StructuresConfig(true), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), FLOATING_ISLANDS.getValue(), false, false)
 		);
 	}
 }

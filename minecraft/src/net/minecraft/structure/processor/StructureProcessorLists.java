@@ -15,15 +15,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.BuiltinRegistries;
 
-public class ProcessorLists {
+public class StructureProcessorLists {
 	private static final StructureProcessorRule field_26621 = new StructureProcessorRule(
 		new RandomBlockMatchRuleTest(Blocks.BLACKSTONE, 0.01F), AlwaysTrueRuleTest.INSTANCE, Blocks.GILDED_BLACKSTONE.getDefaultState()
 	);
 	private static final StructureProcessorRule field_26622 = new StructureProcessorRule(
 		new RandomBlockMatchRuleTest(Blocks.GILDED_BLACKSTONE, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.BLACKSTONE.getDefaultState()
 	);
-	public static final ProcessorList EMPTY = register("empty", ImmutableList.of());
-	public static final ProcessorList ZOMBIE_PLAINS = register(
+	public static final StructureProcessorList EMPTY = register("empty", ImmutableList.of());
+	public static final StructureProcessorList ZOMBIE_PLAINS = register(
 		"zombie_plains",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -57,7 +57,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList ZOMBIE_SAVANNA = register(
+	public static final StructureProcessorList ZOMBIE_SAVANNA = register(
 		"zombie_savanna",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -88,7 +88,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList ZOMBIE_SNOWY = register(
+	public static final StructureProcessorList ZOMBIE_SNOWY = register(
 		"zombie_snowy",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -118,7 +118,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList ZOMBIE_TAIGA = register(
+	public static final StructureProcessorList ZOMBIE_TAIGA = register(
 		"zombie_taiga",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -149,7 +149,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList ZOMBIE_DESERT = register(
+	public static final StructureProcessorList ZOMBIE_DESERT = register(
 		"zombie_desert",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -170,7 +170,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList MOSSIFY_10_PERCENT = register(
+	public static final StructureProcessorList MOSSIFY_10_PERCENT = register(
 		"mossify_10_percent",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -180,7 +180,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList MOSSIFY_20_PERCENT = register(
+	public static final StructureProcessorList MOSSIFY_20_PERCENT = register(
 		"mossify_20_percent",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -190,7 +190,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList MOSSIFY_70_PERCENT = register(
+	public static final StructureProcessorList MOSSIFY_70_PERCENT = register(
 		"mossify_70_percent",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -200,7 +200,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList STREET_PLAINS = register(
+	public static final StructureProcessorList STREET_PLAINS = register(
 		"street_plains",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -213,7 +213,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList STREET_SAVANNA = register(
+	public static final StructureProcessorList STREET_SAVANNA = register(
 		"street_savanna",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -226,7 +226,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList STREET_SNOWY_OR_TAIGA = register(
+	public static final StructureProcessorList STREET_SNOWY_OR_TAIGA = register(
 		"street_snowy_or_taiga",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -239,7 +239,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList FARM_PLAINS = register(
+	public static final StructureProcessorList FARM_PLAINS = register(
 		"farm_plains",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -251,7 +251,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList FARM_SAVANNA = register(
+	public static final StructureProcessorList FARM_SAVANNA = register(
 		"farm_savanna",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -261,7 +261,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList FARM_SNOWY = register(
+	public static final StructureProcessorList FARM_SNOWY = register(
 		"farm_snowy",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -272,7 +272,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList FARM_TAIGA = register(
+	public static final StructureProcessorList FARM_TAIGA = register(
 		"farm_taiga",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -283,7 +283,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList FARM_DESERT = register(
+	public static final StructureProcessorList FARM_DESERT = register(
 		"farm_desert",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -294,8 +294,8 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList OUTPOST_ROT = register("outpost_rot", ImmutableList.of(new BlockRotStructureProcessor(0.05F)));
-	public static final ProcessorList BOTTOM_RAMPART = register(
+	public static final StructureProcessorList OUTPOST_ROT = register("outpost_rot", ImmutableList.of(new BlockRotStructureProcessor(0.05F)));
+	public static final StructureProcessorList BOTTOM_RAMPART = register(
 		"bottom_rampart",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -314,7 +314,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList TREASURE_ROOMS = register(
+	public static final StructureProcessorList TREASURE_ROOMS = register(
 		"treasure_rooms",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -335,7 +335,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList HOUSING = register(
+	public static final StructureProcessorList HOUSING = register(
 		"housing",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -352,7 +352,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList SIDE_WALL_DEGRADATION = register(
+	public static final StructureProcessorList SIDE_WALL_DEGRADATION = register(
 		"side_wall_degradation",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -369,7 +369,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList STABLE_DEGRADATION = register(
+	public static final StructureProcessorList STABLE_DEGRADATION = register(
 		"stable_degradation",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -386,7 +386,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList BASTION_GENERIC_DEGRADATION = register(
+	public static final StructureProcessorList BASTION_GENERIC_DEGRADATION = register(
 		"bastion_generic_degradation",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -406,7 +406,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList RAMPART_DEGRADATION = register(
+	public static final StructureProcessorList RAMPART_DEGRADATION = register(
 		"rampart_degradation",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -432,7 +432,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList ENTRANCE_REPLACEMENT = register(
+	public static final StructureProcessorList ENTRANCE_REPLACEMENT = register(
 		"entrance_replacement",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -449,7 +449,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList BRIDGE = register(
+	public static final StructureProcessorList BRIDGE = register(
 		"bridge",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -464,7 +464,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList ROOF = register(
+	public static final StructureProcessorList ROOF = register(
 		"roof",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -484,7 +484,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList HIGH_WALL = register(
+	public static final StructureProcessorList HIGH_WALL = register(
 		"high_wall",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -505,7 +505,7 @@ public class ProcessorLists {
 			)
 		)
 	);
-	public static final ProcessorList HIGH_RAMPART = register(
+	public static final StructureProcessorList HIGH_RAMPART = register(
 		"high_rampart",
 		ImmutableList.of(
 			new RuleStructureProcessor(
@@ -525,9 +525,9 @@ public class ProcessorLists {
 		)
 	);
 
-	private static ProcessorList register(String id, ImmutableList<StructureProcessor> processorList) {
+	private static StructureProcessorList register(String id, ImmutableList<StructureProcessor> processorList) {
 		Identifier identifier = new Identifier(id);
-		ProcessorList processorList2 = new ProcessorList(processorList);
-		return BuiltinRegistries.add(BuiltinRegistries.PROCESSOR_LIST, identifier, processorList2);
+		StructureProcessorList structureProcessorList = new StructureProcessorList(processorList);
+		return BuiltinRegistries.add(BuiltinRegistries.STRUCTURE_PROCESSOR_LIST, identifier, structureProcessorList);
 	}
 }

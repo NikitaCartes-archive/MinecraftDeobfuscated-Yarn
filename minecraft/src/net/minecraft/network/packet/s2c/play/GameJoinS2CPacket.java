@@ -23,7 +23,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private GameMode field_25713;
 	private Set<RegistryKey<World>> field_25320;
 	private DynamicRegistryManager.Impl registryManager;
-	private RegistryKey<DimensionType> field_25321;
+	private DimensionType field_25321;
 	private RegistryKey<World> dimensionId;
 	private int maxPlayers;
 	private int chunkLoadDistance;
@@ -43,8 +43,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		boolean hardcore,
 		Set<RegistryKey<World>> set,
 		DynamicRegistryManager.Impl impl,
-		RegistryKey<DimensionType> registryKey,
-		RegistryKey<World> registryKey2,
+		DimensionType dimensionType,
+		RegistryKey<World> registryKey,
 		int maxPlayers,
 		int chunkLoadDistance,
 		boolean reducedDebugInfo,
@@ -55,8 +55,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.playerEntityId = playerEntityId;
 		this.field_25320 = set;
 		this.registryManager = impl;
-		this.field_25321 = registryKey;
-		this.dimensionId = registryKey2;
+		this.field_25321 = dimensionType;
+		this.dimensionId = registryKey;
 		this.sha256Seed = sha256Seed;
 		this.gameMode = gameMode;
 		this.field_25713 = gameMode2;
@@ -83,7 +83,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		this.registryManager = buf.decode(DynamicRegistryManager.Impl.CODEC);
-		this.field_25321 = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, buf.readIdentifier());
+		this.field_25321 = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
 		this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.maxPlayers = buf.readVarInt();
@@ -107,7 +107,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		buf.encode(DynamicRegistryManager.Impl.CODEC, this.registryManager);
-		buf.writeIdentifier(this.field_25321.getValue());
+		buf.encode(DimensionType.REGISTRY_CODEC, () -> this.field_25321);
 		buf.writeIdentifier(this.dimensionId.getValue());
 		buf.writeLong(this.sha256Seed);
 		buf.writeVarInt(this.maxPlayers);
@@ -158,7 +158,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public RegistryKey<DimensionType> method_29444() {
+	public DimensionType method_29444() {
 		return this.field_25321;
 	}
 

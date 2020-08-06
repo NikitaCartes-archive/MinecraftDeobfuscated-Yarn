@@ -340,17 +340,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			chunkGenerator = dimensionOptions.getChunkGenerator();
 		}
 
-		RegistryKey<DimensionType> registryKey = (RegistryKey<DimensionType>)this.registryManager
-			.getDimensionTypes()
-			.getKey(dimensionType)
-			.orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType));
 		ServerWorld serverWorld = new ServerWorld(
 			this,
 			this.workerExecutor,
 			this.session,
 			serverWorldProperties,
 			World.OVERWORLD,
-			registryKey,
 			dimensionType,
 			worldGenerationProgressListener,
 			chunkGenerator,
@@ -372,12 +367,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				if (bl) {
 					this.setToDebugWorldProperties(this.saveProperties);
 				}
-			} catch (Throwable var28) {
-				CrashReport crashReport = CrashReport.create(var28, "Exception initializing level");
+			} catch (Throwable var26) {
+				CrashReport crashReport = CrashReport.create(var26, "Exception initializing level");
 
 				try {
 					serverWorld.addDetailsToCrashReport(crashReport);
-				} catch (Throwable var27) {
+				} catch (Throwable var25) {
 				}
 
 				throw new CrashException(crashReport);
@@ -392,14 +387,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
-			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey<DimensionOptions>)entry.getKey();
-			if (registryKey2 != DimensionOptions.OVERWORLD) {
-				RegistryKey<World> registryKey3 = RegistryKey.of(Registry.DIMENSION, registryKey2.getValue());
+			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
+			if (registryKey != DimensionOptions.OVERWORLD) {
+				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.DIMENSION, registryKey.getValue());
 				DimensionType dimensionType2 = ((DimensionOptions)entry.getValue()).getDimensionType();
-				RegistryKey<DimensionType> registryKey4 = (RegistryKey<DimensionType>)this.registryManager
-					.getDimensionTypes()
-					.getKey(dimensionType2)
-					.orElseThrow(() -> new IllegalStateException("Unregistered dimension type: " + dimensionType2));
 				ChunkGenerator chunkGenerator2 = ((DimensionOptions)entry.getValue()).getChunkGenerator();
 				UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
 				ServerWorld serverWorld2 = new ServerWorld(
@@ -407,8 +398,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					this.workerExecutor,
 					this.session,
 					unmodifiableLevelProperties,
-					registryKey3,
-					registryKey4,
+					registryKey2,
 					dimensionType2,
 					worldGenerationProgressListener,
 					chunkGenerator2,
@@ -418,7 +408,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					false
 				);
 				worldBorder.addListener(new WorldBorderListener.WorldBorderSyncer(serverWorld2.getWorldBorder()));
-				this.worlds.put(registryKey3, serverWorld2);
+				this.worlds.put(registryKey2, serverWorld2);
 			}
 		}
 	}

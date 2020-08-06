@@ -361,25 +361,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		Collections.shuffle(arrayList);
 		this.worldKeys = Sets.<RegistryKey<World>>newLinkedHashSet(arrayList);
 		this.registryManager = packet.getRegistryManager();
-		RegistryKey<DimensionType> registryKey = packet.method_29444();
-		RegistryKey<World> registryKey2 = packet.getDimensionId();
-		DimensionType dimensionType = this.registryManager.getDimensionTypes().get(registryKey);
+		RegistryKey<World> registryKey = packet.getDimensionId();
+		DimensionType dimensionType = packet.method_29444();
 		this.chunkLoadDistance = packet.getChunkLoadDistance();
 		boolean bl = packet.isDebugWorld();
 		boolean bl2 = packet.isFlatWorld();
 		ClientWorld.Properties properties = new ClientWorld.Properties(Difficulty.NORMAL, packet.isHardcore(), bl2);
 		this.worldProperties = properties;
 		this.world = new ClientWorld(
-			this,
-			properties,
-			registryKey2,
-			registryKey,
-			dimensionType,
-			this.chunkLoadDistance,
-			this.client::getProfiler,
-			this.client.worldRenderer,
-			bl,
-			packet.getSha256Seed()
+			this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed()
 		);
 		this.client.joinWorld(this.world);
 		if (this.client.player == null) {
@@ -726,7 +716,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		packet.visitUpdates(this.world::setBlockStateWithoutNeighborUpdates);
+		int i = 19 | (packet.method_31179() ? 128 : 0);
+		packet.visitUpdates((blockPos, blockState) -> this.world.setBlockState(blockPos, blockState, i));
 	}
 
 	@Override
@@ -1024,29 +1015,19 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onPlayerRespawn(PlayerRespawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		RegistryKey<DimensionType> registryKey = packet.method_29445();
-		RegistryKey<World> registryKey2 = packet.getDimension();
-		DimensionType dimensionType = this.registryManager.getDimensionTypes().get(registryKey);
+		RegistryKey<World> registryKey = packet.getDimension();
+		DimensionType dimensionType = packet.method_29445();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getEntityId();
 		this.positionLookSetup = false;
-		if (registryKey2 != clientPlayerEntity.world.getRegistryKey()) {
+		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
 			Scoreboard scoreboard = this.world.getScoreboard();
 			boolean bl = packet.isDebugWorld();
 			boolean bl2 = packet.isFlatWorld();
 			ClientWorld.Properties properties = new ClientWorld.Properties(this.worldProperties.getDifficulty(), this.worldProperties.isHardcore(), bl2);
 			this.worldProperties = properties;
 			this.world = new ClientWorld(
-				this,
-				properties,
-				registryKey2,
-				registryKey,
-				dimensionType,
-				this.chunkLoadDistance,
-				this.client::getProfiler,
-				this.client.worldRenderer,
-				bl,
-				packet.getSha256Seed()
+				this, properties, registryKey, dimensionType, this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer, bl, packet.getSha256Seed()
 			);
 			this.world.setScoreboard(scoreboard);
 			this.client.joinWorld(this.world);
@@ -1063,7 +1044,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			);
 		clientPlayerEntity2.setEntityId(i);
 		this.client.player = clientPlayerEntity2;
-		if (registryKey2 != clientPlayerEntity.world.getRegistryKey()) {
+		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
 			this.client.getMusicTracker().stop();
 		}
 

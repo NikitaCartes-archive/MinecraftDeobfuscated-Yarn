@@ -627,35 +627,38 @@ public class RealmsMainScreen extends RealmsScreen {
 	private void method_24991(boolean bl) {
 		if (bl) {
 			(new Thread("Realms-leave-server") {
-					public void run() {
-						try {
-							RealmsServer realmsServer = RealmsMainScreen.this.findServer(RealmsMainScreen.this.selectedServerId);
-							if (realmsServer != null) {
-								RealmsClient realmsClient = RealmsClient.createRealmsClient();
-								realmsClient.uninviteMyselfFrom(realmsServer.id);
-								RealmsMainScreen.realmsDataFetcher.removeItem(realmsServer);
-								RealmsMainScreen.this.realmsServers.remove(realmsServer);
-								RealmsMainScreen.this.realmSelectionList
-									.children()
-									.removeIf(
-										entry -> entry instanceof RealmsMainScreen.RealmSelectionListEntry
-												&& ((RealmsMainScreen.RealmSelectionListEntry)entry).mServerData.id == RealmsMainScreen.this.selectedServerId
-									);
-								RealmsMainScreen.this.realmSelectionList.setSelected(null);
-								RealmsMainScreen.this.updateButtonStates(null);
-								RealmsMainScreen.this.selectedServerId = -1L;
-								RealmsMainScreen.this.playButton.active = false;
-							}
-						} catch (RealmsServiceException var3) {
-							RealmsMainScreen.LOGGER.error("Couldn't configure world");
-							RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.openScreen(new RealmsGenericErrorScreen(var3, RealmsMainScreen.this)));
+				public void run() {
+					try {
+						RealmsServer realmsServer = RealmsMainScreen.this.findServer(RealmsMainScreen.this.selectedServerId);
+						if (realmsServer != null) {
+							RealmsClient realmsClient = RealmsClient.createRealmsClient();
+							realmsClient.uninviteMyselfFrom(realmsServer.id);
+							RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.method_31174(realmsServer));
 						}
+					} catch (RealmsServiceException var3) {
+						RealmsMainScreen.LOGGER.error("Couldn't configure world");
+						RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.openScreen(new RealmsGenericErrorScreen(var3, RealmsMainScreen.this)));
 					}
-				})
-				.start();
+				}
+			}).start();
 		}
 
 		this.client.openScreen(this);
+	}
+
+	private void method_31174(RealmsServer realmsServer) {
+		realmsDataFetcher.removeItem(realmsServer);
+		this.realmsServers.remove(realmsServer);
+		this.realmSelectionList
+			.children()
+			.removeIf(
+				entry -> entry instanceof RealmsMainScreen.RealmSelectionListEntry
+						&& ((RealmsMainScreen.RealmSelectionListEntry)entry).mServerData.id == this.selectedServerId
+			);
+		this.realmSelectionList.setSelected(null);
+		this.updateButtonStates(null);
+		this.selectedServerId = -1L;
+		this.playButton.active = false;
 	}
 
 	public void removeSelection() {

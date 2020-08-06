@@ -129,7 +129,7 @@ public class DimensionType {
 		BlockTags.INFINIBURN_OVERWORLD.getId(),
 		0.0F
 	);
-	public static final Codec<Supplier<DimensionType>> field_24756 = RegistryElementCodec.of(Registry.DIMENSION_TYPE_KEY, CODEC);
+	public static final Codec<Supplier<DimensionType>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.DIMENSION_TYPE_KEY, CODEC);
 	private final OptionalLong fixedTime;
 	private final boolean hasSkyLight;
 	private final boolean hasCeiling;
