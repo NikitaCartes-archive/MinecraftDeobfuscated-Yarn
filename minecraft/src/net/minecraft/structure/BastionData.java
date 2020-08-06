@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.structure.pool.TemplatePools;
+import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.util.Identifier;
 
 public class BastionData {
@@ -12,7 +12,7 @@ public class BastionData {
 	}
 
 	static {
-		TemplatePools.register(
+		StructurePools.register(
 			new StructurePool(
 				new Identifier("bastion/mobs/piglin"),
 				new Identifier("empty"),
@@ -25,7 +25,7 @@ public class BastionData {
 				StructurePool.Projection.RIGID
 			)
 		);
-		TemplatePools.register(
+		StructurePools.register(
 			new StructurePool(
 				new Identifier("bastion/mobs/hoglin"),
 				new Identifier("empty"),
@@ -33,7 +33,7 @@ public class BastionData {
 				StructurePool.Projection.RIGID
 			)
 		);
-		TemplatePools.register(
+		StructurePools.register(
 			new StructurePool(
 				new Identifier("bastion/blocks/gold"),
 				new Identifier("empty"),
@@ -41,7 +41,7 @@ public class BastionData {
 				StructurePool.Projection.RIGID
 			)
 		);
-		TemplatePools.register(
+		StructurePools.register(
 			new StructurePool(
 				new Identifier("bastion/mobs/piglin_melee"),
 				new Identifier("empty"),

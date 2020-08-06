@@ -652,7 +652,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						destination.getDimensionRegistryKey(),
+						destination.getDimension(),
 						destination.getRegistryKey(),
 						BiomeAccess.hashSeed(destination.getSeed()),
 						this.interactionManager.getGameMode(),
@@ -1371,7 +1371,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						targetWorld.getDimensionRegistryKey(),
+						targetWorld.getDimension(),
 						targetWorld.getRegistryKey(),
 						BiomeAccess.hashSeed(targetWorld.getSeed()),
 						this.interactionManager.getGameMode(),

@@ -97,7 +97,6 @@ public class ClientWorld extends World {
 		ClientPlayNetworkHandler clientPlayNetworkHandler,
 		ClientWorld.Properties properties,
 		RegistryKey<World> registryKey,
-		RegistryKey<DimensionType> registryKey2,
 		DimensionType dimensionType,
 		int i,
 		Supplier<Profiler> supplier,
@@ -105,7 +104,7 @@ public class ClientWorld extends World {
 		boolean bl,
 		long l
 	) {
-		super(properties, registryKey, registryKey2, dimensionType, supplier, true, bl, l);
+		super(properties, registryKey, dimensionType, supplier, true, bl, l);
 		this.netHandler = clientPlayNetworkHandler;
 		this.chunkManager = new ClientChunkManager(this, i);
 		this.clientWorldProperties = properties;

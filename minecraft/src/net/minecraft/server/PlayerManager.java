@@ -172,7 +172,7 @@ public abstract class PlayerManager {
 				worldProperties.isHardcore(),
 				this.server.getWorldRegistryKeys(),
 				this.registryManager,
-				serverWorld2.getDimensionRegistryKey(),
+				serverWorld2.getDimension(),
 				serverWorld2.getRegistryKey(),
 				this.getMaxPlayerCount(),
 				this.viewDistance,
@@ -499,7 +499,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
-					serverPlayerEntity.world.getDimensionRegistryKey(),
+					serverPlayerEntity.world.getDimension(),
 					serverPlayerEntity.world.getRegistryKey(),
 					BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()),
 					serverPlayerEntity.interactionManager.getGameMode(),

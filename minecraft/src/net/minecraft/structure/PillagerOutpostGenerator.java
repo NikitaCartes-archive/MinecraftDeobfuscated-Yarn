@@ -4,12 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.structure.pool.TemplatePools;
-import net.minecraft.structure.processor.ProcessorLists;
+import net.minecraft.structure.pool.StructurePools;
+import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
 
 public class PillagerOutpostGenerator {
-	public static final StructurePool field_26252 = TemplatePools.register(
+	public static final StructurePool field_26252 = StructurePools.register(
 		new StructurePool(
 			new Identifier("pillager_outpost/base_plates"),
 			new Identifier("empty"),
@@ -22,7 +22,7 @@ public class PillagerOutpostGenerator {
 	}
 
 	static {
-		TemplatePools.register(
+		StructurePools.register(
 			new StructurePool(
 				new Identifier("pillager_outpost/towers"),
 				new Identifier("empty"),
@@ -31,7 +31,7 @@ public class PillagerOutpostGenerator {
 						StructurePoolElement.method_30429(
 							ImmutableList.of(
 								StructurePoolElement.method_30425("pillager_outpost/watchtower"),
-								StructurePoolElement.method_30426("pillager_outpost/watchtower_overgrown", ProcessorLists.OUTPOST_ROT)
+								StructurePoolElement.method_30426("pillager_outpost/watchtower_overgrown", StructureProcessorLists.OUTPOST_ROT)
 							)
 						),
 						1
@@ -40,7 +40,7 @@ public class PillagerOutpostGenerator {
 				StructurePool.Projection.RIGID
 			)
 		);
-		TemplatePools.register(
+		StructurePools.register(
 			new StructurePool(
 				new Identifier("pillager_outpost/feature_plates"),
 				new Identifier("empty"),
@@ -48,7 +48,7 @@ public class PillagerOutpostGenerator {
 				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
-		TemplatePools.register(
+		StructurePools.register(
 			new StructurePool(
 				new Identifier("pillager_outpost/features"),
 				new Identifier("empty"),

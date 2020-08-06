@@ -175,19 +175,18 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		LevelStorage.Session session,
 		ServerWorldProperties properties,
 		RegistryKey<World> registryKey,
-		RegistryKey<DimensionType> registryKey2,
 		DimensionType dimensionType,
-		WorldGenerationProgressListener generationProgressListener,
+		WorldGenerationProgressListener worldGenerationProgressListener,
 		ChunkGenerator chunkGenerator,
 		boolean bl,
 		long l,
-		List<Spawner> spawners,
+		List<Spawner> list,
 		boolean bl2
 	) {
-		super(properties, registryKey, registryKey2, dimensionType, server::getProfiler, false, bl, l);
+		super(properties, registryKey, dimensionType, server::getProfiler, false, bl, l);
 		this.field_25143 = bl2;
 		this.server = server;
-		this.spawners = spawners;
+		this.spawners = list;
 		this.worldProperties = properties;
 		this.serverChunkManager = new ServerChunkManager(
 			this,
@@ -198,7 +197,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			chunkGenerator,
 			server.getPlayerManager().getViewDistance(),
 			server.syncChunkWrites(),
-			generationProgressListener,
+			worldGenerationProgressListener,
 			() -> server.getOverworld().getPersistentStateManager()
 		);
 		this.portalForcer = new PortalForcer(this);

@@ -117,11 +117,11 @@ public class PresetsScreen extends Screen {
 	public static FlatChunkGeneratorConfig method_29060(Registry<Biome> registry, String string, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		Iterator<String> iterator = Splitter.on(';').split(string).iterator();
 		if (!iterator.hasNext()) {
-			return FlatChunkGeneratorConfig.getDefaultConfig();
+			return FlatChunkGeneratorConfig.getDefaultConfig(registry);
 		} else {
 			List<FlatChunkGeneratorLayer> list = method_29058((String)iterator.next());
 			if (list.isEmpty()) {
-				return FlatChunkGeneratorConfig.getDefaultConfig();
+				return FlatChunkGeneratorConfig.getDefaultConfig(registry);
 			} else {
 				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getConfig());
 				Biome biome = registry.method_31140(Biomes.PLAINS);
@@ -244,7 +244,7 @@ public class PresetsScreen extends Screen {
 			}
 
 			StructuresConfig structuresConfig = new StructuresConfig(bl ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
-			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig);
+			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, registry);
 			if (bl2) {
 				flatChunkGeneratorConfig.method_28911();
 			}

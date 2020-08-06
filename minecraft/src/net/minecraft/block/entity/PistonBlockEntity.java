@@ -264,7 +264,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	public void finish() {
-		if (!this.world.isClient && this.lastProgress < 1.0F && this.world != null) {
+		if (this.lastProgress < 1.0F && this.world != null) {
 			this.progress = 1.0F;
 			this.lastProgress = this.progress;
 			this.world.removeBlockEntity(this.pos);
