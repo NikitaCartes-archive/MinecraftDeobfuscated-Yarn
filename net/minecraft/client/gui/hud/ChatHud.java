@@ -135,6 +135,7 @@ extends DrawableHelper {
     }
 
     public void clear(boolean clearHistory) {
+        this.field_23934.clear();
         this.visibleMessages.clear();
         this.messages.clear();
         if (clearHistory) {

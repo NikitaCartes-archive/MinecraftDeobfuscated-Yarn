@@ -7,6 +7,8 @@ import it.unimi.dsi.fastutil.shorts.ShortIterator;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
 import java.io.IOException;
 import java.util.function.BiConsumer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.Packet;
@@ -24,19 +26,20 @@ implements Packet<ClientPlayPacketListener> {
      */
     private short[] positions;
     private BlockState[] blockStates;
+    private boolean field_26749;
 
     public ChunkDeltaUpdateS2CPacket() {
     }
 
     /**
      * @param sectionPos the position of the given chunk section that will be sent to the client
-     * @param updatedPositions the set of packed local positions within the given chunk section that should be included in the packet
      */
-    public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet updatedPositions, ChunkSection section) {
+    public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet shortSet, ChunkSection section, boolean bl) {
         this.sectionPos = sectionPos;
-        this.allocateBuffers(updatedPositions.size());
+        this.field_26749 = bl;
+        this.allocateBuffers(shortSet.size());
         int i = 0;
-        ShortIterator shortIterator = updatedPositions.iterator();
+        ShortIterator shortIterator = shortSet.iterator();
         while (shortIterator.hasNext()) {
             short s;
             this.positions[i] = s = ((Short)shortIterator.next()).shortValue();
@@ -53,6 +56,7 @@ implements Packet<ClientPlayPacketListener> {
     @Override
     public void read(PacketByteBuf buf) throws IOException {
         this.sectionPos = ChunkSectionPos.from(buf.readLong());
+        this.field_26749 = buf.readBoolean();
         int i = buf.readVarInt();
         this.allocateBuffers(i);
         for (int j = 0; j < this.positions.length; ++j) {
@@ -65,6 +69,7 @@ implements Packet<ClientPlayPacketListener> {
     @Override
     public void write(PacketByteBuf buf) throws IOException {
         buf.writeLong(this.sectionPos.asLong());
+        buf.writeBoolean(this.field_26749);
         buf.writeVarInt(this.positions.length);
         for (int i = 0; i < this.positions.length; ++i) {
             buf.writeVarLong(Block.getRawIdFromState(this.blockStates[i]) << 12 | this.positions[i]);
@@ -86,6 +91,11 @@ implements Packet<ClientPlayPacketListener> {
             mutable.set(this.sectionPos.unpackBlockX(s), this.sectionPos.unpackBlockY(s), this.sectionPos.unpackBlockZ(s));
             biConsumer.accept(mutable, this.blockStates[i]);
         }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public boolean method_31179() {
+        return this.field_26749;
     }
 }
 

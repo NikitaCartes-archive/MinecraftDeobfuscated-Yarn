@@ -202,9 +202,10 @@ implements Angerable {
         this.begAnimationProgress = this.isBegging() ? (this.begAnimationProgress += (1.0f - this.begAnimationProgress) * 0.4f) : (this.begAnimationProgress += (0.0f - this.begAnimationProgress) * 0.4f);
         if (this.isWet()) {
             this.furWet = true;
-            this.canShakeWaterOff = false;
-            this.shakeProgress = 0.0f;
-            this.lastShakeProgress = 0.0f;
+            if (this.canShakeWaterOff && !this.world.isClient) {
+                this.world.sendEntityStatus(this, (byte)56);
+                this.method_31167();
+            }
         } else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
             if (this.shakeProgress == 0.0f) {
                 this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
@@ -228,6 +229,12 @@ implements Angerable {
                 }
             }
         }
+    }
+
+    private void method_31167() {
+        this.canShakeWaterOff = false;
+        this.shakeProgress = 0.0f;
+        this.lastShakeProgress = 0.0f;
     }
 
     @Override
@@ -260,7 +267,7 @@ implements Angerable {
      */
     @Environment(value=EnvType.CLIENT)
     public float getFurWetBrightnessMultiplier(float tickDelta) {
-        return 0.75f + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0f * 0.25f;
+        return Math.min(0.5f + MathHelper.lerp(tickDelta, this.lastShakeProgress, this.shakeProgress) / 2.0f * 0.5f, 1.0f);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -386,6 +393,8 @@ implements Angerable {
             this.canShakeWaterOff = true;
             this.shakeProgress = 0.0f;
             this.lastShakeProgress = 0.0f;
+        } else if (status == 56) {
+            this.method_31167();
         } else {
             super.handleStatus(status);
         }

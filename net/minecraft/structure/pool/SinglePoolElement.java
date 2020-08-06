@@ -28,8 +28,8 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.JigsawReplacementStructureProcessor;
-import net.minecraft.structure.processor.ProcessorList;
-import net.minecraft.structure.processor.ProcessorLists;
+import net.minecraft.structure.processor.StructureProcessorList;
+import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -44,7 +44,7 @@ extends StructurePoolElement {
     private static final Codec<Either<Identifier, Structure>> field_24951 = Codec.of(SinglePoolElement::method_28877, Identifier.CODEC.map(Either::left));
     public static final Codec<SinglePoolElement> field_24952 = RecordCodecBuilder.create(instance -> instance.group(SinglePoolElement.method_28882(), SinglePoolElement.method_28880(), SinglePoolElement.method_28883()).apply((Applicative)instance, SinglePoolElement::new));
     protected final Either<Identifier, Structure> field_24015;
-    protected final Supplier<ProcessorList> processors;
+    protected final Supplier<StructureProcessorList> processors;
 
     private static <T> DataResult<T> method_28877(Either<Identifier, Structure> either, DynamicOps<T> dynamicOps, T object) {
         Optional<Identifier> optional = either.left();
@@ -54,7 +54,7 @@ extends StructurePoolElement {
         return Identifier.CODEC.encode(optional.get(), dynamicOps, object);
     }
 
-    protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Supplier<ProcessorList>> method_28880() {
+    protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Supplier<StructureProcessorList>> method_28880() {
         return ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("processors")).forGetter(singlePoolElement -> singlePoolElement.processors);
     }
 
@@ -62,14 +62,14 @@ extends StructurePoolElement {
         return ((MapCodec)field_24951.fieldOf("location")).forGetter(singlePoolElement -> singlePoolElement.field_24015);
     }
 
-    protected SinglePoolElement(Either<Identifier, Structure> either, Supplier<ProcessorList> supplier, StructurePool.Projection projection) {
+    protected SinglePoolElement(Either<Identifier, Structure> either, Supplier<StructureProcessorList> supplier, StructurePool.Projection projection) {
         super(projection);
         this.field_24015 = either;
         this.processors = supplier;
     }
 
     public SinglePoolElement(Structure structure) {
-        this(Either.right(structure), () -> ProcessorLists.EMPTY, StructurePool.Projection.RIGID);
+        this(Either.right(structure), () -> StructureProcessorLists.EMPTY, StructurePool.Projection.RIGID);
     }
 
     private Structure method_27233(StructureManager structureManager) {

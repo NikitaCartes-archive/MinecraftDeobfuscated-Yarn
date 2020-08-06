@@ -20,7 +20,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.structure.pool.TemplatePools;
+import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -125,13 +125,13 @@ public class StructurePoolBasedGenerator {
                 int k = -1;
                 Identifier identifier = new Identifier(structureBlockInfo2.tag.getString("pool"));
                 Optional<StructurePool> optional = this.field_25852.getOrEmpty(identifier);
-                if (!optional.isPresent() || optional.get().getElementCount() == 0 && !Objects.equals(identifier, TemplatePools.EMPTY.getValue())) {
+                if (!optional.isPresent() || optional.get().getElementCount() == 0 && !Objects.equals(identifier, StructurePools.EMPTY.getValue())) {
                     LOGGER.warn("Empty or none existent pool: {}", (Object)identifier);
                     continue;
                 }
                 Identifier identifier2 = optional.get().getTerminatorsId();
                 Optional<StructurePool> optional2 = this.field_25852.getOrEmpty(identifier2);
-                if (!optional2.isPresent() || optional2.get().getElementCount() == 0 && !Objects.equals(identifier2, TemplatePools.EMPTY.getValue())) {
+                if (!optional2.isPresent() || optional2.get().getElementCount() == 0 && !Objects.equals(identifier2, StructurePools.EMPTY.getValue())) {
                     LOGGER.warn("Empty or none existent fallback pool: {}", (Object)identifier2);
                     continue;
                 }

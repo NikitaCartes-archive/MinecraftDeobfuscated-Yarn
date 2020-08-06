@@ -46,7 +46,7 @@ public abstract class GeneratorType {
 
         @Override
         protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
-            return new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig());
+            return new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(registry));
         }
     };
     private static final GeneratorType LARGE_BIOMES = new GeneratorType("large_biomes"){
@@ -96,13 +96,13 @@ public abstract class GeneratorType {
 
         @Override
         protected ChunkGenerator getChunkGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
-            return DebugChunkGenerator.INSTANCE;
+            return new DebugChunkGenerator(registry);
         }
     };
     protected static final List<GeneratorType> VALUES = Lists.newArrayList(DEFAULT, FLAT, LARGE_BIOMES, AMPLIFIED, SINGLE_BIOME_SURFACE, SINGLE_BIOME_CAVES, SINGLE_BIOME_FLOATING_ISLANDS, DEBUG_ALL_BLOCK_STATES);
     protected static final Map<Optional<GeneratorType>, ScreenProvider> field_25053 = ImmutableMap.of(Optional.of(FLAT), (createWorldScreen, generatorOptions) -> {
         ChunkGenerator chunkGenerator = generatorOptions.getChunkGenerator();
-        return new CustomizeFlatLevelScreen(createWorldScreen, flatChunkGeneratorConfig -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(createWorldScreen.moreOptionsDialog.method_29700().get(Registry.DIMENSION_TYPE_KEY), generatorOptions.getDimensionMap(), new FlatChunkGenerator((FlatChunkGeneratorConfig)flatChunkGeneratorConfig)))), chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).method_28545() : FlatChunkGeneratorConfig.getDefaultConfig());
+        return new CustomizeFlatLevelScreen(createWorldScreen, flatChunkGeneratorConfig -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(createWorldScreen.moreOptionsDialog.method_29700().get(Registry.DIMENSION_TYPE_KEY), generatorOptions.getDimensionMap(), new FlatChunkGenerator((FlatChunkGeneratorConfig)flatChunkGeneratorConfig)))), chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).method_28545() : FlatChunkGeneratorConfig.getDefaultConfig(createWorldScreen.moreOptionsDialog.method_29700().get(Registry.BIOME_KEY)));
     }, Optional.of(SINGLE_BIOME_SURFACE), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_SURFACE, biome)), GeneratorType.getFirstBiome(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions)), Optional.of(SINGLE_BIOME_CAVES), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_CAVES, biome)), GeneratorType.getFirstBiome(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions)), Optional.of(SINGLE_BIOME_FLOATING_ISLANDS), (createWorldScreen, generatorOptions) -> new CustomizeBuffetLevelScreen(createWorldScreen, createWorldScreen.moreOptionsDialog.method_29700(), biome -> createWorldScreen.moreOptionsDialog.setGeneratorOptions(GeneratorType.method_29079(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)), GeneratorType.getFirstBiome(createWorldScreen.moreOptionsDialog.method_29700(), generatorOptions)));
     private final Text translationKey;
 

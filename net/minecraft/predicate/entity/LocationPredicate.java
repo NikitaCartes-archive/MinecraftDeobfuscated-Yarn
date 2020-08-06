@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import java.util.Optional;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.FluidPredicate;
@@ -87,7 +88,11 @@ public class LocationPredicate {
         }
         BlockPos blockPos = new BlockPos(x, y, z);
         boolean bl = world.canSetBlock(blockPos);
-        if (!(this.biome == null || bl && this.biome == world.getRegistryManager().get(Registry.BIOME_KEY).getKey(world.getBiome(blockPos)).orElseThrow(() -> new IllegalStateException("Unregistered biome")))) {
+        Optional<RegistryKey<Biome>> optional = world.getRegistryManager().get(Registry.BIOME_KEY).getKey(world.getBiome(blockPos));
+        if (!optional.isPresent()) {
+            return false;
+        }
+        if (!(this.biome == null || bl && this.biome == optional.get())) {
             return false;
         }
         if (!(this.feature == null || bl && world.getStructureAccessor().getStructureAt(blockPos, true, this.feature).hasChildren())) {

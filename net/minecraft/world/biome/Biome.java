@@ -382,7 +382,7 @@ public final class Biome {
         }
     }
 
-    public static class Settings {
+    public static class Builder {
         @Nullable
         private Precipitation precipitation;
         @Nullable
@@ -403,52 +403,52 @@ public final class Biome {
         @Nullable
         private GenerationSettings generationSettings;
 
-        public Settings precipitation(Precipitation precipitation) {
+        public Builder precipitation(Precipitation precipitation) {
             this.precipitation = precipitation;
             return this;
         }
 
-        public Settings category(Category category) {
+        public Builder category(Category category) {
             this.category = category;
             return this;
         }
 
-        public Settings depth(float depth) {
+        public Builder depth(float depth) {
             this.depth = Float.valueOf(depth);
             return this;
         }
 
-        public Settings scale(float scale) {
+        public Builder scale(float scale) {
             this.scale = Float.valueOf(scale);
             return this;
         }
 
-        public Settings temperature(float temperature) {
+        public Builder temperature(float temperature) {
             this.temperature = Float.valueOf(temperature);
             return this;
         }
 
-        public Settings downfall(float downfall) {
+        public Builder downfall(float downfall) {
             this.downfall = Float.valueOf(downfall);
             return this;
         }
 
-        public Settings effects(BiomeEffects effects) {
+        public Builder effects(BiomeEffects effects) {
             this.specialEffects = effects;
             return this;
         }
 
-        public Settings spawnSettings(SpawnSettings spawnSettings) {
+        public Builder spawnSettings(SpawnSettings spawnSettings) {
             this.spawnSettings = spawnSettings;
             return this;
         }
 
-        public Settings generationSettings(GenerationSettings generationSettings) {
+        public Builder generationSettings(GenerationSettings generationSettings) {
             this.generationSettings = generationSettings;
             return this;
         }
 
-        public Settings temperatureModifier(TemperatureModifier temperatureModifier) {
+        public Builder temperatureModifier(TemperatureModifier temperatureModifier) {
             this.temperatureModifier = temperatureModifier;
             return this;
         }

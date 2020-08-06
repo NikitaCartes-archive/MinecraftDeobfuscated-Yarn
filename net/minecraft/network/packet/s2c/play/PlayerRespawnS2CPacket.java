@@ -17,7 +17,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class PlayerRespawnS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private RegistryKey<DimensionType> field_25322;
+    private DimensionType field_25322;
     private RegistryKey<World> dimension;
     private long sha256Seed;
     private GameMode gameMode;
@@ -29,9 +29,9 @@ implements Packet<ClientPlayPacketListener> {
     public PlayerRespawnS2CPacket() {
     }
 
-    public PlayerRespawnS2CPacket(RegistryKey<DimensionType> registryKey, RegistryKey<World> registryKey2, long l, GameMode gameMode, GameMode gameMode2, boolean bl, boolean bl2, boolean bl3) {
-        this.field_25322 = registryKey;
-        this.dimension = registryKey2;
+    public PlayerRespawnS2CPacket(DimensionType dimensionType, RegistryKey<World> registryKey, long l, GameMode gameMode, GameMode gameMode2, boolean bl, boolean bl2, boolean bl3) {
+        this.field_25322 = dimensionType;
+        this.dimension = registryKey;
         this.sha256Seed = l;
         this.gameMode = gameMode;
         this.field_25714 = gameMode2;
@@ -47,7 +47,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void read(PacketByteBuf buf) throws IOException {
-        this.field_25322 = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, buf.readIdentifier());
+        this.field_25322 = buf.decode(DimensionType.REGISTRY_CODEC).get();
         this.dimension = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
         this.sha256Seed = buf.readLong();
         this.gameMode = GameMode.byId(buf.readUnsignedByte());
@@ -59,7 +59,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void write(PacketByteBuf buf) throws IOException {
-        buf.writeIdentifier(this.field_25322.getValue());
+        buf.encode(DimensionType.REGISTRY_CODEC, () -> this.field_25322);
         buf.writeIdentifier(this.dimension.getValue());
         buf.writeLong(this.sha256Seed);
         buf.writeByte(this.gameMode.getId());
@@ -70,7 +70,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public RegistryKey<DimensionType> method_29445() {
+    public DimensionType method_29445() {
         return this.field_25322;
     }
 

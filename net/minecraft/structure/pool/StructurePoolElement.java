@@ -20,8 +20,8 @@ import net.minecraft.structure.pool.ListPoolElement;
 import net.minecraft.structure.pool.SinglePoolElement;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
-import net.minecraft.structure.processor.ProcessorList;
-import net.minecraft.structure.processor.ProcessorLists;
+import net.minecraft.structure.processor.StructureProcessorList;
+import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -80,19 +80,19 @@ public abstract class StructurePoolElement {
     }
 
     public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30425(String string) {
-        return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> ProcessorLists.EMPTY, (StructurePool.Projection)projection);
+        return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> StructureProcessorLists.EMPTY, (StructurePool.Projection)projection);
     }
 
-    public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30426(String string, ProcessorList processorList) {
-        return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> processorList, (StructurePool.Projection)projection);
+    public static Function<StructurePool.Projection, LegacySinglePoolElement> method_30426(String string, StructureProcessorList structureProcessorList) {
+        return projection -> new LegacySinglePoolElement(Either.left(new Identifier(string)), () -> structureProcessorList, (StructurePool.Projection)projection);
     }
 
     public static Function<StructurePool.Projection, SinglePoolElement> method_30434(String string) {
-        return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> ProcessorLists.EMPTY, (StructurePool.Projection)projection);
+        return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> StructureProcessorLists.EMPTY, (StructurePool.Projection)projection);
     }
 
-    public static Function<StructurePool.Projection, SinglePoolElement> method_30435(String string, ProcessorList processorList) {
-        return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> processorList, (StructurePool.Projection)projection);
+    public static Function<StructurePool.Projection, SinglePoolElement> method_30435(String string, StructureProcessorList structureProcessorList) {
+        return projection -> new SinglePoolElement(Either.left(new Identifier(string)), () -> structureProcessorList, (StructurePool.Projection)projection);
     }
 
     public static Function<StructurePool.Projection, FeaturePoolElement> method_30421(ConfiguredFeature<?, ?> configuredFeature) {

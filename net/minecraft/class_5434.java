@@ -8,7 +8,7 @@ import net.minecraft.structure.MarginedStructureStart;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
-import net.minecraft.structure.pool.TemplatePools;
+import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -47,7 +47,7 @@ extends StructureFeature<StructurePoolFeatureConfig> {
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, StructurePoolFeatureConfig structurePoolFeatureConfig) {
             BlockPos blockPos = new BlockPos(i * 16, this.field_25838.field_25835, j * 16);
-            TemplatePools.initDefaultPools();
+            StructurePools.initDefaultPools();
             StructurePoolBasedGenerator.method_30419(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this.children, this.random, this.field_25838.field_25836, this.field_25838.field_25837);
             this.setBoundingBoxFromChildren();
         }

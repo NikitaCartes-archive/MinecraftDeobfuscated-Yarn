@@ -15,9 +15,9 @@ import net.minecraft.structure.processor.GravityStructureProcessor;
 import net.minecraft.structure.processor.JigsawReplacementStructureProcessor;
 import net.minecraft.structure.processor.LavaSubmergedBlockStructureProcessor;
 import net.minecraft.structure.processor.NopStructureProcessor;
-import net.minecraft.structure.processor.ProcessorList;
 import net.minecraft.structure.processor.RuleStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
+import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.Registry;
 
@@ -32,9 +32,9 @@ public interface StructureProcessorType<P extends StructureProcessor> {
     public static final StructureProcessorType<BlackstoneReplacementStructureProcessor> BLACKSTONE_REPLACE = StructureProcessorType.register("blackstone_replace", BlackstoneReplacementStructureProcessor.CODEC);
     public static final StructureProcessorType<LavaSubmergedBlockStructureProcessor> LAVA_SUBMERGED_BLOCK = StructureProcessorType.register("lava_submerged_block", LavaSubmergedBlockStructureProcessor.CODEC);
     public static final Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
-    public static final Codec<ProcessorList> field_26663 = CODEC.listOf().xmap(ProcessorList::new, ProcessorList::getList);
-    public static final Codec<ProcessorList> field_25876 = Codec.either(((MapCodec)field_26663.fieldOf("processors")).codec(), field_26663).xmap(either -> either.map(processorList -> processorList, processorList -> processorList), Either::left);
-    public static final Codec<Supplier<ProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.PROCESSOR_LIST_WORLDGEN, field_25876);
+    public static final Codec<StructureProcessorList> field_26663 = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
+    public static final Codec<StructureProcessorList> field_25876 = Codec.either(((MapCodec)field_26663.fieldOf("processors")).codec(), field_26663).xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
+    public static final Codec<Supplier<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.PROCESSOR_LIST_WORLDGEN, field_25876);
 
     public Codec<P> codec();
 

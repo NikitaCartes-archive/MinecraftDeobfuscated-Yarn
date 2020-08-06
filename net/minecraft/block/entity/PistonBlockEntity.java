@@ -242,7 +242,7 @@ implements Tickable {
     }
 
     public void finish() {
-        if (!this.world.isClient && this.lastProgress < 1.0f && this.world != null) {
+        if (this.lastProgress < 1.0f && this.world != null) {
             this.lastProgress = this.progress = 1.0f;
             this.world.removeBlockEntity(this.pos);
             this.markRemoved();

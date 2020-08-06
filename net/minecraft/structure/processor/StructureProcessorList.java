@@ -6,10 +6,10 @@ package net.minecraft.structure.processor;
 import java.util.List;
 import net.minecraft.structure.processor.StructureProcessor;
 
-public class ProcessorList {
+public class StructureProcessorList {
     private final List<StructureProcessor> list;
 
-    public ProcessorList(List<StructureProcessor> list) {
+    public StructureProcessorList(List<StructureProcessor> list) {
         this.list = list;
     }
 

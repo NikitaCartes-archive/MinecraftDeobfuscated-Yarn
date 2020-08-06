@@ -204,10 +204,10 @@ public class GeneratorOptions {
             case "flat": {
                 JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();
                 Dynamic<JsonObject> dynamic = new Dynamic<JsonObject>(JsonOps.INSTANCE, jsonObject);
-                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(registry, simpleRegistry, new FlatChunkGenerator(FlatChunkGeneratorConfig.CODEC.parse(dynamic).resultOrPartial(LOGGER::error).orElseGet(FlatChunkGeneratorConfig::getDefaultConfig))));
+                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(registry, simpleRegistry, new FlatChunkGenerator(FlatChunkGeneratorConfig.CODEC.parse(dynamic).resultOrPartial(LOGGER::error).orElseGet(() -> FlatChunkGeneratorConfig.getDefaultConfig(registry2)))));
             }
             case "debug_all_block_states": {
-                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(registry, simpleRegistry, DebugChunkGenerator.INSTANCE));
+                return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(registry, simpleRegistry, new DebugChunkGenerator(registry2)));
             }
             case "amplified": {
                 return new GeneratorOptions(l, bl, false, GeneratorOptions.method_28608(registry, simpleRegistry, new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry2), l, () -> registry3.method_31140(ChunkGeneratorSettings.AMPLIFIED))));

@@ -38,6 +38,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
@@ -231,7 +232,7 @@ public class StructureTestUtil {
 
     private static void method_22368(int altitude, BlockPos pos, ServerWorld world) {
         BlockState blockState = null;
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig();
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(world.getRegistryManager().get(Registry.BIOME_KEY));
         if (flatChunkGeneratorConfig instanceof FlatChunkGeneratorConfig) {
             BlockState[] blockStates = flatChunkGeneratorConfig.getLayerBlocks();
             if (pos.getY() < altitude && pos.getY() <= blockStates.length) {

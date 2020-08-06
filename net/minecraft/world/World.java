@@ -105,30 +105,28 @@ AutoCloseable {
     private final WorldBorder border;
     private final BiomeAccess biomeAccess;
     private final RegistryKey<World> registryKey;
-    private final RegistryKey<DimensionType> dimensionRegistryKey;
 
-    protected World(MutableWorldProperties properties, RegistryKey<World> registryKey, RegistryKey<DimensionType> dimensionRegistryKey, final DimensionType dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
-        this.profiler = profiler;
+    protected World(MutableWorldProperties properties, RegistryKey<World> registryKey, final DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l) {
+        this.profiler = supplier;
         this.properties = properties;
-        this.dimension = dimension;
+        this.dimension = dimensionType;
         this.registryKey = registryKey;
-        this.dimensionRegistryKey = dimensionRegistryKey;
-        this.isClient = isClient;
-        this.border = dimension.method_31110() != 1.0 ? new WorldBorder(){
+        this.isClient = bl;
+        this.border = dimensionType.method_31110() != 1.0 ? new WorldBorder(){
 
             @Override
             public double getCenterX() {
-                return super.getCenterX() / dimension.method_31110();
+                return super.getCenterX() / dimensionType.method_31110();
             }
 
             @Override
             public double getCenterZ() {
-                return super.getCenterZ() / dimension.method_31110();
+                return super.getCenterZ() / dimensionType.method_31110();
             }
         } : new WorldBorder();
         this.thread = Thread.currentThread();
-        this.biomeAccess = new BiomeAccess(this, seed, dimension.getBiomeAccessType());
-        this.debugWorld = debugWorld;
+        this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
+        this.debugWorld = bl2;
     }
 
     @Override
@@ -201,7 +199,7 @@ AutoCloseable {
         BlockState blockState = worldChunk.setBlockState(pos, state, (flags & 0x40) != 0);
         if (blockState != null) {
             BlockState blockState2 = this.getBlockState(pos);
-            if (blockState2 != blockState && (blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos) || blockState2.getLuminance() != blockState.getLuminance() || blockState2.hasSidedTransparency() || blockState.hasSidedTransparency())) {
+            if ((flags & 0x80) == 0 && blockState2 != blockState && (blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos) || blockState2.getLuminance() != blockState.getLuminance() || blockState2.hasSidedTransparency() || blockState.hasSidedTransparency())) {
                 this.getProfiler().push("queueCheckLight");
                 this.getChunkManager().getLightingProvider().checkBlock(pos);
                 this.getProfiler().pop();
@@ -953,10 +951,6 @@ AutoCloseable {
     @Override
     public DimensionType getDimension() {
         return this.dimension;
-    }
-
-    public RegistryKey<DimensionType> getDimensionRegistryKey() {
-        return this.dimensionRegistryKey;
     }
 
     public RegistryKey<World> getRegistryKey() {

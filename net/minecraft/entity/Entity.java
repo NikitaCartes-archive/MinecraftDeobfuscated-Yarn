@@ -1225,6 +1225,11 @@ CommandOutput {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public Vec3d method_31166(float f) {
+        return this.getCameraPosVec(f);
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public final Vec3d method_30950(float f) {
         double d = MathHelper.lerp((double)f, this.prevX, this.getX());
         double e = MathHelper.lerp((double)f, this.prevY, this.getY());
