@@ -41,7 +41,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class SlimeEntity extends MobEntity implements Monster {
@@ -276,7 +276,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (Objects.equals(world.method_31081(pos), Optional.of(Biomes.SWAMP))
+			if (Objects.equals(world.method_31081(pos), Optional.of(BuiltInBiomes.SWAMP))
 				&& pos.getY() > 50
 				&& pos.getY() < 70
 				&& random.nextFloat() < 0.5F

@@ -68,7 +68,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class DolphinEntity extends WaterCreatureEntity {
@@ -349,7 +349,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	public static boolean canSpawn(EntityType<DolphinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (pos.getY() > 45 && pos.getY() < world.getSeaLevel()) {
 			Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
-			return (!Objects.equals(optional, Optional.of(Biomes.OCEAN)) || !Objects.equals(optional, Optional.of(Biomes.DEEP_OCEAN)))
+			return (!Objects.equals(optional, Optional.of(BuiltInBiomes.OCEAN)) || !Objects.equals(optional, Optional.of(BuiltInBiomes.DEEP_OCEAN)))
 				&& world.getFluidState(pos).isIn(FluidTags.WATER);
 		} else {
 			return false;

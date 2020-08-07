@@ -41,7 +41,7 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.createButton = this.addButton(
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 17, 97, 20, new TranslatableText("mco.create.world"), buttonWidget -> this.createWorld())
 		);
@@ -63,7 +63,7 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

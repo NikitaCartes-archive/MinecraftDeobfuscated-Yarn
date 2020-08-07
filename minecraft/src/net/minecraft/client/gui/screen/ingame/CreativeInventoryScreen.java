@@ -236,7 +236,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	protected void init() {
 		if (this.client.interactionManager.hasCreativeInventory()) {
 			super.init();
-			this.client.keyboard.enableRepeatEvents(true);
+			this.client.keyboard.setRepeatEvents(true);
 			this.searchBox = new TextFieldWidget(this.textRenderer, this.x + 82, this.y + 6, 80, 9, new TranslatableText("itemGroup.search"));
 			this.searchBox.setMaxLength(50);
 			this.searchBox.setHasBorder(false);
@@ -271,7 +271,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			this.client.player.playerScreenHandler.removeListener(this.listener);
 		}
 
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override
@@ -626,7 +626,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				list2.add(1, itemGroup.getTranslationKey().shallowCopy().formatted(Formatting.BLUE));
 			}
 
-			this.method_30901(matrices, list2, x, y);
+			this.renderTooltip(matrices, list2, x, y);
 		} else {
 			super.renderTooltip(matrices, stack, x, y);
 		}
@@ -882,13 +882,13 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		@Override
-		public int getMaxStackAmount() {
-			return this.slot.getMaxStackAmount();
+		public int getMaxItemCount() {
+			return this.slot.getMaxItemCount();
 		}
 
 		@Override
-		public int getMaxStackAmount(ItemStack stack) {
-			return this.slot.getMaxStackAmount(stack);
+		public int getMaxItemCount(ItemStack stack) {
+			return this.slot.getMaxItemCount(stack);
 		}
 
 		@Nullable

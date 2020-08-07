@@ -161,7 +161,7 @@ public class DefaultBiomeCreator {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, parrotWeight, 1, parrotMaxGroupSize))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, ocelotMaxGroupSize))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 1, 1, 2));
-		builder.method_31083();
+		builder.playerSpawnFriendly();
 		return createJungleFeatures(depth, scale, 0.9F, false, false, false, builder);
 	}
 
@@ -319,7 +319,7 @@ public class DefaultBiomeCreator {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addPlainsMobs(builder);
 		if (!bl) {
-			builder.method_31083();
+			builder.playerSpawnFriendly();
 		}
 
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
@@ -805,7 +805,7 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createNormalForest(float depth, float scale) {
-		SpawnSettings.Builder builder = method_31069().spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4)).method_31083();
+		SpawnSettings.Builder builder = method_31069().spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4)).playerSpawnFriendly();
 		return createForest(depth, scale, false, builder);
 	}
 
@@ -821,7 +821,7 @@ public class DefaultBiomeCreator {
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
 		if (!bl && !bl2) {
-			builder.method_31083();
+			builder.playerSpawnFriendly();
 		}
 
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);

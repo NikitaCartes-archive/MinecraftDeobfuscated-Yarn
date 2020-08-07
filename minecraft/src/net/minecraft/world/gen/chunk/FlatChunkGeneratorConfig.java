@@ -13,15 +13,14 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5504;
-import net.minecraft.class_5505;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -38,15 +37,15 @@ public class FlatChunkGeneratorConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.<FlatChunkGeneratorConfig>create(
 			instance -> instance.group(
-						class_5505.method_31148(Registry.BIOME_KEY).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_26748),
+						RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_26748),
 						StructuresConfig.CODEC.fieldOf("structures").forGetter(FlatChunkGeneratorConfig::getConfig),
 						FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers").forGetter(FlatChunkGeneratorConfig::getLayers),
 						Codec.BOOL.fieldOf("lakes").orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24977),
 						Codec.BOOL.fieldOf("features").orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.field_24976),
 						Biome.REGISTRY_CODEC
-							.fieldOf("biome")
-							.orElseGet(Util.method_29188("Unknown biome, defaulting to plains", LOGGER::error), () -> () -> class_5504.field_26734)
-							.forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biome)
+							.optionalFieldOf("biome")
+							.orElseGet(Optional::empty)
+							.forGetter(flatChunkGeneratorConfig -> Optional.of(flatChunkGeneratorConfig.biome))
 					)
 					.apply(instance, FlatChunkGeneratorConfig::new)
 		)
@@ -74,14 +73,14 @@ public class FlatChunkGeneratorConfig {
 	private final Registry<Biome> field_26748;
 	private final StructuresConfig config;
 	private final List<FlatChunkGeneratorLayer> layers = Lists.<FlatChunkGeneratorLayer>newArrayList();
-	private Supplier<Biome> biome = () -> class_5504.field_26734;
+	private Supplier<Biome> biome;
 	private final BlockState[] layerBlocks = new BlockState[256];
 	private boolean hasNoTerrain;
 	private boolean field_24976 = false;
 	private boolean field_24977 = false;
 
 	public FlatChunkGeneratorConfig(
-		Registry<Biome> registry, StructuresConfig structuresConfig, List<FlatChunkGeneratorLayer> list, boolean bl, boolean bl2, Supplier<Biome> supplier
+		Registry<Biome> registry, StructuresConfig structuresConfig, List<FlatChunkGeneratorLayer> list, boolean bl, boolean bl2, Optional<Supplier<Biome>> optional
 	) {
 		this(structuresConfig, registry);
 		if (bl) {
@@ -94,12 +93,18 @@ public class FlatChunkGeneratorConfig {
 
 		this.layers.addAll(list);
 		this.updateLayerBlocks();
-		this.biome = supplier;
+		if (!optional.isPresent()) {
+			LOGGER.error("Unknown biome, defaulting to plains");
+			this.biome = () -> registry.method_31140(BuiltInBiomes.PLAINS);
+		} else {
+			this.biome = (Supplier<Biome>)optional.get();
+		}
 	}
 
 	public FlatChunkGeneratorConfig(StructuresConfig structuresConfig, Registry<Biome> registry) {
 		this.field_26748 = registry;
 		this.config = structuresConfig;
+		this.biome = () -> registry.method_31140(BuiltInBiomes.PLAINS);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -116,7 +121,7 @@ public class FlatChunkGeneratorConfig {
 			flatChunkGeneratorConfig.updateLayerBlocks();
 		}
 
-		flatChunkGeneratorConfig.setBiome((Biome)this.biome.get());
+		flatChunkGeneratorConfig.setBiome(this.biome);
 		if (this.field_24976) {
 			flatChunkGeneratorConfig.method_28911();
 		}
@@ -149,7 +154,7 @@ public class FlatChunkGeneratorConfig {
 			builder.structureFeature(generationSettings.method_30978((ConfiguredStructureFeature<?, ?>)STRUCTURE_TO_FEATURES.get(entry.getKey())));
 		}
 
-		boolean bl = (!this.hasNoTerrain || this.field_26748.getKey(biome).equals(Optional.of(Biomes.THE_VOID))) && this.field_24976;
+		boolean bl = (!this.hasNoTerrain || this.field_26748.getKey(biome).equals(Optional.of(BuiltInBiomes.THE_VOID))) && this.field_24976;
 		if (bl) {
 			List<List<Supplier<ConfiguredFeature<?, ?>>>> list = generationSettings.getFeatures();
 
@@ -193,8 +198,9 @@ public class FlatChunkGeneratorConfig {
 		return (Biome)this.biome.get();
 	}
 
-	public void setBiome(Biome biome) {
-		this.biome = () -> biome;
+	@Environment(EnvType.CLIENT)
+	public void setBiome(Supplier<Biome> supplier) {
+		this.biome = supplier;
 	}
 
 	public List<FlatChunkGeneratorLayer> getLayers() {
@@ -235,7 +241,7 @@ public class FlatChunkGeneratorConfig {
 			)
 		);
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, registry);
-		flatChunkGeneratorConfig.setBiome(class_5504.field_26734);
+		flatChunkGeneratorConfig.biome = () -> registry.method_31140(BuiltInBiomes.PLAINS);
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(2, Blocks.DIRT));
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK));

@@ -50,7 +50,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 
 public class PolarBearEntity extends AnimalEntity implements Angerable {
 	private static final TrackedData<Boolean> WARNING = DataTracker.registerData(PolarBearEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -102,7 +102,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 
 	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
-		return !Objects.equals(optional, Optional.of(Biomes.FROZEN_OCEAN)) && !Objects.equals(optional, Optional.of(Biomes.DEEP_FROZEN_OCEAN))
+		return !Objects.equals(optional, Optional.of(BuiltInBiomes.FROZEN_OCEAN)) && !Objects.equals(optional, Optional.of(BuiltInBiomes.DEEP_FROZEN_OCEAN))
 			? isValidNaturalSpawn(type, world, spawnReason, pos, random)
 			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.down()).isOf(Blocks.ICE);
 	}

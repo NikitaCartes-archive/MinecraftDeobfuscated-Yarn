@@ -102,16 +102,16 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.dimension = dimensionType;
 		this.registryKey = registryKey;
 		this.isClient = bl;
-		if (dimensionType.method_31110() != 1.0) {
+		if (dimensionType.getCoordinateScale() != 1.0) {
 			this.border = new WorldBorder() {
 				@Override
 				public double getCenterX() {
-					return super.getCenterX() / dimensionType.method_31110();
+					return super.getCenterX() / dimensionType.getCoordinateScale();
 				}
 
 				@Override
 				public double getCenterZ() {
-					return super.getCenterZ() / dimensionType.method_31110();
+					return super.getCenterZ() / dimensionType.getCoordinateScale();
 				}
 			};
 		} else {

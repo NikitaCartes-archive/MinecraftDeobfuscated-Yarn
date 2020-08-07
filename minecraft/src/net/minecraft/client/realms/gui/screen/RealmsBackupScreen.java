@@ -63,7 +63,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.backupObjectSelectionList = new RealmsBackupScreen.BackupObjectSelectionList();
 		if (lastScrollPosition != -1) {
 			this.backupObjectSelectionList.setScrollAmount((double)lastScrollPosition);

@@ -78,6 +78,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
@@ -484,16 +486,28 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			this.particlesFramebuffer = framebuffer3;
 			this.weatherFramebuffer = framebuffer4;
 			this.cloudsFramebuffer = framebuffer5;
-		} catch (Exception var8) {
-			String string = var8 instanceof JsonSyntaxException ? "parse" : "load";
+		} catch (Exception var9) {
+			String string = var9 instanceof JsonSyntaxException ? "parse" : "load";
 			String string2 = "Failed to " + string + " shader: " + identifier;
-			WorldRenderer.ShaderException shaderException = new WorldRenderer.ShaderException(string2, var8);
-			CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, shaderException));
-			this.client.options.graphicsMode = GraphicsMode.FANCY;
-			this.client.options.write();
-			LOGGER.fatal(string2, (Throwable)shaderException);
-			this.client.cleanUpAfterCrash();
-			MinecraftClient.printCrashReport(crashReport);
+			WorldRenderer.ShaderException shaderException = new WorldRenderer.ShaderException(string2, var9);
+			if (this.client.getResourcePackManager().getEnabledNames().size() > 1) {
+				Text text;
+				try {
+					text = new LiteralText(this.client.getResourceManager().getResource(identifier).getResourcePackName());
+				} catch (IOException var8) {
+					text = null;
+				}
+
+				this.client.options.graphicsMode = GraphicsMode.FANCY;
+				this.client.method_31186(shaderException, text);
+			} else {
+				CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, shaderException));
+				this.client.options.graphicsMode = GraphicsMode.FANCY;
+				this.client.options.write();
+				LOGGER.fatal(string2, (Throwable)shaderException);
+				this.client.cleanUpAfterCrash();
+				MinecraftClient.printCrashReport(crashReport);
+			}
 		}
 	}
 
@@ -2365,10 +2379,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public void addParticle(
-		ParticleEffect parameters, boolean shouldAlwaysSpawn, boolean isImportant, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+		ParticleEffect parameters, boolean shouldAlwaysSpawn, boolean important, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		try {
-			this.spawnParticle(parameters, shouldAlwaysSpawn, isImportant, x, y, z, velocityX, velocityY, velocityZ);
+			this.spawnParticle(parameters, shouldAlwaysSpawn, important, x, y, z, velocityX, velocityY, velocityZ);
 		} catch (Throwable var19) {
 			CrashReport crashReport = CrashReport.create(var19, "Exception while adding particle");
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");

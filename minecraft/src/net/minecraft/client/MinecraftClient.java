@@ -313,7 +313,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private ServerInfo currentServerEntry;
 	@Nullable
 	private ClientConnection connection;
-	private boolean isIntegratedServerRunning;
+	private boolean integratedServerRunning;
 	@Nullable
 	public Entity cameraEntity;
 	@Nullable
@@ -557,18 +557,22 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				text = null;
 			}
 
-			LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", throwable);
-			this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
-			this.options.resourcePacks.clear();
-			this.options.incompatibleResourcePacks.clear();
-			this.options.write();
-			this.reloadResources().thenRun(() -> {
-				ToastManager toastManager = this.getToastManager();
-				SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), text);
-			});
+			this.method_31186(throwable, text);
 		} else {
 			Util.throwUnchecked(throwable);
 		}
+	}
+
+	public void method_31186(Throwable throwable, @Nullable Text text) {
+		LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", throwable);
+		this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
+		this.options.resourcePacks.clear();
+		this.options.incompatibleResourcePacks.clear();
+		this.options.write();
+		this.reloadResources().thenRun(() -> {
+			ToastManager toastManager = this.getToastManager();
+			SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), text);
+		});
 	}
 
 	public void run() {
@@ -1075,7 +1079,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		try {
 			System.gc();
-			if (this.isIntegratedServerRunning && this.server != null) {
+			if (this.integratedServerRunning && this.server != null) {
 				this.server.stop(true);
 			}
 
@@ -1700,7 +1704,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							}
 						)
 				);
-				this.isIntegratedServerRunning = true;
+				this.integratedServerRunning = true;
 			} catch (Throwable var19) {
 				CrashReport crashReport = CrashReport.create(var19, "Starting integrated server");
 				CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
@@ -1835,7 +1839,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.reset(progressScreen);
 		this.world = world;
 		this.setWorld(world);
-		if (!this.isIntegratedServerRunning) {
+		if (!this.integratedServerRunning) {
 			AuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
 			MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
 			GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
@@ -1877,7 +1881,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.builtinPackProvider.clear();
 			this.inGameHud.clear();
 			this.currentServerEntry = null;
-			this.isIntegratedServerRunning = false;
+			this.integratedServerRunning = false;
 			this.game.onLeaveGameSession();
 		}
 
@@ -2199,11 +2203,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean isInSingleplayer() {
-		return this.isIntegratedServerRunning;
+		return this.integratedServerRunning;
 	}
 
 	public boolean isIntegratedServerRunning() {
-		return this.isIntegratedServerRunning && this.server != null;
+		return this.integratedServerRunning && this.server != null;
 	}
 
 	/**

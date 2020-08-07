@@ -117,6 +117,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 			}
 
 			this.field_26683.removeInt(object2);
+			this.field_26731.remove(object2);
 		}
 
 		return this.method_31051(i, registryKey, object, lifecycle, false);

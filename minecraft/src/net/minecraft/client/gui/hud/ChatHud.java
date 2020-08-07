@@ -248,7 +248,7 @@ public class ChatHud extends DrawableHelper {
 					int j = (int)(e / 9.0 + (double)this.scrolledLines);
 					if (j >= 0 && j < this.visibleMessages.size()) {
 						ChatHudLine<OrderedText> chatHudLine = (ChatHudLine<OrderedText>)this.visibleMessages.get(j);
-						return this.client.textRenderer.getTextHandler().method_30876(chatHudLine.getText(), (int)d);
+						return this.client.textRenderer.getTextHandler().getStyleAt(chatHudLine.getText(), (int)d);
 					}
 				}
 

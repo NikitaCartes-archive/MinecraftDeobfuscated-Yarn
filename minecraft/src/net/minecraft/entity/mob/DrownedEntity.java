@@ -51,7 +51,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 
 public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	private boolean targetingUnderwater;
@@ -100,7 +100,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		boolean bl = serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL
 			&& isSpawnDark(serverWorldAccess, pos, random)
 			&& (spawnReason == SpawnReason.SPAWNER || serverWorldAccess.getFluidState(pos).isIn(FluidTags.WATER));
-		return !Objects.equals(optional, Optional.of(Biomes.RIVER)) && !Objects.equals(optional, Optional.of(Biomes.FROZEN_RIVER))
+		return !Objects.equals(optional, Optional.of(BuiltInBiomes.RIVER)) && !Objects.equals(optional, Optional.of(BuiltInBiomes.FROZEN_RIVER))
 			? random.nextInt(40) == 0 && isValidSpawnDepth(serverWorldAccess, pos) && bl
 			: random.nextInt(15) == 0 && bl;
 	}

@@ -51,7 +51,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public final class NoiseChunkGenerator extends ChunkGenerator {
 	public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BiomeSource.field_24713.fieldOf("biome_source").forGetter(noiseChunkGenerator -> noiseChunkGenerator.biomeSource),
+					BiomeSource.CODEC.fieldOf("biome_source").forGetter(noiseChunkGenerator -> noiseChunkGenerator.biomeSource),
 					Codec.LONG.fieldOf("seed").stable().forGetter(noiseChunkGenerator -> noiseChunkGenerator.worldSeed),
 					ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(noiseChunkGenerator -> noiseChunkGenerator.settings)
 				)

@@ -72,7 +72,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			this.reset(narrow);
 		}
 
-		client.keyboard.enableRepeatEvents(true);
+		client.keyboard.setRepeatEvents(true);
 	}
 
 	public void reset(boolean narrow) {
@@ -128,7 +128,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	public void close() {
 		this.searchField = null;
 		this.currentTab = null;
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	public int findLeftEdge(boolean narrow, int width, int parentWidth) {
@@ -288,7 +288,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 
 		if (itemStack != null && this.client.currentScreen != null) {
-			this.client.currentScreen.method_30901(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
+			this.client.currentScreen.renderTooltip(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
 		}
 	}
 

@@ -86,6 +86,7 @@ public final class Biome {
 				)
 	);
 	public static final Codec<Supplier<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
+	public static final Codec<List<Supplier<Biome>>> field_26750 = RegistryElementCodec.method_31194(Registry.BIOME_KEY, CODEC);
 	private final Map<Integer, List<StructureFeature<?>>> field_26634 = (Map<Integer, List<StructureFeature<?>>>)Registry.STRUCTURE_FEATURE
 		.stream()
 		.collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));

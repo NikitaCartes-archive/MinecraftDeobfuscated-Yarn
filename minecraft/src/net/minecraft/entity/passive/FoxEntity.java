@@ -78,7 +78,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 
 public class FoxEntity extends AnimalEntity {
 	private static final TrackedData<Integer> TYPE = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -1429,15 +1429,15 @@ public class FoxEntity extends AnimalEntity {
 		RED(
 			0,
 			"red",
-			Biomes.TAIGA,
-			Biomes.TAIGA_HILLS,
-			Biomes.TAIGA_MOUNTAINS,
-			Biomes.GIANT_TREE_TAIGA,
-			Biomes.GIANT_SPRUCE_TAIGA,
-			Biomes.GIANT_TREE_TAIGA_HILLS,
-			Biomes.GIANT_SPRUCE_TAIGA_HILLS
+			BuiltInBiomes.TAIGA,
+			BuiltInBiomes.TAIGA_HILLS,
+			BuiltInBiomes.TAIGA_MOUNTAINS,
+			BuiltInBiomes.GIANT_TREE_TAIGA,
+			BuiltInBiomes.GIANT_SPRUCE_TAIGA,
+			BuiltInBiomes.GIANT_TREE_TAIGA_HILLS,
+			BuiltInBiomes.GIANT_SPRUCE_TAIGA_HILLS
 		),
-		SNOW(1, "snow", Biomes.SNOWY_TAIGA, Biomes.SNOWY_TAIGA_HILLS, Biomes.SNOWY_TAIGA_MOUNTAINS);
+		SNOW(1, "snow", BuiltInBiomes.SNOWY_TAIGA, BuiltInBiomes.SNOWY_TAIGA_HILLS, BuiltInBiomes.SNOWY_TAIGA_MOUNTAINS);
 
 		private static final FoxEntity.Type[] TYPES = (FoxEntity.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(FoxEntity.Type::getId))

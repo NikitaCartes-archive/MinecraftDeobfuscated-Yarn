@@ -12,16 +12,16 @@ public class BiomeParticleConfig {
 	public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					ParticleTypes.field_25125.fieldOf("options").forGetter(biomeParticleConfig -> biomeParticleConfig.particle),
-					Codec.FLOAT.fieldOf("probability").forGetter(biomeParticleConfig -> biomeParticleConfig.chance)
+					Codec.FLOAT.fieldOf("probability").forGetter(biomeParticleConfig -> biomeParticleConfig.probability)
 				)
 				.apply(instance, BiomeParticleConfig::new)
 	);
 	private final ParticleEffect particle;
-	private final float chance;
+	private final float probability;
 
-	public BiomeParticleConfig(ParticleEffect particle, float f) {
+	public BiomeParticleConfig(ParticleEffect particle, float probability) {
 		this.particle = particle;
-		this.chance = f;
+		this.probability = probability;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -31,6 +31,6 @@ public class BiomeParticleConfig {
 
 	@Environment(EnvType.CLIENT)
 	public boolean shouldAddParticle(Random random) {
-		return random.nextFloat() <= this.chance;
+		return random.nextFloat() <= this.probability;
 	}
 }

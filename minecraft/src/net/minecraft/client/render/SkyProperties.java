@@ -2,27 +2,24 @@ package net.minecraft.client.render;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public abstract class SkyProperties {
-	private static final Object2ObjectMap<RegistryKey<DimensionType>, SkyProperties> BY_DIMENSION_TYPE = Util.make(
-		new Object2ObjectArrayMap<>(), object2ObjectArrayMap -> {
-			SkyProperties.Overworld overworld = new SkyProperties.Overworld();
-			object2ObjectArrayMap.defaultReturnValue(overworld);
-			object2ObjectArrayMap.put(DimensionType.OVERWORLD_REGISTRY_KEY, overworld);
-			object2ObjectArrayMap.put(DimensionType.THE_NETHER_REGISTRY_KEY, new SkyProperties.Nether());
-			object2ObjectArrayMap.put(DimensionType.THE_END_REGISTRY_KEY, new SkyProperties.End());
-		}
-	);
+	private static final Object2ObjectMap<Identifier, SkyProperties> BY_IDENTIFIER = Util.make(new Object2ObjectArrayMap<>(), object2ObjectArrayMap -> {
+		SkyProperties.Overworld overworld = new SkyProperties.Overworld();
+		object2ObjectArrayMap.defaultReturnValue(overworld);
+		object2ObjectArrayMap.put(DimensionType.OVERWORLD_ID, overworld);
+		object2ObjectArrayMap.put(DimensionType.THE_NETHER_ID, new SkyProperties.Nether());
+		object2ObjectArrayMap.put(DimensionType.THE_END_ID, new SkyProperties.End());
+	});
 	private final float[] rgba = new float[4];
 	private final float cloudsHeight;
 	private final boolean alternateSkyColor;
@@ -38,8 +35,8 @@ public abstract class SkyProperties {
 		this.darkened = darkened;
 	}
 
-	public static SkyProperties byDimensionType(Optional<RegistryKey<DimensionType>> optional) {
-		return BY_DIMENSION_TYPE.get(optional.orElse(DimensionType.OVERWORLD_REGISTRY_KEY));
+	public static SkyProperties byDimensionType(DimensionType dimensionType) {
+		return BY_IDENTIFIER.get(dimensionType.getSkyProperties());
 	}
 
 	@Nullable

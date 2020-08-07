@@ -12,7 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -87,7 +87,7 @@ public class WanderingTraderManager implements Spawner {
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.getNearbySpawnPos(serverWorld, blockPos2, 48);
 			if (blockPos3 != null && this.doesNotSuffocateAt(serverWorld, blockPos3)) {
-				if (serverWorld.method_31081(blockPos3).equals(Optional.of(Biomes.THE_VOID))) {
+				if (serverWorld.method_31081(blockPos3).equals(Optional.of(BuiltInBiomes.THE_VOID))) {
 					return false;
 				}
 

@@ -46,7 +46,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class AbstractPackScreen extends Screen {
+public class PackScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.DARK_GRAY);
 	private static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");
@@ -54,20 +54,20 @@ public class AbstractPackScreen extends Screen {
 	private final ResourcePackOrganizer organizer;
 	private final Screen parent;
 	@Nullable
-	private AbstractPackScreen.DirectoryWatcher directoryWatcher;
+	private PackScreen.DirectoryWatcher directoryWatcher;
 	private long field_25788;
 	private PackListWidget availablePackList;
 	private PackListWidget selectedPackList;
-	private final File field_25474;
+	private final File file;
 	private ButtonWidget doneButton;
 	private final Map<String, Identifier> field_25789 = Maps.<String, Identifier>newHashMap();
 
-	public AbstractPackScreen(Screen screen, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> consumer, File file, Text text) {
-		super(text);
-		this.parent = screen;
-		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, resourcePackManager, consumer);
-		this.field_25474 = file;
-		this.directoryWatcher = AbstractPackScreen.DirectoryWatcher.create(file);
+	public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> consumer, File file, Text title) {
+		super(title);
+		this.parent = parent;
+		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, packManager, consumer);
+		this.file = file;
+		this.directoryWatcher = PackScreen.DirectoryWatcher.create(file);
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class AbstractPackScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("pack.openFolder"),
-				buttonWidget -> Util.getOperatingSystem().open(this.field_25474),
+				buttonWidget -> Util.getOperatingSystem().open(this.file),
 				(buttonWidget, matrixStack, i, j) -> this.renderTooltip(matrixStack, FOLDER_INFO, i, j)
 			)
 		);
@@ -118,7 +118,7 @@ public class AbstractPackScreen extends Screen {
 					this.field_25788 = 20L;
 				}
 			} catch (IOException var2) {
-				LOGGER.warn("Failed to poll for directory {} changes, stopping", this.field_25474);
+				LOGGER.warn("Failed to poll for directory {} changes, stopping", this.file);
 				this.closeDirectoryWatcher();
 			}
 		}
@@ -203,7 +203,7 @@ public class AbstractPackScreen extends Screen {
 		String string = (String)paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
 		this.client.openScreen(new ConfirmScreen(bl -> {
 			if (bl) {
-				method_29669(this.client, paths, this.field_25474.toPath());
+				method_29669(this.client, paths, this.file.toPath());
 				this.refresh();
 			}
 
@@ -299,11 +299,11 @@ public class AbstractPackScreen extends Screen {
 		}
 
 		@Nullable
-		public static AbstractPackScreen.DirectoryWatcher create(File file) {
+		public static PackScreen.DirectoryWatcher create(File file) {
 			try {
-				return new AbstractPackScreen.DirectoryWatcher(file);
+				return new PackScreen.DirectoryWatcher(file);
 			} catch (IOException var2) {
-				AbstractPackScreen.LOGGER.warn("Failed to initialize pack directory {} monitoring", file, var2);
+				PackScreen.LOGGER.warn("Failed to initialize pack directory {} monitoring", file, var2);
 				return null;
 			}
 		}

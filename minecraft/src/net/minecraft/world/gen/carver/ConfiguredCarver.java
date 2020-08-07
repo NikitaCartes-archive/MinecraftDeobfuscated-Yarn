@@ -2,6 +2,7 @@ package net.minecraft.world.gen.carver;
 
 import com.mojang.serialization.Codec;
 import java.util.BitSet;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -14,6 +15,9 @@ import net.minecraft.world.chunk.Chunk;
 public class ConfiguredCarver<WC extends CarverConfig> {
 	public static final Codec<ConfiguredCarver<?>> field_25832 = Registry.CARVER.dispatch(configuredCarver -> configuredCarver.carver, Carver::getCodec);
 	public static final Codec<Supplier<ConfiguredCarver<?>>> field_24828 = RegistryElementCodec.of(Registry.CONFIGURED_CARVER_WORLDGEN, field_25832);
+	public static final Codec<List<Supplier<ConfiguredCarver<?>>>> field_26755 = RegistryElementCodec.method_31194(
+		Registry.CONFIGURED_CARVER_WORLDGEN, field_25832
+	);
 	private final Carver<WC> carver;
 	private final WC config;
 

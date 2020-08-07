@@ -160,7 +160,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 		List<OrderedText> list = method_31048(this.list, mouseX, mouseY);
 		if (list != null) {
-			this.renderTooltip(matrices, list, mouseX, mouseY);
+			this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
 		}
 	}
 }

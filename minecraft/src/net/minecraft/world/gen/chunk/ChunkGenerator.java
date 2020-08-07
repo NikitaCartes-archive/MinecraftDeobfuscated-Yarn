@@ -52,7 +52,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
  * Biome placement starts here, however all vanilla and most modded chunk generators delegate this to a {@linkplain net.minecraft.world.biome.source.BiomeSource biome source}.
  */
 public abstract class ChunkGenerator {
-	public static final Codec<ChunkGenerator> field_24746 = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::getCodec, Function.identity());
+	public static final Codec<ChunkGenerator> CODEC = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::getCodec, Function.identity());
 	protected final BiomeSource biomeSource;
 	protected final BiomeSource field_24747;
 	private final StructuresConfig config;
@@ -339,7 +339,7 @@ public abstract class ChunkGenerator {
 
 	static {
 		Registry.register(Registry.CHUNK_GENERATOR, "noise", NoiseChunkGenerator.CODEC);
-		Registry.register(Registry.CHUNK_GENERATOR, "flat", FlatChunkGenerator.field_24769);
-		Registry.register(Registry.CHUNK_GENERATOR, "debug", DebugChunkGenerator.field_24768);
+		Registry.register(Registry.CHUNK_GENERATOR, "flat", FlatChunkGenerator.CODEC);
+		Registry.register(Registry.CHUNK_GENERATOR, "debug", DebugChunkGenerator.CODEC);
 	}
 }

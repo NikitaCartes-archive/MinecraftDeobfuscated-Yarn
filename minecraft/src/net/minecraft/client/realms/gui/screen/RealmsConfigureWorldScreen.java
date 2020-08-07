@@ -72,7 +72,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 
 		this.left_x = this.width / 2 - 187;
 		this.right_x = this.width / 2 + 190;
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		this.playersButton = this.addButton(
 			new ButtonWidget(
 				this.buttonCenter(0, 3),
@@ -256,7 +256,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

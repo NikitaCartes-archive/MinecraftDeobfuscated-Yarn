@@ -34,7 +34,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5505;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
@@ -51,6 +50,7 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
@@ -118,17 +118,17 @@ public class LevelStorage {
 			(GeneratorOptions)dataResult.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error))
 				.orElseGet(
 					() -> {
-						Registry<DimensionType> registry = (Registry<DimensionType>)class_5505.method_31148(Registry.DIMENSION_TYPE_KEY)
+						Registry<DimensionType> registry = (Registry<DimensionType>)RegistryLookupCodec.of(Registry.DIMENSION_TYPE_KEY)
 							.codec()
 							.parse(dynamic3)
 							.resultOrPartial(Util.method_29188("Dimension type registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get dimension registry"));
-						Registry<Biome> registry2 = (Registry<Biome>)class_5505.method_31148(Registry.BIOME_KEY)
+						Registry<Biome> registry2 = (Registry<Biome>)RegistryLookupCodec.of(Registry.BIOME_KEY)
 							.codec()
 							.parse(dynamic3)
 							.resultOrPartial(Util.method_29188("Biome registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get biome registry"));
-						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)class_5505.method_31148(Registry.NOISE_SETTINGS_WORLDGEN)
+						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)RegistryLookupCodec.of(Registry.NOISE_SETTINGS_WORLDGEN)
 							.codec()
 							.parse(dynamic3)
 							.resultOrPartial(Util.method_29188("Noise settings registry: ", LOGGER::error))

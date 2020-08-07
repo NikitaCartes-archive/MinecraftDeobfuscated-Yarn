@@ -134,7 +134,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		@Override
-		public int getMaxStackAmount() {
+		public int getMaxItemCount() {
 			return 64;
 		}
 	}
@@ -150,7 +150,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		@Override
-		public int getMaxStackAmount() {
+		public int getMaxItemCount() {
 			return 64;
 		}
 	}
@@ -166,7 +166,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		@Override
-		public int getMaxStackAmount() {
+		public int getMaxItemCount() {
 			return 1;
 		}
 

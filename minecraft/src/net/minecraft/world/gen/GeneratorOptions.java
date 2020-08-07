@@ -49,7 +49,7 @@ public class GeneratorOptions {
 						SimpleRegistry.createCodec(Registry.DIMENSION_OPTIONS, Lifecycle.stable(), DimensionOptions.CODEC)
 							.xmap(DimensionOptions::method_29569, Function.identity())
 							.fieldOf("dimensions")
-							.forGetter(GeneratorOptions::getDimensionMap),
+							.forGetter(GeneratorOptions::getDimensions),
 						Codec.STRING.optionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)
 					)
 					.apply(instance, instance.stable(GeneratorOptions::new))
@@ -113,8 +113,12 @@ public class GeneratorOptions {
 		);
 	}
 
-	public static NoiseChunkGenerator createOverworldGenerator(Registry<Biome> registry, Registry<ChunkGeneratorSettings> registry2, long l) {
-		return new NoiseChunkGenerator(new VanillaLayeredBiomeSource(l, false, false, registry), l, () -> registry2.method_31140(ChunkGeneratorSettings.OVERWORLD));
+	public static NoiseChunkGenerator createOverworldGenerator(
+		Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed
+	) {
+		return new NoiseChunkGenerator(
+			new VanillaLayeredBiomeSource(seed, false, false, biomeRegistry), seed, () -> chunkGeneratorSettingsRegistry.method_31140(ChunkGeneratorSettings.OVERWORLD)
+		);
 	}
 
 	public long getSeed() {
@@ -155,7 +159,7 @@ public class GeneratorOptions {
 		return simpleRegistry2;
 	}
 
-	public SimpleRegistry<DimensionOptions> getDimensionMap() {
+	public SimpleRegistry<DimensionOptions> getDimensions() {
 		return this.options;
 	}
 
@@ -169,7 +173,7 @@ public class GeneratorOptions {
 	}
 
 	public ImmutableSet<RegistryKey<World>> getWorlds() {
-		return (ImmutableSet<RegistryKey<World>>)this.getDimensionMap()
+		return (ImmutableSet<RegistryKey<World>>)this.getDimensions()
 			.getEntries()
 			.stream()
 			.map(entry -> RegistryKey.of(Registry.DIMENSION, ((RegistryKey)entry.getKey()).getValue()))

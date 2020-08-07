@@ -243,33 +243,33 @@ public class Keyboard {
 		}
 	}
 
-	private void copyBlock(BlockState blockState, BlockPos blockPos, @Nullable CompoundTag compoundTag) {
-		if (compoundTag != null) {
-			compoundTag.remove("x");
-			compoundTag.remove("y");
-			compoundTag.remove("z");
-			compoundTag.remove("id");
+	private void copyBlock(BlockState state, BlockPos pos, @Nullable CompoundTag tag) {
+		if (tag != null) {
+			tag.remove("x");
+			tag.remove("y");
+			tag.remove("z");
+			tag.remove("id");
 		}
 
-		StringBuilder stringBuilder = new StringBuilder(BlockArgumentParser.stringifyBlockState(blockState));
-		if (compoundTag != null) {
-			stringBuilder.append(compoundTag);
+		StringBuilder stringBuilder = new StringBuilder(BlockArgumentParser.stringifyBlockState(state));
+		if (tag != null) {
+			stringBuilder.append(tag);
 		}
 
-		String string = String.format(Locale.ROOT, "/setblock %d %d %d %s", blockPos.getX(), blockPos.getY(), blockPos.getZ(), stringBuilder);
+		String string = String.format(Locale.ROOT, "/setblock %d %d %d %s", pos.getX(), pos.getY(), pos.getZ(), stringBuilder);
 		this.setClipboard(string);
 	}
 
-	private void copyEntity(Identifier identifier, Vec3d vec3d, @Nullable CompoundTag compoundTag) {
+	private void copyEntity(Identifier id, Vec3d pos, @Nullable CompoundTag tag) {
 		String string2;
-		if (compoundTag != null) {
-			compoundTag.remove("UUID");
-			compoundTag.remove("Pos");
-			compoundTag.remove("Dimension");
-			String string = compoundTag.toText().getString();
-			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", identifier.toString(), vec3d.x, vec3d.y, vec3d.z, string);
+		if (tag != null) {
+			tag.remove("UUID");
+			tag.remove("Pos");
+			tag.remove("Dimension");
+			String string = tag.toText().getString();
+			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", id.toString(), pos.x, pos.y, pos.z, string);
 		} else {
-			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", identifier.toString(), vec3d.x, vec3d.y, vec3d.z);
+			string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", id.toString(), pos.x, pos.y, pos.z);
 		}
 
 		this.setClipboard(string2);
@@ -401,7 +401,7 @@ public class Keyboard {
 		}
 	}
 
-	public void enableRepeatEvents(boolean repeatEvents) {
+	public void setRepeatEvents(boolean repeatEvents) {
 		this.repeatEvents = repeatEvents;
 	}
 

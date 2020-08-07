@@ -131,7 +131,7 @@ public class DeathScreen extends Screen {
 			int i = this.client.textRenderer.getWidth(this.message);
 			int j = this.width / 2 - i / 2;
 			int k = this.width / 2 + i / 2;
-			return mouseX >= j && mouseX <= k ? this.client.textRenderer.getTextHandler().trimToWidth(this.message, mouseX - j) : null;
+			return mouseX >= j && mouseX <= k ? this.client.textRenderer.getTextHandler().getStyleAt(this.message, mouseX - j) : null;
 		}
 	}
 

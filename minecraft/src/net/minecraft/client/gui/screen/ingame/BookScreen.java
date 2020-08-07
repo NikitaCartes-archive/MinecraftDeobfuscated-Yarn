@@ -233,7 +233,7 @@ public class BookScreen extends Screen {
 					int l = j / 9;
 					if (l >= 0 && l < this.cachedPage.size()) {
 						OrderedText orderedText = (OrderedText)this.cachedPage.get(l);
-						return this.client.textRenderer.getTextHandler().method_30876(orderedText, i);
+						return this.client.textRenderer.getTextHandler().getStyleAt(orderedText, i);
 					} else {
 						return null;
 					}

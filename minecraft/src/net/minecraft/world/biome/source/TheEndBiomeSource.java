@@ -5,25 +5,25 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5505;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class TheEndBiomeSource extends BiomeSource {
-	public static final Codec<TheEndBiomeSource> field_24730 = RecordCodecBuilder.create(
+	public static final Codec<TheEndBiomeSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					class_5505.method_31148(Registry.BIOME_KEY).forGetter(theEndBiomeSource -> theEndBiomeSource.field_26699),
-					Codec.LONG.fieldOf("seed").stable().forGetter(theEndBiomeSource -> theEndBiomeSource.field_24731)
+					RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(theEndBiomeSource -> theEndBiomeSource.field_26699),
+					Codec.LONG.fieldOf("seed").stable().forGetter(theEndBiomeSource -> theEndBiomeSource.seed)
 				)
 				.apply(instance, instance.stable(TheEndBiomeSource::new))
 	);
 	private final SimplexNoiseSampler noise;
 	private final Registry<Biome> field_26699;
-	private final long field_24731;
+	private final long seed;
 	private final Biome field_26700;
 	private final Biome field_26701;
 	private final Biome field_26702;
@@ -34,31 +34,31 @@ public class TheEndBiomeSource extends BiomeSource {
 		this(
 			registry,
 			l,
-			registry.method_31140(Biomes.THE_END),
-			registry.method_31140(Biomes.END_HIGHLANDS),
-			registry.method_31140(Biomes.END_MIDLANDS),
-			registry.method_31140(Biomes.SMALL_END_ISLANDS),
-			registry.method_31140(Biomes.END_BARRENS)
+			registry.method_31140(BuiltInBiomes.THE_END),
+			registry.method_31140(BuiltInBiomes.END_HIGHLANDS),
+			registry.method_31140(BuiltInBiomes.END_MIDLANDS),
+			registry.method_31140(BuiltInBiomes.SMALL_END_ISLANDS),
+			registry.method_31140(BuiltInBiomes.END_BARRENS)
 		);
 	}
 
-	private TheEndBiomeSource(Registry<Biome> registry, long l, Biome biome, Biome biome2, Biome biome3, Biome biome4, Biome biome5) {
+	private TheEndBiomeSource(Registry<Biome> registry, long seed, Biome biome, Biome biome2, Biome biome3, Biome biome4, Biome biome5) {
 		super(ImmutableList.of(biome, biome2, biome3, biome4, biome5));
 		this.field_26699 = registry;
-		this.field_24731 = l;
+		this.seed = seed;
 		this.field_26700 = biome;
 		this.field_26701 = biome2;
 		this.field_26702 = biome3;
 		this.field_26703 = biome4;
 		this.field_26704 = biome5;
-		ChunkRandom chunkRandom = new ChunkRandom(l);
+		ChunkRandom chunkRandom = new ChunkRandom(seed);
 		chunkRandom.consume(17292);
 		this.noise = new SimplexNoiseSampler(chunkRandom);
 	}
 
 	@Override
-	protected Codec<? extends BiomeSource> method_28442() {
-		return field_24730;
+	protected Codec<? extends BiomeSource> getCodec() {
+		return CODEC;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -86,7 +86,7 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	public boolean method_28479(long l) {
-		return this.field_24731 == l;
+		return this.seed == l;
 	}
 
 	public static float getNoiseAt(SimplexNoiseSampler simplexNoiseSampler, int i, int j) {

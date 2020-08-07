@@ -191,7 +191,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	private void updateNeighborStates() {
-		this.getCachedState().method_30101(this.getWorld(), this.getPos(), 3);
+		this.getCachedState().updateNeighbors(this.getWorld(), this.getPos(), 3);
 	}
 
 	@Override

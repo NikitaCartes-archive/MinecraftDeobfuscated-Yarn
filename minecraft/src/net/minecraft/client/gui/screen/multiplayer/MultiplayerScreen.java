@@ -46,7 +46,7 @@ public class MultiplayerScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.client.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.setRepeatEvents(true);
 		if (this.initialized) {
 			this.serverListWidget.updateSize(this.width, this.height, 32, this.height - 64);
 		} else {
@@ -123,7 +123,7 @@ public class MultiplayerScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.setRepeatEvents(false);
 		if (this.lanServerDetector != null) {
 			this.lanServerDetector.interrupt();
 			this.lanServerDetector = null;
@@ -208,7 +208,7 @@ public class MultiplayerScreen extends Screen {
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.tooltipText != null) {
-			this.method_30901(matrices, this.tooltipText, mouseX, mouseY);
+			this.renderTooltip(matrices, this.tooltipText, mouseX, mouseY);
 		}
 	}
 

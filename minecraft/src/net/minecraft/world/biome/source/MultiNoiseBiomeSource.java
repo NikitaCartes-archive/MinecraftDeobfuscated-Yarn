@@ -20,13 +20,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5504;
-import net.minecraft.class_5505;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class MultiNoiseBiomeSource extends BiomeSource {
@@ -87,7 +87,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	}
 
 	private MultiNoiseBiomeSource(
-		long l,
+		long seed,
 		List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list,
 		MultiNoiseBiomeSource.class_5487 arg,
 		MultiNoiseBiomeSource.class_5487 arg2,
@@ -96,22 +96,22 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		Optional<Pair<Registry<Biome>, MultiNoiseBiomeSource.Preset>> optional
 	) {
 		super(list.stream().map(Pair::getSecond));
-		this.seed = l;
+		this.seed = seed;
 		this.field_24721 = optional;
 		this.field_26434 = arg;
 		this.field_26435 = arg2;
 		this.field_26436 = arg3;
 		this.field_26437 = arg4;
-		this.temperatureNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l), arg.method_30832(), arg.method_30834());
-		this.humidityNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 1L), arg2.method_30832(), arg2.method_30834());
-		this.altitudeNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 2L), arg3.method_30832(), arg3.method_30834());
-		this.weirdnessNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 3L), arg4.method_30832(), arg4.method_30834());
+		this.temperatureNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(seed), arg.method_30832(), arg.method_30834());
+		this.humidityNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(seed + 1L), arg2.method_30832(), arg2.method_30834());
+		this.altitudeNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(seed + 2L), arg3.method_30832(), arg3.method_30834());
+		this.weirdnessNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(seed + 3L), arg4.method_30832(), arg4.method_30834());
 		this.biomePoints = list;
 		this.threeDimensionalSampling = false;
 	}
 
 	@Override
-	protected Codec<? extends BiomeSource> method_28442() {
+	protected Codec<? extends BiomeSource> getCodec() {
 		return CODEC;
 	}
 
@@ -141,7 +141,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			.min(Comparator.comparing(pair -> ((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))
 			.map(Pair::getSecond)
 			.map(Supplier::get)
-			.orElse(class_5504.field_26735);
+			.orElse(Biomes.THE_VOID);
 	}
 
 	public boolean method_28462(long l) {
@@ -155,11 +155,11 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			(preset, registry, long_) -> new MultiNoiseBiomeSource(
 					long_,
 					ImmutableList.of(
-						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.method_31140(Biomes.NETHER_WASTES)),
-						Pair.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 0.0F), () -> registry.method_31140(Biomes.SOUL_SAND_VALLEY)),
-						Pair.of(new Biome.MixedNoisePoint(0.4F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.method_31140(Biomes.CRIMSON_FOREST)),
-						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.5F, 0.0F, 0.0F, 0.375F), () -> registry.method_31140(Biomes.WARPED_FOREST)),
-						Pair.of(new Biome.MixedNoisePoint(-0.5F, 0.0F, 0.0F, 0.0F, 0.175F), () -> registry.method_31140(Biomes.BASALT_DELTAS))
+						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.method_31140(BuiltInBiomes.NETHER_WASTES)),
+						Pair.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 0.0F), () -> registry.method_31140(BuiltInBiomes.SOUL_SAND_VALLEY)),
+						Pair.of(new Biome.MixedNoisePoint(0.4F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.method_31140(BuiltInBiomes.CRIMSON_FOREST)),
+						Pair.of(new Biome.MixedNoisePoint(0.0F, 0.5F, 0.0F, 0.0F, 0.375F), () -> registry.method_31140(BuiltInBiomes.WARPED_FOREST)),
+						Pair.of(new Biome.MixedNoisePoint(-0.5F, 0.0F, 0.0F, 0.0F, 0.175F), () -> registry.method_31140(BuiltInBiomes.BASALT_DELTAS))
 					),
 					Optional.of(Pair.of(registry, preset))
 				)
@@ -216,7 +216,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 							.fieldOf("preset")
 							.stable()
 							.forGetter(MultiNoiseBiomeSource.class_5502::method_31094),
-						class_5505.method_31148(Registry.BIOME_KEY).forGetter(MultiNoiseBiomeSource.class_5502::method_31098),
+						RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(MultiNoiseBiomeSource.class_5502::method_31098),
 						Codec.LONG.fieldOf("seed").stable().forGetter(MultiNoiseBiomeSource.class_5502::method_31100)
 					)
 					.apply(instance, instance.stable(MultiNoiseBiomeSource.class_5502::new))

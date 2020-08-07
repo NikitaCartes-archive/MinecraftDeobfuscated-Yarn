@@ -22,7 +22,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class BiomeSource implements BiomeAccess.Storage {
-	public static final Codec<BiomeSource> field_24713 = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::method_28442, Function.identity());
+	public static final Codec<BiomeSource> CODEC = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::getCodec, Function.identity());
 	protected final Map<StructureFeature<?>, Boolean> structureFeatures = Maps.<StructureFeature<?>, Boolean>newHashMap();
 	protected final Set<BlockState> topMaterials = Sets.<BlockState>newHashSet();
 	protected final List<Biome> biomes;
@@ -35,7 +35,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		this.biomes = biomes;
 	}
 
-	protected abstract Codec<? extends BiomeSource> method_28442();
+	protected abstract Codec<? extends BiomeSource> getCodec();
 
 	@Environment(EnvType.CLIENT)
 	public abstract BiomeSource withSeed(long seed);
@@ -135,10 +135,10 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 	}
 
 	static {
-		Registry.register(Registry.BIOME_SOURCE, "fixed", FixedBiomeSource.field_24717);
+		Registry.register(Registry.BIOME_SOURCE, "fixed", FixedBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
-		Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.field_24715);
+		Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
 		Registry.register(Registry.BIOME_SOURCE, "vanilla_layered", VanillaLayeredBiomeSource.CODEC);
-		Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.field_24730);
+		Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
 	}
 }
