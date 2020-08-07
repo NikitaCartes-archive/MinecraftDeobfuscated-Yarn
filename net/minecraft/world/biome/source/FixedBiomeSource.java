@@ -20,21 +20,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class FixedBiomeSource
 extends BiomeSource {
-    public static final Codec<FixedBiomeSource> field_24717 = ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome).stable().codec();
+    public static final Codec<FixedBiomeSource> CODEC = ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome).stable().codec();
     private final Supplier<Biome> biome;
 
     public FixedBiomeSource(Biome biome) {
         this(() -> biome);
     }
 
-    public FixedBiomeSource(Supplier<Biome> supplier) {
-        super(ImmutableList.of(supplier.get()));
-        this.biome = supplier;
+    public FixedBiomeSource(Supplier<Biome> biome) {
+        super(ImmutableList.of(biome.get()));
+        this.biome = biome;
     }
 
     @Override
-    protected Codec<? extends BiomeSource> method_28442() {
-        return field_24717;
+    protected Codec<? extends BiomeSource> getCodec() {
+        return CODEC;
     }
 
     @Override

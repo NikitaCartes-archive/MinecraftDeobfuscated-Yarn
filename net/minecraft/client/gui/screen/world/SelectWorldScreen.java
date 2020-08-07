@@ -45,7 +45,7 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, new TranslatableText("selectWorld.search"));
         this.searchBox.setChangedListener(string -> this.levelList.filter(() -> string, false));
         this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
@@ -87,7 +87,7 @@ extends Screen {
         SelectWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
         if (this.tooltipText != null) {
-            this.renderTooltip(matrices, this.tooltipText, mouseX, mouseY);
+            this.renderOrderedTooltip(matrices, this.tooltipText, mouseX, mouseY);
         }
     }
 

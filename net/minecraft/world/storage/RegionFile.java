@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.storage;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -40,7 +41,8 @@ implements AutoCloseable {
     private final ByteBuffer header = ByteBuffer.allocateDirect(8192);
     private final IntBuffer sectorData;
     private final IntBuffer saveTimes;
-    private final SectorMap sectors = new SectorMap();
+    @VisibleForTesting
+    protected final SectorMap sectors = new SectorMap();
 
     public RegionFile(File file, File directory, boolean dsync) throws IOException {
         this(file.toPath(), directory.toPath(), ChunkStreamVersion.DEFLATE, dsync);
@@ -64,12 +66,28 @@ implements AutoCloseable {
             if (i != 8192) {
                 LOGGER.warn("Region file {} has truncated header: {}", (Object)file, (Object)i);
             }
+            long l = Files.size(file);
             for (int j = 0; j < 1024; ++j) {
                 int k = this.sectorData.get(j);
                 if (k == 0) continue;
-                int l = RegionFile.getOffset(k);
-                int m = RegionFile.getSize(k);
-                this.sectors.allocate(l, m);
+                int m = RegionFile.getOffset(k);
+                int n = RegionFile.getSize(k);
+                if (m < 2) {
+                    LOGGER.warn("Region file {} has invalid sector at index: {}; sector {} overlaps with header", (Object)file, (Object)j, (Object)m);
+                    this.sectorData.put(j, 0);
+                    continue;
+                }
+                if (n == 0) {
+                    LOGGER.warn("Region file {} has an invalid sector at index: {}; size has to be > 0", (Object)file, (Object)j);
+                    this.sectorData.put(j, 0);
+                    continue;
+                }
+                if ((long)m * 4096L > l) {
+                    LOGGER.warn("Region file {} has an invalid sector at index: {}; sector {} is out of bounds", (Object)file, (Object)j, (Object)m);
+                    this.sectorData.put(j, 0);
+                    continue;
+                }
+                this.sectors.allocate(m, n);
             }
         }
     }
@@ -160,7 +178,7 @@ implements AutoCloseable {
     }
 
     private static int getOffset(int sectorData) {
-        return sectorData >> 8;
+        return sectorData >> 8 & 0xFFFFFF;
     }
 
     private static int getSectorCount(int byteCount) {

@@ -55,7 +55,7 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         super.init();
         this.ruleListWidget = new RuleListWidget(this.gameRules);
         this.children.add(this.ruleListWidget);
@@ -65,7 +65,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
     }
 
     @Override
@@ -80,7 +80,7 @@ extends Screen {
         EditGameRulesScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
         if (this.tooltip != null) {
-            this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
+            this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
         }
     }
 

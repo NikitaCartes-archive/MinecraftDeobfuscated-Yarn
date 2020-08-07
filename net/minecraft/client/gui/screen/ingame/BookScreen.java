@@ -228,7 +228,7 @@ extends Screen {
             int l = j / this.client.textRenderer.fontHeight;
             if (l >= 0 && l < this.cachedPage.size()) {
                 OrderedText orderedText = this.cachedPage.get(l);
-                return this.client.textRenderer.getTextHandler().method_30876(orderedText, i);
+                return this.client.textRenderer.getTextHandler().getStyleAt(orderedText, i);
             }
             return null;
         }

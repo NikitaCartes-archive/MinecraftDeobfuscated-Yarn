@@ -3,10 +3,12 @@
  */
 package net.minecraft.util.dynamic;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.dynamic.RegistryReadingOps;
@@ -30,14 +32,24 @@ public final class RegistryElementCodec<E>
 implements Codec<Supplier<E>> {
     private final RegistryKey<? extends Registry<E>> registryRef;
     private final Codec<E> elementCodec;
+    private final boolean field_26758;
 
     public static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec) {
-        return new RegistryElementCodec<E>(registryRef, codec);
+        return RegistryElementCodec.method_31192(registryRef, codec, true);
     }
 
-    private RegistryElementCodec(RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec) {
+    public static <E> Codec<List<Supplier<E>>> method_31194(RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec) {
+        return Codec.either(RegistryElementCodec.method_31192(registryKey, codec, false).listOf(), codec.xmap(object -> () -> object, Supplier::get).listOf()).xmap(either -> either.map(list -> list, list -> list), Either::left);
+    }
+
+    private static <E> RegistryElementCodec<E> method_31192(RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean bl) {
+        return new RegistryElementCodec<E>(registryKey, codec, bl);
+    }
+
+    private RegistryElementCodec(RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec, boolean bl) {
         this.registryRef = registryRef;
         this.elementCodec = codec;
+        this.field_26758 = bl;
     }
 
     @Override
@@ -51,7 +63,7 @@ implements Codec<Supplier<E>> {
     @Override
     public <T> DataResult<Pair<Supplier<E>, T>> decode(DynamicOps<T> ops, T input) {
         if (ops instanceof RegistryOps) {
-            return ((RegistryOps)ops).decodeOrId(input, this.registryRef, this.elementCodec);
+            return ((RegistryOps)ops).decodeOrId(input, this.registryRef, this.elementCodec, this.field_26758);
         }
         return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(object -> () -> object));
     }

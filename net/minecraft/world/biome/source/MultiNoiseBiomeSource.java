@@ -24,13 +24,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5504;
-import net.minecraft.class_5505;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
 
@@ -60,24 +60,24 @@ extends BiomeSource {
         this(l, list, arg, arg2, arg3, arg4, Optional.empty());
     }
 
-    private MultiNoiseBiomeSource(long l, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list, class_5487 arg, class_5487 arg2, class_5487 arg3, class_5487 arg4, Optional<Pair<Registry<Biome>, Preset>> optional) {
+    private MultiNoiseBiomeSource(long seed, List<Pair<Biome.MixedNoisePoint, Supplier<Biome>>> list, class_5487 arg, class_5487 arg2, class_5487 arg3, class_5487 arg4, Optional<Pair<Registry<Biome>, Preset>> optional) {
         super(list.stream().map(Pair::getSecond));
-        this.seed = l;
+        this.seed = seed;
         this.field_24721 = optional;
         this.field_26434 = arg;
         this.field_26435 = arg2;
         this.field_26436 = arg3;
         this.field_26437 = arg4;
-        this.temperatureNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l), arg.method_30832(), arg.method_30834());
-        this.humidityNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 1L), arg2.method_30832(), arg2.method_30834());
-        this.altitudeNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 2L), arg3.method_30832(), arg3.method_30834());
-        this.weirdnessNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(l + 3L), arg4.method_30832(), arg4.method_30834());
+        this.temperatureNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(seed), arg.method_30832(), arg.method_30834());
+        this.humidityNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(seed + 1L), arg2.method_30832(), arg2.method_30834());
+        this.altitudeNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(seed + 2L), arg3.method_30832(), arg3.method_30834());
+        this.weirdnessNoise = DoublePerlinNoiseSampler.method_30846(new ChunkRandom(seed + 3L), arg4.method_30832(), arg4.method_30834());
         this.biomePoints = list;
         this.threeDimensionalSampling = false;
     }
 
     @Override
-    protected Codec<? extends BiomeSource> method_28442() {
+    protected Codec<? extends BiomeSource> getCodec() {
         return CODEC;
     }
 
@@ -95,7 +95,7 @@ extends BiomeSource {
     public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
         int i = this.threeDimensionalSampling ? biomeY : 0;
         Biome.MixedNoisePoint mixedNoisePoint = new Biome.MixedNoisePoint((float)this.temperatureNoise.sample(biomeX, i, biomeZ), (float)this.humidityNoise.sample(biomeX, i, biomeZ), (float)this.altitudeNoise.sample(biomeX, i, biomeZ), (float)this.weirdnessNoise.sample(biomeX, i, biomeZ), 0.0f);
-        return this.biomePoints.stream().min(Comparator.comparing(pair -> Float.valueOf(((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))).map(Pair::getSecond).map(Supplier::get).orElse(class_5504.field_26735);
+        return this.biomePoints.stream().min(Comparator.comparing(pair -> Float.valueOf(((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))).map(Pair::getSecond).map(Supplier::get).orElse(Biomes.THE_VOID);
     }
 
     public boolean method_28462(long l) {
@@ -104,7 +104,7 @@ extends BiomeSource {
 
     public static class Preset {
         private static final Map<Identifier, Preset> field_24724 = Maps.newHashMap();
-        public static final Preset NETHER = new Preset(new Identifier("nether"), (preset, registry, long_) -> new MultiNoiseBiomeSource((long)long_, ImmutableList.of(Pair.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(Biomes.NETHER_WASTES)), Pair.of(new Biome.MixedNoisePoint(0.0f, -0.5f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(Biomes.SOUL_SAND_VALLEY)), Pair.of(new Biome.MixedNoisePoint(0.4f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(Biomes.CRIMSON_FOREST)), Pair.of(new Biome.MixedNoisePoint(0.0f, 0.5f, 0.0f, 0.0f, 0.375f), () -> registry.method_31140(Biomes.WARPED_FOREST)), Pair.of(new Biome.MixedNoisePoint(-0.5f, 0.0f, 0.0f, 0.0f, 0.175f), () -> registry.method_31140(Biomes.BASALT_DELTAS))), Optional.of(Pair.of(registry, preset))));
+        public static final Preset NETHER = new Preset(new Identifier("nether"), (preset, registry, long_) -> new MultiNoiseBiomeSource((long)long_, ImmutableList.of(Pair.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(BuiltInBiomes.NETHER_WASTES)), Pair.of(new Biome.MixedNoisePoint(0.0f, -0.5f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(BuiltInBiomes.SOUL_SAND_VALLEY)), Pair.of(new Biome.MixedNoisePoint(0.4f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.method_31140(BuiltInBiomes.CRIMSON_FOREST)), Pair.of(new Biome.MixedNoisePoint(0.0f, 0.5f, 0.0f, 0.0f, 0.375f), () -> registry.method_31140(BuiltInBiomes.WARPED_FOREST)), Pair.of(new Biome.MixedNoisePoint(-0.5f, 0.0f, 0.0f, 0.0f, 0.175f), () -> registry.method_31140(BuiltInBiomes.BASALT_DELTAS))), Optional.of(Pair.of(registry, preset))));
         private final Identifier id;
         private final Function3<Preset, Registry<Biome>, Long, MultiNoiseBiomeSource> biomeSourceFunction;
 
@@ -120,7 +120,7 @@ extends BiomeSource {
     }
 
     static final class class_5502 {
-        public static final MapCodec<class_5502> field_26694 = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(Preset.field_24724.get(identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + identifier)), preset -> DataResult.success(((Preset)preset).id)).fieldOf("preset")).stable().forGetter(class_5502::method_31094), class_5505.method_31148(Registry.BIOME_KEY).forGetter(class_5502::method_31098), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(class_5502::method_31100)).apply((Applicative<class_5502, ?>)instance, instance.stable(class_5502::new)));
+        public static final MapCodec<class_5502> field_26694 = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(Preset.field_24724.get(identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + identifier)), preset -> DataResult.success(((Preset)preset).id)).fieldOf("preset")).stable().forGetter(class_5502::method_31094), RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(class_5502::method_31098), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(class_5502::method_31100)).apply((Applicative<class_5502, ?>)instance, instance.stable(class_5502::new)));
         private final Preset field_26695;
         private final Registry<Biome> field_26696;
         private final long field_26697;

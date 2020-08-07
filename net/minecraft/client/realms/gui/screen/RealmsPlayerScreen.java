@@ -74,7 +74,7 @@ extends RealmsScreen {
         this.column1_x = this.width / 2 - 160;
         this.column_width = 150;
         this.column2_x = this.width / 2 + 12;
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         this.invitedObjectSelectionList = new InvitedObjectSelectionList();
         this.invitedObjectSelectionList.setLeftPos(this.column1_x);
         this.addChild(this.invitedObjectSelectionList);
@@ -107,7 +107,7 @@ extends RealmsScreen {
 
     @Override
     public void removed() {
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
     }
 
     @Override

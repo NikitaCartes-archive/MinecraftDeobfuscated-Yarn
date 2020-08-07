@@ -112,6 +112,7 @@ extends MutableRegistry<T> {
                 throw new IllegalStateException("ID mismatch");
             }
             this.field_26683.removeInt(object2);
+            this.field_26731.remove(object2);
         }
         return this.method_31051(i, registryKey, object, lifecycle, false);
     }

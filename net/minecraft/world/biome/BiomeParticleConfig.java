@@ -14,13 +14,13 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 
 public class BiomeParticleConfig {
-    public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ParticleTypes.field_25125.fieldOf("options")).forGetter(biomeParticleConfig -> biomeParticleConfig.particle), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(biomeParticleConfig -> Float.valueOf(biomeParticleConfig.chance))).apply((Applicative<BiomeParticleConfig, ?>)instance, BiomeParticleConfig::new));
+    public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ParticleTypes.field_25125.fieldOf("options")).forGetter(biomeParticleConfig -> biomeParticleConfig.particle), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(biomeParticleConfig -> Float.valueOf(biomeParticleConfig.probability))).apply((Applicative<BiomeParticleConfig, ?>)instance, BiomeParticleConfig::new));
     private final ParticleEffect particle;
-    private final float chance;
+    private final float probability;
 
-    public BiomeParticleConfig(ParticleEffect particle, float f) {
+    public BiomeParticleConfig(ParticleEffect particle, float probability) {
         this.particle = particle;
-        this.chance = f;
+        this.probability = probability;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -30,7 +30,7 @@ public class BiomeParticleConfig {
 
     @Environment(value=EnvType.CLIENT)
     public boolean shouldAddParticle(Random random) {
-        return random.nextFloat() <= this.chance;
+        return random.nextFloat() <= this.probability;
     }
 }
 

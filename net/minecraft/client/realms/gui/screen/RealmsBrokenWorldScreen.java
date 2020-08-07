@@ -71,7 +71,7 @@ extends RealmsScreen {
         } else {
             this.addButtons();
         }
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         Realms.narrateNow(Stream.concat(Stream.of(this.field_24204), Stream.of(this.message)).map(Text::getString).collect(Collectors.joining(" ")));
     }
 
@@ -151,7 +151,7 @@ extends RealmsScreen {
 
     @Override
     public void removed() {
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
     }
 
     @Override

@@ -148,9 +148,9 @@ extends DrawableHelper {
         this.titleFadeOutTicks = 20;
     }
 
-    public void render(MatrixStack matrixStack, float f) {
-        int k;
-        float g;
+    public void render(MatrixStack matrices, float tickDelta) {
+        int j;
+        float f;
         this.scaledWidth = this.client.getWindow().getScaledWidth();
         this.scaledHeight = this.client.getWindow().getScaledHeight();
         TextRenderer textRenderer = this.getFontRenderer();
@@ -165,90 +165,90 @@ extends DrawableHelper {
         if (this.client.options.getPerspective().isFirstPerson() && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
             this.renderPumpkinOverlay();
         }
-        if ((g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
-            this.renderPortalOverlay(g);
+        if ((f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)) > 0.0f && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
+            this.renderPortalOverlay(f);
         }
         if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
-            this.spectatorHud.render(matrixStack, f);
+            this.spectatorHud.render(matrices, tickDelta);
         } else if (!this.client.options.hudHidden) {
-            this.renderHotbar(f, matrixStack);
+            this.renderHotbar(tickDelta, matrices);
         }
         if (!this.client.options.hudHidden) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
             RenderSystem.enableBlend();
             RenderSystem.enableAlphaTest();
-            this.renderCrosshair(matrixStack);
+            this.renderCrosshair(matrices);
             RenderSystem.defaultBlendFunc();
             this.client.getProfiler().push("bossHealth");
-            this.bossBarHud.render(matrixStack);
+            this.bossBarHud.render(matrices);
             this.client.getProfiler().pop();
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
             if (this.client.interactionManager.hasStatusBars()) {
-                this.renderStatusBars(matrixStack);
+                this.renderStatusBars(matrices);
             }
-            this.renderMountHealth(matrixStack);
+            this.renderMountHealth(matrices);
             RenderSystem.disableBlend();
             int i = this.scaledWidth / 2 - 91;
             if (this.client.player.hasJumpingMount()) {
-                this.renderMountJumpBar(matrixStack, i);
+                this.renderMountJumpBar(matrices, i);
             } else if (this.client.interactionManager.hasExperienceBar()) {
-                this.renderExperienceBar(matrixStack, i);
+                this.renderExperienceBar(matrices, i);
             }
             if (this.client.options.heldItemTooltips && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
-                this.renderHeldItemTooltip(matrixStack);
+                this.renderHeldItemTooltip(matrices);
             } else if (this.client.player.isSpectator()) {
-                this.spectatorHud.render(matrixStack);
+                this.spectatorHud.render(matrices);
             }
         }
         if (this.client.player.getSleepTimer() > 0) {
             this.client.getProfiler().push("sleep");
             RenderSystem.disableDepthTest();
             RenderSystem.disableAlphaTest();
-            float h = this.client.player.getSleepTimer();
-            float j = h / 100.0f;
-            if (j > 1.0f) {
-                j = 1.0f - (h - 100.0f) / 10.0f;
+            float g = this.client.player.getSleepTimer();
+            float h = g / 100.0f;
+            if (h > 1.0f) {
+                h = 1.0f - (g - 100.0f) / 10.0f;
             }
-            k = (int)(220.0f * j) << 24 | 0x101020;
-            InGameHud.fill(matrixStack, 0, 0, this.scaledWidth, this.scaledHeight, k);
+            j = (int)(220.0f * h) << 24 | 0x101020;
+            InGameHud.fill(matrices, 0, 0, this.scaledWidth, this.scaledHeight, j);
             RenderSystem.enableAlphaTest();
             RenderSystem.enableDepthTest();
             this.client.getProfiler().pop();
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
         if (this.client.isDemo()) {
-            this.renderDemoTimer(matrixStack);
+            this.renderDemoTimer(matrices);
         }
-        this.renderStatusEffectOverlay(matrixStack);
+        this.renderStatusEffectOverlay(matrices);
         if (this.client.options.debugEnabled) {
-            this.debugHud.render(matrixStack);
+            this.debugHud.render(matrices);
         }
         if (!this.client.options.hudHidden) {
             ScoreboardObjective scoreboardObjective2;
-            int n;
             int m;
+            int l;
             if (this.overlayMessage != null && this.overlayRemaining > 0) {
                 this.client.getProfiler().push("overlayMessage");
-                float h = (float)this.overlayRemaining - f;
-                int l = (int)(h * 255.0f / 20.0f);
-                if (l > 255) {
-                    l = 255;
+                float g = (float)this.overlayRemaining - tickDelta;
+                int k = (int)(g * 255.0f / 20.0f);
+                if (k > 255) {
+                    k = 255;
                 }
-                if (l > 8) {
+                if (k > 8) {
                     RenderSystem.pushMatrix();
                     RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight - 68, 0.0f);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
-                    k = 0xFFFFFF;
+                    j = 0xFFFFFF;
                     if (this.overlayTinted) {
-                        k = MathHelper.hsvToRgb(h / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
+                        j = MathHelper.hsvToRgb(g / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
                     }
-                    m = l << 24 & 0xFF000000;
-                    n = textRenderer.getWidth(this.overlayMessage);
-                    this.drawTextBackground(matrixStack, textRenderer, -4, n, 0xFFFFFF | m);
-                    textRenderer.draw(matrixStack, this.overlayMessage, (float)(-n / 2), -4.0f, k | m);
+                    l = k << 24 & 0xFF000000;
+                    m = textRenderer.getWidth(this.overlayMessage);
+                    this.drawTextBackground(matrices, textRenderer, -4, m, 0xFFFFFF | l);
+                    textRenderer.draw(matrices, this.overlayMessage, (float)(-m / 2), -4.0f, j | l);
                     RenderSystem.disableBlend();
                     RenderSystem.popMatrix();
                 }
@@ -256,33 +256,33 @@ extends DrawableHelper {
             }
             if (this.title != null && this.titleTotalTicks > 0) {
                 this.client.getProfiler().push("titleAndSubtitle");
-                float h = (float)this.titleTotalTicks - f;
-                int l = 255;
+                float g = (float)this.titleTotalTicks - tickDelta;
+                int k = 255;
                 if (this.titleTotalTicks > this.titleFadeOutTicks + this.titleRemainTicks) {
-                    float o = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - h;
-                    l = (int)(o * 255.0f / (float)this.titleFadeInTicks);
+                    float n = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - g;
+                    k = (int)(n * 255.0f / (float)this.titleFadeInTicks);
                 }
                 if (this.titleTotalTicks <= this.titleFadeOutTicks) {
-                    l = (int)(h * 255.0f / (float)this.titleFadeOutTicks);
+                    k = (int)(g * 255.0f / (float)this.titleFadeOutTicks);
                 }
-                if ((l = MathHelper.clamp(l, 0, 255)) > 8) {
+                if ((k = MathHelper.clamp(k, 0, 255)) > 8) {
                     RenderSystem.pushMatrix();
                     RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, 0.0f);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     RenderSystem.pushMatrix();
                     RenderSystem.scalef(4.0f, 4.0f, 4.0f);
-                    int k2 = l << 24 & 0xFF000000;
-                    m = textRenderer.getWidth(this.title);
-                    this.drawTextBackground(matrixStack, textRenderer, -10, m, 0xFFFFFF | k2);
-                    textRenderer.drawWithShadow(matrixStack, this.title, (float)(-m / 2), -10.0f, 0xFFFFFF | k2);
+                    int j2 = k << 24 & 0xFF000000;
+                    l = textRenderer.getWidth(this.title);
+                    this.drawTextBackground(matrices, textRenderer, -10, l, 0xFFFFFF | j2);
+                    textRenderer.drawWithShadow(matrices, this.title, (float)(-l / 2), -10.0f, 0xFFFFFF | j2);
                     RenderSystem.popMatrix();
                     if (this.subtitle != null) {
                         RenderSystem.pushMatrix();
                         RenderSystem.scalef(2.0f, 2.0f, 2.0f);
-                        n = textRenderer.getWidth(this.subtitle);
-                        this.drawTextBackground(matrixStack, textRenderer, 5, n, 0xFFFFFF | k2);
-                        textRenderer.drawWithShadow(matrixStack, this.subtitle, (float)(-n / 2), 5.0f, 0xFFFFFF | k2);
+                        m = textRenderer.getWidth(this.subtitle);
+                        this.drawTextBackground(matrices, textRenderer, 5, m, 0xFFFFFF | j2);
+                        textRenderer.drawWithShadow(matrices, this.subtitle, (float)(-m / 2), 5.0f, 0xFFFFFF | j2);
                         RenderSystem.popMatrix();
                     }
                     RenderSystem.disableBlend();
@@ -290,16 +290,16 @@ extends DrawableHelper {
                 }
                 this.client.getProfiler().pop();
             }
-            this.subtitlesHud.render(matrixStack);
+            this.subtitlesHud.render(matrices);
             Scoreboard scoreboard = this.client.world.getScoreboard();
             ScoreboardObjective scoreboardObjective = null;
             Team team = scoreboard.getPlayerTeam(this.client.player.getEntityName());
-            if (team != null && (m = team.getColor().getColorIndex()) >= 0) {
-                scoreboardObjective = scoreboard.getObjectiveForSlot(3 + m);
+            if (team != null && (l = team.getColor().getColorIndex()) >= 0) {
+                scoreboardObjective = scoreboard.getObjectiveForSlot(3 + l);
             }
             ScoreboardObjective scoreboardObjective3 = scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective : scoreboard.getObjectiveForSlot(1);
             if (scoreboardObjective2 != null) {
-                this.renderScoreboardSidebar(matrixStack, scoreboardObjective2);
+                this.renderScoreboardSidebar(matrices, scoreboardObjective2);
             }
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -307,13 +307,13 @@ extends DrawableHelper {
             RenderSystem.pushMatrix();
             RenderSystem.translatef(0.0f, this.scaledHeight - 48, 0.0f);
             this.client.getProfiler().push("chat");
-            this.chatHud.render(matrixStack, this.ticks);
+            this.chatHud.render(matrices, this.ticks);
             this.client.getProfiler().pop();
             RenderSystem.popMatrix();
             scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
             if (this.client.options.keyPlayerList.isPressed() && (!this.client.isInSingleplayer() || this.client.player.networkHandler.getPlayerList().size() > 1 || scoreboardObjective2 != null)) {
                 this.playerListHud.tick(true);
-                this.playerListHud.render(matrixStack, this.scaledWidth, scoreboard, scoreboardObjective2);
+                this.playerListHud.render(matrices, this.scaledWidth, scoreboard, scoreboardObjective2);
             } else {
                 this.playerListHud.tick(false);
             }

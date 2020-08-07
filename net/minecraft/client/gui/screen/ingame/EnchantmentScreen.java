@@ -197,7 +197,7 @@ extends HandledScreen<EnchantmentScreenHandler> {
                     list.add(mutableText2.formatted(Formatting.GRAY));
                 }
             }
-            this.method_30901(matrices, list, mouseX, mouseY);
+            this.renderTooltip(matrices, list, mouseX, mouseY);
             break;
         }
     }

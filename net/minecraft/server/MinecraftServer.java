@@ -331,7 +331,7 @@ AutoCloseable {
         long l = generatorOptions.getSeed();
         long m = BiomeAccess.hashSeed(l);
         ImmutableList<Spawner> list = ImmutableList.of(new PhantomSpawner(), new PillagerSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties));
-        SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensionMap();
+        SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensions();
         DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
         if (dimensionOptions == null) {
             dimensionType = this.registryManager.getDimensionTypes().method_31140(DimensionType.OVERWORLD_REGISTRY_KEY);
@@ -395,7 +395,7 @@ AutoCloseable {
         }
         BiomeSource biomeSource = chunkGenerator.getBiomeSource();
         Random random = new Random(serverWorld.getSeed());
-        BlockPos blockPos = biomeSource.locateBiome(0, serverWorld.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().method_31082(), random);
+        BlockPos blockPos = biomeSource.locateBiome(0, serverWorld.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random);
         ChunkPos chunkPos2 = chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
         if (blockPos == null) {
             LOGGER.warn("Unable to find spawn biome");

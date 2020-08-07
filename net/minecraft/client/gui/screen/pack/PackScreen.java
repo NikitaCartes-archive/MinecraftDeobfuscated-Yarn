@@ -46,7 +46,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class AbstractPackScreen
+public class PackScreen
 extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.DARK_GRAY);
@@ -59,15 +59,15 @@ extends Screen {
     private long field_25788;
     private PackListWidget availablePackList;
     private PackListWidget selectedPackList;
-    private final File field_25474;
+    private final File file;
     private ButtonWidget doneButton;
     private final Map<String, Identifier> field_25789 = Maps.newHashMap();
 
-    public AbstractPackScreen(Screen screen, ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> consumer, File file, Text text) {
-        super(text);
-        this.parent = screen;
-        this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, resourcePackManager, consumer);
-        this.field_25474 = file;
+    public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> consumer, File file, Text title) {
+        super(title);
+        this.parent = parent;
+        this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, packManager, consumer);
+        this.file = file;
         this.directoryWatcher = DirectoryWatcher.create(file);
     }
 
@@ -92,7 +92,7 @@ extends Screen {
     @Override
     protected void init() {
         this.doneButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, buttonWidget -> this.onClose()));
-        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("pack.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.field_25474), (buttonWidget, matrixStack, i, j) -> this.renderTooltip(matrixStack, FOLDER_INFO, i, j)));
+        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("pack.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.file), (buttonWidget, matrixStack, i, j) -> this.renderTooltip(matrixStack, FOLDER_INFO, i, j)));
         this.availablePackList = new PackListWidget(this.client, 200, this.height, new TranslatableText("pack.available.title"));
         this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
         this.children.add(this.availablePackList);
@@ -110,7 +110,7 @@ extends Screen {
                     this.field_25788 = 20L;
                 }
             } catch (IOException iOException) {
-                LOGGER.warn("Failed to poll for directory {} changes, stopping", (Object)this.field_25474);
+                LOGGER.warn("Failed to poll for directory {} changes, stopping", (Object)this.file);
                 this.closeDirectoryWatcher();
             }
         }
@@ -142,8 +142,8 @@ extends Screen {
         this.renderBackgroundTexture(0);
         this.availablePackList.render(matrices, mouseX, mouseY, delta);
         this.selectedPackList.render(matrices, mouseX, mouseY, delta);
-        AbstractPackScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
-        AbstractPackScreen.drawCenteredText(matrices, this.textRenderer, DROP_INFO, this.width / 2, 20, 0xFFFFFF);
+        PackScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        PackScreen.drawCenteredText(matrices, this.textRenderer, DROP_INFO, this.width / 2, 20, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
@@ -174,7 +174,7 @@ extends Screen {
         String string = paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
         this.client.openScreen(new ConfirmScreen(bl -> {
             if (bl) {
-                AbstractPackScreen.method_29669(this.client, paths, this.field_25474.toPath());
+                PackScreen.method_29669(this.client, paths, this.file.toPath());
                 this.refresh();
             }
             this.client.openScreen(this);

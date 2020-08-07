@@ -104,6 +104,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -457,6 +458,16 @@ AutoCloseable {
             String string = exception instanceof JsonSyntaxException ? "parse" : "load";
             String string2 = "Failed to " + string + " shader: " + identifier;
             ShaderException shaderException = new ShaderException(string2, exception);
+            if (this.client.getResourcePackManager().getEnabledNames().size() > 1) {
+                LiteralText text;
+                try {
+                    text = new LiteralText(this.client.getResourceManager().getResource(identifier).getResourcePackName());
+                } catch (IOException iOException) {
+                    text = null;
+                }
+                this.client.options.graphicsMode = GraphicsMode.FANCY;
+                this.client.method_31186(shaderException, text);
+            }
             CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, shaderException));
             this.client.options.graphicsMode = GraphicsMode.FANCY;
             this.client.options.write();
@@ -1990,9 +2001,9 @@ AutoCloseable {
         this.addParticle(parameters, shouldAlwaysSpawn, false, x, y, z, velocityX, velocityY, velocityZ);
     }
 
-    public void addParticle(ParticleEffect parameters, boolean shouldAlwaysSpawn, boolean isImportant, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    public void addParticle(ParticleEffect parameters, boolean shouldAlwaysSpawn, boolean important, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         try {
-            this.spawnParticle(parameters, shouldAlwaysSpawn, isImportant, x, y, z, velocityX, velocityY, velocityZ);
+            this.spawnParticle(parameters, shouldAlwaysSpawn, important, x, y, z, velocityX, velocityY, velocityZ);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Exception while adding particle");
             CrashReportSection crashReportSection = crashReport.addElement("Particle being added");

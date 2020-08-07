@@ -115,7 +115,7 @@ extends ScreenHandler {
         }
 
         @Override
-        public int getMaxStackAmount() {
+        public int getMaxItemCount() {
             return 64;
         }
     }
@@ -132,7 +132,7 @@ extends ScreenHandler {
         }
 
         @Override
-        public int getMaxStackAmount() {
+        public int getMaxItemCount() {
             return 64;
         }
     }
@@ -149,7 +149,7 @@ extends ScreenHandler {
         }
 
         @Override
-        public int getMaxStackAmount() {
+        public int getMaxItemCount() {
             return 1;
         }
 

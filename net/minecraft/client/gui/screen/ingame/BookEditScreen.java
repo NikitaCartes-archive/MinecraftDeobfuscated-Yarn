@@ -122,7 +122,7 @@ extends Screen {
     @Override
     protected void init() {
         this.invalidatePageContent();
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         this.signButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, new TranslatableText("book.signButton"), buttonWidget -> {
             this.signing = true;
             this.updateButtons();
@@ -173,7 +173,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
     }
 
     private void updateButtons() {

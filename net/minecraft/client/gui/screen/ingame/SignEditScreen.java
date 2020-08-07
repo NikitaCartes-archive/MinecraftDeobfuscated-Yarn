@@ -50,7 +50,7 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, ScreenTexts.DONE, buttonWidget -> this.finishEditing()));
         this.sign.setEditable(false);
         this.selectionManager = new SelectionManager(() -> this.field_24285[this.currentRow], string -> {
@@ -61,7 +61,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
         ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
         if (clientPlayNetworkHandler != null) {
             clientPlayNetworkHandler.sendPacket(new UpdateSignC2SPacket(this.sign.getPos(), this.field_24285[0], this.field_24285[1], this.field_24285[2], this.field_24285[3]));

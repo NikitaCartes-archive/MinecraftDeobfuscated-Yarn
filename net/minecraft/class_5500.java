@@ -53,7 +53,7 @@ extends GameOptionsScreen {
         super.render(matrices, mouseX, mouseY, delta);
         List<OrderedText> list = class_5500.method_31048(this.field_26681, mouseX, mouseY);
         if (list != null) {
-            this.renderTooltip(matrices, list, mouseX, mouseY);
+            this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
         }
     }
 

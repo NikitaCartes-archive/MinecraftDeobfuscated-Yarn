@@ -211,7 +211,7 @@ extends RealmsScreen {
         if (!this.dontSetConnectedToRealms) {
             this.client.setConnectedToRealms(false);
         }
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         if (RealmsMainScreen.hasParentalConsent()) {
             realmsDataFetcher.forceUpdate();
         }
@@ -410,7 +410,7 @@ extends RealmsScreen {
 
     @Override
     public void removed() {
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
         this.stopRealmsFetcher();
     }
 

@@ -111,7 +111,7 @@ extends Screen {
         if (mouseX < j || mouseX > k) {
             return null;
         }
-        return this.client.textRenderer.getTextHandler().trimToWidth(this.message, mouseX - j);
+        return this.client.textRenderer.getTextHandler().getStyleAt(this.message, mouseX - j);
     }
 
     @Override

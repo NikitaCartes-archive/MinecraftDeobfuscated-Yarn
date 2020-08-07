@@ -43,7 +43,7 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         int i = this.width / 2 - 106;
         this.doneButton = this.addButton(new ButtonWidget(i - 2, RealmsSettingsScreen.row(12), 106, 20, new TranslatableText("mco.configure.world.buttons.done"), buttonWidget -> this.save()));
         this.addButton(new ButtonWidget(this.width / 2 + 2, RealmsSettingsScreen.row(12), 106, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
@@ -79,7 +79,7 @@ extends RealmsScreen {
 
     @Override
     public void removed() {
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
     }
 
     @Override

@@ -138,7 +138,7 @@ extends GameOptionsScreen {
         super.render(matrices, mouseX, mouseY, delta);
         List<OrderedText> list = VideoOptionsScreen.method_31048(this.list, mouseX, mouseY);
         if (list != null) {
-            this.renderTooltip(matrices, list, mouseX, mouseY);
+            this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
         }
     }
 }

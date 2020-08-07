@@ -16,7 +16,7 @@ import net.minecraft.world.biome.source.BiomeSource;
 
 public class CheckerboardBiomeSource
 extends BiomeSource {
-    public static final Codec<CheckerboardBiomeSource> field_24715 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Biome.REGISTRY_CODEC.listOf().fieldOf("biomes")).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray), ((MapCodec)Codec.intRange(0, 62).fieldOf("scale")).orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)).apply((Applicative<CheckerboardBiomeSource, ?>)instance, CheckerboardBiomeSource::new));
+    public static final Codec<CheckerboardBiomeSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Biome.field_26750.fieldOf("biomes")).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray), ((MapCodec)Codec.intRange(0, 62).fieldOf("scale")).orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.field_24716)).apply((Applicative<CheckerboardBiomeSource, ?>)instance, CheckerboardBiomeSource::new));
     private final List<Supplier<Biome>> biomeArray;
     private final int gridSize;
     private final int field_24716;
@@ -29,8 +29,8 @@ extends BiomeSource {
     }
 
     @Override
-    protected Codec<? extends BiomeSource> method_28442() {
-        return field_24715;
+    protected Codec<? extends BiomeSource> getCodec() {
+        return CODEC;
     }
 
     @Override

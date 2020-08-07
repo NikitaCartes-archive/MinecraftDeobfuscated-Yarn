@@ -24,8 +24,8 @@ extends Slot {
     }
 
     @Override
-    public int getMaxStackAmount(ItemStack stack) {
-        return FurnaceFuelSlot.isBucket(stack) ? 1 : super.getMaxStackAmount(stack);
+    public int getMaxItemCount(ItemStack stack) {
+        return FurnaceFuelSlot.isBucket(stack) ? 1 : super.getMaxItemCount(stack);
     }
 
     public static boolean isBucket(ItemStack stack) {

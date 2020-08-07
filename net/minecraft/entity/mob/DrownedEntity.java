@@ -57,7 +57,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import org.jetbrains.annotations.Nullable;
 
 public class DrownedEntity
@@ -105,7 +105,7 @@ implements RangedAttackMob {
         boolean bl;
         Optional<RegistryKey<Biome>> optional = serverWorldAccess.method_31081(pos);
         boolean bl2 = bl = serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(serverWorldAccess, pos, random) && (spawnReason == SpawnReason.SPAWNER || serverWorldAccess.getFluidState(pos).isIn(FluidTags.WATER));
-        if (Objects.equals(optional, Optional.of(Biomes.RIVER)) || Objects.equals(optional, Optional.of(Biomes.FROZEN_RIVER))) {
+        if (Objects.equals(optional, Optional.of(BuiltInBiomes.RIVER)) || Objects.equals(optional, Optional.of(BuiltInBiomes.FROZEN_RIVER))) {
             return random.nextInt(15) == 0 && bl;
         }
         return random.nextInt(40) == 0 && DrownedEntity.isValidSpawnDepth(serverWorldAccess, pos) && bl;

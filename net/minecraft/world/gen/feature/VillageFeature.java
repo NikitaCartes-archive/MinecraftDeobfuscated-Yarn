@@ -4,11 +4,11 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_5434;
+import net.minecraft.world.gen.feature.JigsawFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 
 public class VillageFeature
-extends class_5434 {
+extends JigsawFeature {
     public VillageFeature(Codec<StructurePoolFeatureConfig> codec) {
         super(codec, 0, true, true);
     }

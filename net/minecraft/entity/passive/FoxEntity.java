@@ -91,7 +91,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.biome.BuiltInBiomes;
 import org.jetbrains.annotations.Nullable;
 
 public class FoxEntity
@@ -1363,8 +1363,8 @@ extends AnimalEntity {
     }
 
     public static enum Type {
-        RED(0, "red", Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.TAIGA_MOUNTAINS, Biomes.GIANT_TREE_TAIGA, Biomes.GIANT_SPRUCE_TAIGA, Biomes.GIANT_TREE_TAIGA_HILLS, Biomes.GIANT_SPRUCE_TAIGA_HILLS),
-        SNOW(1, "snow", Biomes.SNOWY_TAIGA, Biomes.SNOWY_TAIGA_HILLS, Biomes.SNOWY_TAIGA_MOUNTAINS);
+        RED(0, "red", BuiltInBiomes.TAIGA, BuiltInBiomes.TAIGA_HILLS, BuiltInBiomes.TAIGA_MOUNTAINS, BuiltInBiomes.GIANT_TREE_TAIGA, BuiltInBiomes.GIANT_SPRUCE_TAIGA, BuiltInBiomes.GIANT_TREE_TAIGA_HILLS, BuiltInBiomes.GIANT_SPRUCE_TAIGA_HILLS),
+        SNOW(1, "snow", BuiltInBiomes.SNOWY_TAIGA, BuiltInBiomes.SNOWY_TAIGA_HILLS, BuiltInBiomes.SNOWY_TAIGA_MOUNTAINS);
 
         private static final Type[] TYPES;
         private static final Map<String, Type> NAME_TYPE_MAP;

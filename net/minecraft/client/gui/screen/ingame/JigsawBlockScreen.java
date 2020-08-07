@@ -80,7 +80,7 @@ extends Screen {
     @Override
     protected void init() {
         boolean bl;
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 20, 300, 20, new TranslatableText("jigsaw_block.pool"));
         this.poolField.setMaxLength(128);
         this.poolField.setText(this.jigsaw.getPool().toString());
@@ -173,7 +173,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
     }
 
     @Override

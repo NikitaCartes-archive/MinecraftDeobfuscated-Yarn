@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class BiomeSource
 implements BiomeAccess.Storage {
-    public static final Codec<BiomeSource> field_24713;
+    public static final Codec<BiomeSource> CODEC;
     protected final Map<StructureFeature<?>, Boolean> structureFeatures = Maps.newHashMap();
     protected final Set<BlockState> topMaterials = Sets.newHashSet();
     protected final List<Biome> biomes;
@@ -46,7 +46,7 @@ implements BiomeAccess.Storage {
         this.biomes = biomes;
     }
 
-    protected abstract Codec<? extends BiomeSource> method_28442();
+    protected abstract Codec<? extends BiomeSource> getCodec();
 
     @Environment(value=EnvType.CLIENT)
     public abstract BiomeSource withSeed(long var1);
@@ -132,12 +132,12 @@ implements BiomeAccess.Storage {
     }
 
     static {
-        Registry.register(Registry.BIOME_SOURCE, "fixed", FixedBiomeSource.field_24717);
+        Registry.register(Registry.BIOME_SOURCE, "fixed", FixedBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "multi_noise", MultiNoiseBiomeSource.CODEC);
-        Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.field_24715);
+        Registry.register(Registry.BIOME_SOURCE, "checkerboard", CheckerboardBiomeSource.CODEC);
         Registry.register(Registry.BIOME_SOURCE, "vanilla_layered", VanillaLayeredBiomeSource.CODEC);
-        Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.field_24730);
-        field_24713 = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::method_28442, Function.identity());
+        Registry.register(Registry.BIOME_SOURCE, "the_end", TheEndBiomeSource.CODEC);
+        CODEC = Registry.BIOME_SOURCE.dispatchStable(BiomeSource::getCodec, Function.identity());
     }
 }
 

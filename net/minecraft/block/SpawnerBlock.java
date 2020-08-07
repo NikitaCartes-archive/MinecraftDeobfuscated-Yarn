@@ -28,10 +28,10 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onStacksDropped(BlockState state, ServerWorld serverWorld, BlockPos pos, ItemStack stack) {
-        super.onStacksDropped(state, serverWorld, pos, stack);
-        int i = 15 + serverWorld.random.nextInt(15) + serverWorld.random.nextInt(15);
-        this.dropExperience(serverWorld, pos, i);
+    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
+        super.onStacksDropped(state, world, pos, stack);
+        int i = 15 + world.random.nextInt(15) + world.random.nextInt(15);
+        this.dropExperience(world, pos, i);
     }
 
     @Override

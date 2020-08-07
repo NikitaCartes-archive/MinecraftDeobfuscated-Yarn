@@ -69,7 +69,7 @@ extends ScreenHandler {
         if (player.world.isClient) {
             return;
         }
-        ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxStackAmount());
+        ItemStack itemStack = this.paymentSlot.takeStack(this.paymentSlot.getMaxItemCount());
         if (!itemStack.isEmpty()) {
             player.dropItem(itemStack, false);
         }
@@ -156,7 +156,7 @@ extends ScreenHandler {
         }
 
         @Override
-        public int getMaxStackAmount() {
+        public int getMaxItemCount() {
             return 1;
         }
     }

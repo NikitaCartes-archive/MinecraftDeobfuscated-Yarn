@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.structure.MarginedStructureStart;
@@ -17,38 +17,38 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 
-public class class_5434
+public class JigsawFeature
 extends StructureFeature<StructurePoolFeatureConfig> {
-    private final int field_25835;
+    private final int structureStartY;
     private final boolean field_25836;
     private final boolean field_25837;
 
-    public class_5434(Codec<StructurePoolFeatureConfig> codec, int i, boolean bl, boolean bl2) {
+    public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int startY, boolean bl, boolean bl2) {
         super(codec);
-        this.field_25835 = i;
+        this.structureStartY = startY;
         this.field_25836 = bl;
         this.field_25837 = bl2;
     }
 
     @Override
     public StructureFeature.StructureStartFactory<StructurePoolFeatureConfig> getStructureStartFactory() {
-        return (structureFeature, i, j, blockBox, k, l) -> new class_5435(this, i, j, blockBox, k, l);
+        return (feature, chunkX, chunkZ, boundingBox, references, seed) -> new Start(this, chunkX, chunkZ, boundingBox, references, seed);
     }
 
-    public static class class_5435
+    public static class Start
     extends MarginedStructureStart<StructurePoolFeatureConfig> {
-        private final class_5434 field_25838;
+        private final JigsawFeature jigsawFeature;
 
-        public class_5435(class_5434 arg, int i, int j, BlockBox blockBox, int k, long l) {
-            super(arg, i, j, blockBox, k, l);
-            this.field_25838 = arg;
+        public Start(JigsawFeature feature, int chunkX, int chunkZ, BlockBox boundingBox, int references, long seed) {
+            super(feature, chunkX, chunkZ, boundingBox, references, seed);
+            this.jigsawFeature = feature;
         }
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, StructurePoolFeatureConfig structurePoolFeatureConfig) {
-            BlockPos blockPos = new BlockPos(i * 16, this.field_25838.field_25835, j * 16);
+            BlockPos blockPos = new BlockPos(i * 16, this.jigsawFeature.structureStartY, j * 16);
             StructurePools.initDefaultPools();
-            StructurePoolBasedGenerator.method_30419(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this.children, this.random, this.field_25838.field_25836, this.field_25838.field_25837);
+            StructurePoolBasedGenerator.method_30419(dynamicRegistryManager, structurePoolFeatureConfig, PoolStructurePiece::new, chunkGenerator, structureManager, blockPos, this.children, this.random, this.jigsawFeature.field_25836, this.jigsawFeature.field_25837);
             this.setBoundingBoxFromChildren();
         }
     }

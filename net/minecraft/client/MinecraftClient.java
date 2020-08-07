@@ -198,6 +198,7 @@ import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -323,7 +324,7 @@ WindowEventHandler {
     private ServerInfo currentServerEntry;
     @Nullable
     private ClientConnection connection;
-    private boolean isIntegratedServerRunning;
+    private boolean integratedServerRunning;
     @Nullable
     public Entity cameraEntity;
     @Nullable
@@ -533,18 +534,22 @@ WindowEventHandler {
     private void handleResourceReloadException(Throwable throwable) {
         if (this.resourcePackManager.getEnabledNames().size() > 1) {
             LiteralText text = throwable instanceof ReloadableResourceManagerImpl.PackAdditionFailedException ? new LiteralText(((ReloadableResourceManagerImpl.PackAdditionFailedException)throwable).getPack().getName()) : null;
-            LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", throwable);
-            this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
-            this.options.resourcePacks.clear();
-            this.options.incompatibleResourcePacks.clear();
-            this.options.write();
-            this.reloadResources().thenRun(() -> {
-                ToastManager toastManager = this.getToastManager();
-                SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), text);
-            });
+            this.method_31186(throwable, text);
         } else {
             Util.throwUnchecked(throwable);
         }
+    }
+
+    public void method_31186(Throwable throwable, @Nullable Text text) {
+        LOGGER.info("Caught error loading resourcepacks, removing all selected resourcepacks", throwable);
+        this.resourcePackManager.setEnabledProfiles(Collections.emptyList());
+        this.options.resourcePacks.clear();
+        this.options.incompatibleResourcePacks.clear();
+        this.options.write();
+        this.reloadResources().thenRun(() -> {
+            ToastManager toastManager = this.getToastManager();
+            SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), text);
+        });
     }
 
     public void run() {
@@ -972,7 +977,7 @@ WindowEventHandler {
         }
         try {
             System.gc();
-            if (this.isIntegratedServerRunning && this.server != null) {
+            if (this.integratedServerRunning && this.server != null) {
                 this.server.stop(true);
             }
             this.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
@@ -1500,7 +1505,7 @@ WindowEventHandler {
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
                 return new QueueingWorldGenerationProgressListener(worldGenerationProgressTracker, this.renderTaskQueue::add);
             }));
-            this.isIntegratedServerRunning = true;
+            this.integratedServerRunning = true;
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Starting integrated server");
             CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
@@ -1591,7 +1596,7 @@ WindowEventHandler {
         this.reset(progressScreen);
         this.world = world;
         this.setWorld(world);
-        if (!this.isIntegratedServerRunning) {
+        if (!this.integratedServerRunning) {
             YggdrasilAuthenticationService authenticationService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString());
             MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
@@ -1629,7 +1634,7 @@ WindowEventHandler {
             this.builtinPackProvider.clear();
             this.inGameHud.clear();
             this.currentServerEntry = null;
-            this.isIntegratedServerRunning = false;
+            this.integratedServerRunning = false;
             this.game.onLeaveGameSession();
         }
         this.world = null;
@@ -1936,11 +1941,11 @@ WindowEventHandler {
     }
 
     public boolean isInSingleplayer() {
-        return this.isIntegratedServerRunning;
+        return this.integratedServerRunning;
     }
 
     public boolean isIntegratedServerRunning() {
-        return this.isIntegratedServerRunning && this.server != null;
+        return this.integratedServerRunning && this.server != null;
     }
 
     /**

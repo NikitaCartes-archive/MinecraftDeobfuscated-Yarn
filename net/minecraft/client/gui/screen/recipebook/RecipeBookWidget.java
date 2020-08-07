@@ -84,7 +84,7 @@ RecipeGridAligner<Ingredient> {
         if (this.isOpen()) {
             this.reset(narrow);
         }
-        client.keyboard.enableRepeatEvents(true);
+        client.keyboard.setRepeatEvents(true);
     }
 
     public void reset(boolean narrow) {
@@ -132,7 +132,7 @@ RecipeGridAligner<Ingredient> {
     public void close() {
         this.searchField = null;
         this.currentTab = null;
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
     }
 
     public int findLeftEdge(boolean narrow, int width, int parentWidth) {
@@ -274,7 +274,7 @@ RecipeGridAligner<Ingredient> {
             itemStack = ghostInputSlot.getCurrentItemStack();
         }
         if (itemStack != null && this.client.currentScreen != null) {
-            this.client.currentScreen.method_30901(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
+            this.client.currentScreen.renderTooltip(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
         }
     }
 

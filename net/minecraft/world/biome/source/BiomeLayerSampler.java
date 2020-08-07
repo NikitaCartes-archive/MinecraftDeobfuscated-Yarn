@@ -4,11 +4,11 @@
 package net.minecraft.world.biome.source;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5504;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.util.CachingLayerSampler;
 import net.minecraft.world.biome.layer.util.LayerFactory;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +24,7 @@ public class BiomeLayerSampler {
 
     public Biome sample(Registry<Biome> registry, int i, int j) {
         int k = this.sampler.sample(i, j);
-        RegistryKey<Biome> registryKey = class_5504.method_31144(k);
+        RegistryKey<Biome> registryKey = Biomes.fromRawId(k);
         if (registryKey == null) {
             throw new IllegalStateException("Unknown biome id emitted by layers: " + k);
         }
@@ -34,7 +34,7 @@ public class BiomeLayerSampler {
                 throw Util.throwOrPause(new IllegalStateException("Unknown biome id: " + k));
             }
             LOGGER.warn("Unknown biome id: ", (Object)k);
-            return registry.get(class_5504.method_31144(0));
+            return registry.get(Biomes.fromRawId(0));
         }
         return biome;
     }

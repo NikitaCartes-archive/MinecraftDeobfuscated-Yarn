@@ -70,7 +70,7 @@ extends ForwardingDynamicOps<T> {
      * 
      * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, MapCodec)
      */
-    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec) {
+    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean bl) {
         Optional optional = this.registryManager.getOptional(registryKey);
         if (!optional.isPresent()) {
             return DataResult.error("Unknown registry: " + registryKey);
@@ -78,6 +78,9 @@ extends ForwardingDynamicOps<T> {
         MutableRegistry mutableRegistry = optional.get();
         DataResult dataResult = Identifier.CODEC.decode(this.delegate, object);
         if (!dataResult.result().isPresent()) {
+            if (!bl) {
+                return DataResult.error("Inline definitions not allowed here");
+            }
             return codec.decode(this, object).map(pair -> pair.mapFirst(object -> () -> object));
         }
         Pair pair2 = dataResult.result().get();
@@ -115,7 +118,6 @@ extends ForwardingDynamicOps<T> {
      * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.</p>
      */
     private <E> DataResult<java.util.function.Supplier<E>> readSupplier(RegistryKey<? extends Registry<E>> registryKey, MutableRegistry<E> mutableRegistry, Codec<E> codec, Identifier elementId) {
-        DataResult<Object> dataResult3;
         RegistryKey registryKey2 = RegistryKey.of(registryKey, elementId);
         ValueHolder<E> valueHolder = this.getValueHolder(registryKey);
         DataResult dataResult = (DataResult)((ValueHolder)valueHolder).values.get(registryKey2);
@@ -130,18 +132,15 @@ extends ForwardingDynamicOps<T> {
             return object;
         });
         ((ValueHolder)valueHolder).values.put(registryKey2, DataResult.success(supplier));
-        DataResult<Pair<Object, OptionalInt>> dataResult2 = this.field_26738.method_31155(this.field_26739, registryKey, registryKey2, codec);
-        if (dataResult2.result().isPresent()) {
-            Pair pair = dataResult2.result().get();
-            mutableRegistry.method_31062(pair.getSecond(), registryKey2, pair.getFirst(), dataResult2.lifecycle());
-            dataResult3 = dataResult2.map(Pair::getFirst);
-        } else {
-            Object object2 = mutableRegistry.get(registryKey2);
-            dataResult3 = object2 != null ? DataResult.success(object2, Lifecycle.stable()) : dataResult2.map(Pair::getFirst);
+        DataResult<Pair<java.util.function.Supplier, OptionalInt>> dataResult2 = this.field_26738.method_31155(this.field_26739, registryKey, registryKey2, codec);
+        Optional optional = dataResult2.result();
+        if (optional.isPresent()) {
+            Pair pair2 = optional.get();
+            mutableRegistry.method_31062(pair2.getSecond(), registryKey2, pair2.getFirst(), dataResult2.lifecycle());
         }
-        DataResult<java.util.function.Supplier<E>> dataResult4 = dataResult3.map(object -> () -> object);
-        ((ValueHolder)valueHolder).values.put(registryKey2, dataResult4);
-        return dataResult4;
+        DataResult<java.util.function.Supplier<Object>> dataResult3 = !optional.isPresent() && mutableRegistry.get(registryKey2) != null ? DataResult.success(() -> mutableRegistry.get(registryKey2), Lifecycle.stable()) : dataResult2.map(pair -> () -> mutableRegistry.get(registryKey2));
+        ((ValueHolder)valueHolder).values.put(registryKey2, dataResult3);
+        return dataResult3;
     }
 
     private <E> ValueHolder<E> getValueHolder(RegistryKey<? extends Registry<E>> registryRef) {

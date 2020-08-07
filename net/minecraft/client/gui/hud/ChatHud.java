@@ -243,7 +243,7 @@ extends DrawableHelper {
         int i = Math.min(this.getVisibleLineCount(), this.visibleMessages.size());
         if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < (double)(this.client.textRenderer.fontHeight * i + i) && (j = (int)(e / (double)this.client.textRenderer.fontHeight + (double)this.scrolledLines)) >= 0 && j < this.visibleMessages.size()) {
             ChatHudLine<OrderedText> chatHudLine = this.visibleMessages.get(j);
-            return this.client.textRenderer.getTextHandler().method_30876(chatHudLine.getText(), (int)d);
+            return this.client.textRenderer.getTextHandler().getStyleAt(chatHudLine.getText(), (int)d);
         }
         return null;
     }

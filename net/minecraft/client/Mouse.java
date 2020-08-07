@@ -37,7 +37,7 @@ public class Mouse {
     private double cursorDeltaY;
     private double eventDeltaWheel;
     private double lastMouseUpdateTime = Double.MIN_VALUE;
-    private boolean isCursorLocked;
+    private boolean cursorLocked;
 
     public Mouse(MinecraftClient client) {
         this.client = client;
@@ -76,7 +76,7 @@ public class Mouse {
         boolean[] bls = new boolean[]{false};
         if (this.client.overlay == null) {
             if (this.client.currentScreen == null) {
-                if (!this.isCursorLocked && bl) {
+                if (!this.cursorLocked && bl) {
                     this.lockCursor();
                 }
             } else {
@@ -256,20 +256,20 @@ public class Mouse {
     }
 
     public boolean isCursorLocked() {
-        return this.isCursorLocked;
+        return this.cursorLocked;
     }
 
     public void lockCursor() {
         if (!this.client.isWindowFocused()) {
             return;
         }
-        if (this.isCursorLocked) {
+        if (this.cursorLocked) {
             return;
         }
         if (!MinecraftClient.IS_SYSTEM_MAC) {
             KeyBinding.updatePressedStates();
         }
-        this.isCursorLocked = true;
+        this.cursorLocked = true;
         this.x = this.client.getWindow().getWidth() / 2;
         this.y = this.client.getWindow().getHeight() / 2;
         InputUtil.setCursorParameters(this.client.getWindow().getHandle(), 212995, this.x, this.y);
@@ -279,10 +279,10 @@ public class Mouse {
     }
 
     public void unlockCursor() {
-        if (!this.isCursorLocked) {
+        if (!this.cursorLocked) {
             return;
         }
-        this.isCursorLocked = false;
+        this.cursorLocked = false;
         this.x = this.client.getWindow().getWidth() / 2;
         this.y = this.client.getWindow().getHeight() / 2;
         InputUtil.setCursorParameters(this.client.getWindow().getHandle(), 212993, this.x, this.y);

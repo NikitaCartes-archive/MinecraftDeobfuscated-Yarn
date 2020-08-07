@@ -34,7 +34,7 @@ extends ForgingScreen<AnvilScreenHandler> {
 
     @Override
     protected void setup() {
-        this.client.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.setRepeatEvents(true);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         this.nameField = new TextFieldWidget(this.textRenderer, i + 62, j + 24, 103, 12, new TranslatableText("container.repair"));
@@ -58,7 +58,7 @@ extends ForgingScreen<AnvilScreenHandler> {
     @Override
     public void removed() {
         super.removed();
-        this.client.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.setRepeatEvents(false);
     }
 
     @Override

@@ -112,16 +112,16 @@ AutoCloseable {
         this.dimension = dimensionType;
         this.registryKey = registryKey;
         this.isClient = bl;
-        this.border = dimensionType.method_31110() != 1.0 ? new WorldBorder(){
+        this.border = dimensionType.getCoordinateScale() != 1.0 ? new WorldBorder(){
 
             @Override
             public double getCenterX() {
-                return super.getCenterX() / dimensionType.method_31110();
+                return super.getCenterX() / dimensionType.getCoordinateScale();
             }
 
             @Override
             public double getCenterZ() {
-                return super.getCenterZ() / dimensionType.method_31110();
+                return super.getCenterZ() / dimensionType.getCoordinateScale();
             }
         } : new WorldBorder();
         this.thread = Thread.currentThread();

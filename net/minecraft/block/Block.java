@@ -284,10 +284,10 @@ implements ItemConvertible {
         }
     }
 
-    public static void dropStacks(BlockState state, WorldAccess worldAccess, BlockPos pos, @Nullable BlockEntity blockEntity) {
-        if (worldAccess instanceof ServerWorld) {
-            Block.getDroppedStacks(state, (ServerWorld)worldAccess, pos, blockEntity).forEach(stack -> Block.dropStack((ServerWorld)worldAccess, pos, stack));
-            state.onStacksDropped((ServerWorld)worldAccess, pos, ItemStack.EMPTY);
+    public static void dropStacks(BlockState state, WorldAccess world, BlockPos pos, @Nullable BlockEntity blockEntity) {
+        if (world instanceof ServerWorld) {
+            Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity).forEach(stack -> Block.dropStack((ServerWorld)world, pos, stack));
+            state.onStacksDropped((ServerWorld)world, pos, ItemStack.EMPTY);
         }
     }
 
@@ -311,12 +311,12 @@ implements ItemConvertible {
         world.spawnEntity(itemEntity);
     }
 
-    protected void dropExperience(ServerWorld serverWorld, BlockPos pos, int size) {
-        if (serverWorld.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+    protected void dropExperience(ServerWorld world, BlockPos pos, int size) {
+        if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             while (size > 0) {
                 int i = ExperienceOrbEntity.roundToOrbSize(size);
                 size -= i;
-                serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
+                world.spawnEntity(new ExperienceOrbEntity(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, i));
             }
         }
     }
@@ -325,9 +325,15 @@ implements ItemConvertible {
         return this.resistance;
     }
 
+    /**
+     * Called when this block is destroyed by an explosion.
+     */
     public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
     }
 
+    /**
+     * Called when an entity steps on this block.
+     */
     public void onSteppedOn(World world, BlockPos pos, Entity entity) {
     }
 

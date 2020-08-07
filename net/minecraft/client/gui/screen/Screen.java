@@ -122,7 +122,7 @@ Drawable {
     }
 
     protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-        this.method_30901(matrices, this.getTooltipFromItem(stack), x, y);
+        this.renderTooltip(matrices, this.getTooltipFromItem(stack), x, y);
     }
 
     public List<Text> getTooltipFromItem(ItemStack stack) {
@@ -130,17 +130,17 @@ Drawable {
     }
 
     public void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
-        this.renderTooltip(matrices, Arrays.asList(text.asOrderedText()), x, y);
+        this.renderOrderedTooltip(matrices, Arrays.asList(text.asOrderedText()), x, y);
     }
 
-    public void method_30901(MatrixStack matrixStack, List<Text> list, int i, int j) {
-        this.renderTooltip(matrixStack, Lists.transform(list, Text::asOrderedText), i, j);
+    public void renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y) {
+        this.renderOrderedTooltip(matrices, Lists.transform(lines, Text::asOrderedText), x, y);
     }
 
     /*
      * WARNING - void declaration
      */
-    public void renderTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
+    public void renderOrderedTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
         int n;
         int j;
         if (lines.isEmpty()) {
@@ -210,24 +210,24 @@ Drawable {
         matrices.pop();
     }
 
-    protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int i, int j) {
+    protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int x, int y) {
         if (style == null || style.getHoverEvent() == null) {
             return;
         }
         HoverEvent hoverEvent = style.getHoverEvent();
         HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
         if (itemStackContent != null) {
-            this.renderTooltip(matrices, itemStackContent.asStack(), i, j);
+            this.renderTooltip(matrices, itemStackContent.asStack(), x, y);
         } else {
             HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
             if (entityContent != null) {
                 if (this.client.options.advancedItemTooltips) {
-                    this.method_30901(matrices, entityContent.asTooltip(), i, j);
+                    this.renderTooltip(matrices, entityContent.asTooltip(), x, y);
                 }
             } else {
                 Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
                 if (text != null) {
-                    this.renderTooltip(matrices, this.client.textRenderer.wrapLines(text, Math.max(this.width / 2, 200)), i, j);
+                    this.renderOrderedTooltip(matrices, this.client.textRenderer.wrapLines(text, Math.max(this.width / 2, 200)), x, y);
                 }
             }
         }

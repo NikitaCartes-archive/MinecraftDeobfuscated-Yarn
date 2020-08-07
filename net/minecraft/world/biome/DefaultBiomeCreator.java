@@ -137,7 +137,7 @@ public class DefaultBiomeCreator {
         SpawnSettings.Builder builder = new SpawnSettings.Builder();
         DefaultBiomeFeatures.addJungleMobs(builder);
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, parrotWeight, 1, parrotMaxGroupSize)).spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, ocelotMaxGroupSize)).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 1, 1, 2));
-        builder.method_31083();
+        builder.playerSpawnFriendly();
         return DefaultBiomeCreator.createJungleFeatures(depth, scale, 0.9f, false, false, false, builder);
     }
 
@@ -250,7 +250,7 @@ public class DefaultBiomeCreator {
         SpawnSettings.Builder builder = new SpawnSettings.Builder();
         DefaultBiomeFeatures.addPlainsMobs(builder);
         if (!bl) {
-            builder.method_31083();
+            builder.playerSpawnFriendly();
         }
         GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
         if (!bl) {
@@ -588,7 +588,7 @@ public class DefaultBiomeCreator {
     }
 
     public static Biome createNormalForest(float depth, float scale) {
-        SpawnSettings.Builder builder = DefaultBiomeCreator.method_31069().spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4)).method_31083();
+        SpawnSettings.Builder builder = DefaultBiomeCreator.method_31069().spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4)).playerSpawnFriendly();
         return DefaultBiomeCreator.createForest(depth, scale, false, builder);
     }
 
@@ -602,7 +602,7 @@ public class DefaultBiomeCreator {
         DefaultBiomeFeatures.addFarmAnimals(builder);
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 8, 4, 4)).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3)).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FOX, 8, 2, 4));
         if (!bl && !bl2) {
-            builder.method_31083();
+            builder.playerSpawnFriendly();
         }
         DefaultBiomeFeatures.addBatsAndMonsters(builder);
         float h = bl ? -0.5f : 0.25f;
